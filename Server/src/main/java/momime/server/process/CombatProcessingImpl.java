@@ -617,26 +617,26 @@ public final class CombatProcessingImpl implements CombatProcessing
 				if (firstTurn)
 				{
 					firstTurn = false;
-					tc.setCombatCurrentPlayer (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
+					tc.setCombatCurrentPlayerID (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
 					log.debug ("First turn - Defender");
 				}
 				
 				// Otherwise compare against the player from the last turn
-				else if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayer ()))
+				else if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayerID ()))
 				{
-					tc.setCombatCurrentPlayer (combatPlayers.getAttackingPlayer ().getPlayerDescription ().getPlayerID ());
+					tc.setCombatCurrentPlayerID (combatPlayers.getAttackingPlayer ().getPlayerDescription ().getPlayerID ());
 					log.debug ("Attacker's turn");
 				}
 				else
 				{
-					tc.setCombatCurrentPlayer (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
+					tc.setCombatCurrentPlayerID (combatPlayers.getDefendingPlayer ().getPlayerDescription ().getPlayerID ());
 					log.debug ("Defender's turn");
 				}
 				
 				// Tell all human players involved in the combat who the new player is
 				final SetCombatPlayerMessage msg = new SetCombatPlayerMessage ();
 				msg.setCombatLocation (combatLocation);
-				msg.setPlayerID (tc.getCombatCurrentPlayer ());
+				msg.setPlayerID (tc.getCombatCurrentPlayerID ());
 				
 				if (combatPlayers.getDefendingPlayer ().getPlayerDescription ().isHuman ())
 					((PlayerServerDetails) combatPlayers.getDefendingPlayer ()).getConnection ().sendMessageToClient (msg);
@@ -645,7 +645,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					((PlayerServerDetails) combatPlayers.getAttackingPlayer ()).getConnection ().sendMessageToClient (msg);
 				
 				// Give this player all their movement for this turn
-				getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayer (), combatLocation,
+				getUnitCalculations ().resetUnitCombatMovement (tc.getCombatCurrentPlayerID (), combatLocation,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				// Allow the player to cast a spell this turn
@@ -653,9 +653,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 			}
 			
 			// AI or human player?
-			if (tc.getCombatCurrentPlayer () != null)
+			if (tc.getCombatCurrentPlayerID () != null)
 			{
-				final PlayerServerDetails combatCurrentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCombatCurrentPlayer (), "progressCombat");
+				final PlayerServerDetails combatCurrentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), tc.getCombatCurrentPlayerID (), "progressCombat");
 				if ((combatCurrentPlayer.getPlayerDescription ().isHuman ()) && (!autoControlHumanPlayer))
 				{
 					// Human players' turn.

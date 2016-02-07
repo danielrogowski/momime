@@ -8,14 +8,10 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
-import momime.client.ui.frames.ArmyListUI;
-import momime.client.ui.frames.HeroItemsUI;
 import momime.client.utils.UnitClientUtils;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.utils.UnitUtils;
@@ -36,12 +32,6 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-
-	/** Army list */
-	private ArmyListUI armyListUI;
-	
-	/** Hero items UI */
-	private HeroItemsUI heroItemsUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -57,16 +47,6 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "KillUnitMessageImpl");
 		
 		getUnitClientUtils ().killUnit (unit, getNewStatus ());
-		
-		if (unit.getOwningPlayerID () == getClient ().getOurPlayerID ())
-		{
-			getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) unit.getUnitLocation ());
-		
-			if (getClient ().getClientDB ().findUnit (unit.getUnitID (), "KillUnitMessageImpl").getUnitMagicRealm ().equals
-				(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-				
-				getHeroItemsUI ().refreshHeroes ();
-		}
 		
 		log.trace ("Exiting start");
 	}
@@ -118,37 +98,5 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
-	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
-	}
-
-	/**
-	 * @return Hero items UI
-	 */
-	public final HeroItemsUI getHeroItemsUI ()
-	{
-		return heroItemsUI;
-	}
-
-	/**
-	 * @param ui Hero items UI
-	 */
-	public final void setHeroItemsUI (final HeroItemsUI ui)
-	{
-		heroItemsUI = ui;
 	}
 }

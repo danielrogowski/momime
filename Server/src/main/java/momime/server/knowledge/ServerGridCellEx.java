@@ -22,8 +22,14 @@ public final class ServerGridCellEx extends ServerGridCell
 	 */
 	private Double nodeLairTowerPowerProportion;
 
+	/** The player who attacked to initiate the combat */
+	private Integer attackingPlayerID;
+	
+	/** Player who was attacked to initiate the combat */
+	private Integer defendingPlayerID;
+	
 	/** Who's turn it is in the combat currently taking place at this location */
-	private Integer combatCurrentPlayer;
+	private Integer combatCurrentPlayerID;
 	
 	/** Whether combatCurrentPlayer has cast a spell yet during this combat turn (can only cast 1 spell per combat turn) */
 	private Boolean spellCastThisCombatTurn;
@@ -76,21 +82,53 @@ public final class ServerGridCellEx extends ServerGridCell
 	}
 
 	/**
+	 * @return The player who attacked to initiate the combat
+	 */
+	public final Integer getAttackingPlayerID ()
+	{
+		return attackingPlayerID;
+	}		
+
+	/**
+	 * @param id The player who attacked to initiate the combat
+	 */
+	public final void setAttackingPlayerID (final Integer id)
+	{
+		attackingPlayerID = id;
+	}
+	
+	/**
+	 * @return Player who was attacked to initiate the combat
+	 */
+	public final Integer getDefendingPlayerID ()
+	{
+		return defendingPlayerID;
+	}
+	
+	/**
+	 * @param id Player who was attacked to initiate the combat
+	 */
+	public final void setDefendingPlayerID (final Integer id)
+	{
+		defendingPlayerID = id;
+	}
+	
+	/**
 	 * @return Who's turn it is in the combat currently taking place at this location
 	 */
-	public final Integer getCombatCurrentPlayer ()
+	public final Integer getCombatCurrentPlayerID ()
 	{
-		return combatCurrentPlayer;
+		return combatCurrentPlayerID;
 	}
 
 	/**
-	 * @param playerID Who's turn it is in the combat currently taking place at this location
+	 * @param id Who's turn it is in the combat currently taking place at this location
 	 */
-	public final void setCombatCurrentPlayer (final Integer playerID)
+	public final void setCombatCurrentPlayerID (final Integer id)
 	{
-		combatCurrentPlayer = playerID;
+		combatCurrentPlayerID = id;
 	}
-
+	
 	/**
 	 * @return Whether combatCurrentPlayer has cast a spell yet during this combat turn (can only cast 1 spell per combat turn)
 	 */

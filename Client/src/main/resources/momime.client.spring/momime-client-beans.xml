@@ -525,8 +525,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="armyListUI" ref="armyListUI" />
-		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
 
 	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype">

@@ -623,7 +623,7 @@ public final class TestCombatProcessingImpl
 		proc.progressCombat (combatLocation, true, false, mom);
 		
 		// Check player set correctly on server
-		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayer ());
+		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayerID ());
 		
 		// Check player set correctly on client
 		assertEquals (1, defendingMsgs.getMessages ().size ());
@@ -702,7 +702,7 @@ public final class TestCombatProcessingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 		
 		// Defender/human player just finished turn
-		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
+		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -721,7 +721,7 @@ public final class TestCombatProcessingImpl
 		verify (ai, times (1)).aiCombatTurn (combatLocation, attackingPlayer, mom);
 		
 		// Check player set correctly on server
-		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayer ());
+		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayerID ());
 		
 		// Check player set correctly on client (attacker, then back to defender)
 		assertEquals (2, defendingMsgs.getMessages ().size ());
@@ -806,7 +806,7 @@ public final class TestCombatProcessingImpl
 		when (combatMapUtils.determinePlayersInCombatFromLocation (combatLocation, trueMap.getUnit (), players)).thenReturn (combatPlayers);
 
 		// Its the Defender/human player's turn
-		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
+		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
 		
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -827,7 +827,7 @@ public final class TestCombatProcessingImpl
 		
 		// Check its now the defenders turn again (the method doesn't loop despite the human player
 		// being on auto, to give the client a chance to turn auto off again)
-		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayer ());
+		assertEquals (defendingPd.getPlayerID (), gc.getCombatCurrentPlayerID ());
 		
 		// Check player set correctly on client (attacker after AI takes our defender's turn, then back to defender)
 		assertEquals (2, defendingMsgs.getMessages ().size ());
@@ -912,7 +912,7 @@ public final class TestCombatProcessingImpl
 			(combatPlayers, combatPlayers, combatPlayers, combatPlayers, attackerWins);
 		
 		// Defender/human player just finished turn
-		gc.setCombatCurrentPlayer (defendingPd.getPlayerID ());
+		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -932,7 +932,7 @@ public final class TestCombatProcessingImpl
 		verify (ai, times (2)).aiCombatTurn (combatLocation, attackingPlayer, mom);
 		
 		// Attacker had their turn last
-		assertEquals (attackingPd.getPlayerID (), gc.getCombatCurrentPlayer ());
+		assertEquals (attackingPd.getPlayerID (), gc.getCombatCurrentPlayerID ());
 		
 		// Check other setup
 		assertNull (gc.isSpellCastThisCombatTurn ());

@@ -41,7 +41,6 @@ import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
-import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
 import momime.common.utils.UnitUtils;
@@ -492,40 +491,18 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			attackerUnit.getUnitDamage ().clear ();
 			attackerUnit.getUnitDamage ().addAll (getAttackerUnitDamage ());
 			
-			if (getUnitCalculations ().calculateAliveFigureCount (attackerUnit, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) <= 0)
-			{
-				// Attacker is dead
-				log.debug ("ApplyDamage is killing off dead attacker Unit URN " + getAttackerUnitURN ());
-				final UnitStatusID killStatus;
-				if (!animated)
-					killStatus = null;		// Combat we are not involved in (and so not our units), so completely remove them
-				
-				else if ((attackerUnit.getOwningPlayerID () != getClient ().getOurPlayerID ()) && (getClient ().getClientDB ().findUnit
-					(attackerUnit.getUnitID (), "ApplyDamageMessageImpl-a").getUnitMagicRealm ().equals
-						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
-						
-					killStatus = null;		// We're in combat with it, but its someone else's hero dying - we can't raise/dead other player's heroes, so just immediately remove it
-				else
-					killStatus = UnitStatusID.DEAD;		// Our unit/hero, or someone else's regular unit - can be targets for raise/animate dead, so keep them in our list for now
-				
-				getUnitClientUtils ().killUnit (attackerUnit, killStatus);
-			}
-			else
-			{
-				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
-				if (attackerUI != null)
-					attackerUI.getUnitInfoPanel ().showUnit (attackerUI.getUnitInfoPanel ().getUnit ());
-				
-				for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-					if ((!button.isHidden ()) && (button.getComponent ().getUnit () == attackerUnit))
-						button.repaint ();
+			final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
+			if (attackerUI != null)
+				attackerUI.getUnitInfoPanel ().showUnit (attackerUI.getUnitInfoPanel ().getUnit ());
+			
+			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+				if ((!button.isHidden ()) && (button.getComponent ().getUnit () == attackerUnit))
+					button.repaint ();
 
-				for (final CityViewUI cityView : getClient ().getCityViews ().values ())
-					for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
-						if (button.getUnit () == attackerUnit)
-							button.repaint ();
-			}
+			for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+				for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
+					if (button.getUnit () == attackerUnit)
+						button.repaint ();
 		}
 		
 		// Damage to defender(s)
@@ -547,40 +524,18 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 						break;
 				}
 			
-			if (getUnitCalculations ().calculateAliveFigureCount (thisUnit.getDefUnit (), getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) <= 0)
-			{
-				// Defender is dead
-				log.debug ("ApplyDamage is killing off dead defender Unit URN " + thisUnit.getDefUnit ().getUnitURN ());
-				final UnitStatusID killStatus;
-				if (!animated)
-					killStatus = null;		// Combat we are not involved in (and so not our units), so completely remove them
-				
-				else if ((thisUnit.getDefUnit ().getOwningPlayerID () != getClient ().getOurPlayerID ()) && (getClient ().getClientDB ().findUnit
-					(thisUnit.getDefUnit ().getUnitID (), "ApplyDamageMessageImpl-d").getUnitMagicRealm ().equals
-						(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)))
-						
-					killStatus = null;		// We're in combat with it, but its someone else's hero dying - we can't raise/dead other player's heroes, so just immediately remove it
-				else
-					killStatus = UnitStatusID.DEAD;		// Our unit/hero, or someone else's regular unit - can be targets for raise/animate dead, so keep them in our list for now
+			final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
+			if (defenderUI != null)
+				defenderUI.getUnitInfoPanel ().showUnit (defenderUI.getUnitInfoPanel ().getUnit ());
 
-				getUnitClientUtils ().killUnit (thisUnit.getDefUnit (), killStatus);
-			}
-			else
-			{
-				final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
-				if (defenderUI != null)
-					defenderUI.getUnitInfoPanel ().showUnit (defenderUI.getUnitInfoPanel ().getUnit ());
+			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
+				if ((!button.isHidden ()) && (button.getComponent ().getUnit () == defenderUnit))
+					button.repaint ();
 
-				for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-					if ((!button.isHidden ()) && (button.getComponent ().getUnit () == defenderUnit))
+			for (final CityViewUI cityView : getClient ().getCityViews ().values ())
+				for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
+					if (button.getUnit () == defenderUnit)
 						button.repaint ();
-
-				for (final CityViewUI cityView : getClient ().getCityViews ().values ())
-					for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
-						if (button.getUnit () == defenderUnit)
-							button.repaint ();
-			}
 		}
 		
 		// Jump to the next unit to move

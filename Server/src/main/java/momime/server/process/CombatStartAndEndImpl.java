@@ -230,21 +230,22 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		{
 			log.debug ("Continuing combat setup");
 			
+			// Store the two players involved
+			tc.setAttackingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
+			tc.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
+			
 			// Set casting skill allocation for this combat 
 			final MomPersistentPlayerPrivateKnowledge attackingPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 			tc.setCombatAttackerCastingSkillRemaining (getResourceValueUtils ().calculateCastingSkillOfPlayer (attackingPriv.getResourceValue ()));
 			
-			if (defendingPlayer != null)
-			{
-				final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-				tc.setCombatDefenderCastingSkillRemaining (getResourceValueUtils ().calculateCastingSkillOfPlayer (defendingPriv.getResourceValue ()));
-			}
+			final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+			tc.setCombatDefenderCastingSkillRemaining (getResourceValueUtils ().calculateCastingSkillOfPlayer (defendingPriv.getResourceValue ()));
 			
 			// Finally send the message, containing all the unit positions, units (if monsters in a node/lair/tower) and combat scenery
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 				attackingPlayer.getConnection ().sendMessageToClient (startCombatMessage);
 
-			if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
+			if (defendingPlayer.getPlayerDescription ().isHuman ())
 				defendingPlayer.getConnection ().sendMessageToClient (startCombatMessage);
 			
 			// Kick off first turn of combat
@@ -551,6 +552,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
 					defendingPlayer.getConnection ().sendMessageToClient (nextUnitMsg);
 			}
+			
+			// Clear out combat related items
+			tc.setAttackingPlayerID (null);
+			tc.setDefendingPlayerID (null);
+			tc.setCombatCurrentPlayerID (null);
+			tc.setSpellCastThisCombatTurn (null);
+			tc.setCombatDefenderCastingSkillRemaining (null);
+			tc.setCombatAttackerCastingSkillRemaining (null);
 		}
 		
 		log.trace ("Exiting combatEnded");

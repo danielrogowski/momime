@@ -20,6 +20,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
@@ -32,7 +33,6 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -375,24 +375,17 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		log.trace ("Entering killUnitOnServerAndClients: Unit URN " + trueUnit.getUnitURN ());
 
 		// If the unit was a hero dying in combat, move any items they had into the pool for the winner of the combat to claim
-		if ((trueUnit.getCombatLocation () != null) && (trueUnit.getHeroItemSlot ().size () > 0))
-		{
-			final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (trueUnit.getCombatLocation ().getZ ()).getRow ().get
+		final ServerGridCellEx gc = (trueUnit.getCombatLocation () == null) ? null :
+			(ServerGridCellEx) trueMap.getMap ().getPlane ().get (trueUnit.getCombatLocation ().getZ ()).getRow ().get
 				(trueUnit.getCombatLocation ().getY ()).getCell ().get (trueUnit.getCombatLocation ().getX ());
-			
-			for (final MemoryUnitHeroItemSlot slot : trueUnit.getHeroItemSlot ())
-				if (slot.getHeroItem () != null)
-				{
-					gc.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
-					slot.setHeroItem (null);
-				}
-		}
-		
-		// Build the message ready to send it to whoever could see the unit
-		// Action has to be set per player depending on who can see it
-		final KillUnitMessage msg = new KillUnitMessage ();
-		msg.setUnitURN (trueUnit.getUnitURN ());
 
+		if (trueUnit.getCombatLocation () != null)
+			trueUnit.getHeroItemSlot ().stream ().filter (slot -> (slot.getHeroItem () != null)).forEach (slot ->
+			{
+				gc.getItemsFromHeroesWhoDiedInCombat ().add (slot.getHeroItem ());
+				slot.setHeroItem (null);
+			});
+		
 		// Check which players could see the unit
 		for (final PlayerServerDetails player : players)
 		{
@@ -404,44 +397,63 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				getPendingMovementUtils ().removeUnitFromAnyPendingMoves (priv.getPendingMovement (), trueUnit.getUnitURN ());
 				getUnitUtils ().beforeKillingUnit (priv.getFogOfWarMemory (), trueUnit.getUnitURN ());	// Removes spells cast on unit
 				
-				// If still in combat, only set to DEAD in player's memory on server, rather than removing entirely
-				if (untransmittedAction == UntransmittedKillUnitActionID.COMBAT_DAMAGE)
-					getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "killUnitOnServerAndClients").setStatus (UnitStatusID.DEAD);
-				else
-					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
+				// Map the transmittedAction to a unit status
+				final UnitStatusID newStatusInPlayersMemoryOnServer;
+				final UnitStatusID newStatusInPlayersMemoryOnClient;
+				
+				switch (untransmittedAction)
+				{
+					// Heroes are killed outright on the clients (even if ours, and just dismissing him and may resummon him later), but return to 'Generated' status on the server below
+					case FREE:
+					case HERO_DIMISSED_VOLUNTARILY:
+						newStatusInPlayersMemoryOnServer = null;
+						newStatusInPlayersMemoryOnClient = null;
+						break;
+				    	
+					// If its our unit or hero dying from lack of production then the client still needs the unit object left around temporarily while it sorts the NTM out.
+					// But anybody else's units dying from lack of production can just be removed.
+				    case UNIT_LACK_OF_PRODUCTION:
+				    case HERO_LACK_OF_PRODUCTION:
+						newStatusInPlayersMemoryOnServer = null;
+						if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
+							newStatusInPlayersMemoryOnClient = UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION;
+						else
+							newStatusInPlayersMemoryOnClient = null;
+						break;
+					
+					// If we're not involved in the combat, then units are remove immediately from the client.
+					// If its somebody else's hero dying, then they're remove immediately from the client.
+					// If its a regular unit dying in a combat we're involved in, or our own hero dying, then we might raise/animate dead it, so mark those as dead but don't remove them.
+				    case COMBAT_DAMAGE:
+						if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
+							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
+						else if (db.findUnit (trueUnit.getUnitID (), "killUnitOnServerAndClients").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+							newStatusInPlayersMemoryOnServer = null;
+						else if ((player.getPlayerDescription ().getPlayerID ().equals (gc.getAttackingPlayerID ())) || (player.getPlayerDescription ().getPlayerID ().equals (gc.getDefendingPlayerID ())))
+							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
+						else
+							newStatusInPlayersMemoryOnServer = null;
+						
+						newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
+				    	break;
 
+				    default:
+				    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + untransmittedAction + " into");
+				}
+
+				// If still in combat, only set to DEAD in player's memory on server, rather than removing entirely
+				if (newStatusInPlayersMemoryOnServer == null)
+					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
+				else
+					getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "killUnitOnServerAndClients").setStatus (newStatusInPlayersMemoryOnServer);
+				
 				if (player.getPlayerDescription ().isHuman ())
 				{
-					// Edit the action appropriately for the client - the only reason this isn't always FREE is that
-					// units killed or dismissed by lack of production need to go to a special status on
-					// the owning client so they are freed once their name has been recorded in the NTM
-				
-					// For other players and statuses, they are just killed outright
-					if ((trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ().intValue ()) &&
-						((untransmittedAction == UntransmittedKillUnitActionID.HERO_LACK_OF_PRODUCTION) || (untransmittedAction == UntransmittedKillUnitActionID.UNIT_LACK_OF_PRODUCTION)))
-					{
-						// Map the transmittedAction to a unit status (this used to be done on the client end)
-						switch (untransmittedAction)
-						{
-							// Heroes are killed outright on the clients (even if ours, and just dismissing him and may resummon him later), but return to 'Generated' status on the server
-							case FREE:
-						    case VISIBLE_AREA_CHANGED:
-							case HERO_DIMISSED_VOLUNTARILY:
-								msg.setNewStatus (null);
-								break;
-						    	
-						    case UNIT_LACK_OF_PRODUCTION:
-						    case HERO_LACK_OF_PRODUCTION:
-								msg.setNewStatus (UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION);
-								break;
-
-						    default:
-						    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + untransmittedAction + " into");
-						}
-					}
-					else
-						msg.setNewStatus (null);
-				
+					// New status has to be set per player depending on who can see it
+					final KillUnitMessage msg = new KillUnitMessage ();
+					msg.setUnitURN (trueUnit.getUnitURN ());
+					msg.setNewStatus (newStatusInPlayersMemoryOnClient);
+					
 					player.getConnection ().sendMessageToClient (msg);
 				}
 			}
@@ -469,14 +481,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 			// Killed by taking damage in combat.
 			// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
-			// Heroes are kept at musDead even after the combat ends, in case the player resurrects them.
+			// Heroes are kept at DEAD even after the combat ends, in case the player resurrects them.
 			case COMBAT_DAMAGE:
 				log.debug ("Setting unit with unit URN " + trueUnit.getUnitURN () + " to dead");
 				trueUnit.setStatus (UnitStatusID.DEAD);
 				break;
 				
-				// VISIBLE_AREA_CHANGED is only ever used in msgs sent to clients and should never be passed into this method
-
 			default:
 				throw new MomException ("killUnitOnServerAndClients doesn't know what to do with true units when action = " + untransmittedAction);
 		}

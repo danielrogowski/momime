@@ -21,7 +21,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
@@ -45,6 +44,7 @@ import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 
@@ -306,7 +306,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		}
 		
 		// Kill off the spirit
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit, UntransmittedKillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
+		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
 
 		log.trace ("Exiting attemptToMeldWithNode = " + successful);
 	}

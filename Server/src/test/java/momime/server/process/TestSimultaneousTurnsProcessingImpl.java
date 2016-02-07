@@ -19,7 +19,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -43,6 +42,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
@@ -243,8 +243,8 @@ public final class TestSimultaneousTurnsProcessingImpl
 		proc.processSpecialOrders (mom);
 		
 		// Check units were dismissed
-		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissNormalUnit, UntransmittedKillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissHeroUnit, UntransmittedKillUnitActionID.HERO_DIMISSED_VOLUNTARILY, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissNormalUnit, KillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissHeroUnit, KillUnitActionID.HERO_DIMISSED_VOLUNTARILY, trueMap, players, fogOfWarSettings, db);
 		
 		// Check buildings were sold
 		verify (cityProc, times (1)).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db);

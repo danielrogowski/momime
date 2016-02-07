@@ -11,7 +11,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
@@ -131,7 +130,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void killUnitOnServerAndClients (final MemoryUnit trueUnit, final UntransmittedKillUnitActionID untransmittedAction,
+	public void killUnitOnServerAndClients (final MemoryUnit trueUnit, final KillUnitActionID untransmittedAction,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;

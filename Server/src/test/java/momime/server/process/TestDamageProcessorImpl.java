@@ -21,7 +21,6 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -47,6 +46,7 @@ import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
@@ -216,8 +216,8 @@ public final class TestDamageProcessorImpl
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 		
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, KillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, KillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
 		
 		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
@@ -383,8 +383,8 @@ public final class TestDamageProcessorImpl
 		assertEquals (3, defender.getCombatHeading ().intValue ());
 
 		// Check the dead unit was killed off, and exp given to the other side
-		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (1)).killUnitOnServerAndClients (defender, KillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurnSingle, times (0)).killUnitOnServerAndClients (attacker, KillUnitActionID.COMBAT_DAMAGE, trueMap, players, fogOfWarSettings, db);
 		
 		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);

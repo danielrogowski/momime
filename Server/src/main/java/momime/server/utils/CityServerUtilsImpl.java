@@ -15,7 +15,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
@@ -37,6 +36,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
@@ -230,7 +230,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 		
 		// Kill off the settler
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (settler, UntransmittedKillUnitActionID.FREE, gsk.getTrueMap (), players, sd.getFogOfWarSetting (), db);
+		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (settler, KillUnitActionID.FREE, gsk.getTrueMap (), players, sd.getFogOfWarSetting (), db);
 		
 		// Update our own FOW (the city can see further than the settler could)
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), player, players, "buildCityFromSettler", sd, db);

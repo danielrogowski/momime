@@ -20,7 +20,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
@@ -55,6 +54,7 @@ import momime.server.ai.CombatAI;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.utils.UnitServerUtils;
@@ -807,7 +807,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling defender to remove dead unit URN " + trueUnit.getUnitURN ());
 					
 					// Use regular kill routine
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, UntransmittedKillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
 				}
 				
 				// Special case where we have to tell the client to kill off the unit outside of the FOW routines?

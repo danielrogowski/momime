@@ -15,7 +15,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.DamageResolutionTypeID;
@@ -33,6 +32,7 @@ import momime.server.database.AttackResolutionSvr;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
+import momime.server.fogofwar.KillUnitActionID;
 
 /**
  * Routines dealing with applying combat damage
@@ -233,7 +233,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyAttackingPlayerUnitsSurvived = true;
 				else
 				{
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, KillUnitActionID.COMBAT_DAMAGE,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
 					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
@@ -257,7 +257,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyDefendingPlayerUnitsSurvived = true;
 				else
 				{
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, UntransmittedKillUnitActionID.COMBAT_DAMAGE,
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, KillUnitActionID.COMBAT_DAMAGE,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
 					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,

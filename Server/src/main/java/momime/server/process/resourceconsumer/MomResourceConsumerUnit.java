@@ -10,7 +10,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
@@ -19,6 +18,7 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.KillUnitActionID;
 
 /**
  * Unit that consumes a particular type of resource
@@ -127,11 +127,11 @@ public final class MomResourceConsumerUnit implements MomResourceConsumer
 		log.trace ("Entering kill: Unit URN " + getUnit ().getUnitURN ());
 
 		// Action needs to depend on the type of unit
-		final UntransmittedKillUnitActionID action;
+		final KillUnitActionID action;
 		if (mom.getServerDB ().findUnit (getUnit ().getUnitID (), "MomResourceConsumerUnit").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-			action = UntransmittedKillUnitActionID.HERO_LACK_OF_PRODUCTION;
+			action = KillUnitActionID.HERO_LACK_OF_PRODUCTION;
 		else
-			action = UntransmittedKillUnitActionID.UNIT_LACK_OF_PRODUCTION;
+			action = KillUnitActionID.UNIT_LACK_OF_PRODUCTION;
 
 		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (getUnit (), action,
 			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());

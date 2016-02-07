@@ -20,7 +20,6 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
@@ -406,7 +405,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, UntransmittedKillUnitActionID.FREE, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.FREE, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
@@ -587,7 +586,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, UntransmittedKillUnitActionID.HERO_DIMISSED_VOLUNTARILY, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.HERO_DIMISSED_VOLUNTARILY, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
@@ -768,7 +767,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, UntransmittedKillUnitActionID.UNIT_LACK_OF_PRODUCTION, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.UNIT_LACK_OF_PRODUCTION, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
@@ -949,7 +948,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, UntransmittedKillUnitActionID.HERO_LACK_OF_PRODUCTION, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.HERO_LACK_OF_PRODUCTION, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
@@ -1179,7 +1178,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.COMBAT_DAMAGE, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
@@ -1421,7 +1420,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, UntransmittedKillUnitActionID.COMBAT_DAMAGE, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.COMBAT_DAMAGE, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());

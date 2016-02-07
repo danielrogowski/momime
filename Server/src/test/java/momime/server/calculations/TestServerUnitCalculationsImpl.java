@@ -26,7 +26,6 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
 
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitCalculationsImpl;
 import momime.common.calculations.UnitHasSkillMergedList;
@@ -60,6 +59,7 @@ import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.KillUnitActionID;
 
 /**
  * Tests the ServerUnitCalculations class
@@ -861,7 +861,7 @@ public final class TestServerUnitCalculationsImpl
 		calc.recheckTransportCapacity (new MapCoordinates3DEx (20, 10, 1), trueMap, players, fogOfWarSettings, db);
 		
 		// Check 1 unit of spearmen was killed
-		verify (midTurn).killUnitOnServerAndClients (killedUnit, UntransmittedKillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn).killUnitOnServerAndClients (killedUnit, KillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
 	}
 	
 	/**

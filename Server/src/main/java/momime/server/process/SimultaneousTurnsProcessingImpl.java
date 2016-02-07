@@ -15,7 +15,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
-import momime.common.UntransmittedKillUnitActionID;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -30,6 +29,7 @@ import momime.server.database.MapFeatureSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -90,11 +90,11 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		final List<MemoryUnit> dismisses = getUnitServerUtils ().listUnitsWithSpecialOrder (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), UnitSpecialOrder.DISMISS);
 		for (final MemoryUnit trueUnit : dismisses)
 		{
-			final UntransmittedKillUnitActionID action;
+			final KillUnitActionID action;
 			if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "processSpecialOrders-d").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-				action = UntransmittedKillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
+				action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
 			else
-				action = UntransmittedKillUnitActionID.FREE;
+				action = KillUnitActionID.FREE;
 			
 			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());

@@ -1,4 +1,4 @@
-package momime.common;
+package momime.server.fogofwar;
 
 /**
  * KillUnitActionID has now been phased out of the XSDs and network messages, so all possible values are defined here.
@@ -8,7 +8,7 @@ package momime.common;
  * some of these into HEALABLE_COMBAT_DAMAGE, HEALABLE_OVERLAND_DAMAGE and have FREE renamed into PERMANENT_DAMAGE
  * which would then cover settlers and spirits being consumed, as well as units being killed by e.g. cracks call.
  */
-public enum UntransmittedKillUnitActionID
+public enum KillUnitActionID
 {
 	/** Remove unit entirely; there is no possible means to bring it back in future */
 	FREE,

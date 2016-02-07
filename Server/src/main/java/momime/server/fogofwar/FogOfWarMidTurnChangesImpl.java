@@ -373,6 +373,9 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	{
 		log.trace ("Entering killUnitOnServerAndClients: Unit URN " + trueUnit.getUnitURN ());
 
+		final boolean isHero = db.findUnit (trueUnit.getUnitID (), "killUnitOnServerAndClients").getUnitMagicRealm ().equals
+			(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		
 		// If the unit was a hero dying in combat, move any items they had into the pool for the winner of the combat to claim
 		final ServerGridCellEx gc = (trueUnit.getCombatLocation () == null) ? null :
 			(ServerGridCellEx) trueMap.getMap ().getPlane ().get (trueUnit.getCombatLocation ().getZ ()).getRow ().get
@@ -411,8 +414,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				    	
 					// If its our unit or hero dying from lack of production then the client still needs the unit object left around temporarily while it sorts the NTM out.
 					// But anybody else's units dying from lack of production can just be removed.
-				    case UNIT_LACK_OF_PRODUCTION:
-				    case HERO_LACK_OF_PRODUCTION:
+				    case LACK_OF_PRODUCTION:
 						newStatusInPlayersMemoryOnServer = null;
 						if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
 							newStatusInPlayersMemoryOnClient = UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION;
@@ -426,7 +428,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				    case COMBAT_DAMAGE:
 						if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
 							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
-						else if (db.findUnit (trueUnit.getUnitID (), "killUnitOnServerAndClients").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+						else if (isHero)
 							newStatusInPlayersMemoryOnServer = null;
 						else if ((player.getPlayerDescription ().getPlayerID ().equals (gc.getAttackingPlayerID ())) || (player.getPlayerDescription ().getPlayerID ().equals (gc.getDefendingPlayerID ())))
 							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
@@ -466,18 +468,29 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			// Dismissed heroes go back to Generated
 			// Heroes dismissed by lack of production go back to Generated
 			case HERO_DIMISSED_VOLUNTARILY:
-			case HERO_LACK_OF_PRODUCTION:
-				log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated");
+				log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated (dismissed)");
 				trueUnit.setStatus (UnitStatusID.GENERATED);
 				break;
 
-				// Units killed by lack of production are simply killed off
+			// Complete remove unit
 			case FREE:
-			case UNIT_LACK_OF_PRODUCTION:
-				log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN ());
+				log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (freed)");
 				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
 				break;
 
+			case LACK_OF_PRODUCTION:
+				if (isHero)
+				{
+					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated (lack of production)");
+					trueUnit.setStatus (UnitStatusID.GENERATED);
+				}
+				else
+				{
+					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (lack of production)");
+					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
+				}
+				break;
+				
 			// Killed by taking damage in combat.
 			// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
 			// Heroes are kept at DEAD even after the combat ends, in case the player resurrects them.

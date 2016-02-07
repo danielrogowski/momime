@@ -279,6 +279,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
+		
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 
@@ -460,6 +464,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
+		
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 
@@ -641,6 +649,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
+		
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 
@@ -767,7 +779,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, KillUnitActionID.UNIT_LACK_OF_PRODUCTION, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.LACK_OF_PRODUCTION, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
@@ -822,6 +834,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
+		
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 
@@ -948,7 +964,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, KillUnitActionID.HERO_LACK_OF_PRODUCTION, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.LACK_OF_PRODUCTION, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());

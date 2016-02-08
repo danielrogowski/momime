@@ -425,7 +425,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					// If we're not involved in the combat, then units are remove immediately from the client.
 					// If its somebody else's hero dying, then they're remove immediately from the client.
 					// If its a regular unit dying in a combat we're involved in, or our own hero dying, then we might raise/animate dead it, so mark those as dead but don't remove them.
-				    case COMBAT_DAMAGE:
+				    case HEALABLE_COMBAT_DAMAGE:
 						if (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
 							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
 						else if (isHero)
@@ -437,7 +437,17 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						
 						newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
 				    	break;
+				    	
+				    // As above, but immediately remove regular units even if we own them
+				    case HEALABLE_OVERLAND_DAMAGE:
+				    	if (isHero && (trueUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
+							newStatusInPlayersMemoryOnServer = UnitStatusID.DEAD;
+				    	else
+				    		newStatusInPlayersMemoryOnServer = null;
 
+						newStatusInPlayersMemoryOnClient = newStatusInPlayersMemoryOnServer;
+				    	break;
+				    	
 				    default:
 				    	throw new MomException ("killUnitOnServerAndClients doesn't know what unit status to convert " + untransmittedAction + " into");
 				}
@@ -494,9 +504,24 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			// Killed by taking damage in combat.
 			// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
 			// Heroes are kept at DEAD even after the combat ends, in case the player resurrects them.
-			case COMBAT_DAMAGE:
-				log.debug ("Setting unit with unit URN " + trueUnit.getUnitURN () + " to dead");
+			case HEALABLE_COMBAT_DAMAGE:
+				log.debug ("Setting unit with unit URN " + trueUnit.getUnitURN () + " to dead (combat)");
 				trueUnit.setStatus (UnitStatusID.DEAD);
+				break;
+
+			// Killed by taking damage overland.
+			// As above except we only need to mark heroes as DEAD, since there's no way to resurrect regular units on the overland map.
+			case HEALABLE_OVERLAND_DAMAGE:
+				if (isHero)
+				{
+					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " to dead (overland)");
+					trueUnit.setStatus (UnitStatusID.DEAD);
+				}
+				else
+				{
+					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (overland damage)");
+					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
+				}
 				break;
 				
 			default:

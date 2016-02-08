@@ -269,6 +269,386 @@ public final class TestFogOfWarMidTurnChangesImpl
 	}
 
 	/**
+	 * Tests the killUnitOnServerAndClients method, on a normal being killed overland by mainly healable damage.
+	 * It should just be removed in all lists (server, server copy of player memory, and client copy of player memory).
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testKillUnitOnServerAndClients_OverlandDamage_Normal () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
+		
+		// Session description
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
+
+		// True map details on server
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+
+		// Unit to kill
+		final MemoryUnit tu = new MemoryUnit ();
+		tu.setOwningPlayerID (1);
+		tu.setUnitURN (55);
+		tu.setStatus (UnitStatusID.ALIVE);
+		tu.setUnitID ("UN001");
+		
+		// Player who owns the unit
+		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
+		
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (1);
+		pd1.setHuman (true);
+		
+		final FogOfWarMemory fow1 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWarMemory (fow1);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		
+		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
+		player1.setConnection (conn1);
+		
+		// Another human player who can see the unit
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (2);
+		pd2.setHuman (true);
+		
+		final FogOfWarMemory fow2 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		priv2.setFogOfWarMemory (fow2);
+		
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		
+		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
+		player2.setConnection (conn2);
+		
+		// An AI player who can see the unit
+		final PlayerDescription pd3 = new PlayerDescription ();
+		pd3.setPlayerID (-3);
+		pd3.setHuman (false);
+		
+		final FogOfWarMemory fow3 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
+		priv3.setFogOfWarMemory (fow3);
+		
+		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (true);
+		
+		// A human player who can't see the unit
+		final PlayerDescription pd4 = new PlayerDescription ();
+		pd4.setPlayerID (4);
+		pd4.setHuman (true);
+		
+		final FogOfWarMemory fow4 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
+		priv4.setFogOfWarMemory (fow4);
+		
+		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		
+		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
+		player4.setConnection (conn4);
+		
+		// An AI player who can't see the unit
+		final PlayerDescription pd5 = new PlayerDescription ();
+		pd5.setPlayerID (-5);
+		pd5.setHuman (false);
+		
+		final FogOfWarMemory fow5 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv5 = new MomPersistentPlayerPrivateKnowledge ();
+		priv5.setFogOfWarMemory (fow5);
+		
+		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (false);
+
+		// List of players
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player1);
+		players.add (player2);
+		players.add (player3);
+		players.add (player4);
+		players.add (player5);
+		
+		// Fiddle each player's unit lists in their server memory to make them unique from each other and the true units list
+		int count = 0;
+		for (final PlayerServerDetails player : players)
+		{
+			count++;
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			
+			for (int n = 0; n < count; n++)
+			{
+				priv.getFogOfWarMemory ().getUnit ().add (null);
+				priv.getPendingMovement ().add (null);
+			}
+		}
+		
+		// Set up object to test
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final PendingMovementUtils pendingMovementUtils = mock (PendingMovementUtils.class);
+		
+		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
+		calc.setFogOfWarMidTurnVisibility (midTurn);
+		calc.setUnitUtils (unitUtils);
+		calc.setPendingMovementUtils (pendingMovementUtils);
+		
+		// Run method
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fowSettings, db);
+		
+		// Check results
+		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
+		
+		// Check was removed on server's true map details
+		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
+		assertEquals (UnitStatusID.ALIVE, tu.getStatus ());
+		
+		// Check player who owns the unit
+		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
+		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		
+		assertEquals (1, conn1.getMessages ().size ());
+		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
+		final KillUnitMessage msg1 = (KillUnitMessage) conn1.getMessages ().get (0);
+		assertEquals (tu.getUnitURN (), msg1.getUnitURN ());
+		assertNull (msg1.getNewStatus ());
+
+		// Check another human player who can see the unit
+		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		
+		assertEquals (1, conn2.getMessages ().size ());
+		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
+		final KillUnitMessage msg2 = (KillUnitMessage) conn2.getMessages ().get (0);
+		assertEquals (tu.getUnitURN (), msg2.getUnitURN ());
+		assertNull (msg2.getNewStatus ());
+		
+		// Check an AI player who can see the unit
+		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
+		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
+		
+		// Check a human player who can't see the unit
+		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
+		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
+		
+		assertEquals (0, conn4.getMessages ().size ());
+		
+		// Check an AI player who can't see the unit
+		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
+		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+	}
+	
+	/**
+	 * Tests the killUnitOnServerAndClients method, on a hero being killed overland by mainly healable damage.
+	 * It should be retained in the server's true list and the owner's memory both on the server and client as DEAD, but for everybody else completedly removed.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testKillUnitOnServerAndClients_OverlandDamage_Hero () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
+		
+		// Session description
+		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
+
+		// True map details on server
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+
+		// Unit to kill
+		final MemoryUnit tu = new MemoryUnit ();
+		tu.setOwningPlayerID (1);
+		tu.setUnitURN (55);
+		tu.setStatus (UnitStatusID.ALIVE);
+		tu.setUnitID ("UN001");
+		
+		// Player who owns the unit
+		final FogOfWarMidTurnVisibility midTurn = mock (FogOfWarMidTurnVisibility.class);
+		
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (1);
+		pd1.setHuman (true);
+		
+		final FogOfWarMemory fow1 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		priv1.setFogOfWarMemory (fow1);
+		
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player1, db, fowSettings)).thenReturn (true);
+		
+		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection ();
+		player1.setConnection (conn1);
+		
+		// Another human player who can see the unit
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (2);
+		pd2.setHuman (true);
+		
+		final FogOfWarMemory fow2 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		priv2.setFogOfWarMemory (fow2);
+		
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player2, db, fowSettings)).thenReturn (true);
+		
+		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection ();
+		player2.setConnection (conn2);
+		
+		// An AI player who can see the unit
+		final PlayerDescription pd3 = new PlayerDescription ();
+		pd3.setPlayerID (-3);
+		pd3.setHuman (false);
+		
+		final FogOfWarMemory fow3 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv3 = new MomPersistentPlayerPrivateKnowledge ();
+		priv3.setFogOfWarMemory (fow3);
+		
+		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player3, db, fowSettings)).thenReturn (true);
+		
+		// A human player who can't see the unit
+		final PlayerDescription pd4 = new PlayerDescription ();
+		pd4.setPlayerID (4);
+		pd4.setHuman (true);
+		
+		final FogOfWarMemory fow4 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv4 = new MomPersistentPlayerPrivateKnowledge ();
+		priv4.setFogOfWarMemory (fow4);
+		
+		final PlayerServerDetails player4 = new PlayerServerDetails (pd4, null, priv4, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player4, db, fowSettings)).thenReturn (false);
+		
+		final DummyServerToClientConnection conn4 = new DummyServerToClientConnection ();
+		player4.setConnection (conn4);
+		
+		// An AI player who can't see the unit
+		final PlayerDescription pd5 = new PlayerDescription ();
+		pd5.setPlayerID (-5);
+		pd5.setHuman (false);
+		
+		final FogOfWarMemory fow5 = new FogOfWarMemory ();
+		
+		final MomPersistentPlayerPrivateKnowledge priv5 = new MomPersistentPlayerPrivateKnowledge ();
+		priv5.setFogOfWarMemory (fow5);
+		
+		final PlayerServerDetails player5 = new PlayerServerDetails (pd5, null, priv5, null, null);
+		
+		when (midTurn.canSeeUnitMidTurn (tu, trueMap.getMap (), player5, db, fowSettings)).thenReturn (false);
+
+		// List of players
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (player1);
+		players.add (player2);
+		players.add (player3);
+		players.add (player4);
+		players.add (player5);
+		
+		// Fiddle each player's unit lists in their server memory to make them unique from each other and the true units list
+		int count = 0;
+		for (final PlayerServerDetails player : players)
+		{
+			count++;
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			
+			for (int n = 0; n < count; n++)
+			{
+				priv.getFogOfWarMemory ().getUnit ().add (null);
+				priv.getPendingMovement ().add (null);
+			}
+		}
+		
+		// Player's memory of units on server
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final MemoryUnit mu1 = new MemoryUnit ();
+		mu1.setOwningPlayerID (tu.getOwningPlayerID ());
+		mu1.setUnitURN (tu.getUnitURN ());
+		mu1.setStatus (tu.getStatus ());
+		mu1.setUnitID (tu.getUnitID ());
+		when (unitUtils.findUnitURN (mu1.getUnitURN (), fow1.getUnit (), "killUnitOnServerAndClients")).thenReturn (mu1);
+		
+		// Set up object to test
+		final PendingMovementUtils pendingMovementUtils = mock (PendingMovementUtils.class);
+		
+		final FogOfWarMidTurnChangesImpl calc = new FogOfWarMidTurnChangesImpl ();
+		calc.setFogOfWarMidTurnVisibility (midTurn);
+		calc.setUnitUtils (unitUtils);
+		calc.setPendingMovementUtils (pendingMovementUtils);
+		
+		// Run method
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fowSettings, db);
+		
+		// Check results
+		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
+		
+		// Check was set to DEAD on server's true map details
+		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), trueMap.getUnit ());
+		assertEquals (UnitStatusID.DEAD, tu.getStatus ());
+		
+		// Check player who owns the unit
+		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow1.getUnit ());
+		assertEquals (UnitStatusID.DEAD, mu1.getStatus ());
+		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv1.getPendingMovement (), tu.getUnitURN ());
+		
+		assertEquals (1, conn1.getMessages ().size ());
+		assertEquals (KillUnitMessage.class.getName (), conn1.getMessages ().get (0).getClass ().getName ());
+		final KillUnitMessage msg1 = (KillUnitMessage) conn1.getMessages ().get (0);
+		assertEquals (tu.getUnitURN (), msg1.getUnitURN ());
+		assertEquals (UnitStatusID.DEAD, msg1.getNewStatus ());
+
+		// Check another human player who can see the unit
+		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow2.getUnit ());
+		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv2.getPendingMovement (), tu.getUnitURN ());
+		
+		assertEquals (1, conn2.getMessages ().size ());
+		assertEquals (KillUnitMessage.class.getName (), conn2.getMessages ().get (0).getClass ().getName ());
+		final KillUnitMessage msg2 = (KillUnitMessage) conn2.getMessages ().get (0);
+		assertEquals (tu.getUnitURN (), msg2.getUnitURN ());
+		assertNull (msg2.getNewStatus ());
+		
+		// Check an AI player who can see the unit
+		verify (unitUtils, times (1)).removeUnitURN (tu.getUnitURN (), fow3.getUnit ());
+		verify (pendingMovementUtils, times (1)).removeUnitFromAnyPendingMoves (priv3.getPendingMovement (), tu.getUnitURN ());
+		
+		// Check a human player who can't see the unit
+		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow4.getUnit ());
+		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv4.getPendingMovement (), tu.getUnitURN ());
+		
+		assertEquals (0, conn4.getMessages ().size ());
+		
+		// Check an AI player who can't see the unit
+		verify (unitUtils, times (0)).removeUnitURN (tu.getUnitURN (), fow5.getUnit ());
+		verify (pendingMovementUtils, times (0)).removeUnitFromAnyPendingMoves (priv5.getPendingMovement (), tu.getUnitURN ());
+	}
+	
+	/**
 	 * Tests the killUnitOnServerAndClients method, on a normal unit being dismissed (on the overland map).
 	 * It should just be removed in all lists (server, server copy of player memory, and client copy of player memory).
 	 * @throws Exception If there is a problem
@@ -1009,7 +1389,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 	}
 
 	/**
-	 * Tests the killUnitOnServerAndClients method, on a normal being killed in combat.
+	 * Tests the killUnitOnServerAndClients method, on a normal being killed in combat by mainly healable damage.
 	 * It can potentially be the target of a raise or animate dead spell by either player involved in the combat, so must be set to DEAD in the master server list,
 	 * as well as the server and client side lists of the two players involved in the combat, but removed entirely for any 3rd party observers of the combat.
 	 * @throws Exception If there is a problem
@@ -1194,7 +1574,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, KillUnitActionID.COMBAT_DAMAGE, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.HEALABLE_COMBAT_DAMAGE, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
@@ -1251,7 +1631,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 	}
 	
 	/**
-	 * Tests the killUnitOnServerAndClients method, on a hero being killed in combat.
+	 * Tests the killUnitOnServerAndClients method, on a hero being killed in combat by mainly healable damage.
 	 * It can potentially be the target of a raise dead spell by the unit owner, so must be set to DEAD in the master server list,
 	 * as well as the server and client side lists of the unit owner, but removed entirely for everybody else, including the other player involved in the combat.
 	 * @throws Exception If there is a problem
@@ -1436,7 +1816,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, KillUnitActionID.COMBAT_DAMAGE, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.HEALABLE_COMBAT_DAMAGE, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());

@@ -355,7 +355,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertNull (attackerMsg.getOtherUnitID ());
 		assertNull (attackerMsg.getOtherPlayerID ());
 
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -450,7 +450,7 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
 
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -587,7 +587,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals ("GS", defenderMsg.getOtherUnitID ());
 		assertEquals (2, defenderMsg.getOtherPlayerID ().intValue ());
 		
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (1)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);
@@ -705,7 +705,7 @@ public final class TestOverlandMapServerUtilsImpl
 		assertEquals (0, attackerTrans.getNewTurnMessage ().size ());
 		assertEquals (0, defenderTrans.getNewTurnMessage ().size ());
 		
-		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.FREE, trueMap, players, sd.getFogOfWarSetting (), db);
+		verify (fogOfWarMidTurnChanges, times (1)).killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
 		verify (fogOfWarMidTurnChanges, times (0)).updatePlayerMemoryOfTerrain (trueTerrain, players, nodeLocation, FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 
 		final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (21, 10, 1);

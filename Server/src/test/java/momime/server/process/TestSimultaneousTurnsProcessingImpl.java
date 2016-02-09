@@ -243,8 +243,8 @@ public final class TestSimultaneousTurnsProcessingImpl
 		proc.processSpecialOrders (mom);
 		
 		// Check units were dismissed
-		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissNormalUnit, KillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
-		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissHeroUnit, KillUnitActionID.HERO_DIMISSED_VOLUNTARILY, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissNormalUnit, KillUnitActionID.DISMISS, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn, times (1)).killUnitOnServerAndClients (dismissHeroUnit, KillUnitActionID.DISMISS, trueMap, players, fogOfWarSettings, db);
 		
 		// Check buildings were sold
 		verify (cityProc, times (1)).sellBuilding (trueMap, players, cityLocation, trueBuilding.getBuildingURN (), false, true, sd, db);

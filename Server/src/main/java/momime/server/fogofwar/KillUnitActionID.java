@@ -10,11 +10,11 @@ package momime.server.fogofwar;
  */
 public enum KillUnitActionID
 {
-	/** Remove unit entirely; there is no possible means to bring it back in future */
-	FREE,
+	/** Unit is destroyed permanently - even heroes cannot be resurrected; e.g. units killed by Disintegrate or Cracks Call */
+	PERMANENT_DAMAGE,
 	
-	/** Hero dismissed from service; they return to the pool of available heroes (at status GENERATED) and available to be resummoned later */
-	HERO_DIMISSED_VOLUNTARILY,
+	/** Voluntarily dismissing a unit; units are removed permanently; heroes are return to the pool of available heroes (at status GENERATED) and available to be resummoned later */
+	DISMISS,
 
 	/** Units get routed and abanoned our cause because we failed to pay/feed them - effectivley the same as FREE since there is no way it can come back;
 	 * Heroes abanoned our cause because we failed to pay/feed them - effectively the same as HERO_DIMISSED_VOLUNTARILY - they are available to summon again */

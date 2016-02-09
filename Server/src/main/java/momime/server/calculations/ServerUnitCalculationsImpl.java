@@ -590,7 +590,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 						if (impassable)
 						{
 							log.debug ("Killing Unit URN " + tu.getUnitURN () + " (transport on impassable terrain)");
-							getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu, KillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
+							getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
 						}
 						else
 							spaceRequired = spaceRequired - unitTransportCapacity;
@@ -608,7 +608,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					final MemoryUnit killUnit = impassableUnits.get (getRandomUtils ().nextInt (impassableUnits.size ()));
 					log.debug ("Killing Unit URN " + killUnit.getUnitURN () + " (unit on impassable terrain)");
 					
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit, KillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
 					
 					spaceRequired--;
 					impassableUnits.remove (killUnit);

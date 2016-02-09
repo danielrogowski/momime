@@ -807,7 +807,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 						log.debug ("purgeDeadUnitsAndCombatSummonsFromCombat: Telling defender to remove dead unit URN " + trueUnit.getUnitURN ());
 					
 					// Use regular kill routine
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, fogOfWarSettings, db);
 				}
 				
 				// Special case where we have to tell the client to kill off the unit outside of the FOW routines?

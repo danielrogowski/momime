@@ -1102,14 +1102,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1301,14 +1301,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1495,14 +1495,14 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, defendingPlayer, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (defenderAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (defenderDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1653,12 +1653,12 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here
@@ -1804,12 +1804,12 @@ public final class TestCombatProcessingImpl
 		proc.purgeDeadUnitsAndCombatSummonsFromCombat (combatLocation, attackingPlayer, null, trueMap, players, settings, db);
 
 		// Verify regular kill routine called on the right units
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.FREE, trueMap, players, settings, db);
-		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.FREE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerAliveHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerDeadLongbowmen, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadHero, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (1)).killUnitOnServerAndClients (attackerAlivePhantomWarriors, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
+		verify (fow, times (0)).killUnitOnServerAndClients (attackerDeadLongbowmenInADifferentCombat, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, settings, db);
 		
 		// Alive units are still alive, dead hero stays a dead hero, but server should tell clients to remove the dead unit via custom message
 		// Phantom warriors are removed by the regular routine which is mocked out, so doesn't get recorded here

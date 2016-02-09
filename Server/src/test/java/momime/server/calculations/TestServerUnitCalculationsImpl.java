@@ -861,7 +861,7 @@ public final class TestServerUnitCalculationsImpl
 		calc.recheckTransportCapacity (new MapCoordinates3DEx (20, 10, 1), trueMap, players, fogOfWarSettings, db);
 		
 		// Check 1 unit of spearmen was killed
-		verify (midTurn).killUnitOnServerAndClients (killedUnit, KillUnitActionID.FREE, trueMap, players, fogOfWarSettings, db);
+		verify (midTurn).killUnitOnServerAndClients (killedUnit, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
 	}
 	
 	/**

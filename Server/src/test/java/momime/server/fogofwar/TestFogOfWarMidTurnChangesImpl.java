@@ -789,7 +789,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, KillUnitActionID.FREE, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.DISMISS, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());
@@ -974,7 +974,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		calc.setPendingMovementUtils (pendingMovementUtils);
 		
 		// Run method
-		calc.killUnitOnServerAndClients (tu, KillUnitActionID.HERO_DIMISSED_VOLUNTARILY, trueMap, players, fowSettings, db);
+		calc.killUnitOnServerAndClients (tu, KillUnitActionID.DISMISS, trueMap, players, fowSettings, db);
 		
 		// Check results
 		verify (unitUtils, times (1)).beforeKillingUnit (trueMap, tu.getUnitURN ());

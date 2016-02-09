@@ -12,7 +12,6 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryUnit;
@@ -95,13 +94,7 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 			else
 			{
 				// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server
-				final KillUnitActionID action;
-				if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "DismissUnitMessageImpl").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-					action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
-				else
-					action = KillUnitActionID.FREE;
-				
-				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action, mom.getGeneralServerKnowledge ().getTrueMap (),
+				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.DISMISS, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			}
 			

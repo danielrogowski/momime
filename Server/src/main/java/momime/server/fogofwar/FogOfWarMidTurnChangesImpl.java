@@ -406,12 +406,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				switch (untransmittedAction)
 				{
 					// Heroes are killed outright on the clients (even if ours, and just dismissing him and may resummon him later), but return to 'Generated' status on the server below
-					case FREE:
-					case HERO_DIMISSED_VOLUNTARILY:
+					case PERMANENT_DAMAGE:
+					case DISMISS:
 						newStatusInPlayersMemoryOnServer = null;
 						newStatusInPlayersMemoryOnClient = null;
 						break;
-				    	
+						
 					// If its our unit or hero dying from lack of production then the client still needs the unit object left around temporarily while it sorts the NTM out.
 					// But anybody else's units dying from lack of production can just be removed.
 				    case LACK_OF_PRODUCTION:
@@ -475,28 +475,24 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		
 		switch (untransmittedAction)
 		{
-			// Dismissed heroes go back to Generated
-			// Heroes dismissed by lack of production go back to Generated
-			case HERO_DIMISSED_VOLUNTARILY:
-				log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated (dismissed)");
-				trueUnit.setStatus (UnitStatusID.GENERATED);
-				break;
-
 			// Complete remove unit
-			case FREE:
+			case PERMANENT_DAMAGE:
 				log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (freed)");
 				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
 				break;
 
+			// Dismissed heroes go back to Generated
+			// Heroes dismissed by lack of production go back to Generated
+			case DISMISS:
 			case LACK_OF_PRODUCTION:
 				if (isHero)
 				{
-					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated (lack of production)");
+					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated (dismissed or lack of production)");
 					trueUnit.setStatus (UnitStatusID.GENERATED);
 				}
 				else
 				{
-					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (lack of production)");
+					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (dismissed or lack of production)");
 					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
 				}
 				break;

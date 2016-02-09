@@ -16,7 +16,6 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
@@ -89,16 +88,8 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server.
 		final List<MemoryUnit> dismisses = getUnitServerUtils ().listUnitsWithSpecialOrder (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), UnitSpecialOrder.DISMISS);
 		for (final MemoryUnit trueUnit : dismisses)
-		{
-			final KillUnitActionID action;
-			if (mom.getServerDB ().findUnit (trueUnit.getUnitID (), "processSpecialOrders-d").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-				action = KillUnitActionID.HERO_DIMISSED_VOLUNTARILY;
-			else
-				action = KillUnitActionID.FREE;
-			
-			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, action,
+			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.DISMISS,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
-		}
 		
 		// Sell buildings
 		for (final PlaneSvr plane : mom.getServerDB ().getPlanes ())

@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+﻿<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-assembly</artifactId>
@@ -13,14 +13,14 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.2.0</version>
+		<version>0.2.1</version>
 	</parent>
 
 	<properties>
 		<!-- These are needed to generate the .bat files correctly -->
-		<momime.client.version>0.9.7.1</momime.client.version>
-		<momime.server.version>0.9.7.1</momime.server.version>
-		<momime.editors.version>0.9.7.1</momime.editors.version>
+		<momime.client.version>0.9.7.2-SNAPSHOT</momime.client.version>
+		<momime.server.version>0.9.7.2-SNAPSHOT</momime.server.version>
+		<momime.editors.version>0.9.7.2-SNAPSHOT</momime.editors.version>
 	</properties>
 
 	<build>

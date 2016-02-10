@@ -13,7 +13,7 @@
 	<parent>
 		<groupId>com.ndg.common</groupId>
 		<artifactId>parent</artifactId>
-		<version>0.2.0</version>
+		<version>0.2.1</version>
 	</parent>
 
 	<build>
@@ -109,7 +109,7 @@
 		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>xmleditor</artifactId>
-			<version>0.2.1-SNAPSHOT</version>
+			<version>0.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
@@ -130,7 +130,7 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-utils</artifactId>
-			<version>0.2.0</version>
+			<version>0.2.1</version>
 		</dependency>
 	</dependencies>
 </project>

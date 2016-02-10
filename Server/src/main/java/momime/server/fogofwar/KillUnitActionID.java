@@ -2,11 +2,6 @@ package momime.server.fogofwar;
 
 /**
  * KillUnitActionID has now been phased out of the XSDs and network messages, so all possible values are defined here.
- * 
- * There will eventually need to be an OVERLAND_DAMAGE setting which I think is needed already to correctly handle heroes dying in
- * unfortunate non-combat situations, like being on a boat when it sinks.  I think what this amounts to is that I need to rename
- * some of these into HEALABLE_COMBAT_DAMAGE, HEALABLE_OVERLAND_DAMAGE and have FREE renamed into PERMANENT_DAMAGE
- * which would then cover settlers and spirits being consumed, as well as units being killed by e.g. cracks call.
  */
 public enum KillUnitActionID
 {

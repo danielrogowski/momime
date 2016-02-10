@@ -19,6 +19,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
@@ -33,6 +34,7 @@ import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * Routines dealing with applying combat damage
@@ -62,6 +64,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
 	
 	/**
 	 * Performs one attack in combat, which may be a melee, ranged or spell attack.
@@ -233,7 +238,10 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyAttackingPlayerUnitsSurvived = true;
 				else
 				{
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, KillUnitActionID.HEALABLE_COMBAT_DAMAGE,
+					final KillUnitActionID action = (getUnitServerUtils ().whatKilledUnit (attackingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT) ?
+						KillUnitActionID.PERMANENT_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+					
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingPlayerUnit, action,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
 					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
@@ -257,7 +265,10 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyDefendingPlayerUnitsSurvived = true;
 				else
 				{
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, KillUnitActionID.HEALABLE_COMBAT_DAMAGE,
+					final KillUnitActionID action = (getUnitServerUtils ().whatKilledUnit (defendingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT) ?
+							KillUnitActionID.PERMANENT_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+					
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, action,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 					
 					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
@@ -413,5 +424,21 @@ public final class DamageProcessorImpl implements DamageProcessor
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
 	}
 }

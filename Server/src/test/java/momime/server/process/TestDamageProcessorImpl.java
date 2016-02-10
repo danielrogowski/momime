@@ -48,6 +48,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * Tests the DamageProcessorImpl class
@@ -156,6 +157,7 @@ public final class TestDamageProcessorImpl
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
 		final DamageCalculator calc = mock (DamageCalculator.class);
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		proc.setCoordinateSystemUtils (coordinateSystemUtils);
@@ -165,6 +167,7 @@ public final class TestDamageProcessorImpl
 		proc.setUnitCalculations (unitCalculations);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
+		proc.setUnitServerUtils (unitServerUtils);
 		
 		// Need another surviving unit on each side, so the combat doesn't end
 		for (final PlayerServerDetails thisPlayer : players)
@@ -327,6 +330,7 @@ public final class TestDamageProcessorImpl
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final CombatStartAndEnd combatStartAndEnd = mock (CombatStartAndEnd.class);
 		final DamageCalculator calc = mock (DamageCalculator.class);
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		proc.setCoordinateSystemUtils (coordinateSystemUtils);
@@ -336,6 +340,7 @@ public final class TestDamageProcessorImpl
 		proc.setUnitCalculations (unitCalculations);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
+		proc.setUnitServerUtils (unitServerUtils);
 		
 		// The 'attacker' unit is still left alive because it still took no dmg, so put a unit in the list so the combat doesn't end for them (attacker is owned by defendingPlayer)
 		final MemoryUnit survivingUnit = new MemoryUnit ();

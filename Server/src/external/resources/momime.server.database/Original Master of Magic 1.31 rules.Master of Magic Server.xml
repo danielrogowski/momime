@@ -10500,12 +10500,23 @@
 			<attackResolutionStep>
 				<stepNumber>1</stepNumber>
 				<combatSide>A</combatSide>
+				<unitSkillID>US031</unitSkillID>
+				<repetitions>2</repetitions>
+			</attackResolutionStep>
+			<attackResolutionStep>
+				<stepNumber>1</stepNumber>
+				<combatSide>A</combatSide>
 				<unitSkillID>UA02</unitSkillID>
 				<repetitions>2</repetitions>
 			</attackResolutionStep>
 		</attackResolution>
 		<attackResolution>
 			<attackResolutionDescription>Ranged attack</attackResolutionDescription>
+			<attackResolutionStep>
+				<stepNumber>1</stepNumber>
+				<combatSide>A</combatSide>
+				<unitSkillID>US031</unitSkillID>
+			</attackResolutionStep>
 			<attackResolutionStep>
 				<stepNumber>1</stepNumber>
 				<combatSide>A</combatSide>

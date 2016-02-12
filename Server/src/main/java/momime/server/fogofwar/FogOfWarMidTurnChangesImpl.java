@@ -1078,6 +1078,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				muAttacker.setCombatHeading (tuAttacker.getCombatHeading ());
 				muAttacker.setDoubleCombatMovesLeft (tuAttacker.getDoubleCombatMovesLeft ());
 
+				muAttacker.getUnitDamage ().clear ();
 				tuAttacker.getUnitDamage ().forEach (tuDamage ->
 				{
 					final UnitDamage muDamage = new UnitDamage ();
@@ -1104,6 +1105,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					final MemoryUnit muDefender = getUnitUtils ().findUnitURN (tuDefender.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "sendCombatDamageToClients-d");
 					muDefender.setCombatHeading (tuDefender.getCombatHeading ());
 
+					muDefender.getUnitDamage ().clear ();
 					tuDefender.getUnitDamage ().forEach (tuDamage ->
 					{
 						final UnitDamage muDamage = new UnitDamage ();

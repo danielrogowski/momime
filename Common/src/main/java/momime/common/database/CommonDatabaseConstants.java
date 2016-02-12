@@ -199,6 +199,9 @@ public final class CommonDatabaseConstants
 	/** Skill for settlers creating new cities */
 	public static final String UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
 	
+	/** Skill for damage dealt being returned to the attackers' HP (this is subtely different than the ability to create undead - ghouls create undead but do not recover HP from it) */
+	public static final String UNIT_SKILL_ID_LIFE_STEALING = "US031";
+	
 	/** Skill for magic and guardian spirits capturing nodes */	
 	public static final String UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
 	

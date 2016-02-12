@@ -18,6 +18,7 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -196,6 +197,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		final List<UnitDamage> damageToDefender = new ArrayList<UnitDamage> ();
 		final List<UnitDamage> damageToAttacker = new ArrayList<UnitDamage> ();
 		
+		int lifeStealingDamageToDefender = 0;
+		int lifeStealingDamageToAttacker = 0;
+		
 		// Calculate and total up all the damage before we apply any of it
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		for (final AttackResolutionStepSvr step : steps)
@@ -341,8 +345,18 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							
 							// Add damage to running total
 							if (thisDamage != 0)
+							{
 								getUnitServerUtils ().addDamage ((unitBeingAttacked == defender) ? damageToDefender : damageToAttacker,
 									potentialDamage.getDamageType ().getStoredDamageTypeID (), thisDamage);
+								
+								if (CommonDatabaseConstants.UNIT_SKILL_ID_LIFE_STEALING.equals (potentialDamage.getAttackFromSkillID ()))
+								{
+									if (unitBeingAttacked == defender)
+										lifeStealingDamageToDefender = lifeStealingDamageToDefender + thisDamage;
+									else
+										lifeStealingDamageToAttacker = lifeStealingDamageToAttacker + thisDamage;
+								}
+							}
 						}
 					
 						// Apply any special effect
@@ -368,7 +382,26 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		damageToDefender.forEach (d -> getUnitServerUtils ().addDamage (defender.getUnit ().getUnitDamage (), d.getDamageType (), d.getDamageTaken ()));
 		if (attacker != null)
 			damageToAttacker.forEach (d -> getUnitServerUtils ().addDamage (attacker.getUnit ().getUnitDamage (), d.getDamageType (), d.getDamageTaken ()));
+		
+		// Life stealing units like Wraiths might get some health back
+		if (lifeStealingDamageToDefender > 0)
+		{
+			final int amountToHeal = Math.min (lifeStealingDamageToDefender,
+				getUnitServerUtils ().findDamageTakenOfType (attacker.getUnit ().getUnitDamage (), StoredDamageTypeID.HEALABLE));
+			
+			if (amountToHeal > 0)
+				getUnitServerUtils ().addDamage (attacker.getUnit ().getUnitDamage (), StoredDamageTypeID.HEALABLE, -amountToHeal);
+		}
 
+		if (lifeStealingDamageToAttacker > 0)
+		{
+			final int amountToHeal = Math.min (lifeStealingDamageToAttacker,
+				getUnitServerUtils ().findDamageTakenOfType (defender.getUnit ().getUnitDamage (), StoredDamageTypeID.HEALABLE));
+			
+			if (amountToHeal > 0)
+				getUnitServerUtils ().addDamage (defender.getUnit ().getUnitDamage (), StoredDamageTypeID.HEALABLE, -amountToHeal);
+		}
+		
 		// Each individual step will never allow a unit to be over-killed, i.e. take more damage than it has remaining HP.
 		// But potentially we might have dealt multiple types of damage simultaneously which now added together total more than the unit's remaining HP,
 		// so we might have over-killed the unit.  In that situation, keep healing 1 HP of damage until it no longer has negative health.

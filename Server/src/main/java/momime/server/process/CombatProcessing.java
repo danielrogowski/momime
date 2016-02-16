@@ -83,6 +83,7 @@ public interface CombatProcessing
 	 * and converts them into undead owned by the winning player.
 	 * 
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param newLocation The location the undead should be moved to on the overland map
 	 * @param winningPlayer The player who won the combat
 	 * @param losingPlayer The player who lost the combat
 	 * @param trueMap True server knowledge of buildings and terrain
@@ -96,7 +97,7 @@ public interface CombatProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public int createUndead (final MapCoordinates3DEx combatLocation,
+	public int createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
 		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;

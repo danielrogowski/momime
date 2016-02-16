@@ -344,10 +344,17 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients
 				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
+
+			// Work out moveToPlane - If attackers are capturing a tower from Myrror, in which case they jump to Arcanus as part of the move
+			final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatLocation);
+			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
+				moveTo.setZ (0);
 			
 			// Undead created from ghouls / life stealing?
+			// Note these are always moved to the "moveTo" i.e. defending location - if the attacker won, their main force will advance
+			// there in the code below; if the defender won, the undead need to be moved to be stacked with the rest of the defenders.
 			final PlayerServerDetails losingPlayer = (winningPlayer == attackingPlayer) ? defendingPlayer : attackingPlayer;
-			msg.setUndeadCreated (getCombatProcessing ().createUndead (combatLocation, winningPlayer, losingPlayer,
+			msg.setUndeadCreated (getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ()));
 
 			// Send the CombatEnded message
@@ -377,11 +384,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			else if (winningPlayer == attackingPlayer)
 			{
 				log.debug ("Attacker won");
-				
-				// Work out moveToPlane - If attackers are capturing a tower from Myrror, in which case they jump to Arcanus as part of the move
-				final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (combatLocation);
-				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
-					moveTo.setZ (0);
 				
 				// Put all the attackers in a list, and figure out moveFrom.
 				// NB. We intentionally don't check combatPosition and heading here because we DO want units to advance if they

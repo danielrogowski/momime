@@ -701,6 +701,15 @@ public final class TestCombatStartAndEndImpl
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		gc.setTerrainData (terrainData);
+		
+		// It isn't a tower
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (false);
+		
 		// Set up object to test
 		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
@@ -712,6 +721,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
+		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
@@ -1617,8 +1627,15 @@ public final class TestCombatStartAndEndImpl
 		// Location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
-
+		gc.setTerrainData (terrainData);
+		
+		// It isn't a tower
+		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
+		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (false);
+		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
 		final List<MemoryUnit> advancingUnits = new ArrayList<MemoryUnit> ();
 		for (int n = 1; n <= 3; n++)
@@ -1650,6 +1667,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
+		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setPlayerMessageProcessing (playerMessageProcessing);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		

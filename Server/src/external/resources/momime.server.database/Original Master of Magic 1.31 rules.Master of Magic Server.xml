@@ -24541,6 +24541,7 @@
 		<languageEntry languageEntryID="SavedGamesColumn3" />
 		<languageEntry languageEntryID="SavePointsColumn0" />
 		<languageEntry languageEntryID="SavePointsColumn1" />
+		<languageEntry languageEntryID="DeleteSavedGame" />
 		<languageEntry languageEntryID="SelectSavedGame" />
 		<languageEntry languageEntryID="SelectSavePoint" />
 		<languageEntry languageEntryID="Back" />

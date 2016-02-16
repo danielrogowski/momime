@@ -320,7 +320,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// Heal?
 				if ((magicRealm.isHealEachTurn ()) && (thisUnit.getUnitDamage ().size () > 0))
 				{
-					getUnitServerUtils ().healDamage (thisUnit.getUnitDamage (), 1);
+					getUnitServerUtils ().healDamage (thisUnit.getUnitDamage (), 1, true);
 					sendMsg = true;
 				}
 

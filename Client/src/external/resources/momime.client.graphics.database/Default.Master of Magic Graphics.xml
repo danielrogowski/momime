@@ -1464,7 +1464,9 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP125">
+		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<unitCanCastImageFile>/momime.client.graphics/spells/SP125/unitCanCast.png</unitCanCastImageFile>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP126">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
@@ -1546,7 +1548,10 @@
 		<soundAndImageDelay>2</soundAndImageDelay>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP149" />
+	<spell spellID="SP149">
+		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP150">
 		<combatCastAnimation>LIFE_RAYS</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_031_000 - HeavenlyLight-Prosperity-AltarOfBattle-StreamOfLife-Inspirations-AstralGate-Consecration.mp3</spellSoundFile>

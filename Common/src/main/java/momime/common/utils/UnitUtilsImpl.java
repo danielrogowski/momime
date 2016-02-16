@@ -26,6 +26,7 @@ import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpecialOrder;
@@ -865,6 +866,21 @@ public final class UnitUtilsImpl implements UnitUtils
 		final int total = damages.stream ().mapToInt (d -> d.getDamageTaken ()).sum ();
 		
 		log.trace ("Exiting getTotalDamageTaken = " + total);
+		return total;
+	}
+	
+	/**
+	 * @param damages List of types of unit damage
+	 * @return Total damage taken across all types, excluding PERMANENT
+	 */
+	@Override
+	public final int getHealableDamageTaken (final List<UnitDamage> damages)
+	{
+		log.trace ("Entering getHealableDamageTaken");
+		
+		final int total = damages.stream ().filter (d -> d.getDamageType () != StoredDamageTypeID.PERMANENT).mapToInt (d -> d.getDamageTaken ()).sum ();
+		
+		log.trace ("Exiting getHealableDamageTaken = " + total);
 		return total;
 	}
 	

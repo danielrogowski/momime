@@ -2824,6 +2824,10 @@ Only map squares protected by Heavenly Light are unaffected.</combatAreaEffectHe
 		<spellBookSectionName>Attack Spells</spellBookSectionName>
 		<spellTargetPrompt>Select an enemy unit as the target for your SPELL_NAME spell.</spellTargetPrompt>
 	</spellBookSection>
+	<spellBookSection spellBookSectionID="SC09">
+		<spellBookSectionName>Healing Spells</spellBookSectionName>
+		<spellTargetPrompt>Select a friendly unit as the target for your SPELL_NAME spell.</spellTargetPrompt>
+	</spellBookSection>
 	<spellBookSection spellBookSectionID="SC98">
 		<spellBookSectionName>Research Spells</spellBookSectionName>
 	</spellBookSection>
@@ -6256,6 +6260,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		</languageEntry>
 		<languageEntry languageEntryID="UnitDead">
 			<languageEntryText>You cannot target dead units.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Undamaged">
+			<languageEntryText>This unit has taken no damage.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="PermanentlyDamaged">
+			<languageEntryText>This unit has suffered permanent damage that cannot be healed inside combat.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="CancelTitle">
 			<languageEntryText>Cancel Spell</languageEntryText>

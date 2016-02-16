@@ -547,6 +547,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />

@@ -215,4 +215,10 @@ public interface UnitUtils
 	 * @return Total damage taken across all types
 	 */
 	public int getTotalDamageTaken (final List<UnitDamage> damages);
+
+	/**
+	 * @param damages List of types of unit damage
+	 * @return Total damage taken across all types, excluding PERMANENT
+	 */
+	public int getHealableDamageTaken (final List<UnitDamage> damages);
 }

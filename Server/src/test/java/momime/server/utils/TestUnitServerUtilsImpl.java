@@ -1461,10 +1461,10 @@ public final class TestUnitServerUtilsImpl
 	}
 	
 	/**
-	 * Tests the healDamage method
+	 * Tests the healDamage method, including healing permanent damage
 	 */
 	@Test
-	public final void testHealDamage ()
+	public final void testHealDamage_IncludingPermanent ()
 	{
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
@@ -1477,19 +1477,19 @@ public final class TestUnitServerUtilsImpl
 		dmg1.setDamageTaken (5);
 		damages.add (dmg1);
 		
-		utils.healDamage (damages, 0);
+		utils.healDamage (damages, 0, true);
 		assertEquals (1, damages.size ());
 		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
 		assertEquals (5, damages.get (0).getDamageTaken ());
 		
 		// Healing negative damage is dumb and will be ignored
-		utils.healDamage (damages, -2);
+		utils.healDamage (damages, -2, true);
 		assertEquals (1, damages.size ());
 		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
 		assertEquals (5, damages.get (0).getDamageTaken ());
 				
 		// Heal when only one damage type in the list
-		utils.healDamage (damages, 2);
+		utils.healDamage (damages, 2, true);
 		assertEquals (1, damages.size ());
 		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
 		assertEquals (3, damages.get (0).getDamageTaken ());
@@ -1505,12 +1505,77 @@ public final class TestUnitServerUtilsImpl
 		dmg3.setDamageTaken (5);
 		damages.add (dmg3);
 
-		utils.healDamage (damages, 7);
+		utils.healDamage (damages, 8, true);
 		assertEquals (2, damages.size ());
 		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
-		assertEquals (1, damages.get (0).getDamageTaken ());
+		assertEquals (3, damages.get (0).getDamageTaken ());
 		assertEquals (StoredDamageTypeID.LIFE_STEALING, damages.get (1).getDamageType ());
-		assertEquals (5, damages.get (1).getDamageTaken ());
+		assertEquals (2, damages.get (1).getDamageTaken ());
+		
+		// Try to heal permanent damage
+		utils.healDamage (damages, 3, true);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
+		assertEquals (2, damages.get (0).getDamageTaken ());
+	}
+	
+	/**
+	 * Tests the healDamage method, blocking healing permanent damage
+	 */
+	@Test
+	public final void testHealDamage_ExcludingPermanent ()
+	{
+		// Set up object to test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+
+		// Heal nothing
+		final List<UnitDamage> damages = new ArrayList<UnitDamage> ();
+
+		final UnitDamage dmg1 = new UnitDamage ();
+		dmg1.setDamageType (StoredDamageTypeID.HEALABLE);
+		dmg1.setDamageTaken (5);
+		damages.add (dmg1);
+		
+		utils.healDamage (damages, 0, false);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.HEALABLE, damages.get (0).getDamageType ());
+		assertEquals (5, damages.get (0).getDamageTaken ());
+		
+		// Healing negative damage is dumb and will be ignored
+		utils.healDamage (damages, -2, false);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.HEALABLE, damages.get (0).getDamageType ());
+		assertEquals (5, damages.get (0).getDamageTaken ());
+				
+		// Heal when only one damage type in the list
+		utils.healDamage (damages, 2, false);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.HEALABLE, damages.get (0).getDamageType ());
+		assertEquals (3, damages.get (0).getDamageTaken ());
+		
+		// 3 types of damage in list - heal enough to completely cure one of them and move on to the next
+		final UnitDamage dmg2 = new UnitDamage ();
+		dmg2.setDamageType (StoredDamageTypeID.PERMANENT);
+		dmg2.setDamageTaken (5);
+		damages.add (dmg2);
+
+		final UnitDamage dmg3 = new UnitDamage ();
+		dmg3.setDamageType (StoredDamageTypeID.LIFE_STEALING);
+		dmg3.setDamageTaken (5);
+		damages.add (dmg3);
+
+		utils.healDamage (damages, 6, false);
+		assertEquals (2, damages.size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
+		assertEquals (5, damages.get (0).getDamageTaken ());
+		assertEquals (StoredDamageTypeID.LIFE_STEALING, damages.get (1).getDamageType ());
+		assertEquals (2, damages.get (1).getDamageTaken ());
+		
+		// Try to heal permanent damage
+		utils.healDamage (damages, 3, false);
+		assertEquals (1, damages.size ());
+		assertEquals (StoredDamageTypeID.PERMANENT, damages.get (0).getDamageType ());
+		assertEquals (5, damages.get (0).getDamageTaken ());
 	}
 	
 	/**

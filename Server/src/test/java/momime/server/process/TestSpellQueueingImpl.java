@@ -1515,7 +1515,7 @@ public final class TestSpellQueueingImpl
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, combatLocation, attackingPd.getPlayerID (), null, targetUnit,
-			players, trueMap, db)).thenReturn (TargetSpellResult.ENCHANTING_ENEMY);
+			players, trueMap, db)).thenReturn (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1533,7 +1533,7 @@ public final class TestSpellQueueingImpl
 		// Check player got send the right error message
 		assertEquals (1, attackingMsgs.getMessages ().size ());
 		final TextPopupMessage msg = (TextPopupMessage) attackingMsgs.getMessages ().get (0);
-		assertEquals ("This unit is not a valid target for this spell for reason ENCHANTING_ENEMY", msg.getText ());
+		assertEquals ("This unit is not a valid target for this spell for reason ENCHANTING_OR_HEALING_ENEMY", msg.getText ());
 	}
 
 	/**

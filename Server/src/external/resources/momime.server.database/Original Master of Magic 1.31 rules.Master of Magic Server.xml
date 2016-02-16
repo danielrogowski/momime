@@ -21230,6 +21230,9 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>100</researchCost>
 		<combatCastingCost>15</combatCastingCost>
+		<spellBookSectionID>SC09</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<combatBaseDamage>5</combatBaseDamage>
 		<spellName>Healing</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
 	</spell>
@@ -21529,6 +21532,9 @@
 		<spellRank>SR03</spellRank>
 		<researchCost>1600</researchCost>
 		<combatCastingCost>50</combatCastingCost>
+		<spellBookSectionID>SC09</spellBookSectionID>
+		<attackSpellCombatTarget>A</attackSpellCombatTarget>
+		<combatBaseDamage>5</combatBaseDamage>
 		<spellName>Mass Healing</spellName>
 		<aiResearchOrder>2</aiResearchOrder>
 	</spell>
@@ -24825,6 +24831,8 @@
 		<languageEntry languageEntryID="Immune" />
 		<languageEntry languageEntryID="UnitNotInExpectedCombat" />
 		<languageEntry languageEntryID="UnitDead" />
+		<languageEntry languageEntryID="Undamaged" />
+		<languageEntry languageEntryID="PermanentlyDamaged" />
 		<languageEntry languageEntryID="CancelTitle" />
 		<languageEntry languageEntryID="CancelText" />
 	</languageCategory>

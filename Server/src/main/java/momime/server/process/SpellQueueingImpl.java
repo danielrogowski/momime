@@ -359,7 +359,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 			}
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
 				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
-				((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
+				(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS)) &&
+					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
 			{
 				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)
 				// Verify that the chosen unit is a valid target for unit enchantments/curses (we checked above that a unit has chosen)

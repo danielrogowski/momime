@@ -1808,6 +1808,10 @@ about what a spell must be targetted on.  e.g. Unit enchantments must be targett
 				<xsd:documentation>Attack spells</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC09"><xsd:annotation>
+				<xsd:documentation>Healing spells</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="HEALING_SPELLS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC98"><xsd:annotation>
 				<xsd:documentation>Researchable now - One of the 8 options for what to research next</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="RESEARCHABLE_NOW" /></xsd:appinfo>
@@ -1986,20 +1990,21 @@ single unit (e.g. fire bolt, fireball, doom bolt) or all units (e.g. flame strik
 		<xsd:annotation>
 			<xsd:documentation>Damage is stored against units under the following categories.
 Note the order of these is important - damage will always be healed in the order listed here - so we heal healable damage first, then
-permanent damage, then life stealing damage.  These are ordered to maximize the chances of special effects occurring, like units becoming undead.</xsd:documentation>
+life stealing damage, then permanent damage.  Permanent damage can't be healed by healing spells, only by the regular 1 HP healing per turn on the overland map,
+which is why it is last in the list, so it will only be healed when all healable and life stealing damage is taken care of.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="H"><xsd:annotation>
 				<xsd:documentation>Healable damage (normal damage that will heal itself over time, or can be healed with spells)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="HEALABLE" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="P"><xsd:annotation>
-				<xsd:documentation>Permanent damage (damage from stoning, banishing, disintegration and such that cannot be healed)</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="PERMANENT" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="L"><xsd:annotation>
 				<xsd:documentation>Life stealing damage (damage from ghouls and life drain; if more than half of damage dealt is life stealing, the unit will become undead)</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="LIFE_STEALING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Permanent damage (damage from stoning, banishing, disintegration and such that cannot be healed)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PERMANENT" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

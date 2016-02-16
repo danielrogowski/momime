@@ -21,6 +21,7 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.HeroItem;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
@@ -59,6 +60,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
@@ -95,6 +97,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** Unit skill utils */
 	private UnitSkillUtils unitSkillUtils;
@@ -540,8 +545,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 		}
 		
-		// Attack spells
-		else if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
+		// Attack or Healing spells
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS))
 		{
 			// Does the spell attack a specific unit or ALL enemy units? e.g. Flame Strike or Death Spell
 			final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
@@ -555,8 +560,27 @@ public final class SpellProcessingImpl implements SpellProcessing
 						targetUnits.add (thisUnit);
 			
 			if (targetUnits.size () > 0)
-				getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
-					null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+			{
+				if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
+					getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
+						null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+				else
+				{
+					// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
+					// and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
+					for (final MemoryUnit tu : targetUnits)
+					{
+						final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
+						final int heal = Math.min (dmg, spell.getCombatBaseDamage ());
+						if (heal > 0)
+							getUnitServerUtils ().healDamage (tu.getUnitDamage (), heal, false);
+					}
+					
+					getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (),
+						targetUnits, null, spell.getSpellID (), new ArrayList<DamageResolutionTypeID> (), mom.getPlayers (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+				}
+			}
 		}
 		
 		else
@@ -763,6 +787,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
+	}
+	
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 	
 	/**

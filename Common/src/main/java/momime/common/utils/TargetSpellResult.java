@@ -9,7 +9,7 @@ public enum TargetSpellResult
 	VALID_TARGET (null, null),
 	
 	/** Can't cast a beneficial enchantment on an enemy city or unit */
-	ENCHANTING_ENEMY ("EnchantingEnemyUnit", "EnchantingEnemyCity"),
+	ENCHANTING_OR_HEALING_ENEMY ("EnchantingEnemyUnit", "EnchantingEnemyCity"),
 	
 	/** Can't cast a curse on our own city or unit, or target an attack spell like fire bolt on it */
 	CURSING_OR_ATTACKING_OWN ("CursingOwnUnit", "CursingOwnCity"),
@@ -39,7 +39,13 @@ public enum TargetSpellResult
 	UNIT_NOT_IN_EXPECTED_COMBAT ("UnitNotInExpectedCombat", null),
 	
 	/** Unit's status is not ALIVE */
-	UNIT_DEAD ("UnitDead", null);
+	UNIT_DEAD ("UnitDead", null),
+	
+	/** Trying to heal a unit that has taken no damage */
+	UNDAMAGED ("Undamaged", null),
+
+	/** Trying to heal a unit that has taken only permanent damage */
+	PERMANENTLY_DAMAGED ("PermanentlyDamaged", null);
 	
 	/** languageEntryID for the text describing this kind of error for units; if null then no error will be displayed */
 	private final String unitLanguageEntryID;

@@ -658,7 +658,12 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Enchanting enemy unit
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		unit.setOwningPlayerID (2);
-		assertEquals (TargetSpellResult.ENCHANTING_ENEMY, utils.isUnitValidTargetForSpell
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
+			(spell, null, 1, null, unit, players, fow, db));
+		
+		// Healing enemy unit
+		spell.setSpellBookSectionID (SpellBookSectionID.HEALING_SPELLS);
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
 			(spell, null, 1, null, unit, players, fow, db));
 		
 		// Cursing own uint
@@ -748,6 +753,19 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Unit is in a different combat
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
 			(spell, new MapCoordinates3DEx (20, 11, 1), 2, 3, unit, players, fow, db));
+		
+		// Healing spell
+		spell.setSpellBookSectionID (SpellBookSectionID.HEALING_SPELLS);
+		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, 3, unit, players, fow, db));
+
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (5);
+		assertEquals (TargetSpellResult.PERMANENTLY_DAMAGED, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, 3, unit, players, fow, db));
+
+		when (unitUtils.getHealableDamageTaken (unit.getUnitDamage ())).thenReturn (5);
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, 3, unit, players, fow, db));
 	}
 	
 	/**
@@ -800,7 +818,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Wrong owner
 		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell (spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
-		assertEquals (TargetSpellResult.ENCHANTING_ENEMY, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (24, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (24, 20, 0), map, buildings, db));
 		
 		// No spell effects defined
 		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));

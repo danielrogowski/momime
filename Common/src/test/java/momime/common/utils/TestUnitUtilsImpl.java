@@ -32,6 +32,7 @@ import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkill;
@@ -1670,13 +1671,45 @@ public final class TestUnitUtilsImpl
 		assertEquals (0, utils.getTotalDamageTaken (damages));
 		
 		// Try real example
-		for (final int dmg : new int [] {1, 2, 6})
+		int dmg = 1;
+		for (final StoredDamageTypeID dmgType : StoredDamageTypeID.values ())
 		{
+			dmg++;
+			
 			final UnitDamage unitDamage = new UnitDamage ();
 			unitDamage.setDamageTaken (dmg);
+			unitDamage.setDamageType (dmgType);
 			damages.add (unitDamage);
 		}
 
-		assertEquals (9, utils.getTotalDamageTaken (damages));
+		assertEquals (2+3+4, utils.getTotalDamageTaken (damages));
+	}
+
+	/**
+	 * Tests the getHealableDamageTaken method
+	 */
+	@Test
+	public final void testGetHealableDamageTaken ()
+	{
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+
+		// Try empty list
+		final List<UnitDamage> damages = new ArrayList<UnitDamage> ();
+		assertEquals (0, utils.getHealableDamageTaken (damages));
+		
+		// Try real example
+		int dmg = 1;
+		for (final StoredDamageTypeID dmgType : StoredDamageTypeID.values ())
+		{
+			dmg++;
+			
+			final UnitDamage unitDamage = new UnitDamage ();
+			unitDamage.setDamageTaken (dmg);
+			unitDamage.setDamageType (dmgType);
+			damages.add (unitDamage);
+		}
+
+		assertEquals (2+3, utils.getHealableDamageTaken (damages));		// Permanent (4) is the last component and gets excluded
 	}
 }

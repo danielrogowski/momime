@@ -304,14 +304,15 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		result = TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT;
     	
     	else if (unit.getStatus () != UnitStatusID.ALIVE)
-    		result =TargetSpellResult.UNIT_DEAD;
+    		result = TargetSpellResult.UNIT_DEAD;
     	
-    	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) && (unit.getOwningPlayerID () != castingPlayerID))
-    		result = TargetSpellResult.ENCHANTING_ENEMY; 
+    	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS)) &&
+    		(unit.getOwningPlayerID () != castingPlayerID))
+    		result = TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY; 
 
     	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) || (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)) &&
-    				(unit.getOwningPlayerID () == castingPlayerID))
-    				result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
+    		(unit.getOwningPlayerID () == castingPlayerID))
+    		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
     	
     	else
     	{
@@ -330,6 +331,12 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), mem.getMaintainedSpell (), db)))
     			
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
+    		
+    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) && (getUnitUtils ().getTotalDamageTaken (unit.getUnitDamage ()) == 0)) 
+    			result = TargetSpellResult.UNDAMAGED;
+
+    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) && (getUnitUtils ().getHealableDamageTaken (unit.getUnitDamage ()) == 0))
+    			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
     		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
     			result = TargetSpellResult.VALID_TARGET;
@@ -409,7 +416,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		result = TargetSpellResult.NO_CITY_HERE;
     	
     	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) && (cityData.getCityOwnerID () != castingPlayerID))
-    		result = TargetSpellResult.ENCHANTING_ENEMY; 
+    		result = TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY; 
 
     	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES) && (cityData.getCityOwnerID () == castingPlayerID))
     		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;

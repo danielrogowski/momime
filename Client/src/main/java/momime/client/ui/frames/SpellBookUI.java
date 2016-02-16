@@ -799,7 +799,8 @@ public final class SpellBookUI extends MomClientFrameUI
 			else if ((getCastType () == SpellCastType.COMBAT) &&
 				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
 				(sectionID == SpellBookSectionID.SUMMONING) ||
-				((sectionID == SpellBookSectionID.ATTACK_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+				(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.HEALING_SPELLS)) &&
+					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 				
 				getCombatUI ().setSpellBeingTargetted (spell);
 			

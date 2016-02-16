@@ -18,7 +18,6 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -386,20 +385,18 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		// Life stealing units like Wraiths might get some health back
 		if (lifeStealingDamageToDefender > 0)
 		{
-			final int amountToHeal = Math.min (lifeStealingDamageToDefender,
-				getUnitServerUtils ().findDamageTakenOfType (attacker.getUnit ().getUnitDamage (), StoredDamageTypeID.HEALABLE));
+			final int amountToHeal = Math.min (lifeStealingDamageToDefender, getUnitUtils ().getHealableDamageTaken (attacker.getUnit ().getUnitDamage ()));
 			
 			if (amountToHeal > 0)
-				getUnitServerUtils ().addDamage (attacker.getUnit ().getUnitDamage (), StoredDamageTypeID.HEALABLE, -amountToHeal);
+				getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), amountToHeal, false);
 		}
 
 		if (lifeStealingDamageToAttacker > 0)
 		{
-			final int amountToHeal = Math.min (lifeStealingDamageToAttacker,
-				getUnitServerUtils ().findDamageTakenOfType (defender.getUnit ().getUnitDamage (), StoredDamageTypeID.HEALABLE));
+			final int amountToHeal = Math.min (lifeStealingDamageToAttacker, getUnitUtils ().getHealableDamageTaken (defender.getUnit ().getUnitDamage ()));
 			
 			if (amountToHeal > 0)
-				getUnitServerUtils ().addDamage (defender.getUnit ().getUnitDamage (), StoredDamageTypeID.HEALABLE, -amountToHeal);
+				getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), amountToHeal, false);
 		}
 		
 		// Each individual step will never allow a unit to be over-killed, i.e. take more damage than it has remaining HP.
@@ -414,9 +411,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		// Instead we apply both, then the unit has -2 HP, and the heal routine will always heal healable damage first.
 		// So we convert 2 HP of the healable damage already taken into life stealing damage, ending up with the unit dying from
 		// taking 2 HP healable damage and 4 HP life stealing damage, and so it becomes undead.
-		getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), -getUnitCalculations ().calculateHitPointsRemaining (defender.getUnit (), players, mem, db));
+		getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), -getUnitCalculations ().calculateHitPointsRemaining (defender.getUnit (), players, mem, db), true);
 		if (attacker != null)
-			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -getUnitCalculations ().calculateHitPointsRemaining (attacker.getUnit (), players, mem, db));
+			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -getUnitCalculations ().calculateHitPointsRemaining (attacker.getUnit (), players, mem, db), true);
 		
 		log.trace ("Exiting processAttackResolutionStep = " + specialDamageResolutionsApplied.size ());
 		return specialDamageResolutionsApplied;

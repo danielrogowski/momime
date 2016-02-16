@@ -545,23 +545,24 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	
 	/**
 	 * Heals a specified number of HP from the damage list.  If more HP is specified than exists in the list, the list will simply be emptied.
-	 * Healable damage is always healed first, followed by permanent damage, and lastly life stealing damage.
+	 * Healable damage is always healed first, followed by life stealing damage, and lastly permanent damage.
 	 * See comments on StoredDamageTypeID in MoMIMECommonDatabase.xsd. 
 	 * 
 	 * @param damages List of damages to heal
 	 * @param amountToHeal Number of HP to heal
+	 * @param healPermanentDamage Whether we can heal permanent damage or not
 	 */
 	@Override
-	public final void healDamage (final List<UnitDamage> damages, final int amountToHeal)
+	public final void healDamage (final List<UnitDamage> damages, final int amountToHeal, final boolean healPermanentDamage)
 	{
-		log.trace ("Entering healDamage: " + amountToHeal);
+		log.trace ("Entering healDamage: " + amountToHeal + ", " + healPermanentDamage);
 		
 		if ((amountToHeal > 0) && (damages.size () > 0))
 		{
 			// We always heal in a specific order of damage types, which is the order they're defined on the enum, not the order they are in the list passed into this method
 			int amountLeftToHeal = amountToHeal;
 			for (final StoredDamageTypeID damageType : StoredDamageTypeID.values ())
-				if (amountLeftToHeal > 0)
+				if ((amountLeftToHeal > 0) && ((healPermanentDamage) || (damageType != StoredDamageTypeID.PERMANENT)))
 				{
 					final int healThisDamageType = Math.min (amountLeftToHeal, findDamageTakenOfType (damages, damageType));
 					if (healThisDamageType > 0)
@@ -588,11 +589,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final int halfDamage = (getUnitUtils ().getTotalDamageTaken (damages) + 1) / 2;
 		
 		// Default to Healable, then check each damage type in turn
-		// Important to note that we check Life Stealing last, so in the case that a unit has an even number of HP and
+		// Important to note that we check Life Stealing first and jump out if we get a match, so in the case that a unit has an even number of HP and
 		// takes exactly half Life Stealing and half Permanent damage, the Life Stealing "wins".
 		StoredDamageTypeID result = StoredDamageTypeID.HEALABLE;
 		for (final StoredDamageTypeID damageType : StoredDamageTypeID.values ())
-			if (findDamageTakenOfType (damages, damageType) >= halfDamage)
+			if ((result == StoredDamageTypeID.HEALABLE) && (findDamageTakenOfType (damages, damageType) >= halfDamage))
 				result = damageType;
 		
 		log.trace ("Exiting whatKilledUnit = " + result);

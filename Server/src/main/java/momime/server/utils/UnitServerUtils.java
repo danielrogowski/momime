@@ -146,13 +146,14 @@ public interface UnitServerUtils
 
 	/**
 	 * Heals a specified number of HP from the damage list.  If more HP is specified than exists in the list, the list will simply be emptied.
-	 * Healable damage is always healed first, followed by permanent damage, and lastly life stealing damage.
+	 * Healable damage is always healed first, followed by life stealing damage, and lastly permanent damage.
 	 * See comments on StoredDamageTypeID in MoMIMECommonDatabase.xsd. 
 	 * 
 	 * @param damages List of damages to heal
 	 * @param amountToHeal Number of HP to heal
+	 * @param healPermanentDamage Whether we can heal permanent damage or not
 	 */
-	public void healDamage (final List<UnitDamage> damages, final int amountToHeal);
+	public void healDamage (final List<UnitDamage> damages, final int amountToHeal, final boolean healPermanentDamage);
 	
 	/**
 	 * @param damages List of damages a unit had taken

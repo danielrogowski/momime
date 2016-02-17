@@ -110,7 +110,6 @@
 					<li>Non-corporeal units should appear translucent in combat
 					<li>Buildings and population being destroyed during city combats
 					<li>Roads
-					<li>Cities screen
 					<li>Improve minimap: Show white box indicating current view area; click on map to jump to a location; add checkbox on Option screen to have the map scroll with the view rather than remain fixed
 				</ul>
 			</td>
@@ -118,26 +117,65 @@
 		<tr>
 			<td align=left>Further 0.9.7.x releases</td>
 			<td align=left></td>
-			<td align=left><b>Planned features:</b>
+			<td align=left>
+				<b>Planned for 0.9.7.3:</b>
 				<ul>
-					<li>Generic handling of which unit abilities and spell effects negate each other, e.g. Negate First Strike negates First Strike, Poison Immunity negates Poison, Fire Immunity negates Immolation (and a whole lot more besides), Elemental Armour negates Resist Elements
+					<li>Remaining unit skills that negate one another, e.g. Negate First Strike negates First Strike, Elemental Armour negates Resist Elements
 					<li>All unit skills and abilities working (except engineers building roads)
 					<li>All common spells working (including that the AI will cast them)
-					<li>Some kind of cleanup of old saved game files so they don't sit on the server forever
+				</ul>
+				
+				<b>Planned for 0.9.7.4:</b>
+				<ul>
 					<li>AI calculates unit factory rating for its cities and thus can choose the best city to build units at
 					<li>AI calculates defence rating for its cities and thus knows the friendly zones in which it needs to build more units
 					<li>Overland AI for AI wizards and Raiders (AI building units, moving around the map, attacking cities and lairs/nodes/towers)
-					<li>Champions' book requirements where appropriate, e.g. to summon Ravashack the Necromancer you need at least 1 Death Book
-					<li>Units with free spells (Giant Spiders 'casting' web, or Magicians casting Fireball) should show the icon for it in their skills list
-					<li>When heroes holding items die in combat, those items should be returned to the vault of whoever wins the combat
-					<li>When reloading saved games, can't see the turn number until you end turn once
 				</ul>
 			</td>
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.7.1</b></td>
-			<td align=left><b>23 Dec 2015</b></td>
+			<td align=left><b>Current version: 0.9.7.2</b></td>
+			<td align=left><b>17 Feb 2016</b></td>
+			<td align=left>
+				<b>Major new features:</b>
+				<ul>
+					<li>Cities screen
+					<li>All damage dealt is now assigned one of a list of damage types, e.g. fire damage, stoning damage, and immunities work accordingly.  e.g. Magic Immunity will make a unit completely invulnerable to fire damage, but Fire Immunity will grant 50 defence against it.
+					<li>Damage to units is now recorded as healable, permanent and life stealing.  Units killed mostly with life stealing damage (e.g. from ghouls, life stealing attacks or life drain spell) will come back as Undead.
+					<li>Raise Dead and Animate Dead spells now work correctly and can be used to resurrect units in combat, as long as they weren't killed mostly by permanent damage
+					<li>Healing and Mass Healing spells now work correctly
+					<li>Life stealing attacks now recover HP to the attacker
+				</ul>
+				
+				<b>Minor new features:</b>
+				<ul>
+					<li>When heroes holding items die in combat, those items are awarded to the winner of the combat
+					<li>Units with free spells (e.g. Giant Spiders 'casting' web, or Magicians casting Fireball) now show an icon for it in their skills list
+					<li>Champions' book requirements where appropriate, e.g. to summon Ravashack the Necromancer you need at least 1 Death Book
+					<li>Saved points for each saved game will now only retain saves for the last 16 turns rather than filling up disk space on the server forever
+					<li>Ability to delete saved games
+					<li>A good chunk of client-side data is no longer stored in saved game files, instead it is regenerated on the fly as the game is reloaded (so saved game files are smaller, save faster and are less likely to become unusable with newer versions of MoM IME)
+					<li>Can now cast Chaos Channels on Black Channeled units and vice versa and the resulting units have the proper characteristics of both
+					<li>Can no longer switch off Chaos Channels
+					<li>Right clicking on a blank area of the map when you have no units left requiring movement orders will now centre the map at that location (thanks to AndO3131 for this)
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>When reloading one-player-at-a-time saved games, fixed the turn number not appearing on the first turn
+					<li>Demon Lord and Ravashack the Necromancer's ranged attacks didn't include the life stealing component
+					<li>Fixed the magic screen not showing when an overland spell is added to the head of the spell queue until the following turn (thanks piratep2r for pointing this out)
+				</ul>
+
+				<b>Fixed bugs in the editors:</b>
+				<ul>
+					<li>Editors will now run with no internet connection (previously it wanted to download xml.xsd on startup)
+				</ul>
+		</tr>
+		<tr>
+			<td align=left>0.9.7.1</td>
+			<td align=left>23 Dec 2015</td>
 			<td align=left>
 				<b>Minor new features:</b>
 				<ul>
@@ -153,7 +191,6 @@
 				</ul>
 		</tr>
 		<tr>
-			<a name="currentversion"></a>
 			<td align=left>0.9.7.0</td>
 			<td align=left>21 Dec 2015</td>
 			<td align=left>

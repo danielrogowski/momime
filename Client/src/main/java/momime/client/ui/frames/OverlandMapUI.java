@@ -821,10 +821,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 							else
 							{
 								// Right clicking to select or view a stack of units
-								if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
-									getOverlandMapProcessing ().showSelectUnitBoxes (new MapCoordinates3DEx (mapCellX, mapCellY, 0));
-								else
-									getOverlandMapProcessing ().showSelectUnitBoxes (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
+								final int towerPlane = getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()) ? 0 : mapViewPlane;
+								if (!getOverlandMapProcessing ().showSelectUnitBoxes (new MapCoordinates3DEx (mapCellX, mapCellY, towerPlane)))
+									scrollTo (mapCellX, mapCellY, towerPlane, true);
 							}
 						}
 						

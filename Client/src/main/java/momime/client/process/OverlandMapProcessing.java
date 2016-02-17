@@ -38,8 +38,9 @@ public interface OverlandMapProcessing
 	 * @throws MomException If we cannot find any appropriate experience level for a unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @return Whether there was a unit left to move
 	 */
-	public void selectNextUnitToMoveOverland ()
+	public boolean selectNextUnitToMoveOverland ()
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**
@@ -50,8 +51,9 @@ public interface OverlandMapProcessing
 	 * @throws MomException If we cannot find any appropriate experience level for a unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @return True if there were unit(s) at the location to select OR we had any units left to move; false if we found units neither way
 	 */
-	public void showSelectUnitBoxes (final MapCoordinates3DEx unitLocation)
+	public boolean showSelectUnitBoxes (final MapCoordinates3DEx unitLocation)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**

@@ -125,14 +125,16 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * @throws MomException If we cannot find any appropriate experience level for a unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @return Whether there was a unit left to move
 	 */
 	@Override
-	public final void selectNextUnitToMoveOverland ()
+	public final boolean selectNextUnitToMoveOverland ()
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering selectNextUnitToMoveOverland");
 		
-		if (unitsLeftToMoveOverland.size () > 0)
+		final boolean found = (unitsLeftToMoveOverland.size () > 0);
+		if (found)
 		{
 			final MemoryUnit unitToMove = unitsLeftToMoveOverland.get (0);
 			
@@ -148,7 +150,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			showSelectUnitBoxes (null);
 		}
 		
-		log.trace ("Exiting selectNextUnitToMoveOverland");
+		log.trace ("Exiting selectNextUnitToMoveOverland = " + found);
+		return found;
 	}
 
 	/**
@@ -159,9 +162,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * @throws MomException If we cannot find any appropriate experience level for a unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @return True if there were unit(s) at the location to select OR we had any units left to move; false if we found units neither way
 	 */
 	@Override
-	public final void showSelectUnitBoxes (final MapCoordinates3DEx unitLocation)
+	public final boolean showSelectUnitBoxes (final MapCoordinates3DEx unitLocation)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering showSelectUnitBoxes: " + unitLocation);
@@ -193,8 +197,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		
 		// If we found no units at all (probably player right clicked on empty piece of map) then just jump to next unit to move.
 		// This helps the game not get stuck at "Current player: you" without suggesting what unit you need to move.
+		final boolean found;
 		if ((count == 0) && (unitLocation != null))
-			selectNextUnitToMoveOverland ();
+			found = selectNextUnitToMoveOverland ();
 		else
 		{
 			// Even if we auto selected zero units, we still have to set these, since the player might then decide to select one of the units
@@ -206,9 +211,11 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			// Enable or disable the special order buttons like build city, purify, etc.
 			enableOrDisableSpecialOrderButtons ();
 			updateMovementRemaining ();
+			found = true;
 		}
 		
-		log.trace ("Exiting showSelectUnitBoxes");
+		log.trace ("Exiting showSelectUnitBoxes = " + found);
+		return found;
 	}
 	
 	/**

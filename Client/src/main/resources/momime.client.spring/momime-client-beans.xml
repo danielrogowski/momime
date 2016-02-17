@@ -385,6 +385,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="overlandCastQueuedMessage" class="momime.client.messages.process.OverlandCastQueuedMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
 	</bean>
 
 	<bean id="updateManaSpentOnCastingCurrentSpellMessage" class="momime.client.messages.process.UpdateManaSpentOnCastingCurrentSpellMessageImpl" scope="prototype">

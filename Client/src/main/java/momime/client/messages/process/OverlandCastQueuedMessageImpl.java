@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.QueuedSpellsUI;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
@@ -29,6 +30,9 @@ public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessa
 	/** Queued spells UI */
 	private QueuedSpellsUI queuedSpellsUI;
 	
+	/** Magic sliders screen */
+	private MagicSlidersUI magicSlidersUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -43,8 +47,12 @@ public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessa
 		queued.setQueuedSpellID (getSpellID ());
 		queued.setHeroItem (getHeroItem ());
 		
+		final int previousSize = getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().size ();
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().add (queued);
+		
 		getQueuedSpellsUI ().updateQueuedSpells ();
+		if (previousSize == 0)
+			getMagicSlidersUI ().updateProductionLabels ();
 		
 		log.trace ("Exiting start");
 	}
@@ -79,5 +87,21 @@ public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessa
 	public final void setQueuedSpellsUI (final QueuedSpellsUI ui)
 	{
 		queuedSpellsUI = ui;
+	}
+
+	/**
+	 * @return Magic sliders screen
+	 */
+	public final MagicSlidersUI getMagicSlidersUI ()
+	{
+		return magicSlidersUI;
+	}
+
+	/**
+	 * @param ui Magic sliders screen
+	 */
+	public final void setMagicSlidersUI (final MagicSlidersUI ui)
+	{
+		magicSlidersUI = ui;
 	}
 }

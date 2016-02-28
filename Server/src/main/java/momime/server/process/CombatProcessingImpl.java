@@ -190,7 +190,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		final UnitHasSkillMergedList unitSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
 		
 		// Does this unit have a ranged attack?
-		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) > 0)
 		{
 			// Ranged hero or regular unit?
@@ -201,7 +201,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 		
 		// Does this unit have a melee attack?
-		else if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		else if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) > 0)
 		{
 			// Melee hero or regular unit?
@@ -1079,7 +1079,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// If the unit it making an attack, that takes half its total movement
 			if (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE)
 				reduceMovementRemaining (tu, getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 					null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));				
 			
 			// Actually put the units in that location on the server

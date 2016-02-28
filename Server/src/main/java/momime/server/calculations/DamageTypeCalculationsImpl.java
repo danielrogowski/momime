@@ -107,14 +107,14 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 
 		// Work out basic stat
 		int defenderDefenceStrength = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)) / divisor;
 		
 		// See if we have any immunity to the type of damage
 		for (final DamageTypeImmunity imm : attackDamage.getDamageType ().getDamageTypeImmunity ())
 			
 			// Total immunity was already dealt with in attackFromUnitSkill
-			if ((imm.getBoostsDefenceTo () != null) && (getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (), imm.getUnitSkillID (),
+			if ((imm.getBoostsDefenceTo () != null) && (getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (), imm.getUnitSkillID (), null,
 				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db) >= 0))
 				
 				defenderDefenceStrength = Math.max (defenderDefenceStrength, imm.getBoostsDefenceTo ());

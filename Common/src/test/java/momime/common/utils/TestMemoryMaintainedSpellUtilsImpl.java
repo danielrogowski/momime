@@ -634,7 +634,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		unit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		unit.setCombatSide (UnitCombatSideID.ATTACKER);
 		
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (12);
 		
 		// Immunity

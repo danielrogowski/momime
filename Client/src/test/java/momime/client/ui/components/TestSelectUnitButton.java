@@ -255,7 +255,7 @@ public final class TestSelectUnitButton
 		
 		// Hit points
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (5);
-		when (unitSkillUtils.getModifiedSkillValue (u, u.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedSkillValue (u, u.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);
 		
 		// Coloured image generator

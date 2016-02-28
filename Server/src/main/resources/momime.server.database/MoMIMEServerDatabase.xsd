@@ -538,6 +538,10 @@
 			<xsd:selector xpath="unitSkill/addsToSkill" />
 			<xsd:field xpath="rangedAttackTypeID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="negatedBySkillFKunitSkill1">
+			<xsd:selector xpath="unitSkill/negatedBySkill" />
+			<xsd:field xpath="negatedBySkillID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:pickPK" name="unitSkillFKpick1">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="changesUnitToMagicRealm" />

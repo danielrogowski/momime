@@ -1,5 +1,6 @@
 package momime.server.calculations;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -21,6 +22,7 @@ import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
@@ -128,10 +130,13 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		log.trace ("Entering attackFromUnitSkill: Unit URN " + attacker.getUnit ().getUnitURN () + ", " + attackSkillID);
 
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender.getUnit ());
+		
 		// The unit's skill level indicates the strength of the attack (e.g. Poison Touch 2 vs Poison Touch 4)
 		final AttackDamage attackDamage;
 		final int figureCount = getUnitCalculations ().calculateAliveFigureCount (attacker.getUnit (), players, mem, db) - attacker.getFiguresFrozenInFear ();
-		final int damage = getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (), attackSkillID,
+		final int damage = getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (), attackSkillID, defenders,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
 		if ((damage < 0) || (figureCount <= 0))
 			attackDamage = null;
@@ -158,7 +163,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			// Firstly if the unit has the "create undead" skill, then force all damage to "life stealing" as long as the defender isn't immune to it -
 			// if they are immune to it, leave it as regular melee damage (tested in the original MoM that Ghouls can hurt Zombies).
 			DamageTypeSvr damageType = null;
-			if (getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_CREATE_UNDEAD,
+			if (getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_CREATE_UNDEAD, defenders,
 				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0)
 			{
 				damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_LIFE_STEALING, "attackFromUnitSkill");
@@ -227,7 +232,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 				// Fill in the damage object
 				final int plusToHit = getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, defenders,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
 		
 				attackDamage = new AttackDamage (damageCalculationMsg.getPotentialHits (), plusToHit, damageType, damageCalculationMsg.getDamageResolutionTypeID (), null,
@@ -428,12 +433,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 		damageCalculationMsg.setModifiedDefenceStrength (defenderDefenceStrength);
 
 		damageCalculationMsg.setChanceToDefend (3 + Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 		
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
@@ -486,12 +491,12 @@ public final class DamageCalculatorImpl implements DamageCalculator
 
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attackDamage, 1, players, mem, db));
 
 		damageCalculationMsg.setChanceToDefend (3 + Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 			
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
@@ -534,7 +539,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			
 			// Keep track of how many HP the next figure has
 			if ((figureNo == 0) && (damageCalculationMsg.getDefenderFigures () > 1))
-				hitPointsThisFigure = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+				hitPointsThisFigure = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db);
 		}
 		
@@ -676,7 +681,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 
 		// Is there a saving throw modifier?
@@ -719,7 +724,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			
 			// Keep track of how many HP the next figure has
 			if ((figureNo == 0) && (damageCalculationMsg.getDefenderFigures () > 1))
-				hitPointsThisFigure = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+				hitPointsThisFigure = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db);
 		}
 		
@@ -767,7 +772,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 
 		// Is there a saving throw modifier?
@@ -804,7 +809,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			if (damageCalculationMsg.getDefenderFigures () == 1)
 				totalHits = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender.getUnit (), players, mem, db);
 			else
-				totalHits = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+				totalHits = getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db);
 		}
 		else
@@ -856,7 +861,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 
 		// Is there a saving throw modifier?
@@ -915,7 +920,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 
 		// The potential hits is the number of rolls to make - this type of damage cannot have a saving throw modifier
@@ -972,7 +977,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db));
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 
 		// Is there a saving throw modifier?
@@ -1024,7 +1029,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Set up defender stats - note the minus here, so if 2 figures are already frozen, we can't roll for them again and use those rolls to freeze other figures
 		damageCalculationMsg.setDefenderFigures (getUnitCalculations ().calculateAliveFigureCount (defender.getUnit (), players, mem, db) - defender.getFiguresFrozenInFear ());
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defender.getUnit ().getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
 
 		// Is there a saving throw modifier?

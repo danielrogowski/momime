@@ -546,7 +546,7 @@ public final class TestOverlandMapServerUtilsImpl
 		// Can get away with matching attackingSpirit.getUnitHasSkill () for the defender also, because they're both just empty lists
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
+			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
 			eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (2, 1);
 		
 		// Fix random result
@@ -678,7 +678,7 @@ public final class TestOverlandMapServerUtilsImpl
 		// Can get away with matching attackingSpirit.getUnitHasSkill () for the defender also, because they're both just empty lists
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
+			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
 			eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (2, 1);
 		
 		// Fix random result

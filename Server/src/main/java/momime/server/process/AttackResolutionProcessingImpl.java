@@ -69,7 +69,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * 
 	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
 	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
-	 * @param attackSkillID Which skillthey are attacking with (melee or ranged)
+	 * @param attackSkillID Which skill they are attacking with (melee or ranged)
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -103,7 +103,11 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				
 				// Check this condition; these are things like haste + first strike, so its ok to pass in nulls here - we don't know the actual attack steps yet
 				final MemoryUnit unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
-				if (getUnitSkillUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (),
+				final MemoryUnit enemy = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? defender : attacker;
+				final List<MemoryUnit> enemies = new ArrayList<MemoryUnit> ();
+				enemies.add (enemy);
+				
+				if (getUnitSkillUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (), enemies,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) < 0)
 					
 					conditionsMatch = false;

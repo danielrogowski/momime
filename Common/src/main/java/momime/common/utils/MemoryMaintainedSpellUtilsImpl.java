@@ -359,7 +359,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    					// Units with 10 or more resistance are immune to spells that roll against resistance
 	    					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
 	    					int resistance = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-	       						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, spell.getSpellRealm (), players, mem, db));
+	       						null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, spell.getSpellRealm (), players, mem, db));
 	    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
 	    					{
 	    						final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;

@@ -89,14 +89,14 @@ public final class TestUnitCalculationsImpl
 			spearmen.setOwningPlayerID (playerID);
 			fow.getUnit ().add (spearmen);
 			when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 				null, null, players, fow, db)).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
 			fow.getUnit ().add (hellHounds);
 			when (unitSkillUtils.getModifiedSkillValue (hellHounds, hellHounds.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 				null, null, players, fow, db)).thenReturn (2);
 		}
 
@@ -138,14 +138,14 @@ public final class TestUnitCalculationsImpl
 			spearmen.setOwningPlayerID (playerID);
 			fow.getUnit ().add (spearmen);
 			when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 				null, null, players, fow, db)).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
 			fow.getUnit ().add (hellHounds);
 			when (unitSkillUtils.getModifiedSkillValue (hellHounds, hellHounds.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 				null, null, players, fow, db)).thenReturn (2);
 		}
 
@@ -192,7 +192,7 @@ public final class TestUnitCalculationsImpl
 		u1.setCombatHeading (1);
 		fow.getUnit ().add (u1);
 		when (unitSkillUtils.getModifiedSkillValue (u1, u1.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			null, null, players, fow, db)).thenReturn (1);
 
 		// Wrong location
@@ -205,7 +205,7 @@ public final class TestUnitCalculationsImpl
 		u2.setCombatHeading (1);
 		fow.getUnit ().add (u2);
 		when (unitSkillUtils.getModifiedSkillValue (u2, u2.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			null, null, players, fow, db)).thenReturn (1);
 
 		// No combat position
@@ -217,7 +217,7 @@ public final class TestUnitCalculationsImpl
 		u3.setCombatHeading (1);
 		fow.getUnit ().add (u3);
 		when (unitSkillUtils.getModifiedSkillValue (u3, u3.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			null, null, players, fow, db)).thenReturn (1);
 		
 		// Wrong player
@@ -230,7 +230,7 @@ public final class TestUnitCalculationsImpl
 		u4.setCombatHeading (1);
 		fow.getUnit ().add (u4);
 		when (unitSkillUtils.getModifiedSkillValue (u4, u4.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			null, null, players, fow, db)).thenReturn (1);
 		
 		// Unit B that matches
@@ -243,7 +243,7 @@ public final class TestUnitCalculationsImpl
 		u5.setCombatHeading (1);
 		fow.getUnit ().add (u5);
 		when (unitSkillUtils.getModifiedSkillValue (u5, u5.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			null, null, players, fow, db)).thenReturn (2);
 		
 		// Set up object to test
@@ -453,13 +453,13 @@ public final class TestUnitCalculationsImpl
 		
 		// Test a unit with ammo
 		final AvailableUnit unitWithAmmo = new AvailableUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (unitWithAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitSkillUtils.getModifiedSkillValue (unitWithAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (8);
 		assertEquals (8, calc.calculateFullRangedAttackAmmo (unitWithAmmo, skills, players, fow, db));
 		
 		// Test a unit without ammo
 		final AvailableUnit unitWithoutAmmo = new AvailableUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (unitWithoutAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitSkillUtils.getModifiedSkillValue (unitWithoutAmmo, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		assertEquals (-1, calc.calculateFullRangedAttackAmmo (unitWithoutAmmo, skills, players, fow, db));
 	}
@@ -489,17 +489,17 @@ public final class TestUnitCalculationsImpl
 		
 		// Test a non-casting unit
 		final AvailableUnit nonCaster = new AvailableUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (nonCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		assertEquals (-1, calc.calculateManaTotal (nonCaster, skills, players, fow, db));
 
 		// Test an archangel
 		final AvailableUnit archangel = new AvailableUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (40);
-		when (unitSkillUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (archangel, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		assertEquals (40, calc.calculateManaTotal (archangel, skills, players, fow, db));
 
@@ -508,9 +508,9 @@ public final class TestUnitCalculationsImpl
 		level2.setLevelNumber (2);
 		
 		final AvailableUnit lowHero = new AvailableUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (lowHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);
 		when (unitUtils.getExperienceLevel (lowHero, true, players, fow.getCombatAreaEffect (), db)).thenReturn (level2);
 		assertEquals (22, calc.calculateManaTotal (lowHero, skills, players, fow, db));
@@ -520,9 +520,9 @@ public final class TestUnitCalculationsImpl
 		level4.setLevelNumber (4);
 		
 		final AvailableUnit highHero = new AvailableUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (40);
-		when (unitSkillUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (highHero, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (highHero, true, players, fow.getCombatAreaEffect (), db)).thenReturn (level4);
 		assertEquals (102, calc.calculateManaTotal (highHero, skills, players, fow, db));
@@ -567,11 +567,11 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit melee = new MemoryUnit ();
 		melee.setUnitID ("UN001");
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), melee, db)).thenReturn (skills);
-		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (melee, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		calc.giveUnitFullRangedAmmoAndMana (melee, players, fow, db);
 		
@@ -587,11 +587,11 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit rangedCaster = new MemoryUnit ();
 		rangedCaster.setUnitID ("UN002");
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), rangedCaster, db)).thenReturn (skills);
-		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO,
+		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (8);
-		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
+		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (40);
-		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO,
+		when (unitSkillUtils.getModifiedSkillValue (rangedCaster, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (5);
 		when (unitUtils.getExperienceLevel (rangedCaster, true, players, fow.getCombatAreaEffect (), db)).thenReturn (level4);
 		
@@ -689,7 +689,7 @@ public final class TestUnitCalculationsImpl
 		unit.setUnitID ("A");
 		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (6);
 
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 
 		assertEquals (6, calc.calculateHitPointsRemaining (unit, players, fow, db));
@@ -699,7 +699,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (5, calc.calculateHitPointsRemaining (unit, players, fow, db));
 
 		// Now it has 4 HP per figure
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);
 		assertEquals (23, calc.calculateHitPointsRemaining (unit, players, fow, db));
 		
@@ -739,7 +739,7 @@ public final class TestUnitCalculationsImpl
 		// Unit with 1 HP per figure at full health of 6 figures
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("A");
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		
 		assertEquals (6, calc.calculateAliveFigureCount (unit, players, fow, db));
@@ -757,7 +757,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (0, calc.calculateAliveFigureCount (unit, players, fow, db));
 		
 		// Now it has 4 HP per figure, so 6x4=24 total damage
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);
 		assertEquals (4, calc.calculateAliveFigureCount (unit, players, fow, db));
 		
@@ -798,7 +798,7 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
 		final MemoryUnit unit = new MemoryUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
@@ -808,7 +808,7 @@ public final class TestUnitCalculationsImpl
 		assertEquals (1, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 
 		// Now it has 4 HP per figure
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS,
+		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);
 		assertEquals (3, calc.calculateHitPointsRemainingOfFirstFigure (unit, players, fow, db));
 		
@@ -851,20 +851,20 @@ public final class TestUnitCalculationsImpl
 		
 		// Unit without even a ranged attack skill
 		final MemoryUnit noRangedAttack = new MemoryUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (noRangedAttack, noRangedAttack.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedSkillValue (noRangedAttack, noRangedAttack.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
 		assertFalse (calc.canMakeRangedAttack (noRangedAttack, players, fow, db));
 		
 		// Bow with no remaining ammo
 		final MemoryUnit outOfAmmo = new MemoryUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (outOfAmmo, outOfAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedSkillValue (outOfAmmo, outOfAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		assertFalse (calc.canMakeRangedAttack (outOfAmmo, players, fow, db));
 
 		// Bow with remaining ammo
 		final MemoryUnit hasAmmo = new MemoryUnit ();
 		hasAmmo.setAmmoRemaining (1);
-		when (unitSkillUtils.getModifiedSkillValue (hasAmmo, hasAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedSkillValue (hasAmmo, hasAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		assertTrue (calc.canMakeRangedAttack (hasAmmo, players, fow, db));
 		
@@ -875,7 +875,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit unknownRAT = new MemoryUnit ();
 		unknownRAT.setUnitID (unknownRATUnitDef.getUnitID ());
 		unknownRAT.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedSkillValue (unknownRAT, unknownRAT.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedSkillValue (unknownRAT, unknownRAT.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		when (db.findUnit (unknownRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (unknownRATUnitDef);
 		assertFalse (calc.canMakeRangedAttack (unknownRAT, players, fow, db));
@@ -891,7 +891,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit physRATUnit = new MemoryUnit ();
 		physRATUnit.setUnitID (physRATUnitDef.getUnitID ());
 		physRATUnit.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedSkillValue (physRATUnit, physRATUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedSkillValue (physRATUnit, physRATUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		when (db.findUnit (physRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (physRATUnitDef);
 		when (db.findRangedAttackType (physRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (physRAT);
@@ -909,7 +909,7 @@ public final class TestUnitCalculationsImpl
 		final MemoryUnit magRATUnit = new MemoryUnit ();
 		magRATUnit.setUnitID (magRATUnitDef.getUnitID ());
 		magRATUnit.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedSkillValue (magRATUnit, magRATUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedSkillValue (magRATUnit, magRATUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		when (db.findUnit (magRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (magRATUnitDef);
 		when (db.findRangedAttackType (magRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (magRAT);

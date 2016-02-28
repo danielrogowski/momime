@@ -1216,7 +1216,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 					
 					final int unitMovementTotal = getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+						CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 						null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					if (unitMovementTotal < movementTotal)
 						movementTotal = unitMovementTotal;

@@ -30,7 +30,7 @@ public interface AttackResolutionProcessing
 	 * 
 	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
 	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
-	 * @param attackSkillID Which skillthey are attacking with (melee or ranged)
+	 * @param attackSkillID Which skill they are attacking with (melee or ranged)
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database

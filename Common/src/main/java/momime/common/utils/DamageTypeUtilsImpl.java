@@ -61,6 +61,7 @@ public final class DamageTypeUtilsImpl implements DamageTypeUtils
 			
 			// We only want complete immunities - even if it boots defence to 50, its still a valid target
 			if ((imm.getBoostsDefenceTo () == null) && (getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (), imm.getUnitSkillID (),
+				null, // null seems ok here for enemyUnits, I can't imagine an enemy unit can have a skill that can cancel our immunity to something
    				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, attackFromSkillID, attackFromMagicRealmID, players, mem, db) >= 0))
 					immunity = true;
 		}

@@ -442,7 +442,7 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-common</artifactId>
-			<version>0.9.7.2</version>
+			<version>0.9.7.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.common</groupId>

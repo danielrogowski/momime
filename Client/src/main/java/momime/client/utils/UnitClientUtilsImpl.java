@@ -766,7 +766,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			mergedSkills = unit.getUnitHasSkill ();
 		
 		final BufferedImage image;
-		if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null,
+		if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null,
 			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) <= 0)
 			
 			image = null;
@@ -792,7 +792,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				attributeValueIncludingNegatives = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure
 					(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			else
-				attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID,
+				attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, null,
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
@@ -807,7 +807,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 						// Work out the total value (without negative effects), and our actual current value (after negative effects),
 						// so we can show stats knocked off by e.g. Black Prayer as faded.
 						// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
-						final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, attrComponent,
+						final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, null, attrComponent,
 							unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
 							null, null, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						

@@ -110,7 +110,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 		// Actual scouting skill
 		scoutingRange = Math.max (scoutingRange, getUnitSkillUtils ().getModifiedSkillValue
-			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING,
+			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db));
 
 		// Scouting range granted by other skills (i.e. flight skills)
@@ -655,10 +655,16 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			penalty = (int) (distance / 3);
 			
 			// Long range skill?
-			if ((penalty > 1) && (getUnitSkillUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0))
+			if (penalty > 1)
+			{
+				final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+				defenders.add (defender);
 				
-				penalty = 1;
+				if (getUnitSkillUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE, defenders,
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0)
+				
+					penalty = 1;
+			}
 		}
 		
 		log.trace ("Exiting calculateRangedAttackDistancePenalty = " + penalty);

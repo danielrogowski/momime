@@ -301,11 +301,11 @@ public final class TestCombatUI
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), selectedUnit, db)).thenReturn (mergedSkills);
 		
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
+		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
+		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);
-		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
+		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);
 		
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);

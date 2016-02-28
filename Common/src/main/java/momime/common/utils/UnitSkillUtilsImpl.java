@@ -1,5 +1,6 @@
 package momime.common.utils;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -20,6 +21,7 @@ import momime.common.database.ExperienceLevel;
 import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.HeroItemTypeAttackType;
+import momime.common.database.NegatedBySkill;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkill;
@@ -85,6 +87,8 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * @param unit Unit we want to check
 	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
 	 * @param unitSkillID Unique identifier for this skill
+	 * @param enemyUnits List of enemy units who may have skills that negate the skill we're checking for; typically this is the unit we're engaging in an attack with; in some
+	 * 	cases such as Invisibility, it may be ALL units we're in combat with; for situations not involved in combats or specific attacks, just pass null here
 	 * @param component Which component(s) making up this attribute to calculate
 	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
 	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
@@ -101,7 +105,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit; or a bonus applies that we cannot determine the amount of
 	 */
 	@Override
-	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final String unitSkillID,
+	public final int getModifiedSkillValue (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final String unitSkillID, final List<MemoryUnit> enemyUnits,
 		final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative, final String attackFromSkillID, final String attackFromMagicRealmID,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
@@ -114,12 +118,53 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), (MemoryUnit) unit, db);
 		else
 			mergedSkills = skills;
-
+		
 		// Get unit magic realm ID
 		final String storeMagicRealmLifeformTypeID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (unit, mergedSkills, mem.getMaintainedSpell (), db);
 
 		// Get basic skill value
 		final int basicValue = getUnitUtils ().getBasicSkillValue (mergedSkills, unitSkillID);
+		
+		// If we have the skill, before we go any further see if anything negates it
+		boolean negated = false;
+		if (basicValue >= 0)
+		{
+			final Iterator<NegatedBySkill> iter = db.findUnitSkill (unitSkillID, "getModifiedSkillValue").getNegatedBySkill ().iterator ();
+			while ((!negated) && (iter.hasNext ()))
+			{
+				final NegatedBySkill negation = iter.next ();
+				switch (negation.getNegatedByUnitID ())
+				{
+					case OUR_UNIT:
+						if (getModifiedSkillValue (unit, mergedSkills, negation.getNegatedBySkillID (), null,
+							UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0)
+							negated = true;
+						break;
+						
+					case ENEMY_UNIT:
+						if (enemyUnits != null)
+						{
+							final Iterator<MemoryUnit> enemyUnitsIter = enemyUnits.iterator ();
+							while ((!negated) && (enemyUnitsIter.hasNext ()))
+							{
+								final MemoryUnit enemyUnit = enemyUnitsIter.next ();
+								if (getModifiedSkillValue (enemyUnit, enemyUnit.getUnitHasSkill (), negation.getNegatedBySkillID (), null,
+									UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0)
+									negated = true;
+							}
+						}
+						break;
+						
+					default:
+						throw new MomException ("getModifiedSkillValue doesn't know what to do with negatedByUnitID value of " +
+							negation.getNegatedByUnitID () + " when determining value of skill " + unitSkillID);
+				}
+			}
+		}
+			
+		int total;
+		if (negated)
+			total = -1;
 		
 		// The majority of skills, if we don't have the skill at all, then bonuses don't apply to it.
 		// Also if it is a value-less skill like a movement skill, then no bonuses or penalities can apply to it so we just return 0, regardless of which components were asked for.
@@ -128,8 +173,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 		// e.g. Phantom Warriors have no defence, but this is in the nature of the type of unit, and I think it makes sense to not allow them to gain a defence thru bonuses.
 		// Movement speed, HP and Resistance are N/A here, because all units MUST define a value for those (see ServerDatabaseExImpl.consistencyChecks ())
 		// So the two that are left, that we must treat differently, are + to hit and + to block.  Most units don't have those values defined, but bonuses definitely still apply.
-		int total;
-		if ((basicValue <= 0) && (!unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)) &&
+		else if ((basicValue <= 0) && (!unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)) &&
 			(!unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)))
 				
 			total = basicValue;
@@ -190,7 +234,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 							// if it has any restrictions that depend on the kind of incoming attack, even if we match those restrictions.
 							// This is to stop the bonus from Large Shield showing on the unit info screen.
 							if ((attackFromSkillID == null) && (attackFromMagicRealmID == null) &&
-								(addsToSkill.getOnlyVersusAttacksFromSkillID () != null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID () != null))
+								((addsToSkill.getOnlyVersusAttacksFromSkillID () != null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID () != null)))
 							{
 								// Ignore
 							}
@@ -219,9 +263,9 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 									int multiplier;
 									if (addsToSkill.isAffectsEntireStack ())
 										multiplier = getHighestModifiedSkillValue ((MapCoordinates3DEx) unit.getUnitLocation (), unitCombatLocation, unit.getOwningPlayerID (),
-											skillDef.getUnitSkillID (), players, mem, db);
+											skillDef.getUnitSkillID (), enemyUnits, players, mem, db);
 									else
-										multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (), UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+										multiplier = getModifiedSkillValue (unit, mergedSkills, skillDef.getUnitSkillID (), enemyUnits, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 											attackFromSkillID, attackFromMagicRealmID, players, mem, db);
 									
 									if (multiplier >= 0)
@@ -331,6 +375,8 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * @param unitCombatLocation The combat the unit stack is in, if any
 	 * @param owningPlayerID The player who owns the unit stack
 	 * @param unitSkillID Unique identifier for this skill
+	 * @param enemyUnits List of enemy units who may have skills that negate the skill we're checking for; typically this is the unit we're engaging in an attack with; in some
+	 * 	cases such as Invisibility, it may be ALL units we're in combat with; for situations not involved in combats or specific attacks, just pass null here
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -340,7 +386,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 	 * @throws MomException If we cannot find any appropriate experience level for this unit; or a bonus applies that we cannot determine the amount of
 	 */
 	final int getHighestModifiedSkillValue (final MapCoordinates3DEx unitLocation, final MapCoordinates3DEx unitCombatLocation, final int owningPlayerID,
-		final String unitSkillID, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		final String unitSkillID, final List<MemoryUnit> enemyUnits, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering getHighestModifiedSkillValue: " + unitLocation + ", " + unitCombatLocation + ", " + owningPlayerID + ", " + unitSkillID);
@@ -354,7 +400,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 					
 					// This is used for "Resistance to All" and "Holy Bonus" rather than bonuses that depends on the kind of incoming attack
 					// so its good enough to just pass nulls in for the attack values
-					highest = Math.max (highest, getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), unitSkillID,
+					highest = Math.max (highest, getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), unitSkillID, enemyUnits,
 						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db));
 
 		log.trace ("Exiting getHighestModifiedSkillValue = " + highest);
@@ -384,6 +430,7 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 		
 		// Upkeep for undead is zeroed for normal units and adds +50% for summoned creatures
 		if ((baseUpkeepValue > 0) && (getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD,
+			null,		// null is alright here for enemyUnits - no enemy unit is going to have a skill that cancels out the fact that we're undead 
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0))
 		{
 			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getModifiedUpkeepValue").getUnitMagicRealm ();

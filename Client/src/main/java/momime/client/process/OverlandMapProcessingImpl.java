@@ -247,14 +247,14 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 				if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
 					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST,
+						CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST, null,
 						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
 					
 						settlerCount++;
 					
 					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE,
+						CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, null,
 						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
 						

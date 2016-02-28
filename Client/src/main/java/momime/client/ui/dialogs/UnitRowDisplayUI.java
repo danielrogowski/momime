@@ -260,7 +260,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			for (int attrNo = 1; attrNo <= 6; attrNo++)
 			{
 				final String unitAttributeID = unitAttributeIDs.get (attrNo-1);
-				final int attrValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitAttributeID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+				final int attrValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitAttributeID, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 					null, null, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
 				if (attrValue > 0)

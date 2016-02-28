@@ -10611,6 +10611,14 @@
 		<unitSkillDescription>Create Outpost</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US018">
+		<negatedBySkill>
+			<negatedBySkillID>SS131</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
+		<negatedBySkill>
+			<negatedBySkillID>US010</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
 		<unitSkillDescription>Invisibility</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US019">
@@ -10654,6 +10662,10 @@
 		<unitSkillDescription>Armour Piercing</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US029">
+		<negatedBySkill>
+			<negatedBySkillID>US046</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
 		<unitSkillDescription>First Strike</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US030">
@@ -10702,6 +10714,14 @@
 		<unitSkillDescription>Holy Bonus</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US035">
+		<negatedBySkill>
+			<negatedBySkillID>SS131</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
+		<negatedBySkill>
+			<negatedBySkillID>US010</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
 		<unitSkillDescription>Illusionary Attack</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US036">
@@ -10953,6 +10973,10 @@
 			<addsToSkillFixed>3</addsToSkillFixed>
 			<onlyVersusAttacksFromMagicRealmID>MB03</onlyVersusAttacksFromMagicRealmID>
 		</addsToSkill>
+		<negatedBySkill>
+			<negatedBySkillID>SS021</negatedBySkillID>
+			<negatedByUnitID>O</negatedByUnitID>
+		</negatedBySkill>
 		<unitSkillDescription>Resist Elements</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS004">
@@ -10969,6 +10993,10 @@
 			<affectsEntireStack>false</affectsEntireStack>
 			<addsToSkillFixed>1</addsToSkillFixed>
 		</addsToSkill>
+		<negatedBySkill>
+			<negatedBySkillID>SS024</negatedBySkillID>
+			<negatedByUnitID>O</negatedByUnitID>
+		</negatedBySkill>
 		<unitSkillDescription>Stone Skin</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS008">
@@ -11034,6 +11062,14 @@
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
 	<unitSkill unitSkillID="SS062">
+		<negatedBySkill>
+			<negatedBySkillID>SS131</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
+		<negatedBySkill>
+			<negatedBySkillID>US010</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
 		<unitSkillDescription>Invisibility</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS063">

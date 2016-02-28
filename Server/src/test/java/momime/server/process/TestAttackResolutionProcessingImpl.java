@@ -64,12 +64,20 @@ public final class TestAttackResolutionProcessingImpl
 		
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (1);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (2);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002",
+		
+		final List<MemoryUnit> attackers = new ArrayList<MemoryUnit> ();
+		attackers.add (attacker);
+		
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender);
+
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", defenders,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
+
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", attackers,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
@@ -125,12 +133,20 @@ public final class TestAttackResolutionProcessingImpl
 		
 		final MemoryUnit attacker = new MemoryUnit ();
 		attacker.setUnitURN (1);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001",
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setUnitURN (2);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002",
+
+		final List<MemoryUnit> attackers = new ArrayList<MemoryUnit> ();
+		attackers.add (attacker);
+		
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender);
+
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", defenders,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
+
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", attackers,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)

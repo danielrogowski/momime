@@ -107,7 +107,7 @@ public final class TestServerUnitCalculationsImpl
 		assertEquals (1, calc.calculateUnitScoutingRange (unit, players, fow, db));
 		
 		// Unit with Scouting III
-		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING,
+		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);
 		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, fow, db));
 		
@@ -1014,9 +1014,12 @@ public final class TestServerUnitCalculationsImpl
 		final MemoryUnit defender = new MemoryUnit ();
 		defender.setCombatPosition (new MapCoordinates2DEx (7, 6));
 		
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender);
+		
 		// We don't have the Long Range skill
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE,
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE, defenders,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		
 		// Set up object to test
@@ -1062,7 +1065,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// We don't have the Long Range skill
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE,
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
 		
 		// Set up object to test

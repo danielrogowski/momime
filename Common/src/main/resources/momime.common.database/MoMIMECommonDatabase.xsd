@@ -717,6 +717,7 @@ is defined in the graphics XML file.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="addsToSkill" type="momimecommon:addsToSkill" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="negatedBySkill" type="momimecommon:negatedBySkill" />
 		</xsd:sequence>
 		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Unit Skill ID" nxe:gridwidth="80" />
 	</xsd:complexType>
@@ -791,6 +792,23 @@ In that case, the restriction is put here, with multiple addsToSkill records if 
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="negatedBySkill" nxe:singular="Negated by Skill" nxe:plural="Negated by Skills">
+		<xsd:annotation>
+			<xsd:documentation>Certain skills cancel each other out, e.g. under First Strike will be a negation record listing the Negate First Strike cancels it out,
+and under Resist Elements will be a negation record listing that Elemental Armour cancels it out.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="negatedBySkillID" type="momimecommon:unitSkillID" nxe:label="Negated by Skill">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="negatedByUnitID" type="momimecommon:negatedByUnitID" nxe:label="Negated by which unit's skill?" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 	</xsd:complexType>
 	
@@ -2069,6 +2087,23 @@ which is why it is last in the list, so it will only be healed when all healable
 		</xsd:restriction>
 	</xsd:simpleType>
 
+
+	<xsd:simpleType name="negatedByUnitID">
+        <xsd:annotation>
+        	<xsd:documentation>Some skills are negated by enemy skills (e.g. Negate First Strike); others are negated by our own skills (e.g. Resist Elements).</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="O"><xsd:annotation>
+				<xsd:documentation>Negated by a skill on our unit</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OUR_UNIT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="E"><xsd:annotation>
+				<xsd:documentation>Negated by a skill on the enemy unit</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ENEMY_UNIT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
 <!-- Datatypes not needed directly here, but used both in server and other XSDs -->
 	
 	<xsd:simpleType name="spellCount">

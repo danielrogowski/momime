@@ -138,7 +138,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				error = "Some of the units you are trying to give a special order to are not at the right location";
 			
 			// Does it have the necessary skill?
-			else if ((necessarySkillID == null) || (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID,
+			else if ((necessarySkillID == null) || (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID, null,
 				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) >= 0))
 				
 				unitsWithNecessarySkillID.add (thisUnit);

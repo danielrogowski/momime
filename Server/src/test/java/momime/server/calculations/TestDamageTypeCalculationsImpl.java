@@ -476,7 +476,7 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
 		
 		// Set up object to test
@@ -509,7 +509,7 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
 		
 		// Set up object to test
@@ -547,10 +547,10 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
 
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (-1);
 		
 		// Set up object to test
@@ -588,10 +588,10 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
 
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (0);
 		
 		// Set up object to test
@@ -629,10 +629,10 @@ public final class TestDamageTypeCalculationsImpl
 		
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
 
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
+		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (0);
 		
 		// Set up object to test

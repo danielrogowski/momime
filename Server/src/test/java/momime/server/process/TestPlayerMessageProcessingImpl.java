@@ -613,7 +613,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Movement speed
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
+			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
 			eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (2);
 		
 		// Set up test object
@@ -733,7 +733,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Movement speed
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
+			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
 			eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
@@ -870,7 +870,7 @@ public final class TestPlayerMessageProcessingImpl
 		// Movement speed
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
+			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
 			eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2

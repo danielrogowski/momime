@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -22,11 +23,16 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.NegatedBySkill;
+import momime.common.database.NegatedByUnitID;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -38,12 +44,18 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
+import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
+import momime.server.database.DamageTypeSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseValues;
+import momime.server.database.SpellSvr;
+import momime.server.database.UnitSkillSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -142,7 +154,6 @@ public final class TestDamageProcessorImpl
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -210,6 +221,7 @@ public final class TestDamageProcessorImpl
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
 		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
 		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackSkillID ());
+		assertNull (data.getAttackSpellID ());
 		assertEquals (attacker.getOwningPlayerID (), data.getAttackerPlayerID ());
 		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
@@ -315,7 +327,6 @@ public final class TestDamageProcessorImpl
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
-		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -379,6 +390,7 @@ public final class TestDamageProcessorImpl
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
 		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
 		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, data.getAttackSkillID ());
+		assertNull (data.getAttackSpellID ());
 		assertEquals (attacker.getOwningPlayerID (), data.getAttackerPlayerID ());
 		assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
@@ -396,6 +408,303 @@ public final class TestDamageProcessorImpl
 		
 		// Defending player won
 		verify (combatStartAndEnd, times (1)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), any (CaptureCityDecisionID.class), eq (mom));
+	}
+
+	/**
+	 * Tests the resolveAttack method on a spell that attacks a single unit, which survives
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testResolveAttack_Spell_Survives () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+
+		// Players
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (true);
+		attackingPd.setPlayerID (5);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
+		
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (true);
+		defendingPd.setPlayerID (7);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
+
+		final PlayerServerDetails castingPlayer = defendingPlayer;
+		
+		// Units
+		final UnitDamage defenderDamageTaken = new UnitDamage ();
+		defenderDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+		defenderDamageTaken.setDamageTaken (3);
+		
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (102);
+		defender.setOwningPlayerID (attackingPd.getPlayerID ());
+		defender.getUnitDamage ().add (defenderDamageTaken);
+		
+		// Session description
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize (); 
+
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setFogOfWarSetting (fogOfWarSettings);
+		sd.setCombatMapSize (combatMapSize);
+		
+		// General server knowledge
+		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		gsk.setTrueMap (trueMap);
+
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		
+		// Combat location
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
+		
+		// Spell we're attacking with
+		final SpellSvr spell = new SpellSvr ();
+		spell.setSpellID ("SP001");
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		spell.setAttackSpellCombatTarget (AttackSpellCombatTargetID.SINGLE_UNIT);
+		
+		// Damage from spell
+		final DamageCalculator calc = mock (DamageCalculator.class);
+		final DamageTypeSvr damageType = new DamageTypeSvr (); 
+		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
+		when (calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
+
+		// Damage taken
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap, db)).thenReturn (1);
+		
+		// Set up object to test
+		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
+		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
+
+		final DamageProcessorImpl proc = new DamageProcessorImpl ();
+		proc.setDamageCalculator (calc);
+		proc.setUnitCalculations (unitCalculations);
+		proc.setAttackResolutionProcessing (attackResolutionProc);
+		proc.setFogOfWarMidTurnChanges (midTurnSingle);
+		
+		// Run method
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender);
+		
+		proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null,
+			null, spell, null, castingPlayer, combatLocation, mom);
+
+		// Ensure steps were processed
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
+
+		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		steps.add (null);
+		
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, steps, spellDamage, players,
+			trueMap, combatMapSize, db);
+
+		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (), defenders,
+			null, "SP001", specialDamageResolutionsApplied, players, trueTerrain, db, fogOfWarSettings);
+		
+		// Check initial message was sent
+		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
+		
+		verify (calc, times (1)).sendDamageCalculationMessage (eq (attackingPlayer), eq (defendingPlayer), msg.capture ());
+		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
+		
+		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
+		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
+		assertNull (data.getAttackSkillID ());
+		assertEquals ("SP001", data.getAttackSpellID ());
+		assertEquals (castingPlayer.getPlayerDescription ().getPlayerID ().intValue (), data.getAttackerPlayerID ());
+		assertNull (data.getAttackerUnitURN ());
+		assertEquals (defender.getUnitURN (), data.getDefenderUnitURN ().intValue ());
+	}
+	
+	/**
+	 * Tests the resolveAttack method on a spell that attacks all units; its an illusionary attack and 1 of the 3 units is immune to illusions
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testResolveAttack_MultiUnitSpell_Survives () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final NegatedBySkill immunityToIllusions = new NegatedBySkill ();
+		immunityToIllusions.setNegatedByUnitID (NegatedByUnitID.ENEMY_UNIT);
+		immunityToIllusions.setNegatedBySkillID ("US001");
+		
+		final UnitSkillSvr illusionaryAttackSkill = new UnitSkillSvr ();
+		illusionaryAttackSkill.getNegatedBySkill ().add (immunityToIllusions);
+		when (db.findUnitSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack")).thenReturn (illusionaryAttackSkill);
+
+		// Players
+		final PlayerDescription attackingPd = new PlayerDescription ();
+		attackingPd.setHuman (true);
+		attackingPd.setPlayerID (5);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, null, null, null);
+		
+		final PlayerDescription defendingPd = new PlayerDescription ();
+		defendingPd.setHuman (true);
+		defendingPd.setPlayerID (7);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPd, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
+
+		final PlayerServerDetails castingPlayer = defendingPlayer;
+		
+		// Units
+		final UnitDamage defender1DamageTaken = new UnitDamage ();
+		defender1DamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+		defender1DamageTaken.setDamageTaken (3);
+		
+		final MemoryUnit defender1 = new MemoryUnit ();
+		defender1.setUnitURN (102);
+		defender1.setOwningPlayerID (attackingPd.getPlayerID ());
+		defender1.getUnitDamage ().add (defender1DamageTaken);
+		
+		final UnitDamage defender2DamageTaken = new UnitDamage ();
+		defender2DamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+		defender2DamageTaken.setDamageTaken (3);
+		
+		final MemoryUnit defender2 = new MemoryUnit ();
+		defender2.setUnitURN (103);
+		defender2.setOwningPlayerID (attackingPd.getPlayerID ());
+		defender2.getUnitDamage ().add (defender2DamageTaken);
+		
+		final UnitDamage defender3DamageTaken = new UnitDamage ();
+		defender3DamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+		defender3DamageTaken.setDamageTaken (3);
+		
+		final MemoryUnit defender3 = new MemoryUnit ();
+		defender3.setUnitURN (104);
+		defender3.setOwningPlayerID (attackingPd.getPlayerID ());
+		defender3.getUnitDamage ().add (defender3DamageTaken);
+		
+		// Session description
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize (); 
+
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setFogOfWarSetting (fogOfWarSettings);
+		sd.setCombatMapSize (combatMapSize);
+		
+		// General server knowledge
+		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		gsk.setTrueMap (trueMap);
+
+		// Middle unit is immune to illusions
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.getModifiedSkillValue (defender1, defender1.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, trueMap, db)).thenReturn (-1);
+		when (unitSkillUtils.getModifiedSkillValue (defender2, defender2.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, trueMap, db)).thenReturn (0);
+		when (unitSkillUtils.getModifiedSkillValue (defender3, defender3.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, trueMap, db)).thenReturn (-1);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getPlayers ()).thenReturn (players);
+		
+		// Combat location
+		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
+		
+		// Spell we're attacking with
+		final SpellSvr spell = new SpellSvr ();
+		spell.setSpellID ("SP001");
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
+		spell.setAttackSpellCombatTarget (AttackSpellCombatTargetID.ALL_UNITS);
+		
+		// Damage from spell
+		final DamageCalculator calc = mock (DamageCalculator.class);
+		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
+		when (calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
+
+		// Damage taken
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		when (unitCalculations.calculateAliveFigureCount (defender1, players, trueMap, db)).thenReturn (1);
+		when (unitCalculations.calculateAliveFigureCount (defender2, players, trueMap, db)).thenReturn (2);
+		when (unitCalculations.calculateAliveFigureCount (defender3, players, trueMap, db)).thenReturn (3);
+		
+		// Set up object to test
+		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
+		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
+
+		final DamageProcessorImpl proc = new DamageProcessorImpl ();
+		proc.setDamageCalculator (calc);
+		proc.setUnitCalculations (unitCalculations);
+		proc.setAttackResolutionProcessing (attackResolutionProc);
+		proc.setFogOfWarMidTurnChanges (midTurnSingle);
+		proc.setUnitSkillUtils (unitSkillUtils);
+		
+		// Run method
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender1);
+		defenders.add (defender2);
+		defenders.add (defender3);
+		
+		proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null,
+			null, spell, null, castingPlayer, combatLocation, mom);
+
+		// Ensure steps were processed
+		final AttackResolutionUnit defender1Wrapper = new AttackResolutionUnit (defender1);
+		final AttackResolutionUnit defender2Wrapper = new AttackResolutionUnit (defender2);
+		final AttackResolutionUnit defender3Wrapper = new AttackResolutionUnit (defender3);
+
+		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		steps.add (null);
+
+		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
+		final AttackDamage reducedDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
+		
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender1Wrapper, attackingPlayer, defendingPlayer, steps, spellDamage, players, trueMap, combatMapSize, db);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, steps, reducedDamage, players, trueMap, combatMapSize, db);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, steps, spellDamage, players, trueMap, combatMapSize, db);
+
+		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
+		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (), defenders,
+			null, "SP001", specialDamageResolutionsApplied, players, trueTerrain, db, fogOfWarSettings);
+		
+		// Check initial message was sent
+		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
+		
+		verify (calc, times (1)).sendDamageCalculationMessage (eq (attackingPlayer), eq (defendingPlayer), msg.capture ());
+		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
+		
+		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
+		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
+		assertNull (data.getAttackSkillID ());
+		assertEquals ("SP001", data.getAttackSpellID ());
+		assertEquals (castingPlayer.getPlayerDescription ().getPlayerID ().intValue (), data.getAttackerPlayerID ());
+		assertNull (data.getAttackerUnitURN ());
+		assertNull (data.getDefenderUnitURN ());
 	}
 	
 	/**

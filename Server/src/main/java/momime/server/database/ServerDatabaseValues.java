@@ -53,6 +53,9 @@ public final class ServerDatabaseValues
 	/** Converts melee damage dealt into life stealing stored damage type (ghouls) */
 	public final static String UNIT_SKILL_ID_CREATE_UNDEAD = "US019";
 	
+	/** Converts melee damage dealt into illusionary damage resolution type (phantom warriors/beasts) */
+	public final static String UNIT_SKILL_ID_ILLUSIONARY_ATTACK = "US035";
+	
 	/** Scouting range */
 	public final static String UNIT_SKILL_ID_SCOUTING = "US037";
 

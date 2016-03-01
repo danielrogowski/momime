@@ -36,6 +36,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.database.DamageTypeSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.process.AttackResolutionUnit;
@@ -189,6 +190,9 @@ public final class TestDamageCalculatorImpl
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, defenders,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);	// ..with 40% chance to hit on each
 		
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, defenders,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
+
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
@@ -295,6 +299,9 @@ public final class TestDamageCalculatorImpl
 
 		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, defenders,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);	// ..with 40% chance to hit on each
+		
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, defenders,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
 		
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
@@ -434,6 +441,116 @@ public final class TestDamageCalculatorImpl
 		assertNull (dmg);
 	}
 
+	/**
+	 * Tests the attackFromUnitSkill method when the damage resolution type is modified because we have the Illusionary Attack skill
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testAttackFromUnitSkill_IllusionaryAttack () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// The kind of damage inflicted by this skill
+		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
+		unitSkill.setDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
+		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_FIGURE_COMBINED);
+		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
+
+		// Set up other lists
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Set up players
+		final PlayerDescription attackingPD = new PlayerDescription ();
+		attackingPD.setPlayerID (3);
+		attackingPD.setHuman (true);
+		
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPD, null, null, null, null);
+		
+		final DummyServerToClientConnection attackingConn = new DummyServerToClientConnection ();
+		attackingPlayer.setConnection (attackingConn);
+		
+		final PlayerDescription defendingPD = new PlayerDescription ();
+		defendingPD.setPlayerID (-2);
+		defendingPD.setHuman (false);
+		
+		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
+
+		// Set up units
+		final MemoryUnit attacker = new MemoryUnit ();
+		attacker.setUnitURN (22);
+		attacker.setOwningPlayerID (attackingPD.getPlayerID ());
+		
+		final MemoryUnit defender = new MemoryUnit ();
+		defender.setUnitURN (23);
+
+		// 2 of the attacker figures are frozen in fear so cannot attack
+		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
+		attackerWrapper.setFiguresFrozenInFear (2);
+
+		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
+		
+		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+		defenders.add (defender);
+		
+		// Set up attacker stats
+		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+
+		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has 6 figures...
+
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", defenders,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, defenders,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);	// ..with 40% chance to hit on each
+		
+		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, defenders,
+			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
+
+		// Damage type
+		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
+		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		when (damageTypeCalculations.determineSkillDamageType (attacker, "US001", fow.getMaintainedSpell (), db)).thenReturn (damageType);
+		
+		final DamageTypeUtils damageTypeUtils = mock (DamageTypeUtils.class);
+		
+		// Set up object to test
+		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
+		calc.setUnitCalculations (unitCalculations);
+		calc.setUnitSkillUtils (unitSkillUtils);
+		calc.setDamageTypeCalculations (damageTypeCalculations);
+		calc.setDamageTypeUtils (damageTypeUtils);
+		
+		// Run test
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001", players, fow, db);
+		
+		// Check results
+		assertEquals (12, dmg.getPotentialHits ().intValue ());
+		assertEquals (4, dmg.getChanceToHit ());
+		assertEquals (DamageResolutionTypeID.ILLUSIONARY, dmg.getDamageResolutionTypeID ());
+
+		// Check the message that got sent to the attacker
+		assertEquals (1, attackingConn.getMessages ().size ());
+		assertEquals (DamageCalculationMessage.class.getName (), attackingConn.getMessages ().get (0).getClass ().getName ());
+		final DamageCalculationMessage msg = (DamageCalculationMessage) attackingConn.getMessages ().get (0);
+		
+		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
+		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
+		
+		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
+	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
+	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
+	    assertEquals ("US001", data.getAttackSkillID ());
+	    assertNull (data.getAttackSpellID ());
+	    assertEquals (DamageResolutionTypeID.ILLUSIONARY, data.getDamageResolutionTypeID ());
+	    assertEquals (4, data.getAttackerFigures ().intValue ());
+	    assertEquals (3, data.getAttackStrength ().intValue ());
+	    assertEquals (12, data.getPotentialHits ().intValue ());
+	}
+	
 	/**
 	 * Tests the attackFromSpell method on a spell with fixed damage
 	 * @throws Exception If there is a problem

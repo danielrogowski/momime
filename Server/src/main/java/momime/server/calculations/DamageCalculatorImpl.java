@@ -17,6 +17,7 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitSkillComponent;
@@ -192,13 +193,20 @@ public final class DamageCalculatorImpl implements DamageCalculator
 				damageCalculationMsg.setDamageTypeID (damageType.getDamageTypeID ());
 				damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
 				
-				// Different skills deal different types of damage
+				// Different skills deal different types of damage; illusionary attack skill overrides the damage resolution type, if the defender isn't immune to it
 				final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
 	
-				if (unitSkill.getDamageResolutionTypeID () == null)
-					throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageResolutionTypeID defined");
+				if (getUnitSkillUtils ().getModifiedSkillValue (attacker.getUnit (), attacker.getUnit ().getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, defenders,
+					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0)
 				
-				damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
+					damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
+				else
+				{
+					if (unitSkill.getDamageResolutionTypeID () == null)
+						throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageResolutionTypeID defined");
+				
+					damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
+				}
 				
 				// Some skills hit just once from the whole attacking unit, some hit once per figure
 				if (unitSkill.getDamagePerFigure () == null)
@@ -245,7 +253,8 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	}
 	
 	/**
-	 * Calculates the strength of an attack coming from a spell.
+	 * Calculates the strength of an attack coming from a spell.  Note the same output from here is used to attack *all* the defenders,
+	 * so should not do anything here regarding any immunities each individual defender may have.
 	 *  
 	 * @param spell The spell being cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt

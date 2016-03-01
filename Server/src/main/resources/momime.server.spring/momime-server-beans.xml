@@ -588,6 +588,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 	</bean>
 	
 	<bean id="attackResolutionProcessing" class="momime.server.process.AttackResolutionProcessingImpl">

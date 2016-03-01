@@ -62,7 +62,8 @@ public interface DamageCalculator
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
-	 * Calculates the strength of an attack coming from a spell.
+	 * Calculates the strength of an attack coming from a spell.  Note the same output from here is used to attack *all* the defenders,
+	 * so should not do anything here regarding any immunities each individual defender may have.
 	 *  
 	 * @param spell The spell being cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt

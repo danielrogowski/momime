@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -18,18 +19,24 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.NegatedBySkill;
+import momime.common.database.NegatedByUnitID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
+import momime.common.utils.UnitSkillUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
@@ -67,6 +74,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
+	
+	/** Unit skill utils */
+	private UnitSkillUtils unitSkillUtils;
 	
 	/**
 	 * Performs one attack in combat, which may be a melee, ranged or spell attack.
@@ -170,6 +180,27 @@ public final class DamageProcessorImpl implements DamageProcessor
 				
 				steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
 			}
+
+			// If this particular defender is immune to an illusionary attack, then temporarily set the spell damage resolution type to normal
+			boolean downgradeIllusionaryAttack = false;
+			if ((commonPotentialDamageToDefenders != null) && (commonPotentialDamageToDefenders.getDamageResolutionTypeID () == DamageResolutionTypeID.ILLUSIONARY))
+			{
+				// Borrow the list of immunities from the Illusionary Attack skill - I don't want to have to define immunties to damage types in the XSD just for this
+				final Iterator<NegatedBySkill> iter = mom.getServerDB ().findUnitSkill
+					(ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack").getNegatedBySkill ().iterator ();
+				while ((!downgradeIllusionaryAttack) && (iter.hasNext ()))
+				{
+					final NegatedBySkill negateIllusionaryAttack = iter.next ();
+					if ((negateIllusionaryAttack.getNegatedByUnitID () == NegatedByUnitID.ENEMY_UNIT) && (getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (),
+						negateIllusionaryAttack.getNegatedBySkillID (), null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) >= 0))
+						
+						downgradeIllusionaryAttack = true;
+				}
+			}
+			
+			final AttackDamage spellDamageToThisDefender = downgradeIllusionaryAttack ?
+				new AttackDamage (commonPotentialDamageToDefenders, DamageResolutionTypeID.SINGLE_FIGURE) : commonPotentialDamageToDefenders;
 			
 			// Some figures being frozen in fear lasts for the duration of one attack resolution,
 			// i.e. spans multiple resolution steps so have to keep track of it out here
@@ -184,7 +215,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					(getUnitCalculations ().calculateAliveFigureCount (defender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0))
 				{
 					final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
-						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, step, commonPotentialDamageToDefenders,
+						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, step, spellDamageToThisDefender,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
 					for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)
@@ -440,5 +471,21 @@ public final class DamageProcessorImpl implements DamageProcessor
 	public final void setUnitServerUtils (final UnitServerUtils utils)
 	{
 		unitServerUtils = utils;
+	}
+
+	/**
+	 * @return Unit skill utils
+	 */
+	public final UnitSkillUtils getUnitSkillUtils ()
+	{
+		return unitSkillUtils;
+	}
+
+	/**
+	 * @param utils Unit skill utils
+	 */
+	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	{
+		unitSkillUtils = utils;
 	}
 }

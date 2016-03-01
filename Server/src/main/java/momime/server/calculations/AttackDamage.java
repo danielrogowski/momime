@@ -1,6 +1,7 @@
 package momime.server.calculations;
 
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.utils.CompareUtils;
 import momime.server.database.DamageTypeSvr;
 import momime.server.database.SpellSvr;
 
@@ -68,6 +69,24 @@ public final class AttackDamage
 	}
 	
 	/**
+	 * @param src AttackDamage object to copy value sfrom
+	 * @param aDamageResolutionTypeID Override for rules by which the damage will be applied 
+	 */
+	public AttackDamage (final AttackDamage src, final DamageResolutionTypeID aDamageResolutionTypeID)
+	{
+		super ();
+		potentialHits = src.getPotentialHits ();
+		chanceToHit = src.getChanceToHit ();
+		damageType = src.getDamageType ();
+		spell = src.getSpell ();
+		attackFromSkillID = src.getAttackFromSkillID ();
+		attackFromMagicRealmID = src.getAttackFromMagicRealmID ();
+		repetitions = src.getRepetitions ();
+
+		damageResolutionTypeID = aDamageResolutionTypeID;
+	}
+	
+	/**
 	 * @return String representation of class values
 	 */
 	@Override
@@ -77,6 +96,28 @@ public final class AttackDamage
 			((getDamageType () == null) ? "null" : getDamageType ().getDamageTypeID ()) + " as " + getDamageResolutionTypeID () + ")"; 
 	}
 
+	/**
+	 * Needed to make matchers in unit tests work correctly
+	 */
+	@Override
+	public final boolean equals (final Object o)
+	{
+		final boolean result;
+		if (o instanceof AttackDamage)
+		{
+			final AttackDamage a = (AttackDamage) o; 
+			result = (CompareUtils.safeIntegerCompare (getPotentialHits (), a.getPotentialHits ())) &&
+				(getChanceToHit () == a.getChanceToHit ()) && (getDamageType () == a.getDamageType ()) && (getSpell () == a.getSpell ()) &&
+				(CompareUtils.safeStringCompare (getAttackFromSkillID (), a.getAttackFromSkillID ())) && (getRepetitions () == a.getRepetitions ()) &&
+				(CompareUtils.safeStringCompare (getAttackFromMagicRealmID (), a.getAttackFromMagicRealmID ())) &&
+				(getDamageResolutionTypeID () == a.getDamageResolutionTypeID ());
+		}
+		else
+			result = super.equals (o);
+		
+		return result;
+	}
+	
 	/**
 	 * @return Potential maximum damage of the attack, if every hit hits and every defence fails; this can be null for unusual kinds of attack, e.g. Warp Wood
 	 */ 

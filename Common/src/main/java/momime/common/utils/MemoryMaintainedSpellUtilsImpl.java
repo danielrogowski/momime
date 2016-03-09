@@ -338,6 +338,10 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) && (getUnitUtils ().getHealableDamageTaken (unit.getUnitDamage ()) == 0))
     			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
+    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&
+    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == unit.getUnitURN ()) && (s.getCastingPlayerID () != castingPlayerID))))
+    			result = TargetSpellResult.NOTHING_TO_DISPEL;
+    		
     		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
     			result = TargetSpellResult.VALID_TARGET;
     		

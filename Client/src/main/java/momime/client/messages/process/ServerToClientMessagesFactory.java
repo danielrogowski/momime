@@ -298,4 +298,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public TreasureRewardMessageImpl createTreasureRewardMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public DispelMagicResultsMessageImpl createDispelMagicResultsMessage ();
 }

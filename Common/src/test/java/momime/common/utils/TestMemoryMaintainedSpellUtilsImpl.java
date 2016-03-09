@@ -757,15 +757,41 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Healing spell
 		spell.setSpellBookSectionID (SpellBookSectionID.HEALING_SPELLS);
 		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, 3, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
 
 		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (5);
 		assertEquals (TargetSpellResult.PERMANENTLY_DAMAGED, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, 3, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
 
 		when (unitUtils.getHealableDamageTaken (unit.getUnitDamage ())).thenReturn (5);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, 3, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+		
+		// Dispel magic
+		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
+		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+		
+		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
+		spell1.setUnitURN (unit.getUnitURN ());
+		spell1.setCastingPlayerID (1);
+		fow.getMaintainedSpell ().add (spell1);
+
+		final MemoryMaintainedSpell spell2 = new MemoryMaintainedSpell ();
+		spell2.setUnitURN (999);
+		spell2.setCastingPlayerID (2);
+		fow.getMaintainedSpell ().add (spell2);
+
+		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+
+		final MemoryMaintainedSpell spell3 = new MemoryMaintainedSpell ();
+		spell3.setUnitURN (unit.getUnitURN ());
+		spell3.setCastingPlayerID (2);
+		fow.getMaintainedSpell ().add (spell3);
+
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
 	}
 	
 	/**

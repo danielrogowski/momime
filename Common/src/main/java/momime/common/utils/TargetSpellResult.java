@@ -45,7 +45,10 @@ public enum TargetSpellResult
 	UNDAMAGED ("Undamaged", null),
 
 	/** Trying to heal a unit that has taken only permanent damage */
-	PERMANENTLY_DAMAGED ("PermanentlyDamaged", null);
+	PERMANENTLY_DAMAGED ("PermanentlyDamaged", null),
+	
+	/** Trying to dispel a target that has no enemy spells cast on it */
+	NOTHING_TO_DISPEL ("NoEnemySpellsUnit", null);
 	
 	/** languageEntryID for the text describing this kind of error for units; if null then no error will be displayed */
 	private final String unitLanguageEntryID;

@@ -23,6 +23,7 @@ import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
+import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
@@ -593,6 +594,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final TreasureRewardMessage createTreasureRewardMessage ()
 	{
 		return getFactory ().createTreasureRewardMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final DispelMagicResultsMessage createDispelMagicResultsMessage ()
+	{
+		return getFactory ().createDispelMagicResultsMessage ();
 	}
 
 	/**

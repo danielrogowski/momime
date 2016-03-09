@@ -338,7 +338,7 @@ public final class TestSpellQueueingImpl
 		// Check player got send the right error message
 		assertEquals (1, msgs3.getMessages ().size ());
 		final TextPopupMessage msg = (TextPopupMessage) msgs3.getMessages ().get (0);
-		assertEquals ("You must specify a unit target when casting unit enchantments or curses in combat.", msg.getText ());
+		assertEquals ("You must specify a unit target when casting this spell in combat.", msg.getText ());
 	}
 
 	/**

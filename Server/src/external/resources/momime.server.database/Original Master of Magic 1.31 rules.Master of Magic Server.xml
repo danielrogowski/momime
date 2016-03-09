@@ -20312,6 +20312,11 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>40</researchCost>
 		<combatCastingCost>10</combatCastingCost>
+		<spellBookSectionID>SC10</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<combatBaseDamage>30</combatBaseDamage>
+		<combatMaxDamage>150</combatMaxDamage>
+		<combatAdditionalDamagePointsPerMana>3</combatAdditionalDamagePointsPerMana>
 		<spellName>Dispel Magic True</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>
@@ -22194,6 +22199,11 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>100</researchCost>
 		<combatCastingCost>10</combatCastingCost>
+		<spellBookSectionID>SC10</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<combatBaseDamage>10</combatBaseDamage>
+		<combatMaxDamage>50</combatMaxDamage>
+		<combatAdditionalDamagePointsPerMana>1</combatAdditionalDamagePointsPerMana>
 		<spellName>Dispel Magic</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>
@@ -24847,10 +24857,19 @@
 		<languageEntry languageEntryID="SwitchOffSpellNotOurs" />
 		<languageEntry languageEntryID="WhoWillCastTitle" />
 	</languageCategory>
+	<languageCategory languageCategoryID="DispelMagic">
+		<languageEntry languageEntryID="OurDispelMagicHeading" />
+		<languageEntry languageEntryID="OurDispelMagicSuccess" />
+		<languageEntry languageEntryID="OurDispelMagicFail" />
+		<languageEntry languageEntryID="TheirDispelMagicHeading" />
+		<languageEntry languageEntryID="TheirDispelMagicSuccess" />
+		<languageEntry languageEntryID="TheirDispelMagicFail" />
+	</languageCategory>
 	<languageCategory languageCategoryID="VariableMana">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Damage" />
 		<languageEntry languageEntryID="Resistance" />
+		<languageEntry languageEntryID="Dispel" />
 	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
 		<languageEntry languageEntryID="Title" />
@@ -24870,6 +24889,7 @@
 		<languageEntry languageEntryID="UnitDead" />
 		<languageEntry languageEntryID="Undamaged" />
 		<languageEntry languageEntryID="PermanentlyDamaged" />
+		<languageEntry languageEntryID="NoEnemySpellsUnit" />
 		<languageEntry languageEntryID="CancelTitle" />
 		<languageEntry languageEntryID="CancelText" />
 	</languageCategory>

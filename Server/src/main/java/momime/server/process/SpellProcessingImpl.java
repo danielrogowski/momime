@@ -1,8 +1,12 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -51,6 +55,8 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
+import momime.common.messages.servertoclient.DispelMagicResult;
+import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -545,8 +551,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 		}
 		
-		// Attack or Healing spells
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS))
+		// Attack, healing or dispelling spells
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) ||
+			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
 		{
 			// Does the spell attack a specific unit or ALL enemy units? e.g. Flame Strike or Death Spell
 			final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
@@ -564,7 +571,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
 					getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
 						null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
-				else
+				
+				else if (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS)
 				{
 					// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
 					// and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
@@ -579,6 +587,68 @@ public final class SpellProcessingImpl implements SpellProcessing
 					getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (),
 						targetUnits, null, spell.getSpellID (), new ArrayList<DamageResolutionTypeID> (), mom.getPlayers (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+				}
+				else
+				{
+					// Get a list of all enchantments cast on all the units in the list by other wizards
+					final List<Integer> targetUnitURNs = targetUnits.stream ().map (u -> u.getUnitURN ()).collect (Collectors.toList ());
+					final List<MemoryMaintainedSpell> spellsToDispel = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+						(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
+					
+					// Build up a map so we remember which results we have to send to which players
+					final Map<Integer, List<DispelMagicResult>> resultsMap = new HashMap<Integer, List<DispelMagicResult>> ();
+					if (castingPlayer.getPlayerDescription ().isHuman ())
+						resultsMap.put (castingPlayer.getPlayerDescription ().getPlayerID (), new ArrayList<DispelMagicResult> ());
+					
+					// Now go through trying to dispel each one
+					for (final MemoryMaintainedSpell spellToDispel : spellsToDispel)
+					{
+						// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
+						final SpellSvr spellToDispelDef = mom.getServerDB ().findSpell (spellToDispel.getSpellID (), "castCombatNow (D)");
+						
+						final DispelMagicResult result = new DispelMagicResult ();
+						result.setOwningPlayerID (spellToDispel.getCastingPlayerID ());
+						result.setSpellID (spellToDispel.getSpellID ());
+						result.setCastingCost (spellToDispel.isCastInCombat () ? spellToDispelDef.getCombatCastingCost () : spellToDispelDef.getOverlandCastingCost ());
+						result.setChance (variableDamage.doubleValue () / (result.getCastingCost () + variableDamage));
+						result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + variableDamage) < variableDamage));
+						
+						if (result.isDispelled ())
+							getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+								spellToDispel.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+						
+						if (castingPlayer.getPlayerDescription ().isHuman ())
+							resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+						
+						final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "castCombatNow (D1)");
+						if (spellOwner.getPlayerDescription ().isHuman ())
+						{
+							List<DispelMagicResult> results = resultsMap.get (spellToDispel.getCastingPlayerID ());
+							if (results == null)
+							{
+								results = new ArrayList<DispelMagicResult> ();
+								resultsMap.put (spellToDispel.getCastingPlayerID (), results);
+							}
+							results.add (result);
+						}
+					}
+					
+					// Send the results to each human player invovled
+					if (resultsMap.size () > 0)
+					{
+						final DispelMagicResultsMessage msg = new DispelMagicResultsMessage ();
+						msg.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+						msg.setSpellID (spell.getSpellID ());
+						
+						for (final Entry<Integer, List<DispelMagicResult>> entry : resultsMap.entrySet ())
+						{
+							msg.getDispelMagicResult ().clear ();
+							msg.getDispelMagicResult ().addAll (entry.getValue ());
+							
+							final PlayerServerDetails entryPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castCombatNow (D2)");
+							entryPlayer.getConnection ().sendMessageToClient (msg);
+						}
+					}
 				}
 			}
 		}

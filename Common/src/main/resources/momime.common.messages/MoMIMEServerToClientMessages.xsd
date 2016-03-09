@@ -1201,6 +1201,45 @@ This is purely informational, like NTMs.  Other messages (e.g. add hero item, fu
 		</xsd:sequence>
 	</xsd:complexType>
 
+<!-- Dispel spells, new for 0.9.7.3 -->
+
+	<xsd:complexType name="dispelMagicResult">
+	    <xsd:annotation>
+    		<xsd:documentation>The result of attempting to dispel one spell.  See dispelMagicResultsMessage for more info.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="owningPlayerID" type="mps:playerID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="castingCost" type="momimecommon:spellCastingCost" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="chance" type="xsd:double" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="dispelled" type="xsd:boolean" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="dispelMagicResultsMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Lists the results of casting a Dispel Magic-type spell.  Includes a list of each spell that the wizard tried to dispel and
+whether the dispel succeeded or not for each.  This gets sent to the wizard who cast the Dispel Magic-type spell, as well as the owner of each spell.
+e.g. if wizard A tries to dispel spells cast by both wizards B + C, then wizard A will receive this message listing both results, but wizards B + C
+will receive this message only containing the 1 result applicable to them.
+
+Note this message is informational only, the client need take no action based on the dispelled spells other than to inform the player.
+Each successfully dispelled spell will separately send out the usual FOW updates to actually remove it.
+(That is why I don't put the spellURN here, because the spell would already have been removed before the client receives this message.)</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="dispelMagicResult" type="momimestoc:dispelMagicResult" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
 <!-- Map areas -->
 
 	<!-- Equivalent of TMomOverlandMoveTypeArea -->

@@ -154,9 +154,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 			msg = "Cannot specify a target when casting an overland spell.";
 
 		else if ((combatLocation != null) && (combatTargetUnitURN == null) &&
-			((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
-			 (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES)))
-			msg = "You must specify a unit target when casting unit enchantments or curses in combat.";
+			((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
+			(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) ||
+				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+			msg = "You must specify a unit target when casting this spell in combat.";
 
 		else if ((combatLocation != null) && (combatTargetLocation == null) &&
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
@@ -287,8 +288,15 @@ public final class SpellQueueingImpl implements SpellQueueing
 				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
 			// Work out unmodified casting cost
-			final int unmodifiedCombatCastingCost = (variableDamage == null) ? spell.getCombatCastingCost () :
-				spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) * spell.getCombatManaPerAdditionalDamagePoint ());
+			final int unmodifiedCombatCastingCost;
+			if (variableDamage == null)
+				unmodifiedCombatCastingCost = spell.getCombatCastingCost ();
+			else if (spell.getCombatManaPerAdditionalDamagePoint () != null)
+				unmodifiedCombatCastingCost = spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) * spell.getCombatManaPerAdditionalDamagePoint ());
+			else if (spell.getCombatAdditionalDamagePointsPerMana () != null)
+				unmodifiedCombatCastingCost = spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) / spell.getCombatAdditionalDamagePointsPerMana ());
+			else
+				throw new MomException ("requestCastSpell " + spell.getSpellID () + " sent with variable damage, but neither variable amount is defined for the spell");
 			
 			if (!combatPlayers.bothFound ())
 				msg = "You cannot cast combat spells if one side has been wiped out in the combat.";
@@ -357,9 +365,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// Do nothing - more serious message already generated
 			}
-			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
-				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
-				(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS)) &&
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
+				(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) ||
+					(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) &&
 					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
 			{
 				// (Note overland spells tend to have a lot less validation since we don't pick targets until they've completed casting - so the checks are done then)

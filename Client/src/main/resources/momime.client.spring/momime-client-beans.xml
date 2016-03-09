@@ -595,6 +595,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
+	<bean id="dispelMagicResultsMessage" class="momime.client.messages.process.DispelMagicResultsMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">

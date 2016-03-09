@@ -41,11 +41,11 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 public final class TestVariableManaUI
 {
 	/**
-	 * Tests the VariableManaUI form
+	 * Tests the VariableManaUI form, on a spell where it takes multiple MP points to raise 1 damage point
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testVariableManaUI () throws Exception
+	public final void testVariableManaUI_ManaPerAdditionalDamagePoint () throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -101,6 +101,104 @@ public final class TestVariableManaUI
 		spell.setCombatBaseDamage (5);
 		spell.setCombatMaxDamage (25);
 		spell.setCombatManaPerAdditionalDamagePoint (2);
+		spell.setCombatCastingCost (20);
+
+		// Spell casting reduction
+		final SpellCalculations spellCalc = mock (SpellCalculations.class);
+		when (spellCalc.calculateCastingCostReduction (0, spellSettings, spell, pub.getPick (), db)).thenReturn (30d);
+		
+		final SpellUtilsImpl spellUtils = new SpellUtilsImpl ();
+		spellUtils.setSpellCalculations (spellCalc);
+		
+		// Need combatUI to tell whether it is an overland or combat cast
+		final CombatUI combatUI = new CombatUI ();
+		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/VariableManaUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final VariableManaUI box = new VariableManaUI ();
+		box.setVariableManaLayout (layout);
+		box.setUtils (utils);
+		box.setLanguageHolder (langHolder);
+		box.setLanguageChangeMaster (langMaster);
+		box.setTextUtils (new TextUtilsImpl ());
+		box.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		box.setClient (client);
+		box.setSpellUtils (spellUtils);
+		box.setMediumFont (CreateFontsForTests.getMediumFont ());
+		box.setCombatUI (combatUI);
+		box.setSpellBeingTargetted (spell);
+		
+		// Display form		
+		box.setModal (false);
+		box.setVisible (true);
+		Thread.sleep (5000);
+		box.setVisible (false);
+	}
+
+	/**
+	 * Tests the VariableManaUI form, on a spell where a single MP point raises multiple damage points
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testVariableManaUI_AdditionalDamagePointsPerMana () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+		
+		// Mock entries from the language XML
+		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("VariableMana", "Title")).thenReturn ("Additional Power");
+		when (lang.findCategoryEntry ("VariableMana", "Damage")).thenReturn ("VALUE dispel power");
+		
+		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
+		manaProduction.setProductionTypeSuffix ("MP");
+		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguage (lang);
+		
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+
+		// Player
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		// Session description
+		final SpellSetting spellSettings = new SpellSetting ();
+		
+		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setSpellSetting (spellSettings);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
+		when (client.getSessionDescription ()).thenReturn (sd);
+		
+		// Client db
+		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Session utils
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
+		
+		// Example spell; so for 20 MP we get 30 attack; for each additional +1 MP we get +3 attack; for maximum of 60 MP giving 150 attack
+		final Spell spell = new Spell ();
+		spell.setCombatBaseDamage (30);
+		spell.setCombatMaxDamage (150);
+		spell.setCombatAdditionalDamagePointsPerMana (3);
 		spell.setCombatCastingCost (20);
 
 		// Spell casting reduction

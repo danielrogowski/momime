@@ -2828,6 +2828,10 @@ Only map squares protected by Heavenly Light are unaffected.</combatAreaEffectHe
 		<spellBookSectionName>Healing Spells</spellBookSectionName>
 		<spellTargetPrompt>Select a friendly unit as the target for your SPELL_NAME spell.</spellTargetPrompt>
 	</spellBookSection>
+	<spellBookSection spellBookSectionID="SC10">
+		<spellBookSectionName>Dispelling spells</spellBookSectionName>
+		<spellTargetPrompt>Select any target with enchantments or curses cast by another wizard.</spellTargetPrompt>
+	</spellBookSection>
 	<spellBookSection spellBookSectionID="SC98">
 		<spellBookSectionName>Research Spells</spellBookSectionName>
 	</spellBookSection>
@@ -6202,6 +6206,26 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>Select who, or which item, will cast a spell</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="DispelMagic">
+		<languageEntry languageEntryID="OurDispelMagicHeading">
+			<languageEntryText>You attempted to dispel:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OurDispelMagicSuccess">
+			<languageEntryText>PLAYER_NAME's SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - dispelled</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="OurDispelMagicFail">
+			<languageEntryText>PLAYER_NAME's SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - dispel failed</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TheirDispelMagicHeading">
+			<languageEntryText>PLAYER_NAME attempted to dispel:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TheirDispelMagicSuccess">
+			<languageEntryText>SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - dispelled</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TheirDispelMagicFail">
+			<languageEntryText>SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - dispel failed</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="VariableMana">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Additional Power</languageEntryText>
@@ -6211,6 +6235,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="Resistance">
 			<languageEntryText>-VALUE resistance</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Dispel">
+			<languageEntryText>VALUE dispel power</languageEntryText>
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="SpellTargetting">
@@ -6266,6 +6293,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		</languageEntry>
 		<languageEntry languageEntryID="PermanentlyDamaged">
 			<languageEntryText>This unit has suffered permanent damage that cannot be healed inside combat.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="NoEnemySpellsUnit">
+			<languageEntryText>This unit has no enchantments or curses cast by an enemy wizard for you to try to dispel.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="CancelTitle">
 			<languageEntryText>Cancel Spell</languageEntryText>
@@ -7217,3 +7247,4 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<normalKey>N</normalKey>
 	</shortcutKey>
 </momimelang:languageDatabase>
+

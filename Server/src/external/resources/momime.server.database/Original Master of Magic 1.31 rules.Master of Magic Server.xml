@@ -20374,6 +20374,8 @@
 		<researchCost>160</researchCost>
 		<overlandCastingCost>20</overlandCastingCost>
 		<combatCastingCost>20</combatCastingCost>
+		<spellBookSectionID>SC09</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<spellName>Word of Recall</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
 	</spell>
@@ -22228,6 +22230,9 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>350</researchCost>
 		<combatCastingCost>20</combatCastingCost>
+		<spellBookSectionID>SC09</spellBookSectionID>
+		<attackSpellCombatTarget>S</attackSpellCombatTarget>
+		<spellValidUnitTarget targetMagicRealmID="LTH" />
 		<spellName>Recall Hero</spellName>
 		<aiResearchOrder>4</aiResearchOrder>
 	</spell>

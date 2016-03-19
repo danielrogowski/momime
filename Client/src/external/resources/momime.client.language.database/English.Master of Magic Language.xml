@@ -2825,7 +2825,7 @@ Only map squares protected by Heavenly Light are unaffected.</combatAreaEffectHe
 		<spellTargetPrompt>Select an enemy unit as the target for your SPELL_NAME spell.</spellTargetPrompt>
 	</spellBookSection>
 	<spellBookSection spellBookSectionID="SC09">
-		<spellBookSectionName>Healing Spells</spellBookSectionName>
+		<spellBookSectionName>Special Unit Spells</spellBookSectionName>
 		<spellTargetPrompt>Select a friendly unit as the target for your SPELL_NAME spell.</spellTargetPrompt>
 	</spellBookSection>
 	<spellBookSection spellBookSectionID="SC10">

@@ -679,7 +679,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			// enough to make a difference as to whether there are any valid targets 
 			else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () == null) &&
 				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
-				(sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.HEALING_SPELLS)))
+				(sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)))
 			{
 				boolean found = false;
 				final Iterator<MemoryUnit> iter = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().iterator ();
@@ -799,7 +799,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			else if ((getCastType () == SpellCastType.COMBAT) &&
 				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
 				(sectionID == SpellBookSectionID.SUMMONING) ||
-				(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.HEALING_SPELLS)) &&
+				(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
 					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 				
 				getCombatUI ().setSpellBeingTargetted (spell);

@@ -552,6 +552,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />

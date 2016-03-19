@@ -79,6 +79,9 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	/** Delta being moved in Y direction */
 	private int directionY;
 	
+	/** Show as animation or not? */
+	private boolean anim;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -88,46 +91,53 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
 		log.trace ("Entering start");
+		
+		// If the move is only 1 cell, show as an animation; if its a further move (like Recall Hero) then just do it instantly
+		anim = (getCoordinateSystemUtils ().findDistanceBetweenXCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), getMoveFrom ().getX (), getMoveTo ().getX ()) <= 1) &&
+			(getCoordinateSystemUtils ().findDistanceBetweenYCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), getMoveFrom ().getY (), getMoveTo ().getY ()) <= 1);
 
-		// Work out the direction of travel
-		final int direction = getCoordinateSystemUtils ().determineDirectionTo (getClient ().getSessionDescription ().getOverlandMapSize (),
-			getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveTo ().getX (), getMoveTo ().getY ());
-		
-		// Split the direction into X and Y components
-		switch (direction)
+		if (anim)
 		{
-			case 2:
-			case 3:
-			case 4:
-				directionX = 1;
-				break;
-				
-			case 6:
-			case 7:
-			case 8:
-				directionX = -1;
-				break;
+			// Work out the direction of travel
+			final int direction = getCoordinateSystemUtils ().determineDirectionTo (getClient ().getSessionDescription ().getOverlandMapSize (),
+				getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveTo ().getX (), getMoveTo ().getY ());
 			
-			default:
-				directionX = 0;
-		}
-		
-		switch (direction)
-		{
-			case 8:
-			case 1:
-			case 2:
-				directionY = -1;
-				break;
+			// Split the direction into X and Y components
+			switch (direction)
+			{
+				case 2:
+				case 3:
+				case 4:
+					directionX = 1;
+					break;
+					
+				case 6:
+				case 7:
+				case 8:
+					directionX = -1;
+					break;
 				
-			case 4:
-			case 5:
-			case 6:
-				directionY = 1;
-				break;
+				default:
+					directionX = 0;
+			}
 			
-			default:
-				directionY = 0;
+			switch (direction)
+			{
+				case 8:
+				case 1:
+				case 2:
+					directionY = -1;
+					break;
+					
+				case 4:
+				case 5:
+				case 6:
+					directionY = 1;
+					break;
+				
+				default:
+					directionY = 0;
+			}
 		}
 		
 		// Remove the units from the map cell they're leaving
@@ -145,15 +155,20 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		if (cityView != null)
 			cityView.unitsChanged ();
 		
-		// We need this repeatedly so just work it out once
-		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "MoveUnitStackOverlandMessageImpl.start");
-		tickCount = Math.max (overlandMapTileSet.getTileWidth (), overlandMapTileSet.getTileHeight ());
-		
-		// Start at the starting cell - note it being at the start point means it looks no different, so is why we don't do a repaint yet
-		currentX = getMoveFrom ().getX () * overlandMapTileSet.getTileWidth ();
-		currentY = getMoveFrom ().getY () * overlandMapTileSet.getTileHeight ();
-		
-		getOverlandMapUI ().setUnitStackMoving (this);
+		if (anim)
+		{
+			// We need this repeatedly so just work it out once
+			overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "MoveUnitStackOverlandMessageImpl.start");
+			tickCount = Math.max (overlandMapTileSet.getTileWidth (), overlandMapTileSet.getTileHeight ());
+			
+			// Start at the starting cell - note it being at the start point means it looks no different, so is why we don't do a repaint yet
+			currentX = getMoveFrom ().getX () * overlandMapTileSet.getTileWidth ();
+			currentY = getMoveFrom ().getY () * overlandMapTileSet.getTileHeight ();
+			
+			getOverlandMapUI ().setUnitStackMoving (this);
+		}
+		else
+			tickCount = 0;
 		
 		log.trace ("Exiting start");
 	}
@@ -172,7 +187,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	@Override
 	public final double getDuration ()
 	{
-		return 1;
+		return anim ? 1 : 0;
 	}
 	
 	/**

@@ -6,6 +6,12 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
@@ -23,11 +29,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 /**
  * Server sends this to client when a combat is over to take those units out of combat.
@@ -78,12 +79,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 	{
 		log.trace ("Entering start: " + getUnitURN () + ", " + getCombatLocation () + ", " + getCombatLocation () + ", " + getCombatSide () + ", " + getSummonedBySpellID ()); 
 
-		// First just add it
 		unit = getUnitUtils ().findUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
-		unit.setCombatPosition (getCombatPosition ());
-		unit.setCombatLocation (getCombatLocation ());
-		unit.setCombatHeading (getCombatHeading ());
-		unit.setCombatSide (getCombatSide ());
 		
 		// See if there is an animation defined in the graphics XML file
 		anim = null;
@@ -92,6 +88,8 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 			final SpellGfx spell = getGraphicsDB ().findSpell (getSummonedBySpellID (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 			if (spell.getCombatCastAnimation () != null)
 			{
+				final MapCoordinates2DEx animPosition = (MapCoordinates2DEx) ((getCombatPosition () != null) ? getCombatPosition () : unit.getCombatPosition ());
+
 				anim = getGraphicsDB ().findAnimation (spell.getCombatCastAnimation (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 				
 				final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
@@ -100,13 +98,15 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 				final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
 				
 				getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-					(getCombatPosition ().getX (), getCombatPosition ().getY (), combatMapTileSet),
+					(animPosition.getX (), animPosition.getY (), combatMapTileSet),
 				adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-					(getCombatPosition ().getX (), getCombatPosition ().getY (), combatMapTileSet)));
+					(animPosition.getX (), animPosition.getY (), combatMapTileSet)));
 
 				getCombatUI ().setCombatCastAnimationFrame (0);
 				getCombatUI ().setCombatCastAnimation (anim);
-				getCombatUI ().setCombatCastAnimationInFront (false);
+				
+				// Summoning circle anim appears behind; recall hero anim appears in front
+				getCombatUI ().setCombatCastAnimationInFront (getCombatPosition () == null);
 			}
 			
 			// See if there's a sound effect defined in the graphics XML file
@@ -171,12 +171,19 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 	{
 		log.trace ("Entering finish");
 
-		if (getCombatPosition () != null)
+		// Remove the anim
+		if (anim != null)
 		{
-			// Remove the anim
 			getCombatUI ().setCombatCastAnimation (null);
 			getCombatUI ().getCombatCastAnimationPositions ().clear ();
+		}
 		
+		if (getCombatPosition () == null)
+			
+			// Stop drawing the unit
+			getCombatUI ().getUnitToDrawAtEachLocation () [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = null;
+		else
+		{
 			// Show the unit
 			getCombatUI ().getUnitToDrawAtEachLocation () [getCombatPosition ().getY ()] [getCombatPosition ().getX ()] = unit;
 	
@@ -184,10 +191,17 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 			unit.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),
 				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 				null, null, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()));
-			
-			// Prompt for it to move
-			getCombatMapProcessing ().moveToFrontOfList (unit);
 		}
+
+		// Finally just update the values
+		unit.setCombatPosition (getCombatPosition ());
+		unit.setCombatLocation (getCombatLocation ());
+		unit.setCombatHeading (getCombatHeading ());
+		unit.setCombatSide (getCombatSide ());
+
+		// Prompt for it to move
+		if (getCombatPosition () != null)
+			getCombatMapProcessing ().moveToFrontOfList (unit);
 		
 		log.trace ("Exiting finish");
 	}

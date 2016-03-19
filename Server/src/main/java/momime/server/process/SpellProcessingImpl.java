@@ -73,6 +73,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
@@ -118,6 +119,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/** Combat processing */
 	private CombatProcessing combatProcessing;
@@ -552,7 +556,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 		
 		// Attack, healing or dispelling spells
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) ||
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
 			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
 		{
 			// Does the spell attack a specific unit or ALL enemy units? e.g. Flame Strike or Death Spell
@@ -572,7 +576,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
 						null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 				
-				else if (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS)
+				else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
 				{
 					// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
 					// and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
@@ -588,9 +592,30 @@ public final class SpellProcessingImpl implements SpellProcessing
 						targetUnits, null, spell.getSpellID (), new ArrayList<DamageResolutionTypeID> (), mom.getPlayers (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
+				else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
+				{
+					// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
+					final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (castingPlayer.getPlayerDescription ().getPlayerID (),
+						CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+					
+					if (summoningCircleLocation != null)
+					{
+						// Recall spells - first take the units out of combat
+						for (final MemoryUnit tu : targetUnits)
+							getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
+								mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
+								combatLocation, null, null, null, castingSide, spell.getSpellID (), mom.getServerDB ());
+						
+						// Now teleport it back to our summoning circle
+						getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
+							(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
+							mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+					}
+				}
 				else
 				{
-					// Get a list of all enchantments cast on all the units in the list by other wizards
+					// Dispel magic or similar - first get a list of all enchantments cast on all the units in the list by other wizards
 					final List<Integer> targetUnitURNs = targetUnits.stream ().map (u -> u.getUnitURN ()).collect (Collectors.toList ());
 					final List<MemoryMaintainedSpell> spellsToDispel = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
 						(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
@@ -939,6 +964,22 @@ public final class SpellProcessingImpl implements SpellProcessing
 		fogOfWarMidTurnChanges = obj;
 	}
 
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
+	}
+	
 	/**
 	 * @return Combat processing
 	 */

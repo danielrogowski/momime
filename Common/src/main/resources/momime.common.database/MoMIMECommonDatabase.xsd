@@ -1836,8 +1836,8 @@ about what a spell must be targetted on.  e.g. Unit enchantments must be targett
 				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC09"><xsd:annotation>
-				<xsd:documentation>Healing spells</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="HEALING_SPELLS" /></xsd:appinfo>
+				<xsd:documentation>Special spells targetted at our own units; if combatBaseDamage is set then its a healing spell, otherwise its a recall spell; spellValidUnitTarget entries apply</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_UNIT_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC10"><xsd:annotation>
 				<xsd:documentation>Dispelling spells</xsd:documentation>

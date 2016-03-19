@@ -1220,7 +1220,10 @@
 		<combatCastAnimation>CONFUSION</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_011_000 - Confusion.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP047" />
+	<spell spellID="SP047">
+		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP048" />
 	<spell spellID="SP049">
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
@@ -1728,7 +1731,10 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_033_000 - SummoningCircle.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP204" />
-	<spell spellID="SP205" />
+	<spell spellID="SP205">
+		<combatCastAnimation>RECALL_HERO</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_033_000 - SummoningCircle.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP206">
 		<overlandEnchantmentImageFile>/momime.client.graphics/spells/SP206/overlandEnchantment.png</overlandEnchantmentImageFile>
 		<spellMusicFile>/momime.client.music/MUSIC_040 - ResearchedASpell-DetectMagic-Awareness-GreatUnsummoning-CharmOfLife.mp3</spellMusicFile>
@@ -66213,6 +66219,24 @@
 		<frame>/momime.client.graphics/spells/SP030/cast-frame14.png</frame>
 		<frame>/momime.client.graphics/spells/SP030/cast-frame15.png</frame>
 		<frame>/momime.client.graphics/spells/SP030/cast-frame16.png</frame>
+	</animation>
+	<animation animationID="RECALL_HERO">
+		<animationDescription>Whisp of hero being removed from combat</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>-15</combatCastOffsetX>
+		<combatCastOffsetY>-24</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP205/cast-frame12.png</frame>
 	</animation>
 	<animation animationID="TERRAIN_ARCANUS_OCEAN_11111111">
 		<animationDescription>Arcanus Ocean/Grass border tile, direction bitmask 11111111</animationDescription>

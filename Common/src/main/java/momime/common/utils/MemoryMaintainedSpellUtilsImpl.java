@@ -306,7 +306,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else if (unit.getStatus () != UnitStatusID.ALIVE)
     		result = TargetSpellResult.UNIT_DEAD;
     	
-    	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS)) &&
+    	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
     		(unit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY; 
 
@@ -332,10 +332,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
     		
-    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) && (getUnitUtils ().getTotalDamageTaken (unit.getUnitDamage ()) == 0)) 
+    		// combatBaseDamage being not null is what identifies a special unit spell to be a healing spell
+    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null) && (getUnitUtils ().getTotalDamageTaken (unit.getUnitDamage ()) == 0)) 
     			result = TargetSpellResult.UNDAMAGED;
 
-    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.HEALING_SPELLS) && (getUnitUtils ().getHealableDamageTaken (unit.getUnitDamage ()) == 0))
+    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null) && (getUnitUtils ().getHealableDamageTaken (unit.getUnitDamage ()) == 0))
     			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
     		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&

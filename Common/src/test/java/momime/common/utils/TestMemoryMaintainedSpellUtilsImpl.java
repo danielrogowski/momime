@@ -662,7 +662,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			(spell, null, 1, null, unit, players, fow, db));
 		
 		// Healing enemy unit
-		spell.setSpellBookSectionID (SpellBookSectionID.HEALING_SPELLS);
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
 			(spell, null, 1, null, unit, players, fow, db));
 		
@@ -755,7 +755,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			(spell, new MapCoordinates3DEx (20, 11, 1), 2, 3, unit, players, fow, db));
 		
 		// Healing spell
-		spell.setSpellBookSectionID (SpellBookSectionID.HEALING_SPELLS);
+		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell
 			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
 

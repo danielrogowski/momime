@@ -382,6 +382,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 					
 				getHeroItemsUI ().refreshHeroes ();
+			
+			// If it was our unit dying in combat, jump to next unit to move
+			getCombatMapProcessing ().selectNextUnitToMoveCombat ();
 		}
 		
 		log.trace ("Exiting killUnit");

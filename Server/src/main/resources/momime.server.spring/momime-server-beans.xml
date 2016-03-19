@@ -562,6 +562,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

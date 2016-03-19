@@ -179,9 +179,12 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		}
 		
 		if (getCombatPosition () == null)
-			
+		{
 			// Stop drawing the unit
 			getCombatUI ().getUnitToDrawAtEachLocation () [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = null;
+			getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit);
+			getCombatMapProcessing ().selectNextUnitToMoveCombat ();
+		}
 		else
 		{
 			// Show the unit

@@ -149,6 +149,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
+
+	/** Starting and ending combats */
+	private CombatStartAndEnd combatStartAndEnd;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -392,6 +395,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else
 			throw new MomException ("castCombatNow: Casting player is neither the attacker nor defender");
 		
+		// Set this if we need to call combatEnded at the end
+		PlayerServerDetails winningPlayer = null;
+		
 		// Combat enchantments
 		if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 		{
@@ -601,7 +607,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					if (summoningCircleLocation != null)
 					{
-						// Recall spells - first take the units out of combat
+						// Recall spells - first take the unit(s) out of combat
 						for (final MemoryUnit tu : targetUnits)
 							getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
 								mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
@@ -611,6 +617,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 						getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
 							(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+						
+						// If we recalled our last remaining unit(s) out of combat, then we lose
+						if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+							winningPlayer = (castingPlayer == defendingPlayer) ? attackingPlayer : defendingPlayer;
 					}
 				}
 				else
@@ -742,6 +752,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
+		
+		// Did casting the spell result in winning/losing the combat?
+		if (winningPlayer != null)
+			getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 
 		log.trace ("Exiting castCombatNow");
 	}
@@ -1122,5 +1136,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Starting and ending combats
+	 */
+	public final CombatStartAndEnd getCombatStartAndEnd ()
+	{
+		return combatStartAndEnd;
+	}
+
+	/**
+	 * @param cse Starting and ending combats
+	 */
+	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
+	{
+		combatStartAndEnd = cse;
 	}
 }

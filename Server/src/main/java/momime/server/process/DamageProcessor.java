@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
 import momime.server.MomSessionVariables;
 import momime.server.database.SpellSvr;
@@ -47,4 +48,13 @@ public interface DamageProcessor
 		final SpellSvr spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param combatLocation Location that combat is taking place
+	 * @param combatSide Which side to count
+	 * @param trueUnits List of true units
+	 * @return How many units are still left alive in combat on the requested side
+	 */
+	public int countUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
+		final List<MemoryUnit> trueUnits);
 }

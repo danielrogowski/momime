@@ -329,7 +329,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param trueUnits List of true units
 	 * @return How many units are still left alive in combat on the requested side
 	 */
-	final int countUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
+	@Override
+	public final int countUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
 		final List<MemoryUnit> trueUnits)
 	{
 		log.trace ("Entering countUnitsInCombat: " + combatLocation + ", " + combatSide);

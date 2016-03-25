@@ -883,7 +883,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 							}
 							
 							// NB. There are no overland unit curses
-							else if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+							else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+								(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS))
 							{
 								// Find our units at this map location
 								final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();

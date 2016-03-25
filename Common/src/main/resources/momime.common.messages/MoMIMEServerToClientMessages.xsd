@@ -958,6 +958,12 @@ Sends the complete spell object so the client can just add it as-is.</xsd:docume
     							<xsd:documentation>Whether the spell is newly cast (and so show animation for it), or has merely come into our view.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellTransient" type="xsd:boolean">
+						    <xsd:annotation>
+    							<xsd:documentation>True for spells that have no lasting effect (e.g. Earth Lore or Word of Recall), but we still need to notify the client so
+they can show an animation for it and sort out the target spell NTM.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

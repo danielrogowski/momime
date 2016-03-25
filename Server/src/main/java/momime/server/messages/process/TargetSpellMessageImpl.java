@@ -1,6 +1,7 @@
 package momime.server.messages.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -37,6 +38,7 @@ import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 
 /**
  * Client sends this to specify where they want to cast a spell they've completed casting overland.
@@ -64,6 +66,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -150,7 +155,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				}				
 			}
 			
-			else if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+				(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS))
 			{
 				// Find the unit we're aiming at
 				unit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
@@ -165,17 +171,23 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					
 					if (reason == TargetSpellResult.VALID_TARGET)
 					{
-						// Looks ok but weird if at this point we can't find a free skill ID
-						final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
-							(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getUnitURN ());
-						if ((unitSkillIDs == null) || (unitSkillIDs.size () == 0))
-							error = "Unit is supposedly a valid target, yet couldn't find any unitSkillIDs to use";
-						else
+						// If its a unit enchantment, now pick which skill ID we'll actually get
+						if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 						{
-							// Yay
-							error = null;
-							unitSkillID = unitSkillIDs.get (getRandomUtils ().nextInt (unitSkillIDs.size ()));
+							final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+								(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getUnitURN ());
+							if ((unitSkillIDs == null) || (unitSkillIDs.size () == 0))
+								error = "Unit is supposedly a valid target, yet couldn't find any unitSkillIDs to use";
+							else
+							{
+								// Yay
+								error = null;
+								unitSkillID = unitSkillIDs.get (getRandomUtils ().nextInt (unitSkillIDs.size ()));
+							}
 						}
+						else
+							// Special unit spells don't need to pick a skill ID, so they're just OK
+							error = null;
 					}
 					else
 						// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
@@ -199,10 +211,41 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		}
 		else
 		{
-			// Create a building or a spell?
-			if (spell.getBuildingID () == null)
+			if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
 			{
-				// Normal spell that generates some city or unit effect
+				// Transient spell that performs some immediate action, then the temporary untargetted spell on the server gets removed
+				// So the spell never does get added to any clients
+				// Set values on server - it'll be removed below, but we need to set these to make the visibility checks in sendTransientSpellToClients () work correctly 
+				maintainedSpell.setUnitURN (getUnitURN ());
+				maintainedSpell.setCityLocation (getCityLocation ());
+				maintainedSpell.setUnitSkillID (unitSkillID);
+				maintainedSpell.setCitySpellEffectID (citySpellEffectID);
+				
+				// Just remove it - don't even bother to check if any clients can see it
+				getMemoryMaintainedSpellUtils ().removeSpellURN (maintainedSpell.getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+				
+				// Tell the client to stop asking about targetting the spell, and show an animation for it - need to send this to all players that can see it!
+				getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+
+				// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
+				final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (sender.getPlayerDescription ().getPlayerID (),
+					CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+				
+				if (summoningCircleLocation != null)
+				{
+					final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+					targetUnits.add (unit);
+					
+					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, sender, (MapCoordinates3DEx) unit.getUnitLocation (),
+						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+				}
+			}
+			else if (spell.getBuildingID () == null)
+			{
+				// Enchantment or curse spell that generates some city or unit effect
 				// Set values on server
 				maintainedSpell.setUnitURN (getUnitURN ());
 				maintainedSpell.setCityLocation (getCityLocation ());
@@ -386,6 +429,22 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
 	{
 		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
 	}
 	
 	/**

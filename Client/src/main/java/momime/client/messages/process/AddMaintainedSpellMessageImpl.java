@@ -138,7 +138,8 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			}
 		}
 		
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
+		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
+			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS))
 		{
 			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
 			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
@@ -262,7 +263,8 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	{
 		log.trace ("Entering processOneUpdate: " + getMaintainedSpell ().getSpellID ());
 		
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getMaintainedSpell ());
+		if (!isSpellTransient ())
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getMaintainedSpell ());
 		
 		try
 		{

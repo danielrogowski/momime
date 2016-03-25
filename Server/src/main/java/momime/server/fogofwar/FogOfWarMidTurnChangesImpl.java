@@ -528,6 +528,45 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	}
 
 	/**
+	 * Sends transient spell casts to human players who are in range to see it.  This is purely for purposes of them displaying the animation,
+	 * the spell is then discarded and no actual updates take place on the server or client as a result of this, other than that the client stops asking the caster to target it.
+	 * 
+	 * @param trueTerrain True terrain map
+	 * @param trueUnits True list of units
+	 * @param transientSpell The spell being cast
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void sendTransientSpellToClients (final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits,
+		final MemoryMaintainedSpell transientSpell, final List<PlayerServerDetails> players,
+		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering sendTransientSpellToClients: Player ID " + transientSpell.getCastingPlayerID () + ", " + transientSpell.getSpellID ());
+
+		// Build the message ready to send it to whoever can see the spell
+		final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
+		msg.setMaintainedSpell (transientSpell);
+		msg.setNewlyCast (true);
+		msg.setSpellTransient (true);
+
+		// Check which players can see the spell
+		for (final PlayerServerDetails player : players)
+			if ((player.getPlayerDescription ().isHuman ()) && (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn
+				(transientSpell, trueTerrain, trueUnits, player, db, fogOfWarSettings)))
+				
+				player.getConnection ().sendMessageToClient (msg);
+
+		log.trace ("Exiting sendTransientSpellToClients");
+	}
+	
+	/**
 	 * Checks who can see a maintained spell that already exists on the server, adding it into the memory
 	 * of anyone who can see it and also sending a message to update the client
 	 *
@@ -559,6 +598,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
 		msg.setMaintainedSpell (trueSpell);
 		msg.setNewlyCast (true);		// Spells added via this method must be new, or just being targetted, so either way from the client's point of view they must be newly cast
+		msg.setSpellTransient (false);
 
 		// Check which players can see the spell
 		for (final PlayerServerDetails player : players)
@@ -1184,6 +1224,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 						{
 							final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
 							msg.setMaintainedSpell (trueSpell);
+							msg.setNewlyCast (false);
+							msg.setSpellTransient (false);
 							player.getConnection ().sendMessageToClient (msg);
 						}
 

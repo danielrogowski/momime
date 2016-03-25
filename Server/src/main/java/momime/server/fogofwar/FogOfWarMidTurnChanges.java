@@ -136,6 +136,26 @@ public interface FogOfWarMidTurnChanges
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
+	 * Sends transient spell casts to human players who are in range to see it.  This is purely for purposes of them displaying the animation,
+	 * the spell is then discarded and no actual updates take place on the server or client as a result of this, other than that the client stops asking the caster to target it.
+	 * 
+	 * @param trueTerrain True terrain map
+	 * @param trueUnits True list of units
+	 * @param transientSpell The spell being cast
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void sendTransientSpellToClients (final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits,
+		final MemoryMaintainedSpell transientSpell, final List<PlayerServerDetails> players,
+		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
+	
+	/**
 	 * Checks who can see a maintained spell that already exists on the server, adding it into the memory
 	 * of anyone who can see it and also sending a message to update the client
 	 *

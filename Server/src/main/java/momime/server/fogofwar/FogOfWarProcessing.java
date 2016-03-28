@@ -8,9 +8,12 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfFogOfWarStates;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -24,6 +27,19 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public interface FogOfWarProcessing
 {
+	/**
+	 * Marks that we can see all cells within a particular radius
+	 * @param fogOfWarArea Player's fog of war area
+	 * @param trueTerrain True overland map terrain
+	 * @param sys Overland map coordinate system
+	 * @param x X coordinate of map cell to update
+	 * @param y Y coordinate of map cell to update
+	 * @param plane Plane of map cell to update
+	 * @param radius Visible radius (negative = do nothing, 0 = this cell only, 1 = 1 ring around this cell, and so on)
+	 */
+	public void canSeeRadius (final MapVolumeOfFogOfWarStates fogOfWarArea, final MapVolumeOfMemoryGridCells trueTerrain,
+		final CoordinateSystem sys, final int x, final int y, final int plane, final int radius);
+	
 	/**
 	 * This routine handles when the area that a player can see changes; it:
 	 * 1) Checks what the player can now see

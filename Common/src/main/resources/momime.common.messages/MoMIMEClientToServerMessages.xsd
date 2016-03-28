@@ -546,8 +546,8 @@ this indicates the damage chosen when casting the spell, beteween baseDamage and
 				<xsd:extension base="mp:clientToServerMessage">
 		        	<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
-						<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="overlandTargetUnitURN" type="momimemsgs:unitURN" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="overlandTargetLocation" type="map:mapCoordinates3D" />
 		        	</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

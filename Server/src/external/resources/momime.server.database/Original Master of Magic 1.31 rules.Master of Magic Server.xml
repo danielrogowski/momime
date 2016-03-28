@@ -19958,9 +19958,10 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>250</researchCost>
 		<overlandCastingCost>30</overlandCastingCost>
+		<spellBookSectionID>SC10</spellBookSectionID>
+		<spellScoutingRange>6</spellScoutingRange>
 		<spellName>Earth Lore</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
-		<spellScoutingRange>6</spellScoutingRange>
 	</spell>
 	<spell spellID="SP011">
 		<spellRealm>MB04</spellRealm>
@@ -19981,13 +19982,13 @@
 		<researchCost>350</researchCost>
 		<overlandCastingCost>75</overlandCastingCost>
 		<spellBookSectionID>SC03</spellBookSectionID>
+		<spellScoutingRange>5</spellScoutingRange>
 		<spellHasCityEffect citySpellEffectID="SE012" />
 		<spellUpkeep productionTypeID="RE09">
 			<undoubledProductionValue>1</undoubledProductionValue>
 		</spellUpkeep>
 		<spellName>Nature's Eye</spellName>
 		<aiResearchOrder>5</aiResearchOrder>
-		<spellScoutingRange>5</spellScoutingRange>
 	</spell>
 	<spell spellID="SP013">
 		<spellRealm>MB04</spellRealm>
@@ -20312,7 +20313,7 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>40</researchCost>
 		<combatCastingCost>10</combatCastingCost>
-		<spellBookSectionID>SC10</spellBookSectionID>
+		<spellBookSectionID>SC11</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<combatBaseDamage>30</combatBaseDamage>
 		<combatMaxDamage>150</combatMaxDamage>
@@ -20789,6 +20790,7 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>100</researchCost>
 		<overlandCastingCost>40</overlandCastingCost>
+		<spellBookSectionID>SC10</spellBookSectionID>
 		<spellName>Corruption</spellName>
 		<aiResearchOrder>5</aiResearchOrder>
 	</spell>
@@ -22201,7 +22203,7 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>100</researchCost>
 		<combatCastingCost>10</combatCastingCost>
-		<spellBookSectionID>SC10</spellBookSectionID>
+		<spellBookSectionID>SC11</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<combatBaseDamage>10</combatBaseDamage>
 		<combatMaxDamage>50</combatMaxDamage>
@@ -24895,6 +24897,8 @@
 		<languageEntry languageEntryID="Undamaged" />
 		<languageEntry languageEntryID="PermanentlyDamaged" />
 		<languageEntry languageEntryID="NoEnemySpellsUnit" />
+		<languageEntry languageEntryID="CannotSeeTarget" />
+		<languageEntry languageEntryID="MustTargetLand" />
 		<languageEntry languageEntryID="CancelTitle" />
 		<languageEntry languageEntryID="CancelText" />
 	</languageCategory>
@@ -25029,9 +25033,11 @@
 		<languageEntry languageEntryID="CreateArtifact" />
 		<languageEntry languageEntryID="CreateArtifactLastTurn" />
 		<languageEntry languageEntryID="TargetSpell" />
-		<languageEntry languageEntryID="TargetSpellChosen" />
+		<languageEntry languageEntryID="TargetSpellChosenNamed" />
+		<languageEntry languageEntryID="TargetSpellChosenUnnamed" />
 		<languageEntry languageEntryID="TargetSpellCancelled" />
-		<languageEntry languageEntryID="TargetSpellChosenLastTurn" />
+		<languageEntry languageEntryID="TargetSpellChosenLastTurnNamed" />
+		<languageEntry languageEntryID="TargetSpellChosenLastTurnUnnamed" />
 		<languageEntry languageEntryID="TargetSpellCancelledLastTurn" />
 		<languageEntry languageEntryID="NodesCategory" />
 		<languageEntry languageEntryID="EmptyNodeCaptured" />

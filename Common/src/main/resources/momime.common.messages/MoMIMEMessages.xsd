@@ -486,6 +486,7 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
     				<xsd:documentation>This *does* resolve out across the full area of the aura, so will be set for all squares covered by the aura, not just the actual node tile.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="corrupted" type="xsd:boolean" />
         </xsd:sequence>
 	</xsd:complexType>
 

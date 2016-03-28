@@ -230,6 +230,8 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		}
 		
 		// Run through each tile
+		final BufferedImage corruptedImage = getUtils ().loadImage ("/momime.client.graphics/overland/tileTypes/corrupted.png");
+		
 		final MapCoordinates2DEx mapCoords = new MapCoordinates2DEx (startX, startY);
 		for (int x = 0; x < countX; x++)
 		{
@@ -275,6 +277,11 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 					}
+					
+					// Corruption
+					if ((gc.getTerrainData () != null) && (gc.getTerrainData ().isCorrupted ()))
+						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+							g [frameNo].drawImage (corruptedImage, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 				}
 				
 				// Use proper routine to move map coordinates so it correctly handles wrapping edges (startX might = 58 on a width 60 map)

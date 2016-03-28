@@ -237,6 +237,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
+		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	

@@ -24,16 +24,20 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
+import momime.common.database.TileType;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 
 /**
@@ -881,5 +885,54 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect2.setCastingPlayerID (1);
 		spells.add (effect2);
 		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
+	}
+	
+	/**
+	 * Tests the isCityValidTargetForSpell method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsLocationValidTargetForSpell () throws Exception
+	{
+		// Mock database entries
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileType tileType = new TileType ();
+		when (db.findTileType ("TT01", "isLocationValidTargetForSpell")).thenReturn (tileType);
+		
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+
+		// Cannot see the location
+		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		
+		// Unknown tile type
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		
+		// Unspecified land/water
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("TT01");
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		
+		// Now its a land tile
+		tileType.setLand (true);
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		
+		// Scouting spell
+		terrainData.setTileTypeID (null);
+		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
+		spell.setSpellScoutingRange (1);
+		
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
 	}
 }

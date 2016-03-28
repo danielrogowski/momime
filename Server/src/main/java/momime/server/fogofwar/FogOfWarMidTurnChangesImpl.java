@@ -556,10 +556,10 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		msg.setNewlyCast (true);
 		msg.setSpellTransient (true);
 
-		// Check which players can see the spell
+		// Check which players can see the spell; force the caster to be able to see it for casting Earth Lore in black areas
 		for (final PlayerServerDetails player : players)
-			if ((player.getPlayerDescription ().isHuman ()) && (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn
-				(transientSpell, trueTerrain, trueUnits, player, db, fogOfWarSettings)))
+			if ((player.getPlayerDescription ().isHuman ()) && ((transientSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ()) ||
+				(getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (transientSpell, trueTerrain, trueUnits, player, db, fogOfWarSettings))))
 				
 				player.getConnection ().sendMessageToClient (msg);
 

@@ -63,6 +63,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
+import momime.common.MomException;
 import momime.common.ai.ZoneAI;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Shortcut;
@@ -847,7 +848,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 									{
 										final TargetSpellMessage msg = new TargetSpellMessage ();
 										msg.setSpellID (spell.getSpellID ());
-										msg.setCityLocation (mapLocation);
+										msg.setOverlandTargetLocation (mapLocation);
 										getClient ().getServerConnection ().sendMessageToServer (msg);
 										
 										// Close out the "Target Spell" right hand panel
@@ -902,6 +903,42 @@ public final class OverlandMapUI extends MomClientFrameUI
 									unitRowDisplay.setVisible (true);
 								}
 							}
+
+							else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
+							{
+								// Use common routine to do all the validation
+								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isLocationValidTargetForSpell (spell, mapLocation,
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getClientDB ());
+								
+								if (validTarget == TargetSpellResult.VALID_TARGET)
+								{
+									final TargetSpellMessage msg = new TargetSpellMessage ();
+									msg.setSpellID (spell.getSpellID ());
+									msg.setOverlandTargetLocation (mapLocation);
+									getClient ().getServerConnection ().sendMessageToServer (msg);
+									
+									// Close out the "Target Spell" right hand panel
+									getOverlandMapProcessing ().updateMovementRemaining ();
+								}
+								else if (validTarget.getLocationLanguageEntryID () != null)
+								{
+									final SpellLang spellLang = getLanguage ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
+									final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+									
+									final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getLocationLanguageEntryID ()).replaceAll
+										("SPELL_NAME", (spellName != null) ? spellName : getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
+									
+									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+									msg.setTitleLanguageCategoryID ("SpellTargetting");
+									msg.setTitleLanguageEntryID ("Title");
+									msg.setText (text);
+									msg.setVisible (true);												
+								}
+							}
+							
+							else
+								throw new MomException ("Clicking on the overland map to target a spell, but don't know what to do with spells from section " + spell.getSpellBookSectionID ());
 						}
 						
 						// Left clicking on a space to move a stack of units to - can only do this if its our turn

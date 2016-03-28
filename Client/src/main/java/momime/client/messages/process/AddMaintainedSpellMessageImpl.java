@@ -206,6 +206,54 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 					}
 			}
 		}
+
+		else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
+		{
+			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
+				(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
+			{
+				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+				
+				// Redraw the NTMs
+				getNewTurnMessagesUI ().languageChanged ();
+			}
+			
+			// Is there an animation to display for it?
+			final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
+			
+			anim = null;
+			if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getCityLocation () != null) && (isNewlyCast ()))
+			{
+				anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
+
+				if (!getMaintainedSpell ().isCastInCombat ())
+				{
+					// Show anim on OverlandMapUI
+					final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
+
+					final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
+					final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
+
+					getOverlandMapUI ().setOverlandCastAnimationX (adjustX + (overlandMapTileSet.getTileWidth () * getMaintainedSpell ().getCityLocation ().getX ()));
+					getOverlandMapUI ().setOverlandCastAnimationY (adjustY + (overlandMapTileSet.getTileHeight () * getMaintainedSpell ().getCityLocation ().getY ()));
+					
+					getOverlandMapUI ().setOverlandCastAnimationFrame (0);
+					getOverlandMapUI ().setOverlandCastAnimation (anim);
+				}
+			
+				// See if there's a sound effect defined in the graphics XML file
+				if (spellGfx.getSpellSoundFile () != null)
+					try
+					{
+						getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
+			}
+		}
 		
 		// If no spell animation, then just add it right away
 		if (!animatedByOtherFrame)

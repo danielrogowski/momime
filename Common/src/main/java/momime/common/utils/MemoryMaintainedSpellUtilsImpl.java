@@ -24,11 +24,14 @@ import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 
 /**
@@ -451,7 +454,55 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	log.trace ("Exiting isCityValidTargetForSpell = " + result);
     	return result;
 	}
-		
+
+	/**
+	 * Checks whether the specified spell can be targetted at the specified map location
+	 * 
+	 * @param spell Spell being cast
+	 * @param targetLocation Location we want to cast the spell at 
+	 * @param map Known terrain
+	 * @param fow Area we can currently see
+	 * @param db Lookup lists built over the XML database
+	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
+	 */
+	@Override
+	public final TargetSpellResult isLocationValidTargetForSpell (final Spell spell, final MapCoordinates3DEx targetLocation,
+		final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException
+	{
+    	log.trace ("Entering isLocationValidTargetForSpell: " + spell.getSpellID () + ", " + targetLocation);
+
+    	final TargetSpellResult result;
+
+    	// Visibility spells can always be target anywhere
+    	if (spell.getSpellScoutingRange () != null)
+    		result = TargetSpellResult.VALID_TARGET;
+    	else
+    	{
+    		// Corruption spell must be targetted on land that we can see
+	    	final OverlandMapTerrainData terrainData = map.getPlane ().get (targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+	    	
+	    	if (fow.getPlane ().get (targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()) != FogOfWarStateID.CAN_SEE)
+	    		result = TargetSpellResult.CANNOT_SEE_TARGET;
+	    	
+	    	else if ((terrainData == null) || (terrainData.getTileTypeID () == null))
+	    		result = TargetSpellResult.MUST_TARGET_LAND;
+	    	
+	    	else
+	    	{
+	    		final Boolean isLand = db.findTileType (terrainData.getTileTypeID (), "isLocationValidTargetForSpell").isLand ();
+	    		if ((isLand == null) || (!isLand))
+	    			result = TargetSpellResult.MUST_TARGET_LAND;
+	    		
+	    		else
+	    			result = TargetSpellResult.VALID_TARGET;
+	    	}
+    	}
+    	
+    	log.trace ("Exiting isLocationValidTargetForSpell = " + result);
+    	return result;
+	}
+	
 	/**
 	 * @return Spell utils
 	 */

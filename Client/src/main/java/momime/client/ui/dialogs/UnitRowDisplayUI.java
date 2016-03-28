@@ -209,7 +209,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 					{
 						final TargetSpellMessage msg = new TargetSpellMessage ();
 						msg.setSpellID (getTargetSpellID ());
-						msg.setUnitURN (unit.getUnitURN ());
+						msg.setOverlandTargetUnitURN (unit.getUnitURN ());
 						getClient ().getServerConnection ().sendMessageToServer (msg);
 						
 						// Close out this window and the "Target Spell" right hand panel

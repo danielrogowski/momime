@@ -3,10 +3,14 @@ package momime.common.database;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
 
+import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MapAreaOfFogOfWarStates;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfCombatTiles;
+import momime.common.messages.MapRowOfFogOfWarStates;
 import momime.common.messages.MapRowOfMemoryGridCells;
+import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomCombatTile;
@@ -131,6 +135,31 @@ public final class GenerateTestData
 		return map;
 	}
 
+	/**
+	 * @param sys Overland map coordinate system
+	 * @return FOW area prepopulated with "Never Seen"
+	 */
+	public final static MapVolumeOfFogOfWarStates createFogOfWarArea (final CoordinateSystem sys)
+	{
+		final MapVolumeOfFogOfWarStates map = new MapVolumeOfFogOfWarStates ();
+		for (int plane = 0; plane < sys.getDepth (); plane++)
+		{
+			final MapAreaOfFogOfWarStates area = new MapAreaOfFogOfWarStates ();
+			for (int y = 0; y < sys.getHeight (); y++)
+			{
+				final MapRowOfFogOfWarStates row = new MapRowOfFogOfWarStates ();
+				for (int x = 0; x < sys.getWidth (); x++)
+					row.getCell ().add (FogOfWarStateID.NEVER_SEEN);
+
+				area.getRow ().add (row);
+			}
+
+			map.getPlane ().add (area);
+		}
+
+		return map;
+	}
+	
 	/**
 	 * @return Demo MoM combat map-like coordinate system with a 60x40 diamond non-wrapping map
 	 */

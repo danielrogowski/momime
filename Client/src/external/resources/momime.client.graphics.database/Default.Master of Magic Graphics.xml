@@ -1101,7 +1101,10 @@
 	<spell spellID="SP009">
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP010" />
+	<spell spellID="SP010">
+		<combatCastAnimation>EARTH_LORE</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP011">
 		<combatCastAnimation>CRACKS_CALL</combatCastAnimation>
 		<combatCastAnimationInFront>false</combatCastAnimationInFront>
@@ -1331,7 +1334,10 @@
 	<spell spellID="SP084">
 		<spellMusicFile>/momime.client.music/MUSIC_013 - Common summoning spell.mp3</spellMusicFile>
 	</spell>
-	<spell spellID="SP085" />
+	<spell spellID="SP085">
+		<combatCastAnimation>CORRUPTION</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_103_000 - Corruption.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP086">
 		<combatCastAnimation>CHAOS_WHIRLWIND</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_030_000 - WallOfFire-ChaosRift.mp3</spellSoundFile>
@@ -66237,6 +66243,61 @@
 		<frame>/momime.client.graphics/spells/SP205/cast-frame10.png</frame>
 		<frame>/momime.client.graphics/spells/SP205/cast-frame11.png</frame>
 		<frame>/momime.client.graphics/spells/SP205/cast-frame12.png</frame>
+	</animation>
+	<animation animationID="EARTH_LORE">
+		<animationDescription>Earth lore big green expanding ring</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<overlandCastOffsetX>-111</overlandCastOffsetX>
+		<overlandCastOffsetY>-100</overlandCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame12.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame13.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame14.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame15.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame16.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame17.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame18.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame19.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame20.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame21.png</frame>
+		<frame>/momime.client.graphics/spells/SP010/cast-frame22.png</frame>
+	</animation>
+	<animation animationID="CORRUPTION">
+		<animationDescription>Corruption expanding then contracting blue/black circle</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<overlandCastOffsetX>-19</overlandCastOffsetX>
+		<overlandCastOffsetY>-19</overlandCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP085/cast-frame1.png</frame>
 	</animation>
 	<animation animationID="TERRAIN_ARCANUS_OCEAN_11111111">
 		<animationDescription>Arcanus Ocean/Grass border tile, direction bitmask 11111111</animationDescription>

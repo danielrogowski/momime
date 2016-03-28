@@ -139,30 +139,43 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 				// Cast a city/unit enchantment/curse, so need to pick a target for it
 				case TARGET_SPELL:
 					String targetLanguageEntryID = "TargetSpell";
+					boolean includeTarget = false;
 					if (isTargettingCancelled ())
 						targetLanguageEntryID = targetLanguageEntryID + "Cancelled";
 					else if ((getTargettedCity () != null) || (getTargettedUnitURN () != null))
+					{
 						targetLanguageEntryID = targetLanguageEntryID + "Chosen";
+						includeTarget = true;
+					}
 					
 					if (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN)
 						targetLanguageEntryID = targetLanguageEntryID + "LastTurn";
 					
-					text = getLanguage ().findCategoryEntry ("NewTurnMessages", targetLanguageEntryID).replaceAll
-						("SPELL_NAME", (spellName != null) ? spellName : getSpellID ());
-										
+					// Does the target have a name, or is it a nameless location?
+					String target = null;
 					if (getTargettedCity () != null)
 					{
 						final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 							(getTargettedCity ().getZ ()).getRow ().get (getTargettedCity ().getY ()).getCell ().get (getTargettedCity ().getX ()).getCityData ();
 						if (cityData != null)
-							text = text.replaceAll ("TARGET", cityData.getCityName ());
+							target = cityData.getCityName ();
 					}
 					else if (getTargettedUnitURN () != null)
 					{
 						final MemoryUnit unit = getUnitUtils ().findUnitURN (getTargettedUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 						if (unit != null)
-							text = text.replaceAll ("TARGET", getUnitClientUtils ().getUnitName (unit, UnitNameType.A_UNIT_NAME));
+							target = getUnitClientUtils ().getUnitName (unit, UnitNameType.A_UNIT_NAME);
 					}
+
+					if (includeTarget)
+						targetLanguageEntryID = targetLanguageEntryID + ((target != null) ? "Named" : "Unnamed");
+					
+					// Finally know which language entry to look up
+					text = getLanguage ().findCategoryEntry ("NewTurnMessages", targetLanguageEntryID).replaceAll
+						("SPELL_NAME", (spellName != null) ? spellName : getSpellID ());
+					
+					if ((includeTarget) && (target != null))
+						text = text.replaceAll ("TARGET", target);
 					
 					break;
 					

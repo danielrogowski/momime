@@ -50,6 +50,12 @@ public final class TestFogOfWarDuplicationImpl
 		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
 		assertNotNull (destination.getTerrainData ());
 		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
+		
+		// Corrupted?
+		sourceData.setCorrupted (true);
+		assertTrue (dup.copyTerrainAndNodeAura (source, destination));
+		assertTrue (destination.getTerrainData ().isCorrupted ());
+		assertFalse (dup.copyTerrainAndNodeAura (source, destination));
 
 		// Tile type
 		sourceData.setTileTypeID ("A");

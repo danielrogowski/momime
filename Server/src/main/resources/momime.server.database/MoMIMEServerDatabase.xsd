@@ -1265,7 +1265,6 @@ where a number of different heroes may be summoned at random, but some may have 
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="spellName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="100" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="aiResearchOrder" type="momimesvr:aiResearchOrder" nxe:label="AI Research Order" nxe:gridwidth="100" />
-					<xsd:element minOccurs="0" maxOccurs="1" name="spellScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

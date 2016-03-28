@@ -2829,6 +2829,10 @@ Only map squares protected by Heavenly Light are unaffected.</combatAreaEffectHe
 		<spellTargetPrompt>Select a friendly unit as the target for your SPELL_NAME spell.</spellTargetPrompt>
 	</spellBookSection>
 	<spellBookSection spellBookSectionID="SC10">
+		<spellBookSectionName>Special Overland Spells</spellBookSectionName>
+		<spellTargetPrompt>Select any map location as the target for your SPELL_NAME spell.</spellTargetPrompt>
+	</spellBookSection>
+	<spellBookSection spellBookSectionID="SC11">
 		<spellBookSectionName>Dispelling spells</spellBookSectionName>
 		<spellTargetPrompt>Select any target with enchantments or curses cast by another wizard.</spellTargetPrompt>
 	</spellBookSection>
@@ -2897,8 +2901,8 @@ Sprites are small, flying forest creatures that can hurl tiny magic attacks over
 	</spell>
 	<spell spellID="SP010">
 		<spellName>Earth Lore</spellName>
-		<spellDescription>Fully reveals terrain, terrain specials, and cities on all squares in a targeted 'map window.'</spellDescription>
-		<spellHelpText>Fully reveals terrain, terrain specials, cities and armies on all squares in a targeted 'map window.'</spellHelpText>
+		<spellDescription>Fully reveals terrain, terrain specials, and cities on all squares in a targeted 13x13 area.</spellDescription>
+		<spellHelpText>Fully reveals terrain, terrain specials, cities and armies on all squares in a targeted 13x13 area.</spellHelpText>
 	</spell>
 	<spell spellID="SP011">
 		<spellName>Cracks Call</spellName>
@@ -6297,6 +6301,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="NoEnemySpellsUnit">
 			<languageEntryText>This unit has no enchantments or curses cast by an enemy wizard for you to try to dispel.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CannotSeeTarget">
+			<languageEntryText>SPELL_NAME can only be targetted at locations you can see.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="MustTargetLand">
+			<languageEntryText>SPELL_NAME can only be targetted at land tiles.</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="CancelTitle">
 			<languageEntryText>Cancel Spell</languageEntryText>
 		</languageEntry>
@@ -6673,14 +6683,20 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<languageEntry languageEntryID="TargetSpell">
 			<languageEntryText>You have completed casting SPELL_NAME and need to choose a target for it</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="TargetSpellChosen">
+		<languageEntry languageEntryID="TargetSpellChosenNamed">
 			<languageEntryText>You have completed casting SPELL_NAME and cast it on TARGET</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TargetSpellChosenUnnamed">
+			<languageEntryText>You have completed casting SPELL_NAME and have chosen a target for it</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="TargetSpellCancelled">
 			<languageEntryText>You have completed casting SPELL_NAME but cancelled it rather than choosing a target for it</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="TargetSpellChosenLastTurn">
+		<languageEntry languageEntryID="TargetSpellChosenLastTurnNamed">
 			<languageEntryText>Last turn you completed casting SPELL_NAME and cast it on TARGET</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="TargetSpellChosenLastTurnUnnamed">
+			<languageEntryText>Last turn you completed casting SPELL_NAME and chose a target for it</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="TargetSpellCancelledLastTurn">
 			<languageEntryText>Last turn you completed casting SPELL_NAME but cancelled it rather than choosing a target for it</languageEntryText>

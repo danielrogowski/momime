@@ -152,7 +152,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	 * @param plane Plane of map cell to update
 	 * @param radius Visible radius (negative = do nothing, 0 = this cell only, 1 = 1 ring around this cell, and so on)
 	 */
-	final void canSeeRadius (final MapVolumeOfFogOfWarStates fogOfWarArea, final MapVolumeOfMemoryGridCells trueTerrain,
+	@Override
+	public final void canSeeRadius (final MapVolumeOfFogOfWarStates fogOfWarArea, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CoordinateSystem sys, final int x, final int y, final int plane, final int radius)
 	{
 		// First the centre square }

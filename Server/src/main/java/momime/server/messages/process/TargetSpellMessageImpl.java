@@ -25,6 +25,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
@@ -39,6 +40,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
+import momime.server.fogofwar.FogOfWarProcessing;
 
 /**
  * Client sends this to specify where they want to cast a spell they've completed casting overland.
@@ -69,6 +71,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
+	
+	/** Main FOW update routine */
+	private FogOfWarProcessing fogOfWarProcessing;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -114,29 +119,29 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				(spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
 			{
 				// Find the city we're aiming at
-				if (getUnitURN () != null)
-					error = "You chose a unit as the target for a city enchantment";
+				if (getOverlandTargetUnitURN () != null)
+					error = "You chose a unit as the target for a city enchantment or curse";
 				
-				else if (getCityLocation () == null)
-					error = "You didn't provide a target for a city enchantment";
+				else if (getOverlandTargetLocation () == null)
+					error = "You didn't provide a target for a city enchantment or curse";
 				
-				else if ((getCityLocation ().getX () < 0) || (getCityLocation ().getY () < 0) || (getCityLocation ().getZ () < 0) ||
-					(getCityLocation ().getX () >= mom.getSessionDescription ().getOverlandMapSize ().getWidth ()) ||
-					(getCityLocation ().getY () >= mom.getSessionDescription ().getOverlandMapSize ().getHeight ()) ||
-					(getCityLocation ().getZ () >= mom.getServerDB ().getPlanes ().size ()))
+				else if ((getOverlandTargetLocation ().getX () < 0) || (getOverlandTargetLocation ().getY () < 0) || (getOverlandTargetLocation ().getZ () < 0) ||
+					(getOverlandTargetLocation ().getX () >= mom.getSessionDescription ().getOverlandMapSize ().getWidth ()) ||
+					(getOverlandTargetLocation ().getY () >= mom.getSessionDescription ().getOverlandMapSize ().getHeight ()) ||
+					(getOverlandTargetLocation ().getZ () >= mom.getServerDB ().getPlanes ().size ()))
 					
 					error = "The coordinates you are trying to aim a city spell at are off the edge of the map";
 				else
 				{
 					// Common routine used by both the client and server does the guts of the validation work
 					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-						spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getCityLocation (),
+						spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getOverlandTargetLocation (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
 					if (reason == TargetSpellResult.VALID_TARGET)
 					{
 						// Looks ok but weird if at this point we can't find a free skill ID
 						final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
-							(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getCityLocation ());
+							(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getOverlandTargetLocation ());
 						if ((spell.getBuildingID () == null) && ((citySpellEffectIDs == null) || (citySpellEffectIDs.size () == 0)))
 							error = "City is supposedly a valid target, yet couldn't find any citySpellEffectIDs to use or a building to create";
 						else
@@ -159,39 +164,77 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS))
 			{
 				// Find the unit we're aiming at
-				unit = getUnitUtils ().findUnitURN (getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-				if (unit == null)
-					error = "Could not find the unit you're trying to target the spell on";
+				if (getOverlandTargetLocation () != null)
+					error = "You chose a location as the target for a unit spell";
+				
+				else if (getOverlandTargetUnitURN () == null)
+					error = "You didn't provide a target for a unit spell";
+				
+				else
+				{
+					unit = getUnitUtils ().findUnitURN (getOverlandTargetUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+					if (unit == null)
+						error = "Could not find the unit you're trying to target the spell on";
+					else
+					{
+						// Common routine used by both the client and server does the guts of the validation work
+						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+							(spell, null, sender.getPlayerDescription ().getPlayerID (), null, unit,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
+						if (reason == TargetSpellResult.VALID_TARGET)
+						{
+							// If its a unit enchantment, now pick which skill ID we'll actually get
+							if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+							{
+								final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+									(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getOverlandTargetUnitURN ());
+								if ((unitSkillIDs == null) || (unitSkillIDs.size () == 0))
+									error = "Unit is supposedly a valid target, yet couldn't find any unitSkillIDs to use";
+								else
+								{
+									// Yay
+									error = null;
+									unitSkillID = unitSkillIDs.get (getRandomUtils ().nextInt (unitSkillIDs.size ()));
+								}
+							}
+							else
+								// Special unit spells don't need to pick a skill ID, so they're just OK
+								error = null;
+						}
+						else
+							// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
+							error = "This unit is not a valid target for this spell for reason " + reason;
+					}
+				}
+			}
+			
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
+			{
+				// Just validate that we got a location
+				if (getOverlandTargetUnitURN () != null)
+					error = "You chose a unit as the target for a special overland spell";
+				
+				else if (getOverlandTargetLocation () == null)
+					error = "You didn't provide a target for a special overland spell";
+			
+				else if ((getOverlandTargetLocation ().getX () < 0) || (getOverlandTargetLocation ().getY () < 0) || (getOverlandTargetLocation ().getZ () < 0) ||
+						(getOverlandTargetLocation ().getX () >= mom.getSessionDescription ().getOverlandMapSize ().getWidth ()) ||
+						(getOverlandTargetLocation ().getY () >= mom.getSessionDescription ().getOverlandMapSize ().getHeight ()) ||
+						(getOverlandTargetLocation ().getZ () >= mom.getServerDB ().getPlanes ().size ()))
+						
+						error = "The coordinates you are trying to aim a special overland spell at are off the edge of the map";
+				
 				else
 				{
 					// Common routine used by both the client and server does the guts of the validation work
-					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, sender.getPlayerDescription ().getPlayerID (), null, unit,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-					
+					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isLocationValidTargetForSpell (spell, (MapCoordinates3DEx) getOverlandTargetLocation (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (), mom.getServerDB ());
 					if (reason == TargetSpellResult.VALID_TARGET)
-					{
-						// If its a unit enchantment, now pick which skill ID we'll actually get
-						if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
-						{
-							final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
-								(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, sender.getPlayerDescription ().getPlayerID (), getUnitURN ());
-							if ((unitSkillIDs == null) || (unitSkillIDs.size () == 0))
-								error = "Unit is supposedly a valid target, yet couldn't find any unitSkillIDs to use";
-							else
-							{
-								// Yay
-								error = null;
-								unitSkillID = unitSkillIDs.get (getRandomUtils ().nextInt (unitSkillIDs.size ()));
-							}
-						}
-						else
-							// Special unit spells don't need to pick a skill ID, so they're just OK
-							error = null;
-					}
+						error = null;
 					else
 						// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
-						error = "This unit is not a valid target for this spell for reason " + reason;
+						error = "This city is not a valid target for this spell for reason " + reason;
 				}
 			}
 			
@@ -211,13 +254,13 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		}
 		else
 		{
-			if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
+			if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS))
 			{
 				// Transient spell that performs some immediate action, then the temporary untargetted spell on the server gets removed
 				// So the spell never does get added to any clients
 				// Set values on server - it'll be removed below, but we need to set these to make the visibility checks in sendTransientSpellToClients () work correctly 
-				maintainedSpell.setUnitURN (getUnitURN ());
-				maintainedSpell.setCityLocation (getCityLocation ());
+				maintainedSpell.setUnitURN (getOverlandTargetUnitURN ());
+				maintainedSpell.setCityLocation (getOverlandTargetLocation ());
 				maintainedSpell.setUnitSkillID (unitSkillID);
 				maintainedSpell.setCitySpellEffectID (citySpellEffectID);
 				
@@ -228,27 +271,52 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
-				// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
-				final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (sender.getPlayerDescription ().getPlayerID (),
-					CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
-				
-				if (summoningCircleLocation != null)
+				if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
 				{
-					final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
-					targetUnits.add (unit);
+					// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
+					final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (sender.getPlayerDescription ().getPlayerID (),
+						CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 					
-					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, sender, (MapCoordinates3DEx) unit.getUnitLocation (),
-						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
-						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+					if (summoningCircleLocation != null)
+					{
+						final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+						targetUnits.add (unit);
+						
+						getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, sender, (MapCoordinates3DEx) unit.getUnitLocation (),
+							(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
+							mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+					}
+				}
+				
+				else if (spell.getSpellScoutingRange () == null)
+				{
+					// Corruption
+					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(getOverlandTargetLocation ().getZ ()).getRow ().get (getOverlandTargetLocation ().getY ()).getCell ().get (getOverlandTargetLocation ().getX ()).getTerrainData ();
+					terrainData.setCorrupted (true);
+					
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+				}
+				
+				else
+				{
+					// Earth lore
+					getFogOfWarProcessing ().canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getSessionDescription ().getOverlandMapSize (), getOverlandTargetLocation ().getX (), getOverlandTargetLocation ().getY (),
+						getOverlandTargetLocation ().getZ (), spell.getSpellScoutingRange ());
+					
+					getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), sender, mom.getPlayers (),
+						"earthLore", mom.getSessionDescription (), mom.getServerDB ());
 				}
 			}
 			else if (spell.getBuildingID () == null)
 			{
 				// Enchantment or curse spell that generates some city or unit effect
 				// Set values on server
-				maintainedSpell.setUnitURN (getUnitURN ());
-				maintainedSpell.setCityLocation (getCityLocation ());
+				maintainedSpell.setUnitURN (getOverlandTargetUnitURN ());
+				maintainedSpell.setCityLocation (getOverlandTargetLocation ());
 				maintainedSpell.setUnitSkillID (unitSkillID);
 				maintainedSpell.setCitySpellEffectID (citySpellEffectID);
 				
@@ -310,18 +378,18 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				// Is the building that the spell is adding the same as what was being constructed?  If so then reset construction.
 				// (Casting Wall of Stone in a city that's building City Walls).
 				final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+					(getOverlandTargetLocation ().getZ ()).getRow ().get (getOverlandTargetLocation ().getY ()).getCell ().get (getOverlandTargetLocation ().getX ()).getCityData ();
 							
 				if ((cityData != null) && (spell.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ())))
 				{
 					cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), (MapCoordinates3DEx) cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+						mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
 				
 				// First create the building(s) on the server
 				getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
-					mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
+					mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
 					mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Remove the maintained spell on the server (clients would never have gotten it to begin with)
@@ -445,6 +513,22 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
 	{
 		fogOfWarMidTurnMultiChanges = obj;
+	}
+
+	/**
+	 * @return Main FOW update routine
+	 */
+	public final FogOfWarProcessing getFogOfWarProcessing ()
+	{
+		return fogOfWarProcessing;
+	}
+
+	/**
+	 * @param obj Main FOW update routine
+	 */
+	public final void setFogOfWarProcessing (final FogOfWarProcessing obj)
+	{
+		fogOfWarProcessing = obj;
 	}
 	
 	/**

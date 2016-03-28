@@ -136,7 +136,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					// Common routine used by both the client and server does the guts of the validation work
 					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 						spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getOverlandTargetLocation (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
 					if (reason == TargetSpellResult.VALID_TARGET)
 					{
 						// Looks ok but weird if at this point we can't find a free skill ID

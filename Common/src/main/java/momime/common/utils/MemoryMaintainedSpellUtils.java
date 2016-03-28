@@ -135,13 +135,14 @@ public interface MemoryMaintainedSpellUtils
 	 * @param castingPlayerID Player casting the spell
 	 * @param cityLocation City to cast the spell on
 	 * @param map Known terrain
+	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
 	public TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
-		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildingsList,
+		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
 		final CommonDatabase db) throws RecordNotFoundException; 
 
 	/**

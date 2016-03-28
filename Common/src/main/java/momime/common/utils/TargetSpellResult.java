@@ -51,7 +51,7 @@ public enum TargetSpellResult
 	NOTHING_TO_DISPEL ("NoEnemySpellsUnit", null, null),
 	
 	/** Spell can only be targetted against locations that we can actually see */
-	CANNOT_SEE_TARGET (null, null, "CannotSeeTarget"),
+	CANNOT_SEE_TARGET (null, "CannotSeeCity", "CannotSeeLocation"),
 	
 	/** Spell can only be targetted at land tiles */
 	MUST_TARGET_LAND (null, null, "MustTargetLand");

@@ -24897,7 +24897,8 @@
 		<languageEntry languageEntryID="Undamaged" />
 		<languageEntry languageEntryID="PermanentlyDamaged" />
 		<languageEntry languageEntryID="NoEnemySpellsUnit" />
-		<languageEntry languageEntryID="CannotSeeTarget" />
+		<languageEntry languageEntryID="CannotSeeLocation" />
+		<languageEntry languageEntryID="CannotSeeCity" />
 		<languageEntry languageEntryID="MustTargetLand" />
 		<languageEntry languageEntryID="CancelTitle" />
 		<languageEntry languageEntryID="CancelText" />

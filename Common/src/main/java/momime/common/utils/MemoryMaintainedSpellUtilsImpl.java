@@ -403,6 +403,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param castingPlayerID Player casting the spell
 	 * @param cityLocation City to cast the spell on
 	 * @param map Known terrain
+	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
@@ -410,7 +411,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 */
 	@Override
 	public final TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
-		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildingsList,
+		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
 		final CommonDatabase db) throws RecordNotFoundException
 	{
     	log.trace ("Entering isCityValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID);
@@ -420,7 +421,10 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
     	
     	// Do easy checks first
-    	if (cityData == null)
+    	if (fow.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()) != FogOfWarStateID.CAN_SEE)
+    		result = TargetSpellResult.CANNOT_SEE_TARGET;
+
+    	else if (cityData == null)
     		result = TargetSpellResult.NO_CITY_HERE;
     	
     	else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) && (cityData.getCityOwnerID () != castingPlayerID))
@@ -474,7 +478,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 
     	final TargetSpellResult result;
 
-    	// Visibility spells can always be target anywhere
+    	// Visibility spells can always be targeted anywhere, even in blackness where we've never seen before
     	if (spell.getSpellScoutingRange () != null)
     		result = TargetSpellResult.VALID_TARGET;
     	else

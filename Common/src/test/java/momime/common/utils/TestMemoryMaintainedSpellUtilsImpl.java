@@ -819,18 +819,21 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fow = GenerateTestData.createFogOfWarArea (sys);
 		
 		// Our city
 		final OverlandMapCityData city3 = new OverlandMapCityData ();
 		city3.setCityPopulation (10000);
 		city3.setCityOwnerID (1);
 		map.getPlane ().get (0).getRow ().get (20).getCell ().get (23).setCityData (city3);
+		fow.getPlane ().get (0).getRow ().get (20).getCell ().set (23, FogOfWarStateID.CAN_SEE);
 		
 		// Enemy city
 		final OverlandMapCityData city4 = new OverlandMapCityData ();
 		city4.setCityPopulation (10000);
 		city4.setCityOwnerID (2);
 		map.getPlane ().get (0).getRow ().get (20).getCell ().get (24).setCityData (city4);
+		fow.getPlane ().get (0).getRow ().get (20).getCell ().set (24, FogOfWarStateID.CAN_SEE);
 		
 		// Existing spells
 		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
@@ -843,22 +846,26 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setMemoryBuildingUtils (memoryBuildingUtils);
 		
-		// No city, or can't see location
-		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, buildings, db));
+		// Can't see location
+		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, fow, buildings, db));
+		
+		// No city
+		fow.getPlane ().get (0).getRow ().get (20).getCell ().set (20, FogOfWarStateID.CAN_SEE);
+		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, fow, buildings, db));
 		
 		// Wrong owner
-		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell (spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
-		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (24, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell (spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (24, 20, 0), map, fow, buildings, db));
 		
 		// No spell effects defined
-		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
 		
 		// Spell that creates a building
 		enchantment.setBuildingID ("BL01");
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
 		
 		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (23, 20, 0), "BL01")).thenReturn (new MemoryBuilding ());
-		assertEquals (TargetSpellResult.CITY_ALREADY_HAS_BUILDING, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.CITY_ALREADY_HAS_BUILDING, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
 		
 		// Spell that creates one of two spell effects
 		enchantment.setBuildingID (null);
@@ -868,7 +875,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			effect.setCitySpellEffectID ("CSE0" + n);
 			enchantment.getSpellHasCityEffect ().add (effect);
 		}
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
 		
 		final MemoryMaintainedSpell effect1 = new MemoryMaintainedSpell ();
 		effect1.setCityLocation (new MapCoordinates3DEx (23, 20, 0));
@@ -876,7 +883,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect1.setCitySpellEffectID ("CSE01");
 		effect1.setCastingPlayerID (1);
 		spells.add (effect1);
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
 
 		final MemoryMaintainedSpell effect2 = new MemoryMaintainedSpell ();
 		effect2.setCityLocation (new MapCoordinates3DEx (23, 20, 0));
@@ -884,7 +891,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect2.setCitySpellEffectID ("CSE02");
 		effect2.setCastingPlayerID (1);
 		spells.add (effect2);
-		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, buildings, db));
+		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
 	}
 	
 	/**

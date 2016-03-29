@@ -18,7 +18,7 @@ public enum TargetSpellResult
 	NO_SPELL_EFFECT_IDS_DEFINED ("NoUnitSpellEffectIDsDefined", "NoCitySpellEffectIDsDefined", null),
 
 	/** Spell has spellEffectIDs defined, but they're all already cast on this city or unit */
-	ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS ("AlreadyHasAllPossibleUnitSpellEffects", "AlreadyHasAllPossibleCitySpellEffects", null),
+	ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS ("AlreadyHasAllPossibleUnitSpellEffects", "AlreadyHasAllPossibleCitySpellEffects", "LocationAlreadyCorrupted"),
 	
 	/** This spell creates a building (wall of stone, summoning circle or move fortress, null) and the target city already has that building */
 	CITY_ALREADY_HAS_BUILDING (null, "AlreadyHasBuilding", null),

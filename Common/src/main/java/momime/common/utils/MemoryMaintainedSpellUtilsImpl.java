@@ -492,6 +492,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    	else if ((terrainData == null) || (terrainData.getTileTypeID () == null))
 	    		result = TargetSpellResult.MUST_TARGET_LAND;
 	    	
+	    	else if (terrainData.isCorrupted ())
+	    		result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
+	    	
 	    	else
 	    	{
 	    		final Boolean isLand = db.findTileType (terrainData.getTileTypeID (), "isLocationValidTargetForSpell").isLand ();

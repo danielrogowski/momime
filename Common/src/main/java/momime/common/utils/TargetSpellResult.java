@@ -54,7 +54,10 @@ public enum TargetSpellResult
 	CANNOT_SEE_TARGET (null, "CannotSeeCity", "CannotSeeLocation"),
 	
 	/** Spell can only be targetted at land tiles */
-	MUST_TARGET_LAND (null, null, "MustTargetLand");
+	MUST_TARGET_LAND (null, null, "MustTargetLand"),
+	
+	/** Spell cannot be targetted at certain tile types */
+	INVALID_TILE_TYPE (null, null, "CannotTargetNodes");
 	
 	/** languageEntryID for the text describing this kind of error for targetting units; if null then no error will be displayed */
 	private final String unitLanguageEntryID;

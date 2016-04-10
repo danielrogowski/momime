@@ -931,8 +931,12 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
 		
-		// Now its a land tile
+		// Node
 		tileType.setLand (true);
+		tileType.setMagicRealmID ("X");
+		
+		// Finally valid target
+		tileType.setMagicRealmID (null);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
 		
 		// Scouting spell

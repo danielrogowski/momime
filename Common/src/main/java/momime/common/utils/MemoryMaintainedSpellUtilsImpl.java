@@ -20,6 +20,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
+import momime.common.database.TileType;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpellEffect;
@@ -497,9 +498,14 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    	
 	    	else
 	    	{
-	    		final Boolean isLand = db.findTileType (terrainData.getTileTypeID (), "isLocationValidTargetForSpell").isLand ();
+	    		final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "isLocationValidTargetForSpell");
+	    		final Boolean isLand = tileType.isLand ();
 	    		if ((isLand == null) || (!isLand))
 	    			result = TargetSpellResult.MUST_TARGET_LAND;
+	    		
+	    		// Cannot cast corruption on nodes
+	    		else if (tileType.getMagicRealmID () != null)
+	    			result = TargetSpellResult.INVALID_TILE_TYPE;
 	    		
 	    		else
 	    			result = TargetSpellResult.VALID_TARGET;

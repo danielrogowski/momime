@@ -24902,6 +24902,7 @@
 		<languageEntry languageEntryID="CannotSeeCity" />
 		<languageEntry languageEntryID="MustTargetLand" />
 		<languageEntry languageEntryID="LocationAlreadyCorrupted" />
+		<languageEntry languageEntryID="CannotTargetNodes" />
 		<languageEntry languageEntryID="CancelTitle" />
 		<languageEntry languageEntryID="CancelText" />
 	</languageCategory>

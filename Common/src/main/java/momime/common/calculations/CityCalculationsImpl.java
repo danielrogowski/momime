@@ -130,7 +130,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
+				if ((terrainData != null) && (terrainData.getCorrupted () == null) && (terrainData.getTileTypeID () != null))
 				{
 					// Is this tile type already listed in the map?
 					final CityProductionBreakdownTileType thisTileType = tileTypes.get (terrainData.getTileTypeID ());
@@ -194,7 +194,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		gold.setTradePercentageBonusFromTileType (0);
 		final MemoryGridCell centreTile = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapTerrainData centreTerrain = centreTile.getTerrainData (); 
-		if ((centreTerrain != null) && (centreTerrain.getTileTypeID () != null))
+		if ((centreTerrain != null) && (centreTerrain.getCorrupted () == null) && (centreTerrain.getTileTypeID () != null))
 		{
 			final Integer centreBonus = db.findTileType (centreTerrain.getTileTypeID (), "calculateGoldTradeBonus").getGoldBonus ();
 			if (centreBonus != null)
@@ -210,7 +210,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			{
 				// Bonus only applies if adjacent flag is set
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
+				if ((terrainData != null) && (terrainData.getCorrupted () == null) && (terrainData.getTileTypeID () != null))
 				{
 					final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "calculateGoldTradeBonus");
 					if ((tileType.isGoldBonusSurroundingTiles () != null) && (tileType.isGoldBonusSurroundingTiles ()) && (tileType.getGoldBonus () != null))
@@ -286,7 +286,7 @@ public final class CityCalculationsImpl implements CityCalculations
 				// First check the centre square, we can check this regardless of the defined distance
 				// Put requirement first, just in case the area of terrain is unknown to us
 				final OverlandMapTerrainData centreTile = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getTerrainData ();
-				if ((centreTile != null) && (thisRequirement.getTileTypeID ().equals (centreTile.getTileTypeID ())))
+				if ((centreTile != null) && (centreTile.getCorrupted () == null) && (thisRequirement.getTileTypeID ().equals (centreTile.getTileTypeID ())))
 					thisRequirementPasses = true;
 				else
 				{
@@ -301,7 +301,7 @@ public final class CityCalculationsImpl implements CityCalculations
 							if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, d))
 							{
 								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-								if ((terrainData != null) && (thisRequirement.getTileTypeID ().equals (terrainData.getTileTypeID ())))
+								if ((terrainData != null) && (terrainData.getCorrupted () == null) && (thisRequirement.getTileTypeID ().equals (terrainData.getTileTypeID ())))
 									thisRequirementPasses = true;
 							}
 
@@ -318,7 +318,7 @@ public final class CityCalculationsImpl implements CityCalculations
 							if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, DIRECTIONS_TO_TRAVERSE_CITY_RADIUS [directionIndex].getDirectionID ()))
 							{
 								final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-								if ((terrainData != null) && (thisRequirement.getTileTypeID ().equals (terrainData.getTileTypeID ())))
+								if ((terrainData != null) && (terrainData.getCorrupted () == null) && (thisRequirement.getTileTypeID ().equals (terrainData.getTileTypeID ())))
 									thisRequirementPasses = true;
 							}
 
@@ -363,7 +363,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if ((terrainData != null) && (terrainData.getTileTypeID () != null))
+				if ((terrainData != null) && (terrainData.getCorrupted () == null) && (terrainData.getTileTypeID () != null))
 				{
 					// Is this tile type already listed in the map?
 					final CityProductionBreakdownTileType thisTileType = tileTypes.get (terrainData.getTileTypeID ());
@@ -907,7 +907,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 			{
 				final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
+				if ((terrainData != null) && (terrainData.getCorrupted () == null) && (terrainData.getMapFeatureID () != null))
 				{
 					// Is this map feature already listed in the map?
 					final CityProductionBreakdownMapFeature thisMapFeature = mapFeatures.get (terrainData.getMapFeatureID ());

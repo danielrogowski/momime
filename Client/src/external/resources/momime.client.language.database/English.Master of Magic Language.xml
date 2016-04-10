@@ -6316,6 +6316,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="LocationAlreadyCorrupted">
 			<languageEntryText>This location already has SPELL_NAME cast on it.</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CannotTargetNodes">
+			<languageEntryText>SPELL_NAME cannot be targetted at nodes.</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="CancelTitle">
 			<languageEntryText>Cancel Spell</languageEntryText>
 		</languageEntry>

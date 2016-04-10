@@ -170,7 +170,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ()))
 				{
 					final OverlandMapTerrainData terrainData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-					if ((terrainData != null) && (terrainData.getMapFeatureID () != null))
+					if ((terrainData != null) && (terrainData.getCorrupted () == null) && (terrainData.getMapFeatureID () != null))
 					{
 						final Integer featureMagicWeapons = db.findMapFeature (terrainData.getMapFeatureID (), "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort").getFeatureMagicWeapons ();
 						if ((featureMagicWeapons != null) && (featureMagicWeapons > bestWeaponGrade))

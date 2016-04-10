@@ -11,11 +11,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.random.RandomUtils;
 
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSkillAndValue;
@@ -24,6 +26,9 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageConstructBuilding;
+import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
@@ -36,11 +41,14 @@ import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.database.BuildingSvr;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
+import momime.server.process.PlayerMessageProcessing;
+import momime.server.utils.CityServerUtils;
 
 /**
  * Client sends this to specify where they want to cast a spell they've completed casting overland.
@@ -78,6 +86,18 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	/** Random number generator */
 	private RandomUtils randomUtils;
 
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+
+	/** City calculations */
+	private CityCalculations cityCalculations;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
+	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
 	 * @param sender Player who sent the message
@@ -299,6 +319,41 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+					
+					// Is the corrupted tile within range of a city?
+					final MapCoordinates3DEx cityLocation = getCityServerUtils ().findCityWithinRadius ((MapCoordinates3DEx) getOverlandTargetLocation (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
+					if (cityLocation != null)
+					{
+						// City probably isn't owned by the person who cast the spell
+						final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+						if (cityData.getCurrentlyConstructingBuildingID () != null)
+						{
+							final BuildingSvr buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "targetCorruption");
+							if (!getCityCalculations ().buildingPassesTileTypeRequirements (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), cityLocation,
+								buildingDef, mom.getSessionDescription ().getOverlandMapSize ()))
+							{
+								// City can no longer proceed with their current construction project
+								cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+
+								// If it is a human player then we need to let them know that this has happened
+								final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetCorruption");
+								if (cityOwner.getPlayerDescription ().isHuman ())
+								{
+									final NewTurnMessageConstructBuilding abortConstruction = new NewTurnMessageConstructBuilding ();
+									abortConstruction.setMsgType (NewTurnMessageTypeID.ABORT_BUILDING);
+									abortConstruction.setBuildingID (buildingDef.getBuildingID ());
+									abortConstruction.setCityLocation (cityLocation);
+									((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (abortConstruction);
+									
+									getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
+								}
+							}
+						}
+					}
 				}
 				
 				else
@@ -546,5 +601,69 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+	
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

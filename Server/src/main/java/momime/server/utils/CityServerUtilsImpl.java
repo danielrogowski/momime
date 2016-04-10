@@ -10,12 +10,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.CityCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
@@ -64,6 +67,9 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	
 	/** Fog of war update methods */
 	private FogOfWarProcessing fogOfWarProcessing;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
 	 * Validates that a building or unit that we want to construct at a particular city is a valid choice
@@ -265,6 +271,27 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	}
 	
 	/**
+	 * @param searchLocation Map location to search around
+	 * @param trueTerrain Terrain to search
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @return Location of a city that pulls in requested tile as one of its resource locations; null if there is no city closeby
+	 */
+	@Override
+	public final MapCoordinates3DEx findCityWithinRadius (final MapCoordinates3DEx searchLocation, final MapVolumeOfMemoryGridCells trueTerrain,
+		final CoordinateSystem overlandMapCoordinateSystem)
+	{
+		MapCoordinates3DEx found = null;
+		
+		final MapCoordinates3DEx coords = new MapCoordinates3DEx (searchLocation);
+		for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+			if ((found == null) && (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, coords, direction.getDirectionID ())))
+				if (trueTerrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getCityData () != null)
+					found = coords;
+		
+		return found;
+	}
+	
+	/**
 	 * @return MemoryBuilding utils
 	 */
 	public final MemoryBuildingUtils getMemoryBuildingUtils ()
@@ -358,5 +385,21 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final void setFogOfWarProcessing (final FogOfWarProcessing obj)
 	{
 		fogOfWarProcessing = obj;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

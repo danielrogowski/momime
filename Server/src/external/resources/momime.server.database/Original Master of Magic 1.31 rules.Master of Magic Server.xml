@@ -25019,8 +25019,9 @@
 	</languageCategory>
 	<languageCategory languageCategoryID="NewTurnMessages">
 		<languageEntry languageEntryID="Title" />
-		<languageEntry languageEntryID="ConstructionCompletedCategory" />
+		<languageEntry languageEntryID="ConstructionCategory" />
 		<languageEntry languageEntryID="ConstructionCompleted" />
+		<languageEntry languageEntryID="ConstructionAborted" />
 		<languageEntry languageEntryID="NextConstruction" />
 		<languageEntry languageEntryID="LackOfProductionCategory" />
 		<languageEntry languageEntryID="CityGrowthCategory" />

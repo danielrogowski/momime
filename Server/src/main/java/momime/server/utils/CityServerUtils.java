@@ -5,6 +5,11 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
@@ -14,11 +19,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Server side only helper methods for dealing with cities
@@ -80,4 +80,13 @@ public interface CityServerUtils
 	 */
 	public int totalCostOfBuildingsAtLocation (final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final ServerDatabaseEx db)
 		throws RecordNotFoundException;
+
+	/**
+	 * @param searchLocation Map location to search around
+	 * @param trueTerrain Terrain to search
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @return Location of a city that pulls in requested tile as one of its resource locations; null if there is no city closeby
+	 */
+	public MapCoordinates3DEx findCityWithinRadius (final MapCoordinates3DEx searchLocation, final MapVolumeOfMemoryGridCells trueTerrain,
+		final CoordinateSystem overlandMapCoordinateSystem);
 }

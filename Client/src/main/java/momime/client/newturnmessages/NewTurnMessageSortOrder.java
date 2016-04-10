@@ -10,8 +10,8 @@ package momime.client.newturnmessages;
  */
 public enum NewTurnMessageSortOrder
 {
-	/** NTMs about one of our cities completing construction of a a unit or building */
-	 SORT_ORDER_CONSTRUCTION_COMPLETED (1, "ConstructionCompletedCategory"),
+	/** NTMs about one of our cities completing or aborting construction of a unit or building */
+	 SORT_ORDER_CONSTRUCTION (1, "ConstructionCategory"),
 	
 	/** NTMs about us losing units/buildings/spells because we couldn't afford the maintenance to pay for them */
 	 SORT_ORDER_LACK_OF_PRODUCTION (2, "LackOfProductionCategory"),

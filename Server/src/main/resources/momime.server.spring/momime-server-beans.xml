@@ -239,6 +239,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 	
 	<bean id="cancelTargetSpellMessage" class="momime.server.messages.process.CancelTargetSpellMessageImpl" scope="prototype">
@@ -394,6 +398,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">

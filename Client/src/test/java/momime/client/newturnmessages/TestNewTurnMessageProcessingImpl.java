@@ -174,9 +174,9 @@ public final class TestNewTurnMessageProcessingImpl
 		assertEquals (8, msgs.size ());
 		
 		assertEquals (NewTurnMessageCategory.class, msgs.get (0).getClass ());
-		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION_COMPLETED, msgs.get (0).getSortOrder ());
-		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION_COMPLETED, msgs.get (1).getSortOrder ());
-		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION_COMPLETED, msgs.get (2).getSortOrder ());
+		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION, msgs.get (0).getSortOrder ());
+		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION, msgs.get (1).getSortOrder ());
+		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION, msgs.get (2).getSortOrder ());
 		
 		assertEquals (NewTurnMessageCategory.class, msgs.get (3).getClass ());
 		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_SPELLS, msgs.get (3).getSortOrder ());

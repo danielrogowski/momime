@@ -27,6 +27,7 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.AnimationController;
 import momime.common.messages.NewTurnMessageConstructBuilding;
+import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 
 import org.apache.commons.logging.Log;
@@ -37,7 +38,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.NdgUIUtils;
 
 /**
- * NTM describing a building that completed construction
+ * NTM describing a building that completed construction, or that we aborted trying to construct
  */
 public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConstructBuilding
 	implements NewTurnMessageExpiration, NewTurnMessageComplexUI, NewTurnMessageClickable, NewTurnMessageAnimated, NewTurnMessageRepaintOnCityDataChanged, NewTurnMessageMusic
@@ -93,7 +94,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 	@Override
 	public final NewTurnMessageSortOrder getSortOrder ()
 	{
-		return NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION_COMPLETED;
+		return NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION;
 	}
 
 	/**
@@ -102,7 +103,8 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 	@Override
 	public final String getMusicResourceName ()
 	{
-		return "/momime.client.music/MUSIC_108 - Finished a building.mp3";
+		// Don't play cheery music for failing to construct a building :)
+		return (getMsgType () == NewTurnMessageTypeID.ABORT_BUILDING) ? null : "/momime.client.music/MUSIC_108 - Finished a building.mp3";
 	}
 	
 	/**
@@ -154,7 +156,8 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
 		final BuildingLang oldBuilding = getLanguage ().findBuilding (getBuildingID ());
-		constructionCompletedLabel.setText (getLanguage ().findCategoryEntry ("NewTurnMessages", "ConstructionCompleted").replaceAll
+		constructionCompletedLabel.setText (getLanguage ().findCategoryEntry ("NewTurnMessages",
+			(getMsgType () == NewTurnMessageTypeID.ABORT_BUILDING) ? "ConstructionAborted" : "ConstructionCompleted").replaceAll
 			("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
 			("OLD_CONSTRUCTION", (oldBuilding != null) ? oldBuilding.getBuildingName () : getBuildingID ()));
 		

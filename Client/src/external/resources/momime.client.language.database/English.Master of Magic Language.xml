@@ -6641,11 +6641,14 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Messages</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="ConstructionCompletedCategory">
-			<languageEntryText>Construction Completed</languageEntryText>
+		<languageEntry languageEntryID="ConstructionCategory">
+			<languageEntryText>Construction</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="ConstructionCompleted">
 			<languageEntryText>CITY_NAME has just finished constructing OLD_CONSTRUCTION</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ConstructionAborted">
+			<languageEntryText>CITY_NAME can no longer construct OLD_CONSTRUCTION</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="NextConstruction">
 			<languageEntryText>and is now starting to construct NEW_CONSTRUCTION</languageEntryText>

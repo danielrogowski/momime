@@ -25,7 +25,7 @@ public final class TestNewTurnMessageSorter
 		final List<NewTurnMessageUI> msgs = new ArrayList<NewTurnMessageUI> ();
 		for (final NewTurnMessageSortOrder s : new NewTurnMessageSortOrder []
 			{NewTurnMessageSortOrder.SORT_ORDER_CITY_GROWTH, NewTurnMessageSortOrder.SORT_ORDER_CITY_DEATH,
-			NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION_COMPLETED, NewTurnMessageSortOrder.SORT_ORDER_CITY_GROWTH})
+			NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION, NewTurnMessageSortOrder.SORT_ORDER_CITY_GROWTH})
 		{
 			final NewTurnMessageUI value = mock (NewTurnMessageUI.class);
 			when (value.getSortOrder ()).thenReturn (s);
@@ -36,7 +36,7 @@ public final class TestNewTurnMessageSorter
 		Collections.sort (msgs, new NewTurnMessageSorter ());
 		
 		// Check values were sorted correctly
-		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION_COMPLETED, msgs.get (0).getSortOrder ());
+		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION, msgs.get (0).getSortOrder ());
 		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CITY_GROWTH, msgs.get (1).getSortOrder ());
 		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CITY_GROWTH, msgs.get (2).getSortOrder ());
 		assertEquals (NewTurnMessageSortOrder.SORT_ORDER_CITY_DEATH, msgs.get (3).getSortOrder ());

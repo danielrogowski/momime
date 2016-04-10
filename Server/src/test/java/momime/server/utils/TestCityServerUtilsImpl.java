@@ -9,6 +9,14 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
@@ -22,13 +30,6 @@ import momime.server.database.BuildingSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSvr;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the CityServerUtilsImpl class
@@ -687,5 +688,30 @@ public final class TestCityServerUtilsImpl
 		
 		// Run method
 		assertEquals (310, new CityServerUtilsImpl ().totalCostOfBuildingsAtLocation (cityLocation, buildings, db));
+	}
+	
+	/**
+	 * Tests the findCityWithinRadius method
+	 */
+	@Test
+	public final void testFindCityWithinRadius ()
+	{
+		// Set up map
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (sys);
+		
+		// Place a city
+		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (new OverlandMapCityData ());
+		
+		// Set up object to test
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		// Call method
+		assertEquals (new MapCoordinates3DEx (20, 10, 1), utils.findCityWithinRadius (new MapCoordinates3DEx (20, 10, 1), terrain, sys));
+		assertEquals (new MapCoordinates3DEx (20, 10, 1), utils.findCityWithinRadius (new MapCoordinates3DEx (22, 11, 1), terrain, sys));
+		assertEquals (new MapCoordinates3DEx (20, 10, 1), utils.findCityWithinRadius (new MapCoordinates3DEx (21, 12, 1), terrain, sys));
+		assertNull (utils.findCityWithinRadius (new MapCoordinates3DEx (22, 12, 1), terrain, sys));
+		assertNull (utils.findCityWithinRadius (new MapCoordinates3DEx (21, 12, 0), terrain, sys));
 	}
 }

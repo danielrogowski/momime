@@ -93,7 +93,7 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 	@Override
 	public final NewTurnMessageSortOrder getSortOrder ()
 	{
-		return NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION_COMPLETED;
+		return NewTurnMessageSortOrder.SORT_ORDER_CONSTRUCTION;
 	}
 
 	/**

@@ -232,9 +232,9 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 
 	<xsd:complexType name="newTurnMessageConstructBuilding">
 	    <xsd:annotation>
-    		<xsd:documentation>NTM describing a building that completed construction.
-				Could use buildingURN here but using UnitURN in NewTurnMessageConstructUnit causes issues with message order,
-				so simpler if we keep things so that we don't have to worry about whether the NTM or add msg arrives first.</xsd:documentation>
+    		<xsd:documentation>NTM describing a building that completed construction, or that we aborted trying to construct.
+    			Being forced to abort a construction can happen a number of ways.  We might be constructing a Sawmill and the last Forest tile gets corrupted.
+    			A building that is a pre-requisite of what we are constructing might get destroyed in a battle or by an overland spell.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:newTurnMessageData">
@@ -999,6 +999,10 @@ through lack of production, we can still look up their name to show it on the ne
 			<xsd:enumeration value="B"><xsd:annotation>
 				<xsd:documentation>Completed building</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="COMPLETED_BUILDING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Abort building</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ABORT_BUILDING" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="U"><xsd:annotation>
 				<xsd:documentation>Completed unit</xsd:documentation>

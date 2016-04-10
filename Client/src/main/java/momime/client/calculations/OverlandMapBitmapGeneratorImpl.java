@@ -279,7 +279,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 					}
 					
 					// Corruption
-					if ((gc.getTerrainData () != null) && (gc.getTerrainData ().isCorrupted ()))
+					if ((gc.getTerrainData () != null) && (gc.getTerrainData ().getCorrupted () != null))
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 							g [frameNo].drawImage (corruptedImage, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 				}

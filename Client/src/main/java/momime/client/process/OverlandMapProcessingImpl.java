@@ -232,6 +232,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		// Count the number of units with various types of skill
 		int settlerCount = 0;
 		int spiritCount = 0;
+		int purifyCount = 0;
 		OverlandMapTerrainData terrainData = null;
 		TileType tileType = null;
 		
@@ -259,6 +260,13 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
 						
 						spiritCount++;
+
+					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
+						CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY, null,
+						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
+						
+						purifyCount++;
 				}
 		}
 		
@@ -287,9 +295,11 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		}
 		getOverlandMapRightHandPanel ().setMeldWithNodeEnabled (meldWithNodeEnabled);
 		
+		// Can we purify a corrupted tile?
+		getOverlandMapRightHandPanel ().setPurifyEnabled ((purifyCount > 0) && (terrainData != null) && (terrainData.getCorrupted () != null));
+		
 		// Special order buttons not yet supported
 		getOverlandMapRightHandPanel ().setBuildRoadEnabled (false);
-		getOverlandMapRightHandPanel ().setPurifyEnabled (false);
 		
 		log.trace ("Exiting enableOrDisableSpecialOrderButtons");
 	}

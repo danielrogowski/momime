@@ -504,7 +504,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="playerMessageProcessing" class="momime.server.process.PlayerMessageProcessingImpl">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="skillCalculations" ref="skillCalculations" />
@@ -522,7 +521,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityAI" ref="cityAI" />
 		<property name="playerServerUtils" ref="playerServerUtils" />
 		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
-		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="savePointKeepCount" value="#{serverConfig.savePointKeepCount}" />
@@ -620,8 +618,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
-		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
@@ -639,7 +637,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="cityProcessing" ref="cityProcessing" />
@@ -648,6 +649,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 
 	<!-- AI -->

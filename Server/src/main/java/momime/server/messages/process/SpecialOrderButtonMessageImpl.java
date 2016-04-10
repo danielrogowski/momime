@@ -87,21 +87,31 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		log.trace ("Entering process: " + getMapLocation () + ", " + getSpecialOrder () + ", " + getUnitURN ().size ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
-		
+
 		// What skill do we need
 		final String necessarySkillID;
+		final boolean allowMultipleUnits;
+		
 		switch (getSpecialOrder ())
 		{
 			case BUILD_CITY:
 				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST;
+				allowMultipleUnits = false;
 				break;
 				
 			case MELD_WITH_NODE:
 				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE;
+				allowMultipleUnits = false;
+				break;
+
+			case PURIFY:
+				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY;
+				allowMultipleUnits = true;
 				break;
 				
 			case PATROL:
 				necessarySkillID = null;
+				allowMultipleUnits = true;
 				break;
 				
 			default:
@@ -143,29 +153,31 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				
 				unitsWithNecessarySkillID.add (thisUnit);
 		}
+
+		// We must have at least one unit
+		if ((error == null) && (unitsWithNecessarySkillID.size () == 0))
+			error = "No unit in the unit stack has the necessary skill to perform the requested special order";
 		
-		// Hopefully we found exactly 1 unit
+		// Is it an order that requires us to only have a single unit with the skill?
+		if ((error == null) && (!allowMultipleUnits) && (unitsWithNecessarySkillID.size () > 1))
+			switch (getSpecialOrder ())
+			{
+				case BUILD_CITY:
+					error = "You must select only a single settler to build a city with";
+					break;
+					
+				case MELD_WITH_NODE:
+					error = "You must select only a single spirit to meld with a node";
+					break;
+					
+				default:
+					error = "You must select only a single unit with the relevant skill";
+			}
+		
+		// Skill-specific validation
 		if (error == null)
 		{
-			if (unitsWithNecessarySkillID.size () == 0)
-				error = "No unit in the unit stack has the necessary skill to perform the requested special order";
-			else if ((necessarySkillID != null) && (unitsWithNecessarySkillID.size () > 1))
-			{
-				switch (getSpecialOrder ())
-				{
-					case BUILD_CITY:
-						error = "You must select only a single settler to build a city with";
-						break;
-						
-					case MELD_WITH_NODE:
-						error = "You must select only a single spirit to meld with a node";
-						break;
-						
-					default:
-						error = "You must select only a single unit with the relevant skill";
-				}
-			}
-			else if ((getSpecialOrder () == UnitSpecialOrder.BUILD_CITY) && (!tileType.isCanBuildCity ()))
+			if ((getSpecialOrder () == UnitSpecialOrder.BUILD_CITY) && (!tileType.isCanBuildCity ()))
 				error = "You can't build a city on this type of terrain";
 			else if ((getSpecialOrder () == UnitSpecialOrder.BUILD_CITY) && (mapFeature != null) && (!mapFeature.isCanBuildCity ()))
 				error = "You can't build a city on top of this type of map feature";
@@ -175,9 +187,10 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				error = "Cities cannot be built within " + mom.getSessionDescription ().getOverlandMapSize ().getCitySeparation () + " squares of another city";
 			else if ((getSpecialOrder () == UnitSpecialOrder.MELD_WITH_NODE) && (tileType.getMagicRealmID () == null))
 				error = "Can only use the meld with node skill with node map squares";
-			else if ((getSpecialOrder () == UnitSpecialOrder.MELD_WITH_NODE) && (sender.getPlayerDescription ().getPlayerID ().equals
-				(tc.getTerrainData ().getNodeOwnerID ())))
+			else if ((getSpecialOrder () == UnitSpecialOrder.MELD_WITH_NODE) && (sender.getPlayerDescription ().getPlayerID ().equals (tc.getTerrainData ().getNodeOwnerID ())))
 				error = "You already control this node so cannot meld with it again";
+			else if ((getSpecialOrder () == UnitSpecialOrder.PURIFY) && (tc.getTerrainData ().getCorrupted () == null))
+				error = "You can only use purify on corrupted terrain";
 		}
 
 		if (error != null)
@@ -191,9 +204,11 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		}
 		else
 		{
-			// In a simultaneous turns game, settlers are put on special orders and the city isn't built until movement resolution
-			// But we still have to confirm to the client that their unit selection/build location was fine
-			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (getSpecialOrder () == UnitSpecialOrder.PATROL))
+			// In a simultaneous turns game, settlers are put on special orders and the city isn't built until movement resolution.
+			// But we still have to confirm to the client that their unit selection/build location was fine.
+			// Multi-turn orders like purify and build road also just set the order here and tick up progress later.
+			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (getSpecialOrder () == UnitSpecialOrder.PATROL) ||
+				(getSpecialOrder () == UnitSpecialOrder.PURIFY))
 			{
 				for (final MemoryUnit trueUnit : unitsWithNecessarySkillID)
 					getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, getSpecialOrder (), sender,

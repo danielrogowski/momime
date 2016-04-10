@@ -486,7 +486,12 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
     				<xsd:documentation>This *does* resolve out across the full area of the aura, so will be set for all squares covered by the aura, not just the actual node tile.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="corrupted" type="xsd:boolean" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="corrupted" type="xsd:unsignedShort">
+	    		<xsd:annotation>
+    				<xsd:documentation>This is the number of purify points it will take to return this tile to uncorrupted state.  Uncorrupted tiles have a null here.
+When corruption is cast this gets set to 5.  Each turn a unit spends purifying the location reduces the value by 1.  When it reaches 0, it is set back to null again.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
         </xsd:sequence>
 	</xsd:complexType>
 

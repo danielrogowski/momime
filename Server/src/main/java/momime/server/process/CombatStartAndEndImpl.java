@@ -128,11 +128,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
-	/** Methods for dealing with player msgs */
-	private PlayerMessageProcessing playerMessageProcessing;
-	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
+
+	/** Simultaneous turns processing */
+	private SimultaneousTurnsProcessing simultaneousTurnsProcessing;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -541,7 +541,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				tc.setCombatDefenderPendingMovement (null);
 				
 				// This routine is reponsible for figuring out if there are more combats to play, or if we can start the next turn
-				getPlayerMessageProcessing ().processSimultaneousTurnsMovement (mom);
+				getSimultaneousTurnsProcessing ().processSimultaneousTurnsMovement (mom);
 			}
 			else
 			{
@@ -808,22 +808,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	}
 
 	/**
-	 * @return Methods for dealing with player msgs
-	 */
-	public PlayerMessageProcessing getPlayerMessageProcessing ()
-	{
-		return playerMessageProcessing;
-	}
-
-	/**
-	 * @param obj Methods for dealing with player msgs
-	 */
-	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
-	{
-		playerMessageProcessing = obj;
-	}
-
-	/**
 	 * @return Server-only unit calculations
 	 */
 	public final ServerUnitCalculations getServerUnitCalculations ()
@@ -837,5 +821,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Simultaneous turns processing
+	 */	
+	public final SimultaneousTurnsProcessing getSimultaneousTurnsProcessing ()
+	{
+		return simultaneousTurnsProcessing;
+	}
+
+	/**
+	 * @param proc Simultaneous turns processing
+	 */
+	public final void setSimultaneousTurnsProcessing (final SimultaneousTurnsProcessing proc)
+	{
+		simultaneousTurnsProcessing = proc;
 	}
 }

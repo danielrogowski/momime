@@ -295,7 +295,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					// Corruption
 					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 						(getOverlandTargetLocation ().getZ ()).getRow ().get (getOverlandTargetLocation ().getY ()).getCell ().get (getOverlandTargetLocation ().getX ()).getTerrainData ();
-					terrainData.setCorrupted (true);
+					terrainData.setCorrupted (5);
 					
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());

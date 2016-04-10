@@ -1517,7 +1517,7 @@ public final class TestCombatStartAndEndImpl
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
-		final PlayerMessageProcessing playerMessageProcessing = mock (PlayerMessageProcessing.class);
+		final SimultaneousTurnsProcessing simultaneousTurnsProcessing = mock (SimultaneousTurnsProcessing.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnMultiChanges (midTurn);
@@ -1525,7 +1525,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
-		cse.setPlayerMessageProcessing (playerMessageProcessing);
+		cse.setSimultaneousTurnsProcessing (simultaneousTurnsProcessing);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Regular combat, so only the attacker has a pending movement
@@ -1660,7 +1660,7 @@ public final class TestCombatStartAndEndImpl
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
-		final PlayerMessageProcessing playerMessageProcessing = mock (PlayerMessageProcessing.class);
+		final SimultaneousTurnsProcessing simultaneousTurnsProcessing = mock (SimultaneousTurnsProcessing.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
 		cse.setFogOfWarMidTurnMultiChanges (midTurn);
@@ -1668,7 +1668,7 @@ public final class TestCombatStartAndEndImpl
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
-		cse.setPlayerMessageProcessing (playerMessageProcessing);
+		cse.setSimultaneousTurnsProcessing (simultaneousTurnsProcessing);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Border conflict, so we have two pending movements

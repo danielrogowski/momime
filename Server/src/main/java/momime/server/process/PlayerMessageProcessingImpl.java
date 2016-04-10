@@ -23,10 +23,11 @@ import momime.common.MomException;
 import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitSpecialOrder;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -34,7 +35,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
@@ -51,16 +52,15 @@ import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
-import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.CompareUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CityAI;
@@ -90,9 +90,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -147,9 +144,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** Simultaneous turns processing */
 	private SimultaneousTurnsProcessing simultaneousTurnsProcessing;
-	
-	/** Starting and ending combats */
-	private CombatStartAndEnd combatStartAndEnd;
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -949,6 +943,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
 				getSpellQueueing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		
+		// Progress multi-turn special orders
+		progressMultiTurnSpecialOrders (mom.getGeneralServerKnowledge ().getTrueMap (), onlyOnePlayerID,
+			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
 		// Kick off the next turn
 		mom.getSessionLogger ().info ("Kicking off next turn...");
@@ -967,6 +965,61 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		}
 
 		log.trace ("Exiting endPhase");
+	}
+	
+	/**
+	 * Purifying corruption and building roads can take several turns
+	 *
+	 * @param trueMap True terrain and unit details
+	 * @param onlyOnePlayerID If zero, will process special orders for all players; if specified will process special orders only for the specified player
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	final void progressMultiTurnSpecialOrders (final FogOfWarMemory trueMap, final int onlyOnePlayerID,
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering progressMultiTurnSpecialOrders: Player ID " + onlyOnePlayerID);
+		
+		for (final MemoryUnit tu : trueMap.getUnit ())
+			if ((tu.getStatus () == UnitStatusID.ALIVE) && (tu.getSpecialOrder () == UnitSpecialOrder.PURIFY) &&
+				((onlyOnePlayerID == 0) || (tu.getOwningPlayerID () == onlyOnePlayerID)))
+			{
+				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
+					(tu.getUnitLocation ().getZ ()).getRow ().get (tu.getUnitLocation ().getY ()).getCell ().get (tu.getUnitLocation ().getX ()).getTerrainData ();
+				
+				final Integer oldValue = terrainData.getCorrupted ();
+				
+				// Purify a little bit more
+				if ((terrainData.getCorrupted () != null) && (terrainData.getCorrupted () > 0))
+					terrainData.setCorrupted (terrainData.getCorrupted () - 1);
+				
+				// Corruption all gone?
+				if ((terrainData.getCorrupted () == null) || (terrainData.getCorrupted () <= 0))
+					terrainData.setCorrupted (null);
+				
+				// Send to anyone who can see it
+				if (!CompareUtils.safeIntegerCompare (oldValue, terrainData.getCorrupted ()))
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
+						(MapCoordinates3DEx) tu.getUnitLocation (), fogOfWarSettings.getTerrainAndNodeAuras ());
+				
+				// If corruption is all gone then cancel purify orders for all units here
+				if (terrainData.getCorrupted () == null)
+					for (final MemoryUnit tu2 : trueMap.getUnit ())
+						if ((tu2.getStatus () == UnitStatusID.ALIVE) && (tu2.getSpecialOrder () == UnitSpecialOrder.PURIFY) && (tu2.getUnitLocation ().equals (tu.getUnitLocation ())))
+						{
+							tu2.setSpecialOrder (null);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings);
+						}					
+			}
+		
+		log.trace ("Exiting progressMultiTurnSpecialOrders");
 	}
 
 	/**
@@ -1021,7 +1074,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), new ErasePendingMovementsMessage ());
 					
 					// Process all movements and combats
-					processSimultaneousTurnsMovement (mom);
+					getSimultaneousTurnsProcessing ().processSimultaneousTurnsMovement (mom);
 				}				
 				break;
 				
@@ -1088,358 +1141,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	}
 
 	/**
-	 * Processes PendingMovements at the end of a simultaneous turns game.
-	 * 
-	 * This routine will end when either we find a combat that needs to be played (in which case it ends with a call to startCombat)
-	 * or when the only PendingMovements remaining are unit stacks that have no movement left (in which case it ends with a call to endPhase).
-	 * 
-	 * It must be able to carry on where it left off, so e.g. it is called the first time, and ends when it finds a combat that a human player needs
-	 * to do, then the end of combatEnded will call it again, and it must be able to continue processing remaining movements.
-	 * 
-	 * Combats just between AI players still cause this routine to exit out, because combatEnded being triggered results in this routine
-	 * being called again, so it will start another execution and continue where it left off, and the original invocation will exit out. 
-	 * 
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	@Override
-	public final void processSimultaneousTurnsMovement (final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
-	{
-		log.trace ("Entering processSimultaneousTurnsMovement");
-
-		// Process non combat moves
-		while (findAndProcessOneCellPendingMovement (mom));
-
-		// Is there a combat to process?
-		if (!findAndProcessOneCombat (mom))
-		{
-			// No more combats - so end the turn
-			log.debug ("No more combats, so ending turn " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
-			
-			// Any pending movements remaining at this point must be unit stacks that ran out of movement before they
-			// reached their destination - so we resend these pending moves to the client so the arrows display correctly
-			// and it won't ask the player for where to move those units.
-			for (final PlayerServerDetails player : mom.getPlayers ())
-				if (player.getPlayerDescription ().isHuman ())
-				{
-					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-					final Iterator<PendingMovement> iter = priv.getPendingMovement ().iterator ();
-					while (iter.hasNext ())
-					{
-						final PendingMovement thisMove = iter.next ();
-	
-						// Find each of the units
-						final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-						for (final Integer unitURN : thisMove.getUnitURN ())
-							unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "processSimultaneousTurnsMovement"));
-						
-						// We're at a different location now, and know more about the map than when the path was calculated, so need to recalculate it
-						final List<Integer> path = getFogOfWarMidTurnMultiChanges ().determineMovementPath (unitStack, player,
-							(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), mom);
-						
-						// In the process we might now find that the location has become unreachable, because of what we've learned about the map
-						if (path == null)
-							iter.remove ();
-						else
-						{
-							// Use the updated path
-							thisMove.getPath ().clear ();
-							thisMove.getPath ().addAll (path);
-							
-							// Send it to the client
-							final PendingMovementMessage msg = new PendingMovementMessage ();
-							msg.setPendingMovement (thisMove);
-							player.getConnection ().sendMessageToClient (msg);
-						}
-					}
-				}
-	
-			// Special orders - e.g. settlers building cities.
-			// This can generate messages about spirits capturing nodes.
-			// We want to send these now, even though we may be just about to run the EndPhase to keep consistency between whether
-			// they are considered part of the previous or new turn depending on whether there's any combats or not
-			// (Since if there are combats, there's no way to get messages generated
-			// here sent with the message block generated in the EndPhase)
-			getSimultaneousTurnsProcessing ().processSpecialOrders (mom);
-			sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
-	
-			// End this turn and start the next one
-			endPhase (mom, 0);
-		}
-		
-		log.trace ("Exiting processSimultaneousTurnsMovement");
-	}
-	
-	/**
-	 * Searches all pending movements across all players, making a list of all those where the first cell being
-	 * moved to is free and clear, or occupied by ourselves (even if subsequent moves result in a combat).
-	 * Then chooses one at random and processes the move.
-	 * 
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether we found a move to do
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	final boolean findAndProcessOneCellPendingMovement (final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
-	{
-		log.trace ("Entering findAndProcessOneCellPendingMovement");
-
-		// Go through all pending movements for all players
-		final List<OneCellPendingMovement> moves = new ArrayList<OneCellPendingMovement> ();
-		for (final PlayerServerDetails player : mom.getPlayers ())
-		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final Iterator<PendingMovement> iter = priv.getPendingMovement ().iterator ();
-			while (iter.hasNext ())
-			{
-				final PendingMovement thisMove = iter.next ();
-				
-				// Loop finding each unit, and in process ensure they all have movement remaining
-				int doubleMovementRemaining = Integer.MAX_VALUE;
-				int movementTotal = Integer.MAX_VALUE;
-				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-				for (final Integer unitURN : thisMove.getUnitURN ())
-				{
-					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement");
-					
-					unitStack.add (thisUnit);
-					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
-						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
-					
-					final int unitMovementTotal = getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-						null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-					if (unitMovementTotal < movementTotal)
-						movementTotal = unitMovementTotal;
-				}
-				
-				// Any pending movements where the unit stack is out of movement, just leave them in the list until next turn
-				if (doubleMovementRemaining > 0)
-				{
-					// Does this unit stack have a valid single cell non-combat move?
-					final OneCellPendingMovement oneCell = getFogOfWarMidTurnMultiChanges ().determineOneCellPendingMovement
-						(unitStack, player, thisMove, doubleMovementRemaining, mom);
-					
-					// Is the destination unreachable?  If so just remove the pending movement altogether
-					if (oneCell == null)
-						iter.remove ();
-					
-					// Does it initiate a combat?  If so then leave the pending movement (don't remove it) and we'll deal with it later
-					else if (!oneCell.isCombatInitiated ())
-						for (int n = 0; n < movementTotal; n++)
-							moves.add (oneCell);
-				}
-			}
-		}
-		
-		final boolean found = (moves.size () > 0);
-		if (found)
-		{
-			// Pick a random movement to do
-			final OneCellPendingMovement oneCell = moves.get (getRandomUtils ().nextInt (moves.size ()));
-			log.debug ("Randomly chose move to do for player ID " + oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
-				" from " + oneCell.getPendingMovement ().getMoveFrom () + " to " + oneCell.getPendingMovement ().getMoveTo () +
-				", stepping to " + oneCell.getOneStep ());
-			
-			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-			for (final Integer unitURN : oneCell.getPendingMovement ().getUnitURN ())
-				unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement"));
-			
-			// Execute the move
-			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, oneCell.getUnitStackOwner (), true,
-				(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getOneStep (), false, mom);
-			
-			// If they got to their destination, remove the pending move completely
-			if (oneCell.getOneStep ().equals (oneCell.getPendingMovement ().getMoveTo ()))
-			{
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) oneCell.getUnitStackOwner ().getPersistentPlayerPrivateKnowledge ();
-				priv.getPendingMovement ().remove (oneCell.getPendingMovement ());
-			}
-			
-			// Otherwise update the pending movement with the new start position
-			else
-				oneCell.getPendingMovement ().setMoveFrom (oneCell.getOneStep ());
-		}
-		
-		log.trace ("Exiting findAndProcessOneCellPendingMovement = " + found);
-		return found;
-	}
-
-	/**
-	 * Searches all pending movements across all players, making a list all of them (which at this stage are assumed to be combats).
-	 * Then chooses one at random and initiates the combat.
-	 * 
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether we found a combat to do
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
-	 * @throws MomException If there is a problem with any of the calculations
-	 * @throws PlayerNotFoundException If we can't find one of the players
-	 */
-	final boolean findAndProcessOneCombat (final MomSessionVariables mom)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
-	{
-		log.trace ("Entering findAndProcessOneCombat");
-
-		// Go through all pending movements for all players
-		final List<OneCellPendingMovement> combats = new ArrayList<OneCellPendingMovement> ();
-		for (final PlayerServerDetails player : mom.getPlayers ())
-		{
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-			final Iterator<PendingMovement> iter = priv.getPendingMovement ().iterator ();
-			while (iter.hasNext ())
-			{
-				final PendingMovement thisMove = iter.next ();
-				
-				// Loop finding each unit, and in process ensure they all have movement remaining
-				int doubleMovementRemaining = Integer.MAX_VALUE;
-				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
-				for (final Integer unitURN : thisMove.getUnitURN ())
-				{
-					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCombat");
-					
-					unitStack.add (thisUnit);
-					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
-						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
-				}
-				
-				// Any pending movements where the unit stack is out of movement, just leave them in the list until next turn
-				if (doubleMovementRemaining > 0)
-				{
-					// Does this unit stack have a valid single cell non-combat move?
-					final OneCellPendingMovement oneCell = getFogOfWarMidTurnMultiChanges ().determineOneCellPendingMovement
-						(unitStack, player, thisMove, doubleMovementRemaining, mom);
-					
-					// Is the destination unreachable?  If so these should have been dealt with by findAndProcessOneCellPendingMovement
-					if (oneCell == null)
-						throw new MomException ("findAndProcessOneCombat found a PendingMovement with an unreachable destination");
-					
-					// If this doesn't initiate a combat, then these should have been dealt with by findAndProcessOneCellPendingMovement
-					if (!oneCell.isCombatInitiated ())
-						throw new MomException ("findAndProcessOneCombat found a PendingMovement with movement remaining that isn't a combat");
-
-					// Add the combat to the list
-					combats.add (oneCell);
-				}
-			}
-		}
-		
-		final boolean found = (combats.size () > 0);
-		if (found)
-		{
-			// Now we've got a list of all outstanding combats, check to see if any of them are border conflicts/counterattacks
-			// i.e. we find two PendingMovements that match up where A is moving to B and B is moving to A and the players are different.
-			final List<BorderConflict> borderConflicts = new ArrayList<BorderConflict> ();
-			for (int n = 0; n < combats.size () - 1; n++)
-			{
-				final OneCellPendingMovement firstMove = combats.get (n);
-				for (int m = n + 1; m < combats.size (); m++)
-				{
-					final OneCellPendingMovement secondMove = combats.get (m);
-					if ((firstMove.getUnitStackOwner () != secondMove.getUnitStackOwner ()) &&
-						(firstMove.getPendingMovement ().getMoveFrom ().equals (secondMove.getOneStep ())) && 
-						(secondMove.getPendingMovement ().getMoveFrom ().equals (firstMove.getOneStep ())))
-						borderConflicts.add (new BorderConflict (firstMove, secondMove));
-				}
-			}
-			
-			if (borderConflicts.size () > 0)
-			{
-				// Pick a random border conflict to do
-				final BorderConflict borderConflict = borderConflicts.get (getRandomUtils ().nextInt (borderConflicts.size ()));
-				log.debug ("Randomly chose border conflict to do between player ID " + borderConflict.getFirstMove ().getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
-					" at location " + borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom () +
-					" and player ID " + borderConflict.getSecondMove ().getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
-					" at location " + borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ());
-
-				// Get the two map cells
-				final OverlandMapCityData firstMoveFromCity = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom ().getZ ()).getRow ().get
-					(borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom ().getY ()).getCell ().get
-					(borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom ().getX ()).getCityData ();
-				
-				final OverlandMapCityData secondMoveFromCity = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ().getZ ()).getRow ().get
-					(borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ().getY ()).getCell ().get
-					(borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ().getX ()).getCityData ();
-				
-				// Choose who will be "attacker" and "defender"
-				// If one is a city, force them to be attacker so the city doesn't feature in the combat, otherwise choose random
-				final OneCellPendingMovement attackerMove;
-				final OneCellPendingMovement defenderMove;
-				
-				if (firstMoveFromCity != null)
-				{
-					attackerMove = borderConflict.getFirstMove ();
-					defenderMove = borderConflict.getSecondMove ();
-				}
-				else if (secondMoveFromCity != null)
-				{
-					attackerMove = borderConflict.getSecondMove ();
-					defenderMove = borderConflict.getFirstMove ();
-				}
-				else if (getRandomUtils ().nextBoolean ())
-				{
-					attackerMove = borderConflict.getFirstMove ();
-					defenderMove = borderConflict.getSecondMove ();
-				}
-				else
-				{
-					attackerMove = borderConflict.getSecondMove ();
-					defenderMove = borderConflict.getFirstMove ();
-				}
-				
-				// Execute the combat
-				getCombatStartAndEnd ().startCombat ((MapCoordinates3DEx) defenderMove.getPendingMovement ().getMoveFrom (),
-					(MapCoordinates3DEx) attackerMove.getPendingMovement ().getMoveFrom (),
-					attackerMove.getPendingMovement ().getUnitURN (), defenderMove.getPendingMovement ().getUnitURN (),
-					attackerMove.getPendingMovement (), defenderMove.getPendingMovement (), mom);
-			}
-			else
-			{
-				// Pick a random regular combat to do
-				final OneCellPendingMovement oneCell = combats.get (getRandomUtils ().nextInt (combats.size ()));
-				log.debug ("Randomly chose combat to do for player ID " + oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
-					" from " + oneCell.getPendingMovement ().getMoveFrom () + " to " + oneCell.getPendingMovement ().getMoveTo () +
-					", stepping to " + oneCell.getOneStep ());
-				
-				// The defenders are all units in the destination cell who are not ours, and not part of their own combat which hasn't taken place yet
-				// (in that case we assume those units already left the destination cell and are midway between it and wherever they are attacking)
-				final List<Integer> defendingUnitURNs = new ArrayList<Integer> ();
-				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((oneCell.getOneStep ().equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
-						(tu.getOwningPlayerID () != oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID ().intValue ()))
-						defendingUnitURNs.add (tu.getUnitURN ());
-	
-				for (final PlayerServerDetails player : mom.getPlayers ())
-				{
-					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-					for (final PendingMovement pendingMove : priv.getPendingMovement ())
-						defendingUnitURNs.removeAll (pendingMove.getUnitURN ());
-				}
-				
-				// Execute the combat
-				getCombatStartAndEnd ().startCombat (oneCell.getOneStep (),
-					(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getPendingMovement ().getUnitURN (), defendingUnitURNs,
-					oneCell.getPendingMovement (), null, mom);
-			}
-		}
-		
-		log.trace ("Exiting findAndProcessOneCombat = " + found);
-		return found;
-	}
-	
-	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()
@@ -1455,22 +1156,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		unitUtils = utils;
 	}
 
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
 	/**
 	 * @return Unit calculations
 	 */
@@ -1757,22 +1442,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void setSimultaneousTurnsProcessing (final SimultaneousTurnsProcessing proc)
 	{
 		simultaneousTurnsProcessing = proc;
-	}
-	
-	/**
-	 * @return Starting and ending combats
-	 */
-	public final CombatStartAndEnd getCombatStartAndEnd ()
-	{
-		return combatStartAndEnd;
-	}
-
-	/**
-	 * @param cse Starting and ending combats
-	 */
-	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
-	{
-		combatStartAndEnd = cse;
 	}
 	
 	/**

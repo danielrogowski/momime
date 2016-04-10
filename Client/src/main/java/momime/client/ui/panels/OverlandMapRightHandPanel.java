@@ -1041,6 +1041,17 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			if (cityInfo == null)
 				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityBecauseUnscouted");
 		}
+		else if (terrainData.getCorrupted () != null)
+		{
+			// For corrupted tiles, show the tile type name, "Corrupted", and nothing else
+			surveyorTileTypeFood.setText (getLanguage ().findCategoryEntry ("frmSurveyor", "Corrupted"));
+
+			surveyorTileTypeProduction.setText	(null);
+			surveyorTileTypeGold.setText			(null);
+			surveyorMapFeature.setText			(null);
+			surveyorMapFeatureFirst.setText		(null);
+			surveyorMapFeatureSecond.setText	(null);
+		}
 		else
 		{
 			// Details about the tile type

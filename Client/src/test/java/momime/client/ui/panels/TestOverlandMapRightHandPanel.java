@@ -92,6 +92,7 @@ public final class TestOverlandMapRightHandPanel
 		when (lang.findCategoryEntry ("frmSurveyor", "CityResources")).thenReturn ("City Resources");
 		when (lang.findCategoryEntry ("frmSurveyor", "FeatureProvidesSpellProtection")).thenReturn ("Protects against spells");
 		when (lang.findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity")).thenReturn ("Cities cannot be built" + System.lineSeparator () + "within CITY_SEPARATION squares" + System.lineSeparator () + "of another city");
+		when (lang.findCategoryEntry ("frmSurveyor", "Corrupted")).thenReturn ("Corrupted");
 		
 		final ProductionTypeLang goldProduction = new ProductionTypeLang ();
 		goldProduction.setProductionTypeDescription ("Gold");
@@ -323,9 +324,30 @@ public final class TestOverlandMapRightHandPanel
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testSurveyorPanel () throws Exception
+	public final void testSurveyorPanel_Normal () throws Exception
 	{
 		final PanelAndFrame panel = createPanel ();
+		panel.panel.setTop (OverlandMapRightHandPanelTop.SURVEYOR);
+		panel.panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+		
+		Thread.sleep (5000);
+		panel.frame.setVisible (false);
+	}
+
+	/**
+	 * Tests showing the surveyor panel on a corrupted land tile
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testSurveyorPanel_Corrupted () throws Exception
+	{
+		final PanelAndFrame panel = createPanel ();
+		final MomPersistentPlayerPrivateKnowledge ppk = panel.panel.getClient ().getOurPersistentPlayerPrivateKnowledge ();
+		ppk.getFogOfWarMemory ().getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).getTerrainData ().setCorrupted (1);
+		
+		// Have to force the surveyor info to update, since it has already been displayed
+		panel.panel.setSurveyorLocation (new MapCoordinates3DEx (20, 10, 1));
+		
 		panel.panel.setTop (OverlandMapRightHandPanelTop.SURVEYOR);
 		panel.panel.setBottom (OverlandMapRightHandPanelBottom.CANCEL);
 		

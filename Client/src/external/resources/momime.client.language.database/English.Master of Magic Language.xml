@@ -5943,6 +5943,9 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 		<languageEntry languageEntryID="NodeTowerCleared">
 			<languageEntryText>Cleared</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="Corrupted">
+			<languageEntryText>Corrupted</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmRazeCity">
 		<languageEntry languageEntryID="Text">

@@ -24761,6 +24761,7 @@
 		<languageEntry languageEntryID="FeatureProvidesSpellProtection" />
 		<languageEntry languageEntryID="NodeLairTowerUnscouted" />
 		<languageEntry languageEntryID="NodeTowerCleared" />
+		<languageEntry languageEntryID="Corrupted" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmRazeCity">
 		<languageEntry languageEntryID="Text" />

@@ -303,4 +303,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public DispelMagicResultsMessageImpl createDispelMagicResultsMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public ShowSpellAnimationMessageImpl createShowSpellAnimationMessage ();
 }

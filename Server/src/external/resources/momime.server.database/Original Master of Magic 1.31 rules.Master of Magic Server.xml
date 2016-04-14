@@ -19855,6 +19855,8 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>20</researchCost>
 		<combatCastingCost>15</combatCastingCost>
+		<spellBookSectionID>SC11</spellBookSectionID>
+		<spellScoutingRange>2</spellScoutingRange>
 		<spellName>Earth to Mud</spellName>
 		<aiResearchOrder>6</aiResearchOrder>
 	</spell>
@@ -20313,7 +20315,7 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>40</researchCost>
 		<combatCastingCost>10</combatCastingCost>
-		<spellBookSectionID>SC11</spellBookSectionID>
+		<spellBookSectionID>SC12</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<combatBaseDamage>30</combatBaseDamage>
 		<combatMaxDamage>150</combatMaxDamage>
@@ -20757,7 +20759,11 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>40</researchCost>
 		<combatCastingCost>15</combatCastingCost>
-		<spellName>Disrupt</spellName>
+		<spellBookSectionID>SC11</spellBookSectionID>
+		<spellValidBorderTarget targetCombatTileBorderID="CTB01" />
+		<spellValidBorderTarget targetCombatTileBorderID="CTB02" />
+		<spellValidBorderTarget targetCombatTileBorderID="CTB03" />
+		<spellName>Disrupt Wall</spellName>
 		<aiResearchOrder>5</aiResearchOrder>
 	</spell>
 	<spell spellID="SP083">
@@ -22203,7 +22209,7 @@
 		<spellRank>SR01</spellRank>
 		<researchCost>100</researchCost>
 		<combatCastingCost>10</combatCastingCost>
-		<spellBookSectionID>SC11</spellBookSectionID>
+		<spellBookSectionID>SC12</spellBookSectionID>
 		<attackSpellCombatTarget>S</attackSpellCombatTarget>
 		<combatBaseDamage>10</combatBaseDamage>
 		<combatMaxDamage>50</combatMaxDamage>

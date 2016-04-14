@@ -622,6 +622,12 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 		</xsd:annotation>
         <xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="offMapEdge" type="xsd:boolean" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="wrecked" type="xsd:boolean">
+			    <xsd:annotation>
+    				<xsd:documentation>Set to true when stone walls get a hole knocked in them (via Disrupt Wall spell or Wall Crusher unit skill).</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="mud" type="xsd:boolean" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="borderDirections" type="momimecommon:directions" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="borderID" type="momimecommon:combatTileBorderID" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileLayer" type="momimemsgs:momCombatTileLayer" />

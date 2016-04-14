@@ -1070,7 +1070,10 @@
 			<rangedAttackTypeCombatImageFile>/momime.client.graphics/rangedAttacks/fireball/strike-d8.png</rangedAttackTypeCombatImageFile>
 		</rangedAttackTypeCombatImage>
 	</rangedAttackType>
-	<spell spellID="SP001" />
+	<spell spellID="SP001">
+		<combatCastAnimation>EARTH_TO_MUD</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_069_000 - EarthToMud.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP002">
 		<combatCastAnimation>NATURE_SPARKLY_RING</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_028_000 - ResistElem-WallOfStone-GiantStr-StoneSkin-WaterWalking-NaturesEye-ChgTerrain-PathFinding-Transmute-NaturesCures-ElemArmour-IronSkin-Gaias-Regen-EarthGate.mp3</spellSoundFile>
@@ -1324,7 +1327,10 @@
 		<combatCastAnimation>WARP_WOOD</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_015_000 - WarpWood.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP082" />
+	<spell spellID="SP082">
+		<combatCastAnimation>DISRUPT_WALL</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_039_000 - MoveFortress-DispelMagicTrue-CursedLands.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP083">
 		<combatCastAnimationFly>FIRE_BOLT_FLY</combatCastAnimationFly>
 		<combatCastAnimation>FIRE_BOLT_STRIKE</combatCastAnimation>
@@ -66298,6 +66304,69 @@
 		<frame>/momime.client.graphics/spells/SP085/cast-frame3.png</frame>
 		<frame>/momime.client.graphics/spells/SP085/cast-frame2.png</frame>
 		<frame>/momime.client.graphics/spells/SP085/cast-frame1.png</frame>
+	</animation>
+	<animation animationID="DISRUPT_WALL">
+		<animationDescription>Disrupt orange expanding circle</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<combatCastOffsetX>1</combatCastOffsetX>
+		<combatCastOffsetY>-19</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP082/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP082/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP082/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP082/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP082/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP082/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP082/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP082/cast-frame8.png</frame>
+	</animation>
+	<animation animationID="EARTH_TO_MUD">
+		<animationDescription>Earth-to-mud raincloud</animationDescription>
+		<animationSpeed>10</animationSpeed>
+		<combatCastOffsetX>-16</combatCastOffsetX>
+		<combatCastOffsetY>-28</combatCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame12.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame13.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame14.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame15.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame16.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame17.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame18.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame19.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame20.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame21.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame22.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame23.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame24.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame25.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame26.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame27.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame28.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame29.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame30.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame31.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame32.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame33.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/cast-frame34.png</frame>
+	</animation>
+	<animation animationID="MUDDY_TILE">
+		<animationDescription>Muddy combat tile resulting from Earth to Mud spell</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/spells/SP001/terrain-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/terrain-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/terrain-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/terrain-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP001/terrain-frame5.png</frame>
 	</animation>
 	<animation animationID="TERRAIN_ARCANUS_OCEAN_11111111">
 		<animationDescription>Arcanus Ocean/Grass border tile, direction bitmask 11111111</animationDescription>

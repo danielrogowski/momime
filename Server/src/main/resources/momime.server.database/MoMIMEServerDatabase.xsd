@@ -682,6 +682,10 @@
 			<xsd:selector xpath="spell/spellValidUnitTarget" />
 			<xsd:field xpath="savingThrowSkillID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:combatTileBorderPK" name="spellValidBorderTargetFKcombatTileBorder">
+			<xsd:selector xpath="spell/spellValidBorderTarget" />
+			<xsd:field xpath="@targetCombatTileBorderID" />
+		</xsd:keyref>
 
 		<!-- New game form settings, new for 0.9.2 -->
 		<xsd:keyref refer="momimesvr:tileTypePK" name="landProportionTileTypeFKtileType">

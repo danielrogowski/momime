@@ -81,7 +81,6 @@ import momime.common.database.FrontOrBack;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -536,19 +535,33 @@ public final class CombatUI extends MomClientFrameUI
 								getCombatLocation (), moveToLocation);
 							
 							final boolean validTarget;
-							if (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+							switch (getSpellBeingTargetted ().getSpellBookSectionID ())
 							{
 								// Summoning spell - valid as long as there isn't a unit here
-								validTarget = (unit == null);
-							}
-							else
-							{
+								case SUMMONING:
+									validTarget = (unit == null);
+									break;
+									
 								// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
-								validTarget = (unit != null) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-									(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
-										(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
-										unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-										getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
+								case UNIT_ENCHANTMENTS:
+								case UNIT_CURSES:
+								case ATTACK_SPELLS:
+								case SPECIAL_UNIT_SPELLS:
+								case DISPEL_SPELLS:
+									validTarget = (unit != null) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
+											(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
+											unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+											getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
+									break;
+									
+								// Combat spells targetted at a location have their own method too
+								case SPECIAL_COMBAT_SPELLS:
+									validTarget = getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), moveToLocation, getCombatTerrain ());
+									break;
+									
+								default:
+									throw new MomException ("CombatUI doesn't know targetting rules (drawing) for spells from section " + getSpellBeingTargetted ().getSpellBookSectionID ());
 							}
 							
 							moveTypeFilename = "/momime.client.graphics/ui/combat/moveType-" + (validTarget ? "spell" : "cannot") + ".png";
@@ -705,7 +718,9 @@ public final class CombatUI extends MomClientFrameUI
 										final CombatTileBorderImageGfx borderImage = getGraphicsDB ().findCombatTileBorderImages (combatTileBorderID, tile.getBorderDirections (), frontOrBack);
 										if (borderImage != null)
 										{
-											final BufferedImage image = getAnim ().loadImageOrAnimationFrame (borderImage.getStandardFile (), borderImage.getStandardAnimation (), false);
+											final BufferedImage image = getAnim ().loadImageOrAnimationFrame
+												(tile.isWrecked () ? borderImage.getWreckedFile () : borderImage.getStandardFile (), borderImage.getStandardAnimation (), false);
+											
 											zOrderGraphics.drawImage (image,
 												getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) - (2 * 2),
 												getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) - (16 * 2),
@@ -959,55 +974,73 @@ public final class CombatUI extends MomClientFrameUI
 							msg.setVariableDamage (getVariableManaUI ().getVariableDamage ());
 									
 						boolean isValidTarget = false;
-						if (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+						switch (getSpellBeingTargetted ().getSpellBookSectionID ())
 						{
 							// Summoning spell - valid as long as there isn't a unit here
-							if (unit == null)
-							{
-								isValidTarget = true;
-								msg.setCombatTargetLocation (combatCoords);
-								
-								// Resurrecting an existing unit?
-								if (getSpellBeingTargetted ().getResurrectedHealthPercentage () != null)
-									msg.setCombatTargetUnitURN (getUnitBeingRaised ().getUnitURN ());
-							}
-						}
-						else
-						{
-							// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
-							if (unit != null)
-							{
-								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-									(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
-									(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
-									unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-								
-								if (validTarget == TargetSpellResult.VALID_TARGET)
+							case SUMMONING:
+								if (unit == null)
 								{
 									isValidTarget = true;
-									msg.setCombatTargetUnitURN (unit.getUnitURN ());
+									msg.setCombatTargetLocation (combatCoords);
+									
+									// Resurrecting an existing unit?
+									if (getSpellBeingTargetted ().getResurrectedHealthPercentage () != null)
+										msg.setCombatTargetUnitURN (getUnitBeingRaised ().getUnitURN ());
 								}
+								break;
 
-								// If we can't target on this unit, tell the player why not
-								else if (validTarget.getUnitLanguageEntryID () != null)
+							// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
+							case UNIT_ENCHANTMENTS:
+							case UNIT_CURSES:
+							case ATTACK_SPELLS:
+							case SPECIAL_UNIT_SPELLS:
+							case DISPEL_SPELLS:
+								if (unit != null)
 								{
-									final SpellLang spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
-									final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
+										(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
+										unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
-									String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
-										("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargetted ().getSpellID ());
-									
-									// If spell can only be targetted on specific magic realm/lifeform types, the list them
-									if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
-										text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (getSpellBeingTargetted ());
-									
-									final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
-									msgBox.setTitleLanguageCategoryID ("SpellTargetting");
-									msgBox.setTitleLanguageEntryID ("Title");
-									msgBox.setText (text);
-									msgBox.setVisible (true);
+									if (validTarget == TargetSpellResult.VALID_TARGET)
+									{
+										isValidTarget = true;
+										msg.setCombatTargetUnitURN (unit.getUnitURN ());
+									}
+	
+									// If we can't target on this unit, tell the player why not
+									else if (validTarget.getUnitLanguageEntryID () != null)
+									{
+										final SpellLang spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
+										final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+										
+										String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
+											("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargetted ().getSpellID ());
+										
+										// If spell can only be targetted on specific magic realm/lifeform types, the list them
+										if (validTarget == TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE)
+											text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (getSpellBeingTargetted ());
+										
+										final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
+										msgBox.setTitleLanguageCategoryID ("SpellTargetting");
+										msgBox.setTitleLanguageEntryID ("Title");
+										msgBox.setText (text);
+										msgBox.setVisible (true);
+									}
 								}
-							}
+								break;
+								
+							// Combat spells targetted at a location have their own method too
+							case SPECIAL_COMBAT_SPELLS:
+								if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (getSpellBeingTargetted (), moveToLocation, getCombatTerrain ()))
+								{
+									msg.setCombatTargetLocation (combatCoords);
+									isValidTarget = true;
+								}
+								break;
+								
+							default:
+								throw new MomException ("CombatUI doesn't know targetting rules (clicking) for spells from section " + getSpellBeingTargetted ().getSpellBookSectionID ());
 						}
 
 						if (isValidTarget)
@@ -1194,16 +1227,30 @@ public final class CombatUI extends MomClientFrameUI
 	 * This is called during map startup, but also from the options screen if we change smoothing options
 	 * 
 	 * @throws IOException If there is a problem loading any of the images
-	 * @throws RecordNotFoundException If required entries in the graphics XML cannot be found
 	 */
-	public final void smoothCombatMapAndGenerateBitmaps () throws IOException, RecordNotFoundException
+	public final void smoothCombatMapAndGenerateBitmaps () throws IOException
 	{
 		log.trace ("Entering smoothCombatMapAndGenerateBitmaps");
 
 		getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
-		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps ();
+		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps (getCombatTerrain ());
 
 		log.trace ("Exiting smoothCombatMapAndGenerateBitmaps");
+	}
+
+	/**
+	 * Regenerates the bitmaps *only* without smoothing the terrain again, so the screen does not alter much.
+	 * Used when spells like Earth to Mud change ancilliary things about the terrain but not the core tiles.
+	 * 
+	 * @throws IOException If there is a problem loading any of the images
+	 */
+	public final void regenerateBitmaps () throws IOException
+	{
+		log.trace ("Entering smoothCombatMapAndGenerateBitmaps");
+
+		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps (getCombatTerrain ());
+
+		log.trace ("Exiting regenerateBitmaps");
 	}
 
 	/**

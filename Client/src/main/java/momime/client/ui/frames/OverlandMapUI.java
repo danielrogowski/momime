@@ -908,7 +908,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 							else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
 							{
 								// Use common routine to do all the validation
-								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isLocationValidTargetForSpell (spell, mapLocation,
+								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, mapLocation,
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getClientDB ());
 								

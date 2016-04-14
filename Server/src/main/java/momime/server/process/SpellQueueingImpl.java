@@ -461,6 +461,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 				else if (combatAreaEffectIDs.size () == 0)
 					msg = "You have already cast all possible effects of this combat enchantment";
 			}
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS)
+			{
+				// Check location is valid 
+				if (!getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, combatTargetLocation, gc.getCombatMap ()))
+					msg = "This location is not a valid target for this combat spell";
+			}
 		}
 		
 		// Separate routine to validate hero items we're trying to craft

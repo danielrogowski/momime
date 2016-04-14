@@ -57,6 +57,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
+import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -387,6 +388,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 		log.trace ("Entering castCombatNow: Player ID " +
 			castingPlayer.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID () + ", " + spell.getSpellBookSectionID () + ", " + combatLocation);
 
+		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		
 		// Which side is casting the spell
 		final UnitCombatSideID castingSide;
 		if (castingPlayer == attackingPlayer)
@@ -456,15 +460,50 @@ public final class SpellProcessingImpl implements SpellProcessing
 				true, combatLocation, citySpellEffectID, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			
 			// The new enchantment presumably requires the combat map to be regenerated so we can see it
-			final ServerGridCellEx mc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-			
-			getCombatMapGenerator ().regenerateCombatTileBorders (mc.getCombatMap (), mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
+			getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
 			
 			// Send the updated map
 			final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
 			msg.setCombatLocation (combatLocation);
-			msg.setCombatTerrain (mc.getCombatMap ());
+			msg.setCombatTerrain (gc.getCombatMap ());
+			
+			if (attackingPlayer.getPlayerDescription ().isHuman ())
+				attackingPlayer.getConnection ().sendMessageToClient (msg);
+
+			if (defendingPlayer.getPlayerDescription ().isHuman ())
+				defendingPlayer.getConnection ().sendMessageToClient (msg);
+		}
+		
+		// Spells aimed at a location
+		else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS)
+		{
+			if (spell.getSpellValidBorderTarget ().size () > 0)
+			{
+				// Wreck one tile
+				gc.getCombatMap ().getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).setWrecked (true);
+			}
+			else
+			{
+				// Make an area muddy, the range is in the "scouting" range field
+				gc.getCombatMap ().getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).setMud (true);
+			}
+			
+			// Show animation for it
+			final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
+			anim.setSpellID (spell.getSpellID ());
+			anim.setCastInCombat (true);
+			anim.setCombatTargetLocation (targetLocation);
+
+			if (attackingPlayer.getPlayerDescription ().isHuman ())
+				attackingPlayer.getConnection ().sendMessageToClient (anim);
+
+			if (defendingPlayer.getPlayerDescription ().isHuman ())
+				defendingPlayer.getConnection ().sendMessageToClient (anim);
+			
+			// Send the updated map
+			final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
+			msg.setCombatLocation (combatLocation);
+			msg.setCombatTerrain (gc.getCombatMap ());
 			
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
@@ -700,8 +739,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
 			
 			// Charge skill
-			final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 			final int sendSkillValue;
 			if (castingPlayer == defendingPlayer)
 			{

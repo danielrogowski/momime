@@ -40,6 +40,7 @@ public final class UpdateCombatMapMessageImpl extends UpdateCombatMapMessage imp
 			throw new MomException ("Server sent updated combat map for a location other than the combat we're playing");
 		
 		getCombatUI ().setCombatTerrain (getCombatTerrain ());
+		getCombatUI ().regenerateBitmaps ();
 		
 		log.trace ("Exiting start");
 	}

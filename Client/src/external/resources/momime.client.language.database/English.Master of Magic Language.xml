@@ -2833,6 +2833,10 @@ Only map squares protected by Heavenly Light are unaffected.</combatAreaEffectHe
 		<spellTargetPrompt>Select any map location as the target for your SPELL_NAME spell.</spellTargetPrompt>
 	</spellBookSection>
 	<spellBookSection spellBookSectionID="SC11">
+		<spellBookSectionName>Special Combat Spells</spellBookSectionName>
+		<spellTargetPrompt>Select any combat tile as the target for your SPELL_NAME spell.</spellTargetPrompt>
+	</spellBookSection>
+	<spellBookSection spellBookSectionID="SC12">
 		<spellBookSectionName>Dispelling spells</spellBookSectionName>
 		<spellTargetPrompt>Select any target with enchantments or curses cast by another wizard.</spellTargetPrompt>
 	</spellBookSection>
@@ -3398,7 +3402,7 @@ The casting wizard must pay maintenance on this spell, but only on this spell.</
 There is no way to prevent the effect of this spell.</spellHelpText>
 	</spell>
 	<spell spellID="SP082">
-		<spellName>Disrupt</spellName>
+		<spellName>Disrupt Wall</spellName>
 		<spellDescription>Destroys a section of stone wall.</spellDescription>
 		<spellHelpText>Destroys one section of stone wall, clearing a way for troops to pass through.</spellHelpText>
 	</spell>

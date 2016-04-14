@@ -2,6 +2,7 @@ package momime.common.utils;
 
 import java.util.List;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -11,6 +12,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -146,7 +148,7 @@ public interface MemoryMaintainedSpellUtils
 		final CommonDatabase db) throws RecordNotFoundException; 
 
 	/**
-	 * Checks whether the specified spell can be targetted at the specified map location
+	 * Checks whether the specified spell can be targetted at the specified overland map location
 	 * 
 	 * @param spell Spell being cast
 	 * @param targetLocation Location we want to cast the spell at 
@@ -156,6 +158,17 @@ public interface MemoryMaintainedSpellUtils
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
 	 */
-	public TargetSpellResult isLocationValidTargetForSpell (final Spell spell, final MapCoordinates3DEx targetLocation,
+	public TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final MapCoordinates3DEx targetLocation,
 		final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException;
+
+	/**
+	 * Checks whether the specified spell can be targetted at the specified combat map location.
+	 * This is only called for spells that are targetted at a location - section SPECIAL_COMBAT_SPELLS
+	 * 
+	 * @param spell Spell being cast
+	 * @param targetLocation Location we want to cast the spell at 
+	 * @param map Combat map terrain
+	 * @return Whether the location is a valid target or not
+	 */
+	public boolean isCombatLocationValidTargetForSpell (final Spell spell, final MapCoordinates2DEx targetLocation, final MapAreaOfCombatTiles map);
 }

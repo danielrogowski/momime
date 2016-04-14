@@ -45,6 +45,7 @@ import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage
 import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
+import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
@@ -603,6 +604,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final DispelMagicResultsMessage createDispelMagicResultsMessage ()
 	{
 		return getFactory ().createDispelMagicResultsMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final ShowSpellAnimationMessage createShowSpellAnimationMessage ()
+	{
+		return getFactory ().createShowSpellAnimationMessage ();
 	}
 
 	/**

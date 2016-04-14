@@ -278,7 +278,7 @@ public final class TestCombatUI
 			combatMapBitmaps [n] = ClientTestData.createSolidImage (640, 362, (new int [] {0x200000, 0x002000, 0x000020}) [n]);
 		
 		final CombatMapBitmapGenerator gen = mock (CombatMapBitmapGenerator.class);
-		when (gen.generateCombatMapBitmaps ()).thenReturn (combatMapBitmaps);
+		when (gen.generateCombatMapBitmaps (combatMap)).thenReturn (combatMapBitmaps);
 		
 		// Mock other outputs from the bitmap generator, used to draw the building layer
 		final SmoothedTileGfx [] [] buildingTiles = new SmoothedTileGfx [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];

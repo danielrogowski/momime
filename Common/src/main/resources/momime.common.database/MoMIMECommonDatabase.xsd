@@ -1101,6 +1101,7 @@ expensive bonus we are allowed to put onto the item.  A value of 0 allows all bo
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCityEffect" type="momimecommon:spellHasCityEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCombatEffect" type="momimecommon:spellHasCombatEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidUnitTarget" type="momimecommon:spellValidUnitTarget" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellValidBorderTarget" type="momimecommon:spellValidBorderTarget" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellUpkeep" type="momimecommon:productionTypeAndUndoubledValue">
 		        <xsd:annotation>
 		        	<xsd:documentation>Defines the upkeep a particular spells costs each turn, typically an amount of mana.</xsd:documentation>
@@ -1169,11 +1170,11 @@ Can have different saving throw depending on the type of unit.</xsd:documentatio
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowSkillID" type="momimecommon:unitSkillID" nxe:label="Saving Throw rolls against Target Skill" nxe:showmaincolumn="false">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="savingThrowModifier" type="momimecommon:savingThrowModifier" nxe:label="Saving Throw Modifier" nxe:gridwidth="150" />
 		</xsd:sequence>
@@ -1189,6 +1190,13 @@ If targetMagicRealmID is ommitted, the spell can be cast on all types of unit an
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="spellValidBorderTarget" nxe:singular="Valid Border Target" nxe:plural="Valid Border Targets">
+        <xsd:annotation>
+        	<xsd:documentation>Some spells (Disrupt) can be aimed at certain kinds of Combat Tile Borders (Stone walls).</xsd:documentation>
+        </xsd:annotation>
+		<xsd:attribute name="targetCombatTileBorderID" type="momimecommon:combatTileBorderID" use="required" nxe:label="Combat Tile Border ID" />
 	</xsd:complexType>
 
 	<xsd:complexType name="combatTileType" nxe:singular="Combat Tile Type" nxe:plural="Combat Tile Types" nxe:submenu="Combat Map">
@@ -1846,6 +1854,11 @@ the exact type of spell is currently dictated by whether or not spellScoutingRan
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_OVERLAND_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC11"><xsd:annotation>
+				<xsd:documentation>Special spells targetted at a location on the combat map, can be any combat tile, doesn't have to be targetted on a particular unit;
+the exact type of spell is currently dictated by whether there any spellValidBorderTarget records or not</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_COMBAT_SPELLS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC12"><xsd:annotation>
 				<xsd:documentation>Dispelling spells</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DISPEL_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>

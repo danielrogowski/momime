@@ -34,6 +34,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -677,9 +678,9 @@ public final class SpellBookUI extends MomClientFrameUI
 			// If its a combat spell then make sure there's at least something we can target it on
 			// Only do this for spells without variable damage, because otherwise we might raise or lower the saving throw modifier
 			// enough to make a difference as to whether there are any valid targets 
-			else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () == null) &&
+			else if ((getCastType () == SpellCastType.COMBAT) && ((sectionID == SpellBookSectionID.DISPEL_SPELLS) || ((spell.getCombatMaxDamage () == null) &&
 				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
-				(sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)))
+				(sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)))))
 			{
 				boolean found = false;
 				final Iterator<MemoryUnit> iter = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().iterator ();
@@ -691,6 +692,37 @@ public final class SpellBookUI extends MomClientFrameUI
 						
 						found = true;
 				
+				proceed = found;
+				if (!proceed)
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setTitleLanguageCategoryID ("frmSpellBook");
+					msg.setTitleLanguageEntryID ("CastSpellTitle");
+					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "NoValidTargets").replaceAll
+						("SPELL_NAME", spellName));
+
+					msg.setVisible (true);
+				}
+			}
+			
+			// Similar for spells targetted at a location
+			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SPECIAL_COMBAT_SPELLS))
+			{
+				boolean found = false;
+				int y = 0;
+				while ((!found) && (y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight ()))
+				{
+					int x = 0;
+					while ((!found) && (x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth ()))
+					{
+						if (getMemoryMaintainedSpellUtils ().isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (x, y), getCombatUI ().getCombatTerrain ()))
+							found = true;
+						else
+							x++;
+					}
+					y++;
+				}
+
 				proceed = found;
 				if (!proceed)
 				{
@@ -798,7 +830,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			// Is it a combat spell that we need to pick a target for?  If so then set up the combat UI to prompt for it
 			else if ((getCastType () == SpellCastType.COMBAT) &&
 				((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
-				(sectionID == SpellBookSectionID.SUMMONING) ||
+				(sectionID == SpellBookSectionID.SUMMONING) || (sectionID == SpellBookSectionID.SPECIAL_COMBAT_SPELLS) ||
 				(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
 					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 				

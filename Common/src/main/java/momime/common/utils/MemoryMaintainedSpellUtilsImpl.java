@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -20,17 +21,20 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
+import momime.common.database.SpellValidBorderTarget;
 import momime.common.database.TileType;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
@@ -461,7 +465,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	}
 
 	/**
-	 * Checks whether the specified spell can be targetted at the specified map location
+	 * Checks whether the specified spell can be targetted at the specified overland map location
 	 * 
 	 * @param spell Spell being cast
 	 * @param targetLocation Location we want to cast the spell at 
@@ -472,10 +476,10 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
 	 */
 	@Override
-	public final TargetSpellResult isLocationValidTargetForSpell (final Spell spell, final MapCoordinates3DEx targetLocation,
+	public final TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final MapCoordinates3DEx targetLocation,
 		final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException
 	{
-    	log.trace ("Entering isLocationValidTargetForSpell: " + spell.getSpellID () + ", " + targetLocation);
+    	log.trace ("Entering isOverlandLocationValidTargetForSpell: " + spell.getSpellID () + ", " + targetLocation);
 
     	final TargetSpellResult result;
 
@@ -512,7 +516,47 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    	}
     	}
     	
-    	log.trace ("Exiting isLocationValidTargetForSpell = " + result);
+    	log.trace ("Exiting isOverlandLocationValidTargetForSpell = " + result);
+    	return result;
+	}
+	
+	/**
+	 * Checks whether the specified spell can be targetted at the specified combat map location.
+	 * This is only called for spells that are targetted at a location - section SPECIAL_COMBAT_SPELLS
+	 * 
+	 * @param spell Spell being cast
+	 * @param targetLocation Location we want to cast the spell at 
+	 * @param map Combat map terrain
+	 * @return Whether the location is a valid target or not
+	 */
+	@Override
+	public final boolean isCombatLocationValidTargetForSpell (final Spell spell, final MapCoordinates2DEx targetLocation, final MapAreaOfCombatTiles map)
+	{
+    	log.trace ("Entering isCombatLocationValidTargetForSpell: " + spell.getSpellID () + ", " + targetLocation);
+    	
+    	final boolean result;
+		final MomCombatTile tile = map.getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ());
+    	
+    	// Is it a spell that needs to be targetted at particular wall locations?
+    	// Otherwise things like Earth to Mud or Magic Vortex can be aimed anywhere
+    	if (spell.getSpellValidBorderTarget ().size () == 0)
+    		result = !tile.isOffMapEdge ();
+    	else
+    	{
+    		if ((tile.isWrecked ()) || (tile.getBorderID ().size () == 0))
+    			result = false;
+    		else
+    		{
+    			boolean found = false;
+    			for (final SpellValidBorderTarget possibleTargetBorderType : spell.getSpellValidBorderTarget ())
+    				if (tile.getBorderID ().contains (possibleTargetBorderType.getTargetCombatTileBorderID ()))
+    					found = true;
+    			
+    			result = found;
+    		}
+    	}
+    	
+    	log.trace ("Exiting isCombatLocationValidTargetForSpell = " + result);
     	return result;
 	}
 	

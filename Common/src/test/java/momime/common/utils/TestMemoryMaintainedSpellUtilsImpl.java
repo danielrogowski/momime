@@ -1,7 +1,9 @@
 package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -24,6 +26,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
+import momime.common.database.SpellValidBorderTarget;
 import momime.common.database.TileType;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
@@ -31,6 +34,7 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -895,11 +899,11 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	}
 	
 	/**
-	 * Tests the isCityValidTargetForSpell method
+	 * Tests the isOverlandLocationValidTargetForSpell method
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testIsLocationValidTargetForSpell () throws Exception
+	public final void testIsOverlandLocationValidTargetForSpell () throws Exception
 	{
 		// Mock database entries
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -919,17 +923,17 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 
 		// Cannot see the location
-		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
 		
 		// Unknown tile type
 		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isOverlandLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
 		
 		// Unspecified land/water
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT01");
 		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
-		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		assertEquals (TargetSpellResult.MUST_TARGET_LAND, utils.isOverlandLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
 		
 		// Node
 		tileType.setLand (true);
@@ -937,13 +941,59 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Finally valid target
 		tileType.setMagicRealmID (null);
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
 		
 		// Scouting spell
 		terrainData.setTileTypeID (null);
 		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
 		spell.setSpellScoutingRange (1);
 		
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
+	}
+	
+	/**
+	 * Tests the isCombatLocationValidTargetForSpell method
+	 */
+	@Test
+	public final void testIsCombatLocationValidTargetForSpell ()
+	{
+		// Spell being targetted
+		final Spell spell = new Spell ();
+		
+		// Map
+		final CoordinateSystem sys = GenerateTestData.createCombatMapCoordinateSystem ();
+		final MapAreaOfCombatTiles map = GenerateTestData.createCombatMap (sys);
+
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Spells not targetted at borders can hit anywhere
+		assertTrue (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
+		
+		// Unless its off the map edge
+		map.getRow ().get (1).getCell ().get (2).setOffMapEdge (true);
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (2, 1), map));
+		
+		// Now we need a specific border
+		final SpellValidBorderTarget borderReq1 = new SpellValidBorderTarget ();
+		borderReq1.setTargetCombatTileBorderID ("CTB01");
+		spell.getSpellValidBorderTarget ().add (borderReq1);
+
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
+		
+		// Put the wrong kind of border there
+		map.getRow ().get (5).getCell ().get (10).getBorderID ().add ("CTB02");
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
+		
+		// Now the spell can hit either
+		final SpellValidBorderTarget borderReq2 = new SpellValidBorderTarget ();
+		borderReq2.setTargetCombatTileBorderID ("CTB02");
+		spell.getSpellValidBorderTarget ().add (borderReq2);
+
+		assertTrue (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
+		
+		// Border already destroyed
+		map.getRow ().get (5).getCell ().get (10).setWrecked (true);
+		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
 	}
 }

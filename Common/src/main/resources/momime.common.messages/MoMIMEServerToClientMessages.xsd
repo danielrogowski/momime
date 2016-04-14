@@ -1245,6 +1245,28 @@ Each successfully dispelled spell will separately send out the usual FOW updates
 			</xsd:complexContent>
 		</xsd:complexType>
 	</xsd:element>
+	
+	<xsd:element name="showSpellAnimationMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Tells the client to display a spell animation.  There are no other side effects, so whatever
+damage or updates to the game world take place as a result of the spell must be sent separately.
+
+Currently this is only used for SPECIAL_COMBAT_SPELLS but I will probably move more spell animations to this model in future,
+where the animation and game world updates are sent in separate messages.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="castInCombat" type="xsd:boolean" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetUnitURN" type="momimemsgs:unitURN" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="combatTargetLocation" type="map:mapCoordinates2D" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
 
 <!-- Map areas -->
 

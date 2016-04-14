@@ -655,6 +655,16 @@ public final class TestSpellProcessingImpl
 	@Test(expected=MomException.class)
 	public final void testCastCombatNow_NotParticipating () throws Exception
 	{
+		// Server knowledge
+		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		
+		final FogOfWarMemory trueMap = new FogOfWarMemory ();
+		trueMap.setMap (trueTerrain);
+		
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		gsk.setTrueMap (trueMap);
+
 		// Spell to cast
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
@@ -671,12 +681,16 @@ public final class TestSpellProcessingImpl
 		castingPd.setPlayerID (7);
 		
 		final PlayerServerDetails castingPlayer = new PlayerServerDetails (castingPd, null, null, null, null); 
+
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		
 		// Set up test object
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
 
 		// Run test
-		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, null);
+		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
 	}
 	
 	/**

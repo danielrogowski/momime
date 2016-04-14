@@ -249,7 +249,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				else
 				{
 					// Common routine used by both the client and server does the guts of the validation work
-					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isLocationValidTargetForSpell (spell, (MapCoordinates3DEx) getOverlandTargetLocation (),
+					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, (MapCoordinates3DEx) getOverlandTargetLocation (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (), mom.getServerDB ());
 					if (reason == TargetSpellResult.VALID_TARGET)
 						error = null;

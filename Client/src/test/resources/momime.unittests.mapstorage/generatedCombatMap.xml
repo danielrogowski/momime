@@ -4,6 +4,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -15,6 +17,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -22,6 +26,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -29,6 +35,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -36,6 +44,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -43,6 +53,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -50,6 +62,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -57,6 +71,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -64,6 +80,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -71,6 +89,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -78,6 +98,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -85,6 +107,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -94,6 +118,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -101,6 +127,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -108,6 +136,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -115,6 +145,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -122,6 +154,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -129,6 +163,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -136,6 +172,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -143,6 +181,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -154,6 +194,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -161,6 +203,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -168,6 +212,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -175,6 +221,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -184,6 +232,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -191,6 +241,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -198,6 +250,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -205,6 +259,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -212,6 +268,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -219,6 +277,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -226,6 +286,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -233,6 +295,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -240,6 +304,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -247,6 +313,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -254,6 +322,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -261,6 +331,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -270,6 +342,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -277,6 +351,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -284,6 +360,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -291,6 +369,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -302,6 +382,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -309,6 +391,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -316,6 +400,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -323,6 +409,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -330,6 +418,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -337,6 +427,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -344,6 +436,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -351,6 +445,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -360,6 +456,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -367,6 +465,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -374,6 +474,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -381,6 +483,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -388,6 +492,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -395,6 +501,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -402,6 +510,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -409,6 +519,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -416,6 +528,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -423,6 +537,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -430,6 +546,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -437,6 +555,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -446,6 +566,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -453,6 +575,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -460,6 +584,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -467,6 +593,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -478,6 +606,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -485,6 +615,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -492,6 +624,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -499,6 +633,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -506,6 +642,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -513,6 +651,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -520,6 +660,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -527,6 +669,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -536,6 +680,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -543,6 +689,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -550,6 +698,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -557,17 +707,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-				<tileLayer>
-					<layer>R</layer>
-					<combatTileTypeID>CRL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -579,6 +720,21 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+				<tileLayer>
+					<layer>R</layer>
+					<combatTileTypeID>CRL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -586,6 +742,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -593,6 +751,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -600,6 +760,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -607,6 +769,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -614,6 +778,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -621,6 +787,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -630,6 +798,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -641,6 +811,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -648,17 +820,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-				<tileLayer>
-					<layer>R</layer>
-					<combatTileTypeID>CRL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -670,6 +833,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -681,6 +846,21 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+				<tileLayer>
+					<layer>R</layer>
+					<combatTileTypeID>CRL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -688,6 +868,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -695,6 +877,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -706,6 +890,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -713,6 +899,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -720,6 +908,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -727,6 +917,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -736,6 +928,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -743,6 +937,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -750,6 +946,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -765,6 +963,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -780,6 +980,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -795,6 +997,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -810,6 +1014,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -817,24 +1023,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-				<tileLayer>
-					<layer>B</layer>
-					<combatTileTypeID>CBL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -846,6 +1036,30 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+				<tileLayer>
+					<layer>B</layer>
+					<combatTileTypeID>CBL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -853,6 +1067,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -862,6 +1078,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -869,6 +1087,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL03</combatTileTypeID>
@@ -880,6 +1100,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -895,6 +1117,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -910,6 +1134,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -925,6 +1151,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -936,6 +1164,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -943,6 +1173,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -950,6 +1182,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -957,6 +1191,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -964,6 +1200,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -971,6 +1209,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -980,6 +1220,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -987,6 +1229,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -994,17 +1238,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-				<tileLayer>
-					<layer>R</layer>
-					<combatTileTypeID>CRL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1016,6 +1251,21 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+				<tileLayer>
+					<layer>R</layer>
+					<combatTileTypeID>CRL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1031,6 +1281,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1046,6 +1298,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1053,6 +1307,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1060,6 +1316,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1067,6 +1325,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1074,6 +1334,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1081,6 +1343,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1090,6 +1354,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1097,6 +1363,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1104,17 +1372,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-				<tileLayer>
-					<layer>R</layer>
-					<combatTileTypeID>CRL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1126,6 +1385,21 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+				<tileLayer>
+					<layer>R</layer>
+					<combatTileTypeID>CRL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1137,6 +1411,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>true</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1144,6 +1420,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1151,6 +1429,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1158,6 +1438,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1165,6 +1447,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1172,6 +1456,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1179,6 +1465,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1188,6 +1476,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1199,6 +1489,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1210,6 +1502,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1217,6 +1511,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1228,6 +1524,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1239,6 +1537,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1246,6 +1546,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1253,6 +1555,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1260,6 +1564,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1267,6 +1573,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1274,6 +1582,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1281,6 +1591,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1290,6 +1602,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1297,6 +1611,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1304,6 +1620,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1311,6 +1629,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1322,6 +1642,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1329,6 +1651,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1336,6 +1660,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1343,6 +1669,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1350,6 +1678,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1357,6 +1687,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1364,6 +1696,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1371,6 +1705,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1380,6 +1716,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1387,6 +1725,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1394,6 +1734,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1401,6 +1743,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1408,6 +1752,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1415,6 +1761,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1422,6 +1770,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1429,6 +1779,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1436,6 +1788,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1443,6 +1797,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1450,6 +1806,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1461,6 +1819,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1470,6 +1830,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1477,6 +1839,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1484,6 +1848,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1491,6 +1857,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1498,6 +1866,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1505,6 +1875,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1512,6 +1884,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1519,6 +1893,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1526,6 +1902,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1533,99 +1911,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL02</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>true</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL02</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>true</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL02</combatTileTypeID>
-				</tileLayer>
-			</cell>
-		</row>
-		<row>
-			<cell>
-				<offMapEdge>true</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL02</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1633,6 +1920,17 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL02</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1642,6 +1940,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1649,6 +1949,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1656,6 +1958,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1663,6 +1967,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1670,6 +1976,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1677,6 +1985,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1684,6 +1994,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1691,6 +2003,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1698,6 +2012,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1705,13 +2021,17 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
+					<combatTileTypeID>CTL02</combatTileTypeID>
 				</tileLayer>
 			</cell>
 			<cell>
-				<offMapEdge>true</offMapEdge>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1719,6 +2039,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1728,6 +2050,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1735,6 +2059,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1742,6 +2068,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1749,6 +2077,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1756,6 +2086,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1763,6 +2095,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1770,6 +2104,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1777,6 +2113,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1784,6 +2122,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1791,13 +2131,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1805,6 +2140,127 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL02</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL02</combatTileTypeID>
+				</tileLayer>
+			</cell>
+		</row>
+		<row>
+			<cell>
+				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1814,6 +2270,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1821,6 +2279,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1828,6 +2288,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1835,6 +2297,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1842,6 +2306,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1853,6 +2319,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1860,6 +2328,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1867,6 +2337,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1874,6 +2346,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1881,6 +2355,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1888,6 +2364,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1895,6 +2373,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1904,6 +2384,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -1911,6 +2393,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1918,6 +2402,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1925,6 +2411,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1932,6 +2420,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1939,6 +2429,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1950,6 +2442,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1957,6 +2451,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1964,6 +2460,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1971,6 +2469,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1978,6 +2478,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1985,6 +2487,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -1994,6 +2498,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -2001,6 +2507,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2008,6 +2516,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2015,6 +2525,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2022,6 +2534,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2029,6 +2543,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2036,6 +2552,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2043,6 +2561,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2050,6 +2570,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2057,6 +2579,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2064,6 +2588,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2071,6 +2597,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2084,6 +2612,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -2091,6 +2621,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -2098,6 +2630,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -2105,6 +2639,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2112,6 +2648,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2119,6 +2657,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2126,6 +2666,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2133,6 +2675,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2140,6 +2684,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2147,6 +2693,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2154,6 +2702,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>false</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2161,6 +2711,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2170,6 +2722,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -2177,6 +2731,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -2184,6 +2740,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2191,6 +2749,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2198,6 +2758,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2205,6 +2767,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2212,6 +2776,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2219,6 +2785,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2226,6 +2794,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2233,6 +2803,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2240,6 +2812,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2247,6 +2821,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2256,6 +2832,8 @@
 		<row>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -2263,6 +2841,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL02</combatTileTypeID>
@@ -2274,6 +2854,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2281,6 +2863,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2288,6 +2872,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2295,31 +2881,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-				<tileLayer>
-					<layer>B</layer>
-					<combatTileTypeID>CBL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>true</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>true</offMapEdge>
-				<tileLayer>
-					<layer>T</layer>
-					<combatTileTypeID>CTL01</combatTileTypeID>
-				</tileLayer>
-			</cell>
-			<cell>
-				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2331,6 +2894,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2338,6 +2903,8 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>
@@ -2345,6 +2912,39 @@
 			</cell>
 			<cell>
 				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+				<tileLayer>
+					<layer>B</layer>
+					<combatTileTypeID>CBL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
+				<tileLayer>
+					<layer>T</layer>
+					<combatTileTypeID>CTL01</combatTileTypeID>
+				</tileLayer>
+			</cell>
+			<cell>
+				<offMapEdge>true</offMapEdge>
+				<wrecked>false</wrecked>
+				<mud>false</mud>
 				<tileLayer>
 					<layer>T</layer>
 					<combatTileTypeID>CTL01</combatTileTypeID>

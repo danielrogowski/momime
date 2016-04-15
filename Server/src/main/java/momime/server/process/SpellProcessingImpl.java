@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.areas.operations.MapAreaOperations2D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -42,6 +43,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -77,6 +79,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.mapgenerator.CombatMapArea;
 import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.utils.HeroItemServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
@@ -153,6 +156,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
+	
+	/** Operations for processing combat maps */
+	private MapAreaOperations2D<MomCombatTile> combatMapOperations;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -485,7 +491,12 @@ public final class SpellProcessingImpl implements SpellProcessing
 			else
 			{
 				// Make an area muddy, the range is in the "scouting" range field
-				gc.getCombatMap ().getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).setMud (true);
+				final CombatMapArea areaBridge = new CombatMapArea ();
+				areaBridge.setArea (gc.getCombatMap ());
+				areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
+				
+				getCombatMapOperations ().processCellsWithinRadius (areaBridge, targetLocation.getX (), targetLocation.getY (),
+					spell.getSpellScoutingRange (), (tile) -> tile.setMud (true));
 			}
 			
 			// Show animation for it
@@ -1190,5 +1201,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
 		combatStartAndEnd = cse;
+	}
+
+	/**
+	 * @return Operations for processing combat maps
+	 */
+	public final MapAreaOperations2D<MomCombatTile> getCombatMapOperations ()
+	{
+		return combatMapOperations;
+	}
+
+	/**
+	 * @param op Operations for processing combat maps
+	 */
+	public final void setCombatMapOperations (final MapAreaOperations2D<MomCombatTile> op)
+	{
+		combatMapOperations = op;
 	}
 }

@@ -546,6 +546,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
+	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->
+	<bean id="combatMapOperations" class="com.ndg.map.areas.operations.MapAreaOperations2DImpl">
+		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+	</bean>
+
 	<bean id="spellProcessing" class="momime.server.process.SpellProcessingImpl">
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
@@ -568,6 +574,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
+		<property name="combatMapOperations" ref="combatMapOperations" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

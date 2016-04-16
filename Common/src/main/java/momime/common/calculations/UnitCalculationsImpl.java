@@ -206,7 +206,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		
 		if (!tile.isOffMapEdge ())
 		{
-			// Any types of wall here that block movement?  (not using iterator because there's going to be so few of these)
+			// Any types of wall here that block movement?  (not using iterator because there's going to be so few of these).
+			// NB. You still cannot walk across corners of city walls even when they've been wrecked.
 			boolean impassableBorderFound = false;
 			for (final String borderID : tile.getBorderID ())
 				if (db.findCombatTileBorder (borderID, "calculateDoubleMovementToEnterCombatTile").getBlocksMovement () == CombatTileBorderBlocksMovementID.WHOLE_TILE_IMPASSABLE)
@@ -737,9 +738,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	{
 		boolean ok;
 		
-		// Quick check, if there's no border at all then must be OK
+		// Quick check, if there's no border at all or the tile has been wrecked, then must be OK
 		final MomCombatTile tile = combatMap.getRow ().get (y).getCell ().get (x);
-		if (tile.getBorderDirections () == null)
+		if ((tile.getBorderDirections () == null) || (tile.isWrecked ()))
 			ok = true;
 		
 		// So there is a border - check if it includes the requested direction.

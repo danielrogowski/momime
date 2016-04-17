@@ -22353,12 +22353,12 @@
 	</spell>
 	<movementRateRule>
 		<unitSkillID>US022</unitSkillID>
-		<doubleMovement>1</doubleMovement>
+		<doubleMovement>2</doubleMovement>
 		<description>Non-corporeal *prevents* unit from gaining any other benefits, e.g. enchanted road, wind walking</description>
 	</movementRateRule>
 	<movementRateRule>
 		<unitSkillID>SS181</unitSkillID>
-		<doubleMovement>1</doubleMovement>
+		<doubleMovement>2</doubleMovement>
 		<description>Non-corporeal *prevents* unit from gaining any other benefits, e.g. enchanted road, wind walking</description>
 	</movementRateRule>
 	<movementRateRule>

@@ -718,8 +718,10 @@ public final class CombatUI extends MomClientFrameUI
 										final CombatTileBorderImageGfx borderImage = getGraphicsDB ().findCombatTileBorderImages (combatTileBorderID, tile.getBorderDirections (), frontOrBack);
 										if (borderImage != null)
 										{
+											// If wall section is wrecked then use alternative image if we have one (wrecked wall sections are N/A for walls of fire/darkness)
 											final BufferedImage image = getAnim ().loadImageOrAnimationFrame
-												(tile.isWrecked () ? borderImage.getWreckedFile () : borderImage.getStandardFile (), borderImage.getStandardAnimation (), false);
+												(((tile.isWrecked ()) && (borderImage.getWreckedFile () != null)) ?
+													borderImage.getWreckedFile () : borderImage.getStandardFile (), borderImage.getStandardAnimation (), false);
 											
 											zOrderGraphics.drawImage (image,
 												getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) - (2 * 2),

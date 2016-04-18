@@ -219,15 +219,20 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				// This works in the opposite order than the Delphi code, here we check the lowest layer (terrain) first and overwrite the value with higher layers
 				// The delphi code started with the highest layer and worked down, but skipping as soon as it got a non-zero value
 				for (final CombatMapLayerID layer : CombatMapLayerID.values ())
-				{
-					final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, layer);
-					if (combatTileTypeID != null)		// layers are often not all populated
+					
+					// Mud overrides anything else in the terrain layer, but movement rate can still be reduced by roads or set to impassable by buildings
+					if ((layer == CombatMapLayerID.TERRAIN) && (tile.isMud ()))
+						result = 1000;
+					else
 					{
-						final Integer movement = db.findCombatTileType (combatTileTypeID, "calculateDoubleMovementToEnterCombatTile").getDoubleMovement ();
-						if (movement != null)		// many tiles have no effect at all on movement, e.g. houses
-							result = movement;
+						final String combatTileTypeID = getCombatMapUtils ().getCombatTileTypeForLayer (tile, layer);
+						if (combatTileTypeID != null)		// layers are often not all populated
+						{
+							final Integer movement = db.findCombatTileType (combatTileTypeID, "calculateDoubleMovementToEnterCombatTile").getDoubleMovement ();
+							if (movement != null)		// many tiles have no effect at all on movement, e.g. houses
+								result = movement;
+						}
 					}
-				}
 			}
 		}
 		
@@ -773,6 +778,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * 
 	 * @param moveFrom Combat tile we're moving from
 	 * @param unitBeingMoved The unit moving in combat
+	 * @param ignoresCombatTerrain True if the unit has a skill with the "ignoreCombatTerrain" flag
 	 * @param cellsLeftToCheck List of combat tiles we still need to check movement from
 	 * @param doubleMovementDistances Double the number of movement points it takes to move here, 0=free (enchanted road), negative=cannot reach
 	 * @param movementDirections Trace of unit directions taken to reach here
@@ -784,9 +790,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
-	final void processCell (final MapCoordinates2DEx moveFrom, final MemoryUnit unitBeingMoved, final List<MapCoordinates2DEx> cellsLeftToCheck,
-		final int [] [] doubleMovementDistances, final int [] [] movementDirections, final CombatMoveType [] [] movementTypes,
-		final boolean [] [] ourUnits, final boolean [] [] enemyUnits,
+	final void processCell (final MapCoordinates2DEx moveFrom, final MemoryUnit unitBeingMoved, final boolean ignoresCombatTerrain,
+		final List<MapCoordinates2DEx> cellsLeftToCheck, final int [] [] doubleMovementDistances, final int [] [] movementDirections,
+		final CombatMoveType [] [] movementTypes, final boolean [] [] ourUnits, final boolean [] [] enemyUnits,
 		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
@@ -815,12 +821,16 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 					// Can we cross the border between the two tiles?
 					// i.e. check there's not a stone wall in the exit from the first cell or in the entrance to the second cell
-					else if ((okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), moveFrom.getX (), moveFrom.getY (), d, db)) &&
+					else if ((ignoresCombatTerrain) ||
+						((okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), moveFrom.getX (), moveFrom.getY (), d, db)) &&
 						(okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), moveTo.getX (), moveTo.getY (),
-							getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), d+4), db)))
+							getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystem.getCoordinateSystemType (), d+4), db))))
 					{
 						// How much movement (total) will it cost us to get here
-						final int newDistance = distance + doubleMovementToEnterThisTile;
+						
+						// If we ignore terrain, then we only call calculateDoubleMovementToEnterCombatTile to check if the
+						// tile is impassable or not - but if its not, then override whatever value we got back
+						final int newDistance = distance + (ignoresCombatTerrain ? 2 : doubleMovementToEnterThisTile);
 						
 						// Is this better than the current value for this cell?
 						if ((doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] < 0) || (newDistance < doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()]))
@@ -901,6 +911,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		// We know combatLocation from the unit being moved
 		final MapCoordinates3DEx combatLocation = (MapCoordinates3DEx) unitBeingMoved.getCombatLocation ();
 		
+		// Work this out once only
+		final boolean ignoresCombatTerrain = getUnitSkillUtils ().unitIgnoresCombatTerrain (unitBeingMoved, fogOfWarMemory.getMaintainedSpell (), db);
+		
 		// Mark locations of units on both sides (including the unit being moved)
 		for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
 			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
@@ -920,13 +933,13 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		// This is to prevent the situation in the original MoM where you are on Enchanced Road,
 		// hit 'Up' and the game decides to move you up-left and then right to get there.
 		final List<MapCoordinates2DEx> cellsLeftToCheck = new ArrayList<MapCoordinates2DEx> ();
-		processCell ((MapCoordinates2DEx) unitBeingMoved.getCombatPosition (), unitBeingMoved, cellsLeftToCheck,
+		processCell ((MapCoordinates2DEx) unitBeingMoved.getCombatPosition (), unitBeingMoved, ignoresCombatTerrain, cellsLeftToCheck,
 			doubleMovementDistances, movementDirections, movementTypes, ourUnits, enemyUnits, combatMap, combatMapCoordinateSystem, db);
 		
 		// Keep going until there's nowhere left to check
 		while (cellsLeftToCheck.size () > 0)
 		{
-			processCell (cellsLeftToCheck.get (0), unitBeingMoved, cellsLeftToCheck,
+			processCell (cellsLeftToCheck.get (0), unitBeingMoved, ignoresCombatTerrain, cellsLeftToCheck,
 				doubleMovementDistances, movementDirections, movementTypes, ourUnits, enemyUnits, combatMap, combatMapCoordinateSystem, db);
 			cellsLeftToCheck.remove (0);
 		}

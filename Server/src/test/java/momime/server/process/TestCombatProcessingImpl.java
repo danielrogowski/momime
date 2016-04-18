@@ -3473,6 +3473,10 @@ public final class TestCombatProcessingImpl
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (2), db)).thenReturn (2);
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
+		
+		// Non-flying unit
+		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		when (unitSkillUtils.unitIgnoresCombatTerrain (tu, trueMap.getMaintainedSpell (), db)).thenReturn (false);
 
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -3480,6 +3484,7 @@ public final class TestCombatProcessingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setUnitUtils (unitUtils);
+		proc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
 		proc.okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);

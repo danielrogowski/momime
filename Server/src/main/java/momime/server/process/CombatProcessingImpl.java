@@ -1048,6 +1048,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 			// However we still use up movement, as above.
 			if ((movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE) && (directions.size () > 0))
 				directions.remove (directions.size () - 1);
+
+			// Work this out once only
+			final boolean ignoresCombatTerrain = getUnitSkillUtils ().unitIgnoresCombatTerrain (tu, mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
 			
 			// Send direction messages to the client, reducing the unit's movement with each step
 			// (so that's why we do this even if both players are AI)
@@ -1063,7 +1066,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (F)");
 				
 				// How much movement did it take us to walk into this cell?
-				reduceMovementRemaining (tu, getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+				// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
+				reduceMovementRemaining (tu, ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 					(combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
 				msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
 				

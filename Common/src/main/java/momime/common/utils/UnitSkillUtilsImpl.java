@@ -32,6 +32,7 @@ import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -464,6 +465,32 @@ public final class UnitSkillUtilsImpl implements UnitSkillUtils
 
 		log.trace ("Exiting getModifiedUpkeepValue = " + upkeepValue);
 		return upkeepValue;
+	}
+	
+	/**
+	 * @param unit Unit we want to check
+	 * @param spells List of known maintained spells
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
+	 */
+	@Override
+	public final boolean unitIgnoresCombatTerrain (final MemoryUnit unit, final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering unitIgnoresCombatTerrain: Unit URN " + unit.getUnitURN ());
+
+		boolean found = false;
+		final Iterator<UnitSkillAndValue> iter = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, unit, db).iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final UnitSkill skillDef = db.findUnitSkill (iter.next ().getUnitSkillID (), "unitIgnoresCombatTerrain");
+			if ((skillDef.isIgnoreCombatTerrain () != null) && (skillDef.isIgnoreCombatTerrain ()))
+				found = true;
+		}
+
+		log.trace ("Exiting unitIgnoresCombatTerrain = " + found);
+		return found;
 	}
 
 	/**

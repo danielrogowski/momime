@@ -716,6 +716,13 @@ is defined in the graphics XML file.</xsd:documentation>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="ignoreCombatTerrain" type="xsd:boolean" nxe:label="Ignore combat terrain?">
+		        <xsd:annotation>
+		        	<xsd:documentation>If a unit has any skill where this is set to true, they will not be hindered by combat terrain that slows movement, such as
+ridges or the Earth to Mud skill.  They also don't gain the benefit of faster movement from roads.  It also allows them to ignore combat tile borders
+that normally block movement across them (i.e. stone walls).  Completely impassable tiles such as buildings or stone wall corner sections are still impassable.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="addsToSkill" type="momimecommon:addsToSkill" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="negatedBySkill" type="momimecommon:negatedBySkill" />
 		</xsd:sequence>

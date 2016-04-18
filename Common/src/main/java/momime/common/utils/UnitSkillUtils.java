@@ -13,6 +13,7 @@ import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 
 /**
@@ -60,4 +61,14 @@ public interface UnitSkillUtils
 	public int getModifiedUpkeepValue (final AvailableUnit unit, final String productionTypeID, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
+
+	/**
+	 * @param unit Unit we want to check
+	 * @param spells List of known maintained spells
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
+	 */
+	public boolean unitIgnoresCombatTerrain (final MemoryUnit unit, final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+		throws RecordNotFoundException;
 }

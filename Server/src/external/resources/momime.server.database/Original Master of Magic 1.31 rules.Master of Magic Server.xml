@@ -10552,6 +10552,7 @@
 		<unitSkillDescription>Movement: Swimming</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="USX04">
+		<ignoreCombatTerrain>true</ignoreCombatTerrain>
 		<unitSkillDescription>Movement: Flying</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
@@ -10630,6 +10631,7 @@
 		<unitSkillDescription>Movement: Path Finding</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US022">
+		<ignoreCombatTerrain>true</ignoreCombatTerrain>
 		<unitSkillDescription>Movement: Non-corporeal</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US023">
@@ -11058,6 +11060,7 @@
 		<unitSkillDescription>Spell Lock</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS056">
+		<ignoreCombatTerrain>true</ignoreCombatTerrain>
 		<unitSkillDescription>Flight</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
@@ -11105,6 +11108,7 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS093C">
 		<changesUnitToMagicRealm>LTC</changesUnitToMagicRealm>
+		<ignoreCombatTerrain>true</ignoreCombatTerrain>
 		<unitSkillDescription>Chaos Channels - Flight</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
 	</unitSkill>
@@ -11324,6 +11328,7 @@
 		<unitSkillDescription>Beserk</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS181">
+		<ignoreCombatTerrain>true</ignoreCombatTerrain>
 		<unitSkillDescription>Wraith Form</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC005">

@@ -548,6 +548,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="combatUI" ref="combatUI" />
 	</bean>
 
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype">

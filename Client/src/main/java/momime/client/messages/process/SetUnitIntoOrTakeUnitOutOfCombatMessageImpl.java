@@ -181,14 +181,14 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		if (getCombatPosition () == null)
 		{
 			// Stop drawing the unit
-			getCombatUI ().getUnitToDrawAtEachLocation () [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = null;
+			getCombatUI ().setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), null);
 			getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit);
 			getCombatMapProcessing ().selectNextUnitToMoveCombat ();
 		}
 		else
 		{
 			// Show the unit
-			getCombatUI ().getUnitToDrawAtEachLocation () [getCombatPosition ().getY ()] [getCombatPosition ().getX ()] = unit;
+			getCombatUI ().setUnitToDrawAtLocation (getCombatPosition ().getX (), getCombatPosition ().getY (), unit);
 	
 			// Give it movement this turn
 			unit.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),

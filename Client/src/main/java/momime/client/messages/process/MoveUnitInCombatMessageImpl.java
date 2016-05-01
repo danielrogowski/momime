@@ -1,6 +1,8 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -8,12 +10,15 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.ClientUnitCalculations;
+import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetGfx;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
 import momime.common.utils.UnitUtils;
@@ -84,6 +89,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/** Current base zOrder of this unit on the combat map */
 	private int currentZOrder;
 	
+	/** Animations to draw on top of the unit that's moving */
+	private List<AnimationGfx> animations;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -100,10 +108,20 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		if (!getMoveFrom ().equals (unit.getCombatPosition ()))
 			log.warn ("MoveUnitInCombatMessageImpl is trying to move Unit URN " + getUnitURN () + " but its previous location stated in the message (" + getMoveFrom () +
-				") isn't what we expected (" + unit.getCombatPosition () + ")"); 
+				") isn't what we expected (" + unit.getCombatPosition () + ")");
+		
+		// See if we need to draw an animation that moves with the unit, e.g. Confusion
+		animations = new ArrayList<AnimationGfx> ();
+		for (final UnitSkillAndValue unitSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList
+			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ()))
+		{
+			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkill.getUnitSkillID (), "MoveUnitInCombatMessageImpl.start");
+			if (unitSkillGfx.getUnitSkillCombatAnimation () != null)
+				animations.add (getGraphicsDB ().findAnimation (unitSkillGfx.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
+		}
 		
 		// Remove the unit from the map cell it is leaving so the regular drawing routine stops drawing this unit
-		getCombatUI ().getUnitToDrawAtEachLocation () [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = null;
+		getCombatUI ().setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), null);
 		unit.setCombatPosition (null);
 		getCombatUI ().setUnitMoving (this);
 
@@ -192,7 +210,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		// Set the unit into the new map cell so the regular drawing routine takes over drawing this unit again
 		unit.setCombatPosition (moveTo);
-		getCombatUI ().getUnitToDrawAtEachLocation () [moveTo.getY ()] [moveTo.getX ()] = unit;
+		getCombatUI ().setUnitToDrawAtLocation (moveTo.getX (), moveTo.getY (), unit);
 		getCombatUI ().setUnitMoving (null);
 		
 		// Update remaining movement
@@ -382,5 +400,13 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	public final int getCurrentZOrder ()
 	{
 		return currentZOrder;
+	}
+
+	/**
+	 * @return Animations to draw on top of the unit that's moving
+	 */
+	public final List<AnimationGfx> getAnimations ()
+	{
+		return animations;
 	}
 }

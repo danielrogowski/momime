@@ -1223,7 +1223,6 @@
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_107_000 - EarthElemental-PhantomWarriors-AirElemental.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP046">
-		<combatCastAnimation>CONFUSION</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/NEWSOUND_011_000 - Confusion.mp3</spellSoundFile>
 	</spell>
 	<spell spellID="SP047">
@@ -40285,6 +40284,7 @@
 	<unitSkill unitSkillID="SC046">
 		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC046-icon.png</unitSkillImageFile>
+		<unitSkillCombatAnimation>CONFUSION</unitSkillCombatAnimation>
 	</unitSkill>
 	<unitSkill unitSkillID="SC053">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -65845,7 +65845,7 @@
 	</animation>
 	<animation animationID="CONFUSION">
 		<animationDescription>Confusion twirly blue dots</animationDescription>
-		<animationSpeed>6</animationSpeed>
+		<animationSpeed>10</animationSpeed>
 		<combatCastOffsetX>1</combatCastOffsetX>
 		<combatCastOffsetY>-22</combatCastOffsetY>
 		<frame>/momime.client.graphics/spells/SP046/cast-frame1.png</frame>

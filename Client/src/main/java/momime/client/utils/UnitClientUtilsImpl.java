@@ -330,7 +330,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		getUnitUtils ().beforeKillingUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unit.getUnitURN ());	// Removes spells cast on unit
 		
 		if ((unit.getCombatLocation () != null) && (unit.getCombatLocation ().equals (getCombatUI ().getCombatLocation ())))
-			getCombatUI ().getUnitToDrawAtEachLocation () [unit.getCombatPosition ().getY ()] [unit.getCombatPosition ().getX ()] = null;
+			getCombatUI ().setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), null);
 		
 		// Is there a unit info screen open for it?
 		final UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unit.getUnitURN ());

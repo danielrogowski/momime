@@ -6,6 +6,12 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
@@ -25,17 +31,10 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 /**
  * Server sends this to notify clients of new maintained spells cast, or those that have newly come into view
@@ -100,159 +99,166 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 		animatedByOtherFrame = false;
 
 		// Overland enchantments are always animated
-		if (spell.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+		switch (spell.getSpellBookSectionID ())
 		{
-			animatedByOtherFrame = true;
-			
-			final OverlandEnchantmentsUI overlandEnchantmentsPopup = getPrototypeFrameCreator ().createOverlandEnchantments ();
-			overlandEnchantmentsPopup.setAddSpellMessage (this);
-			overlandEnchantmentsPopup.setVisible (true);
-		}
-		
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
-		{
-			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
-			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
-				(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
-			{
-				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
-				
-				// Redraw the NTMs
-				getNewTurnMessagesUI ().languageChanged ();
-			}
-			
-			// If we cast it OR its our city, then display a popup window for it, as long as it isn't in combat
-			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-				(getMaintainedSpell ().getCityLocation ().getZ ()).getRow ().get (getMaintainedSpell ().getCityLocation ().getY ()).getCell ().get (getMaintainedSpell ().getCityLocation ().getX ()).getCityData ();
-			
-			if ((!getMaintainedSpell ().isCastInCombat ()) &&
-				((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) ||
-				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))))
-			{
+			case OVERLAND_ENCHANTMENTS:
 				animatedByOtherFrame = true;
 				
-				final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
-				miniCityView.setCityLocation ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
-				miniCityView.setAddSpellMessage (this);
-				miniCityView.setVisible (true);
-			}
-		}
+				final OverlandEnchantmentsUI overlandEnchantmentsPopup = getPrototypeFrameCreator ().createOverlandEnchantments ();
+				overlandEnchantmentsPopup.setAddSpellMessage (this);
+				overlandEnchantmentsPopup.setVisible (true);
+				break;
+				
+			case CITY_ENCHANTMENTS:
+			case CITY_CURSES:
+				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
+					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
+				{
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+					
+					// Redraw the NTMs
+					getNewTurnMessagesUI ().languageChanged ();
+				}
+				
+				// If we cast it OR its our city, then display a popup window for it, as long as it isn't in combat
+				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(getMaintainedSpell ().getCityLocation ().getZ ()).getRow ().get (getMaintainedSpell ().getCityLocation ().getY ()).getCell ().get (getMaintainedSpell ().getCityLocation ().getX ()).getCityData ();
+				
+				if ((!getMaintainedSpell ().isCastInCombat ()) &&
+					((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) ||
+					((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ()))))
+				{
+					animatedByOtherFrame = true;
+					
+					final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
+					miniCityView.setCityLocation ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+					miniCityView.setAddSpellMessage (this);
+					miniCityView.setVisible (true);
+				}
+				break;
 		
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS))
-		{
-			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
-			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
-				(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
-			{
-				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedUnitURN (getMaintainedSpell ().getUnitURN ());
-				
-				// Redraw the NTMs
-				getNewTurnMessagesUI ().languageChanged ();
-			}
-			
-			// Is there an animation to display for it?
-			final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
-			
-			anim = null;
-			if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getUnitURN () != null) && (isNewlyCast ()))
-			{
-				final MemoryUnit spellTargetUnit = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl");
-				
-				anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
-
-				if (getMaintainedSpell ().isCastInCombat ())
+			case UNIT_ENCHANTMENTS:
+			case UNIT_CURSES:
+			case SPECIAL_UNIT_SPELLS:
+				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
+					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 				{
-					// Show anim on CombatUI
-					final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedUnitURN (getMaintainedSpell ().getUnitURN ());
 					
-					final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
-					final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
+					// Redraw the NTMs
+					getNewTurnMessagesUI ().languageChanged ();
+				}
+				
+				// Is there an animation to display for it?
+				if ((getMaintainedSpell ().getUnitURN () != null) && (isNewlyCast ()))
+				{
+					final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
 					
-					getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-						(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet),
-					adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-						(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet)));
+					anim = null;
+					if (spellGfx.getCombatCastAnimation () != null)
+					{
+						final MemoryUnit spellTargetUnit = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl");
+						
+						anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
+		
+						if (getMaintainedSpell ().isCastInCombat ())
+						{
+							// Show anim on CombatUI
+							final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
+							
+							final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
+							final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
+							
+							getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet),
+							adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet)));
+			
+							getCombatUI ().setCombatCastAnimationFrame (0);
+							getCombatUI ().setCombatCastAnimation (anim);
+							getCombatUI ().setCombatCastAnimationInFront (true);
+						}
+						else
+						{
+							// Show anim on OverlandMapUI
+							final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
+		
+							final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
+							final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
+		
+							getOverlandMapUI ().setOverlandCastAnimationX (adjustX + (overlandMapTileSet.getTileWidth () * spellTargetUnit.getUnitLocation ().getX ()));
+							getOverlandMapUI ().setOverlandCastAnimationY (adjustY + (overlandMapTileSet.getTileHeight () * spellTargetUnit.getUnitLocation ().getY ()));
+							
+							getOverlandMapUI ().setOverlandCastAnimationFrame (0);
+							getOverlandMapUI ().setOverlandCastAnimation (anim);
+						}
+					}
+					
+					// See if there's a sound effect defined in the graphics XML file
+					if (spellGfx.getSpellSoundFile () != null)
+						try
+						{
+							getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
+				break;
+				
+			case SPECIAL_OVERLAND_SPELLS:
+				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
+				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
+					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
+				{
+					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+					
+					// Redraw the NTMs
+					getNewTurnMessagesUI ().languageChanged ();
+				}
+				
+				// Is there an animation to display for it?
+				final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
+				
+				anim = null;
+				if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getCityLocation () != null) && (isNewlyCast ()))
+				{
+					anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
 	
-					getCombatUI ().setCombatCastAnimationFrame (0);
-					getCombatUI ().setCombatCastAnimation (anim);
-					getCombatUI ().setCombatCastAnimationInFront (true);
-				}
-				else
-				{
-					// Show anim on OverlandMapUI
-					final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
-
-					final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
-					final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
-
-					getOverlandMapUI ().setOverlandCastAnimationX (adjustX + (overlandMapTileSet.getTileWidth () * spellTargetUnit.getUnitLocation ().getX ()));
-					getOverlandMapUI ().setOverlandCastAnimationY (adjustY + (overlandMapTileSet.getTileHeight () * spellTargetUnit.getUnitLocation ().getY ()));
-					
-					getOverlandMapUI ().setOverlandCastAnimationFrame (0);
-					getOverlandMapUI ().setOverlandCastAnimation (anim);
-				}
-			
-				// See if there's a sound effect defined in the graphics XML file
-				if (spellGfx.getSpellSoundFile () != null)
-					try
+					if (!getMaintainedSpell ().isCastInCombat ())
 					{
-						getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+						// Show anim on OverlandMapUI
+						final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
+	
+						final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
+						final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
+	
+						getOverlandMapUI ().setOverlandCastAnimationX (adjustX + (overlandMapTileSet.getTileWidth () * getMaintainedSpell ().getCityLocation ().getX ()));
+						getOverlandMapUI ().setOverlandCastAnimationY (adjustY + (overlandMapTileSet.getTileHeight () * getMaintainedSpell ().getCityLocation ().getY ()));
+						
+						getOverlandMapUI ().setOverlandCastAnimationFrame (0);
+						getOverlandMapUI ().setOverlandCastAnimation (anim);
 					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-			}
-		}
-
-		else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
-		{
-			// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
-			if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
-				(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
-			{
-				getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
 				
-				// Redraw the NTMs
-				getNewTurnMessagesUI ().languageChanged ();
-			}
-			
-			// Is there an animation to display for it?
-			final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
-			
-			anim = null;
-			if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getCityLocation () != null) && (isNewlyCast ()))
-			{
-				anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
-
-				if (!getMaintainedSpell ().isCastInCombat ())
-				{
-					// Show anim on OverlandMapUI
-					final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
-
-					final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
-					final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
-
-					getOverlandMapUI ().setOverlandCastAnimationX (adjustX + (overlandMapTileSet.getTileWidth () * getMaintainedSpell ().getCityLocation ().getX ()));
-					getOverlandMapUI ().setOverlandCastAnimationY (adjustY + (overlandMapTileSet.getTileHeight () * getMaintainedSpell ().getCityLocation ().getY ()));
-					
-					getOverlandMapUI ().setOverlandCastAnimationFrame (0);
-					getOverlandMapUI ().setOverlandCastAnimation (anim);
+					// See if there's a sound effect defined in the graphics XML file
+					if (spellGfx.getSpellSoundFile () != null)
+						try
+						{
+							getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
 				}
-			
-				// See if there's a sound effect defined in the graphics XML file
-				if (spellGfx.getSpellSoundFile () != null)
-					try
-					{
-						getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-			}
+				break;
+				
+			// Not all spell book sections need special animation handling
+			default:
 		}
 		
 		// If no spell animation, then just add it right away
@@ -338,10 +344,18 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				if (getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ())
 				{
 					final MemoryUnit u = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl");
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl.processOneUpdate (A)");
 					
 					if (u.getOwningPlayerID () == getClient ().getOurPlayerID ())
 						getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) u.getUnitLocation ());
+				}
+				
+				// If its being cast on a combat unit, need to check if we now need to display an animation over the unit's head to show the new effect, e.g. Confusion
+				if (getMaintainedSpell ().isCastInCombat ())
+				{
+					final MemoryUnit u = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl.processOneUpdate (C)");
+					getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), u);
 				}
 			}
 		}

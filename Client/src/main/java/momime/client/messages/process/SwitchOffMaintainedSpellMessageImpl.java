@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 import momime.client.MomClient;
 import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -45,6 +46,9 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
+	/** Combat UI */
+	private CombatUI combatUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -71,7 +75,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 		{
 			// Find the spell details before we remove it
 			final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findSpellURN
-				(getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), "SwitchOffMaintainedSpellMessageImpl");
+				(getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate");
 			
 			// Remove it
 			getMemoryMaintainedSpellUtils ().removeSpellURN (getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
@@ -98,10 +102,18 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 				if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
 				{
 					final MemoryUnit u = getUnitUtils ().findUnitURN (spell.getUnitURN (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "SwitchOffMaintainedSpellMessageImpl");
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (A)");
 					
 					if (u.getOwningPlayerID () == getClient ().getOurPlayerID ())
 						getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) u.getUnitLocation ());
+				}
+
+				// If its being removed from a combat unit, need to check if we need to remove an animation from over the unit's head to no longer show the effect, e.g. Confusion
+				if (spell.isCastInCombat ())
+				{
+					final MemoryUnit u = getUnitUtils ().findUnitURN (spell.getUnitURN (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (C)");
+					getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), u);
 				}
 			}
 			
@@ -195,5 +207,21 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
 	}
 }

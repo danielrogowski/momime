@@ -222,6 +222,10 @@
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="moveActionID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimegfx:animationPK" name="unitSkillFKanimation">
+			<xsd:selector xpath="unitSkill" />
+			<xsd:field xpath="unitSkillCombatAnimation" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimegfx:cityViewElementSetPK" name="cityViewElementFKcityViewElementSet">
 			<xsd:selector xpath="cityViewElement" />
 			<xsd:field xpath="cityViewElementSetID" />
@@ -617,6 +621,14 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>combatActionDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatImage" type="momimegfx:imageFilename" nxe:label="Unit skill (spell effect) image" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatAnimation" type="momimegfx:animationID" nxe:label="Unit skill (spell effect) animation" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>

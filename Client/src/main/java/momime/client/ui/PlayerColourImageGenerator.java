@@ -2,6 +2,7 @@ package momime.client.ui;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Various items like unit backgrounds and city flags are displayed in the player's colour.
@@ -52,4 +53,16 @@ public interface PlayerColourImageGenerator
 	 * @throws IOException If there is a problem loading the border image
 	 */
 	public BufferedImage getFriendlyZoneBorderImage (final int d, final int playerID) throws IOException;
+
+	/**
+	 * Images (typically of unit figures) shaded by one or more unit skills that change a unit's appearance, e.g. Black Sleep or Invisibility
+	 * The key to this is the name of the image, followed by the colour codes that have been applied to its appearance, in alphabetical order, with a : delimiter
+	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:808080:FFFF50"
+	 * 
+	 * @param imageName Filename of the base colour image
+	 * @param shadingColours List of shading colours to apply to the image
+	 * @return Image with modified colours
+	 * @throws IOException If there is a problem loading the image
+	 */
+	public BufferedImage getSkillShadedImage (final String imageName, final List<String> shadingColours) throws IOException;
 }

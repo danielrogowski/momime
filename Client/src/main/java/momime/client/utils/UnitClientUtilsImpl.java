@@ -548,12 +548,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param baseZOrder Z order for the top of the tile
+	 * @param shadingColours List of shading colours to apply to the image
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder) throws IOException
+		final int baseZOrder, final List<String> shadingColours) throws IOException
 	{
 		// Draw sample tile
 		if (sampleTileImageFile != null)
@@ -574,14 +575,14 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		{
 			final UnitGfx secondaryUnit = getGraphicsDB ().findUnit (unit.getSecondaryUnitID (), "drawUnitFigures");
 			final UnitCombatImageGfx secondaryUnitImage = secondaryUnit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
-			secondaryImage = getAnim ().loadImageOrAnimationFrame
-				(secondaryUnitImage.getUnitCombatImageFile (), secondaryUnitImage.getUnitCombatAnimation (), registeredAnimation);
+			secondaryImage = getAnim ().loadImageOrAnimationFrameWithShading
+				(secondaryUnitImage.getUnitCombatImageFile (), secondaryUnitImage.getUnitCombatAnimation (), shadingColours, registeredAnimation);
 		}
 		
 		// Work out the image to draw n times
 		final UnitCombatImageGfx unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
-		final BufferedImage image = getAnim ().loadImageOrAnimationFrame
-			(unitImage.getUnitCombatImageFile (), unitImage.getUnitCombatAnimation (), registeredAnimation);
+		final BufferedImage image = getAnim ().loadImageOrAnimationFrameWithShading
+			(unitImage.getUnitCombatImageFile (), unitImage.getUnitCombatAnimation (), shadingColours, registeredAnimation);
 		
 		// Draw the figure in each position
 		int n = 1;
@@ -620,11 +621,12 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param drawSampleTile Whether to draw a sample tile (grass or ocean) under this unit
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param baseZOrder Z order for the top of the tile
+	 * @param shadingColours List of shading colours to apply to the image
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final AvailableUnit unit, final String combatActionID, final int direction, final ZOrderGraphics g,
-		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder) throws IOException
+		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder, final List<String> shadingColours) throws IOException
 	{
 		// Get total figures
 		final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "drawUnitFigures");
@@ -654,7 +656,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			
 			// Call other version now that we have all the necessary values
 			drawUnitFigures (unit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, combatActionID,
-				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder);
+				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours);
 		}
 	}
 	

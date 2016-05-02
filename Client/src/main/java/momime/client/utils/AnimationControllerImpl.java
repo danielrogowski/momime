@@ -15,6 +15,7 @@ import javax.swing.Timer;
 
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 
@@ -73,9 +74,12 @@ public final class AnimationControllerImpl implements AnimationController
 	/** Lists the frame number that animations are on, keyed by the animationID */
 	private Map<String, AnimationFrameCounter> animationFrames = new HashMap<String, AnimationFrameCounter> ();
 	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
+
 	/**
-	 * Gets the image for either a staticly named image or an animationID.  If an animationID, will use the frame speed
-	 * defined in the graphics XML to animate the frames appropriately.
+	 * Gets the name of an image for either a staticly named image or an animationID.  If an animationID, will use the frame speed
+	 * defined in the graphics XML to animate the frames appropriately.  Internal method shared by both versions of loadImageOrAnimationFrame.
 	 * 
 	 * imageResourceName and animationID should be mutally exclusive; one should be filled in and the other left null.
 	 * 
@@ -86,15 +90,14 @@ public final class AnimationControllerImpl implements AnimationController
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
-	@Override
-	public final BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation)
+	final String getImageOrAnimationFrameName (final String imageResourceName, final String animationID, final boolean registeredAnimation)
 		throws MomException, IOException
 	{
 		if ((imageResourceName == null) && (animationID == null))
-			throw new MomException ("loadImageOrAnimationFrame: imageResourceName and animationID were both null");
+			throw new MomException ("getImageOrAnimationFrameName: imageResourceName and animationID were both null");
 
 		if ((imageResourceName != null) && (animationID != null))
-			throw new MomException ("loadImageOrAnimationFrame: imageResourceName \"" + imageResourceName + "\" and animationID \"" + animationID + "\" were both non-null");
+			throw new MomException ("getImageOrAnimationFrameName: imageResourceName \"" + imageResourceName + "\" and animationID \"" + animationID + "\" were both non-null");
 		
 		// Easy if its a static image
 		final String imageName;
@@ -125,10 +128,54 @@ public final class AnimationControllerImpl implements AnimationController
 			imageName = anim.getFrame ().get (frameLoop);
 		}
 
-		// Now can load the image
-		return getUtils ().loadImage (imageName);
+		// Now we know the image name
+		return imageName;
+	}
+	
+	/**
+	 * Gets the image for either a staticly named image or an animationID.  If an animationID, will use the frame speed
+	 * defined in the graphics XML to animate the frames appropriately.
+	 * 
+	 * imageResourceName and animationID should be mutally exclusive; one should be filled in and the other left null.
+	 * 
+	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
+	 * @param animationID AnimationID from the graphics XML file
+	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @return Appropriate image to display
+	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
+	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
+	 */
+	@Override
+	public final BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation)
+		throws MomException, IOException
+	{
+		return getUtils ().loadImage (getImageOrAnimationFrameName (imageResourceName, animationID, registeredAnimation));
 	}
 
+	/**
+	 * Gets the image for either a staticly named image or an animationID.  Which frame of the animation to display
+	 * should have been previously set by calling registerRepaintTrigger to start the animation.  Then modifies the
+	 * retrieved image according to the colour(s) in the list of shadingColours.
+	 * 
+	 * imageResourceName and animationID should be mutally exclusive; one should be filled in and the other left null.
+	 * 
+	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
+	 * @param animationID AnimationID from the graphics XML file
+	 * @param shadingColours List of shading colours to apply to the image
+	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @return Appropriate image to display
+	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
+	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
+	 */
+	@Override
+	public final BufferedImage loadImageOrAnimationFrameWithShading (final String imageResourceName, final String animationID,
+		final List<String> shadingColours, final boolean registeredAnimation)
+		throws MomException, IOException
+	{
+		return getPlayerColourImageGenerator ().getSkillShadedImage
+			(getImageOrAnimationFrameName (imageResourceName, animationID, registeredAnimation), shadingColours);
+	}
+	
 	/**
 	 * Call this when a component starts to display an animation - the component should know how to draw
 	 * itself using the animation (via the loadImageOrAnimationFrame method) - so calling this method
@@ -291,6 +338,22 @@ public final class AnimationControllerImpl implements AnimationController
 		utils = util;
 	}
 
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
+	}
+	
 	/**
 	 * Internal class holding the current frame and the list of components on which we need to trigger repaint events when the current frame changes
 	 */

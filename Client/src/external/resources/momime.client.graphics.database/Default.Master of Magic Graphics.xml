@@ -39964,6 +39964,7 @@
 	<unitSkill unitSkillID="US122">
 		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/US122-icon.png</unitSkillImageFile>
+		<unitSkillCombatColour>80D0FF</unitSkillCombatColour>
 	</unitSkill>
 	<unitSkill unitSkillID="US123">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -40317,6 +40318,7 @@
 	<unitSkill unitSkillID="SC165">
 		<unitSkillTypeID>N</unitSkillTypeID>
 		<unitSkillImageFile>/momime.client.graphics/unitSkills/SC165-icon.png</unitSkillImageFile>
+		<unitSkillCombatColour>707070</unitSkillCombatColour>
 	</unitSkill>
 	<unitSkill unitSkillID="SC172">
 		<unitSkillTypeID>N</unitSkillTypeID>

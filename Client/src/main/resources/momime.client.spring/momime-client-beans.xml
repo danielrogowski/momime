@@ -808,6 +808,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="anim" class="momime.client.utils.AnimationControllerImpl">
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 	
 	<bean id="overlandMapClientUtils" class="momime.client.utils.OverlandMapClientUtilsImpl">

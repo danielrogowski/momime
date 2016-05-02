@@ -323,10 +323,10 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 					zOrderGraphics.setGraphics (g);
 					
 					getUnitClientUtils ().drawUnitFigures (SAMPLE_UNIT_1_ID, SAMPLE_UNIT_1_UNIT_TYPE_ID, SAMPLE_UNIT_1_FIGURE_COUNT, SAMPLE_UNIT_1_FIGURE_COUNT,
-						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, zOrderGraphics, 0, 26, SAMPLE_TILE_FILENAME, true, 0);
+						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, zOrderGraphics, 0, 26, SAMPLE_TILE_FILENAME, true, 0, null);
 
 					getUnitClientUtils ().drawUnitFigures (SAMPLE_UNIT_2_ID, SAMPLE_UNIT_2_UNIT_TYPE_ID, SAMPLE_UNIT_2_FIGURE_COUNT, SAMPLE_UNIT_2_FIGURE_COUNT,
-						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, zOrderGraphics, 65, 26, SAMPLE_TILE_FILENAME, true, 0);
+						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, zOrderGraphics, 65, 26, SAMPLE_TILE_FILENAME, true, 0, null);
 				}
 				catch (final Exception e)
 				{

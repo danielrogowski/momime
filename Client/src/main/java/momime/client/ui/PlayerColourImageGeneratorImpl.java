@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -38,6 +39,13 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 
 	/** Colour multiplied gems for each player */
 	private final Map<Integer, BufferedImage> wizardGemImages = new HashMap<Integer, BufferedImage> ();
+	
+	/**
+	 * Images (typically of unit figures) shaded by one or more unit skills that change a unit's appearance, e.g. Black Sleep or Invisibility
+	 * The key to this is the name of the image, followed by the colour codes that have been applied to its appearance, in alphabetical order, with a : delimiter
+	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:808080:FFFF50"
+	 */
+	private final Map<String, BufferedImage> skillShadedImages = new HashMap<String, BufferedImage> ();
 	
 	/** Uncoloured unit background image */
 	private BufferedImage unitBackgroundImage;
@@ -244,6 +252,44 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 		return image;
 	}
 
+	/**
+	 * Images (typically of unit figures) shaded by one or more unit skills that change a unit's appearance, e.g. Black Sleep or Invisibility
+	 * The key to this is the name of the image, followed by the colour codes that have been applied to its appearance, in alphabetical order, with a : delimiter
+	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:808080:FFFF50"
+	 * 
+	 * @param imageName Filename of the base colour image
+	 * @param shadingColours List of shading colours to apply to the image
+	 * @return Image with modified colours
+	 * @throws IOException If there is a problem loading the image
+	 */
+	@Override
+	public final BufferedImage getSkillShadedImage (final String imageName, final List<String> shadingColours) throws IOException
+	{
+		BufferedImage image;
+		if ((shadingColours == null) || (shadingColours.size () == 0))
+			image = getUtils ().loadImage (imageName);
+		else
+		{
+			final List<String> sortedColours = shadingColours.stream ().sorted ().collect (Collectors.toList ());
+			
+			final StringBuilder key = new StringBuilder (imageName);
+			sortedColours.forEach (s -> key.append (":" + s));
+			image = skillShadedImages.get (key.toString ());
+			if (image == null)
+			{
+				// Generate new image
+				image = getUtils ().loadImage (imageName);
+				for (final String colour : sortedColours)
+					image = getUtils ().multiplyImageByColour (image, Integer.parseInt (colour, 16));
+				
+				// Store it in the map
+				skillShadedImages.put (key.toString (), image);
+			}
+		}
+		
+		return image;
+	}
+	
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */

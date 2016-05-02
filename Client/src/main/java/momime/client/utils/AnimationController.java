@@ -2,6 +2,7 @@ package momime.client.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JComponent;
 
@@ -62,6 +63,25 @@ public interface AnimationController
 	public BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation)
 		throws MomException, IOException;
 
+	/**
+	 * Gets the image for either a staticly named image or an animationID.  Which frame of the animation to display
+	 * should have been previously set by calling registerRepaintTrigger to start the animation.  Then modifies the
+	 * retrieved image according to the colour(s) in the list of shadingColours.
+	 * 
+	 * imageResourceName and animationID should be mutally exclusive; one should be filled in and the other left null.
+	 * 
+	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
+	 * @param animationID AnimationID from the graphics XML file
+	 * @param shadingColours List of shading colours to apply to the image
+	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @return Appropriate image to display
+	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
+	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
+	 */
+	public BufferedImage loadImageOrAnimationFrameWithShading (final String imageResourceName, final String animationID,
+		final List<String> shadingColours, final boolean registeredAnimation)
+		throws MomException, IOException;
+	
 	/**
 	 * Call this when a component starts to display an animation - the component should know how to draw
 	 * itself using the animation (via the loadImageOrAnimationFrame method) - so calling this method

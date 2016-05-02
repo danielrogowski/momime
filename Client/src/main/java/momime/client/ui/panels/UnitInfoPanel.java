@@ -43,6 +43,7 @@ import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitGfx;
+import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.database.BuildingLang;
 import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
@@ -214,6 +215,9 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Unit being displayed */
 	private AvailableUnit unit;
 
+	/** List of shading colours to apply to the unit images */
+	private List<String> shadingColours;
+	
 	/** Cell renderer for drawing the unit attribute text and component breakdowns */
 	private UnitAttributeListCellRenderer unitAttributeListCellRenderer;
 	
@@ -309,7 +313,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 							// Show combat anim of unit 
 							zOrderGraphics.setGraphics (g);
 							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
-							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0);
+							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours);
 						}
 					}
 				}
@@ -562,6 +566,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Find details about this kind of building
 		building = showBuilding;
 		unit = null;
+		shadingColours = null;
 		final Building buildingInfo = getClient ().getClientDB ().findBuilding (building.getBuildingID (), "showBuilding");
 		
 		// Update language independant labels
@@ -643,6 +648,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Find details about this kind of unit
 		unit = showUnit;
 		building = null;
+		shadingColours = new ArrayList<String> ();
 		final Unit unitInfo = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "showUnit");
 
 		// Update language independant labels
@@ -727,12 +733,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		for (final UnitSkillAndValue thisSkill : mergedSkills)
 		{
 			// Which list do we display it in?
-			final UnitSkillTypeID skillType = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitInfoPanel").getUnitSkillTypeID ();
+			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitInfoPanel");
 			
-			if ((skillType == UnitSkillTypeID.ATTRIBUTE) ||
-				((skillType == UnitSkillTypeID.MODIFYABLE) && ((getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.MODIFYABLE) ||
-																						(getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED))) ||
-				((skillType == UnitSkillTypeID.FIXED) && (getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED)))
+			if ((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE) ||
+				((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.MODIFYABLE) && ((getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.MODIFYABLE) ||
+																															(getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED))) ||
+				((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.FIXED) && (getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED)))
 			{
 				// Display as unit attribute
 				unitAttributesItems.addElement (new UnitAttributeWithBreakdownImage (thisSkill.getUnitSkillID (),
@@ -752,6 +758,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					unitSkillsItems.addElement (skill);
 				}
 			}
+			
+			// Does this skill mean we should colour the unit image differently?
+			if (unitSkillGfx.getUnitSkillCombatColour () != null)
+				shadingColours.add (unitSkillGfx.getUnitSkillCombatColour ());
 		}
 		
 		// Add ability to cast fixed spells

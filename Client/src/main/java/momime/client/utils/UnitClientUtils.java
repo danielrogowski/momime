@@ -2,6 +2,7 @@ package momime.client.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.xml.bind.JAXBException;
@@ -148,11 +149,12 @@ public interface UnitClientUtils
 	 * @param sampleTileImageFile The filename of the sample tile (grass or ocean) to draw under this unit; if null, then no sample tile will be drawn
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param baseZOrder Z order for the top of the tile
+	 * @param shadingColours List of shading colours to apply to the image
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder) throws IOException;
+		final int baseZOrder, final List<String> shadingColours) throws IOException;
 
 	/**
 	 * Version which derives most of the values from an existing unit object.
@@ -166,10 +168,11 @@ public interface UnitClientUtils
 	 * @param drawSampleTile Whether to draw a sample tile (grass or ocean) under this unit
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param baseZOrder Z order for the top of the tile
+	 * @param shadingColours List of shading colours to apply to the image
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final AvailableUnit unit, final String combatActionID, final int direction, final ZOrderGraphics g,
-		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder) throws IOException;
+		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder, final List<String> shadingColours) throws IOException;
 
 	/**
 	 * When we 4x the number of units in a tile, if they still take the same amount of time to walk from tile to tile, it looks

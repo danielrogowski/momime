@@ -648,7 +648,7 @@ public final class CombatUI extends MomClientFrameUI
 								// Draw unit
 								getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
 									getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
-									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50);
+									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours ());
 							}
 							catch (final Exception e)
 							{
@@ -662,7 +662,7 @@ public final class CombatUI extends MomClientFrameUI
 					{
 						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true);
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
-							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder ());
+							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours ());
 					}
 					catch (final Exception e)
 					{
@@ -1874,15 +1874,21 @@ public final class CombatUI extends MomClientFrameUI
 		else
 		{
 			final List<AnimationGfx> animations = new ArrayList<AnimationGfx> ();
+			final List<String> shadingColours = new ArrayList<String> ();
+			
 			for (final UnitSkillAndValue unitSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), u, getClient ().getClientDB ()))
 			{
 				final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkill.getUnitSkillID (), "setUnitToDrawAtLocation");
 				if (unitSkillGfx.getUnitSkillCombatAnimation () != null)
 					animations.add (getGraphicsDB ().findAnimation (unitSkillGfx.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
+				
+				if (unitSkillGfx.getUnitSkillCombatColour () != null)
+					shadingColours.add (unitSkillGfx.getUnitSkillCombatColour ());
 			}
 			
-			unitToDrawAtEachLocation [y] [x] = new CombatUIUnitAndAnimations (u, (animations.size () == 0) ? null : animations);
+			unitToDrawAtEachLocation [y] [x] = new CombatUIUnitAndAnimations
+				(u, (animations.size () == 0) ? null : animations, (shadingColours.size () == 0) ? null : shadingColours);
 		}
 	}
 

@@ -92,6 +92,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/** Animations to draw on top of the unit that's moving */
 	private List<AnimationGfx> animations;
 	
+	/** List of shading colours to apply to the image */
+	private List<String> shadingColours;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -112,12 +115,17 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		// See if we need to draw an animation that moves with the unit, e.g. Confusion
 		animations = new ArrayList<AnimationGfx> ();
+		shadingColours = new ArrayList<String> ();
+		
 		for (final UnitSkillAndValue unitSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList
 			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ()))
 		{
 			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkill.getUnitSkillID (), "MoveUnitInCombatMessageImpl.start");
 			if (unitSkillGfx.getUnitSkillCombatAnimation () != null)
 				animations.add (getGraphicsDB ().findAnimation (unitSkillGfx.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
+			
+			if (unitSkillGfx.getUnitSkillCombatColour () != null)
+				shadingColours.add (unitSkillGfx.getUnitSkillCombatColour ());
 		}
 		
 		// Remove the unit from the map cell it is leaving so the regular drawing routine stops drawing this unit
@@ -408,5 +416,13 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	public final List<AnimationGfx> getAnimations ()
 	{
 		return animations;
+	}
+
+	/**
+	 * @return List of shading colours to apply to the image
+	 */
+	public final List<String> getShadingColours ()
+	{
+		return shadingColours;
 	}
 }

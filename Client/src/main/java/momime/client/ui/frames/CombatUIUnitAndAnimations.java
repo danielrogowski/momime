@@ -18,14 +18,19 @@ final class CombatUIUnitAndAnimations
 	/** Animations to draw on top of the unit */
 	private final List<AnimationGfx> animations;
 	
+	/** List of shading colours to apply to the image */
+	private final List<String> shadingColours;
+	
 	/**
 	 * @param aUnit Unit to draw at this combat map cell
 	 * @param anAnimations Animations to draw on top of the unit
+	 * @param aShadingColours List of shading colours to apply to the image
 	 */
-	CombatUIUnitAndAnimations (final MemoryUnit aUnit, final List<AnimationGfx> anAnimations)
+	CombatUIUnitAndAnimations (final MemoryUnit aUnit, final List<AnimationGfx> anAnimations, final List<String> aShadingColours)
 	{
 		unit = aUnit;
 		animations = anAnimations;
+		shadingColours = aShadingColours;
 	}
 
 	/**
@@ -42,5 +47,13 @@ final class CombatUIUnitAndAnimations
 	public final List<AnimationGfx> getAnimations ()
 	{
 		return animations;
+	}
+
+	/**
+	 * @return List of shading colours to apply to the image
+	 */
+	public final List<String> getShadingColours ()
+	{
+		return shadingColours;
 	}
 }

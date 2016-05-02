@@ -755,7 +755,7 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatImage" type="momimegfx:imageFilename" nxe:label="Unit skill (spell effect) image" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatColour" type="momimecommon:colour" nxe:label="Unit skill (spell effect) colour" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillCombatAnimation" type="momimegfx:animationID" nxe:label="Unit skill (spell effect) animation" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>

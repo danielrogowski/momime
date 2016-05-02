@@ -770,8 +770,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		else
 			mergedSkills = unit.getUnitHasSkill ();
 		
+		// If they DID have the skill but something is zeroing it out, then DO display the greyed out icons
 		final BufferedImage image;
-		if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null,
+		if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE, null, null,
 			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) <= 0)
 			
 			image = null;

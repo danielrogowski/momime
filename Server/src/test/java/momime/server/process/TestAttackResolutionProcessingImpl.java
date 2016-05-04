@@ -377,7 +377,7 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer,
 			potentialDamageToDefender, players, fow, db)).thenReturn (3);
 		
 		// Range penalty
@@ -492,9 +492,9 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
-		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer,
 			potentialDamageToDefender, players, fow, db)).thenReturn (3);
-		when (damageCalc.calculateSingleFigureDamage (attackerWrapper, attackingPlayer, defendingPlayer,
+		when (damageCalc.calculateSingleFigureDamage (attackerWrapper, null, attackingPlayer, defendingPlayer,
 			potentialDamageToAttacker, players, fow, db)).thenReturn (4);
 		
 		// Set up object to test
@@ -678,7 +678,7 @@ public final class TestAttackResolutionProcessingImpl
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer,
+		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer,
 			potentialDamageToDefender, players, fow, db)).thenReturn (3);
 		
 		// Set up object to test

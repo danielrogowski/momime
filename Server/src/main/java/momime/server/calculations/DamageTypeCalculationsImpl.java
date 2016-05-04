@@ -1,5 +1,6 @@
 package momime.server.calculations;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -87,6 +88,7 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	
 	/**
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack - this is only used for immunity purposes, e.g. do they have a skill that can punch through our weapon immunity?  So its fine to pass null here
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param divisor Divisor that applies to the unit's actual defence score but NOT to any boosts from immunities; this is used for Armour Piercing, which according to the
 	 * 	Wiki applies BEFORE boosts from immunities, e.g. an armour piercing lightning bolt striking magic immune sky drakes has to punch through 50 shields, not 25
@@ -99,7 +101,7 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final int getDefenderDefenceStrength (final MemoryUnit defender, final AttackDamage attackDamage, final int divisor,
+	public final int getDefenderDefenceStrength (final MemoryUnit defender, final MemoryUnit attacker, final AttackDamage attackDamage, final int divisor,
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
@@ -110,11 +112,21 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)) / divisor;
 		
+		// Make list for attacker
+		final List<MemoryUnit> attackers;
+		if (attacker == null)
+			attackers = null;
+		else
+		{
+			attackers = new ArrayList<MemoryUnit> ();
+			attackers.add (attacker);
+		}
+		
 		// See if we have any immunity to the type of damage
 		for (final DamageTypeImmunity imm : attackDamage.getDamageType ().getDamageTypeImmunity ())
 			
 			// Total immunity was already dealt with in attackFromUnitSkill
-			if ((imm.getBoostsDefenceTo () != null) && (getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (), imm.getUnitSkillID (), null,
+			if ((imm.getBoostsDefenceTo () != null) && (getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (), imm.getUnitSkillID (), attackers,
 				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db) >= 0))
 				
 				defenderDefenceStrength = Math.max (defenderDefenceStrength, imm.getBoostsDefenceTo ());

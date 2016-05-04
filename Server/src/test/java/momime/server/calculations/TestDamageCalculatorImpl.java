@@ -746,7 +746,7 @@ public final class TestDamageCalculatorImpl
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (defender, attackDamage, 1, players, fow, db)).thenReturn (4);
+		when (damageTypeCalculations.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, fow, db)).thenReturn (4);
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
@@ -769,7 +769,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
+		assertEquals (3, calc.calculateSingleFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -851,7 +851,7 @@ public final class TestDamageCalculatorImpl
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (defender, attackDamage, 2, players, fow, db)).thenReturn (2);		// halved by Armour Piercing
+		when (damageTypeCalculations.getDefenderDefenceStrength (defender, null, attackDamage, 2, players, fow, db)).thenReturn (2);		// halved by Armour Piercing
 
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
@@ -874,7 +874,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (3, calc.calculateArmourPiercingDamage (defenderWrapper, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
+		assertEquals (3, calc.calculateArmourPiercingDamage (defenderWrapper, null, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1057,7 +1057,7 @@ public final class TestDamageCalculatorImpl
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (defender, attackDamage, 1, players, fow, db)).thenReturn (4);
+		when (damageTypeCalculations.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, fow, db)).thenReturn (4);
 		
 		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, null,
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
@@ -1086,7 +1086,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (5, calc.calculateMultiFigureDamage (defenderWrapper, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
+		assertEquals (5, calc.calculateMultiFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());

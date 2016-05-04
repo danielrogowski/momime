@@ -301,6 +301,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * absorbed or every figure is killed.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack - this is only used for immunity purposes, e.g. do they have a skill that can punch through our weapon immunity?  So its fine to pass null here
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
@@ -315,13 +316,14 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateSingleFigureDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public final int calculateSingleFigureDamage (final AttackResolutionUnit defender, final MemoryUnit attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
 		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateSingleFigureDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
 		
-		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attackDamage, 1, players, mem, db);
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attacker, attackDamage, 1, players, mem, db);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength,
 			attackingPlayer, defendingPlayer, attackDamage, players, mem, db);
@@ -335,6 +337,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * damage except that the defender's defence stat is halved.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack - this is only used for immunity purposes, e.g. do they have a skill that can punch through our weapon immunity?  So its fine to pass null here
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
@@ -349,13 +352,14 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateArmourPiercingDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public final int calculateArmourPiercingDamage (final AttackResolutionUnit defender, final MemoryUnit attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateArmourPiercingDamage: Unit URN " + defender.getUnit ().getUnitURN () + " hit by " + attackDamage);
 		
-		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attackDamage, 2, players, mem, db);
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attacker, attackDamage, 2, players, mem, db);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength,
 			attackingPlayer, defendingPlayer, attackDamage, players, mem, db);
@@ -468,6 +472,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * making their own to hit and defence rolls.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack - this is only used for immunity purposes, e.g. do they have a skill that can punch through our weapon immunity?  So its fine to pass null here
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
@@ -482,7 +487,8 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateMultiFigureDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public final int calculateMultiFigureDamage (final AttackResolutionUnit defender, final MemoryUnit attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -502,7 +508,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
 			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)));
-		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attackDamage, 1, players, mem, db));
+		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getUnit (), attacker, attackDamage, 1, players, mem, db));
 
 		damageCalculationMsg.setChanceToDefend (3 + Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (defender.getUnit (), defenderSkills,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,

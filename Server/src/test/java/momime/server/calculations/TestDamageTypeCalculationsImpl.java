@@ -484,7 +484,7 @@ public final class TestDamageTypeCalculationsImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (5, calc.getDefenderDefenceStrength (defender, attackDamage, 1, players, mem, db));
+		assertEquals (5, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, mem, db));
 	}
 
 	/**
@@ -517,7 +517,7 @@ public final class TestDamageTypeCalculationsImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (2, calc.getDefenderDefenceStrength (defender, attackDamage, 2, players, mem, db));
+		assertEquals (2, calc.getDefenderDefenceStrength (defender, null, attackDamage, 2, players, mem, db));
 	}
 
 	/**
@@ -558,7 +558,7 @@ public final class TestDamageTypeCalculationsImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (5, calc.getDefenderDefenceStrength (defender, attackDamage, 1, players, mem, db));
+		assertEquals (5, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, mem, db));
 	}
 
 	/**
@@ -599,7 +599,7 @@ public final class TestDamageTypeCalculationsImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (50, calc.getDefenderDefenceStrength (defender, attackDamage, 1, players, mem, db));
+		assertEquals (50, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, mem, db));
 	}
 
 	/**
@@ -640,6 +640,6 @@ public final class TestDamageTypeCalculationsImpl
 		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (50, calc.getDefenderDefenceStrength (defender, attackDamage, 2, players, mem, db));
+		assertEquals (50, calc.getDefenderDefenceStrength (defender, null, attackDamage, 2, players, mem, db));
 	}
 }

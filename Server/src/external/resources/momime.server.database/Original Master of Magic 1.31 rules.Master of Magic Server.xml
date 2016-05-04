@@ -10747,6 +10747,18 @@
 		<unitSkillDescription>Immunity: Stoning</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US008">
+		<negatedBySkill>
+			<negatedBySkillID>SS124</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
+		<negatedBySkill>
+			<negatedBySkillID>SS086</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
+		<negatedBySkill>
+			<negatedBySkillID>SS094</negatedBySkillID>
+			<negatedByUnitID>E</negatedByUnitID>
+		</negatedBySkill>
 		<unitSkillDescription>Immunity: Weapon</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US009">

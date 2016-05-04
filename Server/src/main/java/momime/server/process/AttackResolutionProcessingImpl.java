@@ -221,12 +221,16 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				{
 					// Work out potential damage from the attack
 					final AttackDamage potentialDamage;
+					final AttackResolutionUnit unitMakingAttack;
 					if (step == null)
+					{
 						potentialDamage = commonPotentialDamageToDefenders;
+						unitMakingAttack = null;
+					}
 					else
 					{
 						// Which unit is attacking?
-						final AttackResolutionUnit unitMakingAttack = (step.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
+						unitMakingAttack = (step.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
 						if (unitMakingAttack == null)
 							throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
 						
@@ -265,15 +269,16 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							switch (potentialDamage.getDamageResolutionTypeID ())
 							{
 								case SINGLE_FIGURE:
-									thisDamage = getDamageCalculator ().calculateSingleFigureDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
+									thisDamage = getDamageCalculator ().calculateSingleFigureDamage (unitBeingAttacked,
+										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
+										attackingPlayer, defendingPlayer, potentialDamage,
 										players, mem, db); 
 									break;
 									
 								case ARMOUR_PIERCING:
-									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage (unitBeingAttacked,
+										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
+										attackingPlayer, defendingPlayer, potentialDamage, players, mem, db); 
 									break;
 									
 								case ILLUSIONARY:
@@ -283,9 +288,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									break;
 				
 								case MULTI_FIGURE:
-									thisDamage = getDamageCalculator ().calculateMultiFigureDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+									thisDamage = getDamageCalculator ().calculateMultiFigureDamage (unitBeingAttacked,
+										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
+										attackingPlayer, defendingPlayer, potentialDamage, players, mem, db); 
 									break;
 									
 								case DOOM:

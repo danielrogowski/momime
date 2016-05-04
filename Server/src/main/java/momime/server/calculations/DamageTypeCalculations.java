@@ -32,6 +32,7 @@ public interface DamageTypeCalculations
 	
 	/**
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack - this is only used for immunity purposes, e.g. do they have a skill that can punch through our weapon immunity?  So its fine to pass null here
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
 	 * @param divisor Divisor that applies to the unit's actual defence score but NOT to any boosts from immunities; this is used for Armour Piercing, which according to the
 	 * 	Wiki applies BEFORE boosts from immunities, e.g. an armour piercing lightning bolt striking magic immune sky drakes has to punch through 50 shields, not 25
@@ -43,7 +44,7 @@ public interface DamageTypeCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public int getDefenderDefenceStrength (final MemoryUnit defender, final AttackDamage attackDamage, final int divisor,
+	public int getDefenderDefenceStrength (final MemoryUnit defender, final MemoryUnit attacker, final AttackDamage attackDamage, final int divisor,
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

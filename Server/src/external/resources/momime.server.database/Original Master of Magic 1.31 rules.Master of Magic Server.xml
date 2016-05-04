@@ -11420,6 +11420,7 @@
 		<unitSkillDescription>Lionheart</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS143">
+		<grantsSkill grantsSkillID="US008" />
 		<unitSkillDescription>Invulnerability</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SS144">
@@ -11510,6 +11511,7 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS181">
 		<ignoreCombatTerrain>true</ignoreCombatTerrain>
+		<grantsSkill grantsSkillID="US008" />
 		<unitSkillDescription>Wraith Form</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="SC005">
@@ -11679,12 +11681,6 @@
 		<damageTypeImmunity unitSkillID="US008">
 			<boostsDefenceTo>10</boostsDefenceTo>
 		</damageTypeImmunity>
-		<damageTypeImmunity unitSkillID="SS143">
-			<boostsDefenceTo>10</boostsDefenceTo>
-		</damageTypeImmunity>
-		<damageTypeImmunity unitSkillID="SS181">
-			<boostsDefenceTo>10</boostsDefenceTo>
-		</damageTypeImmunity>
 		<storedDamageTypeID>H</storedDamageTypeID>
 		<damageTypeName>Unmagical melee damage</damageTypeName>
 		<damageTypeDescription>Standard hits from normal units without magical weapons.  Can be blocked by Weapon Immunity.</damageTypeDescription>
@@ -11697,12 +11693,6 @@
 	<damageType damageTypeID="DT03">
 		<enhancedVersion>DT04</enhancedVersion>
 		<damageTypeImmunity unitSkillID="US008">
-			<boostsDefenceTo>10</boostsDefenceTo>
-		</damageTypeImmunity>
-		<damageTypeImmunity unitSkillID="SS143">
-			<boostsDefenceTo>10</boostsDefenceTo>
-		</damageTypeImmunity>
-		<damageTypeImmunity unitSkillID="SS181">
 			<boostsDefenceTo>10</boostsDefenceTo>
 		</damageTypeImmunity>
 		<damageTypeImmunity unitSkillID="US009">

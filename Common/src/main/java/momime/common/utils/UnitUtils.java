@@ -1,6 +1,7 @@
 package momime.common.utils;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -102,6 +103,22 @@ public interface UnitUtils
 	public UnitHasSkillMergedList mergeSpellEffectsIntoSkillList (final List<MemoryMaintainedSpell> spells, final MemoryUnit unit, final CommonDatabase db)
 		throws RecordNotFoundException;
 
+	/**
+	 * Note about the returned map: many skills (such as movement skills) do not have a value, the unit just has the skill, with a null value.
+	 * As such you cannot do (map.get ("US000") != null) to test whether a unit has a particular skill or not.  You must use (map.containsKey ("US000")).
+	 * 
+	 * Also this only lists basic skill values - if a unit has a melee attack of 4, is experienced and has flame blade cast on it, the value in the map will still just read "4".
+	 * To get the true unit skill value, with all modifiers and penalties applied, must pass the map output from this method into "getModifiedSkillValue".
+	 * 
+	 * @param spells List of known maintained spells
+	 * @param unit Unit to expand skill list for
+	 * @param db Lookup lists built over the XML database
+	 * @return List of all skills this unit has, with skills granted from other skills and skills granted from spells merged into the list
+	 * @throws RecordNotFoundException If the definition of a skill or spell cannot be found in the db
+	 */
+	public Map<String, Integer> expandSkillList (final List<MemoryMaintainedSpell> spells, final AvailableUnit unit, final CommonDatabase db)
+		throws RecordNotFoundException;
+	
 	/**
 	 * @param unit Unit to get value for
 	 * @param includeBonuses Whether to include level increases from Warlord+Crusade

@@ -5,12 +5,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doReturn;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -27,6 +28,7 @@ import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.GrantsSkill;
 import momime.common.database.MergedFromPick;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
@@ -513,7 +515,289 @@ public final class TestUnitUtilsImpl
 		assertEquals ("US003", mergedSkills.get (2).getUnitSkillID ());
 		assertEquals (7, mergedSkills.get (2).getUnitSkillValue ().intValue ());
 	}
+	
+	/**
+	 * Tests the expandSkillList method on an available unit which has no skills which grant other skills
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandSkillList_AvailableUnit_BasicSkills () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		for (int n = 1; n <= 3; n++)
+			when (db.findUnitSkill ("US00" + n, "expandSkillList")).thenReturn (new UnitSkill ());
 
+		// Create spells list
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Create test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			
+			if (n == 2)
+				skill.setUnitSkillValue (4);
+			
+			unit.getUnitHasSkill ().add (skill);
+		}
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		final Map<String, Integer> map = utils.expandSkillList (spells, unit, db);
+		
+		// Check results
+		assertEquals (3, map.size ());
+
+		for (int n = 1; n <= 3; n++)
+			assertTrue (map.containsKey ("US00" + n));
+		
+		assertNull (map.get ("US001"));
+		assertEquals (4, map.get ("US002").intValue ());
+		assertNull (map.get ("US003"));
+	}
+
+	/**
+	 * Tests the expandSkillList method on an available unit, where one skill the unit has grants another, which in turn grants another 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandSkillList_AvailableUnit_GrantsSkill () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitSkill skillDef1 = new UnitSkill ();
+		when (db.findUnitSkill ("US001", "expandSkillList")).thenReturn (skillDef1);
+
+		final GrantsSkill skill2GrantsSkill4 = new GrantsSkill ();
+		skill2GrantsSkill4.setGrantsSkillID ("US004");
+		
+		final UnitSkill skillDef2 = new UnitSkill ();
+		skillDef2.getGrantsSkill ().add (skill2GrantsSkill4);
+		when (db.findUnitSkill ("US002", "expandSkillList")).thenReturn (skillDef2);
+
+		final UnitSkill skillDef3 = new UnitSkill ();
+		when (db.findUnitSkill ("US003", "expandSkillList")).thenReturn (skillDef3);
+
+		final GrantsSkill skill4GrantsSkill5 = new GrantsSkill ();
+		skill4GrantsSkill5.setGrantsSkillID ("US005");
+		
+		final UnitSkill skillDef4 = new UnitSkill ();
+		skillDef4.getGrantsSkill ().add (skill4GrantsSkill5);
+		when (db.findUnitSkill ("US004", "expandSkillList")).thenReturn (skillDef4);
+
+		final UnitSkill skillDef5 = new UnitSkill ();
+		when (db.findUnitSkill ("US005", "expandSkillList")).thenReturn (skillDef5);
+
+		// Create spells list
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		// Create test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			
+			if (n == 2)
+				skill.setUnitSkillValue (4);
+			
+			unit.getUnitHasSkill ().add (skill);
+		}
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		final Map<String, Integer> map = utils.expandSkillList (spells, unit, db);
+		
+		// Check results
+		assertEquals (5, map.size ());
+
+		for (int n = 1; n <= 5; n++)
+			assertTrue (map.containsKey ("US00" + n));
+		
+		assertNull (map.get ("US001"));
+		assertEquals (4, map.get ("US002").intValue ());
+		assertNull (map.get ("US003"));
+		assertNull (map.get ("US004"));
+		assertNull (map.get ("US005"));
+	}
+
+	/**
+	 * Tests the expandSkillList method on a unit which has a couple of skills being gained from spells cast on it
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandSkillList_MemoryUnit_SpellSkills () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		for (int n = 1; n <= 4; n++)
+			when (db.findUnitSkill ("US00" + n, "expandSkillList")).thenReturn (new UnitSkill ());
+		
+		final UnitSpellEffect spell1Effect = new UnitSpellEffect ();
+		spell1Effect.setUnitSkillID ("US003");
+		
+		final Spell spell1Def = new Spell ();
+		spell1Def.getUnitSpellEffect ().add (spell1Effect);
+		when (db.findSpell ("SP001", "expandSkillList")).thenReturn (spell1Def);
+
+		final UnitSpellEffect spell2Effect = new UnitSpellEffect ();
+		spell2Effect.setUnitSkillID ("US004");
+		spell2Effect.setUnitSkillValue (6);
+		
+		final Spell spell2Def = new Spell ();
+		spell2Def.getUnitSpellEffect ().add (spell2Effect);
+		when (db.findSpell ("SP002", "expandSkillList")).thenReturn (spell2Def);
+
+		// Create spells list
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
+		spell1.setUnitURN (1);
+		spell1.setSpellID ("SP001");
+		spell1.setUnitSkillID ("US003");
+		spells.add (spell1);
+		
+		final MemoryMaintainedSpell spell2 = new MemoryMaintainedSpell ();
+		spell2.setUnitURN (1);
+		spell2.setSpellID ("SP002");
+		spell2.setUnitSkillID ("US004");
+		spells.add (spell2);
+		
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+
+		final UnitSkillAndValue skill1 = new UnitSkillAndValue ();
+		skill1.setUnitSkillID ("US001");
+		unit.getUnitHasSkill ().add (skill1);
+
+		final UnitSkillAndValue skill2 = new UnitSkillAndValue ();
+		skill2.setUnitSkillID ("US002");
+		skill2.setUnitSkillValue (4);
+		unit.getUnitHasSkill ().add (skill2);
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		final Map<String, Integer> map = utils.expandSkillList (spells, unit, db);
+		
+		// Check results
+		assertEquals (4, map.size ());
+
+		for (int n = 1; n <= 4; n++)
+			assertTrue (map.containsKey ("US00" + n));
+		
+		assertNull (map.get ("US001"));
+		assertEquals (4, map.get ("US002").intValue ());
+		assertNull (map.get ("US003"));
+		assertEquals (6, map.get ("US004").intValue ());
+	}
+
+	/**
+	 * Tests the expandSkillList method on a unit which has a couple of skills being gained from spells cast on it, one of which has grants another skill, which in turn grants another 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandSkillList_MemoryUnit_SpellSkillsGrantOtherSkills () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		// Skill defs
+		for (final int n : new int [] {1, 2, 3, 6})
+			when (db.findUnitSkill ("US00" + n, "expandSkillList")).thenReturn (new UnitSkill ());
+
+		final GrantsSkill skill4GrantsSkill5 = new GrantsSkill ();
+		skill4GrantsSkill5.setGrantsSkillID ("US005");
+
+		final UnitSkill skillDef4 = new UnitSkill ();
+		skillDef4.getGrantsSkill ().add (skill4GrantsSkill5);
+		when (db.findUnitSkill ("US004", "expandSkillList")).thenReturn (skillDef4);
+		
+		final GrantsSkill skill5GrantsSkill6 = new GrantsSkill ();
+		skill5GrantsSkill6.setGrantsSkillID ("US006");
+		
+		final UnitSkill skillDef5 = new UnitSkill ();
+		skillDef5.getGrantsSkill ().add (skill5GrantsSkill6);
+		when (db.findUnitSkill ("US005", "expandSkillList")).thenReturn (skillDef5);
+
+		// Spell defs
+		final UnitSpellEffect spell1Effect = new UnitSpellEffect ();
+		spell1Effect.setUnitSkillID ("US003");
+		
+		final Spell spell1Def = new Spell ();
+		spell1Def.getUnitSpellEffect ().add (spell1Effect);
+		when (db.findSpell ("SP001", "expandSkillList")).thenReturn (spell1Def);
+
+		final UnitSpellEffect spell2Effect = new UnitSpellEffect ();
+		spell2Effect.setUnitSkillID ("US004");
+		spell2Effect.setUnitSkillValue (6);
+		
+		final Spell spell2Def = new Spell ();
+		spell2Def.getUnitSpellEffect ().add (spell2Effect);
+		when (db.findSpell ("SP002", "expandSkillList")).thenReturn (spell2Def);
+
+		// Create spells list
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		
+		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
+		spell1.setUnitURN (1);
+		spell1.setSpellID ("SP001");
+		spell1.setUnitSkillID ("US003");
+		spells.add (spell1);
+		
+		final MemoryMaintainedSpell spell2 = new MemoryMaintainedSpell ();
+		spell2.setUnitURN (1);
+		spell2.setSpellID ("SP002");
+		spell2.setUnitSkillID ("US004");
+		spells.add (spell2);
+		
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+
+		final UnitSkillAndValue skill1 = new UnitSkillAndValue ();
+		skill1.setUnitSkillID ("US001");
+		unit.getUnitHasSkill ().add (skill1);
+
+		final UnitSkillAndValue skill2 = new UnitSkillAndValue ();
+		skill2.setUnitSkillID ("US002");
+		skill2.setUnitSkillValue (4);
+		unit.getUnitHasSkill ().add (skill2);
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		final Map<String, Integer> map = utils.expandSkillList (spells, unit, db);
+		
+		// Check results
+		assertEquals (6, map.size ());
+
+		for (int n = 1; n <= 6; n++)
+			assertTrue (map.containsKey ("US00" + n));
+		
+		assertNull (map.get ("US001"));
+		assertEquals (4, map.get ("US002").intValue ());
+		assertNull (map.get ("US003"));
+		assertEquals (6, map.get ("US004").intValue ());
+		assertNull (map.get ("US005"));
+		assertNull (map.get ("US006"));
+	}
+	
 	/**
 	 * Tests the getExperienceLevel method with a summoned unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit

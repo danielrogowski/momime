@@ -1,8 +1,11 @@
 package momime.common.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +31,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
+import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitSpellEffect;
@@ -329,6 +333,78 @@ public final class UnitUtilsImpl implements UnitUtils
 		log.trace ("Exiting mergeSpellEffectsIntoSkillList = " + mergedSkills.size ());
 
 		return mergedSkills;
+	}
+	
+	/**
+	 * Note about the returned map: many skills (such as movement skills) do not have a value, the unit just has the skill, with a null value.
+	 * As such you cannot do (map.get ("US000") != null) to test whether a unit has a particular skill or not.  You must use (map.containsKey ("US000")).
+	 * 
+	 * Also this only lists basic skill values - if a unit has a melee attack of 4, is experienced and has flame blade cast on it, the value in the map will still just read "4".
+	 * To get the true unit skill value, with all modifiers and penalties applied, must pass the map output from this method into "getModifiedSkillValue".
+	 * 
+	 * @param spells List of known maintained spells
+	 * @param unit Unit to expand skill list for
+	 * @param db Lookup lists built over the XML database
+	 * @return List of all skills this unit has, with skills granted from other skills and skills granted from spells merged into the list
+	 * @throws RecordNotFoundException If the definition of a skill or spell cannot be found in the db
+	 */
+	@Override
+	public final Map<String, Integer> expandSkillList (final List<MemoryMaintainedSpell> spells, final AvailableUnit unit, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering expandSkillList: " + unit.getUnitID () + ", " + spells.size () + ", " + unit.getUnitHasSkill ().size ());
+
+		// First just copy the skills from the unit into a map
+		// NB. can't just use Collectors.toMap () because this throws an exception if you have any null values (which we often will)
+		final Map<String, Integer> map = new HashMap<String, Integer> ();
+		unit.getUnitHasSkill ().forEach (s -> map.put (s.getUnitSkillID (), s.getUnitSkillValue ()));
+		
+		// Add in skills from spells - we must do this next since some skills from spells may grant other skills, e.g. Invulerability spell effect grants Weapon Immunity
+		if (unit instanceof MemoryUnit)
+		{
+			final int unitURN = ((MemoryUnit) unit).getUnitURN ();
+			
+			for (final MemoryMaintainedSpell thisSpell : spells)
+				if ((thisSpell.getUnitURN () != null) && (thisSpell.getUnitURN () == unitURN) && (thisSpell.getUnitSkillID () != null))
+				{
+					// See if the spell definition defines a strength - this is for things like casting Immolation on a unit - we have to know that it is "Immolation 4"
+					final Spell spellDef = db.findSpell (thisSpell.getSpellID (), "expandSkillList");
+					boolean found = false;
+					Integer strength = null;
+					final Iterator<UnitSpellEffect> iter = spellDef.getUnitSpellEffect ().iterator ();
+					while ((!found) && (iter.hasNext ()))
+					{
+						final UnitSpellEffect effect = iter.next ();
+						if (effect.getUnitSkillID ().equals (thisSpell.getUnitSkillID ()))
+						{
+							found = true;
+							strength = effect.getUnitSkillValue ();
+						}
+					}
+					
+					if (!found)
+						throw new RecordNotFoundException (UnitSkill.class.getName (), thisSpell.getUnitSkillID (), "expandSkillList");
+					
+					map.put (thisSpell.getUnitSkillID (), strength);
+				}
+		}
+		
+		// Now check all skills to see if any grant other skills
+		final List<String> skillsLeftToCheck = map.keySet ().stream ().collect (Collectors.toList ());
+		while (skillsLeftToCheck.size () > 0)
+		{
+			final UnitSkill skillDef = db.findUnitSkill (skillsLeftToCheck.get (0), "expandSkillList");
+			skillsLeftToCheck.remove (0);
+			
+			skillDef.getGrantsSkill ().stream ().map (s -> s.getGrantsSkillID ()).forEach (s ->
+			{
+				map.put (s, null);
+				skillsLeftToCheck.add (s);
+			});
+		}
+		
+		log.trace ("Exiting expandSkillList = " + map.size ());
+		return map;
 	}
 
 	/**

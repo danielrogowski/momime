@@ -5,13 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -20,18 +21,28 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
+import momime.common.database.AddsToSkill;
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
+import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.GrantsSkill;
+import momime.common.database.HeroItemBonus;
+import momime.common.database.HeroItemType;
+import momime.common.database.HeroItemTypeAllowedBonus;
+import momime.common.database.HeroItemTypeAttackType;
 import momime.common.database.MergedFromPick;
+import momime.common.database.NegatedBySkill;
+import momime.common.database.NegatedByUnitID;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
@@ -41,12 +52,15 @@ import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitType;
+import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 
@@ -517,23 +531,51 @@ public final class TestUnitUtilsImpl
 	}
 	
 	/**
-	 * Tests the expandSkillList method on an available unit which has no skills which grant other skills
+	 * Tests the expandSkillList method on a summoned available unit which has no skills which grant other skills
+	 * and we provide no info about enemies or the type of incoming attack, so is about the most simple example possible.
+	 * Also prove that even if we have no stats whatsoever that contribute to +to hit, that we still get a 0 value out (not a null).
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testExpandSkillList_AvailableUnit_BasicSkills () throws Exception
+	public final void testExpandUnitDetails_AvailableUnit_Summoned () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("MB01");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("S");
+		when (db.findPick ("MB01", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("S", "expandUnitDetails")).thenReturn (unitType);
+		
 		for (int n = 1; n <= 3; n++)
-			when (db.findUnitSkill ("US00" + n, "expandSkillList")).thenReturn (new UnitSkill ());
-
-		// Create spells list
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+			
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, null, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
 		
 		for (int n = 1; n <= 3; n++)
 		{
@@ -548,59 +590,152 @@ public final class TestUnitUtilsImpl
 
 		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Run method
-		final Map<String, Integer> map = utils.expandSkillList (spells, unit, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
-		// Check results
-		assertEquals (3, map.size ());
-
+		// Do simple checks
+		assertSame (unit, details.getUnit ());
+		assertFalse (details.isMemoryUnit ());
+		assertNull (details.getMemoryUnit ());
+		assertSame (unitDef, details.getUnitDefinition ());
+		assertSame (unitType, details.getUnitType ());
+		assertSame (owningPlayer, details.getOwningPlayer ());
+		assertNull (details.getWeaponGrade ());
+		assertNull (details.getRangedAttackType ());
+		assertNull (details.getBasicExperienceLevel ());
+		assertNull (details.getModifiedExperienceLevel ());
+		
+		assertEquals ("MB01", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		
+		// Check skills
 		for (int n = 1; n <= 3; n++)
-			assertTrue (map.containsKey ("US00" + n));
+		{
+			assertTrue (details.hasBasicSkill ("US00" + n));
+			assertTrue (details.hasModifiedSkill ("US00" + n));
+		}
 		
-		assertNull (map.get ("US001"));
-		assertEquals (4, map.get ("US002").intValue ());
-		assertNull (map.get ("US003"));
+		assertNull (details.getBasicSkillValue ("US001"));
+		assertEquals (4, details.getBasicSkillValue ("US002").intValue ());
+		assertNull (details.getBasicSkillValue ("US003"));
+
+		assertNull (details.getModifiedSkillValue ("US001"));
+		assertEquals (4, details.getModifiedSkillValue ("US002").intValue ());
+		assertNull (details.getModifiedSkillValue ("US003"));
+		
+		assertFalse (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+		assertTrue (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+		assertEquals (0, details.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT).intValue ());
 	}
 
 	/**
-	 * Tests the expandSkillList method on an available unit, where one skill the unit has grants another, which in turn grants another 
+	 * Tests the expandSkillList method on a normal unit which hence has an experience level to calculate, and the exp level gives a boost to one of our stats,
+	 * plus we have couple of spells cast on it that grant additional skills
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testExpandSkillList_AvailableUnit_GrantsSkill () throws Exception
+	public final void testExpandUnitDetails_MemoryUnit_SkillsFromSpells_ExpLvl () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSkill skillDef1 = new UnitSkill ();
-		when (db.findUnitSkill ("US001", "expandSkillList")).thenReturn (skillDef1);
-
-		final GrantsSkill skill2GrantsSkill4 = new GrantsSkill ();
-		skill2GrantsSkill4.setGrantsSkillID ("US004");
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
-		final UnitSkill skillDef2 = new UnitSkill ();
-		skillDef2.getGrantsSkill ().add (skill2GrantsSkill4);
-		when (db.findUnitSkill ("US002", "expandSkillList")).thenReturn (skillDef2);
-
-		final UnitSkill skillDef3 = new UnitSkill ();
-		when (db.findUnitSkill ("US003", "expandSkillList")).thenReturn (skillDef3);
-
-		final GrantsSkill skill4GrantsSkill5 = new GrantsSkill ();
-		skill4GrantsSkill5.setGrantsSkillID ("US005");
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
 		
-		final UnitSkill skillDef4 = new UnitSkill ();
-		skillDef4.getGrantsSkill ().add (skill4GrantsSkill5);
-		when (db.findUnitSkill ("US004", "expandSkillList")).thenReturn (skillDef4);
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		
+		for (int n = 0; n <= 5; n++)
+		{
+			final ExperienceLevel expLvl = new ExperienceLevel ();
+			expLvl.setLevelNumber (n);
+			expLvl.setExperienceRequired (n * 10);
+			unitType.getExperienceLevel ().add (expLvl);
+			
+			if (n > 0)
+			{
+				final UnitSkillAndValue expBonus1 = new UnitSkillAndValue ();
+				expBonus1.setUnitSkillID ("US002");
+				expBonus1.setUnitSkillValue (n);
+				expLvl.getExperienceSkillBonus ().add (expBonus1);
+				
+				// Exp bonus to a skill that we don't have, to prove that we don't suddenly gain the skill.
+				// This is like exp giving bonus to Thrown Weapons - the unit doesn't suddenly gain Thrown Weapons if it didn't already have them.
+				final UnitSkillAndValue expBonus2 = new UnitSkillAndValue ();
+				expBonus2.setUnitSkillID ("US006");
+				expBonus2.setUnitSkillValue (n);
+				expLvl.getExperienceSkillBonus ().add (expBonus2);
+			}
+		}
+		
+		for (int n = 1; n <= 6; n++)
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		final UnitSpellEffect spellEffect1 = new UnitSpellEffect ();
+		spellEffect1.setUnitSkillID ("US004");
+		
+		final Spell spellDef1 = new Spell ();
+		spellDef1.getUnitSpellEffect ().add (spellEffect1);
+		when (db.findSpell ("SP001", "expandUnitDetails")).thenReturn (spellDef1);
 
-		final UnitSkill skillDef5 = new UnitSkill ();
-		when (db.findUnitSkill ("US005", "expandSkillList")).thenReturn (skillDef5);
+		final UnitSpellEffect spellEffect2 = new UnitSpellEffect ();
+		spellEffect2.setUnitSkillID ("US005");
+		spellEffect2.setUnitSkillValue (3);
+		
+		final Spell spellDef2 = new Spell ();
+		spellDef2.getUnitSpellEffect ().add (spellEffect2);
+		when (db.findSpell ("SP002", "expandUnitDetails")).thenReturn (spellDef2);
 
-		// Create spells list
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
+		spell1.setUnitURN (1);
+		spell1.setSpellID ("SP001");
+		spell1.setUnitSkillID ("US004");
+		mem.getMaintainedSpell ().add (spell1);
+
+		final MemoryMaintainedSpell spell2 = new MemoryMaintainedSpell ();
+		spell2.setUnitURN (1);
+		spell2.setSpellID ("SP002");
+		spell2.setUnitSkillID ("US005");
+		mem.getMaintainedSpell ().add (spell2);
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		
+		// Warlord and Crusade
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_WARLORD)).thenReturn (1);
+		
+		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
+		when (caeUtils.findCombatAreaEffect (mem.getCombatAreaEffect (), null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, owningPd.getPlayerID ())).thenReturn (new MemoryCombatAreaEffect ());
 		
 		// Create test unit
-		final AvailableUnit unit = new AvailableUnit ();
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		mem.getUnit ().add (unit);
 		
 		for (int n = 1; n <= 3; n++)
 		{
@@ -612,190 +747,1345 @@ public final class TestUnitUtilsImpl
 			
 			unit.getUnitHasSkill ().add (skill);
 		}
+		
+		final UnitSkillAndValue exp = new UnitSkillAndValue ();
+		exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		exp.setUnitSkillValue (38);
+		unit.getUnitHasSkill ().add (exp);
 
 		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setMemoryCombatAreaEffectUtils (caeUtils);
 		
 		// Run method
-		final Map<String, Integer> map = utils.expandSkillList (spells, unit, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
-		// Check results
-		assertEquals (5, map.size ());
+		// Do simple checks
+		assertSame (unit, details.getUnit ());
+		assertTrue (details.isMemoryUnit ());
+		assertSame (unit, details.getMemoryUnit ());
+		assertSame (unitDef, details.getUnitDefinition ());
+		assertSame (unitType, details.getUnitType ());
+		assertSame (owningPlayer, details.getOwningPlayer ());
+		assertNull (details.getWeaponGrade ());
+		assertNull (details.getRangedAttackType ());
+		
+		assertEquals (3, details.getBasicExperienceLevel ().getLevelNumber ());
+		assertEquals (5, details.getModifiedExperienceLevel ().getLevelNumber ());
+		
+		assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		
+		// Check skills
+		for (int n = 1; n <= 5; n++)
+		{
+			assertTrue (details.hasBasicSkill ("US00" + n));
+			assertTrue (details.hasModifiedSkill ("US00" + n));
+		}
+
+		assertFalse (details.hasBasicSkill ("US006"));
+		assertFalse (details.hasModifiedSkill ("US006"));
+		
+		assertNull (details.getBasicSkillValue ("US001"));
+		assertEquals (4, details.getBasicSkillValue ("US002").intValue ());
+		assertNull (details.getBasicSkillValue ("US003"));
+		assertNull (details.getBasicSkillValue ("US004"));
+		assertEquals (3, details.getBasicSkillValue ("US005").intValue ());
+
+		assertNull (details.getModifiedSkillValue ("US001"));
+		assertEquals (4 + 5, details.getModifiedSkillValue ("US002").intValue ());		// +5 from boosted experience level
+		assertNull (details.getModifiedSkillValue ("US003"));
+		assertNull (details.getModifiedSkillValue ("US004"));
+		assertEquals (3, details.getModifiedSkillValue ("US005").intValue ());
+	}
+	
+	/**
+	 * Tests the expandSkillList method on a normal unit which has a skill that grants 3 other skills;
+	 * 1 of which is negated by another of our skills, and 1 of which is negated by the enemy we're fighting.
+	 * Also we have adamantium weapons that gives a couple of bonuses, and our RAT is something like arrows that does get the bonus.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandUnitDetails_MemoryUnit_GrantAndNegateSkills_WeaponGradeRAT () throws Exception
+	{
+		// Mock database
+		// US001 grants US002, US003 & US004, but US003 gets cancelled by us having US005 and US004 gets cancelled by enemy having US006
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		unitDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		
+		// Skill defintions
+		for (final int n : new int [] {2, 5, 6})
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		final UnitSkill skillThatGrantsOthers = new UnitSkill ();
+		for (int n = 2; n <= 4; n++)
+		{
+			final GrantsSkill grantsSkill = new GrantsSkill ();
+			grantsSkill.setGrantsSkillID ("US00" + n);
+			skillThatGrantsOthers.getGrantsSkill ().add (grantsSkill);
+		}
+		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (skillThatGrantsOthers);
+		
+		final NegatedBySkill negatedByOurs = new NegatedBySkill ();
+		negatedByOurs.setNegatedBySkillID ("US005");
+		negatedByOurs.setNegatedByUnitID (NegatedByUnitID.OUR_UNIT);
+		
+		final UnitSkill skillCancelledByOurs = new UnitSkill ();
+		skillCancelledByOurs.getNegatedBySkill ().add (negatedByOurs);
+		when (db.findUnitSkill ("US003", "expandUnitDetails")).thenReturn (skillCancelledByOurs);
+
+		final NegatedBySkill negatedByEnemys = new NegatedBySkill ();
+		negatedByEnemys.setNegatedBySkillID ("US006");
+		negatedByEnemys.setNegatedByUnitID (NegatedByUnitID.ENEMY_UNIT);
+		
+		final UnitSkill skillCancelledByEnemys = new UnitSkill ();
+		skillCancelledByEnemys.getNegatedBySkill ().add (negatedByEnemys);
+		when (db.findUnitSkill ("US004", "expandUnitDetails")).thenReturn (skillCancelledByEnemys);
+		
+		// RAT definition
+		final RangedAttackType rat = new RangedAttackType ();
+		rat.setMithrilAndAdamantiumVersions (true);
+		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat);
+		
+		// Weapon grade definition
+		final WeaponGrade weaponGrade = new WeaponGrade ();
+		for (final String bonusSkillID : new String [] {"US001", CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK})
+		{
+			final UnitSkillAndValue weaponGradeBonus = new UnitSkillAndValue ();
+			weaponGradeBonus.setUnitSkillID (bonusSkillID);
+			weaponGradeBonus.setUnitSkillValue (2);
+			weaponGrade.getWeaponGradeSkillBonus ().add (weaponGradeBonus);
+		}
+		
+		when (db.findWeaponGrade (2, "expandUnitDetails")).thenReturn (weaponGrade);
+
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, null, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		unit.setWeaponGrade (2);
+		mem.getUnit ().add (unit);
+		
+		for (final int n : new int [] {1, 5})
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			
+			if (n == 1)
+				skill.setUnitSkillValue (4);
+			
+			unit.getUnitHasSkill ().add (skill);
+		}
+		
+		final UnitSkillAndValue rangedAttack = new UnitSkillAndValue ();
+		rangedAttack.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+		rangedAttack.setUnitSkillValue (1);
+		unit.getUnitHasSkill ().add (rangedAttack);
+		
+		// Mock enemy units - we only need any one of them to have the negating skill
+		final List<ExpandedUnitDetails> enemyUnits = new ArrayList<ExpandedUnitDetails> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final ExpandedUnitDetails enemyUnit = mock (ExpandedUnitDetails.class);
+			when (enemyUnit.hasModifiedSkill ("US006")).thenReturn (n == 2);
+			enemyUnits.add (enemyUnit);
+		}
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, enemyUnits, null, null, players, mem, db);
+		
+		// Do simple checks
+		assertSame (unit, details.getUnit ());
+		assertTrue (details.isMemoryUnit ());
+		assertSame (unit, details.getMemoryUnit ());
+		assertSame (unitDef, details.getUnitDefinition ());
+		assertSame (unitType, details.getUnitType ());
+		assertSame (owningPlayer, details.getOwningPlayer ());
+		assertSame (weaponGrade, details.getWeaponGrade ());
+		assertSame (rat, details.getRangedAttackType ());
+		assertNull (details.getBasicExperienceLevel ());
+		assertNull (details.getModifiedExperienceLevel ());
+		
+		assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		
+		// Check skills
+		for (int n = 1; n <= 6; n++)
+		{
+			assertEquals ("Failed for US00" + n, n < 6, details.hasBasicSkill ("US00" + n));
+			assertEquals ("Failed for US00" + n, (n==1) || (n==2) || (n==5), details.hasModifiedSkill ("US00" + n));
+			
+			if (n == 1)
+				assertEquals (4, details.getBasicSkillValue ("US00" + n).intValue ());
+			else if (details.hasBasicSkill ("US00" + n))
+				assertNull (details.getBasicSkillValue ("US00" + n));
+
+			if (n == 1)
+				assertEquals (4 + 2, details.getModifiedSkillValue ("US00" + n).intValue ());
+			else if (details.hasModifiedSkill ("US00" + n))
+				assertNull (details.getModifiedSkillValue ("US00" + n));
+		}
+		
+		assertTrue (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+		assertTrue (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+		
+		assertEquals (1, details.getBasicSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK).intValue ());
+		assertEquals (1 + 2, details.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK).intValue ());
+	}
+
+	/**
+	 * Tests the expandSkillList method on a normal unit which:
+	 * - Has adamantium weapons that gives a couple of bonuses, but our RAT is a magic attack so doesn't get the bonus;
+	 * - Gets a skill boost from a CAE;
+	 * - Has its magic realm/lifeform type altered by a skill, e.g. chaos channels.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandUnitDetails_MemoryUnit_WeaponGradeNoRAT_CAE_ModifyMagicRealm () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		unitDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		
+		// Skill defintions
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (new UnitSkill ());
+
+		final UnitSkill chaosChannels = new UnitSkill ();
+		chaosChannels.setChangesUnitToMagicRealm ("LTC");
+		when (db.findUnitSkill ("US002", "expandUnitDetails")).thenReturn (chaosChannels);
+		
+		// RAT definition
+		final RangedAttackType rat = new RangedAttackType ();
+		rat.setMithrilAndAdamantiumVersions (false);		// <---
+		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat);
+		
+		// Weapon grade definition
+		final WeaponGrade weaponGrade = new WeaponGrade ();
+		for (final String bonusSkillID : new String [] {"US001", CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK})
+		{
+			final UnitSkillAndValue weaponGradeBonus = new UnitSkillAndValue ();
+			weaponGradeBonus.setUnitSkillID (bonusSkillID);
+			weaponGradeBonus.setUnitSkillValue (2);
+			weaponGrade.getWeaponGradeSkillBonus ().add (weaponGradeBonus);
+		}
+		
+		when (db.findWeaponGrade (2, "expandUnitDetails")).thenReturn (weaponGrade);
+		
+		// CAE definiton
+		final CombatAreaEffect caeDef = new CombatAreaEffect ();
+		caeDef.setCombatAreaAffectsPlayers (CombatAreaAffectsPlayersID.ALL_EVEN_NOT_IN_COMBAT);
+		for (final String magicRealmID : new String [] {null, "LTC", "LTH"})
+		{
+			final CombatAreaEffectSkillBonus caeBonus = new CombatAreaEffectSkillBonus ();
+			caeBonus.setUnitSkillID ("US001");
+			caeBonus.setUnitSkillValue (3);
+			caeBonus.setEffectMagicRealm (magicRealmID);			
+			caeDef.getCombatAreaEffectSkillBonus ().add (caeBonus);
+		}		
+		when (db.findCombatAreaEffect (eq ("CAE01"), anyString ())).thenReturn (caeDef);
+
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
+		cae.setCombatAreaEffectID ("CAE01");
+		mem.getCombatAreaEffect ().add (cae);
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, null, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		unit.setWeaponGrade (2);
+		mem.getUnit ().add (unit);
+		
+		final UnitSkillAndValue rangedAttack = new UnitSkillAndValue ();
+		rangedAttack.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
+		rangedAttack.setUnitSkillValue (1);
+		unit.getUnitHasSkill ().add (rangedAttack);
+
+		final UnitSkillAndValue regularSkill = new UnitSkillAndValue ();
+		regularSkill.setUnitSkillID ("US001");
+		regularSkill.setUnitSkillValue (2);
+		unit.getUnitHasSkill ().add (regularSkill);
+
+		final UnitSkillAndValue cc = new UnitSkillAndValue ();
+		cc.setUnitSkillID ("US002");
+		unit.getUnitHasSkill ().add (cc);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+		
+		// Do simple checks
+		assertSame (unit, details.getUnit ());
+		assertTrue (details.isMemoryUnit ());
+		assertSame (unit, details.getMemoryUnit ());
+		assertSame (unitDef, details.getUnitDefinition ());
+		assertSame (unitType, details.getUnitType ());
+		assertSame (owningPlayer, details.getOwningPlayer ());
+		assertSame (weaponGrade, details.getWeaponGrade ());
+		assertSame (rat, details.getRangedAttackType ());
+		assertNull (details.getBasicExperienceLevel ());
+		assertNull (details.getModifiedExperienceLevel ());
+		
+		assertEquals ("LTC", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		
+		// Check skills
+		assertTrue (details.hasBasicSkill ("US001"));
+		assertTrue (details.hasModifiedSkill ("US001"));
+
+		assertTrue (details.hasBasicSkill ("US002"));
+		assertTrue (details.hasModifiedSkill ("US002"));
+		
+		assertEquals (2, details.getBasicSkillValue ("US001").intValue ());
+		assertEquals (2 + 2 + 3 + 3, details.getModifiedSkillValue ("US001").intValue ());
+		
+		assertNull (details.getBasicSkillValue ("US002"));
+		assertNull (details.getModifiedSkillValue ("US002"));
+
+		assertTrue (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+		assertTrue (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
+		
+		assertEquals (1, details.getBasicSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK).intValue ());
+		assertEquals (1, details.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK).intValue ());		// +2 doesn't apply
+	}
+
+	/**
+	 * Tests the expandSkillList method on a normal unit which:
+	 * - Has its magic realm/lifeform type altered by multiple skills, e.g. is both Undead and Chaos Channeled;
+	 * - Has both Warlord and Crusade, but having both would push the unit to an experience level that doesn't exist, so it only gets 1 bump up instead of 2;
+	 * - Gains a bonus to defence and +to hit - but the unit has neither of these as a base value - to prove that the +to hit bonus still applies but the +defence bonus does not
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandUnitDetails_MemoryUnit_MergedMagicRealm_ExpLevelOverflow_PlusToHitBonus () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		// Pick defintions
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+
+		final Pick mergedMagicRealm = new Pick ();
+		mergedMagicRealm.setPickID ("LTUC");
+		
+		for (final String mergedFromPickID : new String [] {"LTC", "LTU"})
+		{
+			final MergedFromPick mergedFromPick = new MergedFromPick ();
+			mergedFromPick.setMergedFromPickID (mergedFromPickID);
+			mergedMagicRealm.getMergedFromPick ().add (mergedFromPick);
+		}
+		
+		when (db.findPick ("LTUC", "expandUnitDetails")).thenReturn (mergedMagicRealm);
+		
+		final List<Pick> picks = new ArrayList<Pick> ();
+		picks.add (unitMagicRealm);
+		picks.add (mergedMagicRealm);
+		doReturn (picks).when (db).getPicks ();
+		
+		// Unit type and experience definition
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		
+		for (int n = 0; n <= 4; n++)
+		{
+			final ExperienceLevel expLvl = new ExperienceLevel ();
+			expLvl.setLevelNumber (n);
+			expLvl.setExperienceRequired (n * 10);
+			unitType.getExperienceLevel ().add (expLvl);
+			
+			if (n > 0)
+			{
+				final UnitSkillAndValue expBonus1 = new UnitSkillAndValue ();
+				expBonus1.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE);
+				expBonus1.setUnitSkillValue (n);
+				expLvl.getExperienceSkillBonus ().add (expBonus1);
+				
+				final UnitSkillAndValue expBonus2 = new UnitSkillAndValue ();
+				expBonus2.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT);
+				expBonus2.setUnitSkillValue (n);
+				expLvl.getExperienceSkillBonus ().add (expBonus2);
+			}
+		}
+		
+		// Skill definitions
+		final UnitSkill chaosChannels = new UnitSkill ();
+		chaosChannels.setChangesUnitToMagicRealm ("LTC");
+		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (chaosChannels);
+
+		final UnitSkill undead = new UnitSkill ();
+		undead.setChangesUnitToMagicRealm ("LTU");
+		when (db.findUnitSkill ("US002", "expandUnitDetails")).thenReturn (undead);
+		
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT})
+			when (db.findUnitSkill (unitSkillID, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		
+		// Warlord and Crusade
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_WARLORD)).thenReturn (1);
+		
+		final MemoryCombatAreaEffectUtils caeUtils = mock (MemoryCombatAreaEffectUtils.class);
+		when (caeUtils.findCombatAreaEffect (mem.getCombatAreaEffect (), null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, owningPd.getPlayerID ())).thenReturn (new MemoryCombatAreaEffect ());
+		
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		mem.getUnit ().add (unit);
+		
+		for (int n = 1; n <= 2; n++)
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			unit.getUnitHasSkill ().add (skill);
+		}
+		
+		final UnitSkillAndValue exp = new UnitSkillAndValue ();
+		exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		exp.setUnitSkillValue (38);
+		unit.getUnitHasSkill ().add (exp);
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setMemoryCombatAreaEffectUtils (caeUtils);
+		
+		// Run method
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+		
+		// Do simple checks
+		assertSame (unit, details.getUnit ());
+		assertTrue (details.isMemoryUnit ());
+		assertSame (unit, details.getMemoryUnit ());
+		assertSame (unitDef, details.getUnitDefinition ());
+		assertSame (unitType, details.getUnitType ());
+		assertSame (owningPlayer, details.getOwningPlayer ());
+		assertNull (details.getWeaponGrade ());
+		assertNull (details.getRangedAttackType ());
+		
+		assertEquals (3, details.getBasicExperienceLevel ().getLevelNumber ());
+		assertEquals (4, details.getModifiedExperienceLevel ().getLevelNumber ());
+		
+		assertEquals ("LTUC", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		
+		// Check skills
+		for (int n = 1; n <= 2; n++)
+		{
+			assertTrue (details.hasBasicSkill ("US00" + n));
+			assertTrue (details.hasModifiedSkill ("US00" + n));
+			
+			assertNull (details.getBasicSkillValue ("US00" + n));
+			assertNull (details.getModifiedSkillValue ("US00" + n));
+		}
+		
+		assertFalse (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE));
+		assertFalse (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE));				// <-- note this is still "False" despite the +4 bonus
+
+		assertFalse (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+		assertTrue (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));		// <-- note this is "True"
+		
+		assertEquals (4, details.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT).intValue ());		// no basic component, but +4 bonus from exp
+	}
+
+	/**
+	 * Tests the expandSkillList method specifically around bonuses from hero-like skills where the bonus we get comes from our level, so
+	 * - Standard skill which adds +1 pt per level
+	 * - Super skill which adds +1½ pts per level
+	 * - Standard skill with divisor 2 which adds +½ pt level
+	 * - Super skill with divisor 2 which adds +¾ per level
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandUnitDetails_MemoryUnit_HeroSkills () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		
+		for (int n = 0; n <= 8; n++)
+		{
+			final ExperienceLevel expLvl = new ExperienceLevel ();
+			expLvl.setLevelNumber (n);
+			expLvl.setExperienceRequired (n * 10);
+			unitType.getExperienceLevel ().add (expLvl);
+		}
+		
+		// The skills that the bonuses add to
+		final List<UnitSkill> unitSkillDefs = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 4; n++)
+		{
+			final UnitSkill skillDef = new UnitSkill ();
+			skillDef.setUnitSkillID ("US00" + n);
+			unitSkillDefs.add (skillDef);
+		}
+		
+		final UnitSkill expDef = new UnitSkill ();
+		expDef.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		unitSkillDefs.add (expDef);
+		
+		// The hero skills that add to them
+		for (int n = 1; n <= 4; n++)
+		{
+			final AddsToSkill heroSkillBonus = new AddsToSkill ();
+			heroSkillBonus.setAddsToSkillID ("US00" + n);
+			heroSkillBonus.setAddsToSkillDivisor ((n <= 2) ? 1 : 2);
+			
+			final UnitSkill heroSkill = new UnitSkill ();
+			heroSkill.setUnitSkillID ("HS0" + n);
+			heroSkill.getAddsToSkill ().add (heroSkillBonus);
+			
+			unitSkillDefs.add (heroSkill);
+		}
+
+		for (final UnitSkill skillDef : unitSkillDefs)
+			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
+		
+		doReturn (unitSkillDefs).when (db).getUnitSkills ();
+		
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		mem.getUnit ().add (unit);
+
+		for (int n = 1; n <= 4; n++)
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("HS0" + n);
+			skill.setUnitSkillValue (2 - (n % 2));		// This is whether the skill is "super" or not, i.e. did the hero get 1 or 2 picks of the skill
+			unit.getUnitHasSkill ().add (skill);
+		}
+		
+		for (int n = 1; n <= 4; n++)
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			skill.setUnitSkillValue (1);			
+			unit.getUnitHasSkill ().add (skill);
+		}
+		
+		final UnitSkillAndValue exp = new UnitSkillAndValue ();
+		exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		unit.getUnitHasSkill ().add (exp);
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setPlayerPickUtils (mock (PlayerPickUtils.class));
+		utils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
+		
+		// Test every experience level
+		for (int expLevel = 0; expLevel <= 8; expLevel++)
+		{
+			// Run method
+			exp.setUnitSkillValue (expLevel * 10);
+			final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+			
+			// Do simple checks
+			assertSame (unit, details.getUnit ());
+			assertTrue (details.isMemoryUnit ());
+			assertSame (unit, details.getMemoryUnit ());
+			assertSame (unitDef, details.getUnitDefinition ());
+			assertSame (unitType, details.getUnitType ());
+			assertSame (owningPlayer, details.getOwningPlayer ());
+			assertNull (details.getWeaponGrade ());
+			assertNull (details.getRangedAttackType ());
+			
+			assertEquals (expLevel, details.getBasicExperienceLevel ().getLevelNumber ());
+			assertEquals (expLevel, details.getModifiedExperienceLevel ().getLevelNumber ());
+			
+			assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+			
+			// Check skills
+			for (int n = 1; n <= 4; n++)
+			{
+				assertTrue (details.hasBasicSkill ("US00" + n));
+				assertTrue (details.hasModifiedSkill ("US00" + n));
+	
+				assertTrue (details.hasBasicSkill ("HS0" + n));
+				assertTrue (details.hasModifiedSkill ("HS0" + n));
+				
+				assertEquals (2 - (n % 2), details.getBasicSkillValue ("HS0" + n).intValue ());
+				assertEquals (2 - (n % 2), details.getModifiedSkillValue ("HS0" + n).intValue ());
+			}
+
+			// Here's the values we're most interested to check
+			assertEquals ("Level " + expLevel, 1, details.getBasicSkillValue ("US001").intValue ());
+			assertEquals ("Level " + expLevel, 2 + expLevel, details.getModifiedSkillValue ("US001").intValue ());						// Even at the "no exp" level, you still get a +1
+
+			assertEquals ("Level " + expLevel, 1, details.getBasicSkillValue ("US002").intValue ());
+			assertEquals ("Level " + expLevel, 1 + (((1+expLevel)*3)/2), details.getModifiedSkillValue ("US002").intValue ());	// Matches "Constitution" page on MoM Wiki
+
+			assertEquals ("Level " + expLevel, 1, details.getBasicSkillValue ("US003").intValue ());
+			assertEquals ("Level " + expLevel, 1 + ((1+expLevel)/2), details.getModifiedSkillValue ("US003").intValue ());			// Matches "Blademaster" page on MoM Wiki
+
+			assertEquals ("Level " + expLevel, 1, details.getBasicSkillValue ("US004").intValue ());
+			assertEquals ("Level " + expLevel, 1 + (((1+expLevel)*3)/4), details.getModifiedSkillValue ("US004").intValue ());	// Matches "Blademaster" page on MoM Wiki
+		}
+	}
+
+	/**
+	 * Tests the expandSkillList method specifically around different ways of calculating the amount of bonus to add, so we test
+	 * - A bonus from a skill where the value is defined against the skill itself, like flame blade giving +2 attack
+	 * - A bonus from a skill where the value is defined specific to that unit (similar to Resistance To All +2), like the unit stack skills, but try it on the single unit first
+	 * - A bonus from unit stack skills
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandUnitDetails_MemoryUnit_BonusValues () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+
+		// The skills that the bonuses add to
+		final List<UnitSkill> unitSkillDefs = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitSkill skillDef = new UnitSkill ();
+			skillDef.setUnitSkillID ("US00" + n);
+			unitSkillDefs.add (skillDef);
+		}
+		
+		// The skills that add to them
+		for (int n = 1; n <= 3; n++)
+		{
+			final AddsToSkill bonusSkillBonus = new AddsToSkill ();
+			bonusSkillBonus.setAddsToSkillID ("US00" + n);
+			
+			if (n == 1)
+				bonusSkillBonus.setAddsToSkillFixed (2);
+			
+			if (n == 3)
+				bonusSkillBonus.setAffectsEntireStack (true);
+			
+			final UnitSkill bonusSkill = new UnitSkill ();
+			bonusSkill.setUnitSkillID ("US00" + (n+3));
+			bonusSkill.getAddsToSkill ().add (bonusSkillBonus);
+			
+			unitSkillDefs.add (bonusSkill);
+		}
+
+		for (final UnitSkill skillDef : unitSkillDefs)
+			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
+		
+		doReturn (unitSkillDefs).when (db).getUnitSkills ();
+		
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		unit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		mem.getUnit ().add (unit);
 
 		for (int n = 1; n <= 5; n++)
-			assertTrue (map.containsKey ("US00" + n));
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			
+			if (n <= 3)
+				skill.setUnitSkillValue (1);
+			else if (n == 5)
+				skill.setUnitSkillValue (3);
+			
+			unit.getUnitHasSkill ().add (skill);
+		}
 		
-		assertNull (map.get ("US001"));
-		assertEquals (4, map.get ("US002").intValue ());
-		assertNull (map.get ("US003"));
-		assertNull (map.get ("US004"));
-		assertNull (map.get ("US005"));
-	}
+		// Create the other unit in our stack
+		final MemoryUnit otherUnit = new MemoryUnit ();
+		otherUnit.setUnitURN (2);
+		otherUnit.setUnitID ("UN001");
+		otherUnit.setOwningPlayerID (owningPd.getPlayerID ());
+		otherUnit.setStatus (UnitStatusID.ALIVE);
+		otherUnit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		mem.getUnit ().add (otherUnit);
+		
+		final UnitSkillAndValue otherUnitSkill = new UnitSkillAndValue ();
+		otherUnitSkill.setUnitSkillID ("US006");
+		otherUnitSkill.setUnitSkillValue (4);
+		otherUnit.getUnitHasSkill ().add (otherUnitSkill);
+		
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
+		// Run method
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+		
+		// Do simple checks
+		assertSame (unit, details.getUnit ());
+		assertTrue (details.isMemoryUnit ());
+		assertSame (unit, details.getMemoryUnit ());
+		assertSame (unitDef, details.getUnitDefinition ());
+		assertSame (unitType, details.getUnitType ());
+		assertSame (owningPlayer, details.getOwningPlayer ());
+		assertNull (details.getWeaponGrade ());
+		assertNull (details.getRangedAttackType ());
+		assertNull (details.getBasicExperienceLevel ());
+		assertNull (details.getModifiedExperienceLevel ());
+		
+		assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		
+		// Check skills
+		for (int n = 1; n <= 5; n++)
+		{
+			assertTrue (details.hasBasicSkill ("US00" + n));
+			assertTrue (details.hasModifiedSkill ("US00" + n));
+		}
 
+		assertFalse (details.hasBasicSkill ("US006"));
+		assertFalse (details.hasModifiedSkill ("US006"));
+		
+		assertEquals (1, details.getBasicSkillValue ("US001").intValue ());
+		assertEquals (1 + 2, details.getModifiedSkillValue ("US001").intValue ());		// +2 fixed value on the skill itself, like flame blade
+
+		assertEquals (1, details.getBasicSkillValue ("US002").intValue ());
+		assertEquals (1 + 3, details.getModifiedSkillValue ("US002").intValue ());		// +3 coming from a skill strength defined on the unit itself
+
+		assertEquals (1, details.getBasicSkillValue ("US003").intValue ());
+		assertEquals (1 + 4, details.getModifiedSkillValue ("US003").intValue ());		// +4 coming from another unit in the stack
+	}
+	
 	/**
-	 * Tests the expandSkillList method on a unit which has a couple of skills being gained from spells cast on it
+	 * Tests the expandSkillList method specifically around bonuses from hero items, so:
+	 * - A bonus based on the type of item that has no skill value, like shields granting the Large Shield skill (1)
+	 * - A bonus based on the type of item that has a skill value, like plate mail granting +2 defence (2)
+	 * - A bonus based on the type of item that has a skill value, but we don't have the base skill that its trying to add to (3) 
+	 * - An imbued valueless skill, like endurance (4)
+	 * - An imbued valueless skill that in turn grants other skills, like a hero item with imbued Invulnerability granting the Invulnerability skill (10) which in turn grants the Weapon Immunity skill (5)
+	 * - An imbued bonus, like +2 defence (6)
+	 * - An imbued bonus but we don't have the base skill that its trying to add to (7)
+	 * - A "+attack" bonus, which grants a bonus to one skill we do have (8) and one that we don't (9) 
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testExpandSkillList_MemoryUnit_SpellSkills () throws Exception
+	public final void testExpandUnitDetails_MemoryUnit_HeroItems () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+
+		// Skill definitions
+		for (int n = 1; n <= 9; n++)
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+
+		final GrantsSkill grantsWepImmunity = new GrantsSkill ();
+		grantsWepImmunity.setGrantsSkillID ("US005");
+		
+		final UnitSkill invulnerabilityDef = new UnitSkill ();
+		invulnerabilityDef.getGrantsSkill ().add (grantsWepImmunity);
+		when (db.findUnitSkill ("US010", "expandUnitDetails")).thenReturn (invulnerabilityDef);
+		
+		// Hero item type
+		final HeroItemType heroItemType = new HeroItemType ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitSkillAndValue heroItemTypeBonus = new UnitSkillAndValue ();
+			heroItemTypeBonus.setUnitSkillID ("US00" + n);
+			
+			if (n > 1)
+				heroItemTypeBonus.setUnitSkillValue (2);
+			
+			heroItemType.getHeroItemTypeBasicStat ().add (heroItemTypeBonus);
+		}
+		
+		for (int n = 8; n <= 9; n++)
+		{
+			final HeroItemTypeAttackType attackType = new HeroItemTypeAttackType ();
+			attackType.setUnitSkillID ("US00" + n);
+			heroItemType.getHeroItemTypeAttackType ().add (attackType);
+		}
+		
+		when (db.findHeroItemType ("IT01", "expandUnitDetails")).thenReturn (heroItemType);
+		
+		// Imbuable properties
 		for (int n = 1; n <= 4; n++)
-			when (db.findUnitSkill ("US00" + n, "expandSkillList")).thenReturn (new UnitSkill ());
-		
-		final UnitSpellEffect spell1Effect = new UnitSpellEffect ();
-		spell1Effect.setUnitSkillID ("US003");
-		
-		final Spell spell1Def = new Spell ();
-		spell1Def.getUnitSpellEffect ().add (spell1Effect);
-		when (db.findSpell ("SP001", "expandSkillList")).thenReturn (spell1Def);
+		{
+			final UnitSkillAndValue imbueBonus = new UnitSkillAndValue ();
+			imbueBonus.setUnitSkillID ((n == 2) ? "US010" : ("US00" + (n+3)));
+			
+			if (n >= 3)
+				imbueBonus.setUnitSkillValue (2);
+			
+			final HeroItemBonus imbue = new HeroItemBonus ();
+			imbue.getHeroItemBonusStat ().add (imbueBonus);
+			when (db.findHeroItemBonus ("IB0" + n, "expandUnitDetails")).thenReturn (imbue);
+		}
 
-		final UnitSpellEffect spell2Effect = new UnitSpellEffect ();
-		spell2Effect.setUnitSkillID ("US004");
-		spell2Effect.setUnitSkillValue (6);
+		final UnitSkillAndValue plusAttackBonus = new UnitSkillAndValue ();
+		plusAttackBonus.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM);
+		plusAttackBonus.setUnitSkillValue (3);
 		
-		final Spell spell2Def = new Spell ();
-		spell2Def.getUnitSpellEffect ().add (spell2Effect);
-		when (db.findSpell ("SP002", "expandSkillList")).thenReturn (spell2Def);
-
-		// Create spells list
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final HeroItemBonus plusAttack = new HeroItemBonus ();
+		plusAttack.getHeroItemBonusStat ().add (plusAttackBonus);
+		when (db.findHeroItemBonus ("IB05", "expandUnitDetails")).thenReturn (plusAttack);
 		
-		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
-		spell1.setUnitURN (1);
-		spell1.setSpellID ("SP001");
-		spell1.setUnitSkillID ("US003");
-		spells.add (spell1);
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
 		
-		final MemoryMaintainedSpell spell2 = new MemoryMaintainedSpell ();
-		spell2.setUnitURN (1);
-		spell2.setSpellID ("SP002");
-		spell2.setUnitSkillID ("US004");
-		spells.add (spell2);
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		unit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		mem.getUnit ().add (unit);
 
-		final UnitSkillAndValue skill1 = new UnitSkillAndValue ();
-		skill1.setUnitSkillID ("US001");
-		unit.getUnitHasSkill ().add (skill1);
-
-		final UnitSkillAndValue skill2 = new UnitSkillAndValue ();
-		skill2.setUnitSkillID ("US002");
-		skill2.setUnitSkillValue (4);
-		unit.getUnitHasSkill ().add (skill2);
-
+		for (final int n : new int [] {2, 6, 8})
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			skill.setUnitSkillValue (1);
+			unit.getUnitHasSkill ().add (skill);
+		}
+		
+		// Create hero item
+		final NumberedHeroItem item = new NumberedHeroItem ();
+		item.setHeroItemTypeID ("IT01");
+		
+		for (int n = 1; n <= 5; n++)
+		{
+			final HeroItemTypeAllowedBonus imbuedSkill = new HeroItemTypeAllowedBonus ();
+			imbuedSkill.setHeroItemBonusID ("IB0" + n);
+			item.getHeroItemChosenBonus ().add (imbuedSkill);
+		}
+		
+		final MemoryUnitHeroItemSlot slot = new MemoryUnitHeroItemSlot ();
+		slot.setHeroItem (item);
+		
+		unit.getHeroItemSlot ().add (slot);
+		
 		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Run method
-		final Map<String, Integer> map = utils.expandSkillList (spells, unit, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
-		// Check results
-		assertEquals (4, map.size ());
+		// Do simple checks
+		assertSame (unit, details.getUnit ());
+		assertTrue (details.isMemoryUnit ());
+		assertSame (unit, details.getMemoryUnit ());
+		assertSame (unitDef, details.getUnitDefinition ());
+		assertSame (unitType, details.getUnitType ());
+		assertSame (owningPlayer, details.getOwningPlayer ());
+		assertNull (details.getWeaponGrade ());
+		assertNull (details.getRangedAttackType ());
+		assertNull (details.getBasicExperienceLevel ());
+		assertNull (details.getModifiedExperienceLevel ());
+		
+		assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		
+		// Tests to do with the basic item type
+		assertTrue (details.hasBasicSkill ("US001"));
+		assertTrue (details.hasModifiedSkill ("US001"));
+		assertNull (details.getBasicSkillValue ("US001"));
+		assertNull (details.getModifiedSkillValue ("US001"));
 
-		for (int n = 1; n <= 4; n++)
-			assertTrue (map.containsKey ("US00" + n));
+		assertTrue (details.hasBasicSkill ("US002"));
+		assertTrue (details.hasModifiedSkill ("US002"));
+		assertEquals (1, details.getBasicSkillValue ("US002").intValue ());
+		assertEquals (1 + 2, details.getModifiedSkillValue ("US002").intValue ());
+
+		assertFalse (details.hasBasicSkill ("US003"));
+		assertFalse (details.hasModifiedSkill ("US003"));
 		
-		assertNull (map.get ("US001"));
-		assertEquals (4, map.get ("US002").intValue ());
-		assertNull (map.get ("US003"));
-		assertEquals (6, map.get ("US004").intValue ());
+		// Tests to do with imbued skills
+		assertTrue (details.hasBasicSkill ("US004"));
+		assertTrue (details.hasModifiedSkill ("US004"));
+		assertNull (details.getBasicSkillValue ("US004"));
+		assertNull (details.getModifiedSkillValue ("US004"));
+
+		assertTrue (details.hasBasicSkill ("US010"));
+		assertTrue (details.hasModifiedSkill ("US010"));
+		assertNull (details.getBasicSkillValue ("US010"));
+		assertNull (details.getModifiedSkillValue ("US010"));
+		assertTrue (details.hasBasicSkill ("US005"));
+		assertTrue (details.hasModifiedSkill ("US005"));
+		assertNull (details.getBasicSkillValue ("US005"));
+		assertNull (details.getModifiedSkillValue ("US005"));
+
+		assertTrue (details.hasBasicSkill ("US006"));
+		assertTrue (details.hasModifiedSkill ("US006"));
+		assertEquals (1, details.getBasicSkillValue ("US006").intValue ());
+		assertEquals (1 + 2, details.getModifiedSkillValue ("US006").intValue ());
+	
+		assertFalse (details.hasBasicSkill ("US007"));
+		assertFalse (details.hasModifiedSkill ("US007"));
+
+		assertTrue (details.hasBasicSkill ("US008"));
+		assertTrue (details.hasModifiedSkill ("US008"));
+		assertEquals (1, details.getBasicSkillValue ("US008").intValue ());
+		assertEquals (1 + 3, details.getModifiedSkillValue ("US008").intValue ());
+		assertFalse (details.hasBasicSkill ("US009"));
+		assertFalse (details.hasModifiedSkill ("US009"));
 	}
 
 	/**
-	 * Tests the expandSkillList method on a unit which has a couple of skills being gained from spells cast on it, one of which has grants another skill, which in turn grants another 
+	 * Tests the expandSkillList method specifically around bonuses that only apply vs certain types of incoming attack, so:
+	 * - A bonus that only applies if we input a specific attackFromSkillID value
+	 * - A bonus that only applies if we input anything other than a specific attackFromSkillID value
+	 * - A bonus that only applies if we input a specific attackFromMagicRealmID value 
+	 * - A bonus that only applies if the unit has a specific rangedAttackType
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testExpandSkillList_MemoryUnit_SpellSkillsGrantOtherSkills () throws Exception
+	public final void testExpandUnitDetails_MemoryUnit_ConditionalBonuses () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-
-		// Skill defs
-		for (final int n : new int [] {1, 2, 3, 6})
-			when (db.findUnitSkill ("US00" + n, "expandSkillList")).thenReturn (new UnitSkill ());
-
-		final GrantsSkill skill4GrantsSkill5 = new GrantsSkill ();
-		skill4GrantsSkill5.setGrantsSkillID ("US005");
-
-		final UnitSkill skillDef4 = new UnitSkill ();
-		skillDef4.getGrantsSkill ().add (skill4GrantsSkill5);
-		when (db.findUnitSkill ("US004", "expandSkillList")).thenReturn (skillDef4);
 		
-		final GrantsSkill skill5GrantsSkill6 = new GrantsSkill ();
-		skill5GrantsSkill6.setGrantsSkillID ("US006");
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		unitDef.setRangedAttackType ("RAT01");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
-		final UnitSkill skillDef5 = new UnitSkill ();
-		skillDef5.getGrantsSkill ().add (skill5GrantsSkill6);
-		when (db.findUnitSkill ("US005", "expandSkillList")).thenReturn (skillDef5);
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
 
-		// Spell defs
-		final UnitSpellEffect spell1Effect = new UnitSpellEffect ();
-		spell1Effect.setUnitSkillID ("US003");
+		// The skills that the bonuses add to
+		final List<UnitSkill> unitSkillDefs = new ArrayList<UnitSkill> ();
+		for (int n = 1; n <= 4; n++)
+		{
+			final UnitSkill skillDef = new UnitSkill ();
+			skillDef.setUnitSkillID ("US00" + n);
+			unitSkillDefs.add (skillDef);
+		}
 		
-		final Spell spell1Def = new Spell ();
-		spell1Def.getUnitSpellEffect ().add (spell1Effect);
-		when (db.findSpell ("SP001", "expandSkillList")).thenReturn (spell1Def);
+		// The skills that add to them
+		for (int n = 1; n <= 4; n++)
+		{
+			final AddsToSkill bonusSkillBonus = new AddsToSkill ();
+			bonusSkillBonus.setAddsToSkillID ("US00" + n);
+			bonusSkillBonus.setAddsToSkillFixed (n);
+			
+			switch (n)
+			{
+				case 1:
+					bonusSkillBonus.setOnlyVersusAttacksFromSkillID ("UA01");
+					break;
+					
+				case 2:
+					bonusSkillBonus.setOnlyVersusAttacksFromSkillID ("UA02");
+					bonusSkillBonus.setNegateOnlyVersusAttacksFromSkillID (true);
+					break;
+					
+				case 3:
+					bonusSkillBonus.setOnlyVersusAttacksFromMagicRealmID ("MB01");
+					break;
+				
+				case 4:
+					bonusSkillBonus.setRangedAttackTypeID ("RAT02");
+					break;
+			}
+			
+			final UnitSkill bonusSkill = new UnitSkill ();
+			bonusSkill.setUnitSkillID ("US00" + (n+4));
+			bonusSkill.getAddsToSkill ().add (bonusSkillBonus);
+			
+			unitSkillDefs.add (bonusSkill);
+		}
 
-		final UnitSpellEffect spell2Effect = new UnitSpellEffect ();
-		spell2Effect.setUnitSkillID ("US004");
-		spell2Effect.setUnitSkillValue (6);
+		for (final UnitSkill skillDef : unitSkillDefs)
+			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
 		
-		final Spell spell2Def = new Spell ();
-		spell2Def.getUnitSpellEffect ().add (spell2Effect);
-		when (db.findSpell ("SP002", "expandSkillList")).thenReturn (spell2Def);
-
-		// Create spells list
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		doReturn (unitSkillDefs).when (db).getUnitSkills ();
 		
-		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
-		spell1.setUnitURN (1);
-		spell1.setSpellID ("SP001");
-		spell1.setUnitSkillID ("US003");
-		spells.add (spell1);
+		// RAT definitions
+		final RangedAttackType rat1 = new RangedAttackType ();
+		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat1);
 		
-		final MemoryMaintainedSpell spell2 = new MemoryMaintainedSpell ();
-		spell2.setUnitURN (1);
-		spell2.setSpellID ("SP002");
-		spell2.setUnitSkillID ("US004");
-		spells.add (spell2);
+		final RangedAttackType rat2 = new RangedAttackType ();
+		when (db.findRangedAttackType ("RAT02", "expandUnitDetails")).thenReturn (rat2);
+		
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		unit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		mem.getUnit ().add (unit);
 
-		final UnitSkillAndValue skill1 = new UnitSkillAndValue ();
-		skill1.setUnitSkillID ("US001");
-		unit.getUnitHasSkill ().add (skill1);
-
-		final UnitSkillAndValue skill2 = new UnitSkillAndValue ();
-		skill2.setUnitSkillID ("US002");
-		skill2.setUnitSkillValue (4);
-		unit.getUnitHasSkill ().add (skill2);
+		for (int n = 1; n <= 8; n++)
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			
+			if (n <= 4)
+				skill.setUnitSkillValue (1);
+			
+			unit.getUnitHasSkill ().add (skill);
+		}
 
 		// Set up object to test
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
-		// Run method
-		final Map<String, Integer> map = utils.expandSkillList (spells, unit, db);
-		
-		// Check results
-		assertEquals (6, map.size ());
+		// If we specify nothing about the type of incoming attack, then only the RAT-based bonus can apply
+		final ExpandedUnitDetails details1 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 
-		for (int n = 1; n <= 6; n++)
-			assertTrue (map.containsKey ("US00" + n));
+		assertSame (unit, details1.getUnit ());
+		assertTrue (details1.isMemoryUnit ());
+		assertSame (unit, details1.getMemoryUnit ());
+		assertSame (unitDef, details1.getUnitDefinition ());
+		assertSame (unitType, details1.getUnitType ());
+		assertSame (owningPlayer, details1.getOwningPlayer ());
+		assertNull (details1.getWeaponGrade ());
+		assertSame (rat1, details1.getRangedAttackType ());
+		assertNull (details1.getBasicExperienceLevel ());
+		assertNull (details1.getModifiedExperienceLevel ());
+		assertEquals ("LTN", details1.getModifiedUnitMagicRealmLifeformTypeID ());
+
+		assertTrue (details1.hasBasicSkill ("US001"));
+		assertTrue (details1.hasModifiedSkill ("US001"));
+		assertEquals (1, details1.getBasicSkillValue ("US001").intValue ());
+		assertEquals (1, details1.getModifiedSkillValue ("US001").intValue ());
 		
-		assertNull (map.get ("US001"));
-		assertEquals (4, map.get ("US002").intValue ());
-		assertNull (map.get ("US003"));
-		assertEquals (6, map.get ("US004").intValue ());
-		assertNull (map.get ("US005"));
-		assertNull (map.get ("US006"));
+		assertTrue (details1.hasBasicSkill ("US002"));
+		assertTrue (details1.hasModifiedSkill ("US002"));
+		assertEquals (1, details1.getBasicSkillValue ("US002").intValue ());
+		assertEquals (1, details1.getModifiedSkillValue ("US002").intValue ());
+		
+		assertTrue (details1.hasBasicSkill ("US003"));
+		assertTrue (details1.hasModifiedSkill ("US003"));
+		assertEquals (1, details1.getBasicSkillValue ("US003").intValue ());
+		assertEquals (1, details1.getModifiedSkillValue ("US003").intValue ());
+		
+		assertTrue (details1.hasBasicSkill ("US004"));
+		assertTrue (details1.hasModifiedSkill ("US004"));
+		assertEquals (1, details1.getBasicSkillValue ("US004").intValue ());
+		assertEquals (1, details1.getModifiedSkillValue ("US004").intValue ());
+		
+		// Now use the right RAT
+		unitDef.setRangedAttackType ("RAT02");
+		final ExpandedUnitDetails details2 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+
+		assertSame (unit, details2.getUnit ());
+		assertTrue (details2.isMemoryUnit ());
+		assertSame (unit, details2.getMemoryUnit ());
+		assertSame (unitDef, details2.getUnitDefinition ());
+		assertSame (unitType, details2.getUnitType ());
+		assertSame (owningPlayer, details2.getOwningPlayer ());
+		assertNull (details2.getWeaponGrade ());
+		assertSame (rat2, details2.getRangedAttackType ());
+		assertNull (details2.getBasicExperienceLevel ());
+		assertNull (details2.getModifiedExperienceLevel ());
+		assertEquals ("LTN", details2.getModifiedUnitMagicRealmLifeformTypeID ());
+
+		assertTrue (details2.hasBasicSkill ("US001"));
+		assertTrue (details2.hasModifiedSkill ("US001"));
+		assertEquals (1, details2.getBasicSkillValue ("US001").intValue ());
+		assertEquals (1, details2.getModifiedSkillValue ("US001").intValue ());
+		
+		assertTrue (details2.hasBasicSkill ("US002"));
+		assertTrue (details2.hasModifiedSkill ("US002"));
+		assertEquals (1, details2.getBasicSkillValue ("US002").intValue ());
+		assertEquals (1, details2.getModifiedSkillValue ("US002").intValue ());
+		
+		assertTrue (details2.hasBasicSkill ("US003"));
+		assertTrue (details2.hasModifiedSkill ("US003"));
+		assertEquals (1, details2.getBasicSkillValue ("US003").intValue ());
+		assertEquals (1, details2.getModifiedSkillValue ("US003").intValue ());
+		
+		assertTrue (details2.hasBasicSkill ("US004"));
+		assertTrue (details2.hasModifiedSkill ("US004"));
+		assertEquals (1, details2.getBasicSkillValue ("US004").intValue ());
+		assertEquals (1 + 4, details2.getModifiedSkillValue ("US004").intValue ());
+		
+		// Attack with the right attackSkillID
+		final ExpandedUnitDetails details3 = utils.expandUnitDetails (unit, null, "UA01", null, players, mem, db);
+
+		assertSame (unit, details3.getUnit ());
+		assertTrue (details3.isMemoryUnit ());
+		assertSame (unit, details3.getMemoryUnit ());
+		assertSame (unitDef, details3.getUnitDefinition ());
+		assertSame (unitType, details3.getUnitType ());
+		assertSame (owningPlayer, details3.getOwningPlayer ());
+		assertNull (details3.getWeaponGrade ());
+		assertSame (rat2, details3.getRangedAttackType ());
+		assertNull (details3.getBasicExperienceLevel ());
+		assertNull (details3.getModifiedExperienceLevel ());
+		assertEquals ("LTN", details3.getModifiedUnitMagicRealmLifeformTypeID ());
+
+		assertTrue (details3.hasBasicSkill ("US001"));
+		assertTrue (details3.hasModifiedSkill ("US001"));
+		assertEquals (1, details3.getBasicSkillValue ("US001").intValue ());
+		assertEquals (1 + 1, details3.getModifiedSkillValue ("US001").intValue ());
+		
+		assertTrue (details3.hasBasicSkill ("US002"));
+		assertTrue (details3.hasModifiedSkill ("US002"));
+		assertEquals (1, details3.getBasicSkillValue ("US002").intValue ());
+		assertEquals (1 + 2, details3.getModifiedSkillValue ("US002").intValue ());
+		
+		assertTrue (details3.hasBasicSkill ("US003"));
+		assertTrue (details3.hasModifiedSkill ("US003"));
+		assertEquals (1, details3.getBasicSkillValue ("US003").intValue ());
+		assertEquals (1, details3.getModifiedSkillValue ("US003").intValue ());
+		
+		assertTrue (details3.hasBasicSkill ("US004"));
+		assertTrue (details3.hasModifiedSkill ("US004"));
+		assertEquals (1, details3.getBasicSkillValue ("US004").intValue ());
+		assertEquals (1 + 4, details3.getModifiedSkillValue ("US004").intValue ());
+
+		// Attack with the only attackSkillID that means we *don't* get the 3rd bonus
+		final ExpandedUnitDetails details4 = utils.expandUnitDetails (unit, null, "UA02", null, players, mem, db);
+
+		assertSame (unit, details4.getUnit ());
+		assertTrue (details4.isMemoryUnit ());
+		assertSame (unit, details4.getMemoryUnit ());
+		assertSame (unitDef, details4.getUnitDefinition ());
+		assertSame (unitType, details4.getUnitType ());
+		assertSame (owningPlayer, details4.getOwningPlayer ());
+		assertNull (details4.getWeaponGrade ());
+		assertSame (rat2, details4.getRangedAttackType ());
+		assertNull (details4.getBasicExperienceLevel ());
+		assertNull (details4.getModifiedExperienceLevel ());
+		assertEquals ("LTN", details4.getModifiedUnitMagicRealmLifeformTypeID ());
+
+		assertTrue (details4.hasBasicSkill ("US001"));
+		assertTrue (details4.hasModifiedSkill ("US001"));
+		assertEquals (1, details4.getBasicSkillValue ("US001").intValue ());
+		assertEquals (1, details4.getModifiedSkillValue ("US001").intValue ());
+		
+		assertTrue (details4.hasBasicSkill ("US002"));
+		assertTrue (details4.hasModifiedSkill ("US002"));
+		assertEquals (1, details4.getBasicSkillValue ("US002").intValue ());
+		assertEquals (1, details4.getModifiedSkillValue ("US002").intValue ());
+		
+		assertTrue (details4.hasBasicSkill ("US003"));
+		assertTrue (details4.hasModifiedSkill ("US003"));
+		assertEquals (1, details4.getBasicSkillValue ("US003").intValue ());
+		assertEquals (1, details4.getModifiedSkillValue ("US003").intValue ());
+		
+		assertTrue (details4.hasBasicSkill ("US004"));
+		assertTrue (details4.hasModifiedSkill ("US004"));
+		assertEquals (1, details4.getBasicSkillValue ("US004").intValue ());
+		assertEquals (1 + 4, details4.getModifiedSkillValue ("US004").intValue ());
+
+		// Attack with the right magicRealmID
+		final ExpandedUnitDetails details5 = utils.expandUnitDetails (unit, null, null, "MB01", players, mem, db);
+
+		assertSame (unit, details5.getUnit ());
+		assertTrue (details5.isMemoryUnit ());
+		assertSame (unit, details5.getMemoryUnit ());
+		assertSame (unitDef, details5.getUnitDefinition ());
+		assertSame (unitType, details5.getUnitType ());
+		assertSame (owningPlayer, details5.getOwningPlayer ());
+		assertNull (details5.getWeaponGrade ());
+		assertSame (rat2, details5.getRangedAttackType ());
+		assertNull (details5.getBasicExperienceLevel ());
+		assertNull (details5.getModifiedExperienceLevel ());
+		assertEquals ("LTN", details5.getModifiedUnitMagicRealmLifeformTypeID ());
+
+		assertTrue (details5.hasBasicSkill ("US001"));
+		assertTrue (details5.hasModifiedSkill ("US001"));
+		assertEquals (1, details5.getBasicSkillValue ("US001").intValue ());
+		assertEquals (1, details5.getModifiedSkillValue ("US001").intValue ());
+		
+		assertTrue (details5.hasBasicSkill ("US002"));
+		assertTrue (details5.hasModifiedSkill ("US002"));
+		assertEquals (1, details5.getBasicSkillValue ("US002").intValue ());
+		assertEquals (1 + 2, details5.getModifiedSkillValue ("US002").intValue ());
+		
+		assertTrue (details5.hasBasicSkill ("US003"));
+		assertTrue (details5.hasModifiedSkill ("US003"));
+		assertEquals (1, details5.getBasicSkillValue ("US003").intValue ());
+		assertEquals (1 + 3, details5.getModifiedSkillValue ("US003").intValue ());
+		
+		assertTrue (details5.hasBasicSkill ("US004"));
+		assertTrue (details5.hasModifiedSkill ("US004"));
+		assertEquals (1, details5.getBasicSkillValue ("US004").intValue ());
+		assertEquals (1 + 4, details5.getModifiedSkillValue ("US004").intValue ());
 	}
 	
 	/**

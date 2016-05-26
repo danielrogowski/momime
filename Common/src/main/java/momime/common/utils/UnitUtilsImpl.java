@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
@@ -18,24 +19,32 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitHasSkillMergedList;
+import momime.common.database.AddsToSkill;
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
+import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
+import momime.common.database.HeroItemTypeAttackType;
 import momime.common.database.MergedFromPick;
+import momime.common.database.NegatedBySkill;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitType;
+import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -336,75 +345,522 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 	
 	/**
-	 * Note about the returned map: many skills (such as movement skills) do not have a value, the unit just has the skill, with a null value.
-	 * As such you cannot do (map.get ("US000") != null) to test whether a unit has a particular skill or not.  You must use (map.containsKey ("US000")).
+	 * Calculates and stores all derived skill, upkeep and other values for a particular unit and stores them for easy and quick lookup.
+	 * Note the calculated values depend in part on which unit(s) we're in combat with and if we're calculating stats for purposes of defending an incoming attack.
+	 * e.g. the +2 defence from Long Range will only be included vs incoming ranged attacks; the +3 bonus from Resist Elements will only be included vs incoming Chaos+Nature based attacks
+	 * So must bear this in mind that we need to recalculate unit stats again if the circumstances we are calculating them for change, even if the unit itself has not changed.
 	 * 
-	 * Also this only lists basic skill values - if a unit has a melee attack of 4, is experienced and has flame blade cast on it, the value in the map will still just read "4".
-	 * To get the true unit skill value, with all modifiers and penalties applied, must pass the map output from this method into "getModifiedSkillValue".
-	 * 
-	 * @param spells List of known maintained spells
 	 * @param unit Unit to expand skill list for
+	 * @param enemyUnits List of enemy units who may have skills that negate the skill we're checking for; typically this is the unit we're engaging in an attack with; in some
+	 * 	cases such as Invisibility, it may be ALL units we're in combat with; for situations not involved in combats or specific attacks, just pass null here
+	 * @param attackFromSkillID The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
+	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return List of all skills this unit has, with skills granted from other skills and skills granted from spells merged into the list
-	 * @throws RecordNotFoundException If the definition of a skill or spell cannot be found in the db
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final Map<String, Integer> expandSkillList (final List<MemoryMaintainedSpell> spells, final AvailableUnit unit, final CommonDatabase db)
-		throws RecordNotFoundException
+	public final ExpandedUnitDetails expandUnitDetails (final AvailableUnit unit,
+		final List<ExpandedUnitDetails> enemyUnits, final String attackFromSkillID, final String attackFromMagicRealmID,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering expandSkillList: " + unit.getUnitID () + ", " + spells.size () + ", " + unit.getUnitHasSkill ().size ());
+		log.trace ("Entering expandUnitDetails: " + unit.getUnitID () + ", " + unit.getUnitHasSkill ().size ());
 
-		// First just copy the skills from the unit into a map
-		// NB. can't just use Collectors.toMap () because this throws an exception if you have any null values (which we often will)
-		final Map<String, Integer> map = new HashMap<String, Integer> ();
-		unit.getUnitHasSkill ().forEach (s -> map.put (s.getUnitSkillID (), s.getUnitSkillValue ()));
-		
-		// Add in skills from spells - we must do this next since some skills from spells may grant other skills, e.g. Invulerability spell effect grants Weapon Immunity
-		if (unit instanceof MemoryUnit)
-		{
-			final int unitURN = ((MemoryUnit) unit).getUnitURN ();
-			
-			for (final MemoryMaintainedSpell thisSpell : spells)
-				if ((thisSpell.getUnitURN () != null) && (thisSpell.getUnitURN () == unitURN) && (thisSpell.getUnitSkillID () != null))
+		// STEP 1 - Get a list of all units in the same stack as this one - we need this to look to see if anyone has skills like Holy Bonus or Resistance to All
+		final List<AvailableUnit> unitStack = new ArrayList<AvailableUnit> ();
+		final List<Integer> unitStackUnitURNs = new ArrayList<Integer> ();
+
+		final MapCoordinates3DEx unitCombatLocation = (unit instanceof MemoryUnit) ? (MapCoordinates3DEx) ((MemoryUnit) unit).getCombatLocation () : null;
+		if (unit.getUnitLocation () != null)
+			for (final MemoryUnit thisUnit : mem.getUnit ())
+				if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == unit.getOwningPlayerID ()) &&
+					(unit.getUnitLocation ().equals (thisUnit.getUnitLocation ())) &&
+					(((unitCombatLocation == null) && (thisUnit.getCombatLocation () == null)) ||
+					((unitCombatLocation != null) && (unitCombatLocation.equals (thisUnit.getCombatLocation ())))))
 				{
-					// See if the spell definition defines a strength - this is for things like casting Immolation on a unit - we have to know that it is "Immolation 4"
-					final Spell spellDef = db.findSpell (thisSpell.getSpellID (), "expandSkillList");
-					boolean found = false;
-					Integer strength = null;
-					final Iterator<UnitSpellEffect> iter = spellDef.getUnitSpellEffect ().iterator ();
-					while ((!found) && (iter.hasNext ()))
-					{
-						final UnitSpellEffect effect = iter.next ();
-						if (effect.getUnitSkillID ().equals (thisSpell.getUnitSkillID ()))
-						{
-							found = true;
-							strength = effect.getUnitSkillValue ();
-						}
-					}
-					
-					if (!found)
-						throw new RecordNotFoundException (UnitSkill.class.getName (), thisSpell.getUnitSkillID (), "expandSkillList");
-					
-					map.put (thisSpell.getUnitSkillID (), strength);
+					unitStack.add (thisUnit);
+					unitStackUnitURNs.add (thisUnit.getUnitURN ());
 				}
+		
+		if (!unitStack.contains (unit))
+		{
+			unitStack.add (unit);
+			if (unit instanceof MemoryUnit)
+				unitStackUnitURNs.add (((MemoryUnit) unit).getUnitURN ());
 		}
 		
-		// Now check all skills to see if any grant other skills
-		final List<String> skillsLeftToCheck = map.keySet ().stream ().collect (Collectors.toList ());
+		// STEP 2 - First just copy the skills from the unit into a map
+		// NB. can't just use Collectors.toMap () because this throws an exception if you have any null values (which we often will)
+		final Map<String, Integer> basicSkillValues = new HashMap<String, Integer> ();
+		unit.getUnitHasSkill ().forEach (s -> basicSkillValues.put (s.getUnitSkillID (), s.getUnitSkillValue ()));
+		
+		// For unit stack skills, want the highest value of each, and ignore any that are nulls
+		final Map<String, Integer> unitStackSkills = new HashMap<String, Integer> ();
+		unitStack.forEach (u -> u.getUnitHasSkill ().stream ().filter (s -> (s.getUnitSkillValue () != null)).forEach (s ->
+		{
+			Integer skillValue = unitStackSkills.get (s.getUnitSkillID ());
+			skillValue = (skillValue == null) ? s.getUnitSkillValue () : Math.max (skillValue, s.getUnitSkillValue ());
+			unitStackSkills.put (s.getUnitSkillID (), skillValue);
+		}));
+		
+		// STEP 3 - Add in skills from spells - we must do this next since some skills from spells may grant other skills, e.g. Invulerability spell effect grants Weapon Immunity
+		for (final MemoryMaintainedSpell thisSpell : mem.getMaintainedSpell ())
+			if ((thisSpell.getUnitURN () != null) && (unitStackUnitURNs.contains (thisSpell.getUnitURN ())) && (thisSpell.getUnitSkillID () != null))
+			{
+				// See if the spell definition defines a strength - this is for things like casting Immolation on a unit - we have to know that it is "Immolation 4"
+				final Spell spellDef = db.findSpell (thisSpell.getSpellID (), "expandUnitDetails");
+				boolean found = false;
+				Integer strength = null;
+				final Iterator<UnitSpellEffect> iter = spellDef.getUnitSpellEffect ().iterator ();
+				while ((!found) && (iter.hasNext ()))
+				{
+					final UnitSpellEffect effect = iter.next ();
+					if (effect.getUnitSkillID ().equals (thisSpell.getUnitSkillID ()))
+					{
+						found = true;
+						strength = effect.getUnitSkillValue ();
+					}
+				}
+				
+				if (!found)
+					throw new RecordNotFoundException (UnitSpellEffect.class.getName (), thisSpell.getUnitSkillID (), "expandUnitDetails");
+				
+				// Is it the unit we're calculating skills for?
+				if ((unit instanceof MemoryUnit) && (((MemoryUnit) unit).getUnitURN () == thisSpell.getUnitURN ()))
+					basicSkillValues.put (thisSpell.getUnitSkillID (), strength);
+				
+				// List the skill in the unit stack skills?
+				if (strength != null)
+				{
+					Integer skillValue = unitStackSkills.get (thisSpell.getUnitSkillID ());
+					skillValue = (skillValue == null) ? strength : Math.max (skillValue, strength);
+					unitStackSkills.put (thisSpell.getUnitSkillID (), skillValue);
+				}
+			}
+		
+		// STEP 4 - Add in valueless skills from hero items - again need to do this early since some may grant other skills, e.g. Invulnerability imbued on a hero item grants Weapon Immunity
+		// We deal with numeric bonuses from hero items much lower down
+		if (unit instanceof MemoryUnit)
+			for (final MemoryUnitHeroItemSlot slot : ((MemoryUnit) unit).getHeroItemSlot ())
+				if (slot.getHeroItem () != null)
+				{
+					// Natural effects of the item type, e.g. +2 defence from plate mail
+					final HeroItemType heroItemType = db.findHeroItemType (slot.getHeroItem ().getHeroItemTypeID (), "expandUnitDetails");
+					for (final UnitSkillAndValue basicStat : heroItemType.getHeroItemTypeBasicStat ())
+						if ((basicStat.getUnitSkillValue () == null) && (!basicSkillValues.containsKey (basicStat.getUnitSkillID ())))
+							basicSkillValues.put (basicStat.getUnitSkillID (), null);
+					
+					// Bonuses imbued on the item
+					for (final HeroItemTypeAllowedBonus bonus : slot.getHeroItem ().getHeroItemChosenBonus ())
+						for (final UnitSkillAndValue bonusStat : db.findHeroItemBonus (bonus.getHeroItemBonusID (), "expandUnitDetails").getHeroItemBonusStat ())
+							if ((bonusStat.getUnitSkillValue () == null) && (!basicSkillValues.containsKey (bonusStat.getUnitSkillID ())))
+								basicSkillValues.put (bonusStat.getUnitSkillID (), null);
+				}
+		
+		// STEP 5 - Now check all skills to see if any grant other skills
+		// This is N/A for unit stack skills since granted skills always have a null skill strength value
+		final List<String> skillsLeftToCheck = basicSkillValues.keySet ().stream ().collect (Collectors.toList ());
 		while (skillsLeftToCheck.size () > 0)
 		{
-			final UnitSkill skillDef = db.findUnitSkill (skillsLeftToCheck.get (0), "expandSkillList");
+			final UnitSkill skillDef = db.findUnitSkill (skillsLeftToCheck.get (0), "expandUnitDetails");
 			skillsLeftToCheck.remove (0);
 			
 			skillDef.getGrantsSkill ().stream ().map (s -> s.getGrantsSkillID ()).forEach (s ->
 			{
-				map.put (s, null);
+				basicSkillValues.put (s, null);
 				skillsLeftToCheck.add (s);
 			});
 		}
 		
-		log.trace ("Exiting expandSkillList = " + map.size ());
-		return map;
+		// STEP 6 - Create new map, eliminating from it skills that are negated
+		// If we have the skill, before we go any further see if anything negates it
+		final Map<String, Integer> basicSkillValuesWithNegatedSkillsRemoved = new HashMap<String, Integer> ();
+		final List<String> changedMagicRealmLifeformTypeIDs = new ArrayList<String> ();
+		
+		for (final Entry<String, Integer> skill : basicSkillValues.entrySet ())
+		{
+			boolean negated = false;
+			final UnitSkill skillDef = db.findUnitSkill (skill.getKey (), "expandUnitDetails");
+			final Iterator<NegatedBySkill> iter = skillDef.getNegatedBySkill ().iterator ();
+			while ((!negated) && (iter.hasNext ()))
+			{
+				final NegatedBySkill negation = iter.next ();
+				switch (negation.getNegatedByUnitID ())
+				{
+					case OUR_UNIT:
+						if (basicSkillValues.containsKey (negation.getNegatedBySkillID ()))
+							negated = true;
+						break;
+						
+					case ENEMY_UNIT:
+						if (enemyUnits != null)
+							negated = enemyUnits.stream ().anyMatch (e -> e.hasModifiedSkill (negation.getNegatedBySkillID ()));
+						break;
+						
+					default:
+						throw new MomException ("expandUnitDetails doesn't know what to do with negatedByUnitID value of " +
+							negation.getNegatedByUnitID () + " when determining value of skill " + skill.getKey ());
+				}
+			}
+			
+			if (!negated)
+			{
+				basicSkillValuesWithNegatedSkillsRemoved.put (skill.getKey (), skill.getValue ());
+				
+				// For any that are not negated, while we already have the skill definition found, see if the skill modifies the units magic realm/lifeform type
+				if (skillDef.getChangesUnitToMagicRealm () != null)
+					changedMagicRealmLifeformTypeIDs.add (skillDef.getChangesUnitToMagicRealm ());
+			}
+		}
+		
+		// STEP 7 - Do simple lookups
+		final Unit unitDef = db.findUnit (unit.getUnitID (), "expandUnitDetails");
+		final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "expandUnitDetails");
+		final WeaponGrade weaponGrade = (unit.getWeaponGrade () == null) ? null : db.findWeaponGrade (unit.getWeaponGrade (), "expandUnitDetails");
+		final RangedAttackType rangedAttackType = (unitDef.getRangedAttackType () == null) ? null : db.findRangedAttackType (unitDef.getRangedAttackType (), "expandUnitDetails");
+		
+		final String unitTypeID = db.findPick (unitDef.getUnitMagicRealm (), "expandUnitDetails").getUnitTypeID ();
+		final UnitType unitType = db.findUnitType (unitTypeID, "expandUnitDetails");
+		
+		// STEP 8 - Work out the units magic realm/lifeform type
+		// We made a list of overrides to it above already - now what we do depends on how many modifications we found
+		final String magicRealmLifeformTypeID;
+		
+		// No modifications - use value from unit definition, unaltered
+		if (changedMagicRealmLifeformTypeIDs.size () == 0)
+			magicRealmLifeformTypeID = unitDef.getUnitMagicRealm ();
+
+		// Exactly one modification - use the value set by that skill (i.e. unit is Undead or Chaos Channeled)
+		else if (changedMagicRealmLifeformTypeIDs.size () == 1)
+			magicRealmLifeformTypeID = changedMagicRealmLifeformTypeIDs.get (0);
+		
+		// Multiple - look for a magic realm whose merge list matches our list (i.e. unit is Undead AND Chaos Channeled)
+		else
+		{
+			final Iterator<? extends Pick> iter = db.getPicks ().iterator ();
+			String match = null;
+			while ((match == null) && (iter.hasNext ()))
+			{
+				final Pick pick = iter.next ();
+				
+				if ((pick.getMergedFromPick ().size () == changedMagicRealmLifeformTypeIDs.size ()) &&
+					(pick.getMergedFromPick ().stream ().map (m -> m.getMergedFromPickID ()).allMatch (m -> changedMagicRealmLifeformTypeIDs.contains (m))))
+					
+					match = pick.getPickID ();
+			}
+			
+			if (match != null)
+				magicRealmLifeformTypeID = match;
+			else
+			{
+				// Not found - make the error message useful enough so we'll know how to fix it
+				final StringBuilder msg = new StringBuilder ();
+				changedMagicRealmLifeformTypeIDs.forEach (s ->
+				{
+					if (msg.length () > 0)
+						msg.append (", ");
+					
+					msg.append (s);
+				});
+				
+				throw new MomException ("No magic realm/lifeform type (Pick) found that merges lifeform types: " + msg);
+			}
+		}
+		
+		// STEP 9 - Find the unit's experience level
+		// Experience can never be increased by spells, combat area effects, weapon grades, etc. etc. therefore safe to do this from the basic skill value on the unmerged list
+		final Integer experienceSkillValue = basicSkillValuesWithNegatedSkillsRemoved.get (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+		final ExperienceLevel basicExpLvl;
+		final ExperienceLevel modifiedExpLvl;
+		if (experienceSkillValue == null)
+		{
+			basicExpLvl = null;		// This type of unit doesn't gain experience (e.g. summoned)
+			modifiedExpLvl = null;
+		}
+		else
+		{
+			// Check all experience levels defined under the unit type
+			// This checks them all so we aren't relying on them being defined in the correct orer
+			ExperienceLevel levelFromExperience = null;
+			for (final ExperienceLevel experienceLevel : unitType.getExperienceLevel ())
+
+				// Careful - getExperienceRequired () can be null, for normal units' Ultra-Elite and Champion statuses
+				// Levels that actually require 0 experience must state a 0 in the XML rather than omit the field
+				if ((experienceLevel.getExperienceRequired () != null) && (experienceSkillValue >= experienceLevel.getExperienceRequired ()) &&
+					((levelFromExperience == null) || (levelFromExperience.getLevelNumber () < experienceLevel.getLevelNumber ())))
+						levelFromExperience = experienceLevel;
+
+			// Check we got one
+			if (levelFromExperience == null)
+				throw new MomException ("Unit " + unit.getUnitID () + " of type " + unitTypeID + " with " + experienceSkillValue + " experience cannot find any appropriate experience level");
+
+			// Now we've found the level that we're at due to actual experience, see if we get any level bonuses, i.e. Warlord retort or Crusade spell
+			basicExpLvl = levelFromExperience;
+			int levelIncludingBonuses = levelFromExperience.getLevelNumber ();
+
+			// Does the player have the Warlord retort?
+			final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+			if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_WARLORD) > 0)
+				levelIncludingBonuses++;
+
+			// Does the player have the Crusade CAE?
+			if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (mem.getCombatAreaEffect (), null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, unit.getOwningPlayerID ()) != null)
+				levelIncludingBonuses++;
+
+			// Now we have to ensure that the level we've attained actually exists, this is fine for units but a hero might reach Demi-God naturally,
+			// then giving them +1 level on top of that will move them to an undefined level
+			do
+			{
+				levelFromExperience = UnitTypeUtils.findExperienceLevel (unitType, levelIncludingBonuses);
+				levelIncludingBonuses--;
+			} while (levelFromExperience == null);
+
+			modifiedExpLvl = levelFromExperience;
+		}
+		
+		// STEP 10 - Ensure we have complete list of all skills that we need to fully calculate all the components for
+		// The majority of skills, if we don't have the skill at all, then bonuses don't apply to it.
+		// e.g. Settlers have no melee attack - just because they might gain 20 exp doesn't mean they start attacking with their pitchforks.
+		// e.g. Units with no ranged attack don't suddenly gain one.
+		// e.g. Phantom Warriors have no defence, but this is in the nature of the type of unit, and I think it makes sense to not allow them to gain a defence thru bonuses.
+		// Movement speed, HP and Resistance are N/A here, because all units MUST define a value for those (see ServerDatabaseExImpl.consistencyChecks ())
+		// So the two that are left, that we must treat differently, are + to hit and + to block.  Most units don't have those values defined, but bonuses definitely still apply.
+		// So if they aren't in the list already then add them, and use "0" rather than "null" so we don't skip calculating the component breakdown.
+		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK})
+			if (!basicSkillValuesWithNegatedSkillsRemoved.containsKey (unitSkillID))
+				basicSkillValuesWithNegatedSkillsRemoved.put (unitSkillID, 0);
+		
+		// STEP 11 - Copy across basic skill values
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		for (final Entry<String, Integer> basicSkill : basicSkillValuesWithNegatedSkillsRemoved.entrySet ())
+			
+			// Skills with no value just get copied in as-is with no breakdown
+			if (basicSkill.getValue () == null)
+				modifiedSkillValues.put (basicSkill.getKey (), null);
+			else
+			{
+				// Start a map of components of the breakdown
+				final Map<UnitSkillComponent, Integer> components = new HashMap<UnitSkillComponent, Integer> ();
+				if (basicSkill.getValue () > 0)
+					components.put (UnitSkillComponent.BASIC, basicSkill.getValue ());
+				
+				modifiedSkillValues.put (basicSkill.getKey (), components);
+			}
+		
+		// STEP 12 - Add bonuses from weapon grades
+		if (weaponGrade != null)
+			for (final UnitSkillAndValue bonus : weaponGrade.getWeaponGradeSkillBonus ())
+			{
+				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
+				if ((components != null) && (bonus.getUnitSkillValue () != null))
+				{
+					// Only certain types of ranged attack get bonuses from Mithril and Adamantium weapons - e.g. bows do, magical blasts do not
+					final boolean weaponGradeBonusApplies;
+					if (bonus.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
+						weaponGradeBonusApplies = (rangedAttackType == null) ? false : rangedAttackType.isMithrilAndAdamantiumVersions ();
+					else
+						weaponGradeBonusApplies = true;
+					
+					if (weaponGradeBonusApplies)
+						components.put (UnitSkillComponent.WEAPON_GRADE, bonus.getUnitSkillValue ());
+				}
+			}
+
+		// STEP 13 - Add bonuses from experience
+		if (modifiedExpLvl != null)
+			for (final UnitSkillAndValue bonus : modifiedExpLvl.getExperienceSkillBonus ())
+			{
+				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
+				if ((components != null) && (bonus.getUnitSkillValue () != null))
+					components.put (UnitSkillComponent.EXPERIENCE, bonus.getUnitSkillValue ());
+			}
+		
+		// STEP 14 - Add bonuses from combat area effects
+		for (final MemoryCombatAreaEffect thisCAE : mem.getCombatAreaEffect ())
+			if (doesCombatAreaEffectApplyToUnit (unit, thisCAE, db))
+			{
+				// Found a combat area effect whose location matches this unit, as well as any player or other pre-requisites
+				// So this means all the skill bonuses apply, except we still need to do the magic realm
+				// check since some effects have different components which apply to different lifeform types, e.g. True Light and Darkness
+				for (final CombatAreaEffectSkillBonus bonus : db.findCombatAreaEffect (thisCAE.getCombatAreaEffectID (), "expandUnitDetails").getCombatAreaEffectSkillBonus ())
+				{
+					// Magic realm/lifeform type can be blank for effects that apply to all types of unit (e.g. Prayer)
+					final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
+					if ((components != null) && (bonus.getUnitSkillValue () != null) &&
+						((bonus.getEffectMagicRealm () == null) || (bonus.getEffectMagicRealm ().equals (magicRealmLifeformTypeID))))
+					{
+						// There might be more than one CAE giving a bonus to the same skill, so this isn't a simple "put"
+						Integer bonusValue = components.get (UnitSkillComponent.COMBAT_AREA_EFFECTS);
+						bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus.getUnitSkillValue ();
+						components.put (UnitSkillComponent.COMBAT_AREA_EFFECTS, bonusValue);
+					}
+				}
+			}
+		
+		// STEP 15 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
+		for (final UnitSkill skillDef : db.getUnitSkills ())
+			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
+			{
+				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (addsToSkill.getAddsToSkillID ());
+				if ((components != null) && (addsToSkill.isAffectsEntireStack () ? unitStackSkills : modifiedSkillValues).containsKey (skillDef.getUnitSkillID ()))
+				{
+					// If we have no info about the kind of attack being made, or this isn't in reference to an attack at all, then discount the bonus
+					// if it has any restrictions that depend on the kind of incoming attack, even if we match those restrictions.
+					// This is to stop the bonus from Large Shield showing on the unit info screen.
+					if ((attackFromSkillID == null) && (attackFromMagicRealmID == null) &&
+						((addsToSkill.getOnlyVersusAttacksFromSkillID () != null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID () != null)))
+					{
+						// Ignore
+					}
+					else
+					{
+						// Deal with negative checks first, so the "if" below doesn't get too complicated; the value here is irrelevant if onlyVersusAttacksFromSkillID is null
+						// NB. attackFromSkillID of "null" (i.e. spell based attacks) are considered as not matching the required skill ID
+						// which is what we want - so Large Shield DOES give its bonus against incoming spell attacks such as Fire Bolt
+						boolean onlyVersusAttacksFromSkillIDCheckPasses = (addsToSkill.getOnlyVersusAttacksFromSkillID () != null) &&
+							(addsToSkill.getOnlyVersusAttacksFromSkillID ().equals (attackFromSkillID));
+						if ((addsToSkill.isNegateOnlyVersusAttacksFromSkillID () != null) && (addsToSkill.isNegateOnlyVersusAttacksFromSkillID ()))
+							onlyVersusAttacksFromSkillIDCheckPasses = !onlyVersusAttacksFromSkillIDCheckPasses;
+						
+						// Does the skill only apply to particular ranged attack types, and incoming skill IDs or incoming attacks of only particular magic realms?
+						// (This deals with all conditional bonuses, such as Resist Elements, Large Shield or Flame Blade)
+						if (((addsToSkill.getRangedAttackTypeID () == null) || (addsToSkill.getRangedAttackTypeID ().equals (unitDef.getRangedAttackType ()))) &&
+							((addsToSkill.getOnlyVersusAttacksFromSkillID () == null) || (onlyVersusAttacksFromSkillIDCheckPasses)) &&
+							((addsToSkill.getOnlyVersusAttacksFromMagicRealmID () == null) || (addsToSkill.getOnlyVersusAttacksFromMagicRealmID ().equals (attackFromMagicRealmID))))
+						{
+							// How is the bonus calculated - fixed value, value from the skill, etc - firstly, defining both isn't valid
+							UnitSkillComponent component = addsToSkill.isAffectsEntireStack () ? UnitSkillComponent.SPELL_EFFECTS_STACK : UnitSkillComponent.SPELL_EFFECTS;
+							final int bonus;
+							if ((addsToSkill.getAddsToSkillDivisor () != null) && (addsToSkill.getAddsToSkillFixed () != null))
+								throw new MomException ("Unit skill " + skillDef.getUnitSkillID () + " adds to skill " + addsToSkill.getAddsToSkillID () +
+									" but specifies both a level divisor and a fixed amount");
+
+							// Any fixed bonuses from one skill to another?  e.g. Holy Armour gives +2 to defence
+							else if (addsToSkill.getAddsToSkillFixed () != null)
+								bonus = addsToSkill.getAddsToSkillFixed ();
+							
+							else
+							{
+								// For other kinds, we must have a value for the skill - e.g. Constitution 1 or Holy Bonus 2
+								int multiplier;
+								if (addsToSkill.isAffectsEntireStack ())
+									multiplier = unitStackSkills.get (skillDef.getUnitSkillID ());
+								else
+								{
+									multiplier = 0;
+									final Map<UnitSkillComponent, Integer> totalComponents = modifiedSkillValues.get (skillDef.getUnitSkillID ());
+									if (totalComponents != null)
+										for (final Entry<UnitSkillComponent, Integer> c : totalComponents.entrySet ())
+											if (c.getValue () == null)
+												throw new MomException ("expandUnitDetails on " + unit.getUnitID () + " trying to sum addsFromSkill ID " + skillDef.getUnitSkillID () + " but the " + c.getKey () + " component is null");
+											else
+												multiplier = multiplier + c.getValue ();
+								}
+								
+								if (multiplier <= 0)
+									bonus = 0;
+								
+								// Any bonuses from hero skills? (Might gives +melee, Constitution gives +hit points, Agility gives +defence, and so on)
+								else if (addsToSkill.getAddsToSkillDivisor () != null)
+								{
+									component = UnitSkillComponent.HERO_SKILLS;
+									if (modifiedExpLvl != null)
+									{
+										// Multiplier will either equal 1 or 2, indicating whether we have the regular or super version of the skill - change this to be 2 for regular or 3 for super
+										multiplier++;
+										
+										// Some skills take more than 1 level to gain 1 attribute point, so get this value
+										final int divisor = (addsToSkill.getAddsToSkillDivisor () == null) ? 1 : addsToSkill.getAddsToSkillDivisor ();
+										
+										// Now can do the calculation
+										bonus = ((modifiedExpLvl.getLevelNumber () + 1) * multiplier) / (divisor*2);
+									}
+									else
+										bonus = 0;
+								}
+								
+								
+								// Neither divisor nor fixed value specified, so the value must come from the skill itself
+								else
+									bonus = multiplier;
+							}
+							
+							if (bonus > 0)
+							{
+								Integer bonusValue = components.get (component);
+								bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus;
+								components.put (component, bonusValue);
+							}
+						}
+					}
+				}
+			}
+		
+		// STEP 16 - Hero items - numeric bonuses (dealt with valueless skills above)
+		if (unit instanceof MemoryUnit)
+			for (final MemoryUnitHeroItemSlot slot : ((MemoryUnit) unit).getHeroItemSlot ())
+				if (slot.getHeroItem () != null)
+				{
+					// Natural effects of the item type, e.g. +2 defence from plate mail
+					final HeroItemType heroItemType = db.findHeroItemType (slot.getHeroItem ().getHeroItemTypeID (), "expandUnitDetails");
+					for (final UnitSkillAndValue basicStat : heroItemType.getHeroItemTypeBasicStat ())
+						if (basicStat.getUnitSkillValue () != null)
+						{
+							final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (basicStat.getUnitSkillID ());
+							if ((components != null) && (basicStat.getUnitSkillValue () != null))
+								components.put (UnitSkillComponent.HERO_ITEMS, basicStat.getUnitSkillValue ());
+						}
+					
+					// Bonuses imbued on the item
+					for (final HeroItemTypeAllowedBonus bonus : slot.getHeroItem ().getHeroItemChosenBonus ())
+						for (final UnitSkillAndValue bonusStat : db.findHeroItemBonus (bonus.getHeroItemBonusID (), "expandUnitDetails").getHeroItemBonusStat ())
+							if (bonusStat.getUnitSkillValue () == null)
+							{
+								// Just want bonuses with a numeric value
+							}
+							
+							// +Attack bonus - these apply to one or more specific skills, depending on the type of the item.
+							// This deals with that e.g. swords don't add to "Thrown Weapons" skill but axes do.
+							else if (bonusStat.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM))
+							{
+								for (final HeroItemTypeAttackType attackSkill : heroItemType.getHeroItemTypeAttackType ())
+								{
+									final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (attackSkill.getUnitSkillID ());
+									if (components != null)
+									{
+										// This might coincide with a basic stat, e.g. plate mail (+2 defence) with another +4 defence imbued onto it
+										Integer bonusValue = components.get (UnitSkillComponent.HERO_ITEMS);
+										bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonusStat.getUnitSkillValue ();
+										components.put (UnitSkillComponent.HERO_ITEMS, bonusValue);
+									}
+								}
+							}
+		
+							// Regular bonus
+							else
+							{
+								final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonusStat.getUnitSkillID ());
+								if ((components != null) && (bonusStat.getUnitSkillValue () != null))
+								{
+									// This might coincide with a basic stat, e.g. plate mail (+2 defence) with another +4 defence imbued onto it
+									Integer bonusValue = components.get (UnitSkillComponent.HERO_ITEMS);
+									bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonusStat.getUnitSkillValue ();
+									components.put (UnitSkillComponent.HERO_ITEMS, bonusValue);
+								}
+							}
+				}
+		
+		final ExpandedUnitDetailsImpl container = new ExpandedUnitDetailsImpl (unit, unitDef, unitType, owningPlayer, magicRealmLifeformTypeID,
+			weaponGrade, rangedAttackType, basicExpLvl, modifiedExpLvl, basicSkillValues, modifiedSkillValues);
+		log.trace ("Exiting expandUnitDetails = " + container);
+		return container;
 	}
 
 	/**

@@ -531,21 +531,21 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// STEP 8 - Work out the units magic realm/lifeform type
 		// We made a list of overrides to it above already - now what we do depends on how many modifications we found
-		final String magicRealmLifeformTypeID;
+		final Pick magicRealmLifeformType;
 		
 		// No modifications - use value from unit definition, unaltered
 		if (changedMagicRealmLifeformTypeIDs.size () == 0)
-			magicRealmLifeformTypeID = unitDef.getUnitMagicRealm ();
+			magicRealmLifeformType = db.findPick (unitDef.getUnitMagicRealm (), "expandUnitDetails");
 
 		// Exactly one modification - use the value set by that skill (i.e. unit is Undead or Chaos Channeled)
 		else if (changedMagicRealmLifeformTypeIDs.size () == 1)
-			magicRealmLifeformTypeID = changedMagicRealmLifeformTypeIDs.get (0);
+			magicRealmLifeformType = db.findPick (changedMagicRealmLifeformTypeIDs.get (0), "expandUnitDetails");
 		
 		// Multiple - look for a magic realm whose merge list matches our list (i.e. unit is Undead AND Chaos Channeled)
 		else
 		{
 			final Iterator<? extends Pick> iter = db.getPicks ().iterator ();
-			String match = null;
+			Pick match = null;
 			while ((match == null) && (iter.hasNext ()))
 			{
 				final Pick pick = iter.next ();
@@ -553,11 +553,11 @@ public final class UnitUtilsImpl implements UnitUtils
 				if ((pick.getMergedFromPick ().size () == changedMagicRealmLifeformTypeIDs.size ()) &&
 					(pick.getMergedFromPick ().stream ().map (m -> m.getMergedFromPickID ()).allMatch (m -> changedMagicRealmLifeformTypeIDs.contains (m))))
 					
-					match = pick.getPickID ();
+					match = pick;
 			}
 			
 			if (match != null)
-				magicRealmLifeformTypeID = match;
+				magicRealmLifeformType = match;
 			else
 			{
 				// Not found - make the error message useful enough so we'll know how to fix it
@@ -694,7 +694,7 @@ public final class UnitUtilsImpl implements UnitUtils
 					// Magic realm/lifeform type can be blank for effects that apply to all types of unit (e.g. Prayer)
 					final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
 					if ((components != null) && (bonus.getUnitSkillValue () != null) &&
-						((bonus.getEffectMagicRealm () == null) || (bonus.getEffectMagicRealm ().equals (magicRealmLifeformTypeID))))
+						((bonus.getEffectMagicRealm () == null) || (bonus.getEffectMagicRealm ().equals (magicRealmLifeformType.getPickID ()))))
 					{
 						// There might be more than one CAE giving a bonus to the same skill, so this isn't a simple "put"
 						Integer bonusValue = components.get (UnitSkillComponent.COMBAT_AREA_EFFECTS);
@@ -857,7 +857,7 @@ public final class UnitUtilsImpl implements UnitUtils
 							}
 				}
 		
-		final ExpandedUnitDetailsImpl container = new ExpandedUnitDetailsImpl (unit, unitDef, unitType, owningPlayer, magicRealmLifeformTypeID,
+		final ExpandedUnitDetailsImpl container = new ExpandedUnitDetailsImpl (unit, unitDef, unitType, owningPlayer, magicRealmLifeformType,
 			weaponGrade, rangedAttackType, basicExpLvl, modifiedExpLvl, basicSkillValues, modifiedSkillValues);
 		log.trace ("Exiting expandUnitDetails = " + container);
 		return container;

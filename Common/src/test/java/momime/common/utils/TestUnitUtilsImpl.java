@@ -607,7 +607,7 @@ public final class TestUnitUtilsImpl
 		assertNull (details.getBasicExperienceLevel ());
 		assertNull (details.getModifiedExperienceLevel ());
 		
-		assertEquals ("MB01", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
 		
 		// Check skills
 		for (int n = 1; n <= 3; n++)
@@ -775,7 +775,7 @@ public final class TestUnitUtilsImpl
 		assertEquals (3, details.getBasicExperienceLevel ().getLevelNumber ());
 		assertEquals (5, details.getModifiedExperienceLevel ().getLevelNumber ());
 		
-		assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
 		
 		// Check skills
 		for (int n = 1; n <= 5; n++)
@@ -940,7 +940,7 @@ public final class TestUnitUtilsImpl
 		assertNull (details.getBasicExperienceLevel ());
 		assertNull (details.getModifiedExperienceLevel ());
 		
-		assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
 		
 		// Check skills
 		for (int n = 1; n <= 6; n++)
@@ -985,8 +985,13 @@ public final class TestUnitUtilsImpl
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setPickID ("LTN");
 		unitMagicRealm.setUnitTypeID ("N");
 		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final Pick modifiedMagicRealm = new Pick ();
+		modifiedMagicRealm.setPickID ("LTC");
+		when (db.findPick ("LTC", "expandUnitDetails")).thenReturn (modifiedMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
 		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
@@ -1089,7 +1094,7 @@ public final class TestUnitUtilsImpl
 		assertNull (details.getBasicExperienceLevel ());
 		assertNull (details.getModifiedExperienceLevel ());
 		
-		assertEquals ("LTC", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (modifiedMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
 		
 		// Check skills
 		assertTrue (details.hasBasicSkill ("US001"));
@@ -1254,7 +1259,7 @@ public final class TestUnitUtilsImpl
 		assertEquals (3, details.getBasicExperienceLevel ().getLevelNumber ());
 		assertEquals (4, details.getModifiedExperienceLevel ().getLevelNumber ());
 		
-		assertEquals ("LTUC", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (mergedMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
 		
 		// Check skills
 		for (int n = 1; n <= 2; n++)
@@ -1410,7 +1415,7 @@ public final class TestUnitUtilsImpl
 			assertEquals (expLevel, details.getBasicExperienceLevel ().getLevelNumber ());
 			assertEquals (expLevel, details.getModifiedExperienceLevel ().getLevelNumber ());
 			
-			assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+			assertSame (unitMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
 			
 			// Check skills
 			for (int n = 1; n <= 4; n++)
@@ -1568,7 +1573,7 @@ public final class TestUnitUtilsImpl
 		assertNull (details.getBasicExperienceLevel ());
 		assertNull (details.getModifiedExperienceLevel ());
 		
-		assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
 		
 		// Check skills
 		for (int n = 1; n <= 5; n++)
@@ -1743,7 +1748,7 @@ public final class TestUnitUtilsImpl
 		assertNull (details.getBasicExperienceLevel ());
 		assertNull (details.getModifiedExperienceLevel ());
 		
-		assertEquals ("LTN", details.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
 		
 		// Tests to do with the basic item type
 		assertTrue (details.hasBasicSkill ("US001"));
@@ -1924,7 +1929,7 @@ public final class TestUnitUtilsImpl
 		assertSame (rat1, details1.getRangedAttackType ());
 		assertNull (details1.getBasicExperienceLevel ());
 		assertNull (details1.getModifiedExperienceLevel ());
-		assertEquals ("LTN", details1.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details1.getModifiedUnitMagicRealmLifeformType ());
 
 		assertTrue (details1.hasBasicSkill ("US001"));
 		assertTrue (details1.hasModifiedSkill ("US001"));
@@ -1960,7 +1965,7 @@ public final class TestUnitUtilsImpl
 		assertSame (rat2, details2.getRangedAttackType ());
 		assertNull (details2.getBasicExperienceLevel ());
 		assertNull (details2.getModifiedExperienceLevel ());
-		assertEquals ("LTN", details2.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details2.getModifiedUnitMagicRealmLifeformType ());
 
 		assertTrue (details2.hasBasicSkill ("US001"));
 		assertTrue (details2.hasModifiedSkill ("US001"));
@@ -1995,7 +2000,7 @@ public final class TestUnitUtilsImpl
 		assertSame (rat2, details3.getRangedAttackType ());
 		assertNull (details3.getBasicExperienceLevel ());
 		assertNull (details3.getModifiedExperienceLevel ());
-		assertEquals ("LTN", details3.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details3.getModifiedUnitMagicRealmLifeformType ());
 
 		assertTrue (details3.hasBasicSkill ("US001"));
 		assertTrue (details3.hasModifiedSkill ("US001"));
@@ -2030,7 +2035,7 @@ public final class TestUnitUtilsImpl
 		assertSame (rat2, details4.getRangedAttackType ());
 		assertNull (details4.getBasicExperienceLevel ());
 		assertNull (details4.getModifiedExperienceLevel ());
-		assertEquals ("LTN", details4.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details4.getModifiedUnitMagicRealmLifeformType ());
 
 		assertTrue (details4.hasBasicSkill ("US001"));
 		assertTrue (details4.hasModifiedSkill ("US001"));
@@ -2065,7 +2070,7 @@ public final class TestUnitUtilsImpl
 		assertSame (rat2, details5.getRangedAttackType ());
 		assertNull (details5.getBasicExperienceLevel ());
 		assertNull (details5.getModifiedExperienceLevel ());
-		assertEquals ("LTN", details5.getModifiedUnitMagicRealmLifeformTypeID ());
+		assertSame (unitMagicRealm, details5.getModifiedUnitMagicRealmLifeformType ());
 
 		assertTrue (details5.hasBasicSkill ("US001"));
 		assertTrue (details5.hasModifiedSkill ("US001"));

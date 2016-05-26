@@ -8,6 +8,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillComponent;
@@ -34,8 +35,8 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	/** Details about the player who owns the unit */
 	private final PlayerPublicDetails owningPlayer;
 	
-	/** True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead) */
-	private final String modifiedUnitMagicRealmLifeformTypeID;
+	/** True magic realm/lifeform type of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead) */
+	private final Pick modifiedUnitMagicRealmLifeformType;
 
 	/** Weapon grade this unit has, or null for summoned units and heroes */
 	private final WeaponGrade weaponGrade;
@@ -71,7 +72,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	 * @param aUnitDefinition Definition for this unit from the XML database
 	 * @param aUnitType Unit type (normal, hero or summoned)
 	 * @param anOwningPlayer Details about the player who owns the unit
-	 * @param aModifiedUnitMagicRealmLifeformTypeID True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
+	 * @param aModifiedUnitMagicRealmLifeformType True magic realm/lifeform type of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
 	 * @param aWeaponGrade Weapon grade this unit has, or null for summoned units and heroes
 	 * @param aRangedAttackType Ranged attack type this unit has, or null if it has none
 	 * @param aBasicExpLvl Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; null for units that don't gain experience (e.g. summoned)
@@ -80,7 +81,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	 * @param aModifiedSkillValues Modified skill values, broken down into their individual components; valueless skills will just have a null in the outer map
 	 */
 	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final Unit aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
-		final String aModifiedUnitMagicRealmLifeformTypeID, final WeaponGrade aWeaponGrade, final RangedAttackType aRangedAttackType,
+		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackType aRangedAttackType,
 		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl,
 		final Map<String, Integer> aBasicSkillValues, final Map<String, Map<UnitSkillComponent, Integer>> aModifiedSkillValues)
 	{
@@ -88,7 +89,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		unitDefinition = aUnitDefinition;
 		unitType = aUnitType;
 		owningPlayer = anOwningPlayer;
-		modifiedUnitMagicRealmLifeformTypeID = aModifiedUnitMagicRealmLifeformTypeID;
+		modifiedUnitMagicRealmLifeformType = aModifiedUnitMagicRealmLifeformType;
 		weaponGrade = aWeaponGrade;
 		rangedAttackType = aRangedAttackType;
 		basicExperienceLevel = aBasicExpLvl;
@@ -152,12 +153,12 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 	
 	/**
-	 * @return True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
+	 * @return True magic realm/lifeform type of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
 	 */
 	@Override
-	public final String getModifiedUnitMagicRealmLifeformTypeID ()
+	public final Pick getModifiedUnitMagicRealmLifeformType ()
 	{
-		return modifiedUnitMagicRealmLifeformTypeID;
+		return modifiedUnitMagicRealmLifeformType;
 	}
 	
 	/**
@@ -262,5 +263,69 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		}
 		
 		return total;
+	}
+	
+	/**
+	 * @return String representation of all class values, for debug purposes
+	 */
+	@Override
+	public final String toString ()
+	{
+		final StringBuilder s = new StringBuilder ();
+		s.append ("[UnitID=\"" + getUnit ().getUnitID () + "\", ");
+		
+		if (isMemoryUnit ())
+			s.append ("UnitURN=" + getMemoryUnit ().getUnitURN () + ", ");
+		
+		s.append ("UnitTypeID=\"" + getUnitType ().getUnitTypeID () + "\", ");
+		s.append ("LifeformTypeID=\"" + getModifiedUnitMagicRealmLifeformType ().getPickID () + "\", ");
+		s.append ("PlayerID=" + getUnit ().getOwningPlayerID () + ", ");
+		s.append ("Location=" + getUnit ().getUnitLocation () + ", ");
+		s.append ("WeaponGrade=" + getUnit ().getWeaponGrade () + ", ");
+		s.append ("RAT=" + getUnitDefinition ().getRangedAttackType () + ", ");
+		
+		if (getBasicExperienceLevel () != null)
+			s.append ("BasicExpLvl=" + getBasicExperienceLevel ().getLevelNumber () + ", ");
+
+		if (getModifiedExperienceLevel () != null)
+			s.append ("ModExpLvl=" + getModifiedExperienceLevel ().getLevelNumber () + ", ");
+		
+		// Different sets of skill values
+		final StringBuilder raw = new StringBuilder ();
+		getUnit ().getUnitHasSkill ().stream ().forEach (k ->
+		{
+			if (raw.length () > 0)
+				raw.append (",");
+			
+			raw.append (k.getUnitSkillID ());
+			if (k.getUnitSkillValue () != null)
+				raw.append ("=" + k.getUnitSkillValue ());
+		});	
+		
+		final StringBuilder basic = new StringBuilder ();
+		basicSkillValues.forEach ((k, v) ->
+		{
+			if (basic.length () > 0)
+				basic.append (",");
+			
+			basic.append (k);
+			if (v != null)
+				basic.append ("=" + v);
+		});	
+		
+		final StringBuilder mod = new StringBuilder ();
+		modifiedSkillValues.forEach ((k, components) ->
+		{
+			if (mod.length () > 0)
+				mod.append (",");
+			
+			mod.append (k);
+			if ((components != null) && (!components.isEmpty ()))
+				mod.append ("=" + components.values ().stream ().mapToInt (v -> v).sum ());
+		});	
+		
+		// Finish off
+		s.append ("Raw=(" + raw + "), Basic=(" + basic + "), Mod=(" + mod + ")]");
+		return s.toString ();
 	}
 }

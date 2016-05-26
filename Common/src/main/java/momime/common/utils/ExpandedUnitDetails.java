@@ -4,6 +4,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
 import momime.common.database.Unit;
 import momime.common.database.UnitType;
@@ -48,9 +49,9 @@ public interface ExpandedUnitDetails
 	public PlayerPublicDetails getOwningPlayer ();
 	
 	/**
-	 * @return True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
+	 * @return True magic realm/lifeform type of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
 	 */
-	public String getModifiedUnitMagicRealmLifeformTypeID ();
+	public Pick getModifiedUnitMagicRealmLifeformType ();
 
 	/**
 	 * @return Weapon grade this unit has, or null for summoned units and heroes

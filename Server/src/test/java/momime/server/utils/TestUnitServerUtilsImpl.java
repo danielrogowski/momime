@@ -33,6 +33,7 @@ import momime.common.database.HeroItemSlot;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitSetting;
+import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
@@ -65,6 +66,31 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
  */
 public final class TestUnitServerUtilsImpl
 {
+	/**
+	 * Tests the describeBasicSkillValuesInDebugString method
+	 */
+	@Test
+	public final void testDescribeBasicSkillValuesInDebugString ()
+	{
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (3);
+
+		// Create skills list
+		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
+		skillWithValue.setUnitSkillID ("US001");
+		skillWithValue.setUnitSkillValue (5);
+		unit.getUnitHasSkill ().add (skillWithValue);
+
+		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
+		skillWithoutValue.setUnitSkillID ("US002");
+		unit.getUnitHasSkill ().add (skillWithoutValue);
+
+		// Run test
+		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
+		assertEquals ("5xUS001, US002", utils.describeBasicSkillValuesInDebugString (unit));
+	}
+	
 	/**
 	 * Tests the createMemoryUnit method
 	 * We don't really need to test all combinations of params, since that just affects the call to initializeUnitSkills, which we've already tested above

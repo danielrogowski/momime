@@ -443,31 +443,6 @@ public final class TestUnitUtilsImpl
 	}
 
 	/**
-	 * Tests the describeBasicSkillValuesInDebugString method
-	 */
-	@Test
-	public final void testDescribeBasicSkillValuesInDebugString ()
-	{
-		// Create test unit
-		final MemoryUnit unit = new MemoryUnit ();
-		unit.setUnitURN (3);
-
-		// Create skills list
-		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
-		skillWithValue.setUnitSkillID ("US001");
-		skillWithValue.setUnitSkillValue (5);
-		unit.getUnitHasSkill ().add (skillWithValue);
-
-		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
-		skillWithoutValue.setUnitSkillID ("US002");
-		unit.getUnitHasSkill ().add (skillWithoutValue);
-
-		// Run test
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		assertEquals ("5xUS001, US002", utils.describeBasicSkillValuesInDebugString (unit));
-	}
-
-	/**
 	 * Tests the mergeSpellEffectsIntoSkillList method
 	 * @throws Exception If there is a problem
 	 */

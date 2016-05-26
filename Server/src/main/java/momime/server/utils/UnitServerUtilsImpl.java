@@ -85,6 +85,28 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/**
+	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
+	 * @return Debug string listing out all the skills
+	 */
+	@Override
+	public final String describeBasicSkillValuesInDebugString (final AvailableUnit unit)
+	{
+		String result = "";
+		for (final UnitSkillAndValue thisSkill : unit.getUnitHasSkill ())
+		{
+			if (!result.equals (""))
+				result = result + ", ";
+
+			if ((thisSkill.getUnitSkillValue () != null) && (thisSkill.getUnitSkillValue () != 0))
+				result = result + thisSkill.getUnitSkillValue () + "x";
+
+			result = result + thisSkill.getUnitSkillID ();
+		}
+
+		return result;
+	}
+	
+	/**
 	 * Creates and initializes a new unit - this is the equivalent of the TMomUnit.Create constructor in Delphi (except that it doesn't add the created unit into the unit list)
 	 * @param unitID Type of unit to create
 	 * @param unitURN Unique number identifying this unit
@@ -140,7 +162,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// Any random skills to add?
 		if ( (unitDefinition.getHeroRandomPickCount () != null) && (unitDefinition.getHeroRandomPickCount () > 0))
 		{
-			log.debug ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills before rolling extras: " + getUnitUtils ().describeBasicSkillValuesInDebugString (unit));
+			log.debug ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills before rolling extras: " + describeBasicSkillValuesInDebugString (unit));
 
 			// Run once for each random skill we get
 			for (int pickNo = 0; pickNo < unitDefinition.getHeroRandomPickCount (); pickNo++)
@@ -180,7 +202,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					unit.getUnitHasSkill ().add (newSkill);
 				}
 
-				log.debug ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills after rolling extras: " + getUnitUtils ().describeBasicSkillValuesInDebugString (unit));
+				log.debug ("Hero " + unit.getUnitID () + "' belonging to player ID " + unit.getOwningPlayerID () + " skills after rolling extras: " + describeBasicSkillValuesInDebugString (unit));
 			}
 		}
 

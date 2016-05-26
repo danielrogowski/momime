@@ -14,6 +14,7 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitSpecialOrder;
+import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -26,6 +27,12 @@ import momime.server.database.ServerDatabaseEx;
  */
 public interface UnitServerUtils
 {
+	/**
+	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
+	 * @return Debug string listing out all the skills
+	 */
+	public String describeBasicSkillValuesInDebugString (final AvailableUnit unit);
+	
 	/**
 	 * Creates and initializes a new unit - this is the equivalent of the TMomUnit.Create constructor in Delphi (except that it doesn't add the created unit into the unit list)
 	 * @param unitID Type of unit to create

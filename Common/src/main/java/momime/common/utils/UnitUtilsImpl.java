@@ -273,28 +273,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
-	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
-	 * @return Debug string listing out all the skills
-	 */
-	@Override
-	public final String describeBasicSkillValuesInDebugString (final AvailableUnit unit)
-	{
-		String result = "";
-		for (final UnitSkillAndValue thisSkill : unit.getUnitHasSkill ())
-		{
-			if (!result.equals (""))
-				result = result + ", ";
-
-			if ((thisSkill.getUnitSkillValue () != null) && (thisSkill.getUnitSkillValue () != 0))
-				result = result + thisSkill.getUnitSkillValue () + "x";
-
-			result = result + thisSkill.getUnitSkillID ();
-		}
-
-		return result;
-	}
-
-	/**
 	 * @param spells List of known maintained spells
 	 * @param unit Unit whose skill list this is
 	 * @param db Lookup lists built over the XML database

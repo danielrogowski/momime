@@ -87,12 +87,6 @@ public interface UnitUtils
 		throws MomException;
 
 	/**
-	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
-	 * @return Debug string listing out all the skills
-	 */
-	public String describeBasicSkillValuesInDebugString (final AvailableUnit unit);
-
-	/**
 	 * @param spells List of known maintained spells
 	 * @param unit Unit whose skill list this is
 	 * @param db Lookup lists built over the XML database

@@ -4,6 +4,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
+import momime.common.database.DamageType;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
@@ -126,4 +127,10 @@ public interface ExpandedUnitDetails
 	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
 	 */
 	public boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException;
+
+	/**
+	 * @param damageType Type of damage they are being hit by
+	 * @return Whether or not the unit is completely immune to this type of damage - so getting a boost to e.g. 50 shields still returns false
+	 */
+	public boolean isUnitImmuneToDamageType (final DamageType damageType);
 }

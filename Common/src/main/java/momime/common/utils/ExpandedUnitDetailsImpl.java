@@ -12,6 +12,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
@@ -348,6 +349,24 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 
 		log.trace ("Exiting unitIgnoresCombatTerrain = " + found);
 		return found;
+	}
+
+	/**
+	 * @param damageType Type of damage they are being hit by
+	 * @return Whether or not the unit is completely immune to this type of damage - so getting a boost to e.g. 50 shields still returns false
+	 */
+	@Override
+	public final boolean isUnitImmuneToDamageType (final DamageType damageType)
+	{
+    	log.trace ("Entering isUnitImmuneToDamageType: " + damageType.getDamageTypeID () +
+    		(isMemoryUnit () ? (", Unit URN " + getMemoryUnit ().getUnitURN ()) : ""));
+
+    	// We only want complete immunities - even if it boots defence to 50, its still a valid target
+    	final boolean immunity = damageType.getDamageTypeImmunity ().stream ().anyMatch
+    		(i -> (i.getBoostsDefenceTo () == null) && (hasModifiedSkill (i.getUnitSkillID ())));
+		
+    	log.trace ("Exiting isUnitImmuneToDamageType = " + immunity);
+		return immunity;
 	}
 	
 	/**

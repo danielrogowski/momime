@@ -835,8 +835,41 @@ public final class UnitUtilsImpl implements UnitUtils
 							}
 				}
 		
+		// STEP 17 - Basic upkeep values - just copy from the unit definition
+		final Map<String, Integer> basicUpkeepValues = unitDef.getUnitUpkeep ().stream ().collect
+			(Collectors.toMap (u -> u.getProductionTypeID (), u -> u.getUndoubledProductionValue ()));
+		
+		// STEP 18 - Modify upkeep values
+		final Map<String, Integer> modifiedUpkeepValues;
+
+		// Upkeep for undead is zeroed for normal units and adds +50% for summoned creatures
+		final int unitTypeUpkeepPercentage = modifiedSkillValues.containsKey (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD) ? unitType.getUndeadUpkeepPercentage () : 100;
+		if ((unitTypeUpkeepPercentage <= 0) || (basicUpkeepValues.isEmpty ()))
+			modifiedUpkeepValues = new HashMap<String, Integer> ();		// Empty map
+		else
+		{
+			// Reduce upkeep for Summoner retort?
+			// Get reduction as a percentage - note we use the special "unit upkeep" production type, not "Mana"
+			final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+			final int percentageReduction = getPlayerPickUtils ().totalProductionBonus
+				(CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, unitType.getUnitTypeID (), picks, db);
+
+			// Now copy and modify each basic skill value
+			modifiedUpkeepValues = basicUpkeepValues.entrySet ().stream ().collect (Collectors.toMap (u -> u.getKey (), u ->
+			{
+				final int baseUpkeepValue = (u.getValue () * unitTypeUpkeepPercentage) / 100;
+
+				// Calculate actual amount of reduction, rounding down
+				final int amountReduction = (baseUpkeepValue * percentageReduction) / 100;
+				
+				// Note its impossible to actually get zero here since we round the reduction down, unless percentageReduction reached 100 which will never happen
+				return baseUpkeepValue - amountReduction;				
+			}));
+		}
+		
+		// Finally can build the unit object
 		final ExpandedUnitDetailsImpl container = new ExpandedUnitDetailsImpl (unit, unitDef, unitType, owningPlayer, magicRealmLifeformType,
-			weaponGrade, rangedAttackType, basicExpLvl, modifiedExpLvl, basicSkillValues, modifiedSkillValues);
+			weaponGrade, rangedAttackType, basicExpLvl, modifiedExpLvl, basicSkillValues, modifiedSkillValues, basicUpkeepValues, modifiedUpkeepValues);
 		log.trace ("Exiting expandUnitDetails = " + container);
 		return container;
 	}

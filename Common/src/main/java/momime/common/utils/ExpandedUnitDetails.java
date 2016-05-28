@@ -3,9 +3,11 @@ package momime.common.utils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
@@ -100,4 +102,28 @@ public interface ExpandedUnitDetails
 	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
 	 */
 	public Integer getModifiedSkillValue (final String unitSkillID) throws MomException;
+
+	/**
+	 * @param productionTypeID Production type we want to look up the base upkeep for
+	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
+	 */
+	public int getBasicUpkeepValue (final String productionTypeID);
+
+	/**
+	 * @param productionTypeID Production type we want to look up the modified upkeep for
+	 * @return Upkeep value, modified by reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
+	 */
+	public int getModifiedUpkeepValue (final String productionTypeID);
+	
+	/**
+	 * @return Number of figures in this unit before it takes any damage
+	 */
+	public int getFullFigureCount ();
+
+	/**
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
+	 */
+	public boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException;
 }

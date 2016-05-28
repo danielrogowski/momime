@@ -2069,6 +2069,163 @@ public final class TestUnitUtilsImpl
 	}
 	
 	/**
+	 * Tests the expandSkillList method calculating upkeep values
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandUnitDetails_MemoryUnit_UpkeepValues () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("LTN");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("N");
+		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		unitType.setUnitTypeID ("N");
+		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		// Unit upkeeps
+		final ProductionTypeAndUndoubledValue upkeep1 = new ProductionTypeAndUndoubledValue ();
+		upkeep1.setProductionTypeID ("RE01");
+		upkeep1.setUndoubledProductionValue (1);
+		unitDef.getUnitUpkeep ().add (upkeep1);
+
+		final ProductionTypeAndUndoubledValue upkeep2 = new ProductionTypeAndUndoubledValue ();
+		upkeep2.setProductionTypeID ("RE02");
+		upkeep2.setUndoubledProductionValue (5);
+		unitDef.getUnitUpkeep ().add (upkeep2);
+		
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Players
+		final PlayerDescription owningPd = new PlayerDescription ();
+		owningPd.setPlayerID (1);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		
+		// Upkeep reduction from picks (summoner retort)
+		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
+		
+		// Create test unit
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setUnitURN (1);
+		unit.setUnitID ("UN001");
+		unit.setOwningPlayerID (owningPd.getPlayerID ());
+		unit.setStatus (UnitStatusID.ALIVE);
+		unit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		mem.getUnit ().add (unit);
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setPlayerPickUtils (pickUtils);
+		
+		// Upkeep with no modifiers
+		final ExpandedUnitDetails details1 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+
+		assertSame (unit, details1.getUnit ());
+		assertTrue (details1.isMemoryUnit ());
+		assertSame (unit, details1.getMemoryUnit ());
+		assertSame (unitDef, details1.getUnitDefinition ());
+		assertSame (unitType, details1.getUnitType ());
+		assertSame (owningPlayer, details1.getOwningPlayer ());
+		assertNull (details1.getWeaponGrade ());
+		assertNull (details1.getRangedAttackType ());
+		assertNull (details1.getBasicExperienceLevel ());
+		assertNull (details1.getModifiedExperienceLevel ());
+		assertSame (unitMagicRealm, details1.getModifiedUnitMagicRealmLifeformType ());
+		
+		assertEquals (1, details1.getBasicUpkeepValue ("RE01"));
+		assertEquals (5, details1.getBasicUpkeepValue ("RE02"));
+		assertEquals (1, details1.getModifiedUpkeepValue ("RE01"));
+		assertEquals (5, details1.getModifiedUpkeepValue ("RE02"));
+
+		// Undead normal units have no upkeep
+		final UnitSkillAndValue undead = new UnitSkillAndValue ();
+		undead.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD);
+		unit.getUnitHasSkill ().add (undead);
+
+		final ExpandedUnitDetails details2 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+
+		assertSame (unit, details2.getUnit ());
+		assertTrue (details2.isMemoryUnit ());
+		assertSame (unit, details2.getMemoryUnit ());
+		assertSame (unitDef, details2.getUnitDefinition ());
+		assertSame (unitType, details2.getUnitType ());
+		assertSame (owningPlayer, details2.getOwningPlayer ());
+		assertNull (details2.getWeaponGrade ());
+		assertNull (details2.getRangedAttackType ());
+		assertNull (details2.getBasicExperienceLevel ());
+		assertNull (details2.getModifiedExperienceLevel ());
+		assertSame (unitMagicRealm, details2.getModifiedUnitMagicRealmLifeformType ());
+		
+		assertEquals (1, details2.getBasicUpkeepValue ("RE01"));
+		assertEquals (5, details2.getBasicUpkeepValue ("RE02"));
+		assertEquals (0, details2.getModifiedUpkeepValue ("RE01"));
+		assertEquals (0, details2.getModifiedUpkeepValue ("RE02"));
+		
+		// Undead summoned units have +50% upkeep
+		unitType.setUndeadUpkeepPercentage (150);
+
+		final ExpandedUnitDetails details3 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+
+		assertSame (unit, details3.getUnit ());
+		assertTrue (details3.isMemoryUnit ());
+		assertSame (unit, details3.getMemoryUnit ());
+		assertSame (unitDef, details3.getUnitDefinition ());
+		assertSame (unitType, details3.getUnitType ());
+		assertSame (owningPlayer, details3.getOwningPlayer ());
+		assertNull (details3.getWeaponGrade ());
+		assertNull (details3.getRangedAttackType ());
+		assertNull (details3.getBasicExperienceLevel ());
+		assertNull (details3.getModifiedExperienceLevel ());
+		assertSame (unitMagicRealm, details3.getModifiedUnitMagicRealmLifeformType ());
+		
+		assertEquals (1, details3.getBasicUpkeepValue ("RE01"));
+		assertEquals (5, details3.getBasicUpkeepValue ("RE02"));
+		assertEquals (1, details3.getModifiedUpkeepValue ("RE01"));
+		assertEquals (7, details3.getModifiedUpkeepValue ("RE02"));		// 5 + 50% = 7.5, rounded down
+		
+		// 50% reduction from retorts
+		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, "N", pub.getPick (), db)).thenReturn (70);
+		
+		final ExpandedUnitDetails details4 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
+
+		assertSame (unit, details4.getUnit ());
+		assertTrue (details4.isMemoryUnit ());
+		assertSame (unit, details4.getMemoryUnit ());
+		assertSame (unitDef, details4.getUnitDefinition ());
+		assertSame (unitType, details4.getUnitType ());
+		assertSame (owningPlayer, details4.getOwningPlayer ());
+		assertNull (details4.getWeaponGrade ());
+		assertNull (details4.getRangedAttackType ());
+		assertNull (details4.getBasicExperienceLevel ());
+		assertNull (details4.getModifiedExperienceLevel ());
+		assertSame (unitMagicRealm, details4.getModifiedUnitMagicRealmLifeformType ());
+		
+		assertEquals (1, details4.getBasicUpkeepValue ("RE01"));
+		assertEquals (5, details4.getBasicUpkeepValue ("RE02"));
+		assertEquals (1, details4.getModifiedUpkeepValue ("RE01"));
+		assertEquals (3, details4.getModifiedUpkeepValue ("RE02"));		// 70% of 7 = 4.9, rounded down so get a reduction of 4  
+	}
+	
+	/**
 	 * Tests the getExperienceLevel method with a summoned unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws RecordNotFoundException If we can't find the unit, unit type, magic realm or so on

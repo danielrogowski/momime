@@ -1,16 +1,23 @@
 package momime.common.utils;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
+import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
@@ -23,6 +30,9 @@ import momime.common.messages.MemoryUnit;
  */
 public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 {
+	/** Class logger */
+	private static final Log log = LogFactory.getLog (ExpandedUnitDetailsImpl.class);
+	
 	/** The unit whose details we are storing */
 	private final AvailableUnit unit;
 	
@@ -67,6 +77,12 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	/** Modified skill values, broken down into their individual components; valueless skills will just have a null in the outer map */
 	private final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues;
 	
+	/** Base upkeep values, before any reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here */
+	private final Map<String, Integer> basicUpkeepValues;
+
+	/** Upkeep values, modified by reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here */
+	private final Map<String, Integer> modifiedUpkeepValues;
+	
 	/**
 	 * @param aUnit The unit whose details we are storing
 	 * @param aUnitDefinition Definition for this unit from the XML database
@@ -79,11 +95,14 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	 * @param aModifiedExpLvl Experience level of this unit (0-5 for regular units, 0-8 for heroes) including bonuses from Warlord/Crusade; null for units that don't gain experience (e.g. summoned)
 	 * @param aBasicSkillValues Calculated basic skill map
 	 * @param aModifiedSkillValues Modified skill values, broken down into their individual components; valueless skills will just have a null in the outer map
+	 * @param aBasicUpkeepValues Base upkeep values, before any reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here
+	 * @param aModifiedUpkeepValues Upkeep values, modified by reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here
 	 */
 	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final Unit aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
 		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackType aRangedAttackType,
 		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl,
-		final Map<String, Integer> aBasicSkillValues, final Map<String, Map<UnitSkillComponent, Integer>> aModifiedSkillValues)
+		final Map<String, Integer> aBasicSkillValues, final Map<String, Map<UnitSkillComponent, Integer>> aModifiedSkillValues,
+		final Map<String, Integer> aBasicUpkeepValues, final Map<String, Integer> aModifiedUpkeepValues)
 	{
 		unit = aUnit;
 		unitDefinition = aUnitDefinition;
@@ -96,6 +115,8 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		modifiedExperienceLevel = aModifiedExpLvl;
 		basicSkillValues = aBasicSkillValues;
 		modifiedSkillValues = aModifiedSkillValues;
+		basicUpkeepValues = aBasicUpkeepValues;
+		modifiedUpkeepValues = aModifiedUpkeepValues;
 	}
 	
 	/**
@@ -263,6 +284,70 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		}
 		
 		return total;
+	}
+
+	/**
+	 * @param productionTypeID Production type we want to look up the base upkeep for
+	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
+	 */
+	@Override
+	public final int getBasicUpkeepValue (final String productionTypeID)
+	{
+		final Integer v = basicUpkeepValues.get (productionTypeID);
+		return (v == null) ? 0 : v;
+	}
+
+	/**
+	 * @param productionTypeID Production type we want to look up the modified upkeep for
+	 * @return Upkeep value, modified by reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
+	 */
+	@Override
+	public final int getModifiedUpkeepValue (final String productionTypeID)
+	{
+		final Integer v = modifiedUpkeepValues.get (productionTypeID);
+		return (v == null) ? 0 : v;
+	}
+
+	/**
+	 * @return Number of figures in this unit before it takes any damage
+	 */
+	@Override
+	public final int getFullFigureCount ()
+	{
+		final int countAccordingToRecord = getUnitDefinition ().getFigureCount ();
+
+        // Fudge until we do Hydras properly with a 'Figures-as-heads' skill
+		final int realCount;
+        if (countAccordingToRecord == 9)
+        	realCount = 1;
+       	else
+       		realCount = countAccordingToRecord;
+
+		return realCount;
+	}
+
+	/**
+	 * @param db Lookup lists built over the XML database
+	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
+	 * @throws RecordNotFoundException If one of the unit skills is not found in the database
+	 */
+	@Override
+	public final boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException
+	{
+		log.trace ("Entering unitIgnoresCombatTerrain" + (isMemoryUnit () ? (": Unit URN " + getMemoryUnit ().getUnitURN ()) : ""));
+
+		boolean found = false;
+
+		final Iterator<String> iter = basicSkillValues.keySet ().iterator ();
+		while ((!found) && (iter.hasNext ()))
+		{
+			final UnitSkill skillDef = db.findUnitSkill (iter.next (), "unitIgnoresCombatTerrain");
+			if ((skillDef.isIgnoreCombatTerrain () != null) && (skillDef.isIgnoreCombatTerrain ()))
+				found = true;
+		}
+
+		log.trace ("Exiting unitIgnoresCombatTerrain = " + found);
+		return found;
 	}
 	
 	/**

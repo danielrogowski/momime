@@ -368,6 +368,42 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
     	log.trace ("Exiting isUnitImmuneToDamageType = " + immunity);
 		return immunity;
 	}
+
+	/**
+	 * @return How much ranged ammo this unit has when fully loaded
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
+	 */
+	@Override
+	public final int calculateFullRangedAttackAmmo () throws MomException
+	{
+		return hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO) ?
+			getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO) : 0;
+	}
+
+	/**
+	 * @return How much mana the unit has total, before any is spent in combat
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
+	 */
+	@Override
+	public final int calculateManaTotal () throws MomException
+	{
+		log.trace ("Entering calculateManaTotal" + (isMemoryUnit () ? (": Unit URN " + getMemoryUnit ().getUnitURN ()) : ""));
+		
+		// Unit caster skill is easy, this directly says how many MP the unit has
+		int total = hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) ?
+			getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) : 0;
+		
+		// The hero caster skill is a bit more of a pain, since we get more mana at higher experience levels
+		if (hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO))
+		{
+			final int expLevel = getModifiedExperienceLevel ().getLevelNumber ();
+			final int heroSkillValue = (getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO) * 5 * (expLevel+1)) / 2;
+			total = total + heroSkillValue;
+		}
+		
+		log.trace ("Exiting calculateManaTotal = " + total);
+		return total;
+	}
 	
 	/**
 	 * @return String representation of all class values, for debug purposes

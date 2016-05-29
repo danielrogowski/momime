@@ -1,5 +1,6 @@
 package momime.common.utils;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -11,7 +12,10 @@ import java.util.Map;
 import org.junit.Test;
 
 import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitSkill;
+import momime.common.database.UnitSkillComponent;
 
 /**
  * Tests the ExpandedUnitDetailsImpl class
@@ -55,4 +59,44 @@ public final class TestExpandedUnitDetailsImpl
 		assertTrue (unit.unitIgnoresCombatTerrain (db));
 	}
 
+	/**
+	 * Tests the calculateManaTotal method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateManaTotal () throws Exception
+	{
+		// Set up object to test
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		final ExperienceLevel expLevel = new ExperienceLevel ();
+		
+		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, expLevel, null, modifiedSkillValues, null, null);
+		
+		// Test a non-casting unit
+		assertEquals (0, unit.calculateManaTotal ());
+
+		// Test an archangel
+		final Map<UnitSkillComponent, Integer> casterUnitSkill = new HashMap<UnitSkillComponent, Integer> ();
+		casterUnitSkill.put (UnitSkillComponent.BASIC, 40);
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, casterUnitSkill);
+		
+		assertEquals (40, unit.calculateManaTotal ());
+
+		// Test a low hero, lv 3 caster skill * lv 2 (+1=3) exp * 2½ = 22½
+		expLevel.setLevelNumber (2);
+		modifiedSkillValues.remove (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
+		
+		final Map<UnitSkillComponent, Integer> casterHeroSkill = new HashMap<UnitSkillComponent, Integer> ();
+		casterHeroSkill.put (UnitSkillComponent.BASIC, 3);
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, casterHeroSkill);
+		
+		assertEquals (22, unit.calculateManaTotal ());
+		
+		// Test a higher hero, lv 5 caster skill * lv 4 (+1=5) exp * 2½ = 62½, +40 from unit caster skill = 102½
+		expLevel.setLevelNumber (4);
+		casterHeroSkill.put (UnitSkillComponent.BASIC, 5);
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, casterUnitSkill);
+		
+		assertEquals (102, unit.calculateManaTotal ());
+	}
 }

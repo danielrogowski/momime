@@ -133,4 +133,16 @@ public interface ExpandedUnitDetails
 	 * @return Whether or not the unit is completely immune to this type of damage - so getting a boost to e.g. 50 shields still returns false
 	 */
 	public boolean isUnitImmuneToDamageType (final DamageType damageType);
+
+	/**
+	 * @return How much ranged ammo this unit has when fully loaded
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
+	 */
+	public int calculateFullRangedAttackAmmo () throws MomException;
+
+	/**
+	 * @return How much mana the unit has total, before any is spent in combat
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
+	 */
+	public int calculateManaTotal () throws MomException;
 }

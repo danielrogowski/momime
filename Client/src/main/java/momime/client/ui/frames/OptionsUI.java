@@ -50,7 +50,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	private final Log log = LogFactory.getLog (OptionsUI.class);
 	
 	/** Suffix we expect language files to have */
-	private static final String FILE_SUFFIX = ".master of magic language.xml";
+	private static final String FILE_SUFFIX = ".Master of Magic Language.xml";
 	
 	/** First sample unit to demonstrate combat scale setting */
 	private final static String SAMPLE_UNIT_1_ID = "UN106";

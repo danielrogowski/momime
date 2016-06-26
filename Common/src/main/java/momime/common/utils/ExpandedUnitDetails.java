@@ -1,5 +1,7 @@
 package momime.common.utils;
 
+import java.util.Set;
+
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
@@ -90,6 +92,11 @@ public interface ExpandedUnitDetails
 	public Integer getBasicSkillValue (final String unitSkillID) throws MomException;
 
 	/**
+	 * @return Set of all basic skills this unit has
+	 */
+	public Set<String> listBasicSkillIDs ();
+	
+	/**
 	 * @param unitSkillID Unit skill ID to check
 	 * @return Whether or not the unit has this skill, after negations
 	 */
@@ -104,6 +111,11 @@ public interface ExpandedUnitDetails
 	 */
 	public Integer getModifiedSkillValue (final String unitSkillID) throws MomException;
 
+	/**
+	 * @return Set of all modified skills this unit has
+	 */
+	public Set<String> listModifiedSkillIDs ();
+	
 	/**
 	 * @param productionTypeID Production type we want to look up the base upkeep for
 	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type

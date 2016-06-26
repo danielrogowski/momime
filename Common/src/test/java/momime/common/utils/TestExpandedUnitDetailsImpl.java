@@ -14,6 +14,7 @@ import org.junit.Test;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.Unit;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
 
@@ -22,6 +23,30 @@ import momime.common.database.UnitSkillComponent;
  */
 public final class TestExpandedUnitDetailsImpl
 {
+	/**
+	 * Tests the getFullFigureCount method
+	 */
+	@Test
+	public final void testGetFullFigureCount ()
+	{
+		// Mock database
+		final Unit unitDef = new Unit ();
+		
+		// Set up object to test
+		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, unitDef, null, null, null, null, null, null, null, null, null, null, null);
+
+		// Run method
+		unitDef.setFigureCount (1);
+		assertEquals (1, unit.getFullFigureCount ());
+
+		unitDef.setFigureCount (4);
+		assertEquals (4, unit.getFullFigureCount ());
+
+		// Hydra
+		unitDef.setFigureCount (9);
+		assertEquals (1, unit.getFullFigureCount ());
+	}
+	
 	/**
 	 * Tests the unitIgnoresCombatTerrain method
 	 * @throws Exception If there is a problem

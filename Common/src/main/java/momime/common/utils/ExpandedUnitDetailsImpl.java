@@ -2,6 +2,7 @@ package momime.common.utils;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
@@ -244,6 +245,15 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 
 	/**
+	 * @return Set of all basic skills this unit has
+	 */
+	@Override
+	public final Set<String> listBasicSkillIDs ()
+	{
+		return basicSkillValues.keySet ();
+	}
+	
+	/**
 	 * @param unitSkillID Unit skill ID to check
 	 * @return Whether or not the unit has this skill, after negations
 	 */
@@ -287,6 +297,15 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		return total;
 	}
 
+	/**
+	 * @return Set of all modified skills this unit has
+	 */
+	@Override
+	public final Set<String> listModifiedSkillIDs ()
+	{
+		return modifiedSkillValues.keySet ();
+	}
+	
 	/**
 	 * @param productionTypeID Production type we want to look up the base upkeep for
 	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type

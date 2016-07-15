@@ -242,37 +242,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
-	 * @param unit Unit whose skills to modify (note we pass in the unit rather than the skills list to force using the live list and not a UnitHasSkillMergedList)
-	 * @param unitSkillID Unique identifier for this skill
-	 * @param skillValue New basic value of the specified skill
-	 * @throws MomException If this unit didn't previously have the specified skill (this method only modifies existing skills, not adds new ones)
-	 */
-	@Override
-	public final void setBasicSkillValue (final AvailableUnit unit, final String unitSkillID, final int skillValue)
-		throws MomException
-	{
-		log.trace ("Entering setBasicSkillValue: " + unit.getUnitID () + ", " + unitSkillID + ", " + skillValue);
-
-		boolean found = false;
-		final Iterator<UnitSkillAndValue> iter = unit.getUnitHasSkill ().iterator ();
-
-		while ((!found) && (iter.hasNext ()))
-		{
-			final UnitSkillAndValue thisSkill = iter.next ();
-			if (thisSkill.getUnitSkillID ().equals (unitSkillID))
-			{
-				found = true;
-				thisSkill.setUnitSkillValue (skillValue);
-			}
-		}
-
-		if (!found)
-			throw new MomException ("setBasicSkillValue: Unit " + unit.getUnitID () + " does not have skill " + unitSkillID + " and so cannot set its value to " + skillValue);
-
-		log.trace ("Exiting setBasicSkillValue");
-	}
-
-	/**
 	 * @param spells List of known maintained spells
 	 * @param unit Unit whose skill list this is
 	 * @param db Lookup lists built over the XML database

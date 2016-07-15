@@ -23,6 +23,7 @@ import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.utils.UnitServerUtils;
+import momime.server.utils.UnitSkillDirectAccess;
 
 /**
  * Methods for comparing and copying data from one source against a destination container
@@ -47,6 +48,9 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	
 	/** Memory CAE utils */
 	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	
+	/** Unit skill values direct access */
+	private UnitSkillDirectAccess unitSkillDirectAccess;
 	
 	/**
 	 * Copies all the terrain and node aura related data items from source to destination
@@ -317,7 +321,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			{
 				final UnitSkillAndValue srcSkill = sourceSkillsIter.next ();
 				final int expectedValue = (srcSkill.getUnitSkillValue () == null) ? 0 : srcSkill.getUnitSkillValue ();
-				if (getUnitUtils ().getBasicSkillValue (dest.getUnitHasSkill (), srcSkill.getUnitSkillID ()) != expectedValue)
+				if (getUnitSkillDirectAccess ().getDirectSkillValue (dest.getUnitHasSkill (), srcSkill.getUnitSkillID ()) != expectedValue)
 					needToUpdate = true;
 			}
 			
@@ -486,5 +490,21 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
 	{
 		memoryCombatAreaEffectUtils = utils;
+	}
+
+	/** 
+	 * @return Unit skill values direct access
+	 */
+	public final UnitSkillDirectAccess getUnitSkillDirectAccess ()
+	{
+		return unitSkillDirectAccess;
+	}
+
+	/**
+	 * @param direct Unit skill values direct access
+	 */
+	public final void setUnitSkillDirectAccess (final UnitSkillDirectAccess direct)
+	{
+		unitSkillDirectAccess = direct;
 	}
 }

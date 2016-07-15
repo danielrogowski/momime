@@ -25,6 +25,7 @@ import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.MemoryCombatAreaEffectUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.common.utils.UnitUtilsImpl;
+import momime.server.utils.UnitSkillDirectAccessImpl;
 
 /**
  * Tests the FogOfWarDuplication class
@@ -330,8 +331,8 @@ public final class TestFogOfWarDuplicationImpl
 	{
 		// Set up object to test
 		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		dup.setUnitUtils (utils);
+		dup.setUnitUtils (new UnitUtilsImpl ());
+		dup.setUnitSkillDirectAccess (new UnitSkillDirectAccessImpl ());
 
 		final List<MemoryUnit> destination = new ArrayList<MemoryUnit> ();
 

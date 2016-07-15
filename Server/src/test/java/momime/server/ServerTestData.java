@@ -42,7 +42,6 @@ import momime.common.messages.MapVolumeOfStrings;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
-import momime.common.utils.UnitUtils;
 import momime.server.database.DifficultyLevelSvr;
 import momime.server.database.FogOfWarSettingSvr;
 import momime.server.database.LandProportionSvr;
@@ -57,6 +56,7 @@ import momime.server.database.SpellSettingSvr;
 import momime.server.database.UnitSettingSvr;
 import momime.server.database.v0_9_7.ServerDatabase;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.utils.UnitSkillDirectAccess;
 
 /**
  * Common constants for server test cases
@@ -77,7 +77,7 @@ public final class ServerTestData
 			public final ServerDatabaseExImpl createDatabase ()
 			{
 				final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
-				db.setUnitUtils (mock (UnitUtils.class));
+				db.setUnitSkillDirectAccess (mock (UnitSkillDirectAccess.class));
 				return db;
 			}
 		});

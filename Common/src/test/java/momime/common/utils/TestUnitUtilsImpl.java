@@ -384,65 +384,6 @@ public final class TestUnitUtilsImpl
 	}
 
 	/**
-	 * Tests the setBasicSkillValue method on a skill that we already have
-	 * @throws MomException If this unit didn't previously have the specified skill
-	 */
-	@Test
-	public final void testSetBasicSkillExists () throws MomException
-	{
-		// Create test unit
-		final MemoryUnit unit = new MemoryUnit ();
-		unit.setUnitURN (3);
-
-		// Create skills list
-		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
-		skillWithValue.setUnitSkillID ("US001");
-		skillWithValue.setUnitSkillValue (5);
-		unit.getUnitHasSkill ().add (skillWithValue);
-
-		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
-		skillWithoutValue.setUnitSkillID ("US002");
-		unit.getUnitHasSkill ().add (skillWithoutValue);
-
-		// Run method
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setBasicSkillValue (unit, "US002", 3);
-
-		// Check results
-		assertEquals (2, unit.getUnitHasSkill ().size ());
-		assertEquals ("US001", unit.getUnitHasSkill ().get (0).getUnitSkillID ());
-		assertEquals (5, unit.getUnitHasSkill ().get (0).getUnitSkillValue ().intValue ());
-		assertEquals ("US002", unit.getUnitHasSkill ().get (1).getUnitSkillID ());
-		assertEquals (3, unit.getUnitHasSkill ().get (1).getUnitSkillValue ().intValue ());
-	}
-
-	/**
-	 * Tests the setBasicSkillValue method on a skill that we don't already have
-	 * @throws MomException If this unit didn't previously have the specified skill
-	 */
-	@Test(expected=MomException.class)
-	public final void testSetBasicSkillNotExists () throws MomException
-	{
-		// Create test unit
-		final MemoryUnit unit = new MemoryUnit ();
-		unit.setUnitURN (3);
-
-		// Create skills list
-		final UnitSkillAndValue skillWithValue = new UnitSkillAndValue ();
-		skillWithValue.setUnitSkillID ("US001");
-		skillWithValue.setUnitSkillValue (5);
-		unit.getUnitHasSkill ().add (skillWithValue);
-
-		final UnitSkillAndValue skillWithoutValue = new UnitSkillAndValue ();
-		skillWithoutValue.setUnitSkillID ("US002");
-		unit.getUnitHasSkill ().add (skillWithoutValue);
-
-		// Run method
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setBasicSkillValue (unit, "US003", 3);
-	}
-
-	/**
 	 * Tests the mergeSpellEffectsIntoSkillList method
 	 * @throws Exception If there is a problem
 	 */

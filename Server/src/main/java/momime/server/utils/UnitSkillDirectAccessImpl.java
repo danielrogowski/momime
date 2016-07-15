@@ -58,7 +58,7 @@ public final class UnitSkillDirectAccessImpl implements UnitSkillDirectAccess
 	public final void setDirectSkillValue (final AvailableUnit unit, final String unitSkillID, final int skillValue)
 		throws MomException
 	{
-		log.trace ("Entering setBasicSkillValue: " + unit.getUnitID () + ", " + unitSkillID + ", " + skillValue);
+		log.trace ("Entering setDirectSkillValue: " + unit.getUnitID () + ", " + unitSkillID + ", " + skillValue);
 
 		boolean found = false;
 		final Iterator<UnitSkillAndValue> iter = unit.getUnitHasSkill ().iterator ();
@@ -74,8 +74,8 @@ public final class UnitSkillDirectAccessImpl implements UnitSkillDirectAccess
 		}
 
 		if (!found)
-			throw new MomException ("setBasicSkillValue: Unit " + unit.getUnitID () + " does not have skill " + unitSkillID + " and so cannot set its value to " + skillValue);
+			throw new MomException ("setDirectSkillValue: Unit " + unit.getUnitID () + " does not have skill " + unitSkillID + " and so cannot set its value to " + skillValue);
 
-		log.trace ("Exiting setBasicSkillValue");
+		log.trace ("Exiting setDirectSkillValue");
 	}
 }

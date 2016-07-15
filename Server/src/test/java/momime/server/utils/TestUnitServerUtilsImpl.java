@@ -204,11 +204,11 @@ public final class TestUnitServerUtilsImpl
 		unit.setUnitID ("UN001");
 		
 		// Set up existing skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillDirectAccess (direct);
 		utils.setRandomUtils (random);
 		
 		// Run test
@@ -216,9 +216,9 @@ public final class TestUnitServerUtilsImpl
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS01", 1);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS02", 1);
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS03", 1);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS01", 1);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS02", 1);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS03", 1);
 	}
 
 	/**
@@ -265,12 +265,12 @@ public final class TestUnitServerUtilsImpl
 		unit.setUnitID ("UN001");
 
 		// Set up existing skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "HS03")).thenReturn (1);
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS03")).thenReturn (1);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillDirectAccess (direct);
 		utils.setRandomUtils (random);
 		
 		// Run test
@@ -278,9 +278,9 @@ public final class TestUnitServerUtilsImpl
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS01", 1);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS02", 1);
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS03", 1);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS01", 1);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS02", 1);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS03", 1);
 	}
 
 	/**
@@ -326,11 +326,11 @@ public final class TestUnitServerUtilsImpl
 		unit.setUnitID ("UN001");
 
 		// Set up existing skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillDirectAccess (direct);
 		utils.setRandomUtils (random);
 		
 		// Run test
@@ -380,11 +380,11 @@ public final class TestUnitServerUtilsImpl
 		unit.setUnitID ("UN001");
 		
 		// Set up existing skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillDirectAccess (direct);
 		utils.setRandomUtils (random);
 		
 		// Run test
@@ -392,9 +392,9 @@ public final class TestUnitServerUtilsImpl
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS01", 1);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS02", 1);
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS03", 1);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS01", 1);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS02", 1);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS03", 1);
 	}
 
 	/**
@@ -439,11 +439,11 @@ public final class TestUnitServerUtilsImpl
 		unit.setUnitID ("UN001");
 		
 		// Set up existing skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillDirectAccess (direct);
 		utils.setRandomUtils (random);
 		
 		// Run test
@@ -451,9 +451,9 @@ public final class TestUnitServerUtilsImpl
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS01", 1);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS02", 1);
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS03", 1);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS01", 1);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS02", 1);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS03", 1);
 	}
 
 	/**
@@ -498,12 +498,12 @@ public final class TestUnitServerUtilsImpl
 		unit.setUnitID ("UN001");
 		
 		// Set up existing skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "HS05")).thenReturn (0, 0, 1, 1, 2, 2, 3, 3, 4, 4);	// Gets read twice each iteration
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS05")).thenReturn (0, 0, 1, 1, 2, 2, 3, 3, 4, 4);	// Gets read twice each iteration
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillDirectAccess (direct);
 		utils.setRandomUtils (random);
 		
 		// Run test
@@ -511,12 +511,12 @@ public final class TestUnitServerUtilsImpl
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (unitUtils, times (0)).setBasicSkillValue (unit, "HS04", 1);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 1);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 2);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 3);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 4);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 5);
+		verify (direct, times (0)).setDirectSkillValue (unit, "HS04", 1);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 1);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 2);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 3);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 4);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 5);
 	}
 
 	/**
@@ -565,12 +565,12 @@ public final class TestUnitServerUtilsImpl
 		unit.setUnitID ("UN001");
 		
 		// Set up existing skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getBasicSkillValue (unit.getUnitHasSkill (), "HS05")).thenReturn (0, 0, 1, 1, 2, 2, 3, 3, 4, 4);	// Gets read twice each iteration
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
+		when (direct.getDirectSkillValue (unit.getUnitHasSkill (), "HS05")).thenReturn (0, 0, 1, 1, 2, 2, 3, 3, 4, 4);	// Gets read twice each iteration
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
+		utils.setUnitSkillDirectAccess (direct);
 		utils.setRandomUtils (random);
 		
 		// Run test
@@ -578,11 +578,11 @@ public final class TestUnitServerUtilsImpl
 		assertEquals ("UN001_HN03", unit.getHeroNameID ());
 		assertEquals (UnitStatusID.GENERATED, unit.getStatus ());
 		
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 1);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 2);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 3);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS05", 4);
-		verify (unitUtils, times (1)).setBasicSkillValue (unit, "HS04", 1);		// Last point goes into HS04 because HS05 is maxed out
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 1);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 2);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 3);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS05", 4);
+		verify (direct, times (1)).setDirectSkillValue (unit, "HS04", 1);		// Last point goes into HS04 because HS05 is maxed out
 	}
 
 	/**

@@ -57,6 +57,7 @@ import momime.server.process.CombatStartAndEnd;
 import momime.server.process.OneCellPendingMovement;
 import momime.server.utils.TreasureUtils;
 import momime.server.utils.UnitServerUtils;
+import momime.server.utils.UnitSkillDirectAccess;
 
 /**
  * This contains methods for updating multiple mid turn changes at once, e.g. remove all spells in a location.
@@ -112,6 +113,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	
 	/** Treasure awarding utils */
 	private TreasureUtils treasureUtils;
+	
+	/** Unit skill values direct access */
+	private UnitSkillDirectAccess unitSkillDirectAccess;
 	
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
@@ -325,10 +329,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				}
 
 				// Experience?
-				final int exp = getUnitUtils ().getBasicSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+				final int exp = getUnitSkillDirectAccess ().getDirectSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				if ((magicRealm.isGainExperienceEachTurn ()) && (exp >= 0))
 				{
-					getUnitUtils ().setBasicSkillValue (thisUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp + 1);
+					getUnitSkillDirectAccess ().setDirectSkillValue (thisUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp + 1);
 					sendMsg = true;
 				}
 
@@ -370,10 +374,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				final String magicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (trueUnit, trueUnit.getUnitHasSkill (), trueMap.getMaintainedSpell (), db);
 				final PickSvr magicRealm = db.findPick (magicRealmID, "grantExperienceToUnitsInCombat");
 
-				final int exp = getUnitUtils ().getBasicSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+				final int exp = getUnitSkillDirectAccess ().getDirectSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				if ((magicRealm.isGainExperienceEachTurn ()) && (exp >= 0))
 				{
-					getUnitUtils ().setBasicSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp+1);
+					getUnitSkillDirectAccess ().setDirectSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp+1);
 					
 					// This updates both the player memories on the server, and sends messages out to the clients, as needed
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings);
@@ -1179,5 +1183,21 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	public final void setTreasureUtils (final TreasureUtils util)
 	{
 		treasureUtils = util;
+	}
+
+	/** 
+	 * @return Unit skill values direct access
+	 */
+	public final UnitSkillDirectAccess getUnitSkillDirectAccess ()
+	{
+		return unitSkillDirectAccess;
+	}
+
+	/**
+	 * @param direct Unit skill values direct access
+	 */
+	public final void setUnitSkillDirectAccess (final UnitSkillDirectAccess direct)
+	{
+		unitSkillDirectAccess = direct;
 	}
 }

@@ -78,15 +78,6 @@ public interface UnitUtils
 	public int getBasicSkillValue (final List<UnitSkillAndValue> skills, final String unitSkillID);
 
 	/**
-	 * @param unit Unit whose skills to modify (note we pass in the unit rather than the skills list to force using the live list and not a UnitHasSkillMergedList)
-	 * @param unitSkillID Unique identifier for this skill
-	 * @param skillValue New basic value of the specified skill
-	 * @throws MomException If this unit didn't previously have the specified skill (this method only modifies existing skills, not adds new ones)
-	 */
-	public void setBasicSkillValue (final AvailableUnit unit, final String unitSkillID, final int skillValue)
-		throws MomException;
-
-	/**
 	 * @param spells List of known maintained spells
 	 * @param unit Unit whose skill list this is
 	 * @param db Lookup lists built over the XML database

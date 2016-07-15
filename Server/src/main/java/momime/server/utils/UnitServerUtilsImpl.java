@@ -84,6 +84,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
 	
+	/** Unit skill values direct access */
+	private UnitSkillDirectAccess unitSkillDirectAccess;
+	
 	/**
 	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
 	 * @return Debug string listing out all the skills
@@ -175,7 +178,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					if ( ( (thisSkill.getHeroSkillTypeID () != null) && (!thisSkill.getHeroSkillTypeID ().equals (""))) || ( (thisSkill.isOnlyIfHaveAlready () != null) && (thisSkill.isOnlyIfHaveAlready ())) || ( (thisSkill.getMaxOccurrences () != null) && (thisSkill.getMaxOccurrences () > 0)))
 					{
 						// Its a hero skill - do we have it already?
-						final int currentSkillValue = getUnitUtils ().getBasicSkillValue (unit.getUnitHasSkill (), thisSkill.getUnitSkillID ());
+						final int currentSkillValue = getUnitSkillDirectAccess ().getDirectSkillValue (unit.getUnitHasSkill (), thisSkill.getUnitSkillID ());
 
 						// Is it applicable?
 						// If the unit has no hero random pick type specified, then it means it can use any hero skills
@@ -191,9 +194,9 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					throw new MomException ("generateHeroNameAndRandomSkills: No valid hero skill choices for unit " + unit.getUnitID ());
 
 				final String skillID = skillChoices.get (getRandomUtils ().nextInt (skillChoices.size ()));
-				final int currentSkillValue = getUnitUtils ().getBasicSkillValue (unit.getUnitHasSkill (), skillID);
+				final int currentSkillValue = getUnitSkillDirectAccess ().getDirectSkillValue (unit.getUnitHasSkill (), skillID);
 				if (currentSkillValue >= 0)
-					getUnitUtils ().setBasicSkillValue (unit, skillID, currentSkillValue + 1);
+					getUnitSkillDirectAccess ().setDirectSkillValue (unit, skillID, currentSkillValue + 1);
 				else
 				{
 					final UnitSkillAndValue newSkill = new UnitSkillAndValue ();
@@ -764,5 +767,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/** 
+	 * @return Unit skill values direct access
+	 */
+	public final UnitSkillDirectAccess getUnitSkillDirectAccess ()
+	{
+		return unitSkillDirectAccess;
+	}
+
+	/**
+	 * @param direct Unit skill values direct access
+	 */
+	public final void setUnitSkillDirectAccess (final UnitSkillDirectAccess direct)
+	{
+		unitSkillDirectAccess = direct;
 	}
 }

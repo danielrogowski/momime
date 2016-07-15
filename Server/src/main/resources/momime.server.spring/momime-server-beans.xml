@@ -90,7 +90,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="serverDatabase" class="momime.server.database.ServerDatabaseExImpl" scope="prototype">
-		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 	</bean>
 	
 	<!-- Create extended versions of client to server messages which include message implementations -->
@@ -389,6 +389,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 	</bean>
 
 	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
@@ -426,6 +427,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 	</bean>
+
+	<bean id="unitSkillDirectAccess" class="momime.server.utils.UnitSkillDirectAccessImpl" />
 	
 	<!-- Calculations -->
 	
@@ -708,6 +711,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 	</bean>
 
 	<bean id="fogOfWarMidTurnVisibility" class="momime.server.fogofwar.FogOfWarMidTurnVisibilityImpl">
@@ -747,6 +751,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="treasureUtils" ref="treasureUtils" />
+		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">

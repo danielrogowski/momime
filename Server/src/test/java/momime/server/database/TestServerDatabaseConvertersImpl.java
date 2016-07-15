@@ -34,9 +34,9 @@ import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
-import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.database.v0_9_7.ServerDatabase;
+import momime.server.utils.UnitSkillDirectAccess;
 
 /**
  * Tests the ServerDatabaseConverters class
@@ -58,11 +58,11 @@ public final class TestServerDatabaseConvertersImpl
 			public final ServerDatabaseExImpl createDatabase ()
 			{
 				// Make make all the consistency checks pass
-				final UnitUtils unitUtils = mock (UnitUtils.class);
-				when (unitUtils.getBasicSkillValue (anyListOf (UnitSkillAndValue.class), anyString ())).thenReturn (2);
+				final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
+				when (direct.getDirectSkillValue (anyListOf (UnitSkillAndValue.class), anyString ())).thenReturn (2);
 				
 				final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
-				db.setUnitUtils (unitUtils);
+				db.setUnitSkillDirectAccess (direct);
 				return db;
 			}
 		});

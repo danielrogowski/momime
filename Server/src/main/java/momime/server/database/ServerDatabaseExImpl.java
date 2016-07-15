@@ -11,7 +11,6 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
-import momime.common.utils.UnitUtils;
 import momime.server.database.v0_9_7.Building;
 import momime.server.database.v0_9_7.CitySpellEffect;
 import momime.server.database.v0_9_7.CombatAreaEffect;
@@ -36,6 +35,7 @@ import momime.server.database.v0_9_7.UnitSkill;
 import momime.server.database.v0_9_7.UnitType;
 import momime.server.database.v0_9_7.WeaponGrade;
 import momime.server.database.v0_9_7.Wizard;
+import momime.server.utils.UnitSkillDirectAccess;
 
 /**
  * Adds maps for faster key lookups over the server-side database read in via JAXB
@@ -45,8 +45,8 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	/** Class logger */
 	private final Log log = LogFactory.getLog (ServerDatabaseExImpl.class);
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
+	/** Unit skill values direct access */
+	private UnitSkillDirectAccess unitSkillDirectAccess;
 	
 	/** Map of plane numbers to plane XML objects */
 	private Map<Integer, Plane> planesMap;
@@ -261,13 +261,13 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		// Check all units have an HP and double movement speed "skill" value defined
 		for (final Unit unitDef : getUnit ())
 		{
-			if (getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) < 1)
+			if (getUnitSkillDirectAccess ().getDirectSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) < 1)
 				throw new MomException ("Unit " + unitDef.getUnitID () + " has no HP value defined");
 			
-			if (getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE) < 1)
+			if (getUnitSkillDirectAccess ().getDirectSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE) < 1)
 				throw new MomException ("Unit " + unitDef.getUnitID () + " has no resistance value defined");
 			
-			if (getUnitUtils ().getBasicSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED) < 1)
+			if (getUnitSkillDirectAccess ().getDirectSkillValue (unitDef.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED) < 1)
 				throw new MomException ("Unit " + unitDef.getUnitID () + " has no movement speed defined");
 		}
 
@@ -948,19 +948,19 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 		return (List<DamageTypeSvr>) (List<?>) getDamageType ();
 	}
 	
-	/**
-	 * @return Unit utils
+	/** 
+	 * @return Unit skill values direct access
 	 */
-	public final UnitUtils getUnitUtils ()
+	public final UnitSkillDirectAccess getUnitSkillDirectAccess ()
 	{
-		return unitUtils;
+		return unitSkillDirectAccess;
 	}
 
 	/**
-	 * @param utils Unit utils
+	 * @param direct Unit skill values direct access
 	 */
-	public final void setUnitUtils (final UnitUtils utils)
+	public final void setUnitSkillDirectAccess (final UnitSkillDirectAccess direct)
 	{
-		unitUtils = utils;
+		unitSkillDirectAccess = direct;
 	}
 }

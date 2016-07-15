@@ -27,7 +27,6 @@ import momime.common.database.FogOfWarValue;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -42,7 +41,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
-import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
@@ -54,7 +52,8 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
-import momime.server.utils.UnitServerUtilsImpl;
+import momime.server.utils.UnitServerUtils;
+import momime.server.utils.UnitSkillDirectAccess;
 
 /**
  * Tests the FogOfWarMidTurnMultiChangesImpl class
@@ -372,6 +371,9 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		
 		// Normal unit that has taken 2 kinds of damage
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
+		
 		final UnitDamage unit1dmg1 = new UnitDamage ();
 		unit1dmg1.setDamageType (StoredDamageTypeID.PERMANENT);
 		unit1dmg1.setDamageTaken (3);
@@ -380,17 +382,15 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit1dmg2.setDamageType (StoredDamageTypeID.HEALABLE);
 		unit1dmg2.setDamageTaken (2);
 		
-		final UnitSkillAndValue unit1exp = new UnitSkillAndValue ();
-		unit1exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
-		unit1exp.setUnitSkillValue (10);
-		
 		final MemoryUnit unit1 = new MemoryUnit ();
 		unit1.setUnitID ("UN001");
 		unit1.setStatus (UnitStatusID.ALIVE);
 		unit1.setOwningPlayerID (1);
 		unit1.getUnitDamage ().add (unit1dmg1);
 		unit1.getUnitDamage ().add (unit1dmg2);
-		unit1.getUnitHasSkill ().add (unit1exp);
+		unit1.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit1, unit1.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
+		when (direct.getDirectSkillValue (unit1.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
 
 		// Summoned unit that has taken 1 kind of damage
 		final UnitDamage unit2dmg1 = new UnitDamage ();
@@ -402,39 +402,45 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit2.setStatus (UnitStatusID.ALIVE);
 		unit2.setOwningPlayerID (1);
 		unit2.getUnitDamage ().add (unit2dmg1);
+		for (int n = 0; n < 2; n++)
+			unit2.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit2, unit2.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
+		when (direct.getDirectSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (-1);
 		
 		// Hero that has taken no damage
-		final UnitSkillAndValue unit3exp = new UnitSkillAndValue ();
-		unit3exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
-		unit3exp.setUnitSkillValue (10);
-		
 		final MemoryUnit unit3 = new MemoryUnit ();
 		unit3.setUnitID ("UN001");
 		unit3.setStatus (UnitStatusID.ALIVE);
 		unit3.setOwningPlayerID (1);
-		unit3.getUnitHasSkill ().add (unit3exp);
+		for (int n = 0; n < 3; n++)
+			unit3.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit3, unit3.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
+		when (direct.getDirectSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
 		
 		// Summoned unit that has taken no damage
 		final MemoryUnit unit4 = new MemoryUnit ();
 		unit4.setUnitID ("UN001");
 		unit4.setStatus (UnitStatusID.ALIVE);
 		unit4.setOwningPlayerID (1);
+		for (int n = 0; n < 4; n++)
+			unit4.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit4, unit4.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
+		when (direct.getDirectSkillValue (unit4.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (-1);
 		
 		// Dead hero
 		final UnitDamage unit5dmg1 = new UnitDamage ();
 		unit5dmg1.setDamageType (StoredDamageTypeID.HEALABLE);
 		unit5dmg1.setDamageTaken (2);
 		
-		final UnitSkillAndValue unit5exp = new UnitSkillAndValue ();
-		unit5exp.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
-		unit5exp.setUnitSkillValue (10);
-		
 		final MemoryUnit unit5 = new MemoryUnit ();
 		unit5.setUnitID ("UN001");
 		unit5.setStatus (UnitStatusID.DEAD);
 		unit5.setOwningPlayerID (1);
 		unit5.getUnitDamage ().add (unit5dmg1);
-		unit5.getUnitHasSkill ().add (unit5exp);
+		for (int n = 0; n < 5; n++)
+			unit5.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
+		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit5, unit5.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
+		when (direct.getDirectSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
 		
 		// Units list
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -447,29 +453,36 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		// Set up object to test
 		// The damage list and exp lookups are more awkward to mock than if we just let it use the real methods
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
-		multi.setUnitServerUtils (new UnitServerUtilsImpl ());
-		multi.setUnitUtils (new UnitUtilsImpl ());
+		multi.setUnitServerUtils (unitServerUtils);
+		multi.setUnitSkillDirectAccess (direct);
 		multi.setFogOfWarMidTurnChanges (midTurn);
+		multi.setUnitUtils (unitUtils);
 		
 		// Run method
 		multi.healUnitsAndGainExperience (units, 0, trueMap, players, db, fogOfWarSettings);
 		
 		// Check results
-		assertEquals (1, unit1dmg2.getDamageTaken ());
-		assertEquals (11, unit1exp.getUnitSkillValue ().intValue ());
+		verify (unitServerUtils, times (1)).healDamage (unit1.getUnitDamage (), 1, true);
+		verify (direct, times (1)).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit1, trueTerrain, players, db, fogOfWarSettings);
 
-		assertEquals (2, unit2dmg1.getDamageTaken ());
+		verify (unitServerUtils, times (1)).healDamage (unit2.getUnitDamage (), 1, true);
+		verify (direct, times (0)).setDirectSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit2, trueTerrain, players, db, fogOfWarSettings);
 
-		assertEquals (11, unit3exp.getUnitSkillValue ().intValue ());
+		verify (unitServerUtils, times (0)).healDamage (unit3.getUnitDamage (), 1, true);
+		verify (direct, times (1)).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit3, trueTerrain, players, db, fogOfWarSettings);
 
+		verify (unitServerUtils, times (0)).healDamage (unit4.getUnitDamage (), 1, true);
+		verify (direct, times (0)).setDirectSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit4, trueTerrain, players, db, fogOfWarSettings);
 		
-		assertEquals (10, unit5exp.getUnitSkillValue ().intValue ());
+		verify (unitServerUtils, times (0)).healDamage (unit5.getUnitDamage (), 1, true);
+		verify (direct, times (0)).setDirectSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit5, trueTerrain, players, db, fogOfWarSettings);
 	}
 	
@@ -500,6 +513,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		
 		// Normal unit, in combat, on the correct side
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
 		
 		final MemoryUnit unit1 = new MemoryUnit ();
 		unit1.setStatus (UnitStatusID.ALIVE);
@@ -510,7 +524,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueMap.getUnit ().add (unit1);
 		
 		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit1, unit1.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
-		when (unitUtils.getBasicSkillValue (unit1.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		when (direct.getDirectSkillValue (unit1.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		// Normal unit, in combat, on the wrong side
 		final MemoryUnit unit2 = new MemoryUnit ();
@@ -522,7 +536,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueMap.getUnit ().add (unit2);
 		
 		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit2, unit2.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
-		when (unitUtils.getBasicSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		when (direct.getDirectSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 		
 		// Normal unit, not in combat, on the correct side
 		final MemoryUnit unit3 = new MemoryUnit ();
@@ -530,7 +544,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueMap.getUnit ().add (unit3);
 		
 		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit3, unit3.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
-		when (unitUtils.getBasicSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		when (direct.getDirectSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 		
 		// Summoned unit, in combat, on the correct side
 		final MemoryUnit unit4 = new MemoryUnit ();
@@ -542,7 +556,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueMap.getUnit ().add (unit4);
 		
 		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit4, unit4.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("S");
-		when (unitUtils.getBasicSkillValue (unit4.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		when (direct.getDirectSkillValue (unit4.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 		
 		// Dead unit, in combat, on the correct side
 		final MemoryUnit unit5 = new MemoryUnit ();
@@ -554,7 +568,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueMap.getUnit ().add (unit5);
 		
 		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit5, unit5.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
-		when (unitUtils.getBasicSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		when (direct.getDirectSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		// Normal unit, in combat, on the correct side
 		final MemoryUnit unit6 = new MemoryUnit ();
@@ -566,7 +580,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueMap.getUnit ().add (unit6);
 		
 		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit6, unit6.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
-		when (unitUtils.getBasicSkillValue (unit6.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+		when (direct.getDirectSkillValue (unit6.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -574,27 +588,28 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
 		multi.setUnitUtils (unitUtils);
 		multi.setFogOfWarMidTurnChanges (midTurn);
+		multi.setUnitSkillDirectAccess (direct);
 		
 		// Run method
 		multi.grantExperienceToUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
 		
 		// Check results
-		verify (unitUtils, times (1)).setBasicSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (direct, times (1)).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
 		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit1, trueMap.getMap (), players, db, fogOfWarSettings);
 
-		verify (unitUtils, times (0)).setBasicSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (direct, times (0)).setDirectSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit2, trueMap.getMap (), players, db, fogOfWarSettings);
 
-		verify (unitUtils, times (0)).setBasicSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (direct, times (0)).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit3, trueMap.getMap (), players, db, fogOfWarSettings);
 
-		verify (unitUtils, times (0)).setBasicSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (direct, times (0)).setDirectSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit4, trueMap.getMap (), players, db, fogOfWarSettings);
 
-		verify (unitUtils, times (0)).setBasicSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (direct, times (0)).setDirectSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit5, trueMap.getMap (), players, db, fogOfWarSettings);
 
-		verify (unitUtils, times (1)).setBasicSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
+		verify (direct, times (1)).setDirectSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
 		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit6, trueMap.getMap (), players, db, fogOfWarSettings);
 	}
 	

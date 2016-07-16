@@ -85,6 +85,28 @@ public final class TestExpandedUnitDetailsImpl
 	}
 
 	/**
+	 * Tests the calculateFullRangedAttackAmmo method
+	 * Its a bit of a dumb test, since its only returning the value straight out of getModifiedSkillValue, but including it to be complete and as a pretest for giveUnitFullRangedAmmoAndMana
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateFullRangedAttackAmmo () throws Exception
+	{
+		// Test unit without the ranged attack skill
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+
+		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		assertEquals (0, unit.calculateFullRangedAttackAmmo ());
+
+		// Test unit with the ranged attack skill
+		final Map<UnitSkillComponent, Integer> ammo = new HashMap<UnitSkillComponent, Integer> ();
+		ammo.put (UnitSkillComponent.BASIC, 5);
+		
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, ammo);
+		assertEquals (5, unit.calculateFullRangedAttackAmmo ());
+	}
+	
+	/**
 	 * Tests the calculateManaTotal method
 	 * @throws Exception If there is a problem
 	 */

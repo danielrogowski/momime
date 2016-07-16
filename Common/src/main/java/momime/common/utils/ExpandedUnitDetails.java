@@ -123,10 +123,20 @@ public interface ExpandedUnitDetails
 	public int getBasicUpkeepValue (final String productionTypeID);
 
 	/**
+	 * @return Set of all basic upkeeps this unit has
+	 */
+	public Set<String> listBasicUpkeepProductionTypeIDs ();
+	
+	/**
 	 * @param productionTypeID Production type we want to look up the modified upkeep for
 	 * @return Upkeep value, modified by reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
 	 */
 	public int getModifiedUpkeepValue (final String productionTypeID);
+
+	/**
+	 * @return Set of all modified upkeeps this unit has
+	 */
+	public Set<String> listModifiedUpkeepProductionTypeIDs ();
 	
 	/**
 	 * @return Number of figures in this unit before it takes any damage

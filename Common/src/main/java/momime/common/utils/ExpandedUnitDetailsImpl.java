@@ -318,6 +318,15 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 
 	/**
+	 * @return Set of all basic upkeeps this unit has
+	 */
+	@Override
+	public final Set<String> listBasicUpkeepProductionTypeIDs ()
+	{
+		return basicUpkeepValues.keySet ();
+	}
+	
+	/**
 	 * @param productionTypeID Production type we want to look up the modified upkeep for
 	 * @return Upkeep value, modified by reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
 	 */
@@ -326,6 +335,15 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	{
 		final Integer v = modifiedUpkeepValues.get (productionTypeID);
 		return (v == null) ? 0 : v;
+	}
+
+	/**
+	 * @return Set of all modified upkeeps this unit has
+	 */
+	@Override
+	public Set<String> listModifiedUpkeepProductionTypeIDs ()
+	{
+		return modifiedUpkeepValues.keySet ();
 	}
 
 	/**

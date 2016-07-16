@@ -72,12 +72,13 @@ public interface ServerUnitCalculations
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	public void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final FogOfWarMemory map, final UnitStack unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
 		final boolean [] [] [] movingHereResultsInAttack,
-		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException;
+		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
 	
 	/**
 	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.

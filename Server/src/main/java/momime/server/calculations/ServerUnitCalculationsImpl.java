@@ -192,9 +192,10 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @return Map indicating the doubled movement cost of entering every type of tile type for this unit stack
 	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db) throws RecordNotFoundException
+		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering calculateDoubleMovementRatesForUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
 
@@ -380,13 +381,14 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	@Override
 	public final void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final FogOfWarMemory map, final UnitStack unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
 		final boolean [] [] [] movingHereResultsInAttack,
-		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
+		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering calculateOverlandMovementDistances: (" + startX + ", " + startY + ", " + startPlane + ")");
 

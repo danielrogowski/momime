@@ -3071,9 +3071,11 @@ public final class TestUnitUtilsImpl
 
 	/**
 	 * Tests the listUnitURNs method
+	 * @throws Exception If there is a problem
 	 */
+	@SuppressWarnings ({"rawtypes", "unchecked"})
 	@Test
-	public final void testListUnitURNs ()
+	public final void testListUnitURNs () throws Exception
 	{
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
 		
@@ -3081,7 +3083,7 @@ public final class TestUnitUtilsImpl
 		assertEquals ("()", utils.listUnitURNs (null));
 
 		// Test on list with single unit
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		final List units = new ArrayList ();
 		final MemoryUnit one = new MemoryUnit ();
 		one.setUnitURN (1);
 		units.add (one);
@@ -3095,7 +3097,10 @@ public final class TestUnitUtilsImpl
 
 		final MemoryUnit three = new MemoryUnit ();
 		three.setUnitURN (3);
-		units.add (three);
+		
+		final ExpandedUnitDetails xuThree = mock (ExpandedUnitDetails.class);
+		when (xuThree.getMemoryUnit ()).thenReturn (three);
+		units.add (xuThree);
 
 		assertEquals ("(1, 5, 3)", utils.listUnitURNs (units));
 	}

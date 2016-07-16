@@ -1130,18 +1130,24 @@ public final class UnitUtilsImpl implements UnitUtils
 	/**
 	 * @param units Unit stack
 	 * @return Comma delimited list of their unit URNs, for debug messages
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	@Override
-	public final String listUnitURNs (final List<MemoryUnit> units)
+	public String listUnitURNs (@SuppressWarnings ("rawtypes") final List units) throws MomException
 	{
-		String list = "";
+		final StringBuilder list = new StringBuilder ();
 		if (units != null)
-			for (final MemoryUnit thisUnit : units)
+			for (final Object thisUnit : units)
 			{
-				if (!list.equals (""))
-					list = list + ", ";
+				if (list.length () > 0)
+					list.append (", ");
 
-				list = list + thisUnit.getUnitURN ();
+				if (thisUnit instanceof MemoryUnit)
+					list.append (((MemoryUnit) thisUnit).getUnitURN ());
+				else if (thisUnit instanceof ExpandedUnitDetails)
+					list.append (((ExpandedUnitDetails) thisUnit).getMemoryUnit ().getUnitURN ());
+				else
+					throw new MomException ("listUnitURNs got an object of type " + thisUnit.getClass ());
 			}
 
 		return "(" + list + ")";

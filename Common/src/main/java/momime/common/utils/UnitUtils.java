@@ -173,8 +173,9 @@ public interface UnitUtils
 	/**
 	 * @param units Unit stack
 	 * @return Comma delimited list of their unit URNs, for debug messages
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
-	public String listUnitURNs (final List<MemoryUnit> units);
+	public String listUnitURNs (@SuppressWarnings ("rawtypes") final List units) throws MomException;
 
 	/**
 	 * @param units List of units to check (usually movingPlayer's memory)

@@ -196,9 +196,10 @@ public interface UnitCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
 	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	public List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException;
+		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException, MomException;
 
 	/**
 	 * @param unit Unit that we want to move

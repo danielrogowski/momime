@@ -44,6 +44,21 @@ public interface ExpandedUnitDetails
 	public Unit getUnitDefinition ();
 	
 	/**
+	 * Shortcut method, and to ease the number of trivial conversions I need to do when plugging in ExpandedUnitDetails.
+	 * 
+	 * @return Unit definition identifier, e.g. UN001
+	 */
+	public String getUnitID ();
+	
+	/**
+	 * Shortcut method, and to ease the number of trivial conversions I need to do when plugging in ExpandedUnitDetails.
+	 * 
+	 * @return Unit URN
+	 * @throws NullPointerException If this is an AvailableUnit
+	 */
+	public int getUnitURN ();
+	
+	/**
 	 * @return Unit type (normal, hero or summoned)
 	 */
 	public UnitType getUnitType ();
@@ -52,6 +67,11 @@ public interface ExpandedUnitDetails
 	 * @return Details about the player who owns the unit
 	 */
 	public PlayerPublicDetails getOwningPlayer ();
+	
+	/**
+	 * @return Whether or not the unit is a hero
+	 */
+	public boolean isHero ();
 	
 	/**
 	 * @return True magic realm/lifeform type of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)

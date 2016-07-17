@@ -158,6 +158,29 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 
 	/**
+	 * Shortcut method, and to ease the number of trivial conversions I need to do when plugging in ExpandedUnitDetails.
+	 * 
+	 * @return Unit definition identifier, e.g. UN001
+	 */
+	@Override
+	public String getUnitID ()
+	{
+		return getUnitDefinition ().getUnitID ();
+	}
+	
+	/**
+	 * Shortcut method, and to ease the number of trivial conversions I need to do when plugging in ExpandedUnitDetails.
+	 * 
+	 * @return Unit URN
+	 * @throws NullPointerException If this is an AvailableUnit
+	 */
+	@Override
+	public final int getUnitURN ()
+	{
+		return getMemoryUnit ().getUnitURN ();
+	}
+	
+	/**
 	 * @return Unit type (normal, hero or summoned)
 	 */
 	@Override
@@ -173,6 +196,15 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	public final PlayerPublicDetails getOwningPlayer ()
 	{
 		return owningPlayer;
+	}
+	
+	/**
+	 * @return Whether or not the unit is a hero
+	 */
+	@Override
+	public final boolean isHero ()
+	{
+		return getUnitDefinition ().getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 	}
 	
 	/**

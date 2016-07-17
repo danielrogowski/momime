@@ -37,6 +37,8 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.UnitUtils;
 
 /**
  * Tests the ArmyListUI class
@@ -107,7 +109,8 @@ public final class TestArmyListUI
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		priv.setFogOfWarMemory (fow);
-		
+
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		for (int x = 0; x <= 10; x++)
 			for (int y = 0; y <= 10; y++)
 				for (int z = 0; z <= mapSize.getDepth (); z++)
@@ -118,8 +121,10 @@ public final class TestArmyListUI
 						thisUnit.setOwningPlayerID (1);
 						thisUnit.setUnitLocation (new MapCoordinates3DEx (x, y, z));
 						thisUnit.setUnitID ("UN001");
-						
 						fow.getUnit ().add (thisUnit);
+						
+						final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+						when (unitUtils.expandUnitDetails (thisUnit, null, null, null, players, fow, db)).thenReturn (xu);
 					}
 		
 		// Renderer
@@ -148,6 +153,7 @@ public final class TestArmyListUI
 		final ArmyListUI army = new ArmyListUI ();
 		army.setArmyListLayout (layout);
 		army.setUtils (utils);
+		army.setUnitUtils (unitUtils);
 		army.setLanguageHolder (langHolder);
 		army.setLanguageChangeMaster (langMaster);
 		army.setLargeFont (CreateFontsForTests.getLargeFont ());

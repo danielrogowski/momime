@@ -41,6 +41,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -127,6 +128,11 @@ public final class TestUnitInfoUI
 		unit.setUnitID ("UN001");
 		unit.setOwningPlayerID (pd.getPlayerID ());
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
@@ -135,7 +141,6 @@ public final class TestUnitInfoUI
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
 
 		// Skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
 		
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -264,6 +269,11 @@ public final class TestUnitInfoUI
 		unit.setUnitID ("UN001");
 		unit.setOwningPlayerID (pd.getPlayerID ());
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
@@ -272,7 +282,6 @@ public final class TestUnitInfoUI
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
 
 		// Skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
 
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);

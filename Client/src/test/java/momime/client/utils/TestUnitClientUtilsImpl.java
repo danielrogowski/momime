@@ -49,6 +49,7 @@ import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.RaceLang;
 import momime.client.language.database.UnitLang;
+import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
@@ -449,9 +450,13 @@ public final class TestUnitClientUtilsImpl
 		final GraphicsDatabaseEx gfx = ClientTestData.loadGraphicsDatabase (utils, null);
 		
 		// Animation controller
+		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
+		gen.setUtils (utils);
+		
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
 		anim.setGraphicsDB (gfx);
 		anim.setUtils (utils);
+		anim.setPlayerColourImageGenerator (gen);
 		
 		// Config
 		final MomImeClientConfigEx config = new MomImeClientConfigEx (); 

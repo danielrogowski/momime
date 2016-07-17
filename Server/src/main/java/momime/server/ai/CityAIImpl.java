@@ -7,6 +7,17 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.areas.storage.MapArea2D;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
+
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
@@ -26,25 +37,15 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.areas.storage.MapArea2D;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.random.RandomUtils;
 
 /**
  * Methods for AI players making decisions about where to place cities and what to build in them
@@ -57,8 +58,8 @@ public final class CityAIImpl implements CityAI
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -252,7 +253,10 @@ public final class CityAIImpl implements CityAI
 		int rationsNeeded = 0;
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
-				rationsNeeded = rationsNeeded + getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, players, trueMap, db);
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				rationsNeeded = rationsNeeded + xu.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
+			}
 
 		log.debug ("setOptionalFarmersInAllCities: Armies require " + rationsNeeded + " rations");
 
@@ -434,19 +438,19 @@ public final class CityAIImpl implements CityAI
 	}
 
 	/**
-	 * @return Unit skill utils
+	 * @return Unit utils
 	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
-		return unitSkillUtils;
+		return unitUtils;
 	}
 
 	/**
-	 * @param utils Unit skill utils
+	 * @param utils Unit utils
 	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
-		unitSkillUtils = utils;
+		unitUtils = utils;
 	}
 	
 	/**

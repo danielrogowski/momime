@@ -6,7 +6,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.Action;
 import javax.swing.JFrame;
@@ -61,8 +63,10 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 
 /**
  * Tests the UnitInfoPanel class
@@ -306,6 +310,11 @@ public final class TestUnitInfoPanel
 		unit.setWeaponGrade (2);
 		unit.setOwningPlayerID (1);
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		
 		// Skills
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		for (int n = 1; n <= 5; n++)
@@ -360,8 +369,13 @@ public final class TestUnitInfoPanel
 		}
 		
 		// Upkeep
-		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE01", players, fow, db)).thenReturn (2);
-		when (unitSkillUtils.getModifiedUpkeepValue (unit, "RE02", players, fow, db)).thenReturn (1);
+		when (xu.getModifiedUpkeepValue ("RE01")).thenReturn (2);
+		when (xu.getModifiedUpkeepValue ("RE02")).thenReturn (1);
+		
+		final Set<String> upkeeps = new HashSet<String> ();
+		upkeeps.add ("RE01");
+		upkeeps.add ("RE02");
+		when (xu.listModifiedUpkeepProductionTypeIDs ()).thenReturn (upkeeps);
 		
 		// Unit name
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
@@ -421,6 +435,7 @@ public final class TestUnitInfoPanel
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		panel.setPlayerPickUtils (playerPickUtils);
+		panel.setUnitUtils (unitUtils);
 		panel.setClientConfig (new MomImeClientConfigEx ());
 		
 		if (actions != null)

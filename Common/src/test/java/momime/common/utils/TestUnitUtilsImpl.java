@@ -3034,42 +3034,6 @@ public final class TestUnitUtilsImpl
 	}
 	
 	/**
-	 * Tests the getBasicUpkeepValue method
-	 * @throws RecordNotFoundException If the unitID doesn't exist
-	 */
-	@Test
-	public final void testGetBasicUpkeepValue () throws RecordNotFoundException
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final ProductionTypeAndUndoubledValue upkeepA = new ProductionTypeAndUndoubledValue ();
-		upkeepA.setProductionTypeID ("A");
-		upkeepA.setUndoubledProductionValue (1);
-
-		final ProductionTypeAndUndoubledValue upkeepB = new ProductionTypeAndUndoubledValue ();
-		upkeepB.setProductionTypeID ("B");
-		upkeepB.setUndoubledProductionValue (5);
-		
-		final Unit unitDef = new Unit ();
-		unitDef.getUnitUpkeep ().add (upkeepA);
-		unitDef.getUnitUpkeep ().add (upkeepB);
-		when (db.findUnit ("UN001", "getBasicUpkeepValue")).thenReturn (unitDef);
-		
-		// Create test units
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID ("UN001");
-
-		// Set up object to test
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		
-		// Run method
-		assertEquals (1, utils.getBasicUpkeepValue (unit, "A", db));
-		assertEquals (5, utils.getBasicUpkeepValue (unit, "B", db));
-		assertEquals (0, utils.getBasicUpkeepValue (unit, "C", db));
-	}
-
-	/**
 	 * Tests the listUnitURNs method
 	 * @throws Exception If there is a problem
 	 */

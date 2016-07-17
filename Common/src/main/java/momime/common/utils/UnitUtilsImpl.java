@@ -32,7 +32,6 @@ import momime.common.database.HeroItemTypeAttackType;
 import momime.common.database.MergedFromPick;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.Pick;
-import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -1099,32 +1098,6 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		log.trace ("Exiting getModifiedUnitMagicRealmLifeformTypeID = " + magicRealmLifeformTypeID);
 		return magicRealmLifeformTypeID;
-	}
-
-	/**
-	 * @param unit Unit to look up the base upkeep for
-	 * @param productionTypeID Production type we want to look up the base upkeep for
-	 * @param db Lookup lists built over the XML database
-	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
-	 * @throws RecordNotFoundException If the unitID doesn't exist
-	 */
-	@Override
-	public final int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final CommonDatabase db)
-		throws RecordNotFoundException
-	{
-		log.trace ("Entering getBasicUpkeepValue: " + unit.getUnitID () + ", " + productionTypeID);
-
-		int result = 0;
-		final Iterator<ProductionTypeAndUndoubledValue> iter = db.findUnit (unit.getUnitID (), "getBasicUpkeepValue").getUnitUpkeep ().iterator ();
-		while ((result == 0) && (iter.hasNext ()))
-		{
-			final ProductionTypeAndUndoubledValue thisUpkeep = iter.next ();
-			if (thisUpkeep.getProductionTypeID ().equals (productionTypeID))
-				result = thisUpkeep.getUndoubledProductionValue ();
-		}
-
-		log.trace ("Exiting getBasicUpkeepValue = " + result);
-		return result;
 	}
 
 	/**

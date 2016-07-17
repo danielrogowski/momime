@@ -459,7 +459,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
@@ -677,7 +677,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />

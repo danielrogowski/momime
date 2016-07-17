@@ -68,7 +68,6 @@ import momime.common.database.HeroItemSlot;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
@@ -80,6 +79,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
@@ -649,18 +649,16 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unit = showUnit;
 		building = null;
 		shadingColours = new ArrayList<String> ();
-		final Unit unitInfo = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "showUnit");
+		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (showUnit, null, null, null, getClient ().getPlayers (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		// Update language independant labels
-		currentlyConstructingProductionCost.setText ((unitInfo.getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (unitInfo.getProductionCost ()));
-		costLabel.setVisible (unitInfo.getProductionCost () != null);
+		currentlyConstructingProductionCost.setText ((xu.getUnitDefinition ().getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (xu.getUnitDefinition ().getProductionCost ()));
+		costLabel.setVisible (xu.getUnitDefinition ().getProductionCost () != null);
 		
 		// Search for upkeeps of the unit
 		final Map<String, Integer> upkeepsMap = new HashMap<String, Integer> ();
-		for (final ProductionTypeAndUndoubledValue upkeepValue : unitInfo.getUnitUpkeep ())
-			upkeepsMap.put (upkeepValue.getProductionTypeID (),
-				getUnitSkillUtils ().getModifiedUpkeepValue (getUnit (), upkeepValue.getProductionTypeID (), getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()));
+		xu.listModifiedUpkeepProductionTypeIDs ().forEach (productionTypeID -> upkeepsMap.put (productionTypeID, xu.getModifiedUpkeepValue (productionTypeID)));
 		
 		// Search for upkeeps from spells cast on the unit
 		if (getUnit () instanceof MemoryUnit)
@@ -765,7 +763,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		}
 		
 		// Add ability to cast fixed spells
-		for (final UnitCanCast unitCanCast : unitInfo.getUnitCanCast ())
+		for (final UnitCanCast unitCanCast : xu.getUnitDefinition ().getUnitCanCast ())
 			
 			// Ignore heroes having spells available to cast from their MP pool - we only want to show spells that are free to cast
 			if ((unitCanCast.getNumberOfTimes () != null) && (unitCanCast.getNumberOfTimes () > 0))
@@ -777,7 +775,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Add hero item slots
 		int slotNumber = 0;
-		for (final HeroItemSlot slot : unitInfo.getHeroItemSlot ())
+		for (final HeroItemSlot slot : xu.getUnitDefinition ().getHeroItemSlot ())
 		{
 			// Is there an item in this slot?
 			NumberedHeroItem item = null;

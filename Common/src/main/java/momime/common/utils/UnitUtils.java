@@ -161,16 +161,6 @@ public interface UnitUtils
 		throws RecordNotFoundException, MomException;
 
 	/**
-	 * @param unit Unit to look up the base upkeep for
-	 * @param productionTypeID Production type we want to look up the base upkeep for
-	 * @param db Lookup lists built over the XML database
-	 * @return Base upkeep value, before any reductions such as the Summoner retort reducing upkeep for summoned units; 0 if this unit has no upkeep of this type
-	 * @throws RecordNotFoundException If the unitID doesn't exist
-	 */
-	public int getBasicUpkeepValue (final AvailableUnit unit, final String productionTypeID, final CommonDatabase db)
-		throws RecordNotFoundException;
-
-	/**
 	 * @param units Unit stack
 	 * @return Comma delimited list of their unit URNs, for debug messages
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails

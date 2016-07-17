@@ -54,13 +54,12 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
-import momime.common.database.Unit;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -89,9 +88,6 @@ public final class ArmyListUI extends MomClientFrameUI
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
 	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -346,6 +342,9 @@ public final class ArmyListUI extends MomClientFrameUI
 			for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
 					// Add to stack, or create a new one
 					List<MemoryUnit> unitStack = unitStacksMap.get (thisUnit.getUnitLocation ());
 					if (unitStack == null)
@@ -356,17 +355,14 @@ public final class ArmyListUI extends MomClientFrameUI
 					unitStack.add (thisUnit);
 					
 					// Total up upkeep
-					final Unit unitDetails = getClient ().getClientDB ().findUnit (thisUnit.getUnitID (), "refreshArmyList");
-					for (final ProductionTypeAndUndoubledValue upkeep : unitDetails.getUnitUpkeep ())
+					for (final String productionTypeID : xu.listModifiedUpkeepProductionTypeIDs ())
 					{
-						Integer value = upkeepsMap.get (upkeep.getProductionTypeID ());
+						Integer value = upkeepsMap.get (productionTypeID);
 						if (value == null)
 							value = 0;
 						
-						value = value + getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, upkeep.getProductionTypeID (), getClient ().getPlayers (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-						
-						upkeepsMap.put (upkeep.getProductionTypeID (), value);
+						value = value + xu.getModifiedUpkeepValue (productionTypeID);						
+						upkeepsMap.put (productionTypeID, value);
 					}
 				}
 			
@@ -603,22 +599,6 @@ public final class ArmyListUI extends MomClientFrameUI
 	public final void setWizardClientUtils (final WizardClientUtils util)
 	{
 		wizardClientUtils = util;
-	}
-
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
 	}
 
 	/**

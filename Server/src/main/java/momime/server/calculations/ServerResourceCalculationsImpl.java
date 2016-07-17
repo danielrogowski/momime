@@ -41,18 +41,18 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ProductionTypeSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 import momime.server.process.SpellQueueing;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
@@ -84,9 +84,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
 	/** City calculations */
 	private CityCalculations cityCalculations;
 
@@ -103,7 +103,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	private RandomUtils randomUtils;
 	
 	/**
-	 * Recalculates all per turn production values Note Delphi version could either calculate the values for one player or all players and was named RecalcProductionValues Java version operates only on one player because each player now has their own resource list; the loop is in the outer calling method recalculateGlobalProductionValues
+	 * Recalculates all per turn production values
+	 * Note: Delphi version could either calculate the values for one player or all players and was named RecalcProductionValues
+	 * Java version operates only on one player because each player now has their own resource list; the loop is in the outer calling method recalculateGlobalProductionValues
 	 * 
 	 * @param player Player to recalculate production for
 	 * @param players List of all players in the session
@@ -114,7 +116,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws PlayerNotFoundException If we can't find the player who owns a game element
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
+		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering recalculateAmountsPerTurn: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
@@ -128,10 +131,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
 			{
-				final UnitSvr unitDetails = db.findUnit (thisUnit.getUnitID (), "recalculateAmountsPerTurn");
-				for (final ProductionTypeAndUndoubledValue upkeep : unitDetails.getUnitUpkeep ())
-					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -getUnitSkillUtils ().getModifiedUpkeepValue
-						(thisUnit, upkeep.getProductionTypeID (), players, trueMap, db));
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				for (final String upkeepProductionTypeID : xu.listModifiedUpkeepProductionTypeIDs ())
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeepProductionTypeID, -xu.getModifiedUpkeepValue (upkeepProductionTypeID));
 			}
 
 		// Subtract the mana maintenance of all spells from the economy
@@ -245,7 +247,8 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
-				final int consumptionAmount = getUnitSkillUtils ().getModifiedUpkeepValue (thisUnit, productionTypeID, players, trueMap, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final int consumptionAmount = xu.getModifiedUpkeepValue (productionTypeID);
 				if (consumptionAmount > 0)
 				{
 					final MomResourceConsumerUnit consumer = getMomResourceConsumerFactory ().createUnitConsumer ();
@@ -687,19 +690,19 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	}
 
 	/**
-	 * @return Unit skill utils
+	 * @return Unit utils
 	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
-		return unitSkillUtils;
+		return unitUtils;
 	}
 
 	/**
-	 * @param utils Unit skill utils
+	 * @param utils Unit utils
 	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
-		unitSkillUtils = utils;
+		unitUtils = utils;
 	}
 
 	/**

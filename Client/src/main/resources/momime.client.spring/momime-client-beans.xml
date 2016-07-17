@@ -1547,7 +1547,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="miniMapBitmapGenerator" ref="miniMapBitmapGenerator" />
 		<property name="textUtils" ref="textUtils" />

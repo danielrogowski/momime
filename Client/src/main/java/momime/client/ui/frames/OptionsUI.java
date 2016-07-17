@@ -342,7 +342,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			@Override
 			public final boolean accept (final File dir, final String name)
 			{
-				return name.toLowerCase ().endsWith (FILE_SUFFIX);
+				return name.toLowerCase ().endsWith (FILE_SUFFIX.toLowerCase ());
 			}
 		};
 

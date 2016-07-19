@@ -1,13 +1,16 @@
 package momime.common.utils;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
@@ -19,12 +22,15 @@ import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
+import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitDamage;
+import momime.common.messages.UnitStatusID;
 
 /**
  * Stores all derived skill, upkeep and other values for a particular unit and stores them for easy and quick lookup.  
@@ -140,12 +146,16 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 	
 	/**
-	 * @return The unit whose details we are storing if it is a MemoryUnit; null if it is an AvailableUnit 
+	 * @return The unit whose details we are storing
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	@Override
-	public final MemoryUnit getMemoryUnit ()
+	public final MemoryUnit getMemoryUnit () throws MomException
 	{
-		return (unit instanceof MemoryUnit) ? ((MemoryUnit) unit) : null;
+		if (!isMemoryUnit ())
+			throw new MomException ("ExpandedUnitDetails is storing a " + unit.getClass ().getName () + "; cannot typecast it to MemoryUnit");
+		
+		return (MemoryUnit) unit;
 	}
 
 	/**
@@ -157,29 +167,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		return unitDefinition;
 	}
 
-	/**
-	 * Shortcut method, and to ease the number of trivial conversions I need to do when plugging in ExpandedUnitDetails.
-	 * 
-	 * @return Unit definition identifier, e.g. UN001
-	 */
-	@Override
-	public String getUnitID ()
-	{
-		return getUnitDefinition ().getUnitID ();
-	}
-	
-	/**
-	 * Shortcut method, and to ease the number of trivial conversions I need to do when plugging in ExpandedUnitDetails.
-	 * 
-	 * @return Unit URN
-	 * @throws NullPointerException If this is an AvailableUnit
-	 */
-	@Override
-	public final int getUnitURN ()
-	{
-		return getMemoryUnit ().getUnitURN ();
-	}
-	
 	/**
 	 * @return Unit type (normal, hero or summoned)
 	 */
@@ -271,7 +258,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	public final Integer getBasicSkillValue (final String unitSkillID) throws MomException
 	{
 		if (!hasBasicSkill (unitSkillID))
-			throw new MomException ("getBasicSkillValue called on " + getUnit ().getUnitID () + " skill ID " + unitSkillID + " but the unit does not have this skill");
+			throw new MomException ("getBasicSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the unit does not have this skill");
 		
 		return basicSkillValues.get (unitSkillID);
 	}
@@ -306,7 +293,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	public final Integer getModifiedSkillValue (final String unitSkillID) throws MomException
 	{
 		if (!hasModifiedSkill (unitSkillID))
-			throw new MomException ("getModifiedSkillValue called on " + getUnit ().getUnitID () + " skill ID " + unitSkillID + " but the unit does not have this skill");
+			throw new MomException ("getModifiedSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the unit does not have this skill");
 
 		final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (unitSkillID);
 		Integer total;
@@ -321,7 +308,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 			total = 0;
 			for (final Entry<UnitSkillComponent, Integer> c : components.entrySet ())
 				if (c.getValue () == null)
-					throw new MomException ("getModifiedSkillValue called on " + getUnit ().getUnitID () + " skill ID " + unitSkillID + " but the " + c.getKey () + " component is null");
+					throw new MomException ("getModifiedSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the " + c.getKey () + " component is null");
 				else
 					total = total + c.getValue ();
 		}
@@ -404,7 +391,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering unitIgnoresCombatTerrain" + (isMemoryUnit () ? (": Unit URN " + getMemoryUnit ().getUnitURN ()) : ""));
+		log.trace ("Entering unitIgnoresCombatTerrain: " + getDebugIdentifier ());
 
 		boolean found = false;
 
@@ -427,8 +414,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final boolean isUnitImmuneToDamageType (final DamageType damageType)
 	{
-    	log.trace ("Entering isUnitImmuneToDamageType: " + damageType.getDamageTypeID () +
-    		(isMemoryUnit () ? (", Unit URN " + getMemoryUnit ().getUnitURN ()) : ""));
+    	log.trace ("Entering isUnitImmuneToDamageType: " + getDebugIdentifier () + ", " + damageType.getDamageTypeID ());
 
     	// We only want complete immunities - even if it boots defence to 50, its still a valid target
     	final boolean immunity = damageType.getDamageTypeImmunity ().stream ().anyMatch
@@ -456,7 +442,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final int calculateManaTotal () throws MomException
 	{
-		log.trace ("Entering calculateManaTotal" + (isMemoryUnit () ? (": Unit URN " + getMemoryUnit ().getUnitURN ()) : ""));
+		log.trace ("Entering calculateManaTotal: " + getDebugIdentifier ());
 		
 		// Unit caster skill is easy, this directly says how many MP the unit has
 		int total = hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) ?
@@ -481,15 +467,11 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	public final String toString ()
 	{
 		final StringBuilder s = new StringBuilder ();
-		s.append ("[UnitID=\"" + getUnit ().getUnitID () + "\", ");
-		
-		if (isMemoryUnit ())
-			s.append ("UnitURN=" + getMemoryUnit ().getUnitURN () + ", ");
-		
+		s.append ("[" + getDebugIdentifier () + ", ");		
 		s.append ("UnitTypeID=\"" + getUnitType ().getUnitTypeID () + "\", ");
 		s.append ("LifeformTypeID=\"" + getModifiedUnitMagicRealmLifeformType ().getPickID () + "\", ");
-		s.append ("PlayerID=" + getUnit ().getOwningPlayerID () + ", ");
-		s.append ("Location=" + getUnit ().getUnitLocation () + ", ");
+		s.append ("PlayerID=" + getOwningPlayerID () + ", ");
+		s.append ("Location=" + getUnitLocation () + ", ");
 		s.append ("WeaponGrade=" + getUnit ().getWeaponGrade () + ", ");
 		s.append ("RAT=" + getUnitDefinition ().getRangedAttackType () + ", ");
 		
@@ -536,5 +518,128 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		// Finish off
 		s.append ("Raw=(" + raw + "), Basic=(" + basic + "), Mod=(" + mod + ")]");
 		return s.toString ();
+	}
+
+	/**
+	 * @return String identifiying this unit, suitable for including in debug messages
+	 */
+	@Override
+	public final String getDebugIdentifier ()
+	{
+		final StringBuilder s = new StringBuilder ();
+		s.append ("UnitID=\"" + getUnitID ());
+		
+		if (isMemoryUnit ())
+			try
+			{
+				s.append (", UnitURN=" + getUnitURN ());
+			}
+			catch (final MomException e)
+			{
+				log.error (e, e);
+			}
+		
+		return s.toString ();
+	}
+	
+	// Properties that directly delegate to methods on AvailableUnit
+	
+	/**
+	 * @return Unit definition identifier, e.g. UN001
+	 */
+	@Override
+	public final String getUnitID ()
+	{
+		return getUnit ().getUnitID ();
+	}
+
+	/**
+	 * @return PlayerID of the player who owns this unit 
+	 */
+	@Override
+	public final int getOwningPlayerID ()
+	{
+		return getUnit ().getOwningPlayerID ();
+	}
+
+	/**
+	 * @return Location of the unit on the overland map
+	 */
+	@Override
+	public final MapCoordinates3DEx getUnitLocation ()
+	{
+		return (MapCoordinates3DEx) getUnit ().getUnitLocation ();
+	}
+	
+	// Properties that directly delegate to methods on MemoryUnit
+	
+	/**
+	 * @return Unit URN
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final int getUnitURN () throws MomException
+	{
+		return getMemoryUnit ().getUnitURN ();
+	}
+
+	/**
+	 * @return Current status of this unit
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final UnitStatusID getStatus () throws MomException
+	{
+		return getMemoryUnit ().getStatus ();
+	}
+	
+	/**
+	 * @return Location on the overland map of the combat this unit is involved in null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final MapCoordinates3DEx getCombatLocation () throws MomException
+	{
+		return (MapCoordinates3DEx) getMemoryUnit ().getCombatLocation ();
+	}
+
+	/**
+	 * @return Location within the combat map where this unit is standing null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final MapCoordinates2DEx getCombatPosition () throws MomException
+	{
+		return (MapCoordinates2DEx) getMemoryUnit ().getCombatPosition ();
+	}
+
+	/**
+	 * @return Direction within the combat map that the unit is facing null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final Integer getCombatHeading () throws MomException
+	{
+		return getMemoryUnit ().getCombatHeading ();
+	}
+
+	/**
+	 * @return Whether the unit is part of the attacking or defending side in combat null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final UnitCombatSideID getCombatSide () throws MomException
+	{
+		return getMemoryUnit ().getCombatSide ();
+	}
+
+	/**
+	 * @return List of damage this unit has taken
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final List<UnitDamage> getUnitDamage () throws MomException
+	{
+		return getMemoryUnit ().getUnitDamage ();
 	}
 }

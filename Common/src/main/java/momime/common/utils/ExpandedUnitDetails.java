@@ -1,7 +1,10 @@
 package momime.common.utils;
 
+import java.util.List;
 import java.util.Set;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
@@ -12,10 +15,13 @@ import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
+import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.UnitDamage;
+import momime.common.messages.UnitStatusID;
 
 /**
  * Stores all derived skill, upkeep and other values for a particular unit and stores them for easy and quick lookup.  
@@ -34,29 +40,15 @@ public interface ExpandedUnitDetails
 	public boolean isMemoryUnit ();
 	
 	/**
-	 * @return The unit whose details we are storing if it is a MemoryUnit; null if it is an AvailableUnit 
+	 * @return The unit whose details we are storing
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public MemoryUnit getMemoryUnit ();
+	public MemoryUnit getMemoryUnit () throws MomException;
 	
 	/**
 	 * @return Definition for this unit from the XML database
 	 */
 	public Unit getUnitDefinition ();
-	
-	/**
-	 * Shortcut method, and to ease the number of trivial conversions I need to do when plugging in ExpandedUnitDetails.
-	 * 
-	 * @return Unit definition identifier, e.g. UN001
-	 */
-	public String getUnitID ();
-	
-	/**
-	 * Shortcut method, and to ease the number of trivial conversions I need to do when plugging in ExpandedUnitDetails.
-	 * 
-	 * @return Unit URN
-	 * @throws NullPointerException If this is an AvailableUnit
-	 */
-	public int getUnitURN ();
 	
 	/**
 	 * @return Unit type (normal, hero or summoned)
@@ -187,4 +179,70 @@ public interface ExpandedUnitDetails
 	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
 	 */
 	public int calculateManaTotal () throws MomException;
+
+	/**
+	 * @return String identifiying this unit, suitable for including in debug messages
+	 */
+	public String getDebugIdentifier ();
+	
+	// Properties that directly delegate to methods on AvailableUnit
+	
+	/**
+	 * @return Unit definition identifier, e.g. UN001
+	 */
+	public String getUnitID ();
+
+	/**
+	 * @return PlayerID of the player who owns this unit 
+	 */
+	public int getOwningPlayerID ();
+	
+	/**
+	 * @return Location of the unit on the overland map
+	 */
+	public MapCoordinates3DEx getUnitLocation ();
+	
+	// Properties that directly delegate to methods on MemoryUnit
+	
+	/**
+	 * @return Unit URN
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public int getUnitURN () throws MomException;
+	
+	/**
+	 * @return Current status of this unit
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public UnitStatusID getStatus () throws MomException;
+	
+	/**
+	 * @return Location on the overland map of the combat this unit is involved in; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public MapCoordinates3DEx getCombatLocation () throws MomException;
+
+	/**
+	 * @return Location within the combat map where this unit is standing; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public MapCoordinates2DEx getCombatPosition () throws MomException;
+
+	/**
+	 * @return Direction within the combat map that the unit is facing; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public Integer getCombatHeading () throws MomException;
+
+	/**
+	 * @return Whether the unit is part of the attacking or defending side in combat; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public UnitCombatSideID getCombatSide () throws MomException;
+
+	/**
+	 * @return List of damage this unit has taken
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public List<UnitDamage> getUnitDamage () throws MomException;
 }

@@ -61,6 +61,7 @@ import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -622,10 +623,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 				targetUnits.add (targetUnit);
 			else
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-						variableDamage, thisUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+						variableDamage, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 						
 						targetUnits.add (thisUnit);
+				}
 			
 			if (targetUnits.size () > 0)
 			{

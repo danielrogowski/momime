@@ -17,6 +17,7 @@ import momime.common.database.ExperienceLevel;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
+import momime.common.messages.AvailableUnit;
 
 /**
  * Tests the ExpandedUnitDetailsImpl class
@@ -73,15 +74,18 @@ public final class TestExpandedUnitDetailsImpl
 		basicSkillValues.put ("A", null);
 		basicSkillValues.put ("B", null);
 
+		// Underlying unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
 		// Set up object to test
-		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, basicSkillValues, null, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, basicSkillValues, null, null, null);
 		
 		// Try with no matching skills
-		assertFalse (unit.unitIgnoresCombatTerrain (db));
+		assertFalse (xu.unitIgnoresCombatTerrain (db));
 		
 		// Now add one
 		basicSkillValues.put ("C", null);
-		assertTrue (unit.unitIgnoresCombatTerrain (db));
+		assertTrue (xu.unitIgnoresCombatTerrain (db));
 	}
 
 	/**
@@ -113,21 +117,24 @@ public final class TestExpandedUnitDetailsImpl
 	@Test
 	public final void testCalculateManaTotal () throws Exception
 	{
+		// Underlying unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
 		// Set up object to test
 		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
 		final ExperienceLevel expLevel = new ExperienceLevel ();
 		
-		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, expLevel, null, modifiedSkillValues, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, expLevel, null, modifiedSkillValues, null, null);
 		
 		// Test a non-casting unit
-		assertEquals (0, unit.calculateManaTotal ());
+		assertEquals (0, xu.calculateManaTotal ());
 
 		// Test an archangel
 		final Map<UnitSkillComponent, Integer> casterUnitSkill = new HashMap<UnitSkillComponent, Integer> ();
 		casterUnitSkill.put (UnitSkillComponent.BASIC, 40);
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, casterUnitSkill);
 		
-		assertEquals (40, unit.calculateManaTotal ());
+		assertEquals (40, xu.calculateManaTotal ());
 
 		// Test a low hero, lv 3 caster skill * lv 2 (+1=3) exp * 2½ = 22½
 		expLevel.setLevelNumber (2);
@@ -137,13 +144,13 @@ public final class TestExpandedUnitDetailsImpl
 		casterHeroSkill.put (UnitSkillComponent.BASIC, 3);
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, casterHeroSkill);
 		
-		assertEquals (22, unit.calculateManaTotal ());
+		assertEquals (22, xu.calculateManaTotal ());
 		
 		// Test a higher hero, lv 5 caster skill * lv 4 (+1=5) exp * 2½ = 62½, +40 from unit caster skill = 102½
 		expLevel.setLevelNumber (4);
 		casterHeroSkill.put (UnitSkillComponent.BASIC, 5);
 		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, casterUnitSkill);
 		
-		assertEquals (102, unit.calculateManaTotal ());
+		assertEquals (102, xu.calculateManaTotal ());
 	}
 }

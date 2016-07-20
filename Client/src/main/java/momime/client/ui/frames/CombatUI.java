@@ -100,6 +100,7 @@ import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -550,11 +551,19 @@ public final class CombatUI extends MomClientFrameUI
 								case ATTACK_SPELLS:
 								case SPECIAL_UNIT_SPELLS:
 								case DISPEL_SPELLS:
-									validTarget = (unit != null) && (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
-											(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
-											unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-											getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
+									if (unit == null)
+										validTarget = false;
+									else
+									{
+										final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (),
+											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+										
+										validTarget = (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+											(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
+												(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
+												xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+												getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
+									}
 									break;
 									
 								// Combat spells targetted at a location have their own method too
@@ -1044,10 +1053,13 @@ public final class CombatUI extends MomClientFrameUI
 							case DISPEL_SPELLS:
 								if (unit != null)
 								{
+									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (),
+										getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+									
 									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
 										(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
-										unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+										xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{

@@ -37,6 +37,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -377,9 +378,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "Cannot find the unit you are trying to target the spell on.";
 				else
 				{
-					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, combatLocation, player.getPlayerDescription ().getPlayerID (), variableDamage, combatTargetUnit,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (combatTargetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					
+					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+						(spell, combatLocation, player.getPlayerDescription ().getPlayerID (), variableDamage, xu,
+						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					if (validTarget != TargetSpellResult.VALID_TARGET)
 					{
@@ -397,7 +401,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 					spell, player.getPlayerDescription ().getPlayerID (), combatLocation,
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 				
 				if (validTarget != TargetSpellResult.VALID_TARGET)
 				{

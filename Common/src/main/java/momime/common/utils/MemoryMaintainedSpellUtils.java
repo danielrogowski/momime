@@ -5,7 +5,6 @@ import java.util.List;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -17,7 +16,6 @@ import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
 
 /**
  * Methods for working with list of MemoryMaintainedSpells
@@ -114,7 +112,6 @@ public interface MemoryMaintainedSpellUtils
 	 * @param castingPlayerID Player casting the spell
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param unit Unit to cast the spell on
-	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
@@ -123,7 +120,7 @@ public interface MemoryMaintainedSpellUtils
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	public TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
-		final int castingPlayerID, final Integer variableDamage, final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
+		final int castingPlayerID, final Integer variableDamage, final ExpandedUnitDetails unit,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException; 
 
 	/**
@@ -139,13 +136,12 @@ public interface MemoryMaintainedSpellUtils
 	 * @param map Known terrain
 	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
-	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
 	public TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
-		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
-		final CommonDatabase db) throws RecordNotFoundException; 
+		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList)
+		throws RecordNotFoundException; 
 
 	/**
 	 * Checks whether the specified spell can be targetted at the specified overland map location

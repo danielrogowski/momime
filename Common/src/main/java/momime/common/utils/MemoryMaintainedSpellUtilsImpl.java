@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
@@ -23,8 +22,6 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
 import momime.common.database.SpellValidBorderTarget;
 import momime.common.database.TileType;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
@@ -33,7 +30,6 @@ import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
@@ -53,14 +49,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
-	
-	/** Damage type utils */
-	private DamageTypeUtils damageTypeUtils;
 	
 	/**
 	 * Searches for a maintained spell in a list
@@ -288,7 +278,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param castingPlayerID Player casting the spell
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
 	 * @param unit Unit to cast the spell on
-	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
@@ -298,12 +287,13 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 */
 	@Override
 	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
-		final int castingPlayerID, final Integer variableDamage, final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
+		final int castingPlayerID, final Integer variableDamage, final ExpandedUnitDetails unit,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-    	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID + ", " + combatLocation);
+    	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID + ", " + combatLocation + ", " + unit);
     	
     	final TargetSpellResult result;
+    	final int unitURN = unit.getUnitURN ();
     	
     	// Do easy checks first
     	if ((combatLocation != null) && ((!combatLocation.equals (unit.getCombatLocation ())) ||
@@ -335,9 +325,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else if ((unitSpellEffectRequired) && (unitSpellEffectIDs.size () == 0))
     			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
     		
-    		else if (!getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell,
-    			getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), mem.getMaintainedSpell (), db)))
-    			
+    		else if (!getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell, unit.getModifiedUnitMagicRealmLifeformType ().getPickID ()))
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
     		
     		// combatBaseDamage being not null is what identifies a special unit spell to be a healing spell
@@ -348,7 +336,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
     		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&
-    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == unit.getUnitURN ()) && (s.getCastingPlayerID () != castingPlayerID))))
+    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == unitURN) && (s.getCastingPlayerID () != castingPlayerID))))
     			result = TargetSpellResult.NOTHING_TO_DISPEL;
     		
     		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
@@ -358,7 +346,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		{
     			// Combat attack spell - immunity skill?
     			final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "isUnitValidTargetForSpell");
-    			if (getDamageTypeUtils ().isUnitImmuneToDamageType (unit, damageType, null, spell.getSpellRealm (), players, mem, db))
+    			if (unit.isUnitImmuneToDamageType (damageType))
     				result = TargetSpellResult.IMMUNE;
     			else
 	    			// Immune due to resistance?
@@ -371,8 +359,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    				case DISINTEGRATE:
 	    					// Units with 10 or more resistance are immune to spells that roll against resistance
 	    					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
-	    					int resistance = Math.max (0, getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
-	       						null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, spell.getSpellRealm (), players, mem, db));
+	    					int resistance = Math.max (0, unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE));
 	    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
 	    					{
 	    						final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;
@@ -410,14 +397,13 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param map Known terrain
 	 * @param fow Area we can currently see
 	 * @param buildingsList Known buildings
-	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
 	 */
 	@Override
 	public final TargetSpellResult isCityValidTargetForSpell (final List<MemoryMaintainedSpell> spells, final Spell spell, final int castingPlayerID,
-		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList,
-		final CommonDatabase db) throws RecordNotFoundException
+		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList)
+		throws RecordNotFoundException
 	{
     	log.trace ("Entering isCityValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID);
     	
@@ -593,22 +579,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	}
 
 	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
-	/**
 	 * @return Memory building utils
 	 */
 	public final MemoryBuildingUtils getMemoryBuildingUtils ()
@@ -622,21 +592,5 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
-	}
-
-	/**
-	 * @return Damage type utils
-	 */
-	public final DamageTypeUtils getDamageTypeUtils ()
-	{
-		return damageTypeUtils;
-	}
-
-	/**
-	 * @param utils Damage type utils
-	 */
-	public final void setDamageTypeUtils (final DamageTypeUtils utils)
-	{
-		damageTypeUtils = utils;
 	}
 }

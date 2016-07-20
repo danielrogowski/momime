@@ -42,6 +42,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -1419,6 +1420,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final SpellSvr spell = new SpellSvr ();
+		spell.setSpellRealm ("MB01");
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1512,10 +1514,13 @@ public final class TestSpellQueueingImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (101, trueMap.getUnit ())).thenReturn (targetUnit);
 		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
+		
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, combatLocation, attackingPd.getPlayerID (), null, targetUnit,
-			players, trueMap, db)).thenReturn (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY);
+		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, combatLocation, attackingPd.getPlayerID (), null, xu,
+			trueMap, db)).thenReturn (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY);
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
@@ -1545,6 +1550,7 @@ public final class TestSpellQueueingImpl
 	{
 		// Mock database
 		final SpellSvr spell = new SpellSvr ();
+		spell.setSpellRealm ("MB01");
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
@@ -1638,10 +1644,13 @@ public final class TestSpellQueueingImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (101, trueMap.getUnit ())).thenReturn (targetUnit);
 		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
+		
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
-		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, combatLocation, attackingPd.getPlayerID (), null, targetUnit,
-			players, trueMap, db)).thenReturn (TargetSpellResult.VALID_TARGET);
+		when (memoryMaintainedSpellUtils.isUnitValidTargetForSpell (spell, combatLocation, attackingPd.getPlayerID (), null, xu,
+			trueMap, db)).thenReturn (TargetSpellResult.VALID_TARGET);
 		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);

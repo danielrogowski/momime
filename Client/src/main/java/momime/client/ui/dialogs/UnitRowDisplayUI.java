@@ -44,6 +44,7 @@ import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitSkillUtils;
@@ -140,7 +141,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 		getDialog ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
-			public final void windowClosed (final WindowEvent ev)
+			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
 			{
 				try
 				{
@@ -201,9 +202,12 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 				{
 					// Its a normal unit enchantment being cast on the overland map
 					// Use common routine to do all the validation
-					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, null, getClient ().getOurPlayerID (), null, unit,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
+					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+						(spell, null, getClient ().getOurPlayerID (), null, xu,
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (validTarget == TargetSpellResult.VALID_TARGET)
 					{

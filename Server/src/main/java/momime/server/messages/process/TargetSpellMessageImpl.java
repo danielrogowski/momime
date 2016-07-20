@@ -34,6 +34,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellUtils;
@@ -157,7 +158,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
 						spell, sender.getPlayerDescription ().getPlayerID (), (MapCoordinates3DEx) getOverlandTargetLocation (),
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ());
+						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 					if (reason == TargetSpellResult.VALID_TARGET)
 					{
 						// Looks ok but weird if at this point we can't find a free skill ID
@@ -199,9 +200,12 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					else
 					{
 						// Common routine used by both the client and server does the guts of the validation work
-						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-							(spell, null, sender.getPlayerDescription ().getPlayerID (), null, unit,
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
+						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+							(spell, null, sender.getPlayerDescription ().getPlayerID (), null, xu,
+							mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (reason == TargetSpellResult.VALID_TARGET)
 						{

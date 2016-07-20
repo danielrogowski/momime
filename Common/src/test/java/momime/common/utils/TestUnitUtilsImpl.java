@@ -514,7 +514,6 @@ public final class TestUnitUtilsImpl
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
 		assertFalse (details.isMemoryUnit ());
-		assertNull (details.getMemoryUnit ());
 		assertSame (unitDef, details.getUnitDefinition ());
 		assertSame (unitType, details.getUnitType ());
 		assertSame (owningPlayer, details.getOwningPlayer ());
@@ -3059,11 +3058,8 @@ public final class TestUnitUtilsImpl
 		five.setUnitURN (5);
 		units.add (five);
 
-		final MemoryUnit three = new MemoryUnit ();
-		three.setUnitURN (3);
-		
 		final ExpandedUnitDetails xuThree = mock (ExpandedUnitDetails.class);
-		when (xuThree.getMemoryUnit ()).thenReturn (three);
+		when (xuThree.getUnitURN ()).thenReturn (3);
 		units.add (xuThree);
 
 		assertEquals ("(1, 5, 3)", utils.listUnitURNs (units));

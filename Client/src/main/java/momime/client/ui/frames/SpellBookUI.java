@@ -72,6 +72,7 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
@@ -685,12 +686,18 @@ public final class SpellBookUI extends MomClientFrameUI
 				boolean found = false;
 				final Iterator<MemoryUnit> iter = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().iterator ();
 				while ((!found) && (iter.hasNext ()))
+				{
+					final MemoryUnit thisUnit = iter.next ();
+					
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, iter.next (),
-						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-						getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+						(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, xu,
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
 						
 						found = true;
+				}
 				
 				proceed = found;
 				if (!proceed)

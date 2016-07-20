@@ -15,13 +15,13 @@ import org.junit.Test;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.DamageType;
 import momime.common.database.GenerateTestData;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -29,8 +29,6 @@ import momime.common.database.SpellHasCityEffect;
 import momime.common.database.SpellValidBorderTarget;
 import momime.common.database.TileType;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
@@ -622,6 +620,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		final DamageType damageType = new DamageType ();
 		when (db.findDamageType ("DT01", "isUnitValidTargetForSpell")).thenReturn (damageType);
 		
+		final Pick magicRealm = new Pick ();
+		
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -630,60 +630,52 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		spell.setSpellID ("SP001");
 		spell.setAttackSpellDamageTypeID ("DT01");
 
-		// Players
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
 		// Intended target
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		final MemoryUnit unit = new MemoryUnit ();
-		unit.setUnitURN (10);
-		unit.setStatus (UnitStatusID.DEAD);
-		unit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
-		unit.setCombatSide (UnitCombatSideID.ATTACKER);
 		
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (12);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getMemoryUnit ()).thenReturn (unit);
+		when (xu.getUnitURN ()).thenReturn (10);
+		when (xu.getStatus ()).thenReturn (UnitStatusID.DEAD);
+		when (xu.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
-		// Immunity
-		final DamageTypeUtils damageTypeUtils = mock (DamageTypeUtils.class);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (12);
 		
 		// Set up object to test
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
 		utils.setSpellUtils (spellUtils);
-		utils.setUnitSkillUtils (unitSkillUtils);
 		utils.setUnitUtils (unitUtils);
-		utils.setDamageTypeUtils (damageTypeUtils);
 		
 		// Dead unit
 		assertEquals (TargetSpellResult.UNIT_DEAD, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, unit, players, fow, db));
-		unit.setStatus (UnitStatusID.ALIVE);
+			(spell, null, 1, null, xu, fow, db));
+		when (xu.getStatus ()).thenReturn (UnitStatusID.ALIVE);
 	
 		// Enchanting enemy unit
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
-		unit.setOwningPlayerID (2);
+		when (xu.getOwningPlayerID ()).thenReturn (2);
 		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, unit, players, fow, db));
+			(spell, null, 1, null, xu, fow, db));
 		
 		// Healing enemy unit
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, unit, players, fow, db));
+			(spell, null, 1, null, xu, fow, db));
 		
 		// Cursing own uint
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_CURSES);
-		unit.setOwningPlayerID (1);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
 		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, unit, players, fow, db));
+			(spell, null, 1, null, xu, fow, db));
 		
 		// Spell has no effects defined
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, unit, players, fow, db));
+			(spell, null, 1, null, xu, fow, db));
 		
 		// All effects already cast on this unit
 		final UnitSpellEffect effectA = new UnitSpellEffect ();
@@ -698,90 +690,92 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		fow.getMaintainedSpell ().add (existingEffectA);
 
 		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, unit, players, fow, db));
+			(spell, null, 1, null, xu, fow, db));
 		
 		// Invalid magic realm/lifeform type
 		final UnitSpellEffect effectB = new UnitSpellEffect ();
 		effectA.setUnitSkillID ("B");
 		spell.getUnitSpellEffect ().add (effectB);
 
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit, unit.getUnitHasSkill (), fow.getMaintainedSpell (), db)).thenReturn ("X");
+		magicRealm.setPickID ("X");
 		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (false);
 		assertEquals (TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, unit, players, fow, db));
+			(spell, null, 1, null, xu, fow, db));
 		
 		// Valid target overland
 		when (spellUtils.spellCanTargetMagicRealmLifeformType (spell, "X")).thenReturn (true);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, null, 1, null, unit, players, fow, db));
+			(spell, null, 1, null, xu, fow, db));
 		
 		// Currently the unit has combat location + side, but not heading + position, so its s land unit in a naval combat and can't fight, and can't be targetted
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, xu, fow, db));
 		
 		// Combat non-attack spell
-		unit.setCombatPosition (new MapCoordinates2DEx (5, 6));
-		unit.setCombatHeading (1);
+		when (xu.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (5, 6));
+		when (xu.getCombatHeading ()).thenReturn (1);
+		when (xu.getCombatLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xu.getCombatSide ()).thenReturn (UnitCombatSideID.ATTACKER);
 		
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, xu, fow, db));
 
 		// Combat attack spell that rolls against something other than resistance
 		spell.setSpellBookSectionID (SpellBookSectionID.ATTACK_SPELLS);
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, xu, fow, db));
 
 		// Immune to the type of damage
-		when (damageTypeUtils.isUnitImmuneToDamageType (unit, damageType, null, spell.getSpellRealm (), players, fow, db)).thenReturn (true);
+		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (true);
 		assertEquals (TargetSpellResult.IMMUNE, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, fow, db));
-		when (damageTypeUtils.isUnitImmuneToDamageType (unit, damageType, null, spell.getSpellRealm (), players, fow, db)).thenReturn (false);
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, xu, fow, db));
+		when (xu.isUnitImmuneToDamageType (damageType)).thenReturn (false);
 		
 		// Combat attack spell that rolls against resistance, but its resistance is really high
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, xu, fow, db));
 		
 		// Spell gives -1 modifier, but its still not enough
 		spell.setCombatBaseDamage (1);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, null, xu, fow, db));
 		
 		// Spell gives variable modifier, and we're setting it to -2 - still not enough
 		spell.setCombatMaxDamage (5);
 		assertEquals (TargetSpellResult.TOO_HIGH_RESISTANCE, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, 2, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, 2, xu, fow, db));
 
 		// Upping it to a -3 modifier is enough
 		spell.setCombatMaxDamage (5);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 2, 3, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 2, 3, xu, fow, db));
 		
 		// Unit is in a different combat
 		assertEquals (TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 11, 1), 2, 3, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 11, 1), 2, 3, xu, fow, db));
 		
 		// Healing spell
 		spell.setSpellBookSectionID (SpellBookSectionID.SPECIAL_UNIT_SPELLS);
 		assertEquals (TargetSpellResult.UNDAMAGED, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, xu, fow, db));
 
 		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (5);
 		assertEquals (TargetSpellResult.PERMANENTLY_DAMAGED, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, xu, fow, db));
 
 		when (unitUtils.getHealableDamageTaken (unit.getUnitDamage ())).thenReturn (5);
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, xu, fow, db));
 		
 		// Dispel magic
 		spell.setSpellBookSectionID (SpellBookSectionID.DISPEL_SPELLS);
 		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, xu, fow, db));
 		
 		final MemoryMaintainedSpell spell1 = new MemoryMaintainedSpell ();
-		spell1.setUnitURN (unit.getUnitURN ());
+		spell1.setUnitURN (xu.getUnitURN ());
 		spell1.setCastingPlayerID (1);
 		fow.getMaintainedSpell ().add (spell1);
 
@@ -791,15 +785,15 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		fow.getMaintainedSpell ().add (spell2);
 
 		assertEquals (TargetSpellResult.NOTHING_TO_DISPEL, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, xu, fow, db));
 
 		final MemoryMaintainedSpell spell3 = new MemoryMaintainedSpell ();
-		spell3.setUnitURN (unit.getUnitURN ());
+		spell3.setUnitURN (xu.getUnitURN ());
 		spell3.setCastingPlayerID (2);
 		fow.getMaintainedSpell ().add (spell3);
 
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isUnitValidTargetForSpell
-			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, unit, players, fow, db));
+			(spell, new MapCoordinates3DEx (20, 10, 1), 1, null, xu, fow, db));
 	}
 	
 	/**
@@ -810,8 +804,6 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 	public final void testIsCityValidTargetForSpell () throws Exception
 	{
 		// Mock database entries
-		final CommonDatabase db = mock (CommonDatabase.class);
-
 		final Spell enchantment = new Spell ();
 		enchantment.setSpellID ("SP001");
 		enchantment.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
@@ -851,25 +843,25 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		utils.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		// Can't see location
-		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.CANNOT_SEE_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, fow, buildings));
 		
 		// No city
 		fow.getPlane ().get (0).getRow ().get (20).getCell ().set (20, FogOfWarStateID.CAN_SEE);
-		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.NO_CITY_HERE, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (20, 20, 0), map, fow, buildings));
 		
 		// Wrong owner
-		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell (spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
-		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (24, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isCityValidTargetForSpell (spells, curse, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings));
+		assertEquals (TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (24, 20, 0), map, fow, buildings));
 		
 		// No spell effects defined
-		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings));
 		
 		// Spell that creates a building
 		enchantment.setBuildingID ("BL01");
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings));
 		
 		when (memoryBuildingUtils.findBuilding (buildings, new MapCoordinates3DEx (23, 20, 0), "BL01")).thenReturn (new MemoryBuilding ());
-		assertEquals (TargetSpellResult.CITY_ALREADY_HAS_BUILDING, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.CITY_ALREADY_HAS_BUILDING, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings));
 		
 		// Spell that creates one of two spell effects
 		enchantment.setBuildingID (null);
@@ -879,7 +871,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 			effect.setCitySpellEffectID ("CSE0" + n);
 			enchantment.getSpellHasCityEffect ().add (effect);
 		}
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings));
 		
 		final MemoryMaintainedSpell effect1 = new MemoryMaintainedSpell ();
 		effect1.setCityLocation (new MapCoordinates3DEx (23, 20, 0));
@@ -887,7 +879,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect1.setCitySpellEffectID ("CSE01");
 		effect1.setCastingPlayerID (1);
 		spells.add (effect1);
-		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings));
 
 		final MemoryMaintainedSpell effect2 = new MemoryMaintainedSpell ();
 		effect2.setCityLocation (new MapCoordinates3DEx (23, 20, 0));
@@ -895,7 +887,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		effect2.setCitySpellEffectID ("CSE02");
 		effect2.setCastingPlayerID (1);
 		spells.add (effect2);
-		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings, db));
+		assertEquals (TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings));
 	}
 	
 	/**

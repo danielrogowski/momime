@@ -7,6 +7,12 @@ import momime.common.messages.MemoryUnit;
  * are both wrapped in this object to keep track of any other associated details.
  * 
  * One the attack resolution is resolved between the two units involved, this wrapper is discarded.
+ * 
+ * Note we must reference only the main unit details here and not store ExpandedUnitDetails, since this lives through
+ * a number of attack resolution steps, each of which will be attacks by different unitSkillIDs and so may affect
+ * the stats of the attacker or defender unit differently, e.g. barbarians get a thrown attack against which the
+ * defender gets a +2 bonus, followed by their regular melee hit where the +2 bonus doesn't apply.
+ * So a fresh ExpandedUnitDetails must be created as each individual step is processed.
  */
 public final class AttackResolutionUnit
 {

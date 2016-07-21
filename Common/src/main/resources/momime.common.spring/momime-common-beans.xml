@@ -260,8 +260,4 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
-	<bean id="damageTypeUtils" class="momime.common.utils.DamageTypeUtilsImpl">
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
-	</bean>
-
 </beans>

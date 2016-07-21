@@ -479,7 +479,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="spellUtils" ref="spellUtils" />
-		<property name="damageTypeUtils" ref="damageTypeUtils" />
 		<property name="damageTypeCalculations" ref="damageTypeCalculations" />
 	</bean>
 	

@@ -15,15 +15,13 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
@@ -136,11 +134,13 @@ public final class TestCombatAIImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Sample unit
-		final MemoryUnit unit = new MemoryUnit ();
-		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
-
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (skills);
+		
+		final MemoryUnit unit = new MemoryUnit ();
+
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (xu.getMemoryUnit ()).thenReturn (unit);
 		
 		// Set up object to test
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
@@ -152,26 +152,21 @@ public final class TestCombatAIImpl
 		ai.setUnitCalculations (unitCalculations);
 		
 		// Caster with MP remaining
-		unit.setManaRemaining (10);
-		assertEquals (1, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
+		when (xu.getManaRemaining ()).thenReturn (10);
+		assertEquals (1, ai.calculateUnitCombatAIOrder (xu, players, fow, db));
 		
 		// Unit with a ranged attack
-		unit.setManaRemaining (9);
+		when (xu.getManaRemaining ()).thenReturn (9);
 		when (unitCalculations.canMakeRangedAttack (unit, players, fow, db)).thenReturn (true);
-		assertEquals (2, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
+		assertEquals (2, ai.calculateUnitCombatAIOrder (xu, players, fow, db));
 		
 		// Unit without the caster skill
 		when (unitCalculations.canMakeRangedAttack (unit, players, fow, db)).thenReturn (false);
-		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		assertEquals (3, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
+		assertEquals (3, ai.calculateUnitCombatAIOrder (xu, players, fow, db));
 		
 		// Caster without MP remaining
-		when (unitSkillUtils.getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		assertEquals (4, ai.calculateUnitCombatAIOrder (unit, players, fow, db));
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)).thenReturn (true);
+		assertEquals (4, ai.calculateUnitCombatAIOrder (xu, players, fow, db));
 	}
 	
 	/**

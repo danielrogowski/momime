@@ -634,6 +634,26 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 
 	/**
+	 * @return The number of moves remaining for this unit this combat turn; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final Integer getDoubleCombatMovesLeft () throws MomException
+	{
+		return getMemoryUnit ().getDoubleCombatMovesLeft ();
+	}
+	
+	/**
+	 * @return The amount of MP this unit can still spend on casting spells in the current combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final int getManaRemaining () throws MomException
+	{
+		return getMemoryUnit ().getManaRemaining ();
+	}
+	
+	/**
 	 * @return List of damage this unit has taken
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */

@@ -1694,6 +1694,9 @@ public final class CombatUI extends MomClientFrameUI
 		}
 		else
 		{
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			
 			final CombatMapSize combatMapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 			
 			final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
@@ -1702,7 +1705,7 @@ public final class CombatUI extends MomClientFrameUI
 			// The only array we actually need to keep is the movementTypes, to show the correct icons as the mouse moves over different tiles
 			movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 			
-			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, unit,
+			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatTerrain (),
 				combatMapSize, getClient ().getPlayers (), getClient ().getClientDB ());
 			

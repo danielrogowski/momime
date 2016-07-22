@@ -19,16 +19,14 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -98,7 +96,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
-	final int calculateUnitCombatAIOrder (final MemoryUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+	final int calculateUnitCombatAIOrder (final ExpandedUnitDetails unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering calculateUnitCombatAIOrder: Unit URN + " + unit.getUnitURN ());
@@ -109,18 +107,14 @@ public final class CombatAIImpl implements CombatAI
 			result = 1;
 		
 		// Ranged attack?
-		else if (getUnitCalculations ().canMakeRangedAttack (unit, players, mem, db))
+		else if (getUnitCalculations ().canMakeRangedAttack (unit.getMemoryUnit (), players, mem, db))
 			result = 2;
 		
 		// Caster skill?
 		else
 		{
-			final UnitHasSkillMergedList skills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
-			
-			if ((getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) < 0) &&
-				(getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) < 0))
+			if ((!unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)) &&
+				(!unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)))
 				
 				result = 3;
 			else
@@ -233,7 +227,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final void moveOneUnit (final MemoryUnit tu, final MapCoordinates3DEx combatLocation,
+	final void moveOneUnit (final ExpandedUnitDetails tu, final MapCoordinates3DEx combatLocation,
 		final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -251,7 +245,7 @@ public final class CombatAIImpl implements CombatAI
 			combatMap, combatMapSize, mom.getPlayers (), mom.getServerDB ());
 		
 		// Work out which enemy we want to attack
-		final MemoryUnit bestUnit = selectBestTarget (tu, combatLocation, movementDirections, movementTypes,
+		final MemoryUnit bestUnit = selectBestTarget (tu.getMemoryUnit (), combatLocation, movementDirections, movementTypes,
 			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		if (bestUnit != null)
@@ -279,7 +273,7 @@ public final class CombatAIImpl implements CombatAI
 				}				
 			
 			// Move there
-			getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
+			getCombatProcessing ().okToMoveUnitInCombat (tu.getMemoryUnit (), moveTo, movementDirections, movementTypes, mom);
 		}
 		
 		log.trace ("Exiting moveOneUnit");
@@ -317,15 +311,20 @@ public final class CombatAIImpl implements CombatAI
 			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 		
 		// Sort the list so that we use spellcasters first, then ranged attacks, and only move close combat guys last
-		final List<MemoryUnitAndCombatAIOrder> sortedUnitsToMove = new ArrayList<MemoryUnitAndCombatAIOrder> ();
+		final List<ExpandedUnitDetailsAndCombatAIOrder> sortedUnitsToMove = new ArrayList<ExpandedUnitDetailsAndCombatAIOrder> ();
 		for (final MemoryUnit tu : unitsToMove)
-			sortedUnitsToMove.add (new MemoryUnitAndCombatAIOrder (tu, calculateUnitCombatAIOrder
-				(tu, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ())));
+		{
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			
+			sortedUnitsToMove.add (new ExpandedUnitDetailsAndCombatAIOrder (xu, calculateUnitCombatAIOrder
+				(xu, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ())));
+		}
 		
 		Collections.sort (sortedUnitsToMove);
 		
 		// Move each unit in turn
-		for (final MemoryUnitAndCombatAIOrder tu : sortedUnitsToMove)
+		for (final ExpandedUnitDetailsAndCombatAIOrder tu : sortedUnitsToMove)
 			
 			// A previous unit might have already fired the shot that wiped out the enemy and ended the
 			// combat, in which case all units would have had their CombatX, CombatY values set to -1, -1

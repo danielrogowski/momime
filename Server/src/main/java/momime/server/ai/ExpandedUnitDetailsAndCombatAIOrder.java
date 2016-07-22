@@ -1,14 +1,14 @@
 package momime.server.ai;
 
-import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Stores a link to a unit together with its combat AI ordering, so that we don't have to keep recalculating it
  */
-final class MemoryUnitAndCombatAIOrder implements Comparable<MemoryUnitAndCombatAIOrder>
+final class ExpandedUnitDetailsAndCombatAIOrder implements Comparable<ExpandedUnitDetailsAndCombatAIOrder>
 {
 	/** Unit being positioned into combat */
-	private final MemoryUnit unit;
+	private final ExpandedUnitDetails unit;
 	
 	/** Ordering that AI will use units in combat (see notes in CombatAIImpl) */
 	private final int combatAIOrder;
@@ -17,7 +17,7 @@ final class MemoryUnitAndCombatAIOrder implements Comparable<MemoryUnitAndCombat
 	 * @param aUnit Unit being positioned into combat
 	 * @param aCombatAIOrder Ordering that AI will use units in combat (see notes in CombatAIImpl)
 	 */
-	MemoryUnitAndCombatAIOrder (final MemoryUnit aUnit, final int aCombatAIOrder)
+	ExpandedUnitDetailsAndCombatAIOrder (final ExpandedUnitDetails aUnit, final int aCombatAIOrder)
 	{
 		unit = aUnit;
 		combatAIOrder = aCombatAIOrder;
@@ -27,7 +27,7 @@ final class MemoryUnitAndCombatAIOrder implements Comparable<MemoryUnitAndCombat
 	 * @return Value to sort units by 'combat AI order'
 	 */
 	@Override
-	public final int compareTo (final MemoryUnitAndCombatAIOrder o)
+	public final int compareTo (final ExpandedUnitDetailsAndCombatAIOrder o)
 	{
 		return getCombatAIOrder () - o.getCombatAIOrder ();
 	}
@@ -35,7 +35,7 @@ final class MemoryUnitAndCombatAIOrder implements Comparable<MemoryUnitAndCombat
 	/**
 	 * @return Unit being positioned into combat
 	 */
-	public final MemoryUnit getUnit ()
+	public final ExpandedUnitDetails getUnit ()
 	{
 		return unit;
 	}

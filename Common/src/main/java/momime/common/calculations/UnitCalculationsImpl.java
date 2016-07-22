@@ -44,6 +44,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -790,12 +791,13 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	final void processCell (final MapCoordinates2DEx moveFrom, final MemoryUnit unitBeingMoved, final boolean ignoresCombatTerrain,
+	final void processCell (final MapCoordinates2DEx moveFrom, final ExpandedUnitDetails unitBeingMoved, final boolean ignoresCombatTerrain,
 		final List<MapCoordinates2DEx> cellsLeftToCheck, final int [] [] doubleMovementDistances, final int [] [] movementDirections,
 		final CombatMoveType [] [] movementTypes, final boolean [] [] ourUnits, final boolean [] [] enemyUnits,
 		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
-		throws RecordNotFoundException
+		throws RecordNotFoundException, MomException
 	{
 		final int distance = doubleMovementDistances [moveFrom.getY ()] [moveFrom.getX ()];
 		final int doubleMovementRemainingToHere = unitBeingMoved.getDoubleCombatMovesLeft () - distance;
@@ -887,7 +889,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	@Override
 	public final void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
-		final CombatMoveType [] [] movementTypes, final MemoryUnit unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
+		final CombatMoveType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
 		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
 		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
@@ -910,10 +912,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			}
 		
 		// We know combatLocation from the unit being moved
-		final MapCoordinates3DEx combatLocation = (MapCoordinates3DEx) unitBeingMoved.getCombatLocation ();
+		final MapCoordinates3DEx combatLocation = unitBeingMoved.getCombatLocation ();
 		
 		// Work this out once only
-		final boolean ignoresCombatTerrain = getUnitSkillUtils ().unitIgnoresCombatTerrain (unitBeingMoved, fogOfWarMemory.getMaintainedSpell (), db);
+		final boolean ignoresCombatTerrain = unitBeingMoved.unitIgnoresCombatTerrain (db);
 		
 		// Mark locations of units on both sides (including the unit being moved)
 		for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
@@ -934,7 +936,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		// This is to prevent the situation in the original MoM where you are on Enchanced Road,
 		// hit 'Up' and the game decides to move you up-left and then right to get there.
 		final List<MapCoordinates2DEx> cellsLeftToCheck = new ArrayList<MapCoordinates2DEx> ();
-		processCell ((MapCoordinates2DEx) unitBeingMoved.getCombatPosition (), unitBeingMoved, ignoresCombatTerrain, cellsLeftToCheck,
+		processCell (unitBeingMoved.getCombatPosition (), unitBeingMoved, ignoresCombatTerrain, cellsLeftToCheck,
 			doubleMovementDistances, movementDirections, movementTypes, ourUnits, enemyUnits, combatMap, combatMapCoordinateSystem, db);
 		
 		// Keep going until there's nowhere left to check
@@ -946,7 +948,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		}
 		
 		// Now check if we can fire missile attacks at any enemies
-		if (canMakeRangedAttack (unitBeingMoved, players, fogOfWarMemory, db))
+		if (canMakeRangedAttack (unitBeingMoved.getMemoryUnit (), players, fogOfWarMemory, db))
 			for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
 				for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
 					if (enemyUnits [y] [x])

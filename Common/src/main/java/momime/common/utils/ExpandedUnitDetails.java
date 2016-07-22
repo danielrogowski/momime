@@ -239,6 +239,18 @@ public interface ExpandedUnitDetails
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	public UnitCombatSideID getCombatSide () throws MomException;
+	
+	/**
+	 * @return The number of moves remaining for this unit this combat turn; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public Integer getDoubleCombatMovesLeft () throws MomException;
+	
+	/**
+	 * @return The amount of MP this unit can still spend on casting spells in the current combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public int getManaRemaining () throws MomException;
 
 	/**
 	 * @return List of damage this unit has taken

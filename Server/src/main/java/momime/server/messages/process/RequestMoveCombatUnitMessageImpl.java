@@ -3,6 +3,15 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
@@ -12,19 +21,11 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CombatProcessing;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Client sends this to server to request a unit be moved in combat
@@ -94,10 +95,13 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 			final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(tu.getCombatLocation ().getZ ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
 
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			
 			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 			
 			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
-				tu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
+				xu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
 			
 			// Can we reach where we're trying to go?
 			if (movementTypes [getMoveTo ().getY ()] [getMoveTo ().getX ()] == CombatMoveType.CANNOT_MOVE)

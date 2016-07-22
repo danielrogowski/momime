@@ -20,6 +20,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.PlayerPick;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Common calculations pertaining to units
@@ -261,7 +262,7 @@ public interface UnitCalculations
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	public void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
-		final CombatMoveType [] [] movementTypes, final MemoryUnit unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
+		final CombatMoveType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
 		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
 		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;

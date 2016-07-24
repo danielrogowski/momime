@@ -90,12 +90,15 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		
-		if (error == null)
+		final ExpandedUnitDetails xu;
+		if (error != null)
+			xu = null;
+		else
 		{
 			final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(tu.getCombatLocation ().getZ ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
 
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+			xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
@@ -120,7 +123,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		else
 		{
 			// Proceed with move
-			getCombatProcessing ().okToMoveUnitInCombat (tu, (MapCoordinates2DEx) getMoveTo (), movementDirections, movementTypes, mom);
+			getCombatProcessing ().okToMoveUnitInCombat (xu, (MapCoordinates2DEx) getMoveTo (), movementDirections, movementTypes, mom);
 		}
 		
 		log.trace ("Exiting process");

@@ -5,6 +5,12 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.database.FogOfWarSetting;
@@ -15,14 +21,9 @@ import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.StartCombatMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Routines dealing with initiating and progressing combats, as well as moving and attacking
@@ -191,7 +192,7 @@ public interface CombatProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void okToMoveUnitInCombat (final MemoryUnit tu, final MapCoordinates2DEx moveTo,
+	public void okToMoveUnitInCombat (final ExpandedUnitDetails tu, final MapCoordinates2DEx moveTo,
 		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes, final MomSessionVariables mom)
 		throws MomException, PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException;
 }

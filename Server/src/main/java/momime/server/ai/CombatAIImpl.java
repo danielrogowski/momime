@@ -273,7 +273,7 @@ public final class CombatAIImpl implements CombatAI
 				}				
 			
 			// Move there
-			getCombatProcessing ().okToMoveUnitInCombat (tu.getMemoryUnit (), moveTo, movementDirections, movementTypes, mom);
+			getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
 		}
 		
 		log.trace ("Exiting moveOneUnit");

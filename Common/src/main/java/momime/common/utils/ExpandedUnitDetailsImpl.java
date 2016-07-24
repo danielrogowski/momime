@@ -614,6 +614,16 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 
 	/**
+	 * @param coords Location within the combat map where this unit is standing; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public void setCombatPosition (final MapCoordinates2DEx coords) throws MomException
+	{
+		getMemoryUnit ().setCombatPosition (coords);
+	}
+	
+	/**
 	 * @return Direction within the combat map that the unit is facing null if the unit isn't currently in combat
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
@@ -641,6 +651,16 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	public final Integer getDoubleCombatMovesLeft () throws MomException
 	{
 		return getMemoryUnit ().getDoubleCombatMovesLeft ();
+	}
+	
+	/**
+	 * @param moves The number of moves remaining for this unit this combat turn; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final void setDoubleCombatMovesLeft (final Integer moves) throws MomException
+	{
+		getMemoryUnit ().setDoubleCombatMovesLeft (moves);
 	}
 	
 	/**

@@ -229,6 +229,12 @@ public interface ExpandedUnitDetails
 	public MapCoordinates2DEx getCombatPosition () throws MomException;
 
 	/**
+	 * @param coords Location within the combat map where this unit is standing; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setCombatPosition (final MapCoordinates2DEx coords) throws MomException;
+	
+	/**
 	 * @return Direction within the combat map that the unit is facing; null if the unit isn't currently in combat
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
@@ -245,6 +251,12 @@ public interface ExpandedUnitDetails
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	public Integer getDoubleCombatMovesLeft () throws MomException;
+
+	/**
+	 * @param moves The number of moves remaining for this unit this combat turn; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setDoubleCombatMovesLeft (final Integer moves) throws MomException;
 	
 	/**
 	 * @return The amount of MP this unit can still spend on casting spells in the current combat

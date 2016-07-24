@@ -47,6 +47,7 @@ import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -1001,14 +1002,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void okToMoveUnitInCombat (final MemoryUnit tu, final MapCoordinates2DEx moveTo,
+	public final void okToMoveUnitInCombat (final ExpandedUnitDetails tu, final MapCoordinates2DEx moveTo,
 		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes, final MomSessionVariables mom)
 		throws MomException, PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering okToMoveUnitInCombat: Unit URN " + tu.getUnitURN ());
 		
 		// Find who the two players are
-		final MapCoordinates3DEx combatLocation = (MapCoordinates3DEx) tu.getCombatLocation ();
+		final MapCoordinates3DEx combatLocation = tu.getCombatLocation ();
 		final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
 		
@@ -1050,7 +1051,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				directions.remove (directions.size () - 1);
 
 			// Work this out once only
-			final boolean ignoresCombatTerrain = getUnitSkillUtils ().unitIgnoresCombatTerrain (tu, mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+			final boolean ignoresCombatTerrain = tu.unitIgnoresCombatTerrain (mom.getServerDB ());
 			
 			// Send direction messages to the client, reducing the unit's movement with each step
 			// (so that's why we do this even if both players are AI)
@@ -1067,7 +1068,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				
 				// How much movement did it take us to walk into this cell?
 				// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
-				reduceMovementRemaining (tu, ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+				reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 					(combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
 				msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
 				
@@ -1082,9 +1083,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// If the unit it making an attack, that takes half its total movement
 			if (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE)
-				reduceMovementRemaining (tu, getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));				
+				reduceMovementRemaining (tu.getMemoryUnit (), tu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 			
 			// Actually put the units in that location on the server
 			tu.setCombatPosition (movePath);
@@ -1109,14 +1108,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 		switch (movementTypes [moveTo.getY ()] [moveTo.getX ()])
 		{
 			case MELEE:
-				getDamageProcessor ().resolveAttack (tu, defenders, attackingPlayer, defendingPlayer,
+				getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
 					movementDirections [moveTo.getY ()] [moveTo.getX ()],
 					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 				break;
 				
 			case RANGED:
-				getDamageProcessor ().resolveAttack (tu, defenders, attackingPlayer, defendingPlayer,
-					getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), (MapCoordinates2DEx) tu.getCombatPosition (), moveTo),
+				getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
+					getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), tu.getCombatPosition (), moveTo),
 					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 				break;
 				

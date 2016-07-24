@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtilsImpl;
@@ -51,6 +53,7 @@ import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
@@ -3422,12 +3425,34 @@ public final class TestCombatProcessingImpl
 		
 		// True unit
 		final MemoryUnit tu = new MemoryUnit ();
-		tu.setCombatLocation (combatLocation);
 		tu.setDoubleCombatMovesLeft (6);
-		tu.setUnitURN (101);
 
 		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx (1, 7);
 		tu.setCombatPosition (tuMoveFrom);
+		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getMemoryUnit ()).thenReturn (tu);
+		when (xu.getUnitURN ()).thenReturn (101);
+		when (xu.getCombatLocation ()).thenReturn (combatLocation);
+		
+		// We need combatPosition to be read/written a few times and the updates from the getter to reflect in the setter.
+		// So this is a bit awkward to set up with a mock.  Similarly with doubleCombatMovesLeft.
+		when (xu.getCombatPosition ()).thenAnswer ((i) -> (MapCoordinates2DEx) tu.getCombatPosition ());
+		when (xu.getDoubleCombatMovesLeft ()).thenAnswer ((i) -> tu.getDoubleCombatMovesLeft ());
+		
+		final ArgumentCaptor<MapCoordinates2DEx> capturePosition = ArgumentCaptor.forClass (MapCoordinates2DEx.class);
+		doAnswer ((i) ->
+		{
+			tu.setCombatPosition (capturePosition.getValue ());
+			return null;
+		}).when (xu).setCombatPosition (capturePosition.capture ());
+
+		final ArgumentCaptor<Integer> captureMovesLeft = ArgumentCaptor.forClass (Integer.class);
+		doAnswer ((i) ->
+		{
+			tu.setDoubleCombatMovesLeft (captureMovesLeft.getValue ());
+			return null;
+		}).when (xu).setDoubleCombatMovesLeft (captureMovesLeft.capture ());
 		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();
@@ -3435,16 +3460,14 @@ public final class TestCombatProcessingImpl
 		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		attackingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
-		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
+		attackingPlayerMemoryOfUnit.setCombatPosition (new MapCoordinates2DEx (1, 7));
 
 		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
 		defendingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
 		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		defendingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
-		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
+		defendingPlayerMemoryOfUnit.setCombatPosition (new MapCoordinates2DEx (1, 7));
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (101, attackingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A")).thenReturn (attackingPlayerMemoryOfUnit);
@@ -3476,7 +3499,7 @@ public final class TestCombatProcessingImpl
 		
 		// Non-flying unit
 		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.unitIgnoresCombatTerrain (tu, trueMap.getMaintainedSpell (), db)).thenReturn (false);
+		when (xu.unitIgnoresCombatTerrain (db)).thenReturn (false);
 
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
@@ -3487,7 +3510,7 @@ public final class TestCombatProcessingImpl
 		proc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		proc.okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
+		proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom);
 		
 		// Check movement path messages
 		assertEquals (2, msgs.getMessages ().size ());
@@ -3587,12 +3610,34 @@ public final class TestCombatProcessingImpl
 		
 		// True unit
 		final MemoryUnit tu = new MemoryUnit ();
-		tu.setCombatLocation (combatLocation);
 		tu.setDoubleCombatMovesLeft (6);
-		tu.setUnitURN (101);
 
 		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx (1, 7);
 		tu.setCombatPosition (tuMoveFrom);
+		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getMemoryUnit ()).thenReturn (tu);
+		when (xu.getUnitURN ()).thenReturn (101);
+		when (xu.getCombatLocation ()).thenReturn (combatLocation);
+		
+		// We need combatPosition to be read/written a few times and the updates from the getter to reflect in the setter.
+		// So this is a bit awkward to set up with a mock.  Similarly with doubleCombatMovesLeft.
+		when (xu.getCombatPosition ()).thenAnswer ((i) -> (MapCoordinates2DEx) tu.getCombatPosition ());
+		when (xu.getDoubleCombatMovesLeft ()).thenAnswer ((i) -> tu.getDoubleCombatMovesLeft ());
+		
+		final ArgumentCaptor<MapCoordinates2DEx> capturePosition = ArgumentCaptor.forClass (MapCoordinates2DEx.class);
+		doAnswer ((i) ->
+		{
+			tu.setCombatPosition (capturePosition.getValue ());
+			return null;
+		}).when (xu).setCombatPosition (capturePosition.capture ());
+
+		final ArgumentCaptor<Integer> captureMovesLeft = ArgumentCaptor.forClass (Integer.class);
+		doAnswer ((i) ->
+		{
+			tu.setDoubleCombatMovesLeft (captureMovesLeft.getValue ());
+			return null;
+		}).when (xu).setDoubleCombatMovesLeft (captureMovesLeft.capture ());
 		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();
@@ -3600,16 +3645,14 @@ public final class TestCombatProcessingImpl
 		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		attackingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
-		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
+		attackingPlayerMemoryOfUnit.setCombatPosition (new MapCoordinates2DEx (1, 7));
 
 		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
 		defendingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
 		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		defendingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
-		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
+		defendingPlayerMemoryOfUnit.setCombatPosition (new MapCoordinates2DEx (1, 7));
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (101, attackingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A")).thenReturn (attackingPlayerMemoryOfUnit);
@@ -3654,7 +3697,7 @@ public final class TestCombatProcessingImpl
 		proc.setDamageProcessor (damageProcessor);
 		
 		// Run method
-		proc.okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
+		proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom);
 		
 		// Check there were no movement path messages
 		assertEquals (0, msgs.getMessages ().size ());
@@ -3745,19 +3788,37 @@ public final class TestCombatProcessingImpl
 		
 		// True unit
 		final MemoryUnit tu = new MemoryUnit ();
-		tu.setCombatLocation (combatLocation);
 		tu.setDoubleCombatMovesLeft (6);
-		tu.setUnitURN (101);
-		tu.setUnitID ("UN001");
 
 		final MapCoordinates2DEx tuMoveFrom = new MapCoordinates2DEx (1, 7);
 		tu.setCombatPosition (tuMoveFrom);
 		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getMemoryUnit ()).thenReturn (tu);
+		when (xu.getUnitURN ()).thenReturn (101);
+		when (xu.getCombatLocation ()).thenReturn (combatLocation);
+		
+		// We need combatPosition to be read/written a few times and the updates from the getter to reflect in the setter.
+		// So this is a bit awkward to set up with a mock.  Similarly with doubleCombatMovesLeft.
+		when (xu.getCombatPosition ()).thenAnswer ((i) -> (MapCoordinates2DEx) tu.getCombatPosition ());
+		when (xu.getDoubleCombatMovesLeft ()).thenAnswer ((i) -> tu.getDoubleCombatMovesLeft ());
+		
+		final ArgumentCaptor<MapCoordinates2DEx> capturePosition = ArgumentCaptor.forClass (MapCoordinates2DEx.class);
+		doAnswer ((i) ->
+		{
+			tu.setCombatPosition (capturePosition.getValue ());
+			return null;
+		}).when (xu).setCombatPosition (capturePosition.capture ());
+
+		final ArgumentCaptor<Integer> captureMovesLeft = ArgumentCaptor.forClass (Integer.class);
+		doAnswer ((i) ->
+		{
+			tu.setDoubleCombatMovesLeft (captureMovesLeft.getValue ());
+			return null;
+		}).when (xu).setDoubleCombatMovesLeft (captureMovesLeft.capture ());
+		
 		// Unit speed
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (tu, tu.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			null, null, players, trueMap, db)).thenReturn (3);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (3);
 		
 		// Players' memories of unit
 		final MemoryUnit attackingPlayerMemoryOfUnit = new MemoryUnit ();
@@ -3765,16 +3826,14 @@ public final class TestCombatProcessingImpl
 		attackingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		attackingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx attackingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
-		attackingPlayerMemoryOfUnit.setCombatPosition (attackingPlayerMemoryOfUnitMoveFrom);
+		attackingPlayerMemoryOfUnit.setCombatPosition (new MapCoordinates2DEx (1, 7));
 
 		final MemoryUnit defendingPlayerMemoryOfUnit = new MemoryUnit ();
 		defendingPlayerMemoryOfUnit.setCombatLocation (combatLocation);
 		defendingPlayerMemoryOfUnit.setDoubleCombatMovesLeft (6);
 		defendingPlayerMemoryOfUnit.setUnitURN (101);
 
-		final MapCoordinates2DEx defendingPlayerMemoryOfUnitMoveFrom = new MapCoordinates2DEx (1, 7);
-		defendingPlayerMemoryOfUnit.setCombatPosition (defendingPlayerMemoryOfUnitMoveFrom);
+		defendingPlayerMemoryOfUnit.setCombatPosition (new MapCoordinates2DEx (1, 7));
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findUnitURN (101, attackingPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-A")).thenReturn (attackingPlayerMemoryOfUnit);
@@ -3816,11 +3875,10 @@ public final class TestCombatProcessingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setUnitUtils (unitUtils);
-		proc.setUnitSkillUtils (unitSkillUtils);
 		proc.setDamageProcessor (damageProcessor);
 		
 		// Run method
-		proc.okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
+		proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom);
 		
 		// Check movement path messages
 		assertEquals (1, msgs.getMessages ().size ());

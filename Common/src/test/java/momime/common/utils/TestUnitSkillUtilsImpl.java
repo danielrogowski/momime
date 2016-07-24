@@ -1,8 +1,6 @@
 package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -31,7 +29,6 @@ import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 
 /**
@@ -432,60 +429,5 @@ public final class TestUnitSkillUtilsImpl
 		// Remove 2nd enemy again, just to prove the mocks are working correctly and treating the skill lists uniquely
 		enemies.remove (enemy2);
 		assertEquals (0, utils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US001", enemies, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db));
-	}
-	
-	/**
-	 * Tests the unitIgnoresCombatTerrain method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testUnitIgnoresCombatTerrain () throws Exception
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final UnitSkill skillA = new UnitSkill ();
-		when (db.findUnitSkill ("A", "unitIgnoresCombatTerrain")).thenReturn (skillA);
-
-		final UnitSkill skillB = new UnitSkill ();
-		skillB.setIgnoreCombatTerrain (false);
-		when (db.findUnitSkill ("B", "unitIgnoresCombatTerrain")).thenReturn (skillB);
-
-		final UnitSkill skillC = new UnitSkill ();
-		skillC.setIgnoreCombatTerrain (true);
-		when (db.findUnitSkill ("C", "unitIgnoresCombatTerrain")).thenReturn (skillC);
-		
-		// Unit to test with
-		final MemoryUnit unit = new MemoryUnit ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Skill list
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		
-		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
-		
-		final UnitSkillAndValue hasSkillA = new UnitSkillAndValue ();
-		hasSkillA.setUnitSkillID ("A");
-		skills.add (hasSkillA);
-		
-		final UnitSkillAndValue hasSkillB = new UnitSkillAndValue ();
-		hasSkillB.setUnitSkillID ("B");
-		skills.add (hasSkillB);
-		
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit, db)).thenReturn (skills);
-
-		// Set up object to test
-		final UnitSkillUtilsImpl utils = new UnitSkillUtilsImpl ();
-		utils.setUnitUtils (unitUtils);
-		
-		// Try with no matching skills
-		assertFalse (utils.unitIgnoresCombatTerrain (unit, spells, db));
-		
-		// Now add one
-		final UnitSkillAndValue hasSkillC = new UnitSkillAndValue ();
-		hasSkillC.setUnitSkillID ("C");
-		skills.add (hasSkillC);
-		
-		assertTrue (utils.unitIgnoresCombatTerrain (unit, spells, db));
 	}
 }

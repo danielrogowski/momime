@@ -2,6 +2,7 @@ package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -11,12 +12,14 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 
 /**
@@ -24,6 +27,136 @@ import momime.common.messages.AvailableUnit;
  */
 public final class TestExpandedUnitDetailsImpl
 {
+	/**
+	 * Tests the getModifiedSkillValue method in the normal situation where we have some components to total up
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetModifiedSkillValue_Normal () throws Exception
+	{
+		// Set up skill components with various components and positive/negative values 
+		final Map<UnitSkillComponent, Integer> components = new HashMap<UnitSkillComponent, Integer> ();
+		components.put (UnitSkillComponent.BASIC, 5);
+		components.put (UnitSkillComponent.EXPERIENCE, 3);
+		components.put (UnitSkillComponent.SPELL_EFFECTS, 2);
+		components.put (UnitSkillComponent.COMBAT_AREA_EFFECTS, -1);
+
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		modifiedSkillValues.put ("US001", components);
+
+		// Set up test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		
+		// Run method
+		assertEquals (9, xu.getModifiedSkillValue ("US001").intValue ());
+	}
+
+	/**
+	 * Tests the getModifiedSkillValue method where one of the breakdown components has no value
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testGetModifiedSkillValue_NullComponent () throws Exception
+	{
+		// Include a component with a null value 
+		final Map<UnitSkillComponent, Integer> components = new HashMap<UnitSkillComponent, Integer> ();
+		components.put (UnitSkillComponent.BASIC, 5);
+		components.put (UnitSkillComponent.SPELL_EFFECTS, null);
+
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		modifiedSkillValues.put ("US001", components);
+
+		// Set up test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		
+		// Run method
+		xu.getModifiedSkillValue ("US001");
+	}
+
+	/**
+	 * Tests the getModifiedSkillValue method asking for a skill that we don't even have
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testGetModifiedSkillValue_DontHaveSkill () throws Exception
+	{
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+
+		// Set up test unit
+		final AvailableUnit unit = new AvailableUnit ();
+
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		
+		// Run method
+		xu.getModifiedSkillValue ("US001");
+	}
+	
+	/**
+	 * Tests the getModifiedSkillValue method on a valueless skill, e.g. First Strike
+	 * Also checks the special case of +to hit/block when we have no modifiers
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetModifiedSkillValue_ValuelessSkill () throws Exception
+	{
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		modifiedSkillValues.put ("US001", null);
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, null);
+
+		// Set up test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		
+		// Run method
+		assertNull (xu.getModifiedSkillValue ("US001"));
+		assertEquals (0, xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT).intValue ());
+	}
+	
+	/**
+	 * Tests the filterModifiedSkillValue method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testFilterModifiedSkillValue_Normal () throws Exception
+	{
+		// Set up skill components with various components and positive/negative values 
+		final Map<UnitSkillComponent, Integer> components = new HashMap<UnitSkillComponent, Integer> ();
+		components.put (UnitSkillComponent.BASIC, 5);
+		components.put (UnitSkillComponent.EXPERIENCE, 3);
+		components.put (UnitSkillComponent.SPELL_EFFECTS, 2);
+		components.put (UnitSkillComponent.COMBAT_AREA_EFFECTS, -1);
+
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		modifiedSkillValues.put ("US001", components);
+
+		// Set up test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		
+		// Run method
+		assertEquals (9, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH).intValue ());
+		assertEquals (10, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE).intValue ());
+		assertEquals (-1, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.ALL, UnitSkillPositiveNegative.NEGATIVE).intValue ());
+
+		assertEquals (3, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.BOTH).intValue ());
+		assertEquals (3, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.POSITIVE).intValue ());
+		assertEquals (0, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.EXPERIENCE, UnitSkillPositiveNegative.NEGATIVE).intValue ());
+
+		assertEquals (-1, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.BOTH).intValue ());
+		assertEquals (0, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.POSITIVE).intValue ());
+		assertEquals (-1, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.COMBAT_AREA_EFFECTS, UnitSkillPositiveNegative.NEGATIVE).intValue ());
+
+		assertEquals (0, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.HERO_ITEMS, UnitSkillPositiveNegative.BOTH).intValue ());
+		assertEquals (0, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.HERO_ITEMS, UnitSkillPositiveNegative.POSITIVE).intValue ());
+		assertEquals (0, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.HERO_ITEMS, UnitSkillPositiveNegative.NEGATIVE).intValue ());
+	}
+	
 	/**
 	 * Tests the getFullFigureCount method
 	 */

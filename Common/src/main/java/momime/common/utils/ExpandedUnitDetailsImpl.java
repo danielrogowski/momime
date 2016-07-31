@@ -25,6 +25,7 @@ import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
@@ -287,13 +288,29 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	 * 
 	 * @param unitSkillID Unit skill ID to check
 	 * @return Modified value of this skill, or null for valueless skills such as movement skills
-	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasModifiedSkill (); also if it has any null components
 	 */
 	@Override
 	public final Integer getModifiedSkillValue (final String unitSkillID) throws MomException
 	{
+		return filterModifiedSkillValue (unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH);
+	}
+
+	/**
+	 * Filters only specific breakdown components, for displaying attributes in the unit info panel where we want to colour the skill icons
+	 * differently according to their component, and shading out negated skill points.
+	 * 
+	 * @param unitSkillID Unit skill ID to check
+	 * @param component Which component(s) to include in the total
+	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
+	 * @return Portion of the modified value of this skill that matches the requested filters; 0 for valued skills where no filters matched; null for valueless skills such as movement skills
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasModifiedSkill (); also if it has any null components
+	 */
+	@Override
+	public final Integer filterModifiedSkillValue (final String unitSkillID, final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative) throws MomException
+	{
 		if (!hasModifiedSkill (unitSkillID))
-			throw new MomException ("getModifiedSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the unit does not have this skill");
+			throw new MomException ("filterModifiedSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the unit does not have this skill");
 
 		final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (unitSkillID);
 		Integer total;
@@ -308,14 +325,18 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 			total = 0;
 			for (final Entry<UnitSkillComponent, Integer> c : components.entrySet ())
 				if (c.getValue () == null)
-					throw new MomException ("getModifiedSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the " + c.getKey () + " component is null");
-				else
+					throw new MomException ("filterModifiedSkillValue called on " + getUnitID () + " skill ID " + unitSkillID + " but the " + c.getKey () + " component is null");
+				else if (((component == UnitSkillComponent.ALL) || (component  == c.getKey ())) &&
+					((positiveNegative == UnitSkillPositiveNegative.BOTH) ||
+					((positiveNegative == UnitSkillPositiveNegative.POSITIVE) && (c.getValue () > 0)) ||
+					((positiveNegative == UnitSkillPositiveNegative.NEGATIVE) && (c.getValue () < 0))))
+					
 					total = total + c.getValue ();
 		}
 		
 		return total;
 	}
-
+	
 	/**
 	 * @return Set of all modified skills this unit has
 	 */
@@ -661,6 +682,16 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	public final void setDoubleCombatMovesLeft (final Integer moves) throws MomException
 	{
 		getMemoryUnit ().setDoubleCombatMovesLeft (moves);
+	}
+	
+	/**
+	 * @return The number of ranged shots this unit can still fire in the current combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final int getAmmoRemaining () throws MomException
+	{
+		return getMemoryUnit ().getAmmoRemaining ();
 	}
 	
 	/**

@@ -16,6 +16,8 @@ import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
@@ -119,10 +121,22 @@ public interface ExpandedUnitDetails
 	 * 
 	 * @param unitSkillID Unit skill ID to check
 	 * @return Modified value of this skill, or null for valueless skills such as movement skills
-	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill (); also if it has any null components
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasModifiedSkill (); also if it has any null components
 	 */
 	public Integer getModifiedSkillValue (final String unitSkillID) throws MomException;
 
+	/**
+	 * Filters only specific breakdown components, for displaying attributes in the unit info panel where we want to colour the skill icons
+	 * differently according to their component, and shading out negated skill points.
+	 * 
+	 * @param unitSkillID Unit skill ID to check
+	 * @param component Which component(s) to include in the total
+	 * @param positiveNegative Whether to only include positive effects, only negative effects, or both
+	 * @return Portion of the modified value of this skill that matches the requested filters; 0 for valued skills where no filters matched; null for valueless skills such as movement skills
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasModifiedSkill (); also if it has any null components
+	 */
+	public Integer filterModifiedSkillValue (final String unitSkillID, final UnitSkillComponent component, final UnitSkillPositiveNegative positiveNegative) throws MomException;
+	
 	/**
 	 * @return Set of all modified skills this unit has
 	 */
@@ -258,6 +272,12 @@ public interface ExpandedUnitDetails
 	 */
 	public void setDoubleCombatMovesLeft (final Integer moves) throws MomException;
 	
+	/**
+	 * @return The number of ranged shots this unit can still fire in the current combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public int getAmmoRemaining () throws MomException;
+
 	/**
 	 * @return The amount of MP this unit can still spend on casting spells in the current combat
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 

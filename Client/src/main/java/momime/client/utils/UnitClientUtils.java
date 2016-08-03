@@ -15,6 +15,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Client side only helper methods for dealing with units
@@ -202,5 +203,5 @@ public interface UnitClientUtils
 	 * @return Combined image showing icons for this unit attribute, with appropriate background colours; or null if the unit doesn't have this skill or it is value-less
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	public BufferedImage generateAttributeImage (final AvailableUnit unit, final String unitSkillID) throws IOException;
+	public BufferedImage generateAttributeImage (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException;
 }

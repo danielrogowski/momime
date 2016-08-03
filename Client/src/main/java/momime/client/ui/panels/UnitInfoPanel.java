@@ -740,7 +740,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			{
 				// Display as unit attribute
 				unitAttributesItems.addElement (new UnitAttributeWithBreakdownImage (thisSkill.getUnitSkillID (),
-					getUnitClientUtils ().generateAttributeImage (getUnit (), thisSkill.getUnitSkillID ())));
+					getUnitClientUtils ().generateAttributeImage (xu, thisSkill.getUnitSkillID ())));
 			}
 			else
 			{

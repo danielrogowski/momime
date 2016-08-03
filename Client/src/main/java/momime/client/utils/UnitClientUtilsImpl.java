@@ -50,14 +50,13 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PendingMovementUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -94,9 +93,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -757,24 +753,15 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @throws IOException If there is a problem loading any of the images
 	 */
 	@Override
-	public final BufferedImage generateAttributeImage (final AvailableUnit unit, final String unitSkillID) throws IOException
+	public final BufferedImage generateAttributeImage (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException
 	{
 		log.trace ("Entering generateAttributeImage: " + unit.getUnitID () + ", " + unitSkillID);
 
 		// If the unit doesn't even have the skill, then just return a null image.
 		// Also if it is a value-less skill like a movement skill then there's nothing to draw.
-		final List<UnitSkillAndValue> mergedSkills;
-		if (unit instanceof MemoryUnit)
-			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) unit, getClient ().getClientDB ());
-		else
-			mergedSkills = unit.getUnitHasSkill ();
-		
 		// If they DID have the skill but something is zeroing it out, then DO display the greyed out icons
 		final BufferedImage image;
-		if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE, null, null,
-			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) <= 0)
-			
+		if ((!unit.hasModifiedSkill (unitSkillID)) || (unit.getModifiedSkillValue (unitSkillID) == null))
 			image = null;
 		else
 		{
@@ -790,17 +777,15 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				basicComponentBackgroundImage.getHeight () + 3, BufferedImage.TYPE_INT_ARGB);
 					
 			// Work out the icon to use to display this type of unit attribute
-			final BufferedImage attributeImage = getUnitSkillComponentBreakdownIcon (unit, unitSkillID);
+			final BufferedImage attributeImage = getUnitSkillComponentBreakdownIcon (unit.getUnit (), unitSkillID);
 
 			// Do we need to draw any icons faded, due to negative spells (e.g. Black Prayer) or losing hitpoints?
 			final int attributeValueIncludingNegatives;
 			if (unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
 				attributeValueIncludingNegatives = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure
-					(unit, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					(unit.getUnit (), getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			else
-				attributeValueIncludingNegatives = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, null,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				attributeValueIncludingNegatives = unit.getModifiedSkillValue (unitSkillID);
 			
 			final Graphics2D g = image.createGraphics ();
 			try
@@ -813,9 +798,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 						// Work out the total value (without negative effects), and our actual current value (after negative effects),
 						// so we can show stats knocked off by e.g. Black Prayer as faded.
 						// Simiarly we fade icons for hit points/hearts lost due to damage we've taken.
-						final int totalValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitSkillID, null, attrComponent,
-							unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE,
-							null, null, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+						final int totalValue = unit.filterModifiedSkillValue (unitSkillID, attrComponent,
+							unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS) ? UnitSkillPositiveNegative.BOTH : UnitSkillPositiveNegative.POSITIVE);
 						
 						if (totalValue > 0)
 						{
@@ -949,22 +933,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		unitUtils = util;
 	}
 
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param util Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils util)
-	{
-		unitSkillUtils = util;
-	}
-	
 	/**
 	 * @return Unit calculations
 	 */

@@ -360,7 +360,7 @@ public final class TestUnitInfoPanel
 			unitAttrGfx.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
 			when (gfx.findUnitSkill (eq (attrID), anyString ())).thenReturn (unitAttrGfx);
 			
-			when (unitClientUtils.generateAttributeImage (unit, attrID)).thenReturn (ClientTestData.createSolidImage (289, 15, unitAttrNo * 35));
+			when (unitClientUtils.generateAttributeImage (xu, attrID)).thenReturn (ClientTestData.createSolidImage (289, 15, unitAttrNo * 35));
 			
 			// Unit stat
 			final UnitSkillAndValue attr = new UnitSkillAndValue ();

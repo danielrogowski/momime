@@ -485,7 +485,7 @@ public final class TestDamageCalculatorImpl
 		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
 		unitSkill.setDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_FIGURE_COMBINED);
-		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "attackFromUnitSkill")).thenReturn (unitSkill);
 
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -538,19 +538,21 @@ public final class TestDamageCalculatorImpl
 		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq ("US001"), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class),
+			eq (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
 		
-		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
 		when (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)).thenReturn (true);
 
-		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
 
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
-		when (damageTypeCalculations.determineSkillDamageType (attacker, "US001", fow.getMaintainedSpell (), db)).thenReturn (damageType);
+		when (damageTypeCalculations.determineSkillDamageType (attacker,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, fow.getMaintainedSpell (), db)).thenReturn (damageType);
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -560,7 +562,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US001", players, fow, db);
+		final AttackDamage dmg = calc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players, fow, db);
 		
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());
@@ -578,7 +580,7 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
 	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
-	    assertEquals ("US001", data.getAttackSkillID ());
+	    assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackSkillID ());
 	    assertNull (data.getAttackSpellID ());
 	    assertEquals (DamageResolutionTypeID.ILLUSIONARY, data.getDamageResolutionTypeID ());
 	    assertEquals (4, data.getAttackerFigures ().intValue ());

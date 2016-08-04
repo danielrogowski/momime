@@ -63,7 +63,7 @@ public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEff
 		// If any open unit info screen are affected by this CAE, then redraw their attributes
 		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
 			if (getUnitUtils ().doesCombatAreaEffectApplyToUnit (unitInfo.getUnit (), cae, getClient ().getClientDB ()))
-				unitInfo.getUnitInfoPanel ().getPanel ().repaint ();
+				unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 		
 		log.trace ("Exiting start");
 	}

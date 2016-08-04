@@ -96,7 +96,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 			{
 				final UnitInfoUI ui = getClient ().getUnitInfos ().get (spell.getUnitURN ());
 				if (ui != null)
-					ui.getUnitInfoPanel ().showUnit (ui.getUnit ());
+					ui.getUnitInfoPanel ().refreshUnitDetails ();
 				
 				// Also need to update the upkeep shown on the army list?
 				if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())

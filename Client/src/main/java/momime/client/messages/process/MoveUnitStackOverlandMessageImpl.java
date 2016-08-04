@@ -267,7 +267,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		// every other unit in the cell it moved from or the cell it moved to all need updating (maybe we could make this more
 		// clever and only update units in either the moveFrom or moveTo locations, but just leave it safe / simple for now)
 		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
-			unitInfo.getUnitInfoPanel ().showUnit (unitInfo.getUnit ());
+			unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 		
 		log.trace ("Exiting finish");
 	}

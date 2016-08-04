@@ -338,7 +338,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 			{
 				final UnitInfoUI ui = getClient ().getUnitInfos ().get (getMaintainedSpell ().getUnitURN ());
 				if (ui != null)
-					ui.getUnitInfoPanel ().showUnit (ui.getUnit ());
+					ui.getUnitInfoPanel ().refreshUnitDetails ();
 				
 				// Also need to update the upkeep shown on the army list?
 				if (getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ())

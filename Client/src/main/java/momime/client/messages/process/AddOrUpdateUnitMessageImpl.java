@@ -92,7 +92,7 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 			// Update any unit info screen that may be open
 			UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (oldUnit.getUnitURN ());
 			if (unitInfo != null)
-				unitInfo.getUnitInfoPanel ().showUnit (oldUnit);
+				unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 			
 			// If its our unit, and it expended all its combat movement, then trigger next unit to move
 			if (selectNextCombatUnit)

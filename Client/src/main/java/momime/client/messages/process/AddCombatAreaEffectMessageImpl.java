@@ -144,7 +144,7 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 		// If any open unit info screen are affected by this CAE, then redraw their attributes
 		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
 			if (getUnitUtils ().doesCombatAreaEffectApplyToUnit (unitInfo.getUnit (), getMemoryCombatAreaEffect (), getClient ().getClientDB ()))
-				unitInfo.getUnitInfoPanel ().getPanel ().repaint ();
+				unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 
 		log.trace ("Exiting finish");
 	}

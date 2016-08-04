@@ -691,7 +691,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		upkeepLabel.setVisible (upkeepImage != null);
 		
 		// Add each skill
-		getUnitSkillListCellRenderer ().setUnit (getUnit ().getUnit ());
+		getUnitSkillListCellRenderer ().setUnit (getUnit ());
 		for (final String unitSkillID : getUnit ().listModifiedSkillIDs ().stream ().sorted ().collect (Collectors.toList ()))
 		{
 			// Which list do we display it in?

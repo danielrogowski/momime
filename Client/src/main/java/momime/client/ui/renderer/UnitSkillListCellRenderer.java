@@ -26,10 +26,7 @@ import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.panels.UnitSkillOrHeroItemSlot;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.messages.AvailableUnit;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Renderer for drawing the icon and name of a unit skill
@@ -51,9 +48,6 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	/** Multiplayer client */
 	private MomClient client;
 
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
 	
@@ -61,7 +55,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	private UnitClientUtils unitClientUtils;
 	
 	/** The unit whose skills we're drawing */
-	private AvailableUnit unit;
+	private ExpandedUnitDetails unit;
 	
 	/**
 	 * Sets up the layout of the panel
@@ -75,6 +69,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	/**
 	 * Sets up the image and label to draw the list cell
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getListCellRendererComponent (final JList<? extends UnitSkillOrHeroItemSlot> list,
 		final UnitSkillOrHeroItemSlot value, final int index, final boolean isSelected, final boolean cellHasFocus)
@@ -102,7 +97,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 				setText (value.getUnitSkillID ());
 			else
 			{
-				getUnitStatsReplacer ().setUnit (getUnit ());
+				getUnitStatsReplacer ().setUnit (getUnit ().getUnit ());
 				String skillText = getUnitStatsReplacer ().replaceVariables (skillLang.getUnitSkillDescription ());
 				
 				// Show strength of skills, e.g. Fire Breath 2
@@ -115,9 +110,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 					
 					try
 					{
-						skillText = skillText + " " + getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), value.getUnitSkillID (), null,
-							UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+						skillText = skillText + " " + getUnit ().getModifiedSkillValue (value.getUnitSkillID ());
 					}
 					catch (final Exception e)
 					{
@@ -134,7 +127,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 		{
 			final BufferedImage image;
 			if (value.getUnitSkillID () != null)
-				image = getUnitClientUtils ().getUnitSkillSingleIcon (unit, value.getUnitSkillID ());
+				image = getUnitClientUtils ().getUnitSkillSingleIcon (getUnit ().getUnit (), value.getUnitSkillID ());
 			else if (value.getSpellID () != null)
 				image = getUtils ().loadImage (getGraphicsDB ().findSpell (value.getSpellID (), "UnitSkillListCellRenderer").getUnitCanCastImageFile ());
 			else if (value.getHeroItemSlotTypeID () != null)
@@ -242,22 +235,6 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	}
 	
 	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param util Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils util)
-	{
-		unitSkillUtils = util;
-	}
-	
-	/**
 	 * @return Variable replacer for outputting skill descriptions
 	 */
 	public final UnitStatsLanguageVariableReplacer getUnitStatsReplacer ()
@@ -292,7 +269,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	/**
 	 * @return The unit whose skills we're drawing
 	 */
-	public final AvailableUnit getUnit ()
+	public final ExpandedUnitDetails getUnit ()
 	{
 		return unit;
 	}
@@ -300,7 +277,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	/**
 	 * @param u The unit whose skills we're drawing
 	 */
-	public final void setUnit (final AvailableUnit u)
+	public final void setUnit (final ExpandedUnitDetails u)
 	{
 		unit = u;
 	}

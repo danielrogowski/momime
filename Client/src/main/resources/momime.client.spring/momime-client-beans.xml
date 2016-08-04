@@ -1628,7 +1628,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="client" ref="client" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="unitClientUtils" ref="unitClientUtils" />

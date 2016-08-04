@@ -206,7 +206,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 					// Different skills deal different types of damage; illusionary attack skill overrides the damage resolution type, if the defender isn't immune to it
 					final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
 		
-					if (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK))				
+					if ((xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)) &&
+						((attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) ||
+						(attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))))
+						
 						damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
 					else
 					{

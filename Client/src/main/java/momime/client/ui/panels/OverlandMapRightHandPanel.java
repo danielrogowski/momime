@@ -750,7 +750,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		nextTurnButton.addMouseListener (new MouseAdapter ()
 		{
 			@Override
-			public final void mouseClicked (final MouseEvent ev)
+			public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
 			{
 				try
 				{
@@ -1321,7 +1321,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			nextTurnAction.setEnabled (resourceIconFilenames.size () == 0);
 		}
 		
-		final String result = text.toString ();
+		final String result = (text.length () == 0) ? null : text.toString ();
 		log.trace ("Exiting updateProductionTypesStoppingUsFromEndingTurn: " + result);
 		return result;
 	}

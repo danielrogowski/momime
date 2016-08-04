@@ -148,8 +148,10 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			attackDamage = null;
 		else
 		{
-			final int damage = xuAttacker.getModifiedSkillValue (attackSkillID);
-			if (damage < 0)
+			// nulls are ok here, its possible to attack with some valueless skills, such as Cloak of Fear.
+			// However negative values are not ok, that would indicate our attack had been reduced to useless by some effect such as Black Prayer.
+			final Integer damage = xuAttacker.getModifiedSkillValue (attackSkillID);
+			if ((damage != null) && (damage < 0))
 				attackDamage = null;
 			else
 			{			

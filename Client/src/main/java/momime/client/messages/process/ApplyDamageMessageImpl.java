@@ -396,7 +396,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 
 				final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
 				if (attackerUI != null)
-					attackerUI.getUnitInfoPanel ().showUnit (attackerUI.getUnitInfoPanel ().getUnit ());
+					attackerUI.getUnitInfoPanel ().refreshUnitDetails ();
 
 				// Defenders
 				for (final ApplyDamageMessageDefenderDetails thisUnit : getDefenderUnits ())
@@ -413,7 +413,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					
 					final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
 					if (defenderUI != null)
-						defenderUI.getUnitInfoPanel ().showUnit (defenderUI.getUnitInfoPanel ().getUnit ());
+						defenderUI.getUnitInfoPanel ().refreshUnitDetails ();
 				}
 			}
 			catch (final IOException e)
@@ -493,7 +493,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			
 			final UnitInfoUI attackerUI = getClient ().getUnitInfos ().get (getAttackerUnitURN ());
 			if (attackerUI != null)
-				attackerUI.getUnitInfoPanel ().showUnit (attackerUI.getUnitInfoPanel ().getUnit ());
+				attackerUI.getUnitInfoPanel ().refreshUnitDetails ();
 			
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 				if ((!button.isHidden ()) && (button.getComponent ().getUnit () == attackerUnit))
@@ -526,7 +526,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			
 			final UnitInfoUI defenderUI = getClient ().getUnitInfos ().get (thisUnit.getDefUnit ().getUnitURN ());
 			if (defenderUI != null)
-				defenderUI.getUnitInfoPanel ().showUnit (defenderUI.getUnitInfoPanel ().getUnit ());
+				defenderUI.getUnitInfoPanel ().refreshUnitDetails ();
 
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 				if ((!button.isHidden ()) && (button.getComponent ().getUnit () == defenderUnit))

@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
@@ -43,7 +42,6 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -117,9 +115,6 @@ public final class TestUnitInfoUI
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (unitOwner);
 		
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "showUnit")).thenReturn (unitOwner);
-
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getPlayers ()).thenReturn (players);
 		
@@ -130,7 +125,11 @@ public final class TestUnitInfoUI
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnit ()).thenReturn (unit);
+		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
 		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Movement
@@ -143,8 +142,6 @@ public final class TestUnitInfoUI
 		// Skills
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
 		
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
@@ -169,12 +166,10 @@ public final class TestUnitInfoUI
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);
-		panel.setUnitSkillUtils (unitSkillUtils);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
-		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		panel.setPlayerPickUtils (mock (PlayerPickUtils.class));
 		
 		// Set up form
@@ -258,9 +253,6 @@ public final class TestUnitInfoUI
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		players.add (unitOwner);
 		
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "showUnit")).thenReturn (unitOwner);
-
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID () + 1);		// Purposefully make it different
 		when (client.getPlayers ()).thenReturn (players);
 		
@@ -271,7 +263,11 @@ public final class TestUnitInfoUI
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnit ()).thenReturn (unit);
+		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
 		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Movement
@@ -284,8 +280,6 @@ public final class TestUnitInfoUI
 		// Skills
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
 
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
@@ -310,12 +304,10 @@ public final class TestUnitInfoUI
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitUtils (unitUtils);
-		panel.setUnitSkillUtils (unitSkillUtils);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setAnim (anim);
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
-		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		panel.setPlayerPickUtils (mock (PlayerPickUtils.class));
 		
 		// Set up form

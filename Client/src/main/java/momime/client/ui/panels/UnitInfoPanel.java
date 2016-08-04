@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,8 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
@@ -69,20 +66,17 @@ import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitCanCast;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -137,9 +131,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 
@@ -148,9 +139,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
-	
-	/** Session utils */
-	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
 	/** 0-3 actions to set up red buttons for; NB. this must be set prior to init () being called */
 	private List<Action> actions = new ArrayList<Action> ();
@@ -213,7 +201,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private MemoryBuilding building;
 	
 	/** Unit being displayed */
-	private AvailableUnit unit;
+	private ExpandedUnitDetails unit;
 
 	/** List of shading colours to apply to the unit images */
 	private List<String> shadingColours;
@@ -312,8 +300,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						{
 							// Show combat anim of unit 
 							zOrderGraphics.setGraphics (g);
-							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
-							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours);
+							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit ().getUnit (), true);
+							getUnitClientUtils ().drawUnitFigures (getUnit ().getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours);
 						}
 					}
 				}
@@ -410,21 +398,20 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Clicking a unit skill from a spell asks about cancelling it
 		unitSkillsList.addListSelectionListener ((ev) ->
 		{
-			if ((getUnit () instanceof MemoryUnit) && (unitSkillsList.getSelectedIndex () >= 0))
+			if ((getUnit ().isMemoryUnit ()) && (unitSkillsList.getSelectedIndex () >= 0))
 			{
-				final MemoryUnit memoryUnit = (MemoryUnit) getUnit ();
 				final UnitSkillOrHeroItemSlot skill = unitSkillsItems.get (unitSkillsList.getSelectedIndex ());
 				
 				// We want to ignore clicks on regular skills, and only do something about clicks on skills granted by spells.
 				// So search through maintained spells looking for this unitSkillID on this unit and see if we find anything.
 				if (skill.getUnitSkillID () != null)
-				{
-					final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-						null, null, memoryUnit.getUnitURN (), skill.getUnitSkillID (), null, null);
-					
-					if (spell != null)
-						try
+					try
+					{
+						final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+							null, null, getUnit ().getUnitURN (), skill.getUnitSkillID (), null, null);
+						
+						if (spell != null)
 						{
 							// Its a spell - but make sure it isn't permanent
 							final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "SwitchOffUnitSpell");
@@ -451,11 +438,11 @@ public final class UnitInfoPanel extends MomClientPanelUI
 								msg.setVisible (true);
 							}
 						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-				}
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 			}
 		});
 		
@@ -473,7 +460,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						final UnitAttributeWithBreakdownImage unitAttribute = unitAttributesItems.get (row);
 						try
 						{
-							getHelpUI ().showUnitSkillID (unitAttribute.getUnitSkillID (), getUnit ());
+							getHelpUI ().showUnitSkillID (unitAttribute.getUnitSkillID (), getUnit ().getUnit ());
 						}
 						catch (final Exception e)
 						{
@@ -499,7 +486,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						try
 						{
 							if (skill.getUnitSkillID () != null)
-								getHelpUI ().showUnitSkillID (skill.getUnitSkillID (), getUnit ());
+								getHelpUI ().showUnitSkillID (skill.getUnitSkillID (), getUnit ().getUnit ());
 							else if (skill.getHeroItemSlotTypeID () != null)
 								getHelpUI ().showHeroItemSlotTypeID (skill.getHeroItemSlotTypeID ());
 							else if (skill.getHeroItem () != null)
@@ -626,11 +613,20 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @return Unit that we're displaying info about, or null if we're displaying info about a building
 	 */
-	public final AvailableUnit getUnit ()
+	public final ExpandedUnitDetails getUnit ()
 	{
 		return unit;
 	}
 
+	/**
+	 * Shortcut method for re-displaying the same unit again
+	 * @throws IOException If there is a problem
+	 */
+	public final void refreshUnitDetails () throws IOException
+	{
+		showUnit (getUnit ().getUnit ());
+	}
+	
 	/**
 	 * @param showUnit Unit to show info about
 	 * @throws IOException If there is a problem
@@ -646,27 +642,23 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unitSkillsScrollPane.setVisible (true);
 
 		// Find details about this kind of unit
-		unit = showUnit;
 		building = null;
 		shadingColours = new ArrayList<String> ();
-		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (showUnit, null, null, null, getClient ().getPlayers (),
+		unit = getUnitUtils ().expandUnitDetails (showUnit, null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		// Update language independant labels
-		currentlyConstructingProductionCost.setText ((xu.getUnitDefinition ().getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (xu.getUnitDefinition ().getProductionCost ()));
-		costLabel.setVisible (xu.getUnitDefinition ().getProductionCost () != null);
+		currentlyConstructingProductionCost.setText ((getUnit ().getUnitDefinition ().getProductionCost () == null) ? null : getTextUtils ().intToStrCommas (getUnit ().getUnitDefinition ().getProductionCost ()));
+		costLabel.setVisible (getUnit ().getUnitDefinition ().getProductionCost () != null);
 		
 		// Search for upkeeps of the unit
 		final Map<String, Integer> upkeepsMap = new HashMap<String, Integer> ();
-		xu.listModifiedUpkeepProductionTypeIDs ().forEach (productionTypeID -> upkeepsMap.put (productionTypeID, xu.getModifiedUpkeepValue (productionTypeID)));
+		unit.listModifiedUpkeepProductionTypeIDs ().forEach (productionTypeID -> upkeepsMap.put (productionTypeID, getUnit ().getModifiedUpkeepValue (productionTypeID)));
 		
 		// Search for upkeeps from spells cast on the unit
-		if (getUnit () instanceof MemoryUnit)
-		{
-			final int unitURN = ((MemoryUnit) getUnit ()).getUnitURN ();
-			
+		if (getUnit ().isMemoryUnit ())
 			for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
-				if ((spell.getCastingPlayerID () == getUnit ().getOwningPlayerID ()) && (spell.getUnitURN () != null) && (unitURN == spell.getUnitURN ()))
+				if ((spell.getCastingPlayerID () == getUnit ().getOwningPlayerID ()) && (spell.getUnitURN () != null) && (getUnit ().getUnitURN () == spell.getUnitURN ()))
 				{
 					final Spell spellDef = getClient ().getClientDB ().findSpell (spell.getSpellID (), "showUnit");
 					for (final ProductionTypeAndUndoubledValue upkeepValue : spellDef.getSpellUpkeep ())
@@ -680,7 +672,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						upkeepsMap.put (upkeepValue.getProductionTypeID (), value);
 					}
 				}					
-		}
 		
 		// Turn the map back into a list
 		final List<ProductionTypeAndUndoubledValue> upkeeps = upkeepsMap.entrySet ().stream ().sorted ((e1, e2) -> e1.getKey ().compareTo (e2.getKey ())).map (e ->
@@ -692,46 +683,19 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		}).collect (Collectors.toList ());
 
 		// Generate an image from the upkeeps
-		final PlayerPublicDetails unitOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getUnit ().getOwningPlayerID (), "showUnit");
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) unitOwner.getPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) getUnit ().getOwningPlayer ().getPersistentPlayerPublicKnowledge ();
 
 		final BufferedImage upkeepImage = getResourceValueClientUtils ().generateUpkeepImage (upkeeps,
 			getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) >= 1);
 		currentlyConstructingUpkeep.setIcon ((upkeepImage == null) ? null : new ImageIcon (upkeepImage));
 		upkeepLabel.setVisible (upkeepImage != null);
 		
-		// Add list items to display unit attributes and skills
-		final List<UnitSkillAndValue> mergedSkills;
-		if (getUnit () instanceof MemoryUnit)
-			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), (MemoryUnit) getUnit (), getClient ().getClientDB ());
-		else
-			mergedSkills = getUnit ().getUnitHasSkill ();
-		
-		// If the unit has no + to hit / + to defence skill, but gains it through some other means, e.g. experience, then display it
-		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK})
-		{
-			boolean exists = false;
-			final Iterator<UnitSkillAndValue> iter = mergedSkills.iterator ();
-			while ((!exists) && (iter.hasNext ()))
-				if (iter.next ().getUnitSkillID ().equals (unitSkillID))
-					exists = true;
-			
-			if ((!exists) && (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, unitSkillID, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				null, null, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) > 0))
-			{
-				final UnitSkillAndValue plus = new UnitSkillAndValue ();
-				plus.setUnitSkillID (unitSkillID);
-				mergedSkills.add (plus);
-			}
-		}
-		
 		// Add each skill
-		getUnitSkillListCellRenderer ().setUnit (getUnit ());
-		for (final UnitSkillAndValue thisSkill : mergedSkills)
+		getUnitSkillListCellRenderer ().setUnit (getUnit ().getUnit ());
+		for (final String unitSkillID : getUnit ().listModifiedSkillIDs ().stream ().sorted ().collect (Collectors.toList ()))
 		{
 			// Which list do we display it in?
-			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitInfoPanel");
+			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "UnitInfoPanel");
 			
 			if ((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE) ||
 				((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.MODIFYABLE) && ((getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.MODIFYABLE) ||
@@ -739,22 +703,22 @@ public final class UnitInfoPanel extends MomClientPanelUI
 				((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.FIXED) && (getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED)))
 			{
 				// Display as unit attribute
-				unitAttributesItems.addElement (new UnitAttributeWithBreakdownImage (thisSkill.getUnitSkillID (),
-					getUnitClientUtils ().generateAttributeImage (xu, thisSkill.getUnitSkillID ())));
+				// Omit any that have no positive component at all (this is so + to hit and + to block don't show up if the unit has no value there)
+				if (getUnit ().filterModifiedSkillValue (unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE) > 0)
+					unitAttributesItems.addElement (new UnitAttributeWithBreakdownImage (unitSkillID,
+						getUnitClientUtils ().generateAttributeImage (getUnit (), unitSkillID)));
 			}
-			else
+			
+			// Display as unit skill.				
+			// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form.
+			// Experience is an exception since its images are derived differently.
+			else if ((unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ||
+				(getGraphicsDB ().findUnitSkill (unitSkillID, "showUnit").getUnitSkillImageFile () != null))
 			{
-				// Display as unit skill.				
-				// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form.
-				// Experience is an exception since its images are derived differently.
-				if ((thisSkill.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ||
-					(getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "showUnit").getUnitSkillImageFile () != null))
-				{
-					final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
-					skill.setUnitSkillID (thisSkill.getUnitSkillID ());
-					skill.setUnitSkillValue (thisSkill.getUnitSkillValue ());
-					unitSkillsItems.addElement (skill);
-				}
+				final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
+				skill.setUnitSkillID (unitSkillID);
+				skill.setUnitSkillValue (getUnit ().getModifiedSkillValue (unitSkillID));
+				unitSkillsItems.addElement (skill);
 			}
 			
 			// Does this skill mean we should colour the unit image differently?
@@ -763,7 +727,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		}
 		
 		// Add ability to cast fixed spells
-		for (final UnitCanCast unitCanCast : xu.getUnitDefinition ().getUnitCanCast ())
+		for (final UnitCanCast unitCanCast : getUnit ().getUnitDefinition ().getUnitCanCast ())
 			
 			// Ignore heroes having spells available to cast from their MP pool - we only want to show spells that are free to cast
 			if ((unitCanCast.getNumberOfTimes () != null) && (unitCanCast.getNumberOfTimes () > 0))
@@ -775,13 +739,13 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Add hero item slots
 		int slotNumber = 0;
-		for (final HeroItemSlot slot : xu.getUnitDefinition ().getHeroItemSlot ())
+		for (final HeroItemSlot slot : getUnit ().getUnitDefinition ().getHeroItemSlot ())
 		{
 			// Is there an item in this slot?
 			NumberedHeroItem item = null;
-			if (getUnit () instanceof MemoryUnit)
-				if (slotNumber < ((MemoryUnit) getUnit ()).getHeroItemSlot ().size ())
-					item = ((MemoryUnit) getUnit ()).getHeroItemSlot ().get (slotNumber).getHeroItem ();
+			if (getUnit ().isMemoryUnit ())
+				if (slotNumber < getUnit ().getMemoryUnit ().getHeroItemSlot ().size ())
+					item = getUnit ().getMemoryUnit ().getHeroItemSlot ().get (slotNumber).getHeroItem ();
 			
 			if (item != null)
 			{
@@ -806,13 +770,13 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 		// Show the image of the selected unit
 		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
-		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
+		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit ().getUnit (), true);
 		getUnitClientUtils ().registerUnitFiguresAnimation (getUnit ().getUnitID (), movingActionID, 4, currentlyConstructingImage); 
 		
 		// Show URN?
-		if ((showUnit instanceof MemoryUnit) && (((MemoryUnit) showUnit).getUnitURN () > 0) && (getClientConfig ().isDebugShowURNs ()))
+		if ((unit.isMemoryUnit ()) && (getUnit ().getUnitURN () > 0) && (getClientConfig ().isDebugShowURNs ()))
 		{
-			urnValue.setText (getTextUtils ().intToStrCommas (((MemoryUnit) showUnit).getUnitURN ()));
+			urnValue.setText (getTextUtils ().intToStrCommas (getUnit ().getUnitURN ()));
 			urnLabel.setVisible (true);
 			urnValue.setVisible (true);
 		}
@@ -884,7 +848,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			String unitName = null;
 			try
 			{
-				unitName = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME);
+				unitName = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.RACE_UNIT_NAME);
 			}
 			catch (final RecordNotFoundException e)
 			{
@@ -1072,22 +1036,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	}
 
 	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
-	/**
 	 * @return Unit calculations
 	 */
 	public final UnitCalculations getUnitCalculations ()
@@ -1151,22 +1099,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		playerPickUtils = utils;
 	}
 
-	/**
-	 * @return Session utils
-	 */
-	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
-	{
-		return multiplayerSessionUtils;
-	}
-
-	/**
-	 * @param util Session utils
-	 */
-	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
-	{
-		multiplayerSessionUtils = util;
-	}
-	
 	/**
 	 * @return Cell renderer for drawing the unit attribute text and component breakdowns
 	 */

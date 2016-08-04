@@ -17,7 +17,6 @@ import javax.swing.WindowConstants;
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
@@ -57,6 +56,8 @@ import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.Unit;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -65,7 +66,6 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -283,9 +283,6 @@ public final class TestUnitInfoPanel
 		players.add (player);
 		when (client.getPlayers ()).thenReturn (players);
 
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "showUnit")).thenReturn (player);
-		
 		// FOW memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -312,36 +309,44 @@ public final class TestUnitInfoPanel
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getUnit ()).thenReturn (unit);
+		when (xu.getUnitID ()).thenReturn ("UN001");
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
+		when (xu.getOwningPlayerID ()).thenReturn (1);
+		when (xu.getOwningPlayer ()).thenReturn (player);
 		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Skills
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
+		final Set<String> modifiedSkillIDs = new HashSet<String> ();
 		for (int n = 1; n <= 5; n++)
 		{
+			final String skillID = "US0" + n;
+			
 			// Lang
 			final UnitSkillLang skillLang = new UnitSkillLang ();
-			skillLang.setUnitSkillDescription ("Name of skill US0" + n);
-			when (lang.findUnitSkill ("US0" + n)).thenReturn (skillLang);
+			skillLang.setUnitSkillDescription ("Name of skill " + skillID);
+			when (lang.findUnitSkill (skillID)).thenReturn (skillLang);
 
 			// Gfx
 			final UnitSkillGfx skillGfx = new UnitSkillGfx ();
 			skillGfx.setUnitSkillTypeID (UnitSkillTypeID.NO_VALUE);
 			skillGfx.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png");
 			
-			when (gfx.findUnitSkill (eq ("US0" + n), anyString ())).thenReturn (skillGfx);
+			when (gfx.findUnitSkill (eq (skillID), anyString ())).thenReturn (skillGfx);
 			
 			// Unit stat
 			final UnitSkillAndValue skill = new UnitSkillAndValue ();
-			skill.setUnitSkillID ("US0" + n);
+			skill.setUnitSkillID (skillID);
 			unit.getUnitHasSkill ().add (skill);
+			
+			modifiedSkillIDs.add (skillID);
 
 			// Icon
-			when (unitClientUtils.getUnitSkillSingleIcon (unit, "US0" + n)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));
+			when (unitClientUtils.getUnitSkillSingleIcon (unit, skillID)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));
 		}
 		
 		// Attributes
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 
 		int unitAttrNo = 0;
@@ -366,7 +371,11 @@ public final class TestUnitInfoPanel
 			final UnitSkillAndValue attr = new UnitSkillAndValue ();
 			attr.setUnitSkillID (attrID);
 			unit.getUnitHasSkill ().add (attr);
+
+			modifiedSkillIDs.add (attrID);
+			when (xu.filterModifiedSkillValue (attrID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE)).thenReturn (1);		// Just to get past check
 		}
+		when (xu.listModifiedSkillIDs ()).thenReturn (modifiedSkillIDs);
 		
 		// Upkeep
 		when (xu.getModifiedUpkeepValue ("RE01")).thenReturn (2);
@@ -424,7 +433,6 @@ public final class TestUnitInfoPanel
 		panel.setGraphicsDB (gfx);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setAnim (anim);
-		panel.setUnitSkillUtils (unitSkillUtils);
 		panel.setUnitCalculations (unitCalc);
 		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitClientUtils (unitClientUtils);
@@ -433,7 +441,6 @@ public final class TestUnitInfoPanel
 		panel.setTextUtils (new TextUtilsImpl ());
 		panel.setMediumFont (CreateFontsForTests.getMediumFont ());
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
-		panel.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		panel.setPlayerPickUtils (playerPickUtils);
 		panel.setUnitUtils (unitUtils);
 		panel.setClientConfig (new MomImeClientConfigEx ());

@@ -1845,12 +1845,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitAttributeListCellRenderer" ref="unitAttributeListCellRenderer" />		<!-- So Spring will create and inject a new attribute list renderer for each unitInfoPanel -->

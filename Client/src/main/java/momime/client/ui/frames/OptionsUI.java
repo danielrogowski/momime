@@ -340,7 +340,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		final FilenameFilter filter = new FilenameFilter ()
 		{
 			@Override
-			public final boolean accept (final File dir, final String name)
+			public final boolean accept (@SuppressWarnings ("unused") final File dir, final String name)
 			{
 				return name.toLowerCase ().endsWith (FILE_SUFFIX.toLowerCase ());
 			}
@@ -379,7 +379,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		chooseLanguage.addItemListener (new ItemListener ()
 		{
 			@Override
-		    public final void itemStateChanged (final ItemEvent ev)
+		    public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 		    {
 				try
 				{
@@ -411,7 +411,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandSmoothTerrain.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setOverlandSmoothTerrain (overlandSmoothTerrain.isSelected ());
 				saveConfigFile ();
@@ -431,7 +431,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandSmoothTextures.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setOverlandSmoothTextures (overlandSmoothTextures.isSelected ());
 				saveConfigFile ();
@@ -441,7 +441,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowPartialFogOfWar.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setOverlandShowPartialFogOfWar (overlandShowPartialFogOfWar.isSelected ());
 				saveConfigFile ();
@@ -460,7 +460,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandSmoothFogOfWar.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setOverlandSmoothFogOfWar (overlandSmoothFogOfWar.isSelected ());
 				saveConfigFile ();
@@ -479,7 +479,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowOurBorder.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setOverlandShowOurBorder (overlandShowOurBorder.isSelected ());
 				saveConfigFile ();
@@ -489,7 +489,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowEnemyBorders.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setOverlandShowEnemyBorders (overlandShowEnemyBorders.isSelected ());
 				saveConfigFile ();
@@ -499,7 +499,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		combatSmoothTerrain.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setCombatSmoothTerrain (combatSmoothTerrain.isSelected ());
 				saveConfigFile ();
@@ -518,7 +518,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		debugShowURNs.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setDebugShowURNs (debugShowURNs.isSelected ());
 				saveConfigFile ();
@@ -526,7 +526,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 				for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
 					try
 					{
-						unitInfo.getUnitInfoPanel ().showUnit (unitInfo.getUnitInfoPanel ().getUnit ());
+						unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 					}
 					catch (final Exception e)
 					{
@@ -538,7 +538,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		debugShowEdgesOfMap.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setDebugShowEdgesOfMap (debugShowEdgesOfMap.isSelected ());
 				saveConfigFile ();
@@ -548,7 +548,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		showHeroPortraits.addItemListener (new ItemListener ()
 		{
 			@Override
-			public final void itemStateChanged (final ItemEvent ev)
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setShowHeroPortraits (showHeroPortraits.isSelected ());
 				saveConfigFile ();
@@ -556,7 +556,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 				for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
 					try
 					{
-						unitInfo.getUnitInfoPanel ().showUnit (unitInfo.getUnitInfoPanel ().getUnit ());
+						unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 					}
 					catch (final Exception e)
 					{
@@ -568,7 +568,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		unitAttributesChoice.addItemListener (new ItemListener ()
 		{
 			@Override
-		    public final void itemStateChanged (final ItemEvent ev)
+		    public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 		    {
 				getClientConfig ().setDisplayUnitSkillsAsAttributes (UnitSkillTypeID.values () [unitAttributesChoice.getSelectedIndex ()]);
 				saveConfigFile ();
@@ -576,7 +576,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 				for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
 					try
 					{
-						unitInfo.getUnitInfoPanel ().showUnit (unitInfo.getUnitInfoPanel ().getUnit ());
+						unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 					}
 					catch (final Exception e)
 					{

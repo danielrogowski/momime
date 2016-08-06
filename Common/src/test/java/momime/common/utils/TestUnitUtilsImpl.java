@@ -481,7 +481,9 @@ public final class TestUnitUtilsImpl
 		final PlayerDescription owningPd = new PlayerDescription ();
 		owningPd.setPlayerID (1);
 		
-		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, null, null);
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
@@ -544,6 +546,89 @@ public final class TestUnitUtilsImpl
 		assertEquals (0, details.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT).intValue ());
 	}
 
+	/**
+	 * Tests the expandSkillList method when there's not even a player specified.  This is used in a couple of places, e.g. hitting Rush Buy.
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testExpandUnitDetails_AvailableUnit_NoPlayer () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Unit unitDef = new Unit ();
+		unitDef.setUnitMagicRealm ("MB01");
+		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		
+		final Pick unitMagicRealm = new Pick ();
+		unitMagicRealm.setUnitTypeID ("S");
+		when (db.findPick ("MB01", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		
+		final UnitType unitType = new UnitType ();
+		when (db.findUnitType ("S", "expandUnitDetails")).thenReturn (unitType);
+		
+		for (int n = 1; n <= 3; n++)
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+			
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		
+		// Create other lists
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Create test unit
+		final AvailableUnit unit = new AvailableUnit ();
+		unit.setUnitID ("UN001");
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final UnitSkillAndValue skill = new UnitSkillAndValue ();
+			skill.setUnitSkillID ("US00" + n);
+			
+			if (n == 2)
+				skill.setUnitSkillValue (4);
+			
+			unit.getUnitHasSkill ().add (skill);
+		}
+
+		// Set up object to test
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		
+		// Run method
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, null, mem, db);
+		
+		// Do simple checks
+		assertSame (unit, details.getUnit ());
+		assertFalse (details.isMemoryUnit ());
+		assertSame (unitDef, details.getUnitDefinition ());
+		assertSame (unitType, details.getUnitType ());
+		assertNull (details.getOwningPlayer ());
+		assertNull (details.getWeaponGrade ());
+		assertNull (details.getRangedAttackType ());
+		assertNull (details.getBasicExperienceLevel ());
+		assertNull (details.getModifiedExperienceLevel ());
+		
+		assertSame (unitMagicRealm, details.getModifiedUnitMagicRealmLifeformType ());
+		
+		// Check skills
+		for (int n = 1; n <= 3; n++)
+		{
+			assertTrue (details.hasBasicSkill ("US00" + n));
+			assertTrue (details.hasModifiedSkill ("US00" + n));
+		}
+		
+		assertNull (details.getBasicSkillValue ("US001"));
+		assertEquals (4, details.getBasicSkillValue ("US002").intValue ());
+		assertNull (details.getBasicSkillValue ("US003"));
+
+		assertNull (details.getModifiedSkillValue ("US001"));
+		assertEquals (4, details.getModifiedSkillValue ("US002").intValue ());
+		assertNull (details.getModifiedSkillValue ("US003"));
+		
+		assertFalse (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+		assertTrue (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+		assertEquals (0, details.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT).intValue ());
+	}
+	
 	/**
 	 * Tests the expandSkillList method on a normal unit which hence has an experience level to calculate, and the exp level gives a boost to one of our stats,
 	 * plus we have couple of spells cast on it that grant additional skills
@@ -794,8 +879,10 @@ public final class TestUnitUtilsImpl
 		// Players
 		final PlayerDescription owningPd = new PlayerDescription ();
 		owningPd.setPlayerID (1);
+
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		
-		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, null, null);
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
@@ -960,7 +1047,9 @@ public final class TestUnitUtilsImpl
 		final PlayerDescription owningPd = new PlayerDescription ();
 		owningPd.setPlayerID (1);
 		
-		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, null, null);
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails owningPlayer = new PlayerPublicDetails (owningPd, pub, null);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		

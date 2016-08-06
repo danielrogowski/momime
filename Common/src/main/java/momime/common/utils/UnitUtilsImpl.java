@@ -468,7 +468,9 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// STEP 7 - Do simple lookups
 		final Unit unitDef = db.findUnit (unit.getUnitID (), "expandUnitDetails");
-		final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "expandUnitDetails");
+		final PlayerPublicDetails owningPlayer = (unit.getOwningPlayerID () == 0) ? null : getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "expandUnitDetails");
+		final List<PlayerPick> picks = (owningPlayer == null) ? null : ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+		
 		final WeaponGrade weaponGrade = (unit.getWeaponGrade () == null) ? null : db.findWeaponGrade (unit.getWeaponGrade (), "expandUnitDetails");
 		final RangedAttackType rangedAttackType = (unitDef.getRangedAttackType () == null) ? null : db.findRangedAttackType (unitDef.getRangedAttackType (), "expandUnitDetails");
 		
@@ -552,8 +554,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			int levelIncludingBonuses = levelFromExperience.getLevelNumber ();
 
 			// Does the player have the Warlord retort?
-			final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
-			if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_WARLORD) > 0)
+			if ((picks != null) && (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_WARLORD) > 0))
 				levelIncludingBonuses++;
 
 			// Does the player have the Crusade CAE?
@@ -818,8 +819,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		{
 			// Reduce upkeep for Summoner retort?
 			// Get reduction as a percentage - note we use the special "unit upkeep" production type, not "Mana"
-			final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
-			final int percentageReduction = getPlayerPickUtils ().totalProductionBonus
+			final int percentageReduction = (picks == null) ? 0 : getPlayerPickUtils ().totalProductionBonus
 				(CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, unitType.getUnitTypeID (), picks, db);
 
 			// Now copy and modify each basic skill value

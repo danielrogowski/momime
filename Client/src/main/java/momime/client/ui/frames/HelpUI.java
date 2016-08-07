@@ -57,12 +57,11 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -139,7 +138,7 @@ public final class HelpUI extends MomClientFrameUI
 	private String unitSkillID;
 
 	/** Unit whose skills or attributes we're displaying help text about, null if displaying help text about something other than a unit skill or attribute */
-	private AvailableUnit unit;
+	private ExpandedUnitDetails unit;
 
 	/** Combat area effect ID we're displaying help text about, null if displaying help text about something other than a combat area effect */
 	private String combatAreaEffectID;
@@ -339,14 +338,13 @@ public final class HelpUI extends MomClientFrameUI
 				indentedText.setText ((unitSkillHelpText != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillHelpText) : unitSkillID);
 			
 				// If this unit skill is the result of a spell, show how much upkeep it is costing
-				if (unit instanceof MemoryUnit)
-				{
-					final MemoryUnit mu = (MemoryUnit) unit;
-					final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-						null, null, mu.getUnitURN (), unitSkillID, null, null);
-					if (spell != null)
-						try
+				if (unit.isMemoryUnit ())
+					try
+					{
+						final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+							null, null, unit.getUnitURN (), unitSkillID, null, null);
+						if (spell != null)
 						{
 							text = indentedText.getText ();
 							
@@ -355,11 +353,11 @@ public final class HelpUI extends MomClientFrameUI
 							final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
 							indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, pub.getPick ()));
 						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-				}
+					}
+					catch (final Exception e)
+					{
+						log.error (e, e);
+					}
 			}
 		}
 		else if (citySpellEffectID != null)
@@ -630,7 +628,7 @@ public final class HelpUI extends MomClientFrameUI
 	 * @param u Unit who owns the skill
 	 * @throws IOException If a resource cannot be found
 	 */
-	public final void showUnitSkillID (final String id, final AvailableUnit u) throws IOException
+	public final void showUnitSkillID (final String id, final ExpandedUnitDetails u) throws IOException
 	{
 		log.trace ("Entering showUnitSkillID: " + id + ", " + u.getUnitID ());
 
@@ -638,7 +636,7 @@ public final class HelpUI extends MomClientFrameUI
 		unitSkillID = id;
 		unit = u;
 
-		final BufferedImage image = getUnitClientUtils ().getUnitSkillSingleIcon (unit, unitSkillID);
+		final BufferedImage image = getUnitClientUtils ().getUnitSkillSingleIcon (unit.getUnit (), unitSkillID);
 		if (image != null)
 		{
 			imageLabel.setIcon (new ImageIcon (image));

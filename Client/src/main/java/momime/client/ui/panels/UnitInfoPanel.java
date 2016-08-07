@@ -460,7 +460,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						final UnitAttributeWithBreakdownImage unitAttribute = unitAttributesItems.get (row);
 						try
 						{
-							getHelpUI ().showUnitSkillID (unitAttribute.getUnitSkillID (), getUnit ().getUnit ());
+							getHelpUI ().showUnitSkillID (unitAttribute.getUnitSkillID (), getUnit ());
 						}
 						catch (final Exception e)
 						{
@@ -486,7 +486,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						try
 						{
 							if (skill.getUnitSkillID () != null)
-								getHelpUI ().showUnitSkillID (skill.getUnitSkillID (), getUnit ().getUnit ());
+								getHelpUI ().showUnitSkillID (skill.getUnitSkillID (), getUnit ());
 							else if (skill.getHeroItemSlotTypeID () != null)
 								getHelpUI ().showHeroItemSlotTypeID (skill.getHeroItemSlotTypeID ());
 							else if (skill.getHeroItem () != null)

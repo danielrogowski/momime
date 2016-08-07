@@ -86,6 +86,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.ChangeOptionalFarmersMessage;
 import momime.common.messages.clienttoserver.SellBuildingMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -331,7 +332,10 @@ public final class CityViewUI extends MomClientFrameUI
 
 				final AvailableUnit unit = new AvailableUnit ();
 				unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
-				getUnitStatsReplacer ().setUnit (unit);
+				
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				getUnitStatsReplacer ().setUnit (xu);
 
 				text = getUnitStatsReplacer ().replaceVariables (text);
 			}
@@ -427,7 +431,7 @@ public final class CityViewUI extends MomClientFrameUI
 		getFrame ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
-			public final void windowClosed (final WindowEvent ev)
+			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
 			{
 				try
 				{

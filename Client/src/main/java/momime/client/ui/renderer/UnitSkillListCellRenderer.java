@@ -97,7 +97,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 				setText (value.getUnitSkillID ());
 			else
 			{
-				getUnitStatsReplacer ().setUnit (getUnit ().getUnit ());
+				getUnitStatsReplacer ().setUnit (getUnit ());
 				String skillText = getUnitStatsReplacer ().replaceVariables (skillLang.getUnitSkillDescription ());
 				
 				// Show strength of skills, e.g. Fire Breath 2

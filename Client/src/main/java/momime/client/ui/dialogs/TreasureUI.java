@@ -38,6 +38,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.TreasureRewardPrisoner;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -208,7 +209,10 @@ public final class TreasureUI extends MomClientDialogUI
 					final MemoryUnit unit = getUnitUtils ().findUnitURN (prisoner.getPrisonerUnitURN (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "TreasureUI");
 					
-					getUnitStatsReplacer ().setUnit (unit);
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
+					getUnitStatsReplacer ().setUnit (xu);
 					text.append (System.lineSeparator () + BULLET_POINT + getUnitStatsReplacer ().replaceVariables
 						(getLanguage ().findCategoryEntry ("frmTreasure", "Prisoner" + prisoner.getUnitAddBumpType ().value ())) + ";");
 				}

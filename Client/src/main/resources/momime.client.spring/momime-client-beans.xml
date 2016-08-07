@@ -955,9 +955,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="unitStatsReplacer" class="momime.client.language.replacer.UnitStatsLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="textUtils" ref="textUtils" />

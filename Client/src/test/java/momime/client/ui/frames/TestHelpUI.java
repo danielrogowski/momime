@@ -53,6 +53,7 @@ import momime.common.database.UnitSkillComponent;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellUtils;
 
 /**
@@ -342,10 +343,10 @@ public final class TestHelpUI
 	@Test
 	public final void testHelpUI_UnitSkill () throws Exception
 	{
-		final AvailableUnit unit = new AvailableUnit ();
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		
 		final HelpUI help = createHelpUI ();
-		help.showUnitSkillID ("US020", unit);
+		help.showUnitSkillID ("US020", xu);
 		Thread.sleep (5000);
 		help.setVisible (false);
 	}
@@ -357,10 +358,10 @@ public final class TestHelpUI
 	@Test
 	public final void testHelpUI_UnitAttribute () throws Exception
 	{
-		final AvailableUnit unit = new AvailableUnit ();
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		
 		final HelpUI help = createHelpUI ();
-		help.showUnitSkillID ("UA01", unit);
+		help.showUnitSkillID ("UA01", xu);
 		Thread.sleep (5000);
 		help.setVisible (false);
 	}

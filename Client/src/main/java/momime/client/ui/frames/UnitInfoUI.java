@@ -78,7 +78,7 @@ public final class UnitInfoUI extends MomClientFrameUI
 			{
 				// Show name of unit
 				String text = getLanguage ().findCategoryEntry ("frmUnitInfo", "DismissPrompt");
-				getUnitStatsReplacer ().setUnit (getUnit ());
+				getUnitStatsReplacer ().setUnit (getUnitInfoPanel ().getUnit ());
 				text = getUnitStatsReplacer ().replaceVariables (text);
 				
 				// Show message box

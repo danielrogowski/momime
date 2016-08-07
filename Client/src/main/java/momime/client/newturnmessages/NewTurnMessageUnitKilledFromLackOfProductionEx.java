@@ -5,6 +5,9 @@ import java.awt.Font;
 import java.awt.Image;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -14,10 +17,8 @@ import momime.client.ui.MomUIConstants;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A unit was killed off because we couldn't afford the rations, gold and/or mana to pay for it
@@ -47,7 +48,7 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
 	
 	/** The unit that was killed */
-	private MemoryUnit unit;
+	private ExpandedUnitDetails xu;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -79,7 +80,7 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 	{
 		log.trace ("Entering preProcess: Unit URN " + getUnitURN ());
 		
-		unit = getUnitUtils ().findUnitURN (getUnitURN (),
+		final MemoryUnit unit = getUnitUtils ().findUnitURN (getUnitURN (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "NewTurnMessageUnitKilledFromLackOfProductionEx");
 		
 		if (unit.getStatus () != UnitStatusID.KILLED_BY_LACK_OF_PRODUCTION)
@@ -87,6 +88,9 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 		
 		// Now we've got a hold of the unit, we can really kill it
 		getUnitUtils ().removeUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+		
+		xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		log.trace ("Exiting preProcess");
 	}
@@ -102,7 +106,7 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 		if (text == null)
 			text = "Unit lost from lack of " + getProductionTypeID ();
 		
-		getUnitStatsReplacer ().setUnit (unit);
+		getUnitStatsReplacer ().setUnit (xu);
 		text = getUnitStatsReplacer ().replaceVariables (text);
 		
 		// Make the first letter upper case, because on single units it'll start like "a Magic Spirit..."

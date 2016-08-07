@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
 import momime.client.language.database.CombatAreaEffectLang;
@@ -17,22 +16,15 @@ import momime.client.language.database.UnitTypeLang;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.database.UnitType;
-import momime.common.messages.AvailableUnit;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitTypeUtils;
-import momime.common.utils.UnitUtils;
 
 /**
  * Replacer for replacing language strings to do with unit stats
@@ -45,20 +37,11 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
-	/** Unit utils */
-	private UnitUtils unitUtils;
-
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
-	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 	
 	/** The unit whose stats we're outputting */
-	private AvailableUnit unit;
+	private ExpandedUnitDetails unit;
 	
 	/** Text utils */
 	private TextUtils textUtils;
@@ -86,52 +69,49 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			// Unit names (see comments against the UnitNameType enum for exactly what text these generate)
 			case "SIMPLE_UNIT_NAME":
 				
-				text = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.SIMPLE_UNIT_NAME);
+				text = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.SIMPLE_UNIT_NAME);
 				break;
 			
 			case "RACE_UNIT_NAME":
-				text = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME);
+				text = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.RACE_UNIT_NAME);
 				break;
 			
 			case "A_UNIT_NAME":
-				text = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.A_UNIT_NAME);
+				text = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.A_UNIT_NAME);
 				break;
 			
 			case "THE_UNIT_OF_NAME":
-				text = getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.THE_UNIT_OF_NAME);
+				text = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.THE_UNIT_OF_NAME);
 				break;
 			
 			// Used by skill descriptions
 			case "MANA_TOTAL":
-				text = new Integer (getUnitCalculations ().calculateManaTotal (getUnit (), getUnit ().getUnitHasSkill (), getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ())).toString ();
+				text = new Integer (getUnit ().calculateManaTotal ()).toString ();
 				break;
 
 			case "MANA_REMAINING":
-				if (getUnit () instanceof MemoryUnit)
-					text = new Integer (((MemoryUnit) getUnit ()).getManaRemaining ()).toString ();
+				if (getUnit ().isMemoryUnit ())
+					text = new Integer (getUnit ().getManaRemaining ()).toString ();
 				else
 					text = "MANA_TOTAL";
 				break;
 
 			case "AMMO_TOTAL":
-				text = new Integer (getUnitCalculations ().calculateFullRangedAttackAmmo (getUnit (), getUnit ().getUnitHasSkill (), getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ())).toString ();
+				text = new Integer (getUnit ().calculateFullRangedAttackAmmo ()).toString ();
 				break;
 				
 			case "AMMO_REMAINING":
-				if (getUnit () instanceof MemoryUnit)
-					text = new Integer (((MemoryUnit) getUnit ()).getAmmoRemaining ()).toString ();
+				if (getUnit ().isMemoryUnit ())
+					text = new Integer (getUnit ().getAmmoRemaining ()).toString ();
 				else
 					text = "AMMO_TOTAL";
 				break;
 				
 			case "RAT_NAME":
-				final String rangedAttackTypeID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitStatsLanguageVariableReplacer").getRangedAttackType ();
-				if (rangedAttackTypeID == null)
+				if (getUnit ().getRangedAttackType () == null)
 					text = null;
 				else
-					text = getLanguage ().findRangedAttackTypeDescription (rangedAttackTypeID);
+					text = getLanguage ().findRangedAttackTypeDescription (getUnit ().getRangedAttackType ().getRangedAttackTypeID ());
 				break;
 				
 			// This outputs the actual level of the unit, including or excluding (a.k.a. natural) any bonuses from Warlord and Crusade,
@@ -139,15 +119,12 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			case "EXPERIENCE_LEVEL_NAME":
 			case "EXPERIENCE_NATURAL_LEVEL_NAME":
 			{
-				final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (getUnit (), code.equals ("EXPERIENCE_LEVEL_NAME"), getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				final ExperienceLevel expLvl = code.equals ("EXPERIENCE_LEVEL_NAME") ? getUnit ().getModifiedExperienceLevel () : getUnit ().getBasicExperienceLevel ();
 				if (expLvl == null)
 					text = null;
 				else
 				{
-					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitStatsLanguageVariableReplacer").getUnitMagicRealm ();
-					final String unitTypeID = getClient ().getClientDB ().findPick (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
-					final UnitTypeLang unitType = getLanguage ().findUnitType (unitTypeID);
+					final UnitTypeLang unitType = getLanguage ().findUnitType (getUnit ().getUnitType ().getUnitTypeID ());
 					if (unitType == null)
 						text = null;
 					else
@@ -162,15 +139,12 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			case "EXPERIENCE_SKILL_BONUSES":
 			{
 				// Work this out only once
-				final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (getUnit (), true, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				final ExperienceLevel expLvl = getUnit ().getModifiedExperienceLevel ();
 				if (expLvl == null)
 					text = null;
 				else
 				{
-					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitStatsLanguageVariableReplacer").getUnitMagicRealm ();
-					final String unitTypeID = getClient ().getClientDB ().findPick (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
-					final UnitTypeLang unitType = getLanguage ().findUnitType (unitTypeID);
+					final UnitTypeLang unitType = getLanguage ().findUnitType (getUnit ().getUnitType ().getUnitTypeID ());
 					if (unitType == null)
 						text = null;
 					else if (expLvl.getLevelNumber () == 0)
@@ -180,19 +154,10 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 						final StringBuilder bonuses = new StringBuilder ();
 						
 						// List out all the bonuses this exp level gives
-						final List<UnitSkillAndValue> mergedSkills;
-						if (getUnit () instanceof MemoryUnit)
-							mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-								(MemoryUnit) getUnit (), getClient ().getClientDB ());
-						else
-							mergedSkills = getUnit ().getUnitHasSkill ();
-							
 						for (final UnitSkillAndValue bonus : expLvl.getExperienceSkillBonus ())
 							
 							// Don't mention skills that the unit does not have
-							if ((bonus.getUnitSkillValue () != null) && (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), mergedSkills, bonus.getUnitSkillID (), null,
-								UnitSkillComponent.BASIC, UnitSkillPositiveNegative.BOTH, null, null,
-								getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0))
+							if ((bonus.getUnitSkillValue () != null) && (getUnit ().hasModifiedSkill (bonus.getUnitSkillID ())))
 							{
 								if (bonuses.length () > 0)
 									bonuses.append (", ");
@@ -218,13 +183,10 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			// If the unit gains some level boost from Warlord and/or Crusade, then this outputs some text describing that
 			case "EXPERIENCE_LEVEL_BOOST":
 			{
-				final ExperienceLevel modifiedExpLvl = getUnitUtils ().getExperienceLevel (getUnit (), true, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				final ExperienceLevel modifiedExpLvl = getUnit ().getModifiedExperienceLevel ();
 				
 				// 2nd part of this will exclude if we get no actual bonus, e.g. don't list Warlord as usefully doing anything for heroes who are naturally at Demi-God level
-				if ((modifiedExpLvl == null) || (modifiedExpLvl == getUnitUtils ().getExperienceLevel (getUnit (), false, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ())))
-					
+				if ((modifiedExpLvl == null) || (modifiedExpLvl == getUnit ().getBasicExperienceLevel ()))					
 					text = null;
 				else
 					text = getLanguage ().findCategoryEntry ("frmHelp", "ExperienceLevelBoost").replaceAll
@@ -236,18 +198,13 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			// This says how much more experience a unit needs to get to the next level
 			case "EXPERIENCE_NEXT_LEVEL":
 			{
-				final ExperienceLevel naturalExpLvl = getUnitUtils ().getExperienceLevel (getUnit (), false, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+				final ExperienceLevel naturalExpLvl = getUnit ().getBasicExperienceLevel ();
 				if (naturalExpLvl == null)
 					text = null;
 				else
 				{
-					final String unitMagicRealmID = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitStatsLanguageVariableReplacer").getUnitMagicRealm ();
-					final String unitTypeID = getClient ().getClientDB ().findPick (unitMagicRealmID, "UnitStatsLanguageVariableReplacer").getUnitTypeID ();
-					final UnitType unitType = getClient ().getClientDB ().findUnitType (unitTypeID, "UnitStatsLanguageVariableReplacer");
-					
-					final ExperienceLevel nextExpLevel = UnitTypeUtils.findExperienceLevel (unitType, naturalExpLvl.getLevelNumber () + 1);
-					final UnitTypeLang unitTypeLang = getLanguage ().findUnitType (unitTypeID);
+					final ExperienceLevel nextExpLevel = UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), naturalExpLvl.getLevelNumber () + 1);
+					final UnitTypeLang unitTypeLang = getLanguage ().findUnitType (getUnit ().getUnitType ().getUnitTypeID ());
 					
 					if (unitTypeLang == null)
 						text = null;
@@ -263,20 +220,18 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 					else
 					{
 						// How much exp do we need to reach the next level?
-						final int expRequired = nextExpLevel.getExperienceRequired () - getUnitUtils ().getBasicSkillValue
-							(getUnit ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+						final int expRequired = nextExpLevel.getExperienceRequired () - getUnit ().getBasicSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 						
 						// What level is the unit now, including Warlord and Crusade?
-						final ExperienceLevel modifiedExpLvl = getUnitUtils ().getExperienceLevel (getUnit (), true, getClient ().getPlayers (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+						final ExperienceLevel modifiedExpLvl = getUnit ().getModifiedExperienceLevel ();
 						
 						// Does this wizard get any level boosts from warlord/crusade?  And if so, is there a higher level than the next natural level for this unit?						
-						if ((naturalExpLvl != modifiedExpLvl) && (UnitTypeUtils.findExperienceLevel (unitType, naturalExpLvl.getLevelNumber () + 2) != null))
+						if ((naturalExpLvl != modifiedExpLvl) && (UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), naturalExpLvl.getLevelNumber () + 2) != null))
 						{
 							// We've only proved that some higher level exists - we don't know if the actual level boost will be +1 or +2, if they have both Warlord and Crusade
 							// Equally if they DO have both Warlord and Crusade, we have to make sure we don't raise up to a level that doesn't exist
 							int modifiedLevelNumber = modifiedExpLvl.getLevelNumber () + 1;
-							while (UnitTypeUtils.findExperienceLevel (unitType, modifiedLevelNumber) == null)
+							while (UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), modifiedLevelNumber) == null)
 								modifiedLevelNumber--;
 							
 							text = getLanguage ().findCategoryEntry ("frmHelp", "ExperienceForNextLevelWithBoost").replaceAll
@@ -297,17 +252,11 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			default:
 				// This outputs the value of the specified skill, e.g. SKILL_VALUE_US098 outputs how much experience the unit has
 				if (code.startsWith ("SKILL_VALUE_"))
-					text = new Integer (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (12), null,
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ())).toString ();
+					text = new Integer (getUnit ().getModifiedSkillValue (code.substring (12))).toString ();
 				
 				// This outputs 'Super' if the value of the specified skill is 2 or more
 				else if (code.startsWith ("SUPER_"))
-				{
-					text = (getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), code.substring (6), null,
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) > 1) ? "Super" : "";
-				}
+					text = (getUnit ().getModifiedSkillValue (code.substring (6)) > 1) ? "Super" : "";
 				
 				else
 					text = null;
@@ -325,8 +274,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 		
 		// This follows the same logic and checks as UnitUtilsImpl.getExperienceLevel ()
 		// Does the player have the Warlord retort?
-		final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getUnit ().getOwningPlayerID (), "getExperienceLevel");
-		final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+		final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) getUnit ().getOwningPlayer ().getPersistentPlayerPublicKnowledge ()).getPick ();
 		if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_WARLORD) > 0)
 		{
 			if (s.length () > 0)
@@ -394,54 +342,6 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	}
 
 	/**
-	 * @return Unit utils
-	 */
-	public final UnitUtils getUnitUtils ()
-	{
-		return unitUtils;
-	}
-
-	/**
-	 * @param utils Unit utils
-	 */
-	public final void setUnitUtils (final UnitUtils utils)
-	{
-		unitUtils = utils;
-	}
-	
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
-	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
-	}
-
-	/**
 	 * @return Client-side unit utils
 	 */
 	public final UnitClientUtils getUnitClientUtils ()
@@ -460,7 +360,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	/**
 	 * @return The unit whose stats we're outputting
 	 */
-	public final AvailableUnit getUnit ()
+	public final ExpandedUnitDetails getUnit ()
 	{
 		return unit;
 	}
@@ -469,7 +369,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	 * @param u The unit whose stats we're outputting
 	 */
 	@Override
-	public final void setUnit (final AvailableUnit u)
+	public final void setUnit (final ExpandedUnitDetails u)
 	{
 		unit = u;
 	}

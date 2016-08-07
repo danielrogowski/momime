@@ -10,7 +10,6 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -81,34 +80,6 @@ public interface UnitCalculations
 	public int calculateDoubleMovementToEnterCombatTile (final MomCombatTile tile, final CommonDatabase db)
 		throws RecordNotFoundException;
 	
-	/**
-	 * @param unit Unit we want to check
-	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @return How much ranged ammo this unit has when fully loaded
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	public int calculateFullRangedAttackAmmo (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
-
-	/**
-	 * @param unit Unit we want to check
-	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @return How much mana the unit has total, before any is spent in combat
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	public int calculateManaTotal (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
-
 	/**
 	 * Initializes any values on the unit at the start of a combat
 	 * NB. Available units can never expend ranged attack ammo or use mana, but storing these values keeps avoids the need for the

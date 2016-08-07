@@ -242,64 +242,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	}
 
 	/**
-	 * @param unit Unit we want to check
-	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @return How much ranged ammo this unit has when fully loaded
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	@Override
-	public final int calculateFullRangedAttackAmmo (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
-	{
-		return getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_RANGED_ATTACK_AMMO, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
-	}
-
-	/**
-	 * @param unit Unit we want to check
-	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @return How much mana the unit has total, before any is spent in combat
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	@Override
-	public final int calculateManaTotal (final AvailableUnit unit, final List<UnitSkillAndValue> skills, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
-	{
-		log.trace ("Entering calculateManaTotal: " + unit.getUnitID ());
-		
-		// Unit caster skill is easy, this directly says how many MP the unit has
-		int total = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
-		
-		// The hero caster skill is a bit more of a pain, since we get more mana at higher experience levels
-		int heroSkillValue = getUnitSkillUtils ().getModifiedSkillValue (unit, skills, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);
-		if (heroSkillValue > 0)
-		{
-			final int expLevel = getUnitUtils ().getExperienceLevel (unit, true, players, mem.getCombatAreaEffect (), db).getLevelNumber ();
-			heroSkillValue = (heroSkillValue * 5 * (expLevel+1)) / 2;
-			
-			if (total < 0)
-				total = heroSkillValue;
-			else
-				total = total + heroSkillValue;
-		}
-		
-		log.trace ("Exiting calculateManaTotal = " + total);
-		return total;
-	}
-
-	/**
 	 * Initializes any values on the unit at the start of a combat
 	 * NB. Available units can never expend ranged attack ammo or use mana, but storing these values keeps avoids the need for the
 	 * methods to use the Fog of War memory to look for spell effects that might increase ammo or mana
@@ -318,16 +260,15 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	{
 		log.trace ("Entering giveUnitFullRangedAmmoAndMana: Unit URN " + unit.getUnitURN () + ", " + unit.getUnitID ());
 		
-		final Unit unitDef = db.findUnit (unit.getUnitID (), "giveUnitFullRangedAmmoAndMana");
-		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
+		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
 		
 		// Easy values
-		unit.setAmmoRemaining (calculateFullRangedAttackAmmo (unit, mergedSkills, players, mem, db));
-		unit.setManaRemaining (calculateManaTotal (unit, mergedSkills, players, mem, db));
+		unit.setAmmoRemaining (xu.calculateFullRangedAttackAmmo ());
+		unit.setManaRemaining (xu.calculateManaTotal ());
 
 		// Fixed spells, like Giant Spiders 'casting' web or Magicians casting Fireball
 		unit.getFixedSpellsRemaining ().clear ();
-		for (final UnitCanCast fixedSpell : unitDef.getUnitCanCast ())
+		for (final UnitCanCast fixedSpell : xu.getUnitDefinition ().getUnitCanCast ())
 		{
 			final int count;
 			if ((fixedSpell.getNumberOfTimes () != null) && (fixedSpell.getNumberOfTimes () > 0))

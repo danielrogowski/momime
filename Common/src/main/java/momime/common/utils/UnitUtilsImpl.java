@@ -837,7 +837,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		// Finally can build the unit object
 		final ExpandedUnitDetailsImpl container = new ExpandedUnitDetailsImpl (unit, unitDef, unitType, owningPlayer, magicRealmLifeformType,
-			weaponGrade, rangedAttackType, basicExpLvl, modifiedExpLvl, basicSkillValues, modifiedSkillValues, basicUpkeepValues, modifiedUpkeepValues);
+			weaponGrade, rangedAttackType, basicExpLvl, modifiedExpLvl, basicSkillValues, modifiedSkillValues, basicUpkeepValues, modifiedUpkeepValues, this);
 		log.trace ("Exiting expandUnitDetails = " + container);
 		return container;
 	}

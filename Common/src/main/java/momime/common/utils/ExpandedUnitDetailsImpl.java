@@ -92,6 +92,9 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	/** Upkeep values, modified by reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here */
 	private final Map<String, Integer> modifiedUpkeepValues;
 	
+	/** Unit utils */
+	private final UnitUtils unitUtils;
+	
 	/**
 	 * @param aUnit The unit whose details we are storing
 	 * @param aUnitDefinition Definition for this unit from the XML database
@@ -106,12 +109,13 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	 * @param aModifiedSkillValues Modified skill values, broken down into their individual components; valueless skills will just have a null in the outer map
 	 * @param aBasicUpkeepValues Base upkeep values, before any reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here
 	 * @param aModifiedUpkeepValues Upkeep values, modified by reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here
+	 * @param aUnitUtils Unit utils
 	 */
 	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final Unit aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
 		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackType aRangedAttackType,
 		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl,
 		final Map<String, Integer> aBasicSkillValues, final Map<String, Map<UnitSkillComponent, Integer>> aModifiedSkillValues,
-		final Map<String, Integer> aBasicUpkeepValues, final Map<String, Integer> aModifiedUpkeepValues)
+		final Map<String, Integer> aBasicUpkeepValues, final Map<String, Integer> aModifiedUpkeepValues, final UnitUtils aUnitUtils)
 	{
 		unit = aUnit;
 		unitDefinition = aUnitDefinition;
@@ -126,6 +130,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		modifiedSkillValues = aModifiedSkillValues;
 		basicUpkeepValues = aBasicUpkeepValues;
 		modifiedUpkeepValues = aModifiedUpkeepValues;
+		unitUtils = aUnitUtils;
 	}
 	
 	/**
@@ -714,5 +719,13 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	public final List<UnitDamage> getUnitDamage () throws MomException
 	{
 		return getMemoryUnit ().getUnitDamage ();
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
 	}
 }

@@ -47,7 +47,7 @@ public final class TestExpandedUnitDetailsImpl
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
 		
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, null);
 		
 		// Run method
 		assertEquals (9, xu.getModifiedSkillValue ("US001").intValue ());
@@ -71,7 +71,7 @@ public final class TestExpandedUnitDetailsImpl
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
 		
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, null);
 		
 		// Run method
 		xu.getModifiedSkillValue ("US001");
@@ -89,7 +89,7 @@ public final class TestExpandedUnitDetailsImpl
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
 
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, null);
 		
 		// Run method
 		xu.getModifiedSkillValue ("US001");
@@ -110,7 +110,7 @@ public final class TestExpandedUnitDetailsImpl
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
 		
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, null);
 		
 		// Run method
 		assertNull (xu.getModifiedSkillValue ("US001"));
@@ -137,7 +137,7 @@ public final class TestExpandedUnitDetailsImpl
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
 		
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, null);
 		
 		// Run method
 		assertEquals (9, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH).intValue ());
@@ -167,7 +167,7 @@ public final class TestExpandedUnitDetailsImpl
 		final Unit unitDef = new Unit ();
 		
 		// Set up object to test
-		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, unitDef, null, null, null, null, null, null, null, null, null, null, null);
+		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, unitDef, null, null, null, null, null, null, null, null, null, null, null, null);
 
 		// Run method
 		unitDef.setFigureCount (1);
@@ -211,7 +211,7 @@ public final class TestExpandedUnitDetailsImpl
 		final AvailableUnit unit = new AvailableUnit ();
 		
 		// Set up object to test
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, basicSkillValues, null, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, basicSkillValues, null, null, null, null);
 		
 		// Try with no matching skills
 		assertFalse (xu.unitIgnoresCombatTerrain (db));
@@ -232,7 +232,7 @@ public final class TestExpandedUnitDetailsImpl
 		// Test unit without the ranged attack skill
 		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
 
-		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null);
+		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, null, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, null);
 		assertEquals (0, unit.calculateFullRangedAttackAmmo ());
 
 		// Test unit with the ranged attack skill
@@ -257,7 +257,7 @@ public final class TestExpandedUnitDetailsImpl
 		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
 		final ExperienceLevel expLevel = new ExperienceLevel ();
 		
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, expLevel, null, modifiedSkillValues, null, null);
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, expLevel, null, modifiedSkillValues, null, null, null);
 		
 		// Test a non-casting unit
 		assertEquals (0, xu.calculateManaTotal ());

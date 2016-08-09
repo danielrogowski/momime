@@ -410,7 +410,77 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 
 		return realCount;
 	}
+	
+	/**
+	 * @return Total damage taken by this unit across all types
+	 * @throws MomException Won't happen, since we return 0 for AvailableUnits 
+	 */
+	@Override
+	public final int getTotalDamageTaken () throws MomException
+	{
+		return isMemoryUnit () ? getUnitUtils ().getTotalDamageTaken (getUnitDamage ()) : 0;
+	}	
 
+	/**
+	 * @return How many hit points the unit as a whole has left
+	 * @throws MomException If we hit any problems reading unit skill values
+	 */
+	@Override
+	public final int calculateHitPointsRemaining () throws MomException
+	{
+		log.trace ("Entering calculateHitPointsRemaining: " + getDebugIdentifier ());
+		
+		final int result = (getFullFigureCount () * getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)) - getTotalDamageTaken ();
+		
+		log.trace ("Exiting calculateHitPointsRemaining = " + result);
+		return result;
+	}
+	
+	/**
+	 * First figure will take full damage before the second figure takes any damage
+	 * 
+	 * @return Number of figures left alive in this unit
+	 * @throws MomException If we hit any problems reading unit skill values
+	 */
+	@Override
+	public final int calculateAliveFigureCount () throws MomException
+	{
+		log.trace ("Entering calculateAliveFigureCount: " + getDebugIdentifier ());
+		
+		int figures = getFullFigureCount () -
+				
+			// Take off 1 for each full set of HP the unit has taken in damage
+			(getTotalDamageTaken () / getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS));
+		
+		// Protect against weird results
+		if (figures < 0)
+			figures = 0;
+		
+		log.trace ("Exiting calculateAliveFigureCount = " + figures);
+		return figures;
+	}
+	
+	/**
+	 * @return How many hit points the first figure in this unit has left
+	 * @throws MomException If we hit any problems reading unit skill values
+	 */
+	@Override
+	public final int calculateHitPointsRemainingOfFirstFigure () throws MomException
+	{
+		log.trace ("Entering calculateHitPointsRemainingOfFirstFigure: " + getDebugIdentifier ());
+		
+		final int hitPointsPerFigure = getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);
+		
+		// Work out how much damage the first figure has taken
+		final int firstFigureDamageTaken = getTotalDamageTaken () % hitPointsPerFigure;
+		
+		// Then from that work out how many hit points the first figure has left
+		final int result = hitPointsPerFigure - firstFigureDamageTaken;
+		
+		log.trace ("Exiting calculateHitPointsRemainingOfFirstFigure = " + result);
+		return result;
+	}
+	
 	/**
 	 * @param db Lookup lists built over the XML database
 	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag

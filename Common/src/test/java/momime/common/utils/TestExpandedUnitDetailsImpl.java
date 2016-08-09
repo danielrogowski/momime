@@ -21,6 +21,7 @@ import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.MemoryUnit;
 
 /**
  * Tests the ExpandedUnitDetailsImpl class
@@ -179,6 +180,157 @@ public final class TestExpandedUnitDetailsImpl
 		// Hydra
 		unitDef.setFigureCount (9);
 		assertEquals (1, unit.getFullFigureCount ());
+	}
+	
+	/**
+	 * Tests the calculateHitPointsRemaining method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateHitPointsRemaining () throws Exception
+	{
+		// Mock database
+		final Unit unitDef = new Unit ();
+
+		// Damage taken
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final Map<UnitSkillComponent, Integer> hp = new HashMap<UnitSkillComponent, Integer> ();
+
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, hp);
+
+		final MemoryUnit unit = new MemoryUnit ();
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, unitDef, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, unitUtils);
+		
+		// Unit with 1 HP per figure at full health of 6 figures
+		unitDef.setFigureCount (6);
+		hp.put (UnitSkillComponent.BASIC, 1);
+
+		assertEquals (6, xu.calculateHitPointsRemaining ());
+	
+		// Take 1 hit
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (1);
+		assertEquals (5, xu.calculateHitPointsRemaining ());
+
+		// Now it has 4 HP per figure
+		hp.put (UnitSkillComponent.EXPERIENCE, 3);
+		assertEquals (23, xu.calculateHitPointsRemaining ());
+		
+		// Take 2 more hits
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (3);
+		assertEquals (21, xu.calculateHitPointsRemaining ());
+	}
+	
+	/**
+	 * Tests the calculateAliveFigureCount method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateAliveFigureCount () throws Exception
+	{
+		// Mock database
+		final Unit unitDef = new Unit ();
+
+		// Damage taken
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final Map<UnitSkillComponent, Integer> hp = new HashMap<UnitSkillComponent, Integer> ();
+
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, hp);
+
+		final MemoryUnit unit = new MemoryUnit ();
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, unitDef, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, unitUtils);
+
+		// Unit with 1 HP per figure at full health of 6 figures
+		unitDef.setFigureCount (6);
+		hp.put (UnitSkillComponent.BASIC, 1);
+		
+		assertEquals (6, xu.calculateAliveFigureCount ());
+		
+		// Now it takes 2 hits
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (2);
+		assertEquals (4, xu.calculateAliveFigureCount ());
+
+		// Now its dead
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (6);
+		assertEquals (0, xu.calculateAliveFigureCount ());
+
+		// Now its more than dead
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (9);
+		assertEquals (0, xu.calculateAliveFigureCount ());
+		
+		// Now it has 4 HP per figure, so 6x4=24 total damage
+		hp.put (UnitSkillComponent.EXPERIENCE, 3);
+		assertEquals (4, xu.calculateAliveFigureCount ());
+		
+		// With 11 dmg taken, there's still only 2 figures dead, since it rounds down
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (11);
+		assertEquals (4, xu.calculateAliveFigureCount ());
+		
+		// With 12 dmg taken, there's 3 figures dead
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (12);
+		assertEquals (3, xu.calculateAliveFigureCount ());
+
+		// Nearly dead
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (23);
+		assertEquals (1, xu.calculateAliveFigureCount ());
+	}
+	
+	/**
+	 * Tests the calculateHitPointsRemainingOfFirstFigure method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateHitPointsRemainingOfFirstFigure () throws Exception
+	{
+		// Mock database
+		final Unit unitDef = new Unit ();
+
+		// Damage taken
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		// Set up object to test
+		final Map<UnitSkillComponent, Integer> hp = new HashMap<UnitSkillComponent, Integer> ();
+
+		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, hp);
+
+		final MemoryUnit unit = new MemoryUnit ();
+		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, unitDef, null, null, null, null, null, null, null, null, modifiedSkillValues, null, null, unitUtils);
+		
+		// Unit with 1 HP per figure at full health of 6 figures (actually nbr of figures is irrelevant)
+		unitDef.setFigureCount (6);
+		hp.put (UnitSkillComponent.BASIC, 1);
+
+		assertEquals (1, xu.calculateHitPointsRemainingOfFirstFigure ());
+	
+		// Taking a hit makes no difference, now we're just on the same figure, with same HP
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (1);
+		assertEquals (1, xu.calculateHitPointsRemainingOfFirstFigure ());
+
+		// Now it has 4 HP per figure
+		hp.put (UnitSkillComponent.EXPERIENCE, 3);
+		assertEquals (3, xu.calculateHitPointsRemainingOfFirstFigure ());
+		
+		// Take 2 more hits
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (3);
+		assertEquals (1, xu.calculateHitPointsRemainingOfFirstFigure ());
+		
+		// 1 more hit and first figure is dead, so second on full HP
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (4);
+		assertEquals (4, xu.calculateHitPointsRemainingOfFirstFigure ());
+
+		// 2 and a quarter figures dead
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (9);
+		assertEquals (3, xu.calculateHitPointsRemainingOfFirstFigure ());
+
+		// 2 and three-quarter figures dead
+		when (unitUtils.getTotalDamageTaken (unit.getUnitDamage ())).thenReturn (11);
+		assertEquals (1, xu.calculateHitPointsRemainingOfFirstFigure ());
 	}
 	
 	/**

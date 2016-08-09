@@ -170,6 +170,32 @@ public interface ExpandedUnitDetails
 	public int getFullFigureCount ();
 
 	/**
+	 * @return Total damage taken by this unit across all types
+	 * @throws MomException Won't happen, since we return 0 for AvailableUnits 
+	 */
+	public int getTotalDamageTaken () throws MomException;
+	
+	/**
+	 * @return How many hit points the unit as a whole has left
+	 * @throws MomException If we hit any problems reading unit skill values
+	 */
+	public int calculateHitPointsRemaining () throws MomException;
+	
+	/**
+	 * First figure will take full damage before the second figure takes any damage
+	 * 
+	 * @return Number of figures left alive in this unit
+	 * @throws MomException If we hit any problems reading unit skill values
+	 */
+	public int calculateAliveFigureCount () throws MomException;
+	
+	/**
+	 * @return How many hit points the first figure in this unit has left
+	 * @throws MomException If we hit any problems reading unit skill values
+	 */
+	public int calculateHitPointsRemainingOfFirstFigure () throws MomException;
+	
+	/**
 	 * @param db Lookup lists built over the XML database
 	 * @return True if the unit has a skill with the "ignoreCombatTerrain" flag
 	 * @throws RecordNotFoundException If one of the unit skills is not found in the database

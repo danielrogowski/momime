@@ -481,11 +481,10 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	
 	/**
 	 * @param citySpellEffectID City spell effect ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return City spell effect object, or null if not found (e.g. Pestilence has no image)
 	 */
 	@Override
-	public final CityViewElementGfx findCitySpellEffect (final String citySpellEffectID, final String caller)
+	public final CityViewElementGfx findCitySpellEffect (final String citySpellEffectID)
 	{
 		return citySpellEffectsMap.get (citySpellEffectID);
 	}

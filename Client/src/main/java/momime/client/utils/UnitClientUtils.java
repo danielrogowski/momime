@@ -172,7 +172,7 @@ public interface UnitClientUtils
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @throws IOException If there is a problem
 	 */
-	public void drawUnitFigures (final AvailableUnit unit, final String combatActionID, final int direction, final ZOrderGraphics g,
+	public void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
 		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder, final List<String> shadingColours) throws IOException;
 
 	/**

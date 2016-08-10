@@ -7,9 +7,16 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
+
 import momime.client.MomClient;
-import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.ClientUnitCalculations;
+import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -18,17 +25,10 @@ import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 /**
  * Server breaks down client move requests into a series of directions and sends them back to the client
@@ -72,7 +72,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	private int tickCount;
 	
 	/** The unit that is moving */
-	private MemoryUnit unit;
+	private ExpandedUnitDetails unit;
 	
 	/** The location (in combat map cells) that we're moving to */
 	private MapCoordinates2DEx moveTo;
@@ -106,21 +106,23 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		log.trace ("Entering start");
 		
 		// Find the unit that's moving
-		unit = getUnitUtils ().findUnitURN (getUnitURN (),
+		final MemoryUnit mu = getUnitUtils ().findUnitURN (getUnitURN (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "MoveUnitInCombatMessageImpl.start");
 		
-		if (!getMoveFrom ().equals (unit.getCombatPosition ()))
+		if (!getMoveFrom ().equals (mu.getCombatPosition ()))
 			log.warn ("MoveUnitInCombatMessageImpl is trying to move Unit URN " + getUnitURN () + " but its previous location stated in the message (" + getMoveFrom () +
-				") isn't what we expected (" + unit.getCombatPosition () + ")");
+				") isn't what we expected (" + mu.getCombatPosition () + ")");
+		
+		unit = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 		
 		// See if we need to draw an animation that moves with the unit, e.g. Confusion
 		animations = new ArrayList<AnimationGfx> ();
 		shadingColours = new ArrayList<String> ();
 		
-		for (final UnitSkillAndValue unitSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList
-			(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ()))
+		for (final String unitSkillID : unit.listModifiedSkillIDs ())
 		{
-			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkill.getUnitSkillID (), "MoveUnitInCombatMessageImpl.start");
+			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "MoveUnitInCombatMessageImpl.start");
 			if (unitSkillGfx.getUnitSkillCombatAnimation () != null)
 				animations.add (getGraphicsDB ().findAnimation (unitSkillGfx.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
 			
@@ -129,8 +131,8 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		}
 		
 		// Remove the unit from the map cell it is leaving so the regular drawing routine stops drawing this unit
-		getCombatUI ().setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), null);
-		unit.setCombatPosition (null);
+		getCombatUI ().setUnitToDrawAtLocation (mu.getCombatPosition ().getX (), mu.getCombatPosition ().getY (), null);
+		mu.setCombatPosition (null);
 		getCombatUI ().setUnitMoving (this);
 
 		// We need this repeatedly so just work it out once
@@ -142,18 +144,18 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		currentZOrder = getMoveFrom ().getY ();
 		
 		// Work the duration out once only
-		duration = getUnitClientUtils ().calculateWalkTiming (unit) * 0.8d;
+		duration = getUnitClientUtils ().calculateWalkTiming (mu) * 0.8d;
 
 		// Work out new position
 		moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) getMoveFrom ());
 		getCoordinateSystemUtils ().move2DCoordinates (getClient ().getSessionDescription ().getCombatMapSize (), moveTo, getDirection ());
 		
 		// Kick off animation
-		unit.setCombatHeading (getDirection ());
-		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
+		mu.setCombatHeading (getDirection ());
+		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (mu, true);
 		
 		// Play walking sound effect
-		getUnitClientUtils ().playCombatActionSound (unit, movingActionID);
+		getUnitClientUtils ().playCombatActionSound (mu, movingActionID);
 		
 		log.trace ("Exiting start");
 	}
@@ -227,7 +229,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		// Jump to the next unit to move, unless we're a unit who still has some movement left.
 		// This routine will then ignore the request if we're not the current player.
 		if (unit.getDoubleCombatMovesLeft () <= 0)
-			getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit);
+			getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit.getMemoryUnit ());
 		
 		getCombatMapProcessing ().selectNextUnitToMoveCombat ();
 		
@@ -381,7 +383,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/**
 	 * @return The unit that is moving
 	 */
-	public final MemoryUnit getUnit ()
+	public final ExpandedUnitDetails getUnit ()
 	{
 		return unit;
 	}

@@ -27,6 +27,7 @@ import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
@@ -188,7 +189,10 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		else
 		{
 			// Show the unit
-			getCombatUI ().setUnitToDrawAtLocation (getCombatPosition ().getX (), getCombatPosition ().getY (), unit);
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			
+			getCombatUI ().setUnitToDrawAtLocation (getCombatPosition ().getX (), getCombatPosition ().getY (), xu);
 	
 			// Give it movement this turn
 			unit.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (),

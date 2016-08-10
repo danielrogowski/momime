@@ -252,7 +252,7 @@ public final class TestOverlandMapRightHandPanel
 		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer (new Answer<SelectUnitButton> ()
 		{
 			@Override
-			public final SelectUnitButton answer (final InvocationOnMock invocation) throws Throwable
+			public final SelectUnitButton answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
 			{
 				final SelectUnitButton button = new SelectUnitButton ();
 				button.setUtils (utils);

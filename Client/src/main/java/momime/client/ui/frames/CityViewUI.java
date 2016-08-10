@@ -248,7 +248,7 @@ public final class CityViewUI extends MomClientFrameUI
 	private JPanel constructionPanel;
 	
 	/** Sample unit to display in constructionpanel */
-	private AvailableUnit sampleUnit;
+	private ExpandedUnitDetails sampleUnit;
 	
 	/** Dynamically created select unit buttons */
 	private List<SelectUnitButton> selectUnitButtons = new ArrayList<SelectUnitButton> ();
@@ -728,7 +728,7 @@ public final class CityViewUI extends MomClientFrameUI
 					if (sampleUnit != null)
 					{
 						zOrderGraphics.setGraphics (g);
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit.getUnit (), true);
 						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, zOrderGraphics, (constructionPanel.getWidth () - 60) / 2, 28, true, true, 0, null);
 					}
 				}
@@ -1121,13 +1121,16 @@ public final class CityViewUI extends MomClientFrameUI
 		else
 		{
 			// Create a dummy unit here, rather than on every paintComponent call
-			sampleUnit = new AvailableUnit ();
-			sampleUnit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
+			final AvailableUnit sample = new AvailableUnit ();
+			sample.setUnitID (cityData.getCurrentlyConstructingUnitID ());
 
 			// We don't have to get the weapon grade or experience right just to draw the figures
-			getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
+			getUnitUtils ().initializeUnitSkills (sample, null, getClient ().getClientDB ());
 			
-			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+			sampleUnit = getUnitUtils ().expandUnitDetails (sample, null, null, null,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			
+			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sample, true);
 			getUnitClientUtils ().registerUnitFiguresAnimation (cityData.getCurrentlyConstructingUnitID (), movingActionID, 4, constructionPanel);
 		}
 		

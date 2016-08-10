@@ -143,7 +143,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			 * @throws IOException Can be used for more general types of processing failure
 			 */
 			@Override
-			public final void accountCreated (final int playerID) throws JAXBException, XMLStreamException, IOException
+			public final void accountCreated (@SuppressWarnings ("unused") final int playerID) throws JAXBException, XMLStreamException, IOException
 			{
 				// Log in with the new account
 				getConnectToServerUI ().afterAccountCreated ();
@@ -279,7 +279,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			 * @throws IOException Can be used for more general types of processing failure
 			 */
 			@Override
-			public final void additionalPlayerJoined (final int playerID) throws JAXBException, XMLStreamException, IOException
+			public final void additionalPlayerJoined (@SuppressWarnings ("unused") final int playerID) throws JAXBException, XMLStreamException, IOException
 			{
 				getNewGameUI ().updateWaitPanelPlayersList ();
 			}
@@ -294,7 +294,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			 * @throws IOException Can be used for more general types of processing failure
 			 */
 			@Override
-			public final void playerLeft (final int playerID) throws JAXBException, XMLStreamException, IOException
+			public final void playerLeft (@SuppressWarnings ("unused") final int playerID) throws JAXBException, XMLStreamException, IOException
 			{
 				// This isn't really right, because as per comments above, the list hasn't been updated yet
 				getNewGameUI ().updateWaitPanelPlayersList ();

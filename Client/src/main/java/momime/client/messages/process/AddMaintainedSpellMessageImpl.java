@@ -34,6 +34,7 @@ import momime.common.database.Spell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -355,7 +356,11 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				{
 					final MemoryUnit u = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl.processOneUpdate (C)");
-					getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), u);
+					
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (u, null, null, null,
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
+					getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);
 				}
 			}
 		}

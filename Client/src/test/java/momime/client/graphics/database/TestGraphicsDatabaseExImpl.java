@@ -321,8 +321,8 @@ public final class TestGraphicsDatabaseExImpl
 
 		db.buildMaps ();
 
-		assertEquals ("CSE02", db.findCitySpellEffect ("CSE02", "testFindCitySpellEffect").getCitySpellEffectID ());
-		assertNull (db.findCitySpellEffect ("CSE04", "testFindCitySpellEffect"));
+		assertEquals ("CSE02", db.findCitySpellEffect ("CSE02").getCitySpellEffectID ());
+		assertNull (db.findCitySpellEffect ("CSE04"));
 	}
 
 	/**

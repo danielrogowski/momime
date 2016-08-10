@@ -290,7 +290,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 					// Spells that create city effects, like Altar of Battle
 					for (final SpellHasCityEffect citySpellEffect : spell.getSpellHasCityEffect ())
 					{
-						final CityViewElementGfx cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffect.getCitySpellEffectID (), "findImageForSpell");
+						final CityViewElementGfx cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffect.getCitySpellEffectID ());
 						if (cityViewElement != null)
 							cityViewElements.add (cityViewElement);
 					}

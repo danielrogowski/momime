@@ -685,7 +685,7 @@ public final class HelpUI extends MomClientFrameUI
 		spellID = aSpellID;
 		castingPlayer = player;
 
-		final CityViewElementGfx cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffectID, "showCitySpellEffectID");
+		final CityViewElementGfx cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffectID);
 		if (cityViewElement != null)
 		{
 			String imageFilename = null;

@@ -3,7 +3,7 @@ package momime.client.ui.frames;
 import java.util.List;
 
 import momime.client.graphics.database.AnimationGfx;
-import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * The combatUI caches which unit is at each location on the combat map so it doesn't have to keep rechecking at every redraw.
@@ -13,7 +13,7 @@ import momime.common.messages.MemoryUnit;
 final class CombatUIUnitAndAnimations
 {
 	/** Unit to draw at this combat map cell */
-	private final MemoryUnit unit;
+	private final ExpandedUnitDetails unit;
 	
 	/** Animations to draw on top of the unit */
 	private final List<AnimationGfx> animations;
@@ -26,7 +26,7 @@ final class CombatUIUnitAndAnimations
 	 * @param anAnimations Animations to draw on top of the unit
 	 * @param aShadingColours List of shading colours to apply to the image
 	 */
-	CombatUIUnitAndAnimations (final MemoryUnit aUnit, final List<AnimationGfx> anAnimations, final List<String> aShadingColours)
+	CombatUIUnitAndAnimations (final ExpandedUnitDetails aUnit, final List<AnimationGfx> anAnimations, final List<String> aShadingColours)
 	{
 		unit = aUnit;
 		animations = anAnimations;
@@ -36,7 +36,7 @@ final class CombatUIUnitAndAnimations
 	/**
 	 * @return Unit to draw at this combat map cell
 	 */
-	public final MemoryUnit getUnit ()
+	public final ExpandedUnitDetails getUnit ()
 	{
 		return unit;
 	}

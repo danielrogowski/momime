@@ -512,7 +512,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		
 		// Get the positions of the n times
 		final int [] [] result = new int [aliveFigureCount * figureMultiplier] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER+1];
-		final CombatTileFigurePositionsGfx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "calcUnitFigurePositions").findFigureCount (totalFigureCount * figureMultiplier, "drawUnitFigures");
+		final CombatTileFigurePositionsGfx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "calcUnitFigurePositions").findFigureCount (totalFigureCount * figureMultiplier, "calcUnitFigurePositions");
 		for (int n = 0; n < (aliveFigureCount * figureMultiplier); n++)
 		{
 			final FigurePositionsForFigureCountGfx position = positions.findFigureNumber (n+1, "calcUnitFigurePositions");
@@ -621,37 +621,23 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final void drawUnitFigures (final AvailableUnit unit, final String combatActionID, final int direction, final ZOrderGraphics g,
+	public final void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
 		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder, final List<String> shadingColours) throws IOException
 	{
-		// Get total figures
-		final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "drawUnitFigures");
-		final int totalFigureCount = getUnitUtils ().getFullFigureCount (unitDef);
-		
 		// Get alive figures
-		final int aliveFigureCount;
-		if (unit instanceof MemoryUnit)
-		{
-			aliveFigureCount = getUnitCalculations ().calculateAliveFigureCount ((MemoryUnit) unit, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-		}
-		else
-			aliveFigureCount = totalFigureCount;
+		final int aliveFigureCount = unit.calculateAliveFigureCount ();
 		
 		if (aliveFigureCount > 0)
 		{
-			// Get unit type
-			final String unitTypeID = getClient ().getClientDB ().findPick (unitDef.getUnitMagicRealm (), "drawUnitFigures").getUnitTypeID ();
-			
 			// Get sample tile
 			final String sampleTileImageFile;
 			if (drawSampleTile)
-				sampleTileImageFile = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getSampleTileImageFile ();
+				sampleTileImageFile = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit.getUnit ()).getSampleTileImageFile ();
 			else
 				sampleTileImageFile = null; 
 			
 			// Call other version now that we have all the necessary values
-			drawUnitFigures (unit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, combatActionID,
+			drawUnitFigures (unit.getUnitID (), unit.getUnitType ().getUnitTypeID (), unit.getFullFigureCount (), aliveFigureCount, combatActionID,
 				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours);
 		}
 	}

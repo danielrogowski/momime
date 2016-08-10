@@ -193,7 +193,7 @@ public final class TestHelpUI
 		
 		final CityViewElementGfx citySpellEffectGfx = new CityViewElementGfx ();
 		citySpellEffectGfx.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-SE110-mini.png");
-		when (gfx.findCitySpellEffect ("SE110", "showCitySpellEffectID")).thenReturn (citySpellEffectGfx);
+		when (gfx.findCitySpellEffect ("SE110")).thenReturn (citySpellEffectGfx);
 		
 		// Images for inline text in EL expressions
 		final UnitSkillGfx meleeGfx = new UnitSkillGfx ();

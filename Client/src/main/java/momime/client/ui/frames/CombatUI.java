@@ -83,7 +83,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
@@ -638,21 +637,22 @@ public final class CombatUI extends MomClientFrameUI
 									if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
 									{
 										// Show firing unit going 'pew'
-										if ((unit.getUnit () == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
+										if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
 											combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_RANGED_ATTACK;
 									}
 									
 									// Melee attack animation
 									else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
 									{
-										if ((unit.getUnit () == getAttackAnim ().getAttackerUnit ()) || (unit.getUnit () == getAttackAnim ().getDefenderUnit ()))
+										if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) ||
+											(getAttackAnim ().getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == unit.getUnit ().getUnit ())))
 											combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
 									}
 								}
 								
 								// If animation didn't provide a specific combatActionID then just default to standing still
 								if (combatActionID == null)
-									combatActionID = getClientUnitCalculations ().determineCombatActionID (unit.getUnit (), false);
+									combatActionID = getClientUnitCalculations ().determineCombatActionID (unit.getUnit ().getUnit (), false);
 								
 								// Draw unit
 								getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
@@ -669,7 +669,7 @@ public final class CombatUI extends MomClientFrameUI
 				if (getUnitMoving () != null)
 					try
 					{
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true);
+						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit ().getUnit (), true);
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
 							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours ());
 					}
@@ -1273,8 +1273,12 @@ public final class CombatUI extends MomClientFrameUI
 			for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())) &&
 					(unit.getCombatHeading () != null) && (unit.getCombatSide () != null))
-					
-					setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), unit);
+				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+							
+					setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), xu);
+				}
 			
 			generateCombatAreaEffectIcons ();
 		}
@@ -1879,22 +1883,21 @@ public final class CombatUI extends MomClientFrameUI
 	 * Careful with making updates to this since all the drawing is based on it.  Updates must be consistent with the current location of units, i.e. unit.setCombatPosition ()
 	 * @param x Combat map location to draw this unit at  
 	 * @param y Combat map location to draw this unit at  
-	 * @param u Unit to draw here
+	 * @param xu Unit to draw here
 	 * @throws RecordNotFoundException If there is a problem looking up the skills or animations
 	 */
-	public final void setUnitToDrawAtLocation (final int x, final int y, final MemoryUnit u) throws RecordNotFoundException
+	public final void setUnitToDrawAtLocation (final int x, final int y, final ExpandedUnitDetails xu) throws RecordNotFoundException
 	{
-		if (u == null)
+		if (xu == null)
 			unitToDrawAtEachLocation [y] [x] = null;
 		else
 		{
 			final List<AnimationGfx> animations = new ArrayList<AnimationGfx> ();
 			final List<String> shadingColours = new ArrayList<String> ();
 			
-			for (final UnitSkillAndValue unitSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), u, getClient ().getClientDB ()))
+			for (final String unitSkillID : xu.listModifiedSkillIDs ())
 			{
-				final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkill.getUnitSkillID (), "setUnitToDrawAtLocation");
+				final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "setUnitToDrawAtLocation");
 				if (unitSkillGfx.getUnitSkillCombatAnimation () != null)
 					animations.add (getGraphicsDB ().findAnimation (unitSkillGfx.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
 				
@@ -1903,7 +1906,7 @@ public final class CombatUI extends MomClientFrameUI
 			}
 			
 			unitToDrawAtEachLocation [y] [x] = new CombatUIUnitAndAnimations
-				(u, (animations.size () == 0) ? null : animations, (shadingColours.size () == 0) ? null : shadingColours);
+				(xu, (animations.size () == 0) ? null : animations, (shadingColours.size () == 0) ? null : shadingColours);
 		}
 	}
 

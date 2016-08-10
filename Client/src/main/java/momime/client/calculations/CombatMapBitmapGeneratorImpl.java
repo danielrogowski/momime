@@ -316,7 +316,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	 * @return Top edge of tile in pixel coordinates
 	 */
 	@Override
-	public final int combatCoordinatesY (final int x, final int y, final TileSetGfx combatMapTileSet)
+	public final int combatCoordinatesY (@SuppressWarnings ("unused") final int x, final int y, final TileSetGfx combatMapTileSet)
 	{
 		final int separationY = combatMapTileSet.getTileHeight () / 2;
 

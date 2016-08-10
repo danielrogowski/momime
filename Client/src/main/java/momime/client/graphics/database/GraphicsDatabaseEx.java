@@ -58,10 +58,9 @@ public interface GraphicsDatabaseEx
 
 	/**
 	 * @param citySpellEffectID City spell effect ID to search for
-	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return City spell effect object, or null if not found (e.g. Pestilence has no image)
 	 */
-	public CityViewElementGfx findCitySpellEffect (final String citySpellEffectID, final String caller);
+	public CityViewElementGfx findCitySpellEffect (final String citySpellEffectID);
 	
 	/**
 	 * @param spellID Spell ID to search for

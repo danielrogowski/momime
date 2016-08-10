@@ -199,7 +199,7 @@ public final class TestMagicSlidersUI
 		when (uiComponentFactory.createMagicSlider ()).thenAnswer (new Answer<MagicSlider> ()
 		{
 			@Override
-			public final MagicSlider answer (final InvocationOnMock invocation) throws Throwable
+			public final MagicSlider answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
 			{
 				final MagicSlider slider = new MagicSlider ();
 				slider.setUtils (utils);

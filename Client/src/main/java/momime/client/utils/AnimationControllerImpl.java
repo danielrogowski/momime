@@ -375,7 +375,7 @@ public final class AnimationControllerImpl implements AnimationController
 		 * Update the frame number and trigger all the repaint methods
 		 */
 		@Override
-		public final void actionPerformed (final ActionEvent ev)
+		public final void actionPerformed (@SuppressWarnings ("unused") final ActionEvent ev)
 		{
 			int newFrame = animationFrame + 1;
 			if (newFrame >= anim.getFrame ().size ())

@@ -891,7 +891,7 @@ public final class TestSpellClientUtilsImpl
 		
 		final CityViewElementGfx element = new CityViewElementGfx ();
 		element.setCityViewAlternativeImageFile ("CSE050.png");
-		when (gfx.findCitySpellEffect ("CSE050", "findImageForSpell")).thenReturn (element);
+		when (gfx.findCitySpellEffect ("CSE050")).thenReturn (element);
 		
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
@@ -954,7 +954,7 @@ public final class TestSpellClientUtilsImpl
 			else
 				element.setCityViewImageFile ("CSE051.png");
 			
-			when (gfx.findCitySpellEffect ("CSE0" + n, "findImageForSpell")).thenReturn (element);
+			when (gfx.findCitySpellEffect ("CSE0" + n)).thenReturn (element);
 		}
 		
 		// Mock entries from client DB

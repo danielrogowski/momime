@@ -786,7 +786,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/**
 	 * Stores additional details about each defender unit
 	 */
-	private class ApplyDamageMessageDefenderDetails
+	public class ApplyDamageMessageDefenderDetails
 	{
 		/** Which unit this is */
 		private final MemoryUnit defUnit;

@@ -50,7 +50,7 @@ public abstract class MomClientPanelUI extends LanguageVariableUIImpl
 	 * By default this does nothing, but provides an easier placeholder to override for painting custom backgrounds and so on
 	 * @param g Graphics context
 	 */
-	protected void paintComponent (final Graphics g)
+	protected void paintComponent (@SuppressWarnings ("unused") final Graphics g)
 	{
 	}
 }

@@ -5,6 +5,12 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
@@ -14,14 +20,9 @@ import momime.client.ui.frames.UnitInfoUI;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to notify clients of cancelled maintained spells, or those that have gone out of view
@@ -113,7 +114,11 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 				{
 					final MemoryUnit u = getUnitUtils ().findUnitURN (spell.getUnitURN (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (C)");
-					getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), u);
+					
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (u, null, null, null,
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
+					getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);
 				}
 			}
 			

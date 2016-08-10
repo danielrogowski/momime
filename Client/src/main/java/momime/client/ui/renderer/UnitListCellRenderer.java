@@ -12,6 +12,11 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
@@ -20,17 +25,12 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.UnitLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
-import momime.common.messages.AvailableUnit;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Renderer for drawing the name and figures of a unit in a list cell
  */
-public final class UnitListCellRenderer implements ListCellRenderer<AvailableUnit>
+public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnitDetails>
 {
 	/** Class logger */
 	private final Log log = LogFactory.getLog (UnitListCellRenderer.class);
@@ -62,8 +62,9 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 	/**
 	 * Sets up the label to draw the list cell
 	 */
+	@SuppressWarnings ("unused")
 	@Override
-	public final Component getListCellRendererComponent (final JList<? extends AvailableUnit> list, final AvailableUnit unit,
+	public final Component getListCellRendererComponent (final JList<? extends ExpandedUnitDetails> list, final ExpandedUnitDetails unit,
 		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Because this includes a custom paintComponent, we have to recreate everything every time
@@ -87,8 +88,8 @@ public final class UnitListCellRenderer implements ListCellRenderer<AvailableUni
 					try
 					{
 						zOrderGraphics.setGraphics (g);
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
-						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 0, PANEL_SIZE.height - 32, true, true, 0, null);
+						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit.getUnit (), true);
+						getUnitClientUtils ().drawUnitFigures (unit.getUnit (), movingActionID, 4, zOrderGraphics, 0, PANEL_SIZE.height - 32, true, true, 0, null);
 					}
 					catch (final Exception e)
 					{

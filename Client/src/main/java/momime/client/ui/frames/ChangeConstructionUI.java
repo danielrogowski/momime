@@ -51,6 +51,7 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.clienttoserver.ChangeCityConstructionMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
 
@@ -129,10 +130,10 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	private ListSelectionListener buildingSelectionListener;
 	
 	/** Items in the units list box */
-	private DefaultListModel<AvailableUnit> unitsItems;
+	private DefaultListModel<ExpandedUnitDetails> unitsItems;
 	
 	/** Units list box */
-	private JList<AvailableUnit> unitsList;
+	private JList<ExpandedUnitDetails> unitsList;
 
 	/** Handles clicks on the units list */
 	private ListSelectionListener unitSelectionListener;
@@ -222,8 +223,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		buildingsList.setCellRenderer (getBuildingListCellRenderer ());
 		buildingsList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
-		unitsItems = new DefaultListModel<AvailableUnit> ();
-		unitsList = new JList<AvailableUnit>  ();		
+		unitsItems = new DefaultListModel<ExpandedUnitDetails> ();
+		unitsList = new JList<ExpandedUnitDetails>  ();		
 		unitsList.setOpaque (false);
 		unitsList.setModel (unitsItems);
 		unitsList.setCellRenderer (getUnitListCellRenderer ());
@@ -366,11 +367,14 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 
 			// We don't have to get the weapon grade or experience right just to draw the figures
 			getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
+			
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
 			getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), movingActionID, 4, unitsList);
 
-			unitsItems.addElement (sampleUnit);
+			unitsItems.addElement (xu);
 			
 			// Pre-select whatever was previously being built when the form first opens up
 			if (thisUnit.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()))

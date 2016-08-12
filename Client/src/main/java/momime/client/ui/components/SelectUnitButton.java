@@ -8,22 +8,18 @@ import java.io.IOException;
 
 import javax.swing.JToggleButton;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.NdgUIUtils;
+
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.messages.MemoryUnit;
-import momime.common.utils.UnitSkillUtils;
-import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.swing.NdgUIUtils;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Buttons on the main map screen which select and deselect each unit.
@@ -58,14 +54,8 @@ public final class SelectUnitButton extends JToggleButton
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
 
-	/** Unit utils */
-	private UnitUtils unitUtils;
-
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
 	/** Unit being selected */
-	private MemoryUnit unit;
+	private ExpandedUnitDetails unit;
 	
 	/** Normal button appearance */
 	private BufferedImage unitButtonNormal;	
@@ -123,9 +113,7 @@ public final class SelectUnitButton extends JToggleButton
 				g.drawImage (unitImage, 6 + offset, 3 + offset, null);
 
 				// Experience rings
-				final ExperienceLevel expLevel = getUnitUtils ().getExperienceLevel (getUnit (), true, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
-				
+				final ExperienceLevel expLevel = getUnit ().getModifiedExperienceLevel ();				
 				if ((expLevel != null) && (expLevel.getRingCount () > 0))
 				{
 					g.setColor (new Color (Integer.parseInt (expLevel.getRingColour (), 16)));
@@ -141,7 +129,7 @@ public final class SelectUnitButton extends JToggleButton
 				// Weapon grade
 				if (getUnit ().getWeaponGrade () != null)
 				{
-					final WeaponGradeGfx wepGrade = getGraphicsDB ().findWeaponGrade (getUnit ().getWeaponGrade (), "SelectUnitButton");
+					final WeaponGradeGfx wepGrade = getGraphicsDB ().findWeaponGrade (getUnit ().getWeaponGrade ().getWeaponGradeNumber (), "SelectUnitButton");
 					if (wepGrade.getWeaponGradeMiniImageFile () != null)
 					{
 						final BufferedImage wepGradeImage = getUtils ().loadImage (wepGrade.getWeaponGradeMiniImageFile ());
@@ -151,17 +139,13 @@ public final class SelectUnitButton extends JToggleButton
 				}
 				
 				// Health bar
-				final int damageTaken = getUnitUtils ().getTotalDamageTaken (getUnit ().getUnitDamage ());
+				final int damageTaken = getUnit ().getTotalDamageTaken ();
 				final double healthProportion;
 				if (damageTaken <= 0)
 					healthProportion = 1;
 				else
 				{
-					final double totalHits = getUnitUtils ().getFullFigureCount (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton")) *
-						getUnitSkillUtils ().getModifiedSkillValue (getUnit (), getUnit ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-							UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-					
+					final double totalHits = getUnit ().getFullFigureCount () * getUnit ().getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);					
 					healthProportion = 1 - (damageTaken / totalHits);
 				}
 				
@@ -244,43 +228,11 @@ public final class SelectUnitButton extends JToggleButton
 	{
 		playerColourImageGenerator = gen;
 	}
-
-	/**
-	 * @return Unit utils
-	 */
-	public final UnitUtils getUnitUtils ()
-	{
-		return unitUtils;
-	}
-
-	/**
-	 * @param util Unit utils
-	 */
-	public final void setUnitUtils (final UnitUtils util)
-	{
-		unitUtils = util;
-	}
-
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param util Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils util)
-	{
-		unitSkillUtils = util;
-	}
 	
 	/**
 	 * @return Unit being selected
 	 */
-	public final MemoryUnit getUnit ()
+	public final ExpandedUnitDetails getUnit ()
 	{
 		return unit;
 	}
@@ -288,7 +240,7 @@ public final class SelectUnitButton extends JToggleButton
 	/**
 	 * @param u Unit being selected
 	 */
-	public final void setUnit (final MemoryUnit u)
+	public final void setUnit (final ExpandedUnitDetails u)
 	{
 		unit = u;
 		repaint ();

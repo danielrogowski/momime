@@ -532,60 +532,25 @@ public final class TestUnitClientUtilsImpl
 	@Test
 	public final void testCalculateWalkTiming () throws Exception
 	{
-		// Mock entries from client database
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		// Set up units
+		final ExpandedUnitDetails regularUnit = mock (ExpandedUnitDetails.class);
+		when (regularUnit.isSummoned ()).thenReturn (false);
+		when (regularUnit.getFullFigureCount ()).thenReturn (4);
 		
-		final Pick normalUnits = new Pick ();
-		normalUnits.setUnitTypeID ("X");
-		when (db.findPick ("N", "calculateWalkTiming")).thenReturn (normalUnits);				
-
-		final Pick summonedUnits = new Pick ();
-		summonedUnits.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
-		when (db.findPick ("S", "calculateWalkTiming")).thenReturn (summonedUnits);				
+		final ExpandedUnitDetails summonedMultiple = mock (ExpandedUnitDetails.class);
+		when (summonedMultiple.isSummoned ()).thenReturn (true);
+		when (summonedMultiple.getFullFigureCount ()).thenReturn (4);
 		
-		// Unit definitions
-		final Unit regularUnitDef = new Unit ();
-		regularUnitDef.setUnitMagicRealm ("N");
-		when (db.findUnit ("UN001", "calculateWalkTiming")).thenReturn (regularUnitDef);
-		
-		final Unit summonedMultipleDef = new Unit ();
-		summonedMultipleDef.setUnitMagicRealm ("S");
-		when (db.findUnit ("UN002", "calculateWalkTiming")).thenReturn (summonedMultipleDef);
-		
-		final Unit summonedSingleDef = new Unit ();
-		summonedSingleDef.setUnitMagicRealm ("S");
-		when (db.findUnit ("UN003", "calculateWalkTiming")).thenReturn (summonedSingleDef);
-		
-		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
-		
-		// Mock figure counts
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-
-		when (unitUtils.getFullFigureCount (regularUnitDef)).thenReturn (1);
-		when (unitUtils.getFullFigureCount (summonedMultipleDef)).thenReturn (2);
-		when (unitUtils.getFullFigureCount (summonedSingleDef)).thenReturn (1);
+		final ExpandedUnitDetails summonedSingle = mock (ExpandedUnitDetails.class); 
+		when (summonedSingle.isSummoned ()).thenReturn (true);
+		when (summonedSingle.getFullFigureCount ()).thenReturn (1);
 		
 		// Config
 		final MomImeClientConfigEx config = new MomImeClientConfigEx ();
 
-		// Regular unit (which just happens to only have 1 figure, e.g. a steam cannon)
-		final AvailableUnit regularUnit = new AvailableUnit ();
-		regularUnit.setUnitID ("UN001");
-		
-		// Summoned unit with multiple figures, e.g. hell hounds
-		final AvailableUnit summonedMultiple = new AvailableUnit ();
-		summonedMultiple.setUnitID ("UN002");
-		
-		// Summoned unit with single figure, e.g. storm giant
-		final AvailableUnit summonedSingle = new AvailableUnit ();
-		summonedSingle.setUnitID ("UN003");
-		
 		// Set up object to test
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
-		obj.setClient (client);
 		obj.setClientConfig (config);
-		obj.setUnitUtils (unitUtils);
 		
 		// Test double size units scale
 		config.setUnitCombatScale (UnitCombatScale.DOUBLE_SIZE_UNITS);

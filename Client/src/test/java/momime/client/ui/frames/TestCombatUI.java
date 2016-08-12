@@ -70,6 +70,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitSkillUtils;
@@ -295,8 +296,11 @@ public final class TestCombatUI
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (selectedUnit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("High Elf Swordsmen");
 		
-		// Unit skills
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xuSelectedUnit = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (selectedUnit, null, null, null, players, fow, db)).thenReturn (xuSelectedUnit);
+		
+		// Unit skills
 		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList (); 
 		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), selectedUnit, db)).thenReturn (mergedSkills);
 		
@@ -309,7 +313,7 @@ public final class TestCombatUI
 			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);
 		
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		when (unitCalc.calculateAliveFigureCount (selectedUnit, players, fow, db)).thenReturn (6);
+		when (xuSelectedUnit.calculateAliveFigureCount ()).thenReturn (6);
 		
 		// Unit icons
 		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn

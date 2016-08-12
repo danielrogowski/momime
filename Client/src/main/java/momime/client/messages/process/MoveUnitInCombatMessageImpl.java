@@ -144,7 +144,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		currentZOrder = getMoveFrom ().getY ();
 		
 		// Work the duration out once only
-		duration = getUnitClientUtils ().calculateWalkTiming (mu) * 0.8d;
+		duration = getUnitClientUtils ().calculateWalkTiming (unit) * 0.8d;
 
 		// Work out new position
 		moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) getMoveFrom ());

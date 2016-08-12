@@ -45,7 +45,6 @@ import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
@@ -93,9 +92,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
 	
 	/** Client unit calculations */
 	private ClientUnitCalculations clientUnitCalculations;
@@ -339,7 +335,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		
 		// Select unit buttons on the Map
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-			if ((!button.isHidden ()) && (button.getComponent ().getUnit () == unit))
+			if ((!button.isHidden ()) && (button.getComponent ().getUnit ().getMemoryUnit () == unit))
 			{
 				button.getComponent ().setUnit (null);
 				
@@ -649,11 +645,10 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 *  
 	 * @param unit The unit that is walking/flying
 	 * @return Time, in seconds, a unit takes to walk from tile to tile in combat
-	 * @throws RecordNotFoundException If we can't find the unit definition or its magic realm
 	 * @throws MomException If we encounter a combatScale that we don't know how to handle
 	 */
 	@Override
-	public final double calculateWalkTiming (final AvailableUnit unit) throws RecordNotFoundException, MomException
+	public final double calculateWalkTiming (final ExpandedUnitDetails unit) throws MomException
 	{
 		log.trace ("Entering calculateWalkTiming: " + unit.getUnitID ());
 		
@@ -671,15 +666,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				break;
 				
 			case FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED:
-				
-				// Get total figures
-				final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "calculateWalkTiming");
-				final int totalFigureCount = getUnitUtils ().getFullFigureCount (unitDef);
-
-				// Get unit type
-				final String unitTypeID = getClient ().getClientDB ().findPick (unitDef.getUnitMagicRealm (), "calculateWalkTiming").getUnitTypeID ();
-				
-				unitImageMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 2 : 1;
+				unitImageMultiplier = ((unit.getFullFigureCount () == 1) && (unit.isSummoned ())) ? 2 : 1;
 				break;
 				
 			default:
@@ -768,8 +755,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			// Do we need to draw any icons faded, due to negative spells (e.g. Black Prayer) or losing hitpoints?
 			final int attributeValueIncludingNegatives;
 			if (unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS))
-				attributeValueIncludingNegatives = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure
-					(unit.getUnit (), getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				attributeValueIncludingNegatives = unit.calculateHitPointsRemainingOfFirstFigure ();
 			else
 				attributeValueIncludingNegatives = unit.getModifiedSkillValue (unitSkillID);
 			
@@ -917,22 +903,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	public final void setUnitUtils (final UnitUtils util)
 	{
 		unitUtils = util;
-	}
-
-	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
 	}
 
 	/**

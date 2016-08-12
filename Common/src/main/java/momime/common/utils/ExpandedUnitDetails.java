@@ -18,6 +18,7 @@ import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
@@ -66,6 +67,11 @@ public interface ExpandedUnitDetails
 	 * @return Whether or not the unit is a hero
 	 */
 	public boolean isHero ();
+	
+	/**
+	 * @return Whether or not the unit is a summoned creature
+	 */
+	public boolean isSummoned ();
 	
 	/**
 	 * @return True magic realm/lifeform type of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
@@ -299,6 +305,18 @@ public interface ExpandedUnitDetails
 	public void setDoubleCombatMovesLeft (final Integer moves) throws MomException;
 	
 	/**
+	 * @return The number of moves remaining for this unit this overland turn
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public int getDoubleOverlandMovesLeft () throws MomException;
+
+	/**
+	 * @param moves The number of moves remaining for this unit this overland turn
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setDoubleOverlandMovesLeft (final int moves) throws MomException;
+	
+	/**
 	 * @return The number of ranged shots this unit can still fire in the current combat
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
@@ -310,6 +328,18 @@ public interface ExpandedUnitDetails
 	 */
 	public int getManaRemaining () throws MomException;
 
+	/**
+	 * @return Any special order this unit is currently on, or null if none
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public UnitSpecialOrder getSpecialOrder () throws MomException;
+	
+	/**
+	 * @param o Any special order this unit is currently on, or null if none
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setSpecialOrder (final UnitSpecialOrder o) throws MomException;
+	
 	/**
 	 * @return List of damage this unit has taken
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 

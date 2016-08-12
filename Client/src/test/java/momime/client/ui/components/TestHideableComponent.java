@@ -46,7 +46,7 @@ public final class TestHideableComponent
 		final Timer timer = new Timer (1000, new ActionListener ()
 		{
 			@Override
-			public void actionPerformed (final ActionEvent ev)
+			public void actionPerformed (@SuppressWarnings ("unused") final ActionEvent ev)
 			{
 				button2.setHidden (!button2.isHidden ());
 			}

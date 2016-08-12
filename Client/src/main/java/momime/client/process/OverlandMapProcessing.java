@@ -68,8 +68,9 @@ public interface OverlandMapProcessing
 	 * Updates the indicator for how much movement the current unit stack has left
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public void updateMovementRemaining () throws JAXBException, XMLStreamException;
+	public void updateMovementRemaining () throws JAXBException, XMLStreamException, MomException;
 
 	/**
 	 * @return Whether we're in the middle of the server processing and sending us pending moves
@@ -137,8 +138,9 @@ public interface OverlandMapProcessing
 	 * @param moveTo The place to move to
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public void moveUnitStackTo (final MapCoordinates3DEx moveTo) throws JAXBException, XMLStreamException;
+	public void moveUnitStackTo (final MapCoordinates3DEx moveTo) throws JAXBException, XMLStreamException, MomException;
 
 	/**
 	 * Tells the server that we want to have the currently selected unit(s) perform some special action,
@@ -147,8 +149,9 @@ public interface OverlandMapProcessing
 	 * @param specialOrder Special order to perform
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException;
+	public void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException, MomException;
 	
 	/**
 	 * @param unit Unit to remove from the unitsLeftToMoveOverland list
@@ -159,6 +162,7 @@ public interface OverlandMapProcessing
 	 * Tell the server we clicked the Next Turn button
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public void nextTurnButton () throws JAXBException, XMLStreamException;
+	public void nextTurnButton () throws JAXBException, XMLStreamException, MomException;
 }

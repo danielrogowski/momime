@@ -303,7 +303,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		
 		int result = separationX * (x-1);
 		
-		if (y % 2 == 1)
+		if (y % 2 != 0)
 			result = result + (separationX/2);
 		
 		return result * 2;

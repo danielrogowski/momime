@@ -1118,8 +1118,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 * @param d Direction for which arrow key was pressed
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	private final void moveUnitStackInDirection (final SquareMapDirection d) throws JAXBException, XMLStreamException
+	private final void moveUnitStackInDirection (final SquareMapDirection d) throws JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering moveUnitStackInDirection: " + d);
 

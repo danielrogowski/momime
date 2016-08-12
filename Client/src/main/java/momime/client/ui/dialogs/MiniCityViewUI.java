@@ -111,7 +111,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		getDialog ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
-			public final void windowClosed (final WindowEvent ev)
+			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
 			{
 				try
 				{
@@ -320,7 +320,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			
 			final PlayerPublicDetails castingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID);
 			
-			text = getLanguage ().findCategoryEntry ("SpellCasting", (castingPlayerID == getClient ().getOurPlayerID ()) ? "YouHaveCast" : "SomeoneElseHasCast").replaceAll
+			text = getLanguage ().findCategoryEntry ("SpellCasting", (castingPlayerID.equals (getClient ().getOurPlayerID ())) ? "YouHaveCast" : "SomeoneElseHasCast").replaceAll
 				("SPELL_NAME", useSpellName).replaceAll
 				("PLAYER_NAME", (castingPlayer != null) ? castingPlayer.getPlayerDescription ().getPlayerName () : "Player " + castingPlayerID);
 		}

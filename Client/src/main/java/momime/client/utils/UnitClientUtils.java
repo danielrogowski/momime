@@ -182,10 +182,9 @@ public interface UnitClientUtils
 	 *  
 	 * @param unit The unit that is walking/flying
 	 * @return Time, in seconds, a unit takes to walk from tile to tile in combat
-	 * @throws RecordNotFoundException If we can't find the unit definition or its magic realm
 	 * @throws MomException If we encounter a combatScale that we don't know how to handle
 	 */
-	public double calculateWalkTiming (final AvailableUnit unit) throws RecordNotFoundException, MomException;
+	public double calculateWalkTiming (final ExpandedUnitDetails unit) throws MomException;
 
 	/**
 	 * Plays the sound effect for a particular unit taking a particular action.  This covers all combat actions, so the clank clank of units walking,

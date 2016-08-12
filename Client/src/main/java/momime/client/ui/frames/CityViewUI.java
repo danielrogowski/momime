@@ -879,9 +879,12 @@ public final class CityViewUI extends MomClientFrameUI
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
 			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				
 				final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
 				selectUnitButton.init ();
-				selectUnitButton.setUnit (mu);
+				selectUnitButton.setUnit (xu);
 				selectUnitButton.setSelected (true);		// Just so the owner's background colour appears
 
 				selectUnitButton.addMouseListener (new MouseAdapter ()
@@ -899,7 +902,7 @@ public final class CityViewUI extends MomClientFrameUI
 								if (unitInfo == null)
 								{
 									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
-									unitInfo.setUnit (selectUnitButton.getUnit ());
+									unitInfo.setUnit (selectUnitButton.getUnit ().getMemoryUnit ());
 									getClient ().getUnitInfos ().put (selectUnitButton.getUnit ().getUnitURN (), unitInfo);
 								}
 							

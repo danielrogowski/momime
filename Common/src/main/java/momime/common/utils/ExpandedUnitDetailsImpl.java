@@ -26,6 +26,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
@@ -198,6 +199,15 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	public final boolean isHero ()
 	{
 		return getUnitDefinition ().getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+	}
+	
+	/**
+	 * @return Whether or not the unit is a summoned creature
+	 */
+	@Override
+	public final boolean isSummoned ()
+	{
+		return getUnitType ().getUnitTypeID ().equals (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 	}
 	
 	/**
@@ -762,6 +772,26 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 	
 	/**
+	 * @return The number of moves remaining for this unit this overland turn
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final int getDoubleOverlandMovesLeft () throws MomException
+	{
+		return getMemoryUnit ().getDoubleOverlandMovesLeft ();
+	}
+
+	/**
+	 * @param moves The number of moves remaining for this unit this overland turn
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final void setDoubleOverlandMovesLeft (final int moves) throws MomException
+	{
+		getMemoryUnit ().setDoubleOverlandMovesLeft (moves);
+	}
+	
+	/**
 	 * @return The number of ranged shots this unit can still fire in the current combat
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
@@ -780,6 +810,26 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	{
 		return getMemoryUnit ().getManaRemaining ();
 	}
+	
+	/**
+	 * @return Any special order this unit is currently on, or null if none
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final UnitSpecialOrder getSpecialOrder () throws MomException
+	{
+		return getMemoryUnit ().getSpecialOrder ();
+	}
+	
+	/**
+	 * @param o Any special order this unit is currently on, or null if none
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	@Override
+	public final void setSpecialOrder (final UnitSpecialOrder o) throws MomException
+	{
+		getMemoryUnit ().setSpecialOrder (o);
+	}	
 	
 	/**
 	 * @return List of damage this unit has taken

@@ -40,7 +40,7 @@ public final class OverlandMapClientUtilsImpl implements OverlandMapClientUtils
 		boolean found = (centreTerrain == null) ? false : (tileTypeID.equals (centreTerrain.getTileTypeID ()));
 		
 		int d = 1;
-		while ((!found) & (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ())))
+		while ((!found) && (d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ())))
 		{
 			final MapCoordinates3DEx newCoords = new MapCoordinates3DEx (coords);
 			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, newCoords, d))

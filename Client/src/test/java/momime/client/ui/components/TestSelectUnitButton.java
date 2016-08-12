@@ -28,17 +28,12 @@ import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.StoredDamageTypeID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.WeaponGrade;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.UnitDamage;
-import momime.common.utils.UnitSkillUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Tests the SelectUnitButton class
@@ -132,9 +127,9 @@ public final class TestSelectUnitButton
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		
 		// Set up unit
-		final MemoryUnit u = new MemoryUnit ();
-		u.setOwningPlayerID (pd1.getPlayerID ());
-		u.setUnitID ("UN176");
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getOwningPlayerID ()).thenReturn (pd1.getPlayerID ());
+		when (xu.getUnitID ()).thenReturn ("UN176");
 		
 		// Coloured image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
@@ -147,12 +142,11 @@ public final class TestSelectUnitButton
 		button.setUtils (utils);
 		button.setClient (client);
 		button.setGraphicsDB (gfx);
-		button.setUnitUtils (mock (UnitUtils.class));
 		button.setPlayerColourImageGenerator (gen);
 		button.init ();
 		
 		button.setSelected (true);
-		button.setUnit (u);
+		button.setUnit (xu);
 		
 		// Set up dummy panel to display the button
 		final JPanel panel = new JPanel ();
@@ -190,6 +184,9 @@ public final class TestSelectUnitButton
 		
 		final momime.common.database.Unit unitDef = new momime.common.database.Unit ();
 		when (db.findUnit ("UN102", "SelectUnitButton")).thenReturn (unitDef);
+		
+		final WeaponGrade wepGradeDef = new WeaponGrade ();
+		wepGradeDef.setWeaponGradeNumber (2);
 		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
@@ -234,29 +231,22 @@ public final class TestSelectUnitButton
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		
 		// Set up unit
-		final UnitDamage dmg = new UnitDamage ();
-		dmg.setDamageType (StoredDamageTypeID.HEALABLE);
-		dmg.setDamageTaken (6);
-		
-		final MemoryUnit u = new MemoryUnit ();
-		u.setOwningPlayerID (pd1.getPlayerID ());
-		u.setUnitID ("UN102");
-		u.setWeaponGrade (2);
-		u.getUnitDamage ().add (dmg);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getOwningPlayerID ()).thenReturn (pd1.getPlayerID ());
+		when (xu.getUnitID ()).thenReturn ("UN102");
+		when (xu.getWeaponGrade ()).thenReturn (wepGradeDef);
+		when (xu.getTotalDamageTaken ()).thenReturn (6);
 		
 		// Experience level
 		final ExperienceLevel expLevel = new ExperienceLevel ();
 		expLevel.setRingCount (3);
 		expLevel.setRingColour ("0000FF");
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitUtils.getExperienceLevel (u, true, players, fow.getCombatAreaEffect (), db)).thenReturn (expLevel);
+		when (xu.getModifiedExperienceLevel ()).thenReturn (expLevel);
 		
 		// Hit points
-		when (unitUtils.getFullFigureCount (unitDef)).thenReturn (5);
-		when (unitSkillUtils.getModifiedSkillValue (u, u.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);
+		when (xu.getFullFigureCount ()).thenReturn (5);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (2);
 		
 		// Coloured image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
@@ -269,13 +259,11 @@ public final class TestSelectUnitButton
 		button.setUtils (utils);
 		button.setClient (client);
 		button.setGraphicsDB (gfx);
-		button.setUnitUtils (unitUtils);
-		button.setUnitSkillUtils (unitSkillUtils);
 		button.setPlayerColourImageGenerator (gen);
 		button.init ();
 		
 		button.setSelected (true);
-		button.setUnit (u);
+		button.setUnit (xu);
 		
 		// Set up dummy panel to display the button
 		final JPanel panel = new JPanel ();

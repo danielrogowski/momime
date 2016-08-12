@@ -7,6 +7,12 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.client.MomClient;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
@@ -20,8 +26,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeature;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapTerrainData;
@@ -31,14 +35,9 @@ import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PendingMovementUtils;
-import momime.common.utils.UnitSkillUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
+import momime.common.utils.UnitUtils;
 
 /**
  * Methods dealing with the turn sequence and overland movement that are too big to leave in
@@ -55,8 +54,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	/** Multiplayer client */
 	private MomClient client;
 
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
@@ -179,8 +178,11 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				if ((unitLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
 				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
 					final HideableComponent<SelectUnitButton> button = buttonIter.next ();
-					button.getComponent ().setUnit (mu);
+					button.getComponent ().setUnit (xu);
 					button.getComponent ().setSelected (unitsLeftToMoveOverland.contains (mu));	// Pre-select this unit as long as it hasn't already passed its allocated movement sequence
 					button.setHidden (false);
 					count++;
@@ -247,25 +249,13 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 				if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
-					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST, null,
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
-					
+					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST))
 						settlerCount++;
 					
-					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, null,
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
-						
+					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE))						
 						spiritCount++;
 
-					if (getUnitSkillUtils ().getModifiedSkillValue (button.getComponent ().getUnit (), button.getComponent ().getUnit ().getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY, null,
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
-						
+					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY))
 						purifyCount++;
 				}
 		}
@@ -308,9 +298,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * Updates the indicator for how much movement the current unit stack has left
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	@Override
-	public final void updateMovementRemaining () throws JAXBException, XMLStreamException
+	public final void updateMovementRemaining () throws JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering updateMovementRemaining");
 		
@@ -404,7 +395,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		while ((!found) && (iter.hasNext ()))
 		{
 			final HideableComponent<SelectUnitButton> button = iter.next ();
-			if (button.getComponent ().getUnit () == unit)
+			if (button.getComponent ().getUnit ().getUnit () == unit)
 			{
 				found = true;
 				selected = button.getComponent ().isSelected ();
@@ -430,7 +421,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
-				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ());
+				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ().getMemoryUnit ());
 		
 		selectNextUnitToMoveOverland ();
 		
@@ -457,8 +448,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			{
 				// Only put units back in the 'left to move' list if they already were in it - otherwise this can result in units who've already used
 				// up all their movement being put back in the 'left to move' list which really screws things up.
-				if (unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ()))
-					unitsLeftToMoveOverland.add (button.getComponent ().getUnit ());
+				if (unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ().getMemoryUnit ()))
+					unitsLeftToMoveOverland.add (button.getComponent ().getUnit ().getMemoryUnit ());
 			}
 		
 		selectNextUnitToMoveOverland ();
@@ -483,7 +474,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 			{
-				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ());
+				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ().getMemoryUnit ());
 				button.getComponent ().getUnit ().setSpecialOrder (UnitSpecialOrder.PATROL);
 			}
 		
@@ -497,9 +488,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * @param moveTo The place to move to
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	@Override
-	public final void moveUnitStackTo (final MapCoordinates3DEx moveTo) throws JAXBException, XMLStreamException
+	public final void moveUnitStackTo (final MapCoordinates3DEx moveTo) throws JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering moveUnitStackTo: " + moveTo);
 
@@ -528,9 +520,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * @param specialOrder Special order to perform
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	@Override
-	public final void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException
+	public final void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering specialOrderButton: " + specialOrder);
 
@@ -565,9 +558,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * Tell the server we clicked the Next Turn button
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	@Override
-	public final void nextTurnButton () throws JAXBException, XMLStreamException
+	public final void nextTurnButton () throws JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering nextTurn");
 
@@ -635,19 +629,19 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	}
 
 	/**
-	 * @return Unit skill utils
+	 * @return Unit utils
 	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
-		return unitSkillUtils;
+		return unitUtils;
 	}
 
 	/**
-	 * @param util Unit skill utils
+	 * @param util Unit utils
 	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils util)
+	public final void setUnitUtils (final UnitUtils util)
 	{
-		unitSkillUtils = util;
+		unitUtils = util;
 	}
 	
 	/**

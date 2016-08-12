@@ -38,11 +38,11 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RangedAttackTypeActionID;
 import momime.common.database.StoredDamageTypeID;
-import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -229,16 +229,16 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				duration = tickCount / (double) RANGED_ATTACK_FPS;
 				
 				// Get the start location of every individual missile
-				final Unit attackerUnitDef = getClient ().getClientDB ().findUnit (attackerUnit.getUnitID (), "ApplyDamageMessageImpl");
-				final String unitTypeID = getClient ().getClientDB ().findPick (attackerUnitDef.getUnitMagicRealm (), "ApplyDamageMessageImpl").getUnitTypeID ();
-				final int totalFigureCount = getUnitUtils ().getFullFigureCount (attackerUnitDef);
-				final int aliveFigureCount = getUnitCalculations ().calculateAliveFigureCount (attackerUnit, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attackerUnit, null, null, null,
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
-				start = getUnitClientUtils ().calcUnitFigurePositions (attackerUnit.getUnitID (), unitTypeID, totalFigureCount, aliveFigureCount, startX, startY);
+				final int totalFigureCount = xuAttacker.getFullFigureCount ();
+				final int aliveFigureCount = xuAttacker.calculateAliveFigureCount ();
+				
+				start = getUnitClientUtils ().calcUnitFigurePositions (attackerUnit.getUnitID (), xuAttacker.getUnitType ().getUnitTypeID (), totalFigureCount, aliveFigureCount, startX, startY);
 
 				// Start animation of the missile; e.g. fireballs don't have a constant image
-				final String rangedAttackTypeID = attackerUnitDef.getRangedAttackType ();
+				final String rangedAttackTypeID = xuAttacker.getRangedAttackType ().getRangedAttackTypeID ();
 				final RangedAttackTypeGfx rat = getGraphicsDB ().findRangedAttackType (rangedAttackTypeID, "ApplyDamageMessageImpl");
 				ratFlyImage = rat.findCombatImage (RangedAttackTypeActionID.FLY, getAttackerDirection (), "ApplyDamageMessageImpl");
 				
@@ -424,14 +424,14 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			// Either unit have a select unit button that needs to update?
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 				if ((!button.isHidden ()) &&
-					((button.getComponent ().getUnit () == attackerUnit) || (button.getComponent ().getUnit () == defenderUnit)))
+					((button.getComponent ().getUnit ().getUnit () == attackerUnit) || (getDefenderUnits ().stream ().allMatch (du -> du.getDefUnit () == button.getComponent ().getUnit ().getUnit ()))))
 					button.repaint ();
 
 			// Looking for the city screen at attackerUnit.getUnitLocation () & defenderUnit.getUnitLocation () doesn't seem to work
 			// so just check them all.  There shouldn't be too many city screens open anyway.
 			for (final CityViewUI cityView : getClient ().getCityViews ().values ())
 				for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
-					if ((button.getUnit () == attackerUnit) || (button.getUnit () == defenderUnit))
+					if ((button.getUnit ().getUnit () == attackerUnit) || (getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == button.getUnit ().getUnit ())))
 						button.repaint ();
 		}
 		else if (spellAnimFly != null)
@@ -496,12 +496,12 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				attackerUI.getUnitInfoPanel ().refreshUnitDetails ();
 			
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-				if ((!button.isHidden ()) && (button.getComponent ().getUnit () == attackerUnit))
+				if ((!button.isHidden ()) && (button.getComponent ().getUnit ().getMemoryUnit () == attackerUnit))
 					button.repaint ();
 
 			for (final CityViewUI cityView : getClient ().getCityViews ().values ())
 				for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
-					if (button.getUnit () == attackerUnit)
+					if (button.getUnit ().getMemoryUnit () == attackerUnit)
 						button.repaint ();
 		}
 		
@@ -529,12 +529,12 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				defenderUI.getUnitInfoPanel ().refreshUnitDetails ();
 
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-				if ((!button.isHidden ()) && (button.getComponent ().getUnit () == defenderUnit))
+				if ((!button.isHidden ()) && (getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == button.getComponent ().getUnit ().getUnit ())))
 					button.repaint ();
 
 			for (final CityViewUI cityView : getClient ().getCityViews ().values ())
 				for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
-					if (button.getUnit () == defenderUnit)
+					if (getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == button.getUnit ().getUnit ()))
 						button.repaint ();
 		}
 		

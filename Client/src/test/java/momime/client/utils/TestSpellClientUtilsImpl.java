@@ -620,7 +620,7 @@ public final class TestSpellClientUtilsImpl
 
 		// So this creates units 1,3,5,7,9 all which use the same male summonining image
 		for (int n = 1; n < 10; n++)
-			if (n % 2 == 1)
+			if (n % 2 != 0)
 			{
 				final UnitGfx unitGfx = new UnitGfx ();
 				unitGfx.setUnitSummonImageFile ("Male.png");
@@ -700,7 +700,7 @@ public final class TestSpellClientUtilsImpl
 		for (int n = 1; n < 10; n++)
 		{
 			final UnitGfx unitGfx = new UnitGfx ();
-			unitGfx.setUnitSummonImageFile ((n % 2 == 1) ? "Male.png" : "Female.png");
+			unitGfx.setUnitSummonImageFile ((n % 2 != 0) ? "Male.png" : "Female.png");
 			when (gfx.findUnit ("UN00" + n, "findImageForSpell")).thenReturn (unitGfx);
 		}
 		

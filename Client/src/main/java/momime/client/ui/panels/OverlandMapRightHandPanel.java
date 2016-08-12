@@ -660,7 +660,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 								if (unitInfo == null)
 								{
 									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
-									unitInfo.setUnit (selectUnitButton.getUnit ());
+									unitInfo.setUnit (selectUnitButton.getUnit ().getMemoryUnit ());
 									getClient ().getUnitInfos ().put (selectUnitButton.getUnit ().getUnitURN (), unitInfo);
 								}
 							

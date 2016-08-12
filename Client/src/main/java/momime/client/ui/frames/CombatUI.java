@@ -1655,7 +1655,7 @@ public final class CombatUI extends MomClientFrameUI
 		final int separationX = combatMapTileSet.getTileWidth () + 2;		// Because of the way the tiles slot together
 		int x = ev.getX () / 2;
 
-		if (y % 2 == 1)
+		if (y % 2 != 0)
 			x = x - (separationX/2);
 
 		x = (x / separationX) + 1;
@@ -1722,8 +1722,7 @@ public final class CombatUI extends MomClientFrameUI
 					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()));
 			
-			final int chanceToHitTimesFigures = chanceToHit * getUnitCalculations ().calculateAliveFigureCount (unit, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			final int chanceToHitTimesFigures = chanceToHit * xu.calculateAliveFigureCount ();
 						
 			// Melee attack / average hits / image
 			final int meleeAttack = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,

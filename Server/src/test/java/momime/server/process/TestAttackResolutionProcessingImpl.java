@@ -25,8 +25,9 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitSkillUtils;
-import momime.common.utils.UnitUtilsImpl;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
@@ -355,6 +356,9 @@ public final class TestAttackResolutionProcessingImpl
 		
 		when (unitCalc.canMakeRangedAttack (attacker, players, fow, db)).thenReturn (true);
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();
 		defenderDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
@@ -377,7 +381,7 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer,
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer,
 			potentialDamageToDefender, players, fow, db)).thenReturn (3);
 		
 		// Range penalty
@@ -388,7 +392,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setDamageCalculator (damageCalc);
 		proc.setUnitCalculations (unitCalc);
 		proc.setServerUnitCalculations (serverUnitCalculations);
-		proc.setUnitUtils (new UnitUtilsImpl ());
+		proc.setUnitUtils (unitUtils);
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
@@ -457,6 +461,9 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setUnitURN (102);
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		
 		// Attacker has already taken 2 hits, and can take 6 more
 		final UnitDamage attackerDamageTaken = new UnitDamage ();
 		attackerDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
@@ -492,16 +499,16 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
-		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer,
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer,
 			potentialDamageToDefender, players, fow, db)).thenReturn (3);
-		when (damageCalc.calculateSingleFigureDamage (attackerWrapper, null, attackingPlayer, defendingPlayer,
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer,
 			potentialDamageToAttacker, players, fow, db)).thenReturn (4);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
 		proc.setDamageCalculator (damageCalc);
 		proc.setUnitCalculations (unitCalc);
-		proc.setUnitUtils (new UnitUtilsImpl ());
+		proc.setUnitUtils (unitUtils);
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
@@ -567,6 +574,9 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setUnitURN (102);
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();
 		defenderDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
@@ -594,16 +604,14 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToDefender2);
 
 		// 3+4 of them actually hit
-		when (damageCalc.calculateResistOrTakeDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender1, players, fow, db)).thenReturn (3);
-		when (damageCalc.calculateDoomDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender2, players, fow, db)).thenReturn (4);
+		when (damageCalc.calculateResistOrTakeDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender1)).thenReturn (3);
+		when (damageCalc.calculateDoomDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender2)).thenReturn (4);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
 		proc.setDamageCalculator (damageCalc);
 		proc.setUnitCalculations (unitCalc);
-		proc.setUnitUtils (new UnitUtilsImpl ());
+		proc.setUnitUtils (unitUtils);
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
@@ -659,6 +667,9 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setUnitURN (102);
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();
 		defenderDamageTaken.setDamageType (StoredDamageTypeID.HEALABLE);
@@ -678,14 +689,14 @@ public final class TestAttackResolutionProcessingImpl
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer,
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer,
 			potentialDamageToDefender, players, fow, db)).thenReturn (3);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
 		proc.setDamageCalculator (damageCalc);
 		proc.setUnitCalculations (unitCalc);
-		proc.setUnitUtils (new UnitUtilsImpl ());
+		proc.setUnitUtils (unitUtils);
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method

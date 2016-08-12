@@ -151,14 +151,11 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param map The player who is trying to move here's knowledge of the terrain
 	 * @param units The player who is trying to move here's knowledge of units
-	 * @param db Lookup lists built over the XML database
 	 * @return Whether moving here will result in an attack or not
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	@Override
 	public final boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
-		final ServerDatabaseEx db) throws RecordNotFoundException
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units)
 	{
 		log.trace ("Entering willMovingHereResultInAnAttack: Player ID " + movingPlayerID +
 			", (" + x + ", " + y + ", " + plane + ")");
@@ -248,14 +245,12 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param doubleMovementToEnterTile Double the movement points required to enter every tile on both planes; null = impassable
 	 * @param cellsLeftToCheck List of cells that still need to be checked (we add adjacent cells to the end of this list)
 	 * @param sys Overland map coordinate system
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	private final void calculateOverlandMovementDistances_Cell (final int cellX, final int cellY, final int cellPlane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
 		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
-		final List<MapCoordinates2D> cellsLeftToCheck, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
+		final List<MapCoordinates2D> cellsLeftToCheck, final CoordinateSystem sys)
 	{
 		log.trace ("Entering calculateOverlandMovementDistances_Cell: Player ID " + movingPlayerID +
 			", (" + cellX + ", " + cellY + ", " + cellPlane + ")");
@@ -296,7 +291,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 							// Is this a square we have to stop at, i.e. one which contains enemy units?
 							movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()] = willMovingHereResultInAnAttack
-								(coords.getX (), coords.getY (), cellPlane, movingPlayerID, map, units, db);
+								(coords.getX (), coords.getY (), cellPlane, movingPlayerID, map, units);
 
 							// Log that we need to check every location branching off from here
 							if (!movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()])
@@ -326,14 +321,12 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param movingHereResultsInAttack Indicates whether we know that moving here will result in attacking an enemy unit stack
 	 * @param doubleMovementToEnterTile Double the movement points required to enter every tile on both planes; null = impassable
 	 * @param sys Overland map coordinate system
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	private final void calculateOverlandMovementDistances_Plane (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
 		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
-		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
+		final CoordinateSystem sys)
 	{
 		log.trace ("Entering calculateOverlandMovementDistances_Plane: Player ID " + movingPlayerID + ", (" + startX + ", " + startY + ", " + startPlane + ")");
 
@@ -346,14 +339,14 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		final List<MapCoordinates2D> cellsLeftToCheck = new ArrayList<MapCoordinates2D> ();
 		calculateOverlandMovementDistances_Cell (startX, startY, startPlane, movingPlayerID, map, units,
 			doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-			doubleMovementToEnterTile, cellsLeftToCheck, sys, db);
+			doubleMovementToEnterTile, cellsLeftToCheck, sys);
 
 		// Keep going until there's nowhere left to check
 		while (cellsLeftToCheck.size () > 0)
 		{
 			calculateOverlandMovementDistances_Cell (cellsLeftToCheck.get (0).getX (), cellsLeftToCheck.get (0).getY (), startPlane, movingPlayerID, map, units,
 				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
-				movingHereResultsInAttack, doubleMovementToEnterTile, cellsLeftToCheck, sys, db);
+				movingHereResultsInAttack, doubleMovementToEnterTile, cellsLeftToCheck, sys);
 
 			cellsLeftToCheck.remove (0);
 		}
@@ -511,12 +504,12 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 			for (final PlaneSvr plane : db.getPlanes ())
 				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (),
 					doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-					doubleMovementToEnterTile, sd.getOverlandMapSize (), db);
+					doubleMovementToEnterTile, sd.getOverlandMapSize ());
 		}
 		else
 			calculateOverlandMovementDistances_Plane (startX, startY, startPlane, movingPlayerID, map.getMap (), map.getUnit (),
 				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-				doubleMovementToEnterTile, sd.getOverlandMapSize (), db);
+				doubleMovementToEnterTile, sd.getOverlandMapSize ());
 
 		log.trace ("Exiting calculateOverlandMovementDistances");
 	}

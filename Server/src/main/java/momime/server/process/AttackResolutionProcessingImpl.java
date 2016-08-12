@@ -25,6 +25,7 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
@@ -265,26 +266,40 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						// Work out how much of the damage gets through
 						for (int repetitionNo = 0; repetitionNo < potentialDamage.getRepetitions (); repetitionNo++)
 						{
+							// Now we know all the details about the type of attack, we can properly generate stats of the
+							// unit being attacked, since it might have bonuses against certain kinds of incoming attack so
+							// can't just generate its details using nulls for the attack details
+							final List<ExpandedUnitDetails> xuUnitsMakingAttack;
+							if (unitMakingAttack == null)
+								xuUnitsMakingAttack = null;
+							else
+							{
+								xuUnitsMakingAttack = new ArrayList<ExpandedUnitDetails> ();
+								xuUnitsMakingAttack.add (getUnitUtils ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, players, mem, db));
+							}
+							
+							final ExpandedUnitDetails xuUnitBeingAttacked = getUnitUtils ().expandUnitDetails (unitBeingAttacked.getUnit (), xuUnitsMakingAttack,
+								potentialDamage.getAttackFromSkillID (), potentialDamage.getAttackFromMagicRealmID (), players, mem, db);
+							
 							final int thisDamage;				
 							switch (potentialDamage.getDamageResolutionTypeID ())
 							{
 								case SINGLE_FIGURE:
-									thisDamage = getDamageCalculator ().calculateSingleFigureDamage (unitBeingAttacked,
+									thisDamage = getDamageCalculator ().calculateSingleFigureDamage (xuUnitBeingAttacked,
 										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
 										attackingPlayer, defendingPlayer, potentialDamage,
 										players, mem, db); 
 									break;
 									
 								case ARMOUR_PIERCING:
-									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage (unitBeingAttacked,
+									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage (xuUnitBeingAttacked,
 										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
 										attackingPlayer, defendingPlayer, potentialDamage, players, mem, db); 
 									break;
 									
 								case ILLUSIONARY:
 									thisDamage = getDamageCalculator ().calculateIllusionaryDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 				
 								case MULTI_FIGURE:
@@ -295,14 +310,12 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									
 								case DOOM:
 									thisDamage = getDamageCalculator ().calculateDoomDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 			
 								case CHANCE_OF_DEATH:
 									thisDamage = getDamageCalculator ().calculateChanceOfDeathDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 			
 								case EACH_FIGURE_RESIST_OR_DIE:
@@ -319,20 +332,17 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									
 								case RESIST_OR_TAKE_DAMAGE:
 									thisDamage = getDamageCalculator ().calculateResistOrTakeDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 									
 								case RESISTANCE_ROLLS:
 									thisDamage = getDamageCalculator ().calculateResistanceRollsDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 			
 								case DISINTEGRATE:
 									thisDamage = getDamageCalculator ().calculateDisintegrateDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 									
 								case FEAR:

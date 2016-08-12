@@ -25,8 +25,6 @@ import momime.common.database.StoredDamageTypeID;
 import momime.common.database.Unit;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -39,11 +37,10 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
@@ -60,17 +57,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
-
-	/** Server-only unit calculations */
-	private ServerUnitCalculations serverUnitCalculations;
 
 	/** Random number generator */
 	private RandomUtils randomUtils;
@@ -440,18 +431,12 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param hitsToApply The number of hits striking the defender (number that passed the attacker's to hit roll)
 	 * @param defenderDefenceStrength Value of defence stat for the defender unit
 	 * @param chanceToDefend Chance (0-10) for a defence point to block an incoming hit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return Number of hits actually applied to the unit, after any were maybe blocked by defence; also this will never be more than the HP the unit had
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final int applyDamage (final MemoryUnit defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
+	public final int applyDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
+		throws MomException
 	{
 		log.trace ("Entering applyDamage: Unit URN " + defender.getUnitURN () + " hit by " + hitsToApply + " vs defence " + defenderDefenceStrength + " at " + chanceToDefend + "0%");
 
@@ -460,8 +445,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// e.g. a unit of 8 spearmen has to take 2 hits, if all 8 spearmen get to try to block the 2 hits, they might not even lose 1 figure.
 		// However only the first unit gets to use its shield, even if it blocks 1 hit it will be killed by the 2nd hit.
 		int totalHits = 0;
-		int defendingFiguresRemaining = getUnitCalculations ().calculateAliveFigureCount (defender, players, mem, db);
-		int hitPointsRemainingOfFirstFigure = getUnitCalculations ().calculateHitPointsRemainingOfFirstFigure (defender, players, mem, db);
+		int defendingFiguresRemaining = defender.calculateAliveFigureCount ();
+		int hitPointsRemainingOfFirstFigure = defender.calculateHitPointsRemainingOfFirstFigure ();
 		int hitsLeftToApply = hitsToApply;
 		
 		while ((defendingFiguresRemaining > 0) && (hitsLeftToApply > 0))
@@ -486,9 +471,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				hitsLeftToApply = hitsLeftToApply - hitsOnThisFigure;
 				totalHits = totalHits + hitsOnThisFigure;
 				defendingFiguresRemaining--;
-				hitPointsRemainingOfFirstFigure = getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db);		// Nulls ok - no skill will grant +HP only part of the time
+				hitPointsRemainingOfFirstFigure = defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);
 			}
 		}
 		
@@ -642,22 +625,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	}
 
 	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
-	/**
 	 * @return Unit calculations
 	 */
 	public final UnitCalculations getUnitCalculations ()
@@ -687,22 +654,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setPendingMovementUtils (final PendingMovementUtils utils)
 	{
 		pendingMovementUtils = utils;
-	}
-
-	/**
-	 * @return Server-only unit calculations
-	 */
-	public final ServerUnitCalculations getServerUnitCalculations ()
-	{
-		return serverUnitCalculations;
-	}
-
-	/**
-	 * @param calc Server-only unit calculations
-	 */
-	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
-	{
-		serverUnitCalculations = calc;
 	}
 
 	/**

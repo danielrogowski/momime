@@ -34,8 +34,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -49,8 +47,8 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PendingMovementUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
@@ -1368,26 +1366,12 @@ public final class TestUnitServerUtilsImpl
 	@Test
 	public final void testApplyDamage_Alive () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Unit
-		final MemoryUnit defender = new MemoryUnit ();
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		
-		// Unit stats
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-
-		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
-		
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
-			
-		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		when (xu.calculateAliveFigureCount ()).thenReturn (3);		// Defender is 4 figure unit but 1's dead already...
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+		when (xu.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
 		// Fix random number generator rolls
 		// Note these are in sets of 4 - the defence rolls each figure makes trying to block, before taking damage to HP
@@ -1399,12 +1383,10 @@ public final class TestUnitServerUtilsImpl
 		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
-		utils.setUnitSkillUtils (unitSkillUtils);
-		utils.setUnitCalculations (unitCalculations);
 		utils.setRandomUtils (random);
 		
 		// Run method
-		assertEquals (3, utils.applyDamage (defender, 6, 4, 5, players, fow, db));	// Take 6 hits, each figure has defence 4, with 50% block chance
+		assertEquals (3, utils.applyDamage (xu, 6, 4, 5));	// Take 6 hits, each figure has defence 4, with 50% block chance
 	}
 	
 	/**

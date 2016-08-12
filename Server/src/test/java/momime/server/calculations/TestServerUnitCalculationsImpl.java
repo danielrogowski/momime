@@ -211,9 +211,6 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testWillMovingHereResultInAnAttack () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-
 		// Remember this is all operating over a player's memory - so it has to also work where we may know nothing about the location at all, i.e. everything is nulls
 		// This is a really key method so there's a ton of test conditions
 		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
@@ -228,20 +225,18 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Null terrain and city data
 		assertFalse (calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, db));
+			(20, 10, 0, 2, map, units));
 
 		// Terrain data present but tile type and map feature still null
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		map.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 
-		assertFalse (calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, db));
+		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 0, 2, map, units));
 
 		// Regular tile type
 		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 
-		assertFalse (calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, db));
+		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 0, 2, map, units));
 
 		// Tower that we've previously cleared but now occupied by our units
 		terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
@@ -255,14 +250,12 @@ public final class TestServerUnitCalculationsImpl
 
 		units.add (unit);
 
-		assertFalse (calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, db));
+		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 0, 2, map, units));
 
 		// Tower that we've previously cleared but now occupied by enemy units
 		unit.setOwningPlayerID (1);
 
-		assertTrue (calc.willMovingHereResultInAnAttack
-			(20, 10, 0, 2, map, units, db));
+		assertTrue (calc.willMovingHereResultInAnAttack (20, 10, 0, 2, map, units));
 
 		// Tower that we've previously cleared but now occupied by our units and we're on Myrror
 		final OverlandMapTerrainData myrrorData = new OverlandMapTerrainData ();
@@ -272,14 +265,12 @@ public final class TestServerUnitCalculationsImpl
 		unit.setOwningPlayerID (2);
 		unit.setUnitLocation (unitLocation);
 
-		assertFalse (calc.willMovingHereResultInAnAttack
-			(20, 10, 1, 2, map, units, db));
+		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 1, 2, map, units));
 
 		// Tower that we've previously cleared but now occupied by enemy units and we're on Myrror
 		unit.setOwningPlayerID (1);
 
-		assertTrue (calc.willMovingHereResultInAnAttack
-			(20, 10, 1, 2, map, units, db));
+		assertTrue (calc.willMovingHereResultInAnAttack (20, 10, 1, 2, map, units));
 
 		// Our city
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
@@ -287,28 +278,24 @@ public final class TestServerUnitCalculationsImpl
 
 		map.getPlane ().get (0).getRow ().get (10).getCell ().get (30).setCityData (cityData);
 
-		assertFalse (calc.willMovingHereResultInAnAttack
-			(30, 10, 0, 2, map, units, db));
+		assertFalse (calc.willMovingHereResultInAnAttack (30, 10, 0, 2, map, units));
 
 		// Enemy city
 		cityData.setCityOwnerID (1);
 		cityData.setCityPopulation (1);
 
-		assertTrue (calc.willMovingHereResultInAnAttack
-			(30, 10, 0, 2, map, units, db));
+		assertTrue (calc.willMovingHereResultInAnAttack (30, 10, 0, 2, map, units));
 
 		// Our units in open area
 		unit.setOwningPlayerID (2);
 		unitLocation.setX (40);
 
-		assertFalse (calc.willMovingHereResultInAnAttack
-			(40, 10, 0, 2, map, units, db));
+		assertFalse (calc.willMovingHereResultInAnAttack (40, 10, 0, 2, map, units));
 
 		// Enemy units in open area
 		unit.setOwningPlayerID (1);
 
-		assertTrue (calc.willMovingHereResultInAnAttack
-			(40, 10, 0, 2, map, units, db));
+		assertTrue (calc.willMovingHereResultInAnAttack (40, 10, 0, 2, map, units));
 	}
 
 	/**

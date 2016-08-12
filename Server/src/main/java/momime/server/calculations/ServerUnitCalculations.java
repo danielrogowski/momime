@@ -45,12 +45,10 @@ public interface ServerUnitCalculations
 	 * @param movingPlayerID The player who is trying to move here
 	 * @param map The player who is trying to move here's knowledge of the terrain
 	 * @param units The player who is trying to move here's knowledge of units
-	 * @param db Lookup lists built over the XML database
 	 * @return Whether moving here will result in an attack or not
-	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	public boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final ServerDatabaseEx db) throws RecordNotFoundException;
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units);
 
 	/**
 	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location on the map plus whether we can move there or not

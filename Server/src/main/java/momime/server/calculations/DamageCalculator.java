@@ -164,7 +164,7 @@ public interface DamageCalculator
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public int calculateMultiFigureDamage (final AttackResolutionUnit defender, final MemoryUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+	public int calculateMultiFigureDamage (final ExpandedUnitDetails defender, final MemoryUnit attacker, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
@@ -205,19 +205,13 @@ public interface DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public int calculateSingleFigureResistOrDieDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+	public int calculateSingleFigureResistOrDieDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
 
 	/**
 	 * Rolls the number of actual hits for "each figure resist or die" damage, where each figure has to make a resistance roll.  Used for stoning gaze and many others.
@@ -226,19 +220,13 @@ public interface DamageCalculator
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public int calculateEachFigureResistOrDieDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+	public int calculateEachFigureResistOrDieDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
 
 	/**
 	 * Rolls the number of actual hits for "resist or take damage", where the unit takes damage equal to how
@@ -292,19 +280,15 @@ public interface DamageCalculator
 	 * frozen in fear and unable to attack for the remainder of this attack resolution.
 	 * 
 	 * @param defender Unit being hit
+	 * @param xuDefender Expanded details about unit being hit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public void calculateFearDamage (final AttackResolutionUnit defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
+	public void calculateFearDamage (final AttackResolutionUnit defender, final ExpandedUnitDetails xuDefender,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
 }

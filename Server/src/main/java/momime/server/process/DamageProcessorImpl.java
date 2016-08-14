@@ -16,7 +16,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.NegatedBySkill;
@@ -24,13 +23,12 @@ import momime.common.database.NegatedByUnitID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
@@ -51,9 +49,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 	/** Class logger */
 	private final Log log = LogFactory.getLog (DamageProcessorImpl.class);
 
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
-	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
@@ -75,8 +70,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
 	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/**
 	 * Performs one attack in combat, which may be a melee, ranged or spell attack.
@@ -158,10 +153,31 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final AttackDamage commonPotentialDamageToDefenders = (spell == null) ? null :
 			getDamageCalculator ().attackFromSpell (spell, variableDamage, castingPlayer, attackingPlayer, defendingPlayer, mom.getServerDB ());
 		
+		// We can list the attackers as enemies when generating defender stats, but not the type of attack,
+		// which we don't know until we start going through the individual steps, since there might be multiple parts to the attack
+		final ExpandedUnitDetails xuAttacker;
+		final List<ExpandedUnitDetails> xuAttackers;
+		if (attacker == null)
+		{
+			xuAttacker = null;
+			xuAttackers = null;
+		}
+		else
+		{
+			xuAttacker = getUnitUtils ().expandUnitDetails (attacker, null, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			
+			xuAttackers = new ArrayList<ExpandedUnitDetails> ();
+			xuAttackers.add (xuAttacker);
+		}
+		
 		// Process our attack against each defender
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		for (final MemoryUnit defender : defenders)
 		{
+			final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender, xuAttackers, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
 			// For attacks based on unit attributes (i.e. melee or ranged attacks), use the full routine to work out the sequence of steps to resolve the attack.
 			// If its an attack from a spell, just make a dummy list with a null in it - processAttackResolutionStep looks for this.
 			final List<List<AttackResolutionStepSvr>> steps;
@@ -191,10 +207,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 				while ((!downgradeIllusionaryAttack) && (iter.hasNext ()))
 				{
 					final NegatedBySkill negateIllusionaryAttack = iter.next ();
-					if ((negateIllusionaryAttack.getNegatedByUnitID () == NegatedByUnitID.ENEMY_UNIT) && (getUnitSkillUtils ().getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-						negateIllusionaryAttack.getNegatedBySkillID (), null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null,
-						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) >= 0))
-						
+					if ((negateIllusionaryAttack.getNegatedByUnitID () == NegatedByUnitID.ENEMY_UNIT) && (xuDefender.hasModifiedSkill (negateIllusionaryAttack.getNegatedBySkillID ())))
 						downgradeIllusionaryAttack = true;
 				}
 			}
@@ -211,8 +224,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 			for (final List<AttackResolutionStepSvr> step : steps)
 				
 				// Skip the entire step if either unit is already dead
-				if (((attacker == null) || (getUnitCalculations ().calculateAliveFigureCount (attacker, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0)) &&
-					(getUnitCalculations ().calculateAliveFigureCount (defender, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0))
+				if (((xuAttacker == null) || (xuAttacker.calculateAliveFigureCount () > 0)) &&
+					(xuDefender.calculateAliveFigureCount () > 0))
 				{
 					final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
 						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, step, spellDamageToThisDefender,
@@ -265,7 +278,11 @@ public final class DamageProcessorImpl implements DamageProcessor
 		{
 			boolean anyAttackingPlayerUnitsSurvived = false;
 			for (final MemoryUnit attackingPlayerUnit : attackingPlayerUnits)
-				if (getUnitCalculations ().calculateAliveFigureCount (attackingPlayerUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0)
+			{
+				final ExpandedUnitDetails xuAttackingPlayerUnit = getUnitUtils ().expandUnitDetails (attackingPlayerUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+				if (xuAttackingPlayerUnit.calculateAliveFigureCount () > 0)
 					anyAttackingPlayerUnitsSurvived = true;
 				else
 				{
@@ -278,6 +295,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
+			}
 					
 			// If the attacker is now wiped out, this is the last record we will ever have of who the attacking player was, so we have to deal with tidying up the combat now
 			if ((!anyAttackingPlayerUnitsSurvived) &&
@@ -292,7 +310,11 @@ public final class DamageProcessorImpl implements DamageProcessor
 		{
 			boolean anyDefendingPlayerUnitsSurvived = false;
 			for (final MemoryUnit defendingPlayerUnit : defendingPlayerUnits)
-				if (getUnitCalculations ().calculateAliveFigureCount (defendingPlayerUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) > 0)
+			{
+				final ExpandedUnitDetails xuDefendingPlayerUnit = getUnitUtils ().expandUnitDetails (defendingPlayerUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+				if (xuDefendingPlayerUnit.calculateAliveFigureCount () > 0)
 					anyDefendingPlayerUnitsSurvived = true;
 				else
 				{
@@ -305,6 +327,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					getFogOfWarMidTurnMultiChanges ().grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
+			}
 			
 			// If the defender is now wiped out, this is the last record we will ever have of who the defending player was, so we have to deal with tidying up the combat now.
 			// If attacker was also wiped out then we've already done this - the defender won by default.
@@ -346,22 +369,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 		return count;
 	}
 	
-	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
-	}
-
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */
@@ -475,18 +482,18 @@ public final class DamageProcessorImpl implements DamageProcessor
 	}
 
 	/**
-	 * @return Unit skill utils
+	 * @return Unit utils
 	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
+	public final UnitUtils getUnitUtils ()
 	{
-		return unitSkillUtils;
+		return unitUtils;
 	}
 
 	/**
-	 * @param utils Unit skill utils
+	 * @param utils Unit utils
 	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
+	public final void setUnitUtils (final UnitUtils utils)
 	{
-		unitSkillUtils = utils;
+		unitUtils = utils;
 	}
 }

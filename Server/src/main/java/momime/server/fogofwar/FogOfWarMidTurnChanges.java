@@ -227,21 +227,19 @@ public interface FogOfWarMidTurnChanges
 	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
 	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
 	 * @param players List of players in the session, this can be passed in null for when CAEs are being added to the map pre-game
-	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final List<PlayerServerDetails> players, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException;
 
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param combatAreaEffectURN Which CAE is it
 	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -250,7 +248,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
-		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -344,13 +342,12 @@ public interface FogOfWarMidTurnChanges
 	 * @param unitStack List of units to copy
 	 * @param trueSpells True spell details held on server
 	 * @param player Player to copy details into
-	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If unit with requested URN is not found
 	 * @throws JAXBException If there is a problem sending a message to the client
 	 * @throws XMLStreamException If there is a problem sending a message to the client
 	 */
 	public void addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player, final ServerDatabaseEx db)
+		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player)
 		throws RecordNotFoundException, JAXBException, XMLStreamException;
 
 	/**

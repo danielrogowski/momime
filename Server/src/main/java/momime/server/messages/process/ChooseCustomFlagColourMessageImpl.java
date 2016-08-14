@@ -23,7 +23,7 @@ public final class ChooseCustomFlagColourMessageImpl extends ChooseCustomFlagCol
 	 * @param sender Player who sent the message
 	 */
 	@Override
-	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
+	public final void process (@SuppressWarnings ("unused") final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 	{
 		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
 

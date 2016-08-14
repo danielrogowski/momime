@@ -65,12 +65,6 @@ public interface UnitUtils
 	public Unit initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
-	 * @param unit Unit to test
-	 * @return Number of figures in this unit before it takes any damage
-	 */
-	public int getFullFigureCount (final Unit unit);
-
-	/**
 	 * @param skills List of unit skills to check; this can either be the unmodified list read straight from unit.getUnitHasSkill () or UnitHasSkillMergedList
 	 * @param unitSkillID Unique identifier for this skill
 	 * @return Basic value of the specified skill (defined in the XML or heroes rolled randomly); whether skills granted from spells are included depends on whether we pass in a UnitHasSkillMergedList or not; -1 if we do not have the skill

@@ -137,7 +137,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 		final int [] [] [] count = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (final MemoryUnit thisUnit : units)
-			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) & (thisUnit.getUnitLocation () != null))
+			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getUnitLocation () != null))
 				count [thisUnit.getUnitLocation ().getZ ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
 
 		log.trace ("Exiting countOurAliveUnitsAtEveryLocation");

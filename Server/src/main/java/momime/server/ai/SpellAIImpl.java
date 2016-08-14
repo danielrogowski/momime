@@ -99,7 +99,7 @@ public final class SpellAIImpl implements SpellAI
 		final List<momime.common.database.Spell> researchableSpells = getSpellUtils ().getSpellsForStatus
 			(priv.getSpellResearchStatus (), SpellResearchStatusID.RESEARCHABLE_NOW, db);
 
-		if (researchableSpells.size () >= 0)
+		if (!researchableSpells.isEmpty ())
 		{
 			final List<SpellSvr> researchableServerSpells = new ArrayList<SpellSvr> ();
 			for (final momime.common.database.Spell spell : researchableSpells)

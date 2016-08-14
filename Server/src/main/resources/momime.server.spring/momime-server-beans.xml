@@ -472,7 +472,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="damageCalculator" class="momime.server.calculations.DamageCalculatorImpl">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
@@ -594,7 +593,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="damageCalculator" ref="damageCalculator" />
@@ -602,7 +600,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
 	<bean id="attackResolutionProcessing" class="momime.server.process.AttackResolutionProcessingImpl">

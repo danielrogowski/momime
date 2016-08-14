@@ -357,7 +357,12 @@ public final class TestAttackResolutionProcessingImpl
 		when (unitCalc.canMakeRangedAttack (attacker, players, fow, db)).thenReturn (true);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, players, fow, db)).thenReturn (xuDefender);
+		
+		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, fow, db)).thenReturn (xuAttacker);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();
@@ -365,7 +370,7 @@ public final class TestAttackResolutionProcessingImpl
 		defenderDamageTaken.setDamageTaken (3);
 		
 		defender.getUnitDamage ().add (defenderDamageTaken);
-		when (unitCalc.calculateHitPointsRemaining (defender, players, fow, db)).thenReturn (5);
+		when (xuDefender.calculateHitPointsRemaining ()).thenReturn (5);
 		
 		// Wrappers
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -462,7 +467,12 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, players, fow, db)).thenReturn (xuDefender);
+		
+		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, fow, db)).thenReturn (xuAttacker);
 		
 		// Attacker has already taken 2 hits, and can take 6 more
 		final UnitDamage attackerDamageTaken = new UnitDamage ();
@@ -470,7 +480,7 @@ public final class TestAttackResolutionProcessingImpl
 		attackerDamageTaken.setDamageTaken (2);
 
 		attacker.getUnitDamage ().add (attackerDamageTaken);
-		when (unitCalc.calculateHitPointsRemaining (attacker, players, fow, db)).thenReturn (6);
+		when (xuAttacker.calculateHitPointsRemaining ()).thenReturn (6);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();
@@ -478,7 +488,7 @@ public final class TestAttackResolutionProcessingImpl
 		defenderDamageTaken.setDamageTaken (3);
 		
 		defender.getUnitDamage ().add (defenderDamageTaken);
-		when (unitCalc.calculateHitPointsRemaining (defender, players, fow, db)).thenReturn (5);
+		when (xuDefender.calculateHitPointsRemaining ()).thenReturn (5);
 
 		// Wrappers
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -575,7 +585,12 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, players, fow, db)).thenReturn (xuDefender);
+		
+		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, fow, db)).thenReturn (xuAttacker);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();
@@ -583,7 +598,7 @@ public final class TestAttackResolutionProcessingImpl
 		defenderDamageTaken.setDamageTaken (3);
 
 		defender.getUnitDamage ().add (defenderDamageTaken);
-		when (unitCalc.calculateHitPointsRemaining (defender, players, fow, db)).thenReturn (5);
+		when (xuDefender.calculateHitPointsRemaining ()).thenReturn (5);
 
 		// Wrappers
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -668,7 +683,9 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
+
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, players, fow, db)).thenReturn (xuDefender);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();
@@ -676,7 +693,7 @@ public final class TestAttackResolutionProcessingImpl
 		defenderDamageTaken.setDamageTaken (3);
 
 		defender.getUnitDamage ().add (defenderDamageTaken);
-		when (unitCalc.calculateHitPointsRemaining (defender, players, fow, db)).thenReturn (5);
+		when (xuDefender.calculateHitPointsRemaining ()).thenReturn (5);
 
 		// Wrapper
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);

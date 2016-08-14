@@ -183,7 +183,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
 					final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
 						nodeAuraSquares++;
 				}
 

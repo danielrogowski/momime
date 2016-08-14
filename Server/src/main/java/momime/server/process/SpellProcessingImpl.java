@@ -207,7 +207,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					// Pick one at random
 					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
 					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (gsk, combatAreaEffectID, spell.getSpellID (),
-						player.getPlayerDescription ().getPlayerID (), null, players, db, sd);
+						player.getPlayerDescription ().getPlayerID (), null, players, sd);
 				}
 			}
 		}
@@ -426,7 +426,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
 				
 			getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID,
-				spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getSessionDescription ());
 		}
 		
 		// Unit enchantments or curses
@@ -539,7 +539,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			if (spell.getResurrectedHealthPercentage () < 100)
 			{
-				final int totalHP = getUnitCalculations ().calculateHitPointsRemaining (targetUnit, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				final int totalHP = xu.calculateHitPointsRemaining ();
 				final int hp = (totalHP * spell.getResurrectedHealthPercentage ()) / 100;
 				final int dmg = totalHP - hp;
 				if (dmg > 0)
@@ -863,7 +866,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					(trueMap.getCombatAreaEffect (), null, effect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
 				
 				if (cae != null)
-					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, db, sd);
+					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, sd);
 			}
 		}
 

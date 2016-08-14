@@ -621,7 +621,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			final CitySpellEffectSvr citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "addExistingTrueMaintainedSpellToClients");
 			if (citySpellEffect.getCombatAreaEffectID () != null)
 				addCombatAreaEffectOnServerAndClients (gsk, citySpellEffect.getCombatAreaEffectID (), trueSpell.getSpellID (), trueSpell.getCastingPlayerID (),
-					(MapCoordinates3DEx) trueSpell.getCityLocation (), players, db, sd);
+					(MapCoordinates3DEx) trueSpell.getCityLocation (), players, sd);
 		}
 
 		// The new spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
@@ -741,7 +741,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					(trueMap.getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
 				
 				if (trueCAE != null)
-					removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, db, sd);
+					removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
 			}
 		}
 
@@ -759,7 +759,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
 	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
 	 * @param players List of players in the session, this can be passed in null for when CAEs are being added to the map pre-game
-	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -767,7 +766,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	@Override
 	public final void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final List<PlayerServerDetails> players, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException
 	{
 		log.trace ("Entering addCombatAreaEffectOnServerAndClients: " + combatAreaEffectID);
@@ -816,7 +815,6 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param combatAreaEffectURN Which CAE is it
 	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -826,7 +824,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void removeCombatAreaEffectFromServerAndClients (final FogOfWarMemory trueMap,
-		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final int combatAreaEffectURN, final List<PlayerServerDetails> players, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering removeCombatAreaEffectFromServerAndClients: CAE URN " + combatAreaEffectURN);
@@ -1185,14 +1183,13 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param unitStack List of units to copy
 	 * @param trueSpells True spell details held on server
 	 * @param player Player to copy details into
-	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If unit with requested URN is not found
 	 * @throws JAXBException If there is a problem sending a message to the client
 	 * @throws XMLStreamException If there is a problem sending a message to the client
 	 */
 	@Override
 	public final void addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player, final ServerDatabaseEx db)
+		final List<MemoryMaintainedSpell> trueSpells, final PlayerServerDetails player)
 		throws RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient: " +

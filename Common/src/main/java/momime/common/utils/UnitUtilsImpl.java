@@ -196,25 +196,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
-	 * @param unit Unit to test
-	 * @return Number of figures in this unit before it takes any damage
-	 */
-	@Override
-	public final int getFullFigureCount (final Unit unit)
-	{
-		final int countAccordingToRecord = unit.getFigureCount ();
-
-        // Fudge until we do Hydras properly with a 'Figures-as-heads' skill
-		final int realCount;
-        if (countAccordingToRecord == 9)
-        	realCount = 1;
-       	else
-       		realCount = countAccordingToRecord;
-
-		return realCount;
-	}
-
-	/**
 	 * @param skills List of unit skills to check; this can either be the unmodified list read straight from unit.getUnitHasSkill () or UnitHasSkillMergedList
 	 * @param unitSkillID Unique identifier for this skill
 	 * @return Basic value of the specified skill (defined in the XML or heroes rolled randomly); whether skills granted from spells are included depends on whether we pass in a UnitHasSkillMergedList or not; -1 if we do not have the skill

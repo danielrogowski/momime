@@ -3,10 +3,10 @@ package momime.server.calculations;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +17,10 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
-import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamagePerFigureID;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.StoredDamageTypeID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
@@ -33,7 +29,6 @@ import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.database.DamageTypeSvr;
@@ -180,26 +175,19 @@ public final class TestDamageCalculatorImpl
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		// Set up attacker stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has 6 figures...
-
 		// Expanded details
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has 6 figures...
+		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
+		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
+		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq ("US001"), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
-		
-		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
-
-		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
-
-		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
@@ -208,8 +196,6 @@ public final class TestDamageCalculatorImpl
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setUnitUtils (unitUtils);
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
@@ -294,26 +280,19 @@ public final class TestDamageCalculatorImpl
 		
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		
-		// Set up attacker stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has 6 figures...
-
 		// Expanded details
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has 6 figures...
+		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
+		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
+		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq ("US001"), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
-		
-		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
-
-		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
-
-		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
@@ -322,8 +301,6 @@ public final class TestDamageCalculatorImpl
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setUnitUtils (unitUtils);
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
@@ -382,28 +359,20 @@ public final class TestDamageCalculatorImpl
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		
-		// Set up attacker stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has some figures
-		
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", defenders,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);	// But doesn't have the skill
-		
 		// Expanded details
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has some figures
+		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (false);	// But doesn't have the skill
+		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq ("US001"), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
@@ -440,28 +409,21 @@ public final class TestDamageCalculatorImpl
 		
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		
-		// Set up attacker stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has some figures
-		
 		// Expanded details
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 
-		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq ("US001"), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
-		
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has some figures
 		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (1);	// We have the skill, but can't use since all 6 figures are frozen in fear
 		
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq ("US001"), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
+		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
@@ -525,28 +487,21 @@ public final class TestDamageCalculatorImpl
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		// Set up attacker stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, fow, db)).thenReturn (6);		// Attacker has 6 figures...
-
 		// Expanded details
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuAttacker);
 
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has 6 figures...
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
+		when (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)).thenReturn (true);
+		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
+		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class),
 			eq (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK), eq (null), eq (players), eq (fow), eq (db))).thenReturn (xuDefender);
-		
-		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
-		when (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)).thenReturn (true);
-
-		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
-
-		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
@@ -556,8 +511,6 @@ public final class TestDamageCalculatorImpl
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setUnitUtils (unitUtils);
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
@@ -1030,37 +983,25 @@ public final class TestDamageCalculatorImpl
 		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (33);
-
-		// Wrapper
-		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
 		// Set up attack damage
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		final AttackDamage attackDamage = new AttackDamage (4, 1, damageType, DamageResolutionTypeID.MULTI_FIGURE, null, null, null, 1);
 		
 		// Set up defender stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
 		
-		final UnitHasSkillMergedList defenderSkills = new UnitHasSkillMergedList (); 
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), defender, db)).thenReturn (defenderSkills);
-		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
-		
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 shields...
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
 		when (damageTypeCalculations.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, fow, db)).thenReturn (4);
-		
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);	// ..with 50% chance to block on each
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
-				
-		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+		when (xuDefender.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -1074,14 +1015,12 @@ public final class TestDamageCalculatorImpl
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setRandomUtils (random);
 		calc.setUnitUtils (unitUtils);
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (5, calc.calculateMultiFigureDamage (defenderWrapper, null, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
+		assertEquals (5, calc.calculateMultiFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1341,12 +1280,6 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateEachFigureResistOrDieDamage_NoSavingThrowModifier () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1363,32 +1296,20 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (33);
-
-		// Wrapper
-		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
 		// Set up defender stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final UnitHasSkillMergedList defenderSkills = new UnitHasSkillMergedList (); 
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), defender, db)).thenReturn (defenderSkills);
-		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
-		
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
-				
-		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (4);	// ..and 4 resistance...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+		when (xuDefender.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -1396,16 +1317,14 @@ public final class TestDamageCalculatorImpl
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setRandomUtils (random);
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		
-		assertEquals (5, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
+		assertEquals (5, calc.calculateEachFigureResistOrDieDamage (xuDefender, attackingPlayer, defendingPlayer,
+			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1)));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1439,12 +1358,6 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateEachFigureResistOrDieDamage_WithSavingThrowModifier () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1461,32 +1374,20 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (33);
-
-		// Wrapper
-		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
 		// Set up defender stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final UnitHasSkillMergedList defenderSkills = new UnitHasSkillMergedList (); 
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), defender, db)).thenReturn (defenderSkills);
-		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
-		
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
-				
-		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (4);	// ..and 4 resistance...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+		when (xuDefender.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -1494,16 +1395,14 @@ public final class TestDamageCalculatorImpl
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setRandomUtils (random);
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		
-		assertEquals (11, calc.calculateEachFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (2, 0, damageType, DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
+		assertEquals (11, calc.calculateEachFigureResistOrDieDamage (xuDefender, attackingPlayer, defendingPlayer,
+			new AttackDamage (2, 0, damageType, DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1)));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1537,12 +1436,6 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateSingleFigureResistOrDieDamage_Lives () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1559,32 +1452,20 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (33);
-
-		// Wrapper
-		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
 		// Set up defender stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final UnitHasSkillMergedList defenderSkills = new UnitHasSkillMergedList (); 
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), defender, db)).thenReturn (defenderSkills);
-		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
-		
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
-				
-		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (4);	// ..and 4 resistance...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+		when (xuDefender.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -1592,16 +1473,14 @@ public final class TestDamageCalculatorImpl
 
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setRandomUtils (random);
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		
-		assertEquals (0, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
+		assertEquals (0, calc.calculateSingleFigureResistOrDieDamage (xuDefender, attackingPlayer, defendingPlayer,
+			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1)));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -1635,12 +1514,6 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateSingleFigureResistOrDieDamage_Dies () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -1657,32 +1530,20 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (33);
-
-		// Wrapper
-		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender); 
+		
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
 		// Set up defender stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
-		final UnitHasSkillMergedList defenderSkills = new UnitHasSkillMergedList (); 
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), defender, db)).thenReturn (defenderSkills);
-		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
-		
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (4);	// ..and 4 resistance...
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);	// Each defending figure normally has 3 hearts...
-				
-		when (unitCalculations.calculateHitPointsRemainingOfFirstFigure (defender, players, fow, db)).thenReturn (2);	// ...but 1st one is already hurt and only has 2
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (5);		// Defender has 6 figures unit but 1's dead already...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (4);	// ..and 4 resistance...
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
+		when (xuDefender.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
 		
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -1690,16 +1551,14 @@ public final class TestDamageCalculatorImpl
 
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setRandomUtils (random);
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		
-		assertEquals (3, calc.calculateSingleFigureResistOrDieDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1), players, fow, db));
+		assertEquals (3, calc.calculateSingleFigureResistOrDieDamage (xuDefender, attackingPlayer, defendingPlayer,
+			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1)));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -2120,12 +1979,6 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateFearDamage () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -2142,24 +1995,20 @@ public final class TestDamageCalculatorImpl
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (33);
+		
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
+		when (xuDefender.getUnitURN ()).thenReturn (33);
 
 		// Wrapper
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 		defenderWrapper.setFiguresFrozenInFear (2);
 		
 		// Set up defender stats
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		
-		when (unitCalculations.calculateAliveFigureCount (defender, players, fow, db)).thenReturn (5);		// Defender has 5 figures unit but 1's dead already + 2 frozen
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (6);	// ..and 6 resistance but -2 modifier
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (5);		// Defender has 5 figures unit but 1's dead already + 2 frozen
+		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (6);	// ..and 6 resistance but -2 modifier
 
 		// Fix random number generator rolls
 		final RandomUtils random = mock (RandomUtils.class);
@@ -2167,15 +2016,13 @@ public final class TestDamageCalculatorImpl
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
-		calc.setUnitCalculations (unitCalculations);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setRandomUtils (random);
 	
 		// Run test
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		
-		calc.calculateFearDamage (defenderWrapper, attackingPlayer, defendingPlayer,
-			new AttackDamage (2, 0, damageType, DamageResolutionTypeID.FEAR, null, null, null, 1), players, fow, db);
+		calc.calculateFearDamage (defenderWrapper, xuDefender, attackingPlayer, defendingPlayer,
+			new AttackDamage (2, 0, damageType, DamageResolutionTypeID.FEAR, null, null, null, 1));
 		
 		// Check value recorded on server
 		assertEquals (4, defenderWrapper.getFiguresFrozenInFear ());

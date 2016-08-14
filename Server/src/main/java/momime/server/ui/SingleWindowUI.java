@@ -95,6 +95,9 @@ public final class SingleWindowUI extends AppenderSkeleton implements MomServerU
 				@Override
 				public final void windowClosing (final WindowEvent e)
 				{
+					// Fudge to get rid of compiler warning, using suppress warnings "unused" oddly doesn't seem to work
+					e.getID ();
+					
 					if (JOptionPane.showConfirmDialog (null, "Closing the main window will end the MoM IME server and any sessions currently in progress.  Are you sure?",
 						frame.getTitle (), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) == JOptionPane.YES_OPTION)
 	
@@ -234,6 +237,7 @@ public final class SingleWindowUI extends AppenderSkeleton implements MomServerU
 	 * @param server The server that the sessions are running on
 	 * @param sessions The updated list of sessions
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final void doSessionListUpdatedProcessing (final MomServer server, final List<MultiplayerSessionThread> sessions)
 	{

@@ -339,26 +339,6 @@ public final class TestUnitUtilsImpl
 	}
 
 	/**
-	 * Tests the getFullFigureCount method
-	 */
-	@Test
-	public final void testGetFullFigureCount ()
-	{
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-
-		final Unit unit = new Unit ();
-		unit.setFigureCount (1);
-		assertEquals (1, utils.getFullFigureCount (unit));
-
-		unit.setFigureCount (4);
-		assertEquals (4, utils.getFullFigureCount (unit));
-
-		// Hydra
-		unit.setFigureCount (9);
-		assertEquals (1, utils.getFullFigureCount (unit));
-	}
-
-	/**
 	 * Tests the getBasicSkillValue method
 	 */
 	@Test

@@ -273,7 +273,7 @@ public final class CityProcessingImpl implements CityProcessing
 				{
 					final ServerGridCellEx mc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 					final OverlandMapCityData cityData = mc.getCityData ();
-					if ((cityData != null) && ((onlyOnePlayerID == 0) | (onlyOnePlayerID == cityData.getCityOwnerID ())))
+					if ((cityData != null) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == cityData.getCityOwnerID ())))
 					{
 						final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "growCitiesAndProgressConstructionProjects");
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();

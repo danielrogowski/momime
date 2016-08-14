@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,7 +23,6 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -31,8 +31,6 @@ import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -44,7 +42,8 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.AttackDamage;
@@ -135,6 +134,15 @@ public final class TestDamageProcessorImpl
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
 
+		// Expanded unit detalis
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
+
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuDefender);
+		
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
 
@@ -159,9 +167,8 @@ public final class TestDamageProcessorImpl
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Damage taken
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap, db)).thenReturn (3);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap, db)).thenReturn (1, 0);
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (3);
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1, 0);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -175,10 +182,10 @@ public final class TestDamageProcessorImpl
 		proc.setDamageCalculator (calc);
 		proc.setFogOfWarMidTurnChanges (midTurnSingle);
 		proc.setFogOfWarMidTurnMultiChanges (midTurnMulti);
-		proc.setUnitCalculations (unitCalculations);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setUnitServerUtils (unitServerUtils);
+		proc.setUnitUtils (unitUtils);
 		
 		// Need another surviving unit on each side, so the combat doesn't end
 		for (final PlayerServerDetails thisPlayer : players)
@@ -308,6 +315,15 @@ public final class TestDamageProcessorImpl
 		final CoordinateSystemUtils coordinateSystemUtils = mock (CoordinateSystemUtils.class);
 		when (coordinateSystemUtils.normalizeDirection (CoordinateSystemType.DIAMOND, 7+4)).thenReturn (7+4-8);
 
+		// Expanded unit detalis
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
+
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuDefender);
+		
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
 
@@ -332,9 +348,8 @@ public final class TestDamageProcessorImpl
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Damage taken
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (attacker, players, trueMap, db)).thenReturn (3);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap, db)).thenReturn (1, 0);
+		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (3);
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1, 0);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
@@ -348,10 +363,10 @@ public final class TestDamageProcessorImpl
 		proc.setDamageCalculator (calc);
 		proc.setFogOfWarMidTurnChanges (midTurnSingle);
 		proc.setFogOfWarMidTurnMultiChanges (midTurnMulti);
-		proc.setUnitCalculations (unitCalculations);
 		proc.setCombatStartAndEnd (combatStartAndEnd);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setUnitServerUtils (unitServerUtils);
+		proc.setUnitUtils (unitUtils);
 		
 		// The 'attacker' unit is still left alive because it still took no dmg, so put a unit in the list so the combat doesn't end for them (attacker is owned by defendingPlayer)
 		final MemoryUnit survivingUnit = new MemoryUnit ();
@@ -472,6 +487,12 @@ public final class TestDamageProcessorImpl
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
 		when (mom.getPlayers ()).thenReturn (players);
+
+		// Expanded unit detalis
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -489,8 +510,7 @@ public final class TestDamageProcessorImpl
 		when (calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
 
 		// Damage taken
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (defender, players, trueMap, db)).thenReturn (1);
+		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1);
 		
 		// Set up object to test
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
@@ -498,9 +518,9 @@ public final class TestDamageProcessorImpl
 
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		proc.setDamageCalculator (calc);
-		proc.setUnitCalculations (unitCalculations);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setFogOfWarMidTurnChanges (midTurnSingle);
+		proc.setUnitUtils (unitUtils);
 		
 		// Run method
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
@@ -619,11 +639,22 @@ public final class TestDamageProcessorImpl
 		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 
+		// Expanded unit detalis
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final ExpandedUnitDetails xuDefender1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (defender1, null, null, null, players, trueMap, db)).thenReturn (xuDefender1);
+		
+		final ExpandedUnitDetails xuDefender2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (defender2, null, null, null, players, trueMap, db)).thenReturn (xuDefender2);
+		
+		final ExpandedUnitDetails xuDefender3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (defender3, null, null, null, players, trueMap, db)).thenReturn (xuDefender3);
+		
 		// Middle unit is immune to illusions
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (defender1, defender1.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, trueMap, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (defender2, defender2.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, trueMap, db)).thenReturn (0);
-		when (unitSkillUtils.getModifiedSkillValue (defender3, defender3.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, trueMap, db)).thenReturn (-1);
+		when (xuDefender1.hasModifiedSkill ("US001")).thenReturn (false);
+		when (xuDefender2.hasModifiedSkill ("US001")).thenReturn (true);
+		when (xuDefender3.hasModifiedSkill ("US001")).thenReturn (false);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -648,10 +679,9 @@ public final class TestDamageProcessorImpl
 		when (calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
 
 		// Damage taken
-		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
-		when (unitCalculations.calculateAliveFigureCount (defender1, players, trueMap, db)).thenReturn (1);
-		when (unitCalculations.calculateAliveFigureCount (defender2, players, trueMap, db)).thenReturn (2);
-		when (unitCalculations.calculateAliveFigureCount (defender3, players, trueMap, db)).thenReturn (3);
+		when (xuDefender1.calculateAliveFigureCount ()).thenReturn (1);
+		when (xuDefender2.calculateAliveFigureCount ()).thenReturn (2);
+		when (xuDefender3.calculateAliveFigureCount ()).thenReturn (3);
 		
 		// Set up object to test
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
@@ -659,10 +689,9 @@ public final class TestDamageProcessorImpl
 
 		final DamageProcessorImpl proc = new DamageProcessorImpl ();
 		proc.setDamageCalculator (calc);
-		proc.setUnitCalculations (unitCalculations);
 		proc.setAttackResolutionProcessing (attackResolutionProc);
 		proc.setFogOfWarMidTurnChanges (midTurnSingle);
-		proc.setUnitSkillUtils (unitSkillUtils);
+		proc.setUnitUtils (unitUtils);
 		
 		// Run method
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();

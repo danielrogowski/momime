@@ -132,7 +132,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				final boolean canWalkOn = (x >= 1) && (y >= 2) &&
 					(y <= combatMapCoordinateSystem.getHeight () - 3) &&
 					(((y % 2 == 0) && (x <= combatMapCoordinateSystem.getWidth () - 2)) ||
-					((y % 2 == 1) && (x <= combatMapCoordinateSystem.getWidth () - 3)));
+					((y % 2 != 0) && (x <= combatMapCoordinateSystem.getWidth () - 3)));
 				
 				cell.setOffMapEdge (!canWalkOn);
 				

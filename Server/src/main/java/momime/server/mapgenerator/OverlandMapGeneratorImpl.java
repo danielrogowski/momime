@@ -1579,7 +1579,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 					{
 						for (final TileTypeAreaEffectSvr thisEffect : thisTileType.getTileTypeAreaEffects ())
 							getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients
-								(gsk, thisEffect.getCombatAreaEffectID (), null, null, new MapCoordinates3DEx (x, y, plane), null, db, sd);
+								(gsk, thisEffect.getCombatAreaEffectID (), null, null, new MapCoordinates3DEx (x, y, plane), null, sd);
 					}
 					
 					// If this tile is an aura from another square, then we need to add the node aura here too
@@ -1593,7 +1593,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 							// It must specify that this effect extends out across the node aura
 							if ((thisEffect.isExtendAcrossNodeAura () != null) && (thisEffect.isExtendAcrossNodeAura ()))
 								getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients
-									(gsk, thisEffect.getCombatAreaEffectID (), null, null, new MapCoordinates3DEx (x, y, plane), null, db, sd);
+									(gsk, thisEffect.getCombatAreaEffectID (), null, null, new MapCoordinates3DEx (x, y, plane), null, sd);
 					}
 				}
 

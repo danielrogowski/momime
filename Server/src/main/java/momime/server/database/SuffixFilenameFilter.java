@@ -29,7 +29,7 @@ public final class SuffixFilenameFilter implements FilenameFilter
 	 * @return True if this file has the desired suffix, False if it doesn't
 	 */
 	@Override
-	public final boolean accept (final File dir, final String name)
+	public final boolean accept (@SuppressWarnings ("unused") final File dir, final String name)
 	{
 		return name.endsWith (suffix);
 	}

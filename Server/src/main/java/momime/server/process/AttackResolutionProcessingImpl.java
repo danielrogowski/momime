@@ -217,8 +217,10 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			for (int stepRepetitionNo = 0; stepRepetitionNo < stepRepetitions; stepRepetitionNo++)
 			{
 				// If the unit being attacked is already dead, then don't bother proceeding
+				final ExpandedUnitDetails xuUnitBeingAttackedHPcheck = getUnitUtils ().expandUnitDetails (unitBeingAttacked.getUnit (), null, null, null, players, mem, db);
+				
 				final List<UnitDamage> damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
-				if (getUnitUtils ().getTotalDamageTaken (damageTaken) < getUnitCalculations ().calculateHitPointsRemaining (unitBeingAttacked.getUnit (), players, mem, db))					
+				if (getUnitUtils ().getTotalDamageTaken (damageTaken) < xuUnitBeingAttackedHPcheck.calculateHitPointsRemaining ())					
 				{
 					// Work out potential damage from the attack
 					final AttackDamage potentialDamage;
@@ -303,7 +305,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									break;
 				
 								case MULTI_FIGURE:
-									thisDamage = getDamageCalculator ().calculateMultiFigureDamage (unitBeingAttacked,
+									thisDamage = getDamageCalculator ().calculateMultiFigureDamage (xuUnitBeingAttacked,
 										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
 										attackingPlayer, defendingPlayer, potentialDamage, players, mem, db); 
 									break;
@@ -320,14 +322,12 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			
 								case EACH_FIGURE_RESIST_OR_DIE:
 									thisDamage = getDamageCalculator ().calculateEachFigureResistOrDieDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 	
 								case SINGLE_FIGURE_RESIST_OR_DIE:
 									thisDamage = getDamageCalculator ().calculateSingleFigureResistOrDieDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 									
 								case RESIST_OR_TAKE_DAMAGE:
@@ -348,8 +348,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 								case FEAR:
 									thisDamage = 0;
 									getDamageCalculator ().calculateFearDamage
-										(unitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										(unitBeingAttacked, xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
 								break;
 									
 								case ZEROES_AMMO:
@@ -430,9 +429,13 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		// Instead we apply both, then the unit has -2 HP, and the heal routine will always heal healable damage first.
 		// So we convert 2 HP of the healable damage already taken into life stealing damage, ending up with the unit dying from
 		// taking 2 HP healable damage and 4 HP life stealing damage, and so it becomes undead.
-		getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), -getUnitCalculations ().calculateHitPointsRemaining (defender.getUnit (), players, mem, db), true);
+		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), null, null, null, players, mem, db);
+		getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), -xuDefender.calculateHitPointsRemaining (), true);
 		if (attacker != null)
-			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -getUnitCalculations ().calculateHitPointsRemaining (attacker.getUnit (), players, mem, db), true);
+		{
+			final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attacker.getUnit (), null, null, null, players, mem, db);
+			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -xuAttacker.calculateHitPointsRemaining (), true);
+		}
 		
 		log.trace ("Exiting processAttackResolutionStep = " + specialDamageResolutionsApplied.size ());
 		return specialDamageResolutionsApplied;

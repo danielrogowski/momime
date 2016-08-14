@@ -258,7 +258,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		// CAE must be localised at this combat location (so we don't remove global enchantments like Crusade) and must be owned by a player (so we don't remove node auras)
 		for (final MemoryCombatAreaEffect trueCAE : copyOftrueCAEs)
 			if ((!keepCAEs.contains (trueCAE)) && (mapLocation.equals (trueCAE.getMapLocation ())) && (trueCAE.getCastingPlayerID () != null))
-				getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, db, sd);
+				getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
 		
 		log.trace ("Exiting removeCombatAreaEffectsFromLocalisedSpells");
 	}
@@ -456,7 +456,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				if ((!couldSeeBeforeMove) && (canSeeAfterMove))
 				{
 					// The unit stack doesn't exist yet in the player's memory or on the client, so before they can move, we have to send all the unit details
-					getFogOfWarMidTurnChanges ().addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, gsk.getTrueMap ().getMaintainedSpell (), thisPlayer, db);
+					getFogOfWarMidTurnChanges ().addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, gsk.getTrueMap ().getMaintainedSpell (), thisPlayer);
 					thisPlayerCanSee = true;
 				}
 

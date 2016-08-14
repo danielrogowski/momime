@@ -794,7 +794,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		
 		// Check player 1
 		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1, db);
+		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1);
 
 		for (int n = 1; n <= 3; n++)
 			assertEquals (moveTo, unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
@@ -810,7 +810,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 
 		// Check player 2
 		verify (single, times (1)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player2);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player2, db);
+		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player2);
 
 		assertEquals (1, conn2.getMessages ().size ());
 		final MoveUnitStackOverlandMessage msg2 = (MoveUnitStackOverlandMessage) conn2.getMessages ().get (0);
@@ -823,14 +823,14 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 
 		// Check player 3
 		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player3);
-		verify (single, times (1)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player3, db);
+		verify (single, times (1)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player3);
 
 		for (int n = 1; n <= 3; n++)
 			assertEquals (moveTo, unitUtils.findUnitURN (n, fow3.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
 
 		// Check player 4
 		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player4);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player4, db);
+		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player4);
 
 		for (int n = 1; n <= 3; n++)		// Player still knows about the units, but at their old location, we didn't see them move
 			assertEquals (moveFrom, unitUtils.findUnitURN (n, fow4.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
@@ -955,7 +955,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		
 		// Check player 1
 		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1, db);
+		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1);
 
 		for (int n = 1; n <= 3; n++)
 			assertEquals (moveTo, unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());
@@ -1101,7 +1101,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		
 		// Check player 1
 		verify (single, times (0)).freeUnitStackIncludingSpellsFromServerPlayerMemoryOnly (unitURNList, player1);
-		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1, db);
+		verify (single, times (0)).addUnitStackIncludingSpellsToServerPlayerMemoryAndSendToClient (unitStack, trueMap.getMaintainedSpell (), player1);
 
 		for (int n = 1; n <= 3; n++)
 			assertEquals (moveTo, unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients").getUnitLocation ());

@@ -103,50 +103,6 @@ public interface UnitCalculations
 	public void decreaseRangedAttackAmmo (final MemoryUnit unit);
 
 	/**
-	 * @param unit Unit to calculate HP for
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @return How many hit points the unit as a whole has left
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 */
-	public int calculateHitPointsRemaining (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException;
-	
-	/**
-	 * First figure will take full damage before the second figure takes any damage
-	 * 
-	 * @param unit Unit to calculate attribute value for
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @return Number of figures left alive in this unit
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 */
-	public int calculateAliveFigureCount (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException;
-	
-	/**
-	 * Of course available units can never lose hitpoints, however we still need to define this so the unit info screen can use
-	 * it and draw darkened hearts for 'real' units who have taken damage.
-	 * 
-	 * @param unit Unit to calculate HP for
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @return How many hit points the first figure in this unit has left
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 */
-	public int calculateHitPointsRemainingOfFirstFigure (final AvailableUnit unit, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException;
-	
-	/**
 	 * This isn't as straightforward as it sounds, we either need dedicated ranged attack ammo (which can be phys or magic ranged attacks)
 	 * or caster units can spend mana to fire ranged attacks, but only magical ranged attacks
 	 * 

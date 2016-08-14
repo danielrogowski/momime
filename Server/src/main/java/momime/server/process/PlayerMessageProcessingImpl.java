@@ -899,7 +899,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					final SetCurrentPlayerMessage msg = new SetCurrentPlayerMessage ();
 					msg.setTurnNumber (gpk.getTurnNumber ());
 					msg.setCurrentPlayerID (gpk.getCurrentPlayerID ());
-					msg.setExpireMessages (gpk.getCurrentPlayerID () == player.getPlayerDescription ().getPlayerID ());
+					msg.setExpireMessages (player.getPlayerDescription ().getPlayerID ().equals (gpk.getCurrentPlayerID ()));
 					
 					if (msg.isExpireMessages ())
 						msg.getMessage ().addAll (trans.getNewTurnMessage ());

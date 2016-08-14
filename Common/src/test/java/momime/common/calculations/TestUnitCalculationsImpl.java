@@ -82,27 +82,29 @@ public final class TestUnitCalculationsImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Create units owned by 3 players
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		for (int playerID = 1; playerID <= 3; playerID++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
 			spearmen.setOwningPlayerID (playerID);
 			fow.getUnit ().add (spearmen);
-			when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				null, null, players, fow, db)).thenReturn (1);
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
+			when (xuSpearmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
 			fow.getUnit ().add (hellHounds);
-			when (unitSkillUtils.getModifiedSkillValue (hellHounds, hellHounds.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				null, null, players, fow, db)).thenReturn (2);
+
+			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
+			when (xuHellHounds.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
 		}
 
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
+		calc.setUnitUtils (unitUtils);
 		
 		// Run method
 		calc.resetUnitOverlandMovement (0, players, fow, db);
@@ -131,27 +133,29 @@ public final class TestUnitCalculationsImpl
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Create units owned by 3 players
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		for (int playerID = 1; playerID <= 3; playerID++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
 			spearmen.setOwningPlayerID (playerID);
 			fow.getUnit ().add (spearmen);
-			when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				null, null, players, fow, db)).thenReturn (1);
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
+			when (xuSpearmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 
 			final MemoryUnit hellHounds = new MemoryUnit ();
 			hellHounds.setOwningPlayerID (playerID);
 			fow.getUnit ().add (hellHounds);
-			when (unitSkillUtils.getModifiedSkillValue (hellHounds, hellHounds.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				null, null, players, fow, db)).thenReturn (2);
+
+			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
+			when (xuHellHounds.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
 		}
 
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
+		calc.setUnitUtils (unitUtils);
 
 		// Run method
 		calc.resetUnitOverlandMovement (2, players, fow, db);
@@ -179,10 +183,9 @@ public final class TestUnitCalculationsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		// Set up some test units
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-
 		// Unit A that matches
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+
 		final MemoryUnit u1 = new MemoryUnit ();
 		u1.setStatus (UnitStatusID.ALIVE);
 		u1.setOwningPlayerID (1);
@@ -191,9 +194,10 @@ public final class TestUnitCalculationsImpl
 		u1.setCombatSide (UnitCombatSideID.ATTACKER);
 		u1.setCombatHeading (1);
 		fow.getUnit ().add (u1);
-		when (unitSkillUtils.getModifiedSkillValue (u1, u1.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			null, null, players, fow, db)).thenReturn (1);
+
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (u1, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 
 		// Wrong location
 		final MemoryUnit u2 = new MemoryUnit ();
@@ -204,10 +208,11 @@ public final class TestUnitCalculationsImpl
 		u2.setCombatSide (UnitCombatSideID.ATTACKER);
 		u2.setCombatHeading (1);
 		fow.getUnit ().add (u2);
-		when (unitSkillUtils.getModifiedSkillValue (u2, u2.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			null, null, players, fow, db)).thenReturn (1);
 
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (u2, null, null, null, players, fow, db)).thenReturn (xu2);
+		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+		
 		// No combat position
 		final MemoryUnit u3 = new MemoryUnit ();
 		u3.setStatus (UnitStatusID.ALIVE);
@@ -216,9 +221,10 @@ public final class TestUnitCalculationsImpl
 		u3.setCombatSide (UnitCombatSideID.ATTACKER);
 		u3.setCombatHeading (1);
 		fow.getUnit ().add (u3);
-		when (unitSkillUtils.getModifiedSkillValue (u3, u3.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			null, null, players, fow, db)).thenReturn (1);
+
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (u3, null, null, null, players, fow, db)).thenReturn (xu3);
+		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 		
 		// Wrong player
 		final MemoryUnit u4 = new MemoryUnit ();
@@ -229,9 +235,10 @@ public final class TestUnitCalculationsImpl
 		u4.setCombatSide (UnitCombatSideID.ATTACKER);
 		u4.setCombatHeading (1);
 		fow.getUnit ().add (u4);
-		when (unitSkillUtils.getModifiedSkillValue (u4, u4.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			null, null, players, fow, db)).thenReturn (1);
+
+		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (u4, null, null, null, players, fow, db)).thenReturn (xu4);
+		when (xu4.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 		
 		// Unit B that matches
 		final MemoryUnit u5 = new MemoryUnit ();
@@ -242,13 +249,14 @@ public final class TestUnitCalculationsImpl
 		u5.setCombatSide (UnitCombatSideID.ATTACKER);
 		u5.setCombatHeading (1);
 		fow.getUnit ().add (u5);
-		when (unitSkillUtils.getModifiedSkillValue (u5, u5.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			null, null, players, fow, db)).thenReturn (2);
+
+		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (u5, null, null, null, players, fow, db)).thenReturn (xu5);
+		when (xu5.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
+		calc.setUnitUtils (unitUtils);
 		
 		// Run method
 		final MapCoordinates3DEx loc = new MapCoordinates3DEx (20, 10, 1);

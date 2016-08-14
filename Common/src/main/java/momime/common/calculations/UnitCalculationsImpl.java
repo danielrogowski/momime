@@ -97,9 +97,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 		for (final MemoryUnit thisUnit : mem.getUnit ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
-				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					null, null, players, mem, db));
+				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db).getModifiedSkillValue
+					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 
 		log.trace ("Exiting resetUnitOverlandMovement");
 	}
@@ -127,9 +126,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					
-				thisUnit.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					null, null, players, mem, db));
+				thisUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db).getModifiedSkillValue
+					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 
 		log.trace ("Exiting resetUnitCombatMovement");
 	}

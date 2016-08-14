@@ -255,7 +255,7 @@ public final class MainMenuUI extends MomClientFrameUI
 		final ComponentListener onResize = new ComponentAdapter ()
 		{
 			@Override
-			public final void componentResized (final ComponentEvent e)
+			public final void componentResized (@SuppressWarnings ("unused") final ComponentEvent ev)
 			{
 				final int edge = Math.min (contentPane.getWidth () / 4, contentPane.getHeight () / 3);
 				final int imgWidth = edge * 4;

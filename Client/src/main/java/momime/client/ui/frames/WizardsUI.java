@@ -195,7 +195,7 @@ public final class WizardsUI extends MomClientFrameUI
 			final MouseAdapter displayWizardHandler = new MouseAdapter ()
 			{
 				@Override
-				public final void mouseClicked (final MouseEvent ev)
+				public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
 				{
 					try
 					{

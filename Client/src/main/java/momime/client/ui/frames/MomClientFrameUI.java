@@ -104,7 +104,7 @@ public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 					 * Maybe close the form with a mouse click
 					 */
 					@Override
-					public final void mouseClicked (final MouseEvent ev)
+					public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
 					{
 						if (isCloseOnClick ())
 							try

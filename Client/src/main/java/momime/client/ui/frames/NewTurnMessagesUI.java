@@ -118,7 +118,7 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		newTurnMessagesList.addMouseListener (new MouseAdapter ()
 		{
 			@Override
-			public final void mouseClicked (final MouseEvent ev)
+			public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
 			{
 				if (newTurnMessagesList.getSelectedIndex () >= 0)
 				{

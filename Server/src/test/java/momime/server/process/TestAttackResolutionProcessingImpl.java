@@ -354,8 +354,6 @@ public final class TestAttackResolutionProcessingImpl
 		defender.setUnitURN (102);
 		defender.setOwningPlayerID (attackingPd.getPlayerID ());
 		
-		when (unitCalc.canMakeRangedAttack (attacker, players, fow, db)).thenReturn (true);
-		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
@@ -363,6 +361,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, fow, db)).thenReturn (xuAttacker);
+		when (unitCalc.canMakeRangedAttack (xuAttacker)).thenReturn (true);
 		
 		// Defender has already taken 3 hits, and can take 5 more
 		final UnitDamage defenderDamageTaken = new UnitDamage ();

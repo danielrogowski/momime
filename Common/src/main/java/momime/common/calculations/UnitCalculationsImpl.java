@@ -23,14 +23,10 @@ import momime.common.database.CombatTileBorderBlocksMovementID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MovementRateRule;
-import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
-import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -46,7 +42,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -71,9 +66,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
@@ -317,26 +309,19 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * or caster units can spend mana to fire ranged attacks, but only magical ranged attacks
 	 * 
 	 * @param unit Unit to calculate for
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return Whether the unit can make a ranged attack in combat and has ammo to do so
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	@Override
-	public final boolean canMakeRangedAttack (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
+	public final boolean canMakeRangedAttack (final ExpandedUnitDetails unit) throws MomException
 	{
 		log.trace ("Entering canMakeRangedAttack: Unit URN " + unit.getUnitURN ());
 		
 		final boolean result;
 		
 		// First we have to actually have a ranged attack
-		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) <= 0)
-			
+		if ((!unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) ||
+			(unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK) <= 0))
 			result = false;
 		
 		// If we have ranged attack ammo left then this is easy
@@ -351,14 +336,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		else
 		{
 			// We have spare mana to fire but first we have to prove that our type of attack is magical - we can't use Mana to fire a bow!
-			final Unit unitDef = db.findUnit (unit.getUnitID (), "canMakeRangedAttack");
-			if (unitDef.getRangedAttackType () == null)
+			if (unit.getRangedAttackType () == null)
 				result = false;
 			else
-			{
-				final RangedAttackType rat = db.findRangedAttackType (unitDef.getRangedAttackType (), "canMakeRangedAttack");
-				result = (rat.getMagicRealmID () != null);
-			}
+				result = (unit.getRangedAttackType ().getMagicRealmID () != null);
 		}
 		
 		log.trace ("Entering canMakeRangedAttack = " + result);
@@ -724,7 +705,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param combatMap The details of the combat terrain
 	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
@@ -733,8 +713,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
 		final CombatMoveType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
-		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
-		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering calculateCombatMovementDistances: Unit URN " + unitBeingMoved.getUnitURN ());
@@ -791,7 +770,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		}
 		
 		// Now check if we can fire missile attacks at any enemies
-		if (canMakeRangedAttack (unitBeingMoved.getMemoryUnit (), players, fogOfWarMemory, db))
+		if (canMakeRangedAttack (unitBeingMoved))
 			for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
 				for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
 					if (enemyUnits [y] [x])
@@ -853,22 +832,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		unitUtils = utils;
 	}
 
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
 	/**
 	 * @return Coordinate system utils
 	 */

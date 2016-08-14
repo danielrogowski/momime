@@ -107,16 +107,10 @@ public interface UnitCalculations
 	 * or caster units can spend mana to fire ranged attacks, but only magical ranged attacks
 	 * 
 	 * @param unit Unit to calculate for
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return Whether the unit can make a ranged attack in combat and has ammo to do so
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
-	public boolean canMakeRangedAttack (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException;
+	public boolean canMakeRangedAttack (final ExpandedUnitDetails unit) throws MomException;
 
 	/**
 	 * @param unitStack Unit stack to check
@@ -182,7 +176,6 @@ public interface UnitCalculations
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param combatMap The details of the combat terrain
 	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
@@ -190,7 +183,6 @@ public interface UnitCalculations
 	 */
 	public void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
 		final CombatMoveType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
-		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
-		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
+		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 }

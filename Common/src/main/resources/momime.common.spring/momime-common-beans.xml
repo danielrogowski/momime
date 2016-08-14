@@ -190,7 +190,6 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 

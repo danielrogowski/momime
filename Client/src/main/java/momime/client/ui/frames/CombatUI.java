@@ -1711,7 +1711,7 @@ public final class CombatUI extends MomClientFrameUI
 			
 			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatTerrain (),
-				combatMapSize, getClient ().getPlayers (), getClient ().getClientDB ());
+				combatMapSize, getClient ().getClientDB ());
 			
 			// Calculate unit stats
 			final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList

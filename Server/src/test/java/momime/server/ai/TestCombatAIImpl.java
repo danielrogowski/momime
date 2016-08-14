@@ -17,15 +17,11 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
-import momime.common.utils.UnitUtilsImpl;
-import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseEx;
 
 /**
@@ -143,30 +139,28 @@ public final class TestCombatAIImpl
 		when (xu.getMemoryUnit ()).thenReturn (unit);
 		
 		// Set up object to test
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		
 		final CombatAIImpl ai = new CombatAIImpl ();
 		ai.setUnitUtils (unitUtils);
-		ai.setUnitSkillUtils (unitSkillUtils);
 		ai.setUnitCalculations (unitCalculations);
 		
 		// Caster with MP remaining
 		when (xu.getManaRemaining ()).thenReturn (10);
-		assertEquals (1, ai.calculateUnitCombatAIOrder (xu, players, fow, db));
+		assertEquals (1, ai.calculateUnitCombatAIOrder (xu));
 		
 		// Unit with a ranged attack
 		when (xu.getManaRemaining ()).thenReturn (9);
-		when (unitCalculations.canMakeRangedAttack (unit, players, fow, db)).thenReturn (true);
-		assertEquals (2, ai.calculateUnitCombatAIOrder (xu, players, fow, db));
+		when (unitCalculations.canMakeRangedAttack (xu)).thenReturn (true);
+		assertEquals (2, ai.calculateUnitCombatAIOrder (xu));
 		
 		// Unit without the caster skill
-		when (unitCalculations.canMakeRangedAttack (unit, players, fow, db)).thenReturn (false);
-		assertEquals (3, ai.calculateUnitCombatAIOrder (xu, players, fow, db));
+		when (unitCalculations.canMakeRangedAttack (xu)).thenReturn (false);
+		assertEquals (3, ai.calculateUnitCombatAIOrder (xu));
 		
 		// Caster without MP remaining
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)).thenReturn (true);
-		assertEquals (4, ai.calculateUnitCombatAIOrder (xu, players, fow, db));
+		assertEquals (4, ai.calculateUnitCombatAIOrder (xu));
 	}
 	
 	/**
@@ -176,48 +170,29 @@ public final class TestCombatAIImpl
 	@Test
 	public final void testEvaluateTarget () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-
-		// Other lists
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up object to test
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final CombatAIImpl ai = new CombatAIImpl ();
-		ai.setUnitUtils (new UnitUtilsImpl ());
+		ai.setUnitUtils (unitUtils);
 		ai.setUnitCalculations (unitCalculations);
 		
 		// Attacking unit
-		final MemoryUnit attacker = new MemoryUnit ();
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		
 		// Caster with MP remaining
-		final MemoryUnit casterWithMP = new MemoryUnit ();
-		casterWithMP.setManaRemaining (10);
-		assertEquals (3, ai.evaluateTarget (attacker, casterWithMP, players, fow, db));
+		when (defender.getManaRemaining ()).thenReturn (10);
+		assertEquals (3, ai.evaluateTarget (attacker, defender));
 		
 		// Unit with a ranged attack
-		final MemoryUnit ranged = new MemoryUnit ();
-		ranged.setManaRemaining (9);
-		when (unitCalculations.canMakeRangedAttack (ranged, players, fow, db)).thenReturn (true);
-		assertEquals (2, ai.evaluateTarget (attacker, ranged, players, fow, db));
+		when (defender.getManaRemaining ()).thenReturn (9);
+		when (unitCalculations.canMakeRangedAttack (defender)).thenReturn (true);
+		assertEquals (2, ai.evaluateTarget (attacker, defender));
 		
 		// Unit without the caster skill
-		final MemoryUnit melee = new MemoryUnit ();
-		melee.setUnitID ("UN001");		// Dwarf hero
-		assertEquals (1, ai.evaluateTarget (attacker, melee, players, fow, db));
-		
-		// Caster without MP remaining
-		final MemoryUnit casterWithoutMP = new MemoryUnit ();
-		casterWithoutMP.setUnitID ("UN003");		// Sage hero
-		casterWithoutMP.setManaRemaining (9);
-		
-		final UnitSkillAndValue casterSkill = new UnitSkillAndValue ();
-		casterSkill.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO);
-		casterSkill.setUnitSkillValue (3);
-		casterWithoutMP.getUnitHasSkill ().add (casterSkill);
-		
-		assertEquals (1, ai.evaluateTarget (attacker, casterWithoutMP, players, fow, db));
+		when (unitCalculations.canMakeRangedAttack (defender)).thenReturn (false);
+		assertEquals (1, ai.evaluateTarget (attacker, defender));
 	}
 }

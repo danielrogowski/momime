@@ -284,19 +284,19 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		final DocumentListener documentListener = new DocumentListener ()
 		{
 			@Override
-			public final void insertUpdate (final DocumentEvent e)
+			public final void insertUpdate (@SuppressWarnings ("unused") final DocumentEvent ev)
 			{
 				enabledOrDisableOkButton ();
 			}
 
 			@Override
-			public final void removeUpdate (final DocumentEvent e)
+			public final void removeUpdate (@SuppressWarnings ("unused") final DocumentEvent ev)
 			{
 				enabledOrDisableOkButton ();
 			}
 
 			@Override
-			public final void changedUpdate (final DocumentEvent e)
+			public final void changedUpdate (@SuppressWarnings ("unused") final DocumentEvent ev)
 			{
 				enabledOrDisableOkButton ();
 			}

@@ -1016,7 +1016,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 		 * @return Columns are all units
 		 */
 		@Override
-		public final Class<?> getColumnClass (final int columnIndex)
+		public final Class<?> getColumnClass (@SuppressWarnings ("unused") final int columnIndex)
 		{
 			return MemoryUnit.class;
 		}

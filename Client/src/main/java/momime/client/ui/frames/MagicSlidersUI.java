@@ -986,7 +986,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		 * @return Columns are all spells
 		 */
 		@Override
-		public final Class<?> getColumnClass (final int columnIndex)
+		public final Class<?> getColumnClass (@SuppressWarnings ("unused") final int columnIndex)
 		{
 			return MemoryMaintainedSpell.class;
 		}

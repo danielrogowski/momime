@@ -40,8 +40,6 @@ import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -59,7 +57,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -544,84 +541,39 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testCanMakeRangedAttack () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-
-		// These are all only used for the mock so doesn't matter if there's anything in them
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-
 		// Set up object to test
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Unit without even a ranged attack skill
-		final MemoryUnit noRangedAttack = new MemoryUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (noRangedAttack, noRangedAttack.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
-		assertFalse (calc.canMakeRangedAttack (noRangedAttack, players, fow, db));
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+		when (unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (false);
+		assertFalse (calc.canMakeRangedAttack (unit));
+
+		when (unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (true);
+		when (unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (0);
+		assertFalse (calc.canMakeRangedAttack (unit));
 		
 		// Bow with no remaining ammo
-		final MemoryUnit outOfAmmo = new MemoryUnit ();
-		when (unitSkillUtils.getModifiedSkillValue (outOfAmmo, outOfAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		assertFalse (calc.canMakeRangedAttack (outOfAmmo, players, fow, db));
+		when (unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (1);
+		assertFalse (calc.canMakeRangedAttack (unit));
 
 		// Bow with remaining ammo
-		final MemoryUnit hasAmmo = new MemoryUnit ();
-		hasAmmo.setAmmoRemaining (1);
-		when (unitSkillUtils.getModifiedSkillValue (hasAmmo, hasAmmo.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		assertTrue (calc.canMakeRangedAttack (hasAmmo, players, fow, db));
+		when (unit.getAmmoRemaining ()).thenReturn (1);
+		assertTrue (calc.canMakeRangedAttack (unit));
 		
 		// Ranged attack of unknown type with mana (maybe this should actually be an exception)
-		final Unit unknownRATUnitDef = new Unit ();
-		unknownRATUnitDef.setUnitID ("A");
-		
-		final MemoryUnit unknownRAT = new MemoryUnit ();
-		unknownRAT.setUnitID (unknownRATUnitDef.getUnitID ());
-		unknownRAT.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedSkillValue (unknownRAT, unknownRAT.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (db.findUnit (unknownRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (unknownRATUnitDef);
-		assertFalse (calc.canMakeRangedAttack (unknownRAT, players, fow, db));
+		when (unit.getAmmoRemaining ()).thenReturn (0);
+		when (unit.getManaRemaining ()).thenReturn (3);
+		assertFalse (calc.canMakeRangedAttack (unit));
 
 		// Phys ranged attack with mana
-		final RangedAttackType physRAT = new RangedAttackType ();
-		physRAT.setRangedAttackTypeID ("Y");
-		
-		final Unit physRATUnitDef = new Unit ();
-		physRATUnitDef.setUnitID ("B");
-		physRATUnitDef.setRangedAttackType (physRAT.getRangedAttackTypeID ());
-		
-		final MemoryUnit physRATUnit = new MemoryUnit ();
-		physRATUnit.setUnitID (physRATUnitDef.getUnitID ());
-		physRATUnit.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedSkillValue (physRATUnit, physRATUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (db.findUnit (physRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (physRATUnitDef);
-		when (db.findRangedAttackType (physRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (physRAT);
-		assertFalse (calc.canMakeRangedAttack (physRATUnit, players, fow, db));
+		final RangedAttackType rat = new RangedAttackType ();
+		when (unit.getRangedAttackType ()).thenReturn (rat);
+		assertFalse (calc.canMakeRangedAttack (unit));
 		
 		// Magic ranged attack with mana
-		final RangedAttackType magRAT = new RangedAttackType ();
-		magRAT.setRangedAttackTypeID ("Z");
-		magRAT.setMagicRealmID ("X");
-		
-		final Unit magRATUnitDef = new Unit ();
-		magRATUnitDef.setUnitID ("C");
-		magRATUnitDef.setRangedAttackType (magRAT.getRangedAttackTypeID ());
-		
-		final MemoryUnit magRATUnit = new MemoryUnit ();
-		magRATUnit.setUnitID (magRATUnitDef.getUnitID ());
-		magRATUnit.setManaRemaining (3);
-		when (unitSkillUtils.getModifiedSkillValue (magRATUnit, magRATUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (db.findUnit (magRATUnitDef.getUnitID (), "canMakeRangedAttack")).thenReturn (magRATUnitDef);
-		when (db.findRangedAttackType (magRAT.getRangedAttackTypeID (), "canMakeRangedAttack")).thenReturn (magRAT);
-		assertTrue (calc.canMakeRangedAttack (magRATUnit, players, fow, db));
+		rat.setMagicRealmID ("X");
+		assertTrue (calc.canMakeRangedAttack (unit));
 	}
 	
 	/**

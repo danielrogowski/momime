@@ -127,7 +127,7 @@ public final class EditStringUI extends MomClientFrameUI
 		getFrame ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
-			public final void windowClosed (final WindowEvent ev)
+			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
 			{
 				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 			}

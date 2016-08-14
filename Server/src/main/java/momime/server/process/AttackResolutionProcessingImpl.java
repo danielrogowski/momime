@@ -225,10 +225,12 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 					// Work out potential damage from the attack
 					final AttackDamage potentialDamage;
 					final AttackResolutionUnit unitMakingAttack;
+					final ExpandedUnitDetails xuUnitMakingAttack;
 					if (step == null)
 					{
 						potentialDamage = commonPotentialDamageToDefenders;
 						unitMakingAttack = null;
+						xuUnitMakingAttack = null;
 					}
 					else
 					{
@@ -237,9 +239,11 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						if (unitMakingAttack == null)
 							throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
 						
+						xuUnitMakingAttack = getUnitUtils ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, players, mem, db);
+						
 						// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
 						if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())) &&
-							(!getUnitCalculations ().canMakeRangedAttack (unitMakingAttack.getUnit (), players, mem, db)))
+							(!getUnitCalculations ().canMakeRangedAttack (xuUnitMakingAttack)))
 							
 							potentialDamage = null;
 						else
@@ -272,12 +276,12 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							// unit being attacked, since it might have bonuses against certain kinds of incoming attack so
 							// can't just generate its details using nulls for the attack details
 							final List<ExpandedUnitDetails> xuUnitsMakingAttack;
-							if (unitMakingAttack == null)
+							if (xuUnitMakingAttack == null)
 								xuUnitsMakingAttack = null;
 							else
 							{
 								xuUnitsMakingAttack = new ArrayList<ExpandedUnitDetails> ();
-								xuUnitsMakingAttack.add (getUnitUtils ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, players, mem, db));
+								xuUnitsMakingAttack.add (xuUnitMakingAttack);
 							}
 							
 							final ExpandedUnitDetails xuUnitBeingAttacked = getUnitUtils ().expandUnitDetails (unitBeingAttacked.getUnit (), xuUnitsMakingAttack,

@@ -104,7 +104,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 			
 			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
-				xu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
+				xu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getServerDB ());
 			
 			// Can we reach where we're trying to go?
 			if (movementTypes [getMoveTo ().getY ()] [getMoveTo ().getX ()] == CombatMoveType.CANNOT_MOVE)

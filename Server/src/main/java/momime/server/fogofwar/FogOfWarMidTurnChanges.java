@@ -1,6 +1,7 @@
 package momime.server.fogofwar;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -21,6 +22,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
@@ -380,10 +382,10 @@ public interface FogOfWarMidTurnChanges
 	 * @param unitStack The unit stack that is moving
 	 * @param unitStackSkills All the skills that any units in the stack have
 	 * @param tileTypeID Tile type being moved onto
-	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
+	 * @throws MomException If the one of the units in the list is not a MemoryUnit 
 	 */
-	public void reduceMovementRemaining (final List<MemoryUnit> unitStack, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db) throws RecordNotFoundException;
+	public void reduceMovementRemaining (final List<ExpandedUnitDetails> unitStack, final Set<String> unitStackSkills, final String tileTypeID,
+		final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
 }

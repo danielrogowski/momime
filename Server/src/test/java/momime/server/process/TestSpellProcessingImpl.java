@@ -358,7 +358,7 @@ public final class TestSpellProcessingImpl
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (summoningCircleLocation, UnitAddBumpTypeID.CITY);
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (summoningCircleLocation, "UN001", 7, trueMap, sd, db)).thenReturn (addLocation);
+		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (summoningCircleLocation, "UN001", 7, trueMap, players, sd, db)).thenReturn (addLocation);
 		
 		// Mock creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
@@ -459,7 +459,7 @@ public final class TestSpellProcessingImpl
 		// Will the unit fit in the city?
 		final UnitAddLocation addLocation = new UnitAddLocation (summoningCircleLocation, UnitAddBumpTypeID.CITY);
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (summoningCircleLocation, "UN008", 7, trueMap, sd, db)).thenReturn (addLocation);
+		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (summoningCircleLocation, "UN008", 7, trueMap, players, sd, db)).thenReturn (addLocation);
 		
 		// Heroes already exist in the units list, but lets say 1 we've already summoned, and another we've already summoned and got them killed
 		MemoryUnit theHero = null;

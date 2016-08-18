@@ -17,6 +17,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PendingMovement;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
@@ -207,7 +208,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void moveUnitStack (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
+	public void moveUnitStack (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
@@ -222,12 +223,13 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @param doubleMovementRemaining The lowest movement remaining of any unit in the stack
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws PlayerNotFoundException If we cannot find the player who a unit in the same location as our transports
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
 	 */
-	public OneCellPendingMovement determineOneCellPendingMovement (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
+	public OneCellPendingMovement determineOneCellPendingMovement (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final PendingMovement pendingMovement,  final int doubleMovementRemaining, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException;
+		throws MomException, RecordNotFoundException, PlayerNotFoundException;
 	
 	/**
 	 * This follows the same logic as moveUnitStack, except that it only works out what the movement path will be,
@@ -239,10 +241,11 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @param moveTo Location to move to
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
 	 */
-	public List<Integer> determineMovementPath (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
+	public List<Integer> determineMovementPath (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException;
+		throws MomException, RecordNotFoundException, PlayerNotFoundException;
 }

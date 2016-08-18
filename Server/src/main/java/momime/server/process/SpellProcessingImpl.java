@@ -289,7 +289,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					// Check if the city with the summoning circle has space for the unit
 					final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) summoningCircleLocation.getCityLocation ();
 					final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						(cityLocation, summonedUnitID, player.getPlayerDescription ().getPlayerID (), gsk.getTrueMap (), sd, db);
+						(cityLocation, summonedUnitID, player.getPlayerDescription ().getPlayerID (), gsk.getTrueMap (), players, sd, db);
 
 					final MemoryUnit newUnit;
 					if (addLocation.getUnitLocation () == null)

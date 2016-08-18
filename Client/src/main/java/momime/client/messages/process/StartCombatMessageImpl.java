@@ -5,6 +5,12 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.CreateArtifactUI;
@@ -13,14 +19,9 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.messages.servertoclient.StartCombatMessageUnit;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to the client when they are involved in a combat to start things off - this includes
@@ -70,8 +71,10 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 			unit.setCombatHeading (unitLoc.getCombatHeading ());
 			unit.setCombatSide (unitLoc.getCombatSide ());
 			
-			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (unit, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			
+			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (xu);
 		}
 		
 		// Start up the UI

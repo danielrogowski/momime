@@ -1,14 +1,15 @@
 package momime.server.process;
 
 import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import momime.common.messages.MemoryUnit;
-
 import org.junit.Test;
+
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Tests the MemoryUnitAndCombatClass class
@@ -23,11 +24,11 @@ public final class TestMemoryUnitAndCombatClass
 	public final void testCompare () throws Exception
 	{
 		// One of each kind of test unit
-		final MemoryUnit dwarfHero = new MemoryUnit ();
-		final MemoryUnit spearmen = new MemoryUnit ();
-		final MemoryUnit archerHero = new MemoryUnit ();
-		final MemoryUnit bowmen = new MemoryUnit ();
-		final MemoryUnit settlers = new MemoryUnit ();
+		final ExpandedUnitDetails dwarfHero = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails spearmen = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails archerHero = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails bowmen = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails settlers = mock (ExpandedUnitDetails.class);
 
 		// Put units into the list in the wrong order
 		final List<MemoryUnitAndCombatClass> units = new ArrayList<MemoryUnitAndCombatClass> ();

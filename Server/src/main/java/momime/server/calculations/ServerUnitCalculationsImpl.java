@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -14,7 +15,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.MapCoordinates2D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -36,11 +36,11 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -185,19 +185,18 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 	/**
 	 * @param unitStack Unit stack we are moving
-	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Map indicating the doubled movement cost of entering every type of tile type for this unit stack
 	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
-	final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
+	final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<ExpandedUnitDetails> unitStack,
+		final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering calculateDoubleMovementRatesForUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
 
 		// Get list of all the skills that any unit in the stack has, in case any of them have path finding, wind walking, etc.
-		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack, spells, db);
+		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
 
 		// Go through each tile type
 		final Map<String, Integer> movementRates = new HashMap<String, Integer> ();
@@ -207,12 +206,12 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				Integer worstMovementRate = 0;
 
 				// Check every unit - stop if we've found that terrain is impassable to someone
-				final Iterator<MemoryUnit> unitIter = unitStack.iterator ();
+				final Iterator<ExpandedUnitDetails> unitIter = unitStack.iterator ();
 				while ((worstMovementRate != null) && (unitIter.hasNext ()))
 				{
-					final MemoryUnit thisUnit = unitIter.next ();
+					final ExpandedUnitDetails thisUnit = unitIter.next ();
 
-					final Integer thisMovementRate = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileType.getTileTypeID (), spells, db);
+					final Integer thisMovementRate = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileType.getTileTypeID (), db);
 					if (thisMovementRate == null)
 						worstMovementRate = null;
 					else if (thisMovementRate > worstMovementRate)
@@ -250,7 +249,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
 		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
-		final List<MapCoordinates2D> cellsLeftToCheck, final CoordinateSystem sys)
+		final List<MapCoordinates2DEx> cellsLeftToCheck, final CoordinateSystem sys)
 	{
 		log.trace ("Entering calculateOverlandMovementDistances_Cell: Player ID " + movingPlayerID +
 			", (" + cellX + ", " + cellY + ", " + cellPlane + ")");
@@ -336,7 +335,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 		// Rather than iterating out distances from the centre, process rings around each location before proceeding to the next location
 		// This is to prevent the situation in the original MoM where you are on Enchanced Road, hit 'Up' and the game decides to move you up-left and then right to get there
-		final List<MapCoordinates2D> cellsLeftToCheck = new ArrayList<MapCoordinates2D> ();
+		final List<MapCoordinates2DEx> cellsLeftToCheck = new ArrayList<MapCoordinates2DEx> ();
 		calculateOverlandMovementDistances_Cell (startX, startY, startPlane, movingPlayerID, map, units,
 			doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 			doubleMovementToEnterTile, cellsLeftToCheck, sys);
@@ -371,21 +370,23 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param movementDirections The direction that we moved to get here, e.g. the tile directly above startX, startY will have value 1
 	 * @param canMoveToInOneTurn Indicates the locations that we can reach in a single turn (see the forester example above)
 	 * @param movingHereResultsInAttack Indicates whether we know that moving here will result in attacking an enemy unit stack
+	 * @param players List of players in this session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	@Override
 	public final void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final FogOfWarMemory map, final UnitStack unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
-		final boolean [] [] [] movingHereResultsInAttack,
-		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
+		final boolean [] [] [] movingHereResultsInAttack, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering calculateOverlandMovementDistances: (" + startX + ", " + startY + ", " + startPlane + ")");
 
-		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack.getUnits (), map.getMaintainedSpell (), db);
+		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack.getUnits ());
 		
 		// If its a transported movement, then by defintion the stack can move onto another transport if it wants to,
 		// so don't need to make any special considerations for moving units onto a transport
@@ -407,9 +408,10 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					final int z = thisUnit.getUnitLocation ().getZ ();
 					
 					final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, map, db);
 					
 					// Count space granted by transports
-					final Integer unitTransportCapacity = db.findUnit (thisUnit.getUnitID (), "calculateOverlandMovementDistances").getTransportCapacity ();
+					final Integer unitTransportCapacity = xu.getUnitDefinition ().getTransportCapacity ();
 					if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
 					{
 						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
@@ -422,8 +424,8 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					}
 					
 					// Count space taken up by units already in transports
-					else if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, getMemoryGridCellUtils ().convertNullTileTypeToFOW
-						(terrainData), map.getMaintainedSpell (), db) == null)
+					else if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, unitStackSkills, getMemoryGridCellUtils ().convertNullTileTypeToFOW
+						(terrainData), db) == null)
 						
 						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 						{
@@ -435,10 +437,13 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				}			
 		}
 		
-		// Work out all the movement rates over all tile types of the unit stack
-		// If a transporting move, only the movement speed of the transports matters 
+		// Work out all the movement rates over all tile types of the unit stack.
+		// If a transporting move, only the movement speed of the transports matters.
+		
+		// Not sure this is necessarily correct - see example testCreateUnitStack_TransportOnly - if there are flying/swimming units
+		// moving alongside the transports but not inside them, then their movement rates should be considered as well?
 		final Map<String, Integer> doubleMovementRates = calculateDoubleMovementRatesForUnitStack
-			((unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits (), map.getMaintainedSpell (), db);
+			((unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits (), db);
 
 		// Count how many of OUR units are in every cell on the map - enemy units are fine, we'll just attack them :-)
 		final int [] [] [] ourUnitCountAtLocation = countOurAliveUnitsAtEveryLocation (movingPlayerID, map.getUnit (), sd.getOverlandMapSize ());
@@ -462,10 +467,10 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 							// Can't do this up front because it varies depending on whether the terrain being moved to is impassable to each kind of unit in the stack
 							int spaceRequired = 0;
 							boolean impassableToTransport = false;
-							for (final MemoryUnit thisUnit : unitStack.getUnits ())
+							for (final ExpandedUnitDetails thisUnit : unitStack.getUnits ())
 							{															
 								final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills,
-									getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), map.getMaintainedSpell (), db) == null);
+									getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), db) == null);
 								
 								// Count space granted by transports
 								final Integer unitTransportCapacity = db.findUnit (thisUnit.getUnitID (), "calculateOverlandMovementDistances").getTransportCapacity ();
@@ -561,31 +566,31 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					(mapLocation.getZ ()).getRow ().get (mapLocation.getY ()).getCell ().get (mapLocation.getX ()).getTerrainData ();
 				
 				// List all the units at this location owned by this player
-				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+				final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 				for (final MemoryUnit tu : trueMap.getUnit ())
 					if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())) && (playerID == tu.getOwningPlayerID ()))
-						unitStack.add (tu);
+						unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, players, trueMap, db));
 				
 				// Get a list of the unit stack skills
-				final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack, trueMap.getMaintainedSpell (), db);
+				final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
 				
 				// Now check each unit in the stack
-				final List<MemoryUnit> impassableUnits = new ArrayList<MemoryUnit> ();
+				final List<ExpandedUnitDetails> impassableUnits = new ArrayList<ExpandedUnitDetails> ();
 				int spaceRequired = 0;
-				for (final MemoryUnit tu : unitStack)
+				for (final ExpandedUnitDetails tu : unitStack)
 				{
 					final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
-						getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), trueMap.getMaintainedSpell (), db) == null);
+						getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), db) == null);
 						
 					// Count space granted by transports
-					final Integer unitTransportCapacity = db.findUnit (tu.getUnitID (), "recheckTransportCapacity").getTransportCapacity ();
+					final Integer unitTransportCapacity = tu.getUnitDefinition ().getTransportCapacity ();
 					if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
 					{
 						// Transports on impassable terrain just get killed (maybe a ship had its flight spell dispelled during an overland combat)
 						if (impassable)
 						{
 							log.debug ("Killing Unit URN " + tu.getUnitURN () + " (transport on impassable terrain)");
-							getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
+							getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
 						}
 						else
 							spaceRequired = spaceRequired - unitTransportCapacity;
@@ -600,10 +605,10 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				// Need to kill off any units?
 				while ((spaceRequired > 0) && (impassableUnits.size () > 0))
 				{
-					final MemoryUnit killUnit = impassableUnits.get (getRandomUtils ().nextInt (impassableUnits.size ()));
+					final ExpandedUnitDetails killUnit = impassableUnits.get (getRandomUtils ().nextInt (impassableUnits.size ()));
 					log.debug ("Killing Unit URN " + killUnit.getUnitURN () + " (unit on impassable terrain)");
 					
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
 					
 					spaceRequired--;
 					impassableUnits.remove (killUnit);

@@ -32,6 +32,7 @@ import momime.common.messages.PendingMovement;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -143,9 +144,12 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 						final PendingMovement thisMove = iter.next ();
 	
 						// Find each of the units
-						final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+						final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 						for (final Integer unitURN : thisMove.getUnitURN ())
-							unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "processSimultaneousTurnsMovement"));
+						{
+							final MemoryUnit tu = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "processSimultaneousTurnsMovement");
+							unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+						}
 						
 						// We're at a different location now, and know more about the map than when the path was calculated, so need to recalculate it
 						final List<Integer> path = getFogOfWarMidTurnMultiChanges ().determineMovementPath (unitStack, player,
@@ -215,12 +219,12 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				// Loop finding each unit, and in process ensure they all have movement remaining
 				int doubleMovementRemaining = Integer.MAX_VALUE;
 				int movementTotal = Integer.MAX_VALUE;
-				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+				final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 				for (final Integer unitURN : thisMove.getUnitURN ())
 				{
 					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement");
+					unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 					
-					unitStack.add (thisUnit);
 					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 					
@@ -259,9 +263,12 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				" from " + oneCell.getPendingMovement ().getMoveFrom () + " to " + oneCell.getPendingMovement ().getMoveTo () +
 				", stepping to " + oneCell.getOneStep ());
 			
-			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+			final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 			for (final Integer unitURN : oneCell.getPendingMovement ().getUnitURN ())
-				unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement"));
+			{
+				final MemoryUnit tu = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement");
+				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+			}
 			
 			// Execute the move
 			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, oneCell.getUnitStackOwner (), true,
@@ -312,12 +319,12 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				
 				// Loop finding each unit, and in process ensure they all have movement remaining
 				int doubleMovementRemaining = Integer.MAX_VALUE;
-				final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+				final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 				for (final Integer unitURN : thisMove.getUnitURN ())
 				{
 					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCombat");
+					unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 					
-					unitStack.add (thisUnit);
 					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 				}

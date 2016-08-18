@@ -1,6 +1,6 @@
 package momime.server.process;
 
-import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Stores a link to a unit together with its combat class, so that we don't have to keep recalculating it
@@ -8,7 +8,7 @@ import momime.common.messages.MemoryUnit;
 final class MemoryUnitAndCombatClass implements Comparable<MemoryUnitAndCombatClass>
 {
 	/** Unit being positioned into combat */
-	private final MemoryUnit unit;
+	private final ExpandedUnitDetails unit;
 	
 	/** Combat class (see notes in CombatProcessingImpl) */
 	private final int combatClass;
@@ -17,7 +17,7 @@ final class MemoryUnitAndCombatClass implements Comparable<MemoryUnitAndCombatCl
 	 * @param aUnit Unit being positioned into combat
 	 * @param aCombatClass Combat class (see notes in CombatProcessingImpl)
 	 */
-	MemoryUnitAndCombatClass (final MemoryUnit aUnit, final int aCombatClass)
+	MemoryUnitAndCombatClass (final ExpandedUnitDetails aUnit, final int aCombatClass)
 	{
 		unit = aUnit;
 		combatClass = aCombatClass;
@@ -35,7 +35,7 @@ final class MemoryUnitAndCombatClass implements Comparable<MemoryUnitAndCombatCl
 	/**
 	 * @return Unit being positioned into combat
 	 */
-	public final MemoryUnit getUnit ()
+	public final ExpandedUnitDetails getUnit ()
 	{
 		return unit;
 	}

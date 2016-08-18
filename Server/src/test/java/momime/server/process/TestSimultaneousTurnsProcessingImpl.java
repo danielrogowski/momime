@@ -47,6 +47,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
@@ -158,8 +159,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move1Unit.setDoubleOverlandMovesLeft (2);
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move1Stack = new ArrayList<MemoryUnit> ();
-		move1Stack.add (move1Unit);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		
+		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
+		move1Stack.add (xu1);
 		
 		when (unitUtils.findUnitURN (move1Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move1Unit);
 		
@@ -176,8 +180,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move2Unit.setDoubleOverlandMovesLeft (0);		// <--
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move2Stack = new ArrayList<MemoryUnit> ();
-		move2Stack.add (move2Unit);
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		
+		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
+		move2Stack.add (xu2);
 		
 		when (unitUtils.findUnitURN (move2Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move2Unit);
 		
@@ -193,9 +200,12 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move3Unit.setUnitID ("UN001");
 		move3Unit.setDoubleOverlandMovesLeft (2);
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
+
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
 		
-		final List<MemoryUnit> move3Stack = new ArrayList<MemoryUnit> ();
-		move3Stack.add (move3Unit);
+		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
+		move3Stack.add (xu3);
 		
 		when (unitUtils.findUnitURN (move3Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move3Unit);
 		
@@ -277,8 +287,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move1Unit.setDoubleOverlandMovesLeft (1);
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move1Stack = new ArrayList<MemoryUnit> ();
-		move1Stack.add (move1Unit);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		
+		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
+		move1Stack.add (xu1);
 		
 		when (unitUtils.findUnitURN (move1Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move1Unit);
 		
@@ -295,8 +308,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move2Unit.setDoubleOverlandMovesLeft (2);
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move2Stack = new ArrayList<MemoryUnit> ();
-		move2Stack.add (move2Unit);
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		
+		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
+		move2Stack.add (xu2);
 		
 		when (unitUtils.findUnitURN (move2Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move2Unit);
 		
@@ -313,8 +329,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move3Unit.setDoubleOverlandMovesLeft (3);
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move3Stack = new ArrayList<MemoryUnit> ();
-		move3Stack.add (move3Unit);
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		
+		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
+		move3Stack.add (xu3);
 		
 		when (unitUtils.findUnitURN (move3Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move3Unit);
 		
@@ -414,8 +433,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move1Unit.setDoubleOverlandMovesLeft (1);
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move1Stack = new ArrayList<MemoryUnit> ();
-		move1Stack.add (move1Unit);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		
+		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
+		move1Stack.add (xu1);
 		
 		when (unitUtils.findUnitURN (move1Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move1Unit);
 		
@@ -432,8 +454,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move2Unit.setDoubleOverlandMovesLeft (2);
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move2Stack = new ArrayList<MemoryUnit> ();
-		move2Stack.add (move2Unit);
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		
+		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
+		move2Stack.add (xu2);
 		
 		when (unitUtils.findUnitURN (move2Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move2Unit);
 		
@@ -450,8 +475,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move3Unit.setDoubleOverlandMovesLeft (3);
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move3Stack = new ArrayList<MemoryUnit> ();
-		move3Stack.add (move3Unit);
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		
+		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
+		move3Stack.add (xu3);
 		
 		when (unitUtils.findUnitURN (move3Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCellPendingMovement")).thenReturn (move3Unit);
 		
@@ -537,6 +565,9 @@ public final class TestSimultaneousTurnsProcessingImpl
 	@Test(expected=MomException.class)
 	public final void testFindAndProcessOneCombat_Unreachable () throws Exception
 	{
+		// Mock empty database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
@@ -563,6 +594,7 @@ public final class TestSimultaneousTurnsProcessingImpl
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Needed for setting up units
 		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
@@ -578,8 +610,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move1Unit.setDoubleOverlandMovesLeft (2);
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move1Stack = new ArrayList<MemoryUnit> ();
-		move1Stack.add (move1Unit);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		
+		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
+		move1Stack.add (xu1);
 		
 		when (unitUtils.findUnitURN (move1Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move1Unit);
 		
@@ -602,6 +637,9 @@ public final class TestSimultaneousTurnsProcessingImpl
 	@Test(expected=MomException.class)
 	public final void testFindAndProcessOneCombat_Move () throws Exception
 	{
+		// Mock empty database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
 		final PlayerDescription pd1 = new PlayerDescription ();
@@ -628,6 +666,7 @@ public final class TestSimultaneousTurnsProcessingImpl
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Needed for setting up units
 		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
@@ -643,8 +682,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move1Unit.setDoubleOverlandMovesLeft (2);
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move1Stack = new ArrayList<MemoryUnit> ();
-		move1Stack.add (move1Unit);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		
+		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
+		move1Stack.add (xu1);
 		
 		when (unitUtils.findUnitURN (move1Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move1Unit);
 		
@@ -715,8 +757,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move1Unit.setStatus (UnitStatusID.ALIVE);
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move1Stack = new ArrayList<MemoryUnit> ();
-		move1Stack.add (move1Unit);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		
+		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
+		move1Stack.add (xu1);
 		
 		when (unitUtils.findUnitURN (move1Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move1Unit);
 		
@@ -740,8 +785,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move2Unit.setDoubleOverlandMovesLeft (2);
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move2Stack = new ArrayList<MemoryUnit> ();
-		move2Stack.add (move2Unit);
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		
+		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
+		move2Stack.add (xu2);
 		
 		when (unitUtils.findUnitURN (move2Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move2Unit);
 		
@@ -759,8 +807,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move3Unit.setDoubleOverlandMovesLeft (2);
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move3Stack = new ArrayList<MemoryUnit> ();
-		move3Stack.add (move3Unit);
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		
+		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
+		move3Stack.add (xu3);
 		
 		when (unitUtils.findUnitURN (move3Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move3Unit);
 		
@@ -860,8 +911,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move1Unit.setStatus (UnitStatusID.ALIVE);
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move1Stack = new ArrayList<MemoryUnit> ();
-		move1Stack.add (move1Unit);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		
+		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
+		move1Stack.add (xu1);
 		
 		when (unitUtils.findUnitURN (move1Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move1Unit);
 		
@@ -885,8 +939,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move2Unit.setDoubleOverlandMovesLeft (2);
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move2Stack = new ArrayList<MemoryUnit> ();
-		move2Stack.add (move2Unit);
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		
+		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
+		move2Stack.add (xu2);
 		
 		when (unitUtils.findUnitURN (move2Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move2Unit);
 		
@@ -904,8 +961,11 @@ public final class TestSimultaneousTurnsProcessingImpl
 		move3Unit.setDoubleOverlandMovesLeft (2);
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 		
-		final List<MemoryUnit> move3Stack = new ArrayList<MemoryUnit> ();
-		move3Stack.add (move3Unit);
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		
+		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
+		move3Stack.add (xu3);
 		
 		when (unitUtils.findUnitURN (move3Unit.getUnitURN (), fow.getUnit (), "findAndProcessOneCombat")).thenReturn (move3Unit);
 		

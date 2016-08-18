@@ -31,9 +31,11 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
+import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
@@ -308,6 +310,9 @@ public final class TestPlayerMessageProcessingImpl
 	@Test
 	public final void testContinueMovement_AllPlayers () throws Exception
 	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
@@ -326,14 +331,23 @@ public final class TestPlayerMessageProcessingImpl
 		players.add (player2);	
 		
 		// Units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final MemoryUnit unit1 = new MemoryUnit ();
 		final MemoryUnit unit2 = new MemoryUnit ();
+		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
+		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
 		
-		final List<MemoryUnit> unitStack1 = new ArrayList<MemoryUnit> ();
-		unitStack1.add (unit1);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		
-		final List<MemoryUnit> unitStack2 = new ArrayList<MemoryUnit> ();
-		unitStack2.add (unit2);
+		final List<ExpandedUnitDetails> unitStack1 = new ArrayList<ExpandedUnitDetails> ();
+		unitStack1.add (xu1);
+		
+		final List<ExpandedUnitDetails> unitStack2 = new ArrayList<ExpandedUnitDetails> ();
+		unitStack2.add (xu2);
 		
 		// Pending moves
 		final PendingMovement move1 = new PendingMovement ();
@@ -351,16 +365,12 @@ public final class TestPlayerMessageProcessingImpl
 		priv1.getPendingMovement ().add (move1);
 		priv2.getPendingMovement ().add (move2);
 		
-		// Unit searches
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
-		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
-		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getSessionLogger ()).thenReturn (LogFactory.getLog (TestPlayerMessageProcessingImpl.class));
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up test object
 		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);
@@ -384,6 +394,9 @@ public final class TestPlayerMessageProcessingImpl
 	@Test
 	public final void testContinueMovement_OnePlayers () throws Exception
 	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
@@ -412,14 +425,23 @@ public final class TestPlayerMessageProcessingImpl
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, pd2.getPlayerID (), "continueMovement")).thenReturn (player2);
 		
 		// Units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final MemoryUnit unit1 = new MemoryUnit ();
 		final MemoryUnit unit2 = new MemoryUnit ();
+		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
+		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
 		
-		final List<MemoryUnit> unitStack1 = new ArrayList<MemoryUnit> ();
-		unitStack1.add (unit1);
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		
-		final List<MemoryUnit> unitStack2 = new ArrayList<MemoryUnit> ();
-		unitStack2.add (unit2);
+		final List<ExpandedUnitDetails> unitStack1 = new ArrayList<ExpandedUnitDetails> ();
+		unitStack1.add (xu1);
+		
+		final List<ExpandedUnitDetails> unitStack2 = new ArrayList<ExpandedUnitDetails> ();
+		unitStack2.add (xu2);
 		
 		// Pending moves
 		final PendingMovement move1 = new PendingMovement ();
@@ -437,16 +459,12 @@ public final class TestPlayerMessageProcessingImpl
 		priv1.getPendingMovement ().add (move1);
 		priv2.getPendingMovement ().add (move2);
 		
-		// Unit searches
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findUnitURN (1, trueMap.getUnit (), "continueMovement")).thenReturn (unit1);
-		when (unitUtils.findUnitURN (2, trueMap.getUnit (), "continueMovement")).thenReturn (unit2);
-		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getSessionLogger ()).thenReturn (LogFactory.getLog (TestPlayerMessageProcessingImpl.class));
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getServerDB ()).thenReturn (db);
 		
 		// Set up test object
 		final FogOfWarMidTurnMultiChanges midTurn = mock (FogOfWarMidTurnMultiChanges.class);

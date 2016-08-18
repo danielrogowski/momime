@@ -7,6 +7,14 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitStack;
@@ -21,16 +29,10 @@ import momime.common.messages.servertoclient.MapVolumeOfOverlandMoveType;
 import momime.common.messages.servertoclient.OverlandMoveTypeID;
 import momime.common.messages.servertoclient.OverlandMovementTypesMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerUnitCalculations;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
 /**
  * Client sends this to server to request coordinates where this unit stack can move to
@@ -55,11 +57,12 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns one of the units
 	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
 	 */
 	@Override
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
-		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering process: (" + getMoveFrom ().getX () + ", " + getMoveFrom ().getY () + ", " + getMoveFrom ().getZ () +
 			"), Player ID " + sender.getPlayerDescription ().getPlayerID ());
@@ -72,7 +75,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		if (getUnitURN ().size () == 0)
 			error = "You must select at least one unit to move.";
 
-		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 
 		final Iterator<Integer> unitUrnIterator = getUnitURN ().iterator ();
 		while ((error == null) && (unitUrnIterator.hasNext ()))
@@ -89,7 +92,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 			else if (!thisUnit.getUnitLocation ().equals (getMoveFrom ()))
 				error = "Some of the units you are trying to move are not at the starting location";
 			else
-				selectedUnits.add (thisUnit);
+				selectedUnits.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 		}
 		
 		// If other validation passed, create the unit stack, then find remaining movement
@@ -98,11 +101,11 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 		
 		if (error == null)
 		{
-			unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			// Get the list of units who are actually moving
-			final List<MemoryUnit> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
-			for (final MemoryUnit thisUnit : movingUnits)
+			final List<ExpandedUnitDetails> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
+			for (final ExpandedUnitDetails thisUnit : movingUnits)
 				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
@@ -130,7 +133,7 @@ public final class RequestOverlandMovementDistancesMessageImpl extends RequestOv
 			getServerUnitCalculations ().calculateOverlandMovementDistances (getMoveFrom ().getX (), getMoveFrom ().getY (), getMoveFrom ().getZ (),
 				sender.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (),
 				unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-				mom.getSessionDescription (), mom.getServerDB ());
+				mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// The client only needs to know which areas they can reach, and which they can reach in one turn - not the actual distances or any of the other stuff that gets generated
 			final MapVolumeOfOverlandMoveType movementTypesVolume = new MapVolumeOfOverlandMoveType ();

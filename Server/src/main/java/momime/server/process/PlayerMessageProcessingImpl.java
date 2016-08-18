@@ -58,6 +58,7 @@ import momime.common.messages.servertoclient.StartGameMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.CompareUtils;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -1128,9 +1129,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				for (final PendingMovement thisMove : moves)
 				{
 					// Find each of the units
-					final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+					final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 					for (final Integer unitURN : thisMove.getUnitURN ())
-						unitStack.add (getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "continueMovement"));
+					{
+						final MemoryUnit tu = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "continueMovement");
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						unitStack.add (xu);
+					}
 					
 					getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, player, false,
 						(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), false, mom);

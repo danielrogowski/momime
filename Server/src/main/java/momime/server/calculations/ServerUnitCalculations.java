@@ -67,16 +67,18 @@ public interface ServerUnitCalculations
 	 * @param movementDirections The direction that we moved to get here, e.g. the tile directly above startX, startY will have value 1
 	 * @param canMoveToInOneTurn Indicates the locations that we can reach in a single turn (see the forester example above)
 	 * @param movingHereResultsInAttack Indicates whether we know that moving here will result in attacking an enemy unit stack
+	 * @param players List of players in this session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	public void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final FogOfWarMemory map, final UnitStack unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
-		final boolean [] [] [] movingHereResultsInAttack,
-		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
+		final boolean [] [] [] movingHereResultsInAttack, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
 	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.

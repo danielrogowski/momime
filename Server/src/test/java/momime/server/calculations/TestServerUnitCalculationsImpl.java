@@ -4,15 +4,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -27,24 +30,22 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitCalculationsImpl;
 import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
-import momime.common.database.MovementRateRule;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.UnitSkillUtils;
@@ -58,6 +59,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
+import momime.server.database.v0_9_7.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 
@@ -305,40 +307,8 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateDoubleMovementRatesForUnitStack () throws Exception
 	{
-		// Set up some movement rate rules to say:
-		// 1) Regular units on foot (US001) can move over TT01 at cost of 4 points and TT02 at cost of 6 points
-		// 2) Flying (US002) units move over everything at a cost of 2 points, including water (TT03)
-		// 3) Units with a pathfinding-like skill (US003) allow their entire stack to move over any land at a cost of 1 point, but not water 
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final List<MovementRateRule> rules = new ArrayList<MovementRateRule> ();
-		for (int n = 1; n <= 2; n++)
-		{
-			final MovementRateRule pathfindingRule = new MovementRateRule ();
-			pathfindingRule.setTileTypeID ("TT0" + n);
-			pathfindingRule.setUnitStackSkillID ("US003");
-			pathfindingRule.setDoubleMovement (1);
-			rules.add (pathfindingRule);
-		}
-		
-		final MovementRateRule flyingRule = new MovementRateRule ();
-		flyingRule.setUnitSkillID ("US002");
-		flyingRule.setDoubleMovement (2);
-		rules.add (flyingRule);
-
-		final MovementRateRule hillsRule = new MovementRateRule ();
-		hillsRule.setUnitSkillID ("US001");
-		hillsRule.setTileTypeID ("TT01");
-		hillsRule.setDoubleMovement (4);
-		rules.add (hillsRule);
-		
-		final MovementRateRule mountainsRule = new MovementRateRule ();
-		mountainsRule.setUnitSkillID ("US001");
-		mountainsRule.setTileTypeID ("TT02");
-		mountainsRule.setDoubleMovement (6);
-		rules.add (mountainsRule);
-		
-		when (db.getMovementRateRule ()).thenReturn (rules);
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);		
 		
 		// All possible tile types
 		final List<TileTypeSvr> tileTypes = new ArrayList<TileTypeSvr> ();
@@ -351,66 +321,52 @@ public final class TestServerUnitCalculationsImpl
 		
 		when (db.getTileTypes ()).thenReturn (tileTypes);
 
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Set up object to test
-		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		final UnitCalculationsImpl unitCalc = new UnitCalculationsImpl ();
-		unitCalc.setUnitUtils (unitUtils);
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		calc.setUnitCalculations (unitCalc);
 		
-		// Regular walking unit can walk over the two types of land tiles, but not water
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		// Single unit
+		final List<ExpandedUnitDetails> units = new ArrayList<ExpandedUnitDetails> ();
 		
-		final UnitSkillAndValue spearmenMovementSkill = new UnitSkillAndValue ();
-		spearmenMovementSkill.setUnitSkillID ("US001");
-		
-		final MemoryUnit spearmenUnit = new MemoryUnit ();
-		spearmenUnit.setUnitURN (1);
-		spearmenUnit.getUnitHasSkill ().add (spearmenMovementSkill);
+		final ExpandedUnitDetails spearmenUnit = mock (ExpandedUnitDetails.class);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySetOf (String.class), eq ("TT01"), eq (db))).thenReturn (4);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySetOf (String.class), eq ("TT02"), eq (db))).thenReturn (6);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySetOf (String.class), eq ("TT03"), eq (db))).thenReturn (null);
 		
 		units.add (spearmenUnit);
 
-		final Map<String, Integer> spearmen = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
+		final Map<String, Integer> spearmen = calc.calculateDoubleMovementRatesForUnitStack (units, db);
 		assertEquals (2, spearmen.size ());
 		assertEquals (4, spearmen.get ("TT01").intValue ());
 		assertEquals (6, spearmen.get ("TT02").intValue ());
 		assertNull (spearmen.get ("TT03"));
 		
-		// Stacking a flying unit with it makes no difference - although it can move over all tile types and faster, it always chooses the slowest movement rate
-		final UnitSkillAndValue flyingMovementSkill = new UnitSkillAndValue ();
-		flyingMovementSkill.setUnitSkillID ("US001");
-		
-		final MemoryUnit flyingUnit = new MemoryUnit ();
-		flyingUnit.setUnitURN (2);
-		flyingUnit.getUnitHasSkill ().add (flyingMovementSkill);
+		// Stacking a faster unit with it makes no difference - it always chooses the slowest movement rate
+		final ExpandedUnitDetails flyingUnit = mock (ExpandedUnitDetails.class);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (flyingUnit), anySetOf (String.class), any (String.class), eq (db))).thenReturn (2);
 		
 		units.add (flyingUnit);
 		
-		final Map<String, Integer> flying = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
+		final Map<String, Integer> flying = calc.calculateDoubleMovementRatesForUnitStack (units, db);
 		assertEquals (2, flying.size ());
 		assertEquals (4, flying.get ("TT01").intValue ());
 		assertEquals (6, flying.get ("TT02").intValue ());
 		assertNull (flying.get ("TT03"));
 		
-		// Stacking a pathfinding unit reduces the movement rates for the land tile types for all units in the stack down to 1, but still can't move over water
-		final UnitSkillAndValue pathfindingMovementSkill = new UnitSkillAndValue ();
-		pathfindingMovementSkill.setUnitSkillID ("US003");
-		
-		final MemoryUnit pathfindingUnit = new MemoryUnit ();
-		pathfindingUnit.setUnitURN (2);
-		pathfindingUnit.getUnitHasSkill ().add (pathfindingMovementSkill);
+		// Stack a slower unit
+		final ExpandedUnitDetails pathfindingUnit = mock (ExpandedUnitDetails.class);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (pathfindingUnit), anySetOf (String.class), any (String.class), eq (db))).thenReturn (5);
 		
 		units.add (pathfindingUnit);
 		
-		final Map<String, Integer> pathfinding = calc.calculateDoubleMovementRatesForUnitStack (units, spells, db);
+		final Map<String, Integer> pathfinding = calc.calculateDoubleMovementRatesForUnitStack (units, db);
 		assertEquals (2, pathfinding.size ());
-		assertEquals (1, pathfinding.get ("TT01").intValue ());
-		assertEquals (1, pathfinding.get ("TT02").intValue ());
+		assertEquals (5, pathfinding.get ("TT01").intValue ());
+		assertEquals (6, pathfinding.get ("TT02").intValue ());
 		assertNull (pathfinding.get ("TT03"));
 	}
 
@@ -423,6 +379,8 @@ public final class TestServerUnitCalculationsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		final Unit spearmenDef = new Unit ();
+		
 		// Create map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
@@ -441,6 +399,10 @@ public final class TestServerUnitCalculationsImpl
 		
 			// Units that are moving - two units of high men spearmen
 			final UnitStack unitStack = new UnitStack ();
+			final UnitUtils unitUtils = mock (UnitUtils.class);
+			final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+			final UnitCalculations unitCalc = mock (UnitCalculations.class);
+			final Set<String> unitStackSkills = new HashSet<String> ();
 		
 			for (int n = 1; n <= 2; n++)
 			{
@@ -454,16 +416,37 @@ public final class TestServerUnitCalculationsImpl
 				spearmen.getUnitHasSkill ().add (walkingSkill);
 				spearmen.setStatus (UnitStatusID.ALIVE);
 				spearmen.setUnitID ("UN001");
-		
-				unitStack.getUnits ().add (spearmen);
+
+				final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+				when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, map, db)).thenReturn (xuSpearmen);
+				when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+
+				map.getUnit ().add (spearmen);
+				unitStack.getUnits ().add (xuSpearmen);
+				
+				// Movement rates for this unit - read these off from the server XML editor
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT01", db)).thenReturn (6);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT02", db)).thenReturn (6);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT03", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT04", db)).thenReturn (2);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT05", db)).thenReturn (6);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT06", db)).thenReturn (2);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT07", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT08", db)).thenReturn (null);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT09", db)).thenReturn (null);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT10", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT11", db)).thenReturn (null);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT12", db)).thenReturn (2);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT13", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT14", db)).thenReturn (6);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT15", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT98", db)).thenReturn (1);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT99", db)).thenReturn (0);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "FOW", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "FOWPARTIAL", db)).thenReturn (null);
 			}
-			map.getUnit ().addAll (unitStack.getUnits ());
-		
-			// Set up object to test
-			final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-			final UnitCalculationsImpl unitCalc = new UnitCalculationsImpl ();
-			unitCalc.setUnitUtils (unitUtils);
 			
+			// Set up object to test
 			final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 			calc.setUnitUtils (unitUtils);
 			calc.setUnitCalculations (unitCalc);
@@ -472,7 +455,7 @@ public final class TestServerUnitCalculationsImpl
 			
 			// Run method
 			calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, unitStack,
-				2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
+				2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, players, sd, db);
 		
 			// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
 			assertTrue (canMoveToInOneTurn [1] [8] [20]);
@@ -560,6 +543,8 @@ public final class TestServerUnitCalculationsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
+		final Unit spearmenDef = new Unit ();
+		
 		// Create map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
@@ -578,6 +563,9 @@ public final class TestServerUnitCalculationsImpl
 			// Put 3 nodes on Arcanus - one we haven't scouted, one we have scouted and know its contents, and the last we already cleared
 			// The one that we previously cleared we can walk right through and out the other side; the other two we can move onto but not past
 			// Nature nodes, so forest, same as there before so we don't alter movement rates - all we alter is that we can't move through them
+			final UnitUtils unitUtils = mock (UnitUtils.class);
+			final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+			
 			int nextUnitURN = 0;
 			for (int y = 9; y <= 11; y++)
 			{
@@ -594,7 +582,13 @@ public final class TestServerUnitCalculationsImpl
 					their.setStatus (UnitStatusID.ALIVE);
 					their.setUnitID ("UN001");
 	
+					final ExpandedUnitDetails xuTheir = mock (ExpandedUnitDetails.class);
+					when (unitUtils.expandUnitDetails (their, null, null, null, players, map, db)).thenReturn (xuTheir);
+					when (xuTheir.getUnitDefinition ()).thenReturn (spearmenDef);
+					
 					map.getUnit ().add (their);
+
+					when (unitUtils.findFirstAliveEnemyAtLocation (map.getUnit (), 18, y, 0, 2)).thenReturn (their);
 				}
 			}
 	
@@ -607,6 +601,8 @@ public final class TestServerUnitCalculationsImpl
 			// Units that are moving - two units of high men spearmen
 			// To be really precise with the data model and how units plane jump at towers, all units in towers are always set to plane 0, so this test data setup isn't entirely correct
 			final UnitStack unitStack = new UnitStack ();
+			final UnitCalculations unitCalc = mock (UnitCalculations.class);
+			final Set<String> unitStackSkills = new HashSet<String> ();
 	
 			for (int n = 1; n <= 2; n++)
 			{
@@ -622,9 +618,34 @@ public final class TestServerUnitCalculationsImpl
 				spearmen.setStatus (UnitStatusID.ALIVE);
 				spearmen.setUnitID ("UN001");
 	
-				unitStack.getUnits ().add (spearmen);
+				final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+				when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, map, db)).thenReturn (xuSpearmen);
+				when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+
+				map.getUnit ().add (spearmen);
+				unitStack.getUnits ().add (xuSpearmen);
+				
+				// Movement rates for this unit - read these off from the server XML editor
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT01", db)).thenReturn (6);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT02", db)).thenReturn (6);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT03", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT04", db)).thenReturn (2);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT05", db)).thenReturn (6);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT06", db)).thenReturn (2);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT07", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT08", db)).thenReturn (null);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT09", db)).thenReturn (null);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT10", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT11", db)).thenReturn (null);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT12", db)).thenReturn (2);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT13", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT14", db)).thenReturn (6);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT15", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT98", db)).thenReturn (1);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT99", db)).thenReturn (0);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "FOW", db)).thenReturn (4);
+				when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "FOWPARTIAL", db)).thenReturn (null);
 			}
-			map.getUnit ().addAll (unitStack.getUnits ());
 	
 			// Add 8 of our units in one location, and 8 enemy units in another location, both on Myrror
 			// Our units become impassable terrain because we can't fit that many in one map cell; enemy units we can walk onto the tile but not through it
@@ -637,7 +658,11 @@ public final class TestServerUnitCalculationsImpl
 				our.setUnitLocation (new MapCoordinates3DEx (19, 9, 1));
 				our.setStatus (UnitStatusID.ALIVE);
 				our.setUnitID ("UN001");
-	
+
+				final ExpandedUnitDetails xuOur = mock (ExpandedUnitDetails.class);
+				when (unitUtils.expandUnitDetails (our, null, null, null, players, map, db)).thenReturn (xuOur);
+				when (xuOur.getUnitDefinition ()).thenReturn (spearmenDef);
+				
 				map.getUnit ().add (our);
 	
 				nextUnitURN++;
@@ -648,14 +673,17 @@ public final class TestServerUnitCalculationsImpl
 				their.setStatus (UnitStatusID.ALIVE);
 				their.setUnitID ("UN001");
 	
+				final ExpandedUnitDetails xuTheir = mock (ExpandedUnitDetails.class);
+				when (unitUtils.expandUnitDetails (their, null, null, null, players, map, db)).thenReturn (xuTheir);
+				when (xuTheir.getUnitDefinition ()).thenReturn (spearmenDef);
+				
 				map.getUnit ().add (their);
+				
+				if (n == 1)
+					when (unitUtils.findFirstAliveEnemyAtLocation (map.getUnit (), 20, 9, 1, 2)).thenReturn (their);
 			}
 	
 			// Set up object to test
-			final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-			final UnitCalculationsImpl unitCalc = new UnitCalculationsImpl ();
-			unitCalc.setUnitUtils (unitUtils);
-
 			final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 			calc.setUnitUtils (unitUtils);
 			calc.setUnitCalculations (unitCalc);
@@ -664,7 +692,7 @@ public final class TestServerUnitCalculationsImpl
 			
 			// Run method
 			calc.calculateOverlandMovementDistances (20, 10, 1, 2, map, unitStack,
-				2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, sd, db);
+				2, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, players, sd, db);
 	
 			// Check canMoveToInOneTurn (see the red marked area on the Excel sheet)
 			assertTrue (canMoveToInOneTurn [0] [8] [20]);
@@ -795,13 +823,17 @@ public final class TestServerUnitCalculationsImpl
 		final MemoryGridCellUtils gridCellUtils = mock (MemoryGridCellUtils.class);
 		when (gridCellUtils.convertNullTileTypeToFOW (terrainData)).thenReturn ("TT01");
 
+		// Players list
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
 		// Unit skills
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		
-		final List<String> unitStackSkills = new ArrayList<String> ();
-		when (unitCalc.listAllSkillsInUnitStack (anyListOf (MemoryUnit.class), eq (trueMap.getMaintainedSpell ()), eq (db))).thenReturn (unitStackSkills);
+		final Set<String> unitStackSkills = new HashSet<String> ();
 		
 		// Units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final MemoryUnit trireme = new MemoryUnit ();
 		trireme.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
 		trireme.setUnitLocation (new MapCoordinates3DEx (21, 10, 1));
@@ -809,8 +841,13 @@ public final class TestServerUnitCalculationsImpl
 		trireme.setUnitID ("UN001");
 		trireme.setOwningPlayerID (1);
 		trueMap.getUnit ().add (trireme);
+		
+		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (trireme, null, null, null, players, trueMap, db)).thenReturn (xuTrireme);
+		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
+		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
 
-		when (unitCalc.calculateDoubleMovementToEnterTileType (trireme, unitStackSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (xuTrireme, unitStackSkills, "TT01", db)).thenReturn (2);
 		
 		MemoryUnit killedUnit = null;
 		for (int n = 0; n < 3; n++)
@@ -822,14 +859,16 @@ public final class TestServerUnitCalculationsImpl
 			spearmen.setOwningPlayerID (1);
 			trueMap.getUnit ().add (spearmen);
 			
-			when (unitCalc.calculateDoubleMovementToEnterTileType (spearmen, unitStackSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (null);
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, trueMap, db)).thenReturn (xuSpearmen);
+			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+
+			when (unitCalc.calculateDoubleMovementToEnterTileType (xuSpearmen, unitStackSkills, "TT01", db)).thenReturn (null);
 			
 			if (n == 1)
 				killedUnit = spearmen;
 		}
-		
-		// Players list
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		// Fix random numbers
 		final RandomUtils random = mock (RandomUtils.class);
@@ -839,6 +878,7 @@ public final class TestServerUnitCalculationsImpl
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		calc.setUnitUtils (unitUtils);
 		calc.setUnitCalculations (unitCalc);
 		calc.setMemoryGridCellUtils (gridCellUtils);
 		calc.setRandomUtils (random);

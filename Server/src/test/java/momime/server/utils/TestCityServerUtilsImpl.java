@@ -499,7 +499,7 @@ public final class TestCityServerUtilsImpl
 	}
 	
 	/**
-	 * Tests the validateCityConstruction method for constructing a valid unit that has no race (trieme or catapault)
+	 * Tests the validateCityConstruction method for constructing a valid unit that has no race (trireme or catapault)
 	 * @throws Exception If there is a problem
 	 */
 	@Test

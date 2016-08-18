@@ -269,6 +269,12 @@ public interface ExpandedUnitDetails
 	public MapCoordinates3DEx getCombatLocation () throws MomException;
 
 	/**
+	 * @param coords Location on the overland map of the combat this unit is involved in; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setCombatLocation (final MapCoordinates3DEx coords) throws MomException;
+
+	/**
 	 * @return Location within the combat map where this unit is standing; null if the unit isn't currently in combat
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
@@ -287,10 +293,22 @@ public interface ExpandedUnitDetails
 	public Integer getCombatHeading () throws MomException;
 
 	/**
+	 * @param heading Direction within the combat map that the unit is facing; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setCombatHeading (final Integer heading) throws MomException;
+	
+	/**
 	 * @return Whether the unit is part of the attacking or defending side in combat; null if the unit isn't currently in combat
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	public UnitCombatSideID getCombatSide () throws MomException;
+
+	/**
+	 * @param side Whether the unit is part of the attacking or defending side in combat; null if the unit isn't currently in combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setCombatSide (final UnitCombatSideID side) throws MomException;
 	
 	/**
 	 * @return The number of moves remaining for this unit this combat turn; null if the unit isn't currently in combat
@@ -323,11 +341,23 @@ public interface ExpandedUnitDetails
 	public int getAmmoRemaining () throws MomException;
 
 	/**
+	 * @param ammo The number of ranged shots this unit can still fire in the current combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setAmmoRemaining (final int ammo) throws MomException;
+	
+	/**
 	 * @return The amount of MP this unit can still spend on casting spells in the current combat
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	public int getManaRemaining () throws MomException;
 
+	/**
+	 * @param mana The amount of MP this unit can still spend on casting spells in the current combat
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public void setManaRemaining (final int mana) throws MomException;
+	
 	/**
 	 * @return Any special order this unit is currently on, or null if none
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -22,15 +23,12 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -173,40 +171,31 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 5 = Settlers
 	 * 
 	 * @param unit Unit to compare
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return Combat class of the unit, as defined in the list above
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
-	final int calculateUnitCombatClass (final MemoryUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException
+	final int calculateUnitCombatClass (final ExpandedUnitDetails unit) throws MomException
 	{
 		log.trace ("Entering calculateUnitCombatClass: Unit URN " + unit.getUnitURN ());
 		final int result;
 		
-		// Need this twice, so only do it once
-		final UnitHasSkillMergedList unitSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
-		
 		// Does this unit have a ranged attack?
-		if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) > 0)
+		if ((unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)) &&
+			(unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK) > 0))
 		{
 			// Ranged hero or regular unit?
-			if (db.findUnit (unit.getUnitID (), "calculateUnitCombatClass").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+			if (unit.isHero ())
 				result = 3;
 			else
 				result = 4;
 		}
 		
 		// Does this unit have a melee attack?
-		else if (getUnitSkillUtils ().getModifiedSkillValue (unit, unitSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) > 0)
+		else if ((unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) &&
+			(unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK) > 0))
 		{
 			// Melee hero or regular unit?
-			if (db.findUnit (unit.getUnitID (), "calculateUnitCombatClass").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+			if (unit.isHero ())
 				result = 1;
 			else
 				result = 2;
@@ -394,12 +383,13 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @param combatMap Combat scenery we are placing the units onto (important because some tiles will be impassable to some types of unit)
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	final void placeCombatUnits (final MapCoordinates3DEx combatLocation, final int startX, final int startY, final int unitHeading, final UnitCombatSideID combatSide,
 		final List<MemoryUnitAndCombatClass> unitsToPosition, final List<Integer> unitsInRow, final StartCombatMessage startCombatMessage,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final CoordinateSystem combatMapCoordinateSystem, final MapAreaOfCombatTiles combatMap, final ServerDatabaseEx db)
-		throws RecordNotFoundException
+		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering placeCombatUnits: " + combatLocation + ", (" + startX + ", " + startY + "), " + unitHeading + ", " + combatSide);
 		
@@ -422,7 +412,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 2);
 				
 				// Place unit
-				final MemoryUnit trueUnit = unitsToPosition.get (unitNo).getUnit ();
+				final ExpandedUnitDetails trueUnit = unitsToPosition.get (unitNo).getUnit ();
 				
 				// Update true unit on server
 				trueUnit.setCombatLocation (combatLocation);
@@ -513,26 +503,25 @@ public final class CombatProcessingImpl implements CombatProcessing
 			combatMapCoordinateSystem, combatMap, mom.getServerDB ());
 		
 		// Make a list of all the units we need to position - attackers may not have selected entire stack to attack with
-		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 		for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 			if ((currentLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 				((onlyUnitURNs == null) || (onlyUnitURNs.contains (tu.getUnitURN ()))))
 
-				unitStack.add (tu);
+				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 		
 		// Remove from the list any units to whom the combat terrain is impassable.
 		// This is so land units being transported in boats can't participate in naval combats.
 		final String tileTypeID = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get
 			(combatLocation.getY ()).getCell ().get (combatLocation.getX ()).getTerrainData ().getTileTypeID ();
 		
-		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack, mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
 		
-		final Iterator<MemoryUnit> iter = unitStack.iterator ();
+		final Iterator<ExpandedUnitDetails> iter = unitStack.iterator ();
 		while (iter.hasNext ())
 		{
-			final MemoryUnit tu = iter.next ();
-			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills, tileTypeID,
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ()) == null)
+			final ExpandedUnitDetails tu = iter.next ();
+			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills, tileTypeID, mom.getServerDB ()) == null)
 			{
 				// Set combatLocation and side (we need these to handle units left behind properly when the combat ends), but not position and heading.
 				// Also note we don't send these values to the client.
@@ -545,14 +534,13 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Work out combat class of all units to position
 		final List<MemoryUnitAndCombatClass> unitsToPosition = new ArrayList<MemoryUnitAndCombatClass> ();
-		for (final MemoryUnit tu : unitStack)
+		for (final ExpandedUnitDetails tu : unitStack)
 		{
 			// Give unit full ammo and mana
 			// Have to do this now, since sorting the units relies on knowing what ranged attacks they have
-			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (tu, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-
-			unitsToPosition.add (new MemoryUnitAndCombatClass (tu, calculateUnitCombatClass (tu, mom.getPlayers (),
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ())));
+			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (tu);
+			
+			unitsToPosition.add (new MemoryUnitAndCombatClass (tu, calculateUnitCombatClass (tu)));
 		}
 		
 		// Sort the units by their "combat class"; this sorts in the order: Melee heroes, melee units, ranged heroes, ranged units, settlers

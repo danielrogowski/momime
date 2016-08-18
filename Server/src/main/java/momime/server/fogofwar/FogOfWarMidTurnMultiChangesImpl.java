@@ -2,6 +2,7 @@ package momime.server.fogofwar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -40,6 +41,7 @@ import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage;
 import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingUnit;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
@@ -599,7 +601,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void moveUnitStack (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
+	public final void moveUnitStack (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
@@ -608,16 +610,20 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + originalMoveFrom.toString () + ", " + moveTo.toString () + ", " + processCombats);
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
-		final List<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (selectedUnits, priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
+		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (selectedUnits);
 
-		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		// Get the list of units who are actually moving
-		final List<MemoryUnit> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
+		final List<ExpandedUnitDetails> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
 		
-		final List<MemoryUnit> allUnits = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> allUnits = new ArrayList<ExpandedUnitDetails> ();
 		allUnits.addAll (unitStack.getTransports ());
 		allUnits.addAll (unitStack.getUnits ());
+		
+		final List<MemoryUnit> allUnitsMem = new ArrayList<MemoryUnit> ();
+		for (final ExpandedUnitDetails xu : allUnits)
+			allUnitsMem.add (xu.getMemoryUnit ());
 		
 		// Have to define a lot of these out here so they can be used after the loop
 		boolean keepGoing = true;
@@ -632,7 +638,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		{
 			// What's the lowest movement remaining of any unit in the stack
 			doubleMovementRemaining = Integer.MAX_VALUE;
-			for (final MemoryUnit thisUnit : movingUnits)
+			for (final ExpandedUnitDetails thisUnit : movingUnits)
 				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
@@ -644,7 +650,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 			getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 				priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-				doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
+				doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// Is there a route to where we want to go?
 			validMoveFound = (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
@@ -679,11 +685,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				// Update the movement remaining for each unit
 				if (!combatInitiated)
-					getFogOfWarMidTurnChanges ().reduceMovementRemaining (movingUnits, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), priv.getFogOfWarMemory ().getMaintainedSpell (), mom.getServerDB ());
+					getFogOfWarMidTurnChanges ().reduceMovementRemaining (movingUnits, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), mom.getServerDB ());
 				else if (processCombats)
 				{
 					// Attacking uses up all movement
-					for (final MemoryUnit thisUnit : allUnits)
+					for (final ExpandedUnitDetails thisUnit : allUnits)
 						thisUnit.setDoubleOverlandMovesLeft (0);
 				}
 				
@@ -694,7 +700,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					doubleMovementRemaining = Integer.MAX_VALUE;
 	
 					// If entering a combat, ALL units have their movement zeroed, even ones sitting in transports; for regular movement only the transports' movementRemaining is updated
-					for (final MemoryUnit thisUnit : (combatInitiated ? allUnits : movingUnits))
+					for (final ExpandedUnitDetails thisUnit : (combatInitiated ? allUnits : movingUnits))
 					{
 						final UpdateOverlandMovementRemainingUnit msgUnit = new UpdateOverlandMovementRemainingUnit ();
 						msgUnit.setUnitURN (thisUnit.getUnitURN ());
@@ -711,7 +717,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				if (!combatInitiated)
 				{
 					// Actually move the units
-					moveUnitStackOneCellOnServerAndClients (allUnits, unitStackOwner, moveFrom, oneStep, mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+					moveUnitStackOneCellOnServerAndClients (allUnitsMem, unitStackOwner, moveFrom, oneStep,
+						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 
 					// Prepare for next loop
 					moveFrom = oneStep;
@@ -737,7 +744,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 					priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-					doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
+					doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 				validMoveFound = (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
 			}
@@ -748,7 +755,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				pending.setMoveFrom (moveFrom);
 				pending.setMoveTo (moveTo);
 
-				for (final MemoryUnit thisUnit : selectedUnits)
+				for (final ExpandedUnitDetails thisUnit : selectedUnits)
 					pending.getUnitURN ().add (thisUnit.getUnitURN ());
 
 				// Record the movement path
@@ -798,7 +805,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			final MapCoordinates3DEx defendingLocation = new MapCoordinates3DEx (moveTo.getX (), moveTo.getY (), towerPlane);
 
 			final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
-			for (final MemoryUnit tu : allUnits)
+			for (final ExpandedUnitDetails tu : allUnits)
 				attackingUnitURNs.add (tu.getUnitURN ());
 			
 			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
@@ -821,13 +828,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @param doubleMovementRemaining The lowest movement remaining of any unit in the stack
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws PlayerNotFoundException If we cannot find the player who a unit in the same location as our transports
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
 	 */
 	@Override
-	public final OneCellPendingMovement determineOneCellPendingMovement (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
+	public final OneCellPendingMovement determineOneCellPendingMovement (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final PendingMovement pendingMovement,  final int doubleMovementRemaining, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException
+		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		final MapCoordinates3DEx moveFrom = (MapCoordinates3DEx) pendingMovement.getMoveFrom ();
 		final MapCoordinates3DEx moveTo = (MapCoordinates3DEx) pendingMovement.getMoveTo ();
@@ -837,7 +845,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 
-		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		// Find distances and route from our start point to every location on the map
 		final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
@@ -847,7 +855,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
+			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?
 		final OneCellPendingMovement result;
@@ -892,20 +900,21 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @param moveTo Location to move to
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @return null if the location is unreachable; otherwise object holding the details of the move, the one step we'll take first, and whether it initiates a combat
 	 */
 	@Override
-	public final List<Integer> determineMovementPath (final List<MemoryUnit> selectedUnits, final PlayerServerDetails unitStackOwner,
+	public final List<Integer> determineMovementPath (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
-		throws MomException, RecordNotFoundException
+		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		log.trace ("Entering determineMovementPath: " + getUnitUtils ().listUnitURNs (selectedUnits) + ", Player ID " +
 			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom.toString () + ", " + moveTo.toString ());
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 		
-		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 		
 		// We do this at the end of simultaneous turns movement, when all units stacks have used up all movement, so we know this
 		final int doubleMovementRemaining = 0;
@@ -918,7 +927,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getSessionDescription (), mom.getServerDB ());
+			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?
 		final List<Integer> result;

@@ -3,6 +3,7 @@ package momime.server.fogofwar;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -52,6 +53,7 @@ import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -1310,21 +1312,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param unitStack The unit stack that is moving
 	 * @param unitStackSkills All the skills that any units in the stack have
 	 * @param tileTypeID Tile type being moved onto
-	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
+	 * @throws MomException If the one of the units in the list is not a MemoryUnit 
 	 */
 	@Override
-	public final void reduceMovementRemaining (final List<MemoryUnit> unitStack, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final ServerDatabaseEx db) throws RecordNotFoundException
+	public final void reduceMovementRemaining (final List<ExpandedUnitDetails> unitStack, final Set<String> unitStackSkills, final String tileTypeID,
+		final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering reduceMovementRemaining: " + unitStack.size () + ", " + tileTypeID);
 
-		for (final MemoryUnit thisUnit : unitStack)
+		for (final ExpandedUnitDetails thisUnit : unitStack)
 		{
 			// Don't just work out the distance it took for the whole stack to get here - if e.g. one unit can fly it might be able to
 			// move into mountains taking only 1 MP whereas another unit in the same stack might take 3 MP
-			Integer doubleMovementCost = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileTypeID, spells, db);
+			Integer doubleMovementCost = getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills, tileTypeID, db);
 			
 			// The only way we can get impassable here as a valid move is if we're loading onto a transport, in which case force movement spent to 2
 			if (doubleMovementCost == null)

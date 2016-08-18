@@ -8,15 +8,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.TurnSystem;
-import momime.common.messages.UnitStatusID;
-import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
-import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.utils.UnitUtils;
-import momime.server.MomSessionVariables;
-import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,6 +15,16 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.TurnSystem;
+import momime.common.messages.UnitStatusID;
+import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 
 /**
  * Client sends this to server to request a unit stack be moved on the overland map
@@ -62,7 +63,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 			error = "You cannot move from a location back to the same location.";
 
 		int doubleMovementRemaining = Integer.MAX_VALUE;
-		final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 
 		final Iterator<Integer> unitUrnIterator = getUnitURN ().iterator ();
 		while ((error == null) && (unitUrnIterator.hasNext ()))
@@ -80,7 +81,8 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 				error = "Some of the units you are trying to move are not at the starting location";
 			else
 			{
-				unitStack.add (thisUnit);
+				unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+				
 				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 			}

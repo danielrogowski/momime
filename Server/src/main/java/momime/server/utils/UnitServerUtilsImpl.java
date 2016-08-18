@@ -282,17 +282,16 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * 
 	 * @param addLocation Location that we're trying to add a unit
 	 * @param testUnit Type of unit that we're trying to add
-	 * @param testUnitSkills The skills that testUnit has
 	 * @param trueMap Server's true knowledge of terrain, units and so on
 	 * @param settings Unit settings from session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether unit can be added here or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
-	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final AvailableUnit testUnit, final List<String> testUnitSkills,
+	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final ExpandedUnitDetails testUnit,
 		final FogOfWarMemory trueMap, final UnitSetting settings, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
-		log.trace ("Entering canUnitBeAddedHere: " + addLocation + ", " + testUnit.getUnitID ());
+		log.trace ("Entering canUnitBeAddedHere: " + addLocation + ", " + testUnit.getDebugIdentifier ());
 
 		// Any other units here?
 		final boolean unitCheckOk;
@@ -325,7 +324,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				(!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))) ||
 					
 				// Terrain must be passable (so building boats get bumped to ocean tiles)
-				(getUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, tc.getTerrainData ().getTileTypeID (), trueMap.getMaintainedSpell (), db) == null))
+				(getUnitCalculations ().calculateDoubleMovementToEnterTileType (testUnit, testUnit.listModifiedSkillIDs (), tc.getTerrainData ().getTileTypeID (), db) == null))
 
 				okToAdd = false;
 			else
@@ -352,13 +351,18 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param unitID Type of unit that we're trying to add
 	 * @param playerID Player who is trying to add the unit
 	 * @param trueMap Server's true knowledge of terrain, units and so on
+	 * @param players List of players in the session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Location + bump type; note class and bump type will always be filled in, but location may be null if the unit cannot fit anywhere
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
+	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering findNearestLocationWhereUnitCanBeAdded: " + desiredLocation + ", " + unitID + ", Player ID + " + playerID);
 
@@ -368,15 +372,13 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		testUnit.setOwningPlayerID (playerID);
 		getUnitUtils ().initializeUnitSkills (testUnit, 0, db);
 
-		final List<String> testUnitSkillList = new ArrayList<String> ();
-		for (final UnitSkillAndValue testUnitSkill : testUnit.getUnitHasSkill ())
-			testUnitSkillList.add (testUnitSkill.getUnitSkillID ());
+		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (testUnit, null, null, null, players, trueMap, db);
 
 		// First try the centre
 		MapCoordinates3DEx addLocation = null;
 		UnitAddBumpTypeID bumpType = UnitAddBumpTypeID.NO_ROOM;
 
-		if (canUnitBeAddedHere (desiredLocation, testUnit, testUnitSkillList, trueMap, sd.getUnitSetting (), db))
+		if (canUnitBeAddedHere (desiredLocation, xu, trueMap, sd.getUnitSetting (), db))
 		{
 			addLocation = desiredLocation;
 			bumpType = UnitAddBumpTypeID.CITY;
@@ -388,7 +390,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			{
 				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (desiredLocation);
 				if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), adjacentLocation, direction))
-					if (canUnitBeAddedHere (adjacentLocation, testUnit, testUnitSkillList, trueMap, sd.getUnitSetting (), db))
+					if (canUnitBeAddedHere (adjacentLocation, xu, trueMap, sd.getUnitSetting (), db))
 					{
 						addLocation = adjacentLocation;
 						bumpType = UnitAddBumpTypeID.BUMPED;

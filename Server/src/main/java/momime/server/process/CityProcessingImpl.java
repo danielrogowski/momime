@@ -340,7 +340,7 @@ public final class CityProcessingImpl implements CityProcessing
 										{
 											// Check if the city has space for the unit
 											final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-												(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), gsk.getTrueMap (), sd, db);
+												(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), gsk.getTrueMap (), players, sd, db);
 
 											// Show on new turn messages for the player who built it
 											if (cityOwner.getPlayerDescription ().isHuman ())

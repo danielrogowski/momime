@@ -4,15 +4,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -39,13 +39,10 @@ import momime.common.database.TileType;
 import momime.common.database.Unit;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillAndValue;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomCombatTile;
@@ -441,9 +438,7 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testGiveUnitFullRangedAmmoAndMana () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
+		// Unit definition
 		final Unit unitDef = new Unit ();
 		for (final int count : new int [] {4, 6})
 		{
@@ -451,18 +446,12 @@ public final class TestUnitCalculationsImpl
 			fixedSpell.setNumberOfTimes (count);
 			unitDef.getUnitCanCast ().add (fixedSpell);
 		}
-
-		// These are all only used for the mock so doesn't matter if there's anything in them
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
 		// Test unit
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-
 		final MemoryUnit unit = new MemoryUnit ();
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (xu.getMemoryUnit ()).thenReturn (unit);
 		when (xu.getUnitDefinition ()).thenReturn (unitDef);
 		when (xu.calculateFullRangedAttackAmmo ()).thenReturn (8);
 		when (xu.calculateManaTotal ()).thenReturn (40);
@@ -485,14 +474,13 @@ public final class TestUnitCalculationsImpl
 		
 		// Set up object to test		
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Call method
-		calc.giveUnitFullRangedAmmoAndMana (unit, players, fow, db);
+		calc.giveUnitFullRangedAmmoAndMana (xu);
 
 		// Check results
-		assertEquals (8, unit.getAmmoRemaining ());
-		assertEquals (40, unit.getManaRemaining ());
+		verify (xu).setAmmoRemaining (8);
+		verify (xu).setManaRemaining (40);
 
 		assertEquals (2, unit.getFixedSpellsRemaining ().size ());
 		assertEquals (4, unit.getFixedSpellsRemaining ().get (0).intValue ());
@@ -583,59 +571,43 @@ public final class TestUnitCalculationsImpl
 	@Test
 	public final void testListAllSkillsInUnitStack () throws Exception
 	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
+		// Sample units
+		final ExpandedUnitDetails unitOne = mock (ExpandedUnitDetails.class);
+		final Set<String> unitOneSkills = new HashSet<String> ();
+		unitOneSkills.add ("US001");
+		unitOneSkills.add ("US002");
+		when (unitOne.listModifiedSkillIDs ()).thenReturn (unitOneSkills);
 
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
-		// Units and skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		
-		final MemoryUnit unitOne = new MemoryUnit ();
-		final UnitHasSkillMergedList unitOneSkills = new UnitHasSkillMergedList ();
-		for (final String unitSkillID : new String [] {"US001", "US002"})
-		{
-			final UnitSkillAndValue unitHasSkill = new UnitSkillAndValue ();
-			unitHasSkill.setUnitSkillID (unitSkillID);
-			unitOneSkills.add (unitHasSkill);
-		}
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unitOne, db)).thenReturn (unitOneSkills);
-
-		final MemoryUnit unitTwo = new MemoryUnit ();
-		final UnitHasSkillMergedList unitTwoSkills = new UnitHasSkillMergedList ();
-		for (final String unitSkillID : new String [] {"US002", "US003"})
-		{
-			final UnitSkillAndValue unitHasSkill = new UnitSkillAndValue ();
-			unitHasSkill.setUnitSkillID (unitSkillID);
-			unitTwoSkills.add (unitHasSkill);
-		}
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unitTwo, db)).thenReturn (unitTwoSkills);
+		final ExpandedUnitDetails unitTwo = mock (ExpandedUnitDetails.class);
+		final Set<String> unitTwoSkills = new HashSet<String> ();
+		unitTwoSkills.add ("US002");
+		unitTwoSkills.add ("US003");
+		when (unitTwo.listModifiedSkillIDs ()).thenReturn (unitTwoSkills);
 
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Null stack
-		assertEquals (0, calc.listAllSkillsInUnitStack (null, spells, db).size ());
+		assertEquals (0, calc.listAllSkillsInUnitStack (null).size ());
 
 		// Single unit
-		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> units = new ArrayList<ExpandedUnitDetails> ();
 		units.add (unitOne);
 
-		final List<String> unitOneResults = calc.listAllSkillsInUnitStack (units, spells, db);
+		final Set<String> unitOneResults = calc.listAllSkillsInUnitStack (units);
 		assertEquals (2, unitOneResults.size ());
-		assertEquals ("US001", unitOneResults.get (0));
-		assertEquals ("US002", unitOneResults.get (1));
+		assertTrue (unitOneResults.contains ("US001"));
+		assertTrue (unitOneResults.contains ("US002"));
 
 		// Two units
 		units.add (unitTwo);
 
-		final List<String> unitTwoResults = calc.listAllSkillsInUnitStack (units, spells, db);
+		final Set<String> unitTwoResults = calc.listAllSkillsInUnitStack (units);
 		assertEquals (3, unitTwoResults.size ());
-		assertEquals ("US001", unitTwoResults.get (0));
-		assertEquals ("US002", unitTwoResults.get (1));
-		assertEquals ("US003", unitTwoResults.get (2));
+		assertTrue (unitTwoResults.contains ("US001"));
+		assertTrue (unitTwoResults.contains ("US002"));
+		assertTrue (unitTwoResults.contains ("US003"));
 	}
 
 	/**
@@ -681,54 +653,40 @@ public final class TestUnitCalculationsImpl
 		
 		when (db.getMovementRateRule ()).thenReturn (rules);
 		
-		// Spells
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Sample unit
-		final UnitSkillAndValue movementSkill = new UnitSkillAndValue ();
-		movementSkill.setUnitSkillID ("US001");
-		
-		final UnitHasSkillMergedList movementSkills = new UnitHasSkillMergedList ();
-		movementSkills.add (movementSkill);
-		
-		final MemoryUnit unit = new MemoryUnit ();
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+		when (unit.hasModifiedSkill ("US001")).thenReturn (true);
 
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (spells, unit, db)).thenReturn (movementSkills);
-		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 
 		// Regular walking unit can walk over the two types of land tiles, but not water
-		final List<String> unitStackSkills = new ArrayList<String> ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
 
-		assertEquals (4, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
-		assertEquals (6, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
-		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db));
+		assertEquals (4, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", db).intValue ());
+		assertEquals (6, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", db).intValue ());
+		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", db));
 		
 		// Stack with a pathfinding unit
 		unitStackSkills.add ("US003");
 
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
-		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db));
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", db).intValue ());
+		assertNull (calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", db));
 		
 		// Cast flight spell - pathfinding takes preference, with how the demo rules above are ordered
-		final UnitSkillAndValue flightSpellEffect = new UnitSkillAndValue ();
-		flightSpellEffect.setUnitSkillID ("US002");
-		movementSkills.add (flightSpellEffect);
+		when (unit.hasModifiedSkill ("US002")).thenReturn (true);
 
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
-		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", db).intValue ());
+		assertEquals (1, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", db).intValue ());
 		
 		// Now without the pathfinding to take preference
 		unitStackSkills.clear ();
 		
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", spells, db).intValue ());
-		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", spells, db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT01", db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT02", db).intValue ());
+		assertEquals (2, calc.calculateDoubleMovementToEnterTileType (unit, unitStackSkills, "TT03", db).intValue ());
 	}
 	
 	/**
@@ -773,37 +731,29 @@ public final class TestUnitCalculationsImpl
 		when (db.getMovementRateRule ()).thenReturn (rules);
 		
 		// Example unit with each skill
-		final UnitSkillAndValue flyingUnitSkill = new UnitSkillAndValue ();
-		flyingUnitSkill.setUnitSkillID ("US001");
-		
-		final AvailableUnit flyingUnit = new AvailableUnit ();
-		flyingUnit.getUnitHasSkill ().add (flyingUnitSkill);
+		final ExpandedUnitDetails flyingUnit = mock (ExpandedUnitDetails.class);
+		when (flyingUnit.hasModifiedSkill ("US001")).thenReturn (true);
 
-		final UnitSkillAndValue walkingUnitSkill = new UnitSkillAndValue ();
-		walkingUnitSkill.setUnitSkillID ("US002");
-		
-		final AvailableUnit walkingUnit = new AvailableUnit ();
-		walkingUnit.getUnitHasSkill ().add (walkingUnitSkill);
+		final ExpandedUnitDetails walkingUnit = mock (ExpandedUnitDetails.class);
+		when (walkingUnit.hasModifiedSkill ("US002")).thenReturn (true);
 		
 		// Other lists
-		final List<String> unitStackSkills = new ArrayList<String> ();
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
+		final Set<String> unitStackSkills = new HashSet<String> ();
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		
 		// Run checks
-		assertTrue (calc.areAllTerrainTypesPassable (flyingUnit, unitStackSkills, spells, db));
-		assertFalse (calc.areAllTerrainTypesPassable (walkingUnit, unitStackSkills, spells, db));
+		assertTrue (calc.areAllTerrainTypesPassable (flyingUnit, unitStackSkills, db));
+		assertFalse (calc.areAllTerrainTypesPassable (walkingUnit, unitStackSkills, db));
 	}
 	
 	/**
 	 * Tests the createUnitStack method on an empty unit stack
-	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
-	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
+	 * @throws Exception If there is a problem
 	 */
 	@Test(expected=MomException.class)
-	public final void testCreateUnitStack_Empty () throws RecordNotFoundException, MomException
+	public final void testCreateUnitStack_Empty () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -811,18 +761,18 @@ public final class TestUnitCalculationsImpl
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
 		
-		// Unit stack
-		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		// Only used for the mock so doesn't matter if there's anything in here
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
-		// Skills
-		final UnitUtils unitUtils = mock (UnitUtils.class);
+		// Unit stack
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 	}
 	
 	/**
@@ -836,34 +786,41 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Unit spearmenDef = new Unit ();
-		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+
+		// Only used for the mock so doesn't matter if there's anything in here
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		// Unit stack
-		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		
 		for (int n = 0; n < 2; n++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID ("UN001");
 			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, n));
-			selectedUnits.add (spearmen);
+			spearmen.setOwningPlayerID (1);
+			spearmen.setUnitURN (n + 1);
+			spearmen.setStatus (UnitStatusID.ALIVE);
+			spearmen.setUnitID ("UN001");
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, n));
+			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
+			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			selectedUnits.add (xuSpearmen);
 		}
 
-		// Skills
-		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
-		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 	}
 	
 	/**
@@ -877,35 +834,41 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Unit spearmenDef = new Unit ();
-		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
 		
+		// Only used for the mock so doesn't matter if there's anything in here
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
 		// Unit stack
-		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		
 		for (int n = 0; n < 2; n++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID ("UN001");
 			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
-			spearmen.setOwningPlayerID (n + 1);
-			selectedUnits.add (spearmen);
+			spearmen.setOwningPlayerID (1);
+			spearmen.setUnitURN (n + 1);
+			spearmen.setStatus (UnitStatusID.ALIVE);
+			spearmen.setUnitID ("UN001");
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+			when (xuSpearmen.getOwningPlayerID ()).thenReturn (n + 1);
+			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			selectedUnits.add (xuSpearmen);
 		}
 
-		// Skills
-		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
-		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 	}
 	
 	/**
@@ -919,36 +882,41 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Unit spearmenDef = new Unit ();
-		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
 		
+		// Only used for the mock so doesn't matter if there's anything in here
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
 		// Unit stack
-		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		
 		for (int n = 0; n < 2; n++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID ("UN001");
 			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 			spearmen.setOwningPlayerID (1);
 			spearmen.setUnitURN (n + 1);
-			selectedUnits.add (spearmen);
+			spearmen.setStatus (UnitStatusID.ALIVE);
+			spearmen.setUnitID ("UN001");
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
+			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			selectedUnits.add (xuSpearmen);
 		}
 
-		// Skills
-		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
-		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
+		calc.setUnitUtils (mock (UnitUtils.class));
 		
 		// Run test
-		final UnitStack unitStack = calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		final UnitStack unitStack = calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
 		// Check results
 		assertEquals (0, unitStack.getTransports ().size ());
@@ -958,7 +926,7 @@ public final class TestUnitCalculationsImpl
 	}
 
 	/**
-	 * Tests the createUnitStack method on a unit stack containing a trieme and a regular unit, and there's 2 other regular units at the same location
+	 * Tests the createUnitStack method on a unit stack containing a trireme and a regular unit, and there's 2 other regular units at the same location
 	 * @throws Exception If there is a problem
 	 */
 	@Test
@@ -980,52 +948,68 @@ public final class TestUnitCalculationsImpl
 		final Unit spearmenDef = new Unit ();
 		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 
-		final Unit triemeDef = new Unit ();
-		triemeDef.setTransportCapacity (2);
-		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triemeDef);
+		final Unit triremeDef = new Unit ();
+		triremeDef.setTransportCapacity (2);
+		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
 		
+		// Only used for the mock so doesn't matter if there's anything in here
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
 		// Unit stack
-		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		for (int n = 0; n < 3; n++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID ("UN001");
 			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 			spearmen.setOwningPlayerID (1);
 			spearmen.setUnitURN (n + 1);
 			spearmen.setStatus (UnitStatusID.ALIVE);
+			spearmen.setUnitID ("UN001");
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
+			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 			if (n == 0)
-				selectedUnits.add (spearmen);
+				selectedUnits.add (xuSpearmen);
 		}
 
-		final MemoryUnit trieme = new MemoryUnit ();
-		trieme.setUnitID ("UN002");
-		trieme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
-		trieme.setOwningPlayerID (1);
-		trieme.setUnitURN (4);
-		trieme.setStatus (UnitStatusID.ALIVE);
+		final MemoryUnit trireme = new MemoryUnit ();
+		trireme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		trireme.setOwningPlayerID (1);
+		trireme.setUnitURN (4);
+		trireme.setStatus (UnitStatusID.ALIVE);
+		trireme.setUnitID ("UN002");
 		
-		fogOfWarMemory.getUnit ().add (trieme);
-		selectedUnits.add (trieme);
+		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
+		when (xuTrireme.getUnit ()).thenReturn (trireme);
+		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
+		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
+		when (xuTrireme.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+		when (xuTrireme.getOwningPlayerID ()).thenReturn (1);
+		when (xuTrireme.getUnitURN ()).thenReturn (4);
 		
-		// Skills
-		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
+		fogOfWarMemory.getUnit ().add (trireme);
+		selectedUnits.add (xuTrireme);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final UnitStack unitStack = calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		final UnitStack unitStack = calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
 		// Check results
 		assertEquals (1, unitStack.getTransports ().size ());
@@ -1037,7 +1021,7 @@ public final class TestUnitCalculationsImpl
 	}
 	
 	/**
-	 * Tests the createUnitStack method on a unit stack containing a trieme and 3 regular units all preselected in the stack, so they don't fit
+	 * Tests the createUnitStack method on a unit stack containing a trireme and 3 regular units all preselected in the stack, so they don't fit
 	 * @throws Exception If there is a problem
 	 */
 	@Test
@@ -1059,51 +1043,67 @@ public final class TestUnitCalculationsImpl
 		final Unit spearmenDef = new Unit ();
 		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 
-		final Unit triemeDef = new Unit ();
-		triemeDef.setTransportCapacity (2);
-		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triemeDef);
+		final Unit triremeDef = new Unit ();
+		triremeDef.setTransportCapacity (2);
+		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
 		
+		// Only used for the mock so doesn't matter if there's anything in here
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
 		// Unit stack
-		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		for (int n = 0; n < 3; n++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID ("UN001");
 			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 			spearmen.setOwningPlayerID (1);
 			spearmen.setUnitURN (n + 1);
 			spearmen.setStatus (UnitStatusID.ALIVE);
+			spearmen.setUnitID ("UN001");
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
+			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
-			selectedUnits.add (spearmen);
+			selectedUnits.add (xuSpearmen);
 		}
 
-		final MemoryUnit trieme = new MemoryUnit ();
-		trieme.setUnitID ("UN002");
-		trieme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
-		trieme.setOwningPlayerID (1);
-		trieme.setUnitURN (4);
-		trieme.setStatus (UnitStatusID.ALIVE);
+		final MemoryUnit trireme = new MemoryUnit ();
+		trireme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		trireme.setOwningPlayerID (1);
+		trireme.setUnitURN (4);
+		trireme.setStatus (UnitStatusID.ALIVE);
+		trireme.setUnitID ("UN002");
 		
-		fogOfWarMemory.getUnit ().add (trieme);
-		selectedUnits.add (trieme);
+		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
+		when (xuTrireme.getUnit ()).thenReturn (trireme);
+		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
+		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
+		when (xuTrireme.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+		when (xuTrireme.getOwningPlayerID ()).thenReturn (1);
+		when (xuTrireme.getUnitURN ()).thenReturn (4);
 		
-		// Skills
-		final UnitHasSkillMergedList skills = new UnitHasSkillMergedList ();
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.mergeSpellEffectsIntoSkillList (anyListOf (MemoryMaintainedSpell.class), any (MemoryUnit.class), eq (db))).thenReturn (skills);
+		fogOfWarMemory.getUnit ().add (trireme);
+		selectedUnits.add (xuTrireme);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final UnitStack unitStack = calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		final UnitStack unitStack = calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
 		// Check results
 		assertEquals (0, unitStack.getTransports ().size ());
@@ -1137,22 +1137,13 @@ public final class TestUnitCalculationsImpl
 		final Unit spearmenDef = new Unit ();
 		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 
-		final Unit triemeDef = new Unit ();
-		triemeDef.setTransportCapacity (2);
-		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triemeDef);
+		final Unit triremeDef = new Unit ();
+		triremeDef.setTransportCapacity (2);
+		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 
 		final Unit drakeDef = new Unit ();
 		when (db.findUnit ("UN003", "createUnitStack")).thenReturn (drakeDef);
 
-		// Have to mock skill list merging
-		final UnitHasSkillMergedList noSkills = new UnitHasSkillMergedList ();
-
-		final UnitSkillAndValue drakesFly = new UnitSkillAndValue ();
-		drakesFly.setUnitSkillID ("US001");
-		
-		final UnitHasSkillMergedList yesSkills = new UnitHasSkillMergedList ();
-		yesSkills.add (drakesFly);
-		
 		// Movement rate rules, so that the tile type is passable to the flying units but not the spearmen
 		final MovementRateRule rule = new MovementRateRule ();
 		rule.setTileTypeID ("TT01");
@@ -1166,57 +1157,84 @@ public final class TestUnitCalculationsImpl
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
+
+		// Only used for the mock so doesn't matter if there's anything in here
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		// Unit stack
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		final List<MemoryUnit> selectedUnits = new ArrayList<MemoryUnit> ();
 		
 		for (int n = 0; n < 3; n++)
 		{
 			final MemoryUnit spearmen = new MemoryUnit ();
-			spearmen.setUnitID ("UN001");
 			spearmen.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 			spearmen.setOwningPlayerID (1);
 			spearmen.setUnitURN (n + 1);
 			spearmen.setStatus (UnitStatusID.ALIVE);
+			spearmen.setUnitID ("UN001");
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (xuSpearmen.getUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
+			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
+			when (xuSpearmen.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
+			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
+			
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
-
-			when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), spearmen, db)).thenReturn (noSkills);
 		}
 
 		for (int n = 0; n < 3; n++)
 		{
 			final MemoryUnit drake = new MemoryUnit ();
-			drake.setUnitID ("UN003");
 			drake.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
 			drake.setOwningPlayerID (1);
 			drake.setUnitURN (n + 4);
 			drake.setStatus (UnitStatusID.ALIVE);
+			drake.setUnitID ("UN003");
+			
+			final ExpandedUnitDetails xuDrake = mock (ExpandedUnitDetails.class);
+			when (xuDrake.getUnit ()).thenReturn (drake);
+			when (xuDrake.getMemoryUnit ()).thenReturn (drake);
+			when (xuDrake.getUnitDefinition ()).thenReturn (drakeDef);
+			when (xuDrake.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+			when (xuDrake.getOwningPlayerID ()).thenReturn (1);
+			when (xuDrake.getUnitURN ()).thenReturn (n + 4);
+			when (xuDrake.hasModifiedSkill ("US001")).thenReturn (true);
+			
+			when (unitUtils.expandUnitDetails (drake, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuDrake);
 			
 			fogOfWarMemory.getUnit ().add (drake);
-			
-			when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), drake, db)).thenReturn (yesSkills);
 		}
 
-		final MemoryUnit trieme = new MemoryUnit ();
-		trieme.setUnitID ("UN002");
-		trieme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
-		trieme.setOwningPlayerID (1);
-		trieme.setUnitURN (7);
-		trieme.setStatus (UnitStatusID.ALIVE);
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		
-		fogOfWarMemory.getUnit ().add (trieme);
-		selectedUnits.add (trieme);
+		final MemoryUnit trireme = new MemoryUnit ();
+		trireme.setUnitLocation (new MapCoordinates3DEx (20, 10, 0));
+		trireme.setOwningPlayerID (1);
+		trireme.setUnitURN (7);
+		trireme.setStatus (UnitStatusID.ALIVE);
+		trireme.setUnitID ("UN002");
 		
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fogOfWarMemory.getMaintainedSpell (), trieme, db)).thenReturn (noSkills);		
+		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
+		when (xuTrireme.getUnit ()).thenReturn (trireme);
+		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
+		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
+		when (xuTrireme.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 0));
+		when (xuTrireme.getOwningPlayerID ()).thenReturn (1);
+		when (xuTrireme.getUnitURN ()).thenReturn (7);
+		
+		fogOfWarMemory.getUnit ().add (trireme);
+		selectedUnits.add (xuTrireme);
 		
 		// Set up object to test
 		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final UnitStack unitStack = calc.createUnitStack (selectedUnits, fogOfWarMemory, db);
+		final UnitStack unitStack = calc.createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
 		// Check results
 		assertEquals (1, unitStack.getTransports ().size ());

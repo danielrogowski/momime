@@ -3,8 +3,6 @@ package momime.server.process;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -28,12 +26,9 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -127,92 +122,38 @@ public final class TestCombatProcessingImpl
 	@Test
 	public final void testCalculateUnitCombatClass () throws Exception
 	{
-		// Mock database
-		final UnitSvr dwarfHeroDef = new UnitSvr ();
-		dwarfHeroDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
-		
-		final UnitSvr spearmenDef = new UnitSvr ();
-		spearmenDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
-		
-		final UnitSvr archerHeroDef = new UnitSvr ();
-		archerHeroDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
-		
-		final UnitSvr bowmenDef = new UnitSvr ();
-		bowmenDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
-		
-		final UnitSvr settlersDef = new UnitSvr ();
-		settlersDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
-		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.findUnit ("UN001", "calculateUnitCombatClass")).thenReturn (dwarfHeroDef);
-		when (db.findUnit ("UN040", "calculateUnitCombatClass")).thenReturn (spearmenDef);
-		when (db.findUnit ("UN031", "calculateUnitCombatClass")).thenReturn (archerHeroDef);
-		when (db.findUnit ("UN042", "calculateUnitCombatClass")).thenReturn (bowmenDef);
-		when (db.findUnit ("UN045", "calculateUnitCombatClass")).thenReturn (settlersDef);
-		
-		// Don't need anything real here since we're mocking the attribute calculation
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// One of each kind of test unit
-		final MemoryUnit dwarfHero = new MemoryUnit ();
-		dwarfHero.setUnitID ("UN001");
+		final ExpandedUnitDetails dwarfHero = mock (ExpandedUnitDetails.class);
+		when (dwarfHero.isHero ()).thenReturn (true);
+		when (dwarfHero.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
+		when (dwarfHero.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (1);
 		
-		final MemoryUnit spearmen = new MemoryUnit ();
-		spearmen.setUnitID ("UN040");
+		final ExpandedUnitDetails spearmen = mock (ExpandedUnitDetails.class);
+		when (spearmen.isHero ()).thenReturn (false);
+		when (spearmen.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
+		when (spearmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (1);
 		
-		final MemoryUnit archerHero = new MemoryUnit ();
-		archerHero.setUnitID ("UN031");
+		final ExpandedUnitDetails archerHero = mock (ExpandedUnitDetails.class);
+		when (archerHero.isHero ()).thenReturn (true);
+		when (archerHero.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (true);
+		when (archerHero.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (1);
 		
-		final MemoryUnit bowmen = new MemoryUnit ();
-		bowmen.setUnitID ("UN042");
+		final ExpandedUnitDetails bowmen = mock (ExpandedUnitDetails.class);
+		when (bowmen.isHero ()).thenReturn (false);
+		when (bowmen.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (true);
+		when (bowmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (1);
 		
-		final MemoryUnit settlers = new MemoryUnit ();
-		settlers.setUnitID ("UN045");
+		final ExpandedUnitDetails settlers = mock (ExpandedUnitDetails.class);
 
-		// Mock unit stats
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		
-		final UnitHasSkillMergedList unitSkills = new UnitHasSkillMergedList (); 
-		when (unitUtils.mergeSpellEffectsIntoSkillList (eq (fow.getMaintainedSpell ()), any (MemoryUnit.class), eq (db))).thenReturn (unitSkills);
-		
-		when (unitSkillUtils.getModifiedSkillValue (dwarfHero, dwarfHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (unitSkillUtils.getModifiedSkillValue (dwarfHero, dwarfHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
-		
-		when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (unitSkillUtils.getModifiedSkillValue (spearmen, spearmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
-			
-		when (unitSkillUtils.getModifiedSkillValue (archerHero, archerHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (unitSkillUtils.getModifiedSkillValue (archerHero, archerHero.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-				
-		when (unitSkillUtils.getModifiedSkillValue (bowmen, bowmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (unitSkillUtils.getModifiedSkillValue (bowmen, bowmen.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-					
-		when (unitSkillUtils.getModifiedSkillValue (settlers, settlers.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
-		when (unitSkillUtils.getModifiedSkillValue (settlers, settlers.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
-						
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
-		proc.setUnitSkillUtils (unitSkillUtils);
-		proc.setUnitUtils (unitUtils);
 		
 		// Check results
-		assertEquals (1, proc.calculateUnitCombatClass (dwarfHero, players, fow, db));
-		assertEquals (2, proc.calculateUnitCombatClass (spearmen, players, fow, db));
-		assertEquals (3, proc.calculateUnitCombatClass (archerHero, players, fow, db));
-		assertEquals (4, proc.calculateUnitCombatClass (bowmen, players, fow, db));
-		assertEquals (5, proc.calculateUnitCombatClass (settlers, players, fow, db));
+		assertEquals (1, proc.calculateUnitCombatClass (dwarfHero));
+		assertEquals (2, proc.calculateUnitCombatClass (spearmen));
+		assertEquals (3, proc.calculateUnitCombatClass (archerHero));
+		assertEquals (4, proc.calculateUnitCombatClass (bowmen));
+		assertEquals (5, proc.calculateUnitCombatClass (settlers));
 	}
 	
 	/**
@@ -425,7 +366,6 @@ public final class TestCombatProcessingImpl
 		final List<FogOfWarMemory> FOWs = new ArrayList<FogOfWarMemory> ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		FOWs.add (trueMap);
 
 		// Combat map
 		final CoordinateSystem combatMapCoordinateSystem = ServerTestData.createCombatMapCoordinateSystem ();
@@ -462,13 +402,19 @@ public final class TestCombatProcessingImpl
 		
 		// The actual units to place
 		final List<MemoryUnitAndCombatClass> unitsToPosition = new ArrayList<MemoryUnitAndCombatClass> ();
+		final List<ExpandedUnitDetails> trueExpandedUnits = new ArrayList<ExpandedUnitDetails> ();
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		for (int n = 1; n <= 3; n++)
 		{
 			final MemoryUnit tu = new MemoryUnit ();
 			tu.setUnitURN (n);
 			tu.setOwningPlayerID (attackingPD.getPlayerID ());
 			
-			unitsToPosition.add (new MemoryUnitAndCombatClass (tu, 0));
+			final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+			when (xu.getUnitURN ()).thenReturn (n);
+			trueExpandedUnits.add (xu);
+			
+			unitsToPosition.add (new MemoryUnitAndCombatClass (xu, 0));
 			trueMap.getUnit ().add (tu);
 			
 			// Routine expects attacker and defender to both have unit in their memory
@@ -476,11 +422,13 @@ public final class TestCombatProcessingImpl
 			atkUnit.setUnitURN (n);
 			atkUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 			attackingPriv.getFogOfWarMemory ().getUnit ().add (atkUnit);
+			when (unitUtils.findUnitURN (n, attackingPriv.getFogOfWarMemory ().getUnit (), "placeCombatUnits-A")).thenReturn (atkUnit);
 
 			final MemoryUnit defUnit = new MemoryUnit ();
 			defUnit.setUnitURN (n);
 			defUnit.setOwningPlayerID (attackingPD.getPlayerID ());
 			defendingPriv.getFogOfWarMemory ().getUnit ().add (defUnit);
+			when (unitUtils.findUnitURN (n, defendingPriv.getFogOfWarMemory ().getUnit (), "placeCombatUnits-D")).thenReturn (defUnit);
 		}
 		
 		// Set up object to test
@@ -488,7 +436,7 @@ public final class TestCombatProcessingImpl
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitCalculations (calc);
-		proc.setUnitUtils (new UnitUtilsImpl ());		// used for searching unit lists, so easier to use real one
+		proc.setUnitUtils (unitUtils);
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
@@ -496,7 +444,26 @@ public final class TestCombatProcessingImpl
 			CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y, CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING,
 			UnitCombatSideID.ATTACKER, unitsToPosition, unitsInRow, msg, attackingPlayer, defendingPlayer, combatMapCoordinateSystem, combatMap, db);
 		
-		// Check server's true memory, attacker's memory, defender's memory
+		// Check updates to server's true memory, via mocks
+		final ExpandedUnitDetails xu1 = trueExpandedUnits.get (0);
+		verify (xu1).setCombatLocation (combatLocation);
+		verify (xu1).setCombatPosition (new MapCoordinates2DEx (7, 17));
+		verify (xu1).setCombatHeading (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING);
+		verify (xu1).setCombatSide (UnitCombatSideID.ATTACKER);
+		
+		final ExpandedUnitDetails xu2 = trueExpandedUnits.get (1);
+		verify (xu2).setCombatLocation (combatLocation);
+		verify (xu2).setCombatPosition (new MapCoordinates2DEx (7, 19));
+		verify (xu2).setCombatHeading (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING);
+		verify (xu2).setCombatSide (UnitCombatSideID.ATTACKER);
+
+		final ExpandedUnitDetails xu3 = trueExpandedUnits.get (2);
+		verify (xu3).setCombatLocation (combatLocation);
+		verify (xu3).setCombatPosition (new MapCoordinates2DEx (8, 18));
+		verify (xu3).setCombatHeading (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING);
+		verify (xu3).setCombatSide (UnitCombatSideID.ATTACKER);
+		
+		// Check attacker's and defender's memory
 		for (final FogOfWarMemory fow : FOWs)
 		{
 			assertEquals (3, fow.getUnit ().size ());
@@ -525,7 +492,7 @@ public final class TestCombatProcessingImpl
 			assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ().intValue ());
 			assertEquals (UnitCombatSideID.ATTACKER, unit3.getCombatSide ());
 		}
-		
+
 		// Check message
 		assertEquals (3, msg.getUnitPlacement ().size ());
 

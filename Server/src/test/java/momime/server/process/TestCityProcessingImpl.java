@@ -591,7 +591,7 @@ public final class TestCityProcessingImpl
 		final UnitAddLocation unitAddLocation = new UnitAddLocation (raidersLocation, UnitAddBumpTypeID.CITY);
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
-		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (raidersLocation, "UN001", raidersPd.getPlayerID (), trueMap, sd, db)).thenReturn (unitAddLocation);
+		when (unitServerUtils.findNearestLocationWhereUnitCanBeAdded (raidersLocation, "UN001", raidersPd.getPlayerID (), trueMap, players, sd, db)).thenReturn (unitAddLocation);
 		
 		// Set up object to test
 		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);

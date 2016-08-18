@@ -1,8 +1,10 @@
 package momime.common.calculations;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,13 +28,10 @@ import momime.common.database.MovementRateRule;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
 import momime.common.database.UnitCanCast;
-import momime.common.database.UnitSkillAndValue;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomCombatTile;
@@ -237,28 +236,20 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * methods to use the Fog of War memory to look for spell effects that might increase ammo or mana
 	 * 
 	 * @param unit Unit we want to give ammo+mana to
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final void giveUnitFullRangedAmmoAndMana (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final void giveUnitFullRangedAmmoAndMana (final ExpandedUnitDetails unit) throws MomException
 	{
 		log.trace ("Entering giveUnitFullRangedAmmoAndMana: Unit URN " + unit.getUnitURN () + ", " + unit.getUnitID ());
 		
-		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
-		
 		// Easy values
-		unit.setAmmoRemaining (xu.calculateFullRangedAttackAmmo ());
-		unit.setManaRemaining (xu.calculateManaTotal ());
+		unit.setAmmoRemaining (unit.calculateFullRangedAttackAmmo ());
+		unit.setManaRemaining (unit.calculateManaTotal ());
 
 		// Fixed spells, like Giant Spiders 'casting' web or Magicians casting Fireball
-		unit.getFixedSpellsRemaining ().clear ();
-		for (final UnitCanCast fixedSpell : xu.getUnitDefinition ().getUnitCanCast ())
+		unit.getMemoryUnit ().getFixedSpellsRemaining ().clear ();
+		for (final UnitCanCast fixedSpell : unit.getUnitDefinition ().getUnitCanCast ())
 		{
 			final int count;
 			if ((fixedSpell.getNumberOfTimes () != null) && (fixedSpell.getNumberOfTimes () > 0))
@@ -266,12 +257,12 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			else
 				count = -1;
 				
-			unit.getFixedSpellsRemaining ().add (count);
+			unit.getMemoryUnit ().getFixedSpellsRemaining ().add (count);
 		}
 		
 		// Spell charges on hero items
-		unit.getHeroItemSpellChargesRemaining ().clear ();
-		for (final MemoryUnitHeroItemSlot slot : unit.getHeroItemSlot ())
+		unit.getMemoryUnit ().getHeroItemSpellChargesRemaining ().clear ();
+		for (final MemoryUnitHeroItemSlot slot : unit.getMemoryUnit ().getHeroItemSlot ())
 		{
 			final int count;
 			if (slot.getHeroItem () == null)
@@ -281,7 +272,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			else
 				count = slot.getHeroItem ().getSpellChargeCount ();
 			
-			unit.getHeroItemSpellChargesRemaining ().add (count);
+			unit.getMemoryUnit ().getHeroItemSpellChargesRemaining ().add (count);
 		}
 
 		log.trace ("Exiting giveUnitFullRangedAmmoAndMana");
@@ -348,32 +339,28 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	
 	/**
 	 * @param unitStack Unit stack to check
-	 * @param spells Known spells
-	 * @param db Lookup lists built over the XML database
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	@Override
-	public final List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException, MomException
+	public final Set<String> listAllSkillsInUnitStack (final List<ExpandedUnitDetails> unitStack) throws MomException
 	{
 		log.trace ("Entering listAllSkillsInUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
 
-		final List<String> list = new ArrayList<String> ();
+		final Set<String> list = new HashSet<String> ();
 		String debugList = "";
 
 		if (unitStack != null)
-			for (final MemoryUnit thisUnit : unitStack)
-				for (final UnitSkillAndValue thisSkill : getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, thisUnit, db))
-					if (!list.contains (thisSkill.getUnitSkillID ()))
+			for (final ExpandedUnitDetails thisUnit : unitStack)
+				for (final String thisSkillID : thisUnit.listModifiedSkillIDs ())
+					if (!list.contains (thisSkillID))
 					{
-						list.add (thisSkill.getUnitSkillID ());
+						list.add (thisSkillID);
 
 						if (!debugList.equals (""))
 							debugList = debugList + ", ";
 
-						debugList = debugList + thisSkill.getUnitSkillID ();
+						debugList = debugList + thisSkillID;
 					}
 
 		log.trace ("Exiting listAllSkillsInUnitStack = " + debugList);
@@ -384,28 +371,13 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param unit Unit that we want to move
 	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
 	 * @param tileTypeID Type of tile we are moving onto
-	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	@Override
-	public final Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException
+	public final Integer calculateDoubleMovementToEnterTileType (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db)
 	{
-		log.trace ("Entering calculateDoubleMovementToEnterTileType: " + unit.getUnitID () + ", Player ID " + unit.getOwningPlayerID () + ", " + tileTypeID);
-
-		// Only merge the units list of skills once
-		final List<UnitSkillAndValue> unitHasSkills;
-		if (unit instanceof MemoryUnit)
-			unitHasSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, db);
-		else
-			unitHasSkills = unit.getUnitHasSkill ();
-
-		// Turn it into a list of strings so we can search it more quickly
-		final List<String> unitSkills = new ArrayList<String> ();
-		for (final UnitSkillAndValue thisSkill : unitHasSkills)
-			unitSkills.add (thisSkill.getUnitSkillID ());
+		log.trace ("Entering calculateDoubleMovementToEnterTileType: " + unit.getDebugIdentifier () + ", Player ID " + unit.getOwningPlayerID () + ", " + tileTypeID);
 
 		// We basically run down the movement rate rules and stop as soon as we find the first applicable one
 		// Terrain is impassable if we check every movement rule and none of them are applicable
@@ -417,7 +389,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 			// All 3 parts are optional
 			if (((thisRule.getTileTypeID () == null) || (thisRule.getTileTypeID ().equals (tileTypeID))) &&
-				((thisRule.getUnitSkillID () == null) || (unitSkills.contains (thisRule.getUnitSkillID ()))) &&
+				((thisRule.getUnitSkillID () == null) || (unit.hasModifiedSkill (thisRule.getUnitSkillID ()))) &&
 				((thisRule.getUnitStackSkillID () == null) || (unitStackSkills.contains (thisRule.getUnitStackSkillID ()))))
 
 				doubleMovement = thisRule.getDoubleMovement ();
@@ -430,14 +402,11 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/**
 	 * @param unit Unit that we want to move
 	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
-	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether this unit can pass over every type of possible terrain on the map; i.e. true for swimming units like Lizardmen, any flying unit, or any unit stacked with a Wind Walking unit
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
 	@Override
-	public final boolean areAllTerrainTypesPassable (final AvailableUnit unit, final List<String> unitStackSkills,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException
+	public final boolean areAllTerrainTypesPassable (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final CommonDatabase db)
 	{
 		log.trace ("Entering areAllTerrainTypesPassable: " + unit.getUnitID ());
 
@@ -448,7 +417,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		{
 			final TileType tileType = iter.next ();
 			if ((!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN)) &&
-				(calculateDoubleMovementToEnterTileType (unit, unitStackSkills, tileType.getTileTypeID (), spells, db) == null))
+				(calculateDoubleMovementToEnterTileType (unit, unitStackSkills, tileType.getTileTypeID (), db) == null))
 				
 				result = false;
 		}
@@ -462,15 +431,18 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * See the UnitStack object for a lot more comments on the rules by which this needs to work.
 	 * 
 	 * @param selectedUnits Units selected by the player to move
+	 * @param players Players list
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on 
 	 * @param db Lookup lists built over the XML database
 	 * @return UnitStack object
+	 * @throws PlayerNotFoundException If we cannot find the player who a unit in the same location as our transports
 	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
 	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
 	 */
 	@Override
-	public final UnitStack createUnitStack (final List<MemoryUnit> selectedUnits, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
-		throws RecordNotFoundException, MomException
+	public final UnitStack createUnitStack (final List<ExpandedUnitDetails> selectedUnits,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering createUnitStack: " + getUnitUtils ().listUnitURNs (selectedUnits));
 
@@ -478,31 +450,31 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		if (selectedUnits.size () == 0)
 			throw new MomException ("createUnitStack: Selected units list is empty");
 		
-		final List<String> unitStackSkills = listAllSkillsInUnitStack (selectedUnits, fogOfWarMemory.getMaintainedSpell (), db);
+		final Set<String> unitStackSkills = listAllSkillsInUnitStack (selectedUnits);
 		
 		// Count the units already in the stack into 3 categories: transports, units that want to be in transports (have some impassable terrain), and units that will accompany transports (all terrain passable)
 		// Also while we're at it, find the location of the unit stack
-		final List<MemoryUnit> transports = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> transports = new ArrayList<ExpandedUnitDetails> ();
 		int transportCapacity = 0;
 		int unitsInside = 0;
 		int owningPlayerID = 0;
 		MapCoordinates3DEx unitLocation = null;
 		
-		for (final MemoryUnit thisUnit : selectedUnits)
+		for (final ExpandedUnitDetails thisUnit : selectedUnits)
 		{
 			// Categorise unit
-			final Integer thisTransportCapacity = db.findUnit (thisUnit.getUnitID (), "createUnitStack").getTransportCapacity ();
+			final Integer thisTransportCapacity = thisUnit.getUnitDefinition ().getTransportCapacity ();
 			if ((thisTransportCapacity != null) && (thisTransportCapacity > 0))
 			{
 				transports.add (thisUnit);
 				transportCapacity = transportCapacity + thisTransportCapacity;
 			}
-			else if (!areAllTerrainTypesPassable (thisUnit, unitStackSkills, fogOfWarMemory.getMaintainedSpell (), db))
+			else if (!areAllTerrainTypesPassable (thisUnit, unitStackSkills, db))
 				unitsInside++;
 			
 			// Record or check location
 			if (unitLocation == null)
-				unitLocation = (MapCoordinates3DEx) thisUnit.getUnitLocation ();
+				unitLocation = thisUnit.getUnitLocation ();
 			else if (!unitLocation.equals (thisUnit.getUnitLocation ()))
 				throw new MomException ("createUnitStack: All selected units are not in the same starting location");
 			
@@ -526,18 +498,19 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
 				
 				if ((thisUnit.getOwningPlayerID () == owningPlayerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
-					(unitLocation.equals (thisUnit.getUnitLocation ())) && (!selectedUnits.contains (thisUnit)))
+					(unitLocation.equals (thisUnit.getUnitLocation ())) && (!selectedUnits.stream ().anyMatch (xu -> thisUnit == xu.getUnit ())))
 				{
 					// Never automatically add additional transports
 					final Integer thisTransportCapacity = db.findUnit (thisUnit.getUnitID (), "createUnitStack").getTransportCapacity ();
 					if ((thisTransportCapacity == null) || (thisTransportCapacity <= 0))
 					{
 						// Always automatically add "outside" units; add "inside" units only if there's still space
-						if (areAllTerrainTypesPassable (thisUnit, unitStackSkills, fogOfWarMemory.getMaintainedSpell (), db))
-							stack.getUnits ().add (thisUnit);
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, fogOfWarMemory, db);
+						if (areAllTerrainTypesPassable (xu, unitStackSkills, db))
+							stack.getUnits ().add (xu);
 						else if (unitsInside < transportCapacity)
 						{
-							stack.getUnits ().add (thisUnit);
+							stack.getUnits ().add (xu);
 							unitsInside++;
 						}
 					}
@@ -546,7 +519,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		else
 		{
 			// "normal" mode, so just take the unit stack as given
-			stack.getUnits ().addAll (selectedUnits);
+			stack.getUnits ().addAll (selectedUnits); 
 		}
 		
 		log.trace ("Exiting createUnitStack = " + stack);

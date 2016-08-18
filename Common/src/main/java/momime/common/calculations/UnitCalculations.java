@@ -1,6 +1,7 @@
 package momime.common.calculations;
 
 import java.util.List;
+import java.util.Set;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -10,12 +11,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.PlayerPick;
@@ -86,15 +85,9 @@ public interface UnitCalculations
 	 * methods to use the Fog of War memory to look for spell effects that might increase ammo or mana
 	 * 
 	 * @param unit Unit we want to give ammo+mana to
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public void giveUnitFullRangedAmmoAndMana (final MemoryUnit unit, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	public void giveUnitFullRangedAmmoAndMana (final ExpandedUnitDetails unit) throws MomException;
 	
 	/**
 	 * Decreases amount of ranged ammo remaining for this unit when it fires a ranged attack
@@ -114,51 +107,44 @@ public interface UnitCalculations
 
 	/**
 	 * @param unitStack Unit stack to check
-	 * @param spells Known spells
-	 * @param db Lookup lists built over the XML database
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
-	public List<String> listAllSkillsInUnitStack (final List<MemoryUnit> unitStack,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException, MomException;
+	public Set<String> listAllSkillsInUnitStack (final List<ExpandedUnitDetails> unitStack) throws MomException;
 
 	/**
 	 * @param unit Unit that we want to move
 	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
 	 * @param tileTypeID Type of tile we are moving onto
-	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Double the number of movement points we will use to walk onto that tile; null = impassable
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
-	public Integer calculateDoubleMovementToEnterTileType (final AvailableUnit unit, final List<String> unitStackSkills, final String tileTypeID,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException;
+	public Integer calculateDoubleMovementToEnterTileType (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db);
 	
 	/**
 	 * @param unit Unit that we want to move
 	 * @param unitStackSkills All the skills that any units in the stack moving with this unit have, in case any have e.g. path finding that we can take advantage of - get by calling listAllSkillsInUnitStack
-	 * @param spells Known spells
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether this unit can pass over every type of possible terrain on the map; i.e. true for swimming units like Lizardmen, any flying unit, or any unit stacked with a Wind Walking unit
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
 	 */
-	public boolean areAllTerrainTypesPassable (final AvailableUnit unit, final List<String> unitStackSkills,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db) throws RecordNotFoundException;
+	public boolean areAllTerrainTypesPassable (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final CommonDatabase db);
 	
 	/**
 	 * Checks whether selectedUnits includes any transports, and if so whether the other units fit inside them, and whether any others in the same map cell should be added to the stack.
 	 * See the UnitStack object for a lot more comments on the rules by which this needs to work.
 	 * 
 	 * @param selectedUnits Units selected by the player to move
+	 * @param players Players list
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on 
 	 * @param db Lookup lists built over the XML database
 	 * @return UnitStack object
+	 * @throws PlayerNotFoundException If we cannot find the player who a unit in the same location as our transports
 	 * @throws RecordNotFoundException If we can't find the definitions for any of the units at the location
 	 * @throws MomException If selectedUnits is empty, all the units aren't at the same location, or all the units don't have the same owner 
 	 */
-	public UnitStack createUnitStack (final List<MemoryUnit> selectedUnits, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
-		throws RecordNotFoundException, MomException;
+	public UnitStack createUnitStack (final List<ExpandedUnitDetails> selectedUnits,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**
 	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.

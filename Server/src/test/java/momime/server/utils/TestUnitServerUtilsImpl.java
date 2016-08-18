@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -14,7 +14,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -38,7 +40,6 @@ import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -699,14 +700,14 @@ public final class TestUnitServerUtilsImpl
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setOwningPlayerID (2);
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final List<String> testUnitSkills = new ArrayList<String> ();
+		final Set<String> testUnitSkills = new HashSet<String> ();
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -718,7 +719,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
 	}
 
 	/**
@@ -750,14 +751,14 @@ public final class TestUnitServerUtilsImpl
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setOwningPlayerID (2);
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final List<String> testUnitSkills = new ArrayList<String> ();
+		final Set<String> testUnitSkills = new HashSet<String> ();
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final MemoryUnit enemyUnit = new MemoryUnit ();
@@ -773,7 +774,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
 	}
 
 	/**
@@ -805,14 +806,14 @@ public final class TestUnitServerUtilsImpl
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setOwningPlayerID (2);
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final List<String> testUnitSkills = new ArrayList<String> ();
+		final Set<String> testUnitSkills = new HashSet<String> ();
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final MemoryUnit ourUnit = new MemoryUnit ();
@@ -829,7 +830,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
 	}
 
 	/**
@@ -861,14 +862,14 @@ public final class TestUnitServerUtilsImpl
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setOwningPlayerID (2);
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final List<String> testUnitSkills = new ArrayList<String> ();
+		final Set<String> testUnitSkills = new HashSet<String> ();
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final MemoryUnit ourUnit = new MemoryUnit ();
@@ -885,7 +886,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
 	}
 	
 	/**
@@ -918,14 +919,14 @@ public final class TestUnitServerUtilsImpl
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setOwningPlayerID (2);
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final List<String> testUnitSkills = new ArrayList<String> ();
+		final Set<String> testUnitSkills = new HashSet<String> ();
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -937,7 +938,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));		// Adding onto empty nodes is now allowed
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));		// Adding onto empty nodes is now allowed
 	}
 	
 	/**
@@ -969,14 +970,14 @@ public final class TestUnitServerUtilsImpl
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setOwningPlayerID (2);
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final List<String> testUnitSkills = new ArrayList<String> ();
+		final Set<String> testUnitSkills = new HashSet<String> ();
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (null);		// <---
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (null);		// <---
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -988,7 +989,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
 	}
 	
 	/**
@@ -1026,14 +1027,14 @@ public final class TestUnitServerUtilsImpl
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setOwningPlayerID (2);
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final List<String> testUnitSkills = new ArrayList<String> ();
+		final Set<String> testUnitSkills = new HashSet<String> ();
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1045,7 +1046,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
 	}
 	
 	/**
@@ -1083,14 +1084,14 @@ public final class TestUnitServerUtilsImpl
 		settings.setUnitsPerMapCell (9);
 		
 		// Unit to try to add
-		final AvailableUnit testUnit = new AvailableUnit ();
-		testUnit.setOwningPlayerID (2);
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
-		final List<String> testUnitSkills = new ArrayList<String> ();
+		final Set<String> testUnitSkills = new HashSet<String> ();
 
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", trueMap.getMaintainedSpell (), db)).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (testUnit, testUnitSkills, "TT01", db)).thenReturn (1);
 		
 		// Other units
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1102,7 +1103,7 @@ public final class TestUnitServerUtilsImpl
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, testUnitSkills, trueMap, settings, db));
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
 	}
 
 	/**
@@ -1130,6 +1131,14 @@ public final class TestUnitServerUtilsImpl
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
 		
+		// Unit we're trying to add
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
+		
 		// Map cell and surrounding terrain that we're trying to add to
 		for (int x = -1; x <= 1; x++)
 			for (int y = -1; y <= 1; y++)
@@ -1141,14 +1150,13 @@ public final class TestUnitServerUtilsImpl
 		
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
-			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT01"),
+			any (ServerDatabaseEx.class))).thenReturn (1);
 		
 		// Put 8 units in the city so we just fit
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setOwningPlayerID (2);
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
 		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (8);
 		
@@ -1162,7 +1170,7 @@ public final class TestUnitServerUtilsImpl
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// So we eventually end up being positioned down-right of our preferred location
-		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, sd, db);
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, players, sd, db);
 		assertEquals (UnitAddBumpTypeID.CITY, result.getBumpType ());
 		assertEquals (20, result.getUnitLocation ().getX ());
 		assertEquals (10, result.getUnitLocation ().getY ());
@@ -1200,6 +1208,14 @@ public final class TestUnitServerUtilsImpl
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
+
+		// Unit we're trying to add
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		// Map cell and surrounding terrain that we're trying to add to
 		for (int x = -1; x <= 1; x++)
@@ -1212,18 +1228,17 @@ public final class TestUnitServerUtilsImpl
 		
 		// Unit can enter tiles TT01 and TT02, but TT03 is impassable
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
-			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT02"),
-			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (1);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT03"),
-			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (null);
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT01"),
+			any (ServerDatabaseEx.class))).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT02"),
+			any (ServerDatabaseEx.class))).thenReturn (1);
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT03"),
+			any (ServerDatabaseEx.class))).thenReturn (null);
 		
 		// Put 9 units in the city so we can't fit
 		final MemoryUnit ourUnit = new MemoryUnit ();
 		ourUnit.setOwningPlayerID (2);
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
 		when (unitUtils.findFirstAliveEnemyAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (ourUnit);
 		when (unitUtils.countAliveEnemiesAtLocation (trueMap.getUnit (), 20, 10, 1, 0)).thenReturn (9);
 		
@@ -1246,7 +1261,7 @@ public final class TestUnitServerUtilsImpl
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// So we eventually end up being positioned down-right of our preferred location
-		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, sd, db);
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, players, sd, db);
 		assertEquals (UnitAddBumpTypeID.BUMPED, result.getBumpType ());
 		assertEquals (21, result.getUnitLocation ().getX ());
 		assertEquals (11, result.getUnitLocation ().getY ());
@@ -1277,6 +1292,14 @@ public final class TestUnitServerUtilsImpl
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
+
+		// Unit we're trying to add
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		// Map cell and surrounding terrain that we're trying to add to
 		for (int x = -1; x <= 1; x++)
@@ -1289,12 +1312,9 @@ public final class TestUnitServerUtilsImpl
 		
 		// Easiest thing to do is make the tile type impassable, then we can't fit anywhere
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (AvailableUnit.class), anyListOf (String.class), eq ("TT01"),
-			anyListOf (MemoryMaintainedSpell.class), any (ServerDatabaseEx.class))).thenReturn (null);
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT01"),
+			any (ServerDatabaseEx.class))).thenReturn (null);
 
-		// Other units
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		
 		// Set up object to test
 		final UnitServerUtilsImpl utils = new UnitServerUtilsImpl ();
 		utils.setUnitUtils (unitUtils);
@@ -1308,7 +1328,7 @@ public final class TestUnitServerUtilsImpl
 		addLocation.setZ (1);
 		
 		// So we eventually end up being positioned down-right of our preferred location
-		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, sd, db);
+		final UnitAddLocation result = utils.findNearestLocationWhereUnitCanBeAdded (addLocation, "UN001", 2, trueMap, players, sd, db);
 		assertEquals (UnitAddBumpTypeID.NO_ROOM, result.getBumpType ());
 		assertNull (result.getUnitLocation ());
 	}

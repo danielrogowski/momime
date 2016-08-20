@@ -54,7 +54,8 @@ public abstract class ImageCache
      * @return The retrieved or loaded image
      * @throws IOException If there is a problem reading the specified file
      */
-    public BufferedImage findOrLoadImage (final String fileName, final int subFileNumber, final int frameNumber)
+    @SuppressWarnings ("resource")
+	public BufferedImage findOrLoadImage (final String fileName, final int subFileNumber, final int frameNumber)
     	throws IOException
     {
     	BufferedImage image = null;

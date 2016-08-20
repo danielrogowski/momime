@@ -84,7 +84,7 @@ public final class NdgBmpWriterSpi extends ImageWriterSpi
 	 * @return Appropriate class for encoding .ndgbmp streams
 	 */
 	@Override
-	public final ImageWriter createWriterInstance (final Object extension)
+	public final ImageWriter createWriterInstance (@SuppressWarnings ("unused") final Object extension)
 	{
 		return new NdgBmpWriter (this);
 	}
@@ -94,7 +94,7 @@ public final class NdgBmpWriterSpi extends ImageWriterSpi
 	 * @return Description of this SPI
 	 */
 	@Override
-	public final String getDescription (final Locale locale)
+	public final String getDescription (@SuppressWarnings ("unused") final Locale locale)
 	{
 		return "NDG BMP Writer SPI";
 	}

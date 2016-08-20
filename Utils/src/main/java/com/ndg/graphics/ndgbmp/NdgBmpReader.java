@@ -104,7 +104,7 @@ public final class NdgBmpReader extends ImageReader
 	 * @return Number of images in the .ndgbmp file (always 1)
 	 */
 	@Override
-	public final int getNumImages (final boolean allowSearch)
+	public final int getNumImages (@SuppressWarnings ("unused") final boolean allowSearch)
 	{
 		return 1;
 	}

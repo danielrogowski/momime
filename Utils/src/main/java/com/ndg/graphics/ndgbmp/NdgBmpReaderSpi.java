@@ -84,7 +84,7 @@ public final class NdgBmpReaderSpi extends ImageReaderSpi
 	 * @return Appropriate class for decoding .ndgbmp streams
 	 */
 	@Override
-	public final ImageReader createReaderInstance (final Object extension)
+	public final ImageReader createReaderInstance (@SuppressWarnings ("unused") final Object extension)
 	{
 		return new NdgBmpReader (this);
 	}
@@ -94,7 +94,7 @@ public final class NdgBmpReaderSpi extends ImageReaderSpi
 	 * @return Description of this SPI
 	 */
 	@Override
-	public final String getDescription (final Locale locale)
+	public final String getDescription (@SuppressWarnings ("unused") final Locale locale)
 	{
 		return "NDG BMP Reader SPI";
 	}

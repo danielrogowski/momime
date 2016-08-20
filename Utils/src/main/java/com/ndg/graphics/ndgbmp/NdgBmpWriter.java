@@ -58,7 +58,7 @@ public final class NdgBmpWriter extends ImageWriter
 	 * @throws IOException If there is a problem writing to the stream
 	 */
 	@Override
-	public final void write (final IIOMetadata streamMetadata, final IIOImage image, final ImageWriteParam param)
+	public final void write (@SuppressWarnings ("unused") final IIOMetadata streamMetadata, final IIOImage image, @SuppressWarnings ("unused") final ImageWriteParam param)
 		throws IOException
 	{
 		// Get stream
@@ -413,6 +413,7 @@ public final class NdgBmpWriter extends ImageWriter
 	/**
 	 * @return null, because no metadata is supported for .ndgbmp images
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final IIOMetadata convertImageMetadata (final IIOMetadata inData, final ImageTypeSpecifier imageType, final ImageWriteParam param)
 	{
@@ -422,6 +423,7 @@ public final class NdgBmpWriter extends ImageWriter
 	/**
 	 * @return null, because no metadata is supported for .ndgbmp images
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final IIOMetadata convertStreamMetadata (final IIOMetadata inData, final ImageWriteParam param)
 	{
@@ -431,6 +433,7 @@ public final class NdgBmpWriter extends ImageWriter
 	/**
 	 * @return null, because no metadata is supported for .ndgbmp images
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final IIOMetadata getDefaultImageMetadata (final ImageTypeSpecifier imageType, final ImageWriteParam param)
 	{
@@ -440,6 +443,7 @@ public final class NdgBmpWriter extends ImageWriter
 	/**
 	 * @return null, because no metadata is supported for .ndgbmp images
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final IIOMetadata getDefaultStreamMetadata (final ImageWriteParam param)
 	{

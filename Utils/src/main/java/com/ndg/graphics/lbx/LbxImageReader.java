@@ -378,7 +378,7 @@ public final class LbxImageReader extends ImageReader
 	 * @throws IOException If there is a problem reading the image header
 	 */
 	@Override
-	public final int getNumImages (final boolean allowSearch)
+	public final int getNumImages (@SuppressWarnings ("unused") final boolean allowSearch)
 		throws IOException
 	{
 		ensureHeaderRead ();

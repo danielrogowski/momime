@@ -20,8 +20,6 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
@@ -34,7 +32,6 @@ import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.MapFeatureSvr;
@@ -57,9 +54,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -223,14 +217,14 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				for (final Integer unitURN : thisMove.getUnitURN ())
 				{
 					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement");
-					unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					unitStack.add (xu);
 					
 					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 						doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 					
-					final int unitMovementTotal = getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (),
-						CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-						null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					final int unitMovementTotal = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED);
 					if (unitMovementTotal < movementTotal)
 						movementTotal = unitMovementTotal;
 				}
@@ -590,7 +584,10 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			}
 			else
 			{
-				getOverlandMapServerUtils ().attemptToMeldWithNode (spirit, mom.getGeneralServerKnowledge ().getTrueMap (),
+				final ExpandedUnitDetails xuSpirit = getUnitUtils ().expandUnitDetails (spirit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
+				getOverlandMapServerUtils ().attemptToMeldWithNode (xuSpirit, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}			
 		}
@@ -614,22 +611,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 		unitUtils = utils;
 	}
 
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */

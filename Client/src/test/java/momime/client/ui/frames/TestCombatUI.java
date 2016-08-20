@@ -50,13 +50,10 @@ import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtilsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.TileType;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -73,7 +70,6 @@ import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -300,33 +296,25 @@ public final class TestCombatUI
 		final ExpandedUnitDetails xuSelectedUnit = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (selectedUnit, null, null, null, players, fow, db)).thenReturn (xuSelectedUnit);
 		
-		// Unit skills
-		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList (); 
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), selectedUnit, db)).thenReturn (mergedSkills);
-		
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
-		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);
-		when (unitSkillUtils.getModifiedSkillValue (selectedUnit, selectedUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);
+		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);
+		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (2);
+		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn (3);
 		
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		when (xuSelectedUnit.calculateAliveFigureCount ()).thenReturn (6);
 		
 		// Unit icons
-		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn
+		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xuSelectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn
 			(utils.loadImage ("/momime.client.graphics/unitSkills/meleeNormal.png"));
 
-		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (selectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn
+		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xuSelectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn
 			(utils.loadImage ("/momime.client.graphics/rangedAttacks/rock/iconNormal.png"));
 		
 		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		
 		final ClientUnitCalculations clientUnitCalculations = mock (ClientUnitCalculations.class);
-		when (clientUnitCalculations.findPreferredMovementSkillGraphics (selectedUnit)).thenReturn (movementSkill);
+		when (clientUnitCalculations.findPreferredMovementSkillGraphics (xuSelectedUnit)).thenReturn (movementSkill);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = ClientTestData.createXmlLayoutUnmarshaller ();
@@ -350,7 +338,6 @@ public final class TestCombatUI
 		combat.setMemoryGridCellUtils (memoryGridCellUtils);
 		combat.setSpellCalculations (spellCalculations);
 		combat.setUnitClientUtils (unitClientUtils);
-		combat.setUnitSkillUtils (unitSkillUtils);
 		combat.setClientUnitCalculations (clientUnitCalculations);
 		combat.setCombatLocation (new MapCoordinates3DEx (20, 10, 0));
 		combat.setMusicPlayer (mock (AudioPlayer.class));

@@ -6,7 +6,9 @@ import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -36,21 +38,17 @@ import momime.client.ui.components.UnitRowDisplayButton;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSkill;
-import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -148,7 +146,6 @@ public final class TestUnitRowDisplayUI
 
 		// Unit
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		
 		final MemoryUnit unit = new MemoryUnit ();
@@ -156,35 +153,32 @@ public final class TestUnitRowDisplayUI
 		unit.setUnitID ("UN176");
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Unicorns");
 
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		units.add (unit);
 		
 		// Skills
-		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();
+		final Set<String> unitSkillIDs = new HashSet<String> ();
 		for (int skillNo = 1; skillNo <= 3; skillNo++)
 		{
-			final UnitSkillAndValue skill = new UnitSkillAndValue ();
-			skill.setUnitSkillID ("US03" + skillNo);
-			mergedSkills.add (skill);
+			unitSkillIDs.add ("US03" + skillNo);
 
-			when (unitClientUtils.getUnitSkillSingleIcon (unit, "US03" + skillNo)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US03" + skillNo + "-icon.png"));
+			when (unitClientUtils.getUnitSkillSingleIcon (xu, "US03" + skillNo)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US03" + skillNo + "-icon.png"));
 			
 			final UnitSkillGfx skillGfx = new UnitSkillGfx ();
 			skillGfx.setUnitSkillTypeID (UnitSkillTypeID.NO_VALUE);
-			when (gfx.findUnitSkill (skill.getUnitSkillID (), "UnitRowDisplayUI")).thenReturn (skillGfx);
+			when (gfx.findUnitSkill ("US03" + skillNo, "UnitRowDisplayUI")).thenReturn (skillGfx);
 		}
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (mergedSkills);
+		when (xu.listModifiedSkillIDs ()).thenReturn (unitSkillIDs);
 
 		// Attributes
-		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (2);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (2);
+		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xu, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (meleeIcon);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (15);
 
-		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (meleeIcon);
-		
-		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (15);
-
-		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (hpIcon);
+		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xu, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (hpIcon);
 			
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -201,7 +195,7 @@ public final class TestUnitRowDisplayUI
 		when (uiComponentFactory.createUnitRowDisplayButton ()).thenAnswer (new Answer<UnitRowDisplayButton> ()
 		{
 			@Override
-			public final UnitRowDisplayButton answer (final InvocationOnMock invocation) throws Throwable
+			public final UnitRowDisplayButton answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
 			{
 				final UnitRowDisplayButton button = new UnitRowDisplayButton ();
 				button.setUtils (utils);
@@ -227,7 +221,6 @@ public final class TestUnitRowDisplayUI
 		display.setUiComponentFactory (uiComponentFactory);
 		display.setUnitClientUtils (unitClientUtils);
 		display.setUnitUtils (unitUtils);
-		display.setUnitSkillUtils (unitSkillUtils);
 		display.setSmallFont (CreateFontsForTests.getSmallFont ());
 		display.setMediumFont (CreateFontsForTests.getMediumFont ());
 		display.setUnitRowDisplayLayout (layout);

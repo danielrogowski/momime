@@ -343,7 +343,7 @@ public final class TestUnitInfoPanel
 			modifiedSkillIDs.add (skillID);
 
 			// Icon
-			when (unitClientUtils.getUnitSkillSingleIcon (unit, skillID)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));
+			when (unitClientUtils.getUnitSkillSingleIcon (xu, skillID)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));
 		}
 		
 		// Attributes
@@ -397,7 +397,7 @@ public final class TestUnitInfoPanel
 			final String useAttributeImage = (unitAttributeImage != null) ? "/momime.client.graphics/unitSkills/" + unitAttributeImage + ".png" :
 				"/momime.client.graphics/rangedAttacks/rock/iconNormal.png";
 			
-			when (unitClientUtils.getUnitSkillComponentBreakdownIcon (unit, "UA0" + unitAttrNo)).thenReturn (utils.loadImage (useAttributeImage));
+			when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xu, "UA0" + unitAttrNo)).thenReturn (utils.loadImage (useAttributeImage));
 		}
 		
 		// Cell renderers

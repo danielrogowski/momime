@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.JPanelWithConstantRepaints;
@@ -75,7 +76,6 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FrontOrBack;
@@ -83,8 +83,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.database.Unit;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -104,7 +102,6 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -189,9 +186,6 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Text utils */
 	private TextUtils textUtils;
@@ -652,7 +646,7 @@ public final class CombatUI extends MomClientFrameUI
 								
 								// If animation didn't provide a specific combatActionID then just default to standing still
 								if (combatActionID == null)
-									combatActionID = getClientUnitCalculations ().determineCombatActionID (unit.getUnit ().getUnit (), false);
+									combatActionID = getClientUnitCalculations ().determineCombatActionID (unit.getUnit (), false);
 								
 								// Draw unit
 								getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
@@ -669,7 +663,7 @@ public final class CombatUI extends MomClientFrameUI
 				if (getUnitMoving () != null)
 					try
 					{
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit ().getUnit (), true);
+						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true);
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
 							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours ());
 					}
@@ -1344,8 +1338,12 @@ public final class CombatUI extends MomClientFrameUI
 
 	/**
 	 * @param b Whether our wizard has cast a spell yet during this combat turn (can only cast 1 spell per combat turn)
+	 * 
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public final void setSpellCastThisCombatTurn (final boolean b)
+	public final void setSpellCastThisCombatTurn (final boolean b) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		spellCastThisCombatTurn = b;
 		enableOrDisableSpellAction ();
@@ -1354,16 +1352,23 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * Checks whether any casting sources can currently cast a spell or not (i.e. our wizard, the current unit,
 	 * or any charges in hero items held by the current unit), and enables or disables the spell button accordingly.
+	 * 
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	private final void enableOrDisableSpellAction ()
+	private final void enableOrDisableSpellAction () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		spellAction.setEnabled ((getClient ().getOurPlayerID ().equals (currentPlayerID)) && (listCastingSources ().size () > 0));
 	}
 	
 	/**
 	 * @return A list of all possible sources that can currently cast a spell (i.e. our wizard, the current unit, or any charges in hero items held by the current unit)
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	private final List<CastCombatSpellFrom> listCastingSources ()
+	private final List<CastCombatSpellFrom> listCastingSources () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final List<CastCombatSpellFrom> sources = new ArrayList<CastCombatSpellFrom> ();
 		
@@ -1375,9 +1380,11 @@ public final class CombatUI extends MomClientFrameUI
 			(getSelectedUnitInCombat ().getDoubleCombatMovesLeft () > 0))
 		{
 			// Unit or hero casting from their own MP pool
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (getSelectedUnitInCombat (), null, null, null,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			
 			if ((getSelectedUnitInCombat ().getManaRemaining () > 0) &&
-				((getUnitUtils ().getBasicSkillValue (getSelectedUnitInCombat ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO) >= 0) ||
-				(getUnitUtils ().getBasicSkillValue (getSelectedUnitInCombat ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) >= 0)))
+				(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)) || (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)))
 				
 				sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), null, null));
 			
@@ -1714,22 +1721,11 @@ public final class CombatUI extends MomClientFrameUI
 				combatMapSize, getClient ().getClientDB ());
 			
 			// Calculate unit stats
-			final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ());
-			
-			final int chanceToHit = Math.min (10, 3 +
-				getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, null,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()));
-			
+			final int chanceToHit = Math.min (10, 3 + xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
 			final int chanceToHitTimesFigures = chanceToHit * xu.calculateAliveFigureCount ();
 						
 			// Melee attack / average hits / image
-			final int meleeAttack = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-			
-			if (meleeAttack <= 0)
+			if (!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK))
 			{
 				selectedUnitMeleeValue.setText (null);
 				selectedUnitMeleeImage.setIcon (null);
@@ -1737,18 +1733,15 @@ public final class CombatUI extends MomClientFrameUI
 			}
 			else
 			{
+				final int meleeAttack = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 				selectedUnitMeleeValue.setText (new Integer (meleeAttack).toString ());
 				selectedUnitMeleeAverage = getTextUtils ().insertDecimalPoint (meleeAttack * chanceToHitTimesFigures, 1);
 				selectedUnitMeleeImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitSkillComponentBreakdownIcon
-					(unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)));
+					(xu, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)));
 			}
 			
 			// Ranged attack / average hits / image
-			final int rangedAttack = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-			
-			if (rangedAttack <= 0)
+			if (!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
 			{
 				selectedUnitRangedValue.setText (null);
 				selectedUnitRangedImage.setIcon (null);
@@ -1756,16 +1749,17 @@ public final class CombatUI extends MomClientFrameUI
 			}
 			else
 			{
+				final int rangedAttack = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 				selectedUnitRangedValue.setText (new Integer (rangedAttack).toString ());
 				selectedUnitRangedAverage = getTextUtils ().insertDecimalPoint (rangedAttack * chanceToHitTimesFigures, 1);
 				selectedUnitRangedImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitSkillComponentBreakdownIcon
-					(unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)));
+					(xu, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)));
 			}
 			
 			// Movement
 			selectedUnitMovement.setText (getTextUtils ().halfIntToStr (unit.getDoubleCombatMovesLeft ()));
 			selectedUnitMovementImage.setIcon (new ImageIcon (getUtils ().loadImage
-				(getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ())));
+				(getClientUnitCalculations ().findPreferredMovementSkillGraphics (xu).getMovementIconImageFile ())));
 			
 			// Unit image
 			selectedUnitImage.setIcon (new ImageIcon (getUtils ().loadImage
@@ -2283,22 +2277,6 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
-	}
-
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
 	}
 	
 	/**

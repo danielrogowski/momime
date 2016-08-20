@@ -30,13 +30,10 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -48,7 +45,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
@@ -64,7 +60,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 
 /**
- * Tests the ServerUnitCalculations class
+ * Tests the ServerUnitCalculationsImpl class
  */
 public final class TestServerUnitCalculationsImpl
 {
@@ -89,47 +85,29 @@ public final class TestServerUnitCalculationsImpl
 		when (db.findUnitSkill ("US002", "calculateUnitScoutingRange")).thenReturn (otherSkill);
 		when (db.findUnitSkill ("US003", "calculateUnitScoutingRange")).thenReturn (longSightSkill);
 		
-		// Lists
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-
-		// Unit skills
-		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
-		calc.setUnitSkillUtils (unitSkillUtils);
 
 		// Unit with no skills and no scouting range
-		final MemoryUnit unit = new MemoryUnit ();
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (mergedSkills);
-		assertEquals (1, calc.calculateUnitScoutingRange (unit, players, fow, db));
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+		assertEquals (1, calc.calculateUnitScoutingRange (unit, db));
 		
 		// Unit with Scouting III
-		when (unitSkillUtils.getModifiedSkillValue (unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (3);
-		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, fow, db));
+		when (unit.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING)).thenReturn (true);
+		when (unit.getModifiedSkillValue (ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING)).thenReturn (3);
+		assertEquals (3, calc.calculateUnitScoutingRange (unit, db));
 		
 		// Unit with two skills, one which grants Scouting II (like Flight) and one which has nothing at all to do with scouting
-		final UnitSkillAndValue flight = new UnitSkillAndValue ();
-		flight.setUnitSkillID ("US001");
-		mergedSkills.add (flight);
-
-		final UnitSkillAndValue other = new UnitSkillAndValue ();
-		other.setUnitSkillID ("US002");
-		mergedSkills.add (other);
+		final Set<String> unitSkillIDs = new HashSet<String> ();
+		unitSkillIDs.add ("US001");
+		unitSkillIDs.add ("US002");
 		
-		assertEquals (3, calc.calculateUnitScoutingRange (unit, players, fow, db));
+		when (unit.listModifiedSkillIDs ()).thenReturn (unitSkillIDs);
+		assertEquals (3, calc.calculateUnitScoutingRange (unit, db));
 		
 		// Unit with a skill which grants Scouting IV
-		final UnitSkillAndValue longSight = new UnitSkillAndValue ();
-		longSight.setUnitSkillID ("US003");
-		mergedSkills.add (longSight);
-
-		assertEquals (4, calc.calculateUnitScoutingRange (unit, players, fow, db));
+		unitSkillIDs.add ("US003");
+		assertEquals (4, calc.calculateUnitScoutingRange (unit, db));
 	}
 
 	/**
@@ -898,35 +876,24 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateRangedAttackDistancePenalty_Magic () throws Exception
 	{
-		// Server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr attackerDef = new UnitSvr ();
-		attackerDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
-		
+		// RAT
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 		rat.setMagicRealmID ("A");
-		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system
 		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
 		
-		// Lists
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Units
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
 		
-		final MemoryUnit defender = new MemoryUnit ();
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		
 		// Run method
-		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
+		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys));
 	}
 
 	/**
@@ -936,37 +903,26 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateRangedAttackDistancePenalty_Close () throws Exception
 	{
-		// Server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr attackerDef = new UnitSvr ();
-		attackerDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
-		
+		// RAT
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
-		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system
 		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
 		
-		// Lists
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Units
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setCombatPosition (new MapCoordinates2DEx (4, 4));
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
+		when (attacker.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 4));
 		
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setCombatPosition (new MapCoordinates2DEx (6, 4));
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (6, 4));
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
+		assertEquals (0, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys));
 	}
 
 	/**
@@ -976,37 +932,26 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateRangedAttackDistancePenalty_Short () throws Exception
 	{
-		// Server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr attackerDef = new UnitSvr ();
-		attackerDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
-		
+		// RAT
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
-		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system
 		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
 		
-		// Lists
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Units
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setCombatPosition (new MapCoordinates2DEx (4, 4));
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
+		when (attacker.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (4, 4));
 		
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setCombatPosition (new MapCoordinates2DEx (6, 6));
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (6, 6));
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		
 		// Run method
-		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
+		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys));
 	}
 
 	/**
@@ -1016,46 +961,26 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateRangedAttackDistancePenalty_Long () throws Exception
 	{
-		// Server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr attackerDef = new UnitSvr ();
-		attackerDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
-		
+		// RAT
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
-		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system
 		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
 		
-		// Lists
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Units
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setCombatPosition (new MapCoordinates2DEx (0, 7));
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
+		when (attacker.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (0, 7));
 		
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setCombatPosition (new MapCoordinates2DEx (7, 6));
-		
-		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-		defenders.add (defender);
-		
-		// We don't have the Long Range skill
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE, defenders,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (7, 6));
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (3, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
+		assertEquals (3, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys));
 	}
 
 	/**
@@ -1065,42 +990,28 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateRangedAttackDistancePenalty_LongRange () throws Exception
 	{
-		// Server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		final UnitSvr attackerDef = new UnitSvr ();
-		attackerDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "calculateRangedAttackDistancePenalty")).thenReturn (attackerDef);
-		
+		// RAT
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
-		when (db.findRangedAttackType ("RAT01", "calculateRangedAttackDistancePenalty")).thenReturn (rat);
 
 		// Coordinate system
 		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
 		
-		// Lists
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Units
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setCombatPosition (new MapCoordinates2DEx (0, 7));
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
+		when (attacker.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (0, 7));
 		
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setCombatPosition (new MapCoordinates2DEx (7, 6));
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getCombatPosition ()).thenReturn (new MapCoordinates2DEx (7, 6));
 		
-		// We don't have the Long Range skill
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
+		// We do have the Long Range skill
+		when (attacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE)).thenReturn (true);
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		calc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
-		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys, players, fow, db));
+		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys));
 	}
 }

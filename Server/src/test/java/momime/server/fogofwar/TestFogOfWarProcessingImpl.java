@@ -35,9 +35,11 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
@@ -246,30 +248,38 @@ public final class TestFogOfWarProcessingImpl
 		when (cityCalc.calculateCityScoutingRange (trueMap.getBuilding (), new MapCoordinates3DEx (1, 1, 1), db)).thenReturn (4);			// Oracle can see 4
 
 		// Units - a regular unit, flying unit (sees distance 2) and unit with actual scouting III skill
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final MemoryUnit unitOne = new MemoryUnit ();
 		unitOne.setUnitID ("UN105");
 		unitOne.setStatus (UnitStatusID.ALIVE);
 		unitOne.setUnitLocation (new MapCoordinates3DEx (54, 4, 1));
 		unitOne.setOwningPlayerID (2);
-
 		trueMap.getUnit ().add (unitOne);
+		
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unitOne, null, null, null, players, trueMap, db)).thenReturn (xu1);
 
 		final MemoryUnit unitTwo = new MemoryUnit ();
 		unitTwo.setUnitID ("UN067");
 		unitTwo.setStatus (UnitStatusID.ALIVE);
 		unitTwo.setUnitLocation (new MapCoordinates3DEx (14, 34, 1));
 		unitTwo.setOwningPlayerID (2);
-
 		trueMap.getUnit ().add (unitTwo);
 
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unitTwo, null, null, null, players, trueMap, db)).thenReturn (xu2);
+		
 		final MemoryUnit unitThree = new MemoryUnit ();
 		unitThree.setUnitID ("UN005");
 		unitThree.setStatus (UnitStatusID.ALIVE);
 		unitThree.setUnitLocation (new MapCoordinates3DEx (44, 17, 0));
 		unitThree.setOwningPlayerID (2);
-
 		trueMap.getUnit ().add (unitThree);
 
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unitThree, null, null, null, players, trueMap, db)).thenReturn (xu3);
+		
 		// Unit in a tower
 		for (final PlaneSvr plane : db.getPlanes ())
 		{
@@ -284,25 +294,29 @@ public final class TestFogOfWarProcessingImpl
 		unitFour.setStatus (UnitStatusID.ALIVE);
 		unitFour.setUnitLocation (new MapCoordinates3DEx (22, 22, 0));
 		unitFour.setOwningPlayerID (2);
-
 		trueMap.getUnit ().add (unitFour);
 
+		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unitFour, null, null, null, players, trueMap, db)).thenReturn (xu4);
+		
 		// Enemy unit
 		final MemoryUnit unitFive = new MemoryUnit ();
 		unitFive.setUnitID ("UN105");
 		unitFive.setStatus (UnitStatusID.ALIVE);
 		unitFive.setUnitLocation (new MapCoordinates3DEx (23, 9, 1));
 		unitFive.setOwningPlayerID (1);
-
 		trueMap.getUnit ().add (unitFive);
+
+		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unitFive, null, null, null, players, trueMap, db)).thenReturn (xu5);
 		
 		// Unit scouting ranges
 		final ServerUnitCalculations unitCalc = mock (ServerUnitCalculations.class);
-		when (unitCalc.calculateUnitScoutingRange (unitOne, players, trueMap, db)).thenReturn (1);
-		when (unitCalc.calculateUnitScoutingRange (unitTwo, players, trueMap, db)).thenReturn (2);
-		when (unitCalc.calculateUnitScoutingRange (unitThree, players, trueMap, db)).thenReturn (3);
-		when (unitCalc.calculateUnitScoutingRange (unitFour, players, trueMap, db)).thenReturn (1);
-		when (unitCalc.calculateUnitScoutingRange (unitFive, players, trueMap, db)).thenReturn (1);
+		when (unitCalc.calculateUnitScoutingRange (xu1, db)).thenReturn (1);
+		when (unitCalc.calculateUnitScoutingRange (xu2, db)).thenReturn (2);
+		when (unitCalc.calculateUnitScoutingRange (xu3, db)).thenReturn (3);
+		when (unitCalc.calculateUnitScoutingRange (xu4, db)).thenReturn (1);
+		when (unitCalc.calculateUnitScoutingRange (xu5, db)).thenReturn (1);
 
 		// Nature's eye spell
 		final MemoryMaintainedSpell naturesEye = new MemoryMaintainedSpell ();
@@ -318,6 +332,7 @@ public final class TestFogOfWarProcessingImpl
 		proc.setMemoryMaintainedSpellUtils (spellUtils);
 		proc.setServerCityCalculations (cityCalc);
 		proc.setServerUnitCalculations (unitCalc);
+		proc.setUnitUtils (unitUtils);
 		proc.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
 		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 

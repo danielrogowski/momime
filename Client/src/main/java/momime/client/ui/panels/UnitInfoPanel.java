@@ -300,7 +300,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						{
 							// Show combat anim of unit 
 							zOrderGraphics.setGraphics (g);
-							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit ().getUnit (), true);
+							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
 							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours);
 						}
 					}
@@ -770,7 +770,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 		// Show the image of the selected unit
 		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
-		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit ().getUnit (), true);
+		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
 		getUnitClientUtils ().registerUnitFiguresAnimation (getUnit ().getUnitID (), movingActionID, 4, currentlyConstructingImage); 
 		
 		// Show URN?

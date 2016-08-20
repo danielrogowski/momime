@@ -13,7 +13,7 @@ import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.server.calculations.AttackDamage;
 import momime.server.database.AttackResolutionStepSvr;
 import momime.server.database.AttackResolutionSvr;
@@ -31,17 +31,13 @@ public interface AttackResolutionProcessing
 	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
 	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
 	 * @param attackSkillID Which skill they are attacking with (melee or ranged)
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Chosen attack resolution
 	 * @throws RecordNotFoundException If the unit skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
 	 */
-	public AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackSkillID,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	public AttackResolutionSvr chooseAttackResolution (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender, final String attackSkillID,
+		final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
 	
 	/**
 	 * @param steps Steps in one continuous list

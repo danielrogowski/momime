@@ -52,12 +52,14 @@ import momime.client.language.database.UnitLang;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.Pick;
+import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitCombatScale;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitType;
+import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -231,16 +233,6 @@ public final class TestUnitClientUtilsImpl
 	@Test
 	public final void testGetUnitSkillComponentBreakdownIcon () throws Exception
 	{
-		// Unit def
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
-		final Unit unitDef = new Unit ();
-		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "getUnitSkillComponentBreakdownIcon")).thenReturn (unitDef);
-		
-		final MomClient client = mock (MomClient.class);
-		when (client.getClientDB ()).thenReturn (db);
-		
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		
@@ -306,15 +298,20 @@ public final class TestUnitClientUtilsImpl
 		rat1.buildMap ();
 		
 		// Dummy unit
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID ("UN001");
-		unit.setWeaponGrade (2);
+		final WeaponGrade weaponGrade = new WeaponGrade ();
+		weaponGrade.setWeaponGradeNumber (2);
+		
+		final RangedAttackType rat = new RangedAttackType ();
+		rat.setRangedAttackTypeID ("RAT01");
+		
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+		when (unit.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (unit.getRangedAttackType ()).thenReturn (rat);
 		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
 		unitUtils.setUtils (utils);
 		unitUtils.setGraphicsDB (gfx);
-		unitUtils.setClient (client);
 		
 		// Run tests
 		assertSame (plusToHitImage, unitUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
@@ -322,7 +319,7 @@ public final class TestUnitClientUtilsImpl
 		assertSame (rat1Image, unitUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
 
 		// RAT that does vary by weapon grade
-		unitDef.setRangedAttackType ("RAT02");
+		rat.setRangedAttackTypeID ("RAT02");
 
 		final RangedAttackTypeGfx rat2 = new RangedAttackTypeGfx ();
 		when (gfx.findRangedAttackType ("RAT02", "getUnitSkillComponentBreakdownIcon")).thenReturn (rat2);
@@ -347,17 +344,6 @@ public final class TestUnitClientUtilsImpl
 	@Test
 	public final void testGetUnitSkillSingleIcon () throws Exception
 	{
-		// Unit def
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
-		final Unit unitDef = new Unit ();
-		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
-		when (db.findUnit ("UN001", "getUnitSkillSingleIcon")).thenReturn (unitDef);
-		
-		final Pick unitMagicRealm = new Pick ();
-		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "getUnitSkillSingleIcon")).thenReturn (unitMagicRealm);
-
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		
@@ -397,38 +383,22 @@ public final class TestUnitClientUtilsImpl
 		
 		when (gfx.findUnitType ("N", "getUnitSkillSingleIcon")).thenReturn (unitType);
 		
-		// Player list
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
-		final MomClient client = mock (MomClient.class);
-		when (client.getPlayers ()).thenReturn (players);
-		when (client.getClientDB ()).thenReturn (db);
-		
-		// FOW memory
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
-		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		priv.setFogOfWarMemory (fow);
-		
-		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
-		
-		// Dummy unit
-		final AvailableUnit unit = new AvailableUnit ();
-		unit.setUnitID ("UN001");
-		
 		// Experience
 		final ExperienceLevel expLvl = new ExperienceLevel ();
 		expLvl.setLevelNumber (2);
+
+		// Dummy unit
+		final UnitType unitTypeDef = new UnitType ();
+		unitTypeDef.setUnitTypeID ("N");
 		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getExperienceLevel (unit, true, players, fow.getCombatAreaEffect (), db)).thenReturn (expLvl);
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+		when (unit.getModifiedExperienceLevel ()).thenReturn (expLvl);
+		when (unit.getUnitType ()).thenReturn (unitTypeDef);
 		
 		// Set up object to test
 		final UnitClientUtilsImpl unitClientUtils = new UnitClientUtilsImpl ();
 		unitClientUtils.setGraphicsDB (gfx);
-		unitClientUtils.setUnitUtils (unitUtils);
 		unitClientUtils.setUtils (utils);
-		unitClientUtils.setClient (client);
 
 		// Run tests
 		assertSame (skillImage, unitClientUtils.getUnitSkillSingleIcon (unit, "US001"));

@@ -213,7 +213,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @throws IOException If there's a problem finding the unit skill icon
 	 */
 	@Override
-	public BufferedImage getUnitSkillComponentBreakdownIcon (final AvailableUnit unit, final String unitSkillID) throws IOException
+	public final BufferedImage getUnitSkillComponentBreakdownIcon (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException
 	{
 		log.trace ("Entering getUnitSkillComponentBreakdownIcon: " + unit.getUnitID () + ", " + unitSkillID);
 		
@@ -222,17 +222,16 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		{
 			// Ranged attacks have their own special rules, so we select the appropriate
 			// type of range attack icon, e.g. bow, rock, blue blast.
-			final Unit unitInfo = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitSkillComponentBreakdownIcon");
-			if (unitInfo.getRangedAttackType () == null)
+			if (unit.getRangedAttackType () == null)
 				skillImageName = null;
 			else
 			{
 				// If there is only a single image then just use it; if there are multiple, then select the right one by weapon grade
-				final RangedAttackTypeGfx rat = getGraphicsDB ().findRangedAttackType (unitInfo.getRangedAttackType (), "getUnitSkillComponentBreakdownIcon");
+				final RangedAttackTypeGfx rat = getGraphicsDB ().findRangedAttackType (unit.getRangedAttackType ().getRangedAttackTypeID (), "getUnitSkillComponentBreakdownIcon");
 				if ((unit.getWeaponGrade () == null) || (rat.getRangedAttackTypeWeaponGrade ().size () == 1))
 					skillImageName = rat.getRangedAttackTypeWeaponGrade ().get (0).getUnitDisplayRangedImageFile ();
 				else
-					skillImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade (), "getUnitSkillComponentBreakdownIcon");
+					skillImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade ().getWeaponGradeNumber (), "getUnitSkillComponentBreakdownIcon");
 			}
 		}
 		else if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED))
@@ -247,7 +246,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			if ((unit.getWeaponGrade () == null) || (skillGfx.getUnitSkillWeaponGrade ().size () == 1))
 				skillImageName = skillGfx.getUnitSkillWeaponGrade ().get (0).getSkillImageFile ();
 			else
-				skillImageName = skillGfx.findWeaponGradeImageFile (unit.getWeaponGrade (), "getUnitSkillComponentBreakdownIcon");
+				skillImageName = skillGfx.findWeaponGradeImageFile (unit.getWeaponGrade ().getWeaponGradeNumber (), "getUnitSkillComponentBreakdownIcon");
 		}
 		
 		final BufferedImage skillImage = (skillImageName == null) ? null : getUtils ().loadImage (skillImageName);
@@ -270,7 +269,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @throws IOException If there's a problem finding the unit skill icon
 	 */
 	@Override
-	public BufferedImage getUnitSkillSingleIcon (final AvailableUnit unit, final String unitSkillID) throws IOException
+	public final BufferedImage getUnitSkillSingleIcon (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException
 	{
 		log.trace ("Entering getUnitSkillSingleIcon: " + unit.getUnitID () + ", " + unitSkillID);
 		
@@ -278,15 +277,12 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE))
 		{
 			// Experience skill icon changes as the unit gains experience levels
-			final ExperienceLevel expLvl = getUnitUtils ().getExperienceLevel (unit, true, getClient ().getPlayers (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), getClient ().getClientDB ());
+			final ExperienceLevel expLvl = unit.getModifiedExperienceLevel ();
 			if (expLvl == null)
 				image = null;
 			else
 			{
-				final String unitMagicRealmID = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitSkillSingleIcon").getUnitMagicRealm ();
-				final String unitTypeID = getClient ().getClientDB ().findPick (unitMagicRealmID, "getUnitSkillSingleIcon").getUnitTypeID ();
-				final UnitTypeGfx unitType = getGraphicsDB ().findUnitType (unitTypeID, "getUnitSkillSingleIcon");
+				final UnitTypeGfx unitType = getGraphicsDB ().findUnitType (unit.getUnitType ().getUnitTypeID (), "getUnitSkillSingleIcon");
 				image = unitType.findExperienceLevelImageFile (expLvl.getLevelNumber (), "getUnitSkillSingleIcon");
 			}
 		}
@@ -628,7 +624,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			// Get sample tile
 			final String sampleTileImageFile;
 			if (drawSampleTile)
-				sampleTileImageFile = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit.getUnit ()).getSampleTileImageFile ();
+				sampleTileImageFile = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getSampleTileImageFile ();
 			else
 				sampleTileImageFile = null; 
 			
@@ -750,7 +746,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				basicComponentBackgroundImage.getHeight () + 3, BufferedImage.TYPE_INT_ARGB);
 					
 			// Work out the icon to use to display this type of unit attribute
-			final BufferedImage attributeImage = getUnitSkillComponentBreakdownIcon (unit.getUnit (), unitSkillID);
+			final BufferedImage attributeImage = getUnitSkillComponentBreakdownIcon (unit, unitSkillID);
 
 			// Do we need to draw any icons faded, due to negative spells (e.g. Black Prayer) or losing hitpoints?
 			final int attributeValueIncludingNegatives;

@@ -127,7 +127,7 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 		{
 			final BufferedImage image;
 			if (value.getUnitSkillID () != null)
-				image = getUnitClientUtils ().getUnitSkillSingleIcon (getUnit ().getUnit (), value.getUnitSkillID ());
+				image = getUnitClientUtils ().getUnitSkillSingleIcon (getUnit (), value.getUnitSkillID ());
 			else if (value.getSpellID () != null)
 				image = getUtils ().loadImage (getGraphicsDB ().findSpell (value.getSpellID (), "UnitSkillListCellRenderer").getUnitCanCastImageFile ());
 			else if (value.getHeroItemSlotTypeID () != null)

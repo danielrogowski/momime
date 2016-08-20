@@ -728,7 +728,7 @@ public final class CityViewUI extends MomClientFrameUI
 					if (sampleUnit != null)
 					{
 						zOrderGraphics.setGraphics (g);
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit.getUnit (), true);
+						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
 						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, zOrderGraphics, (constructionPanel.getWidth () - 60) / 2, 28, true, true, 0, null);
 					}
 				}
@@ -1133,7 +1133,7 @@ public final class CityViewUI extends MomClientFrameUI
 			sampleUnit = getUnitUtils ().expandUnitDetails (sample, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
-			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sample, true);
+			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
 			getUnitClientUtils ().registerUnitFiguresAnimation (cityData.getCurrentlyConstructingUnitID (), movingActionID, 4, constructionPanel);
 		}
 		

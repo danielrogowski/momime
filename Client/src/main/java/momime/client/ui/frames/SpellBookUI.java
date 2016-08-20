@@ -774,9 +774,10 @@ public final class SpellBookUI extends MomClientFrameUI
 						((thisUnit.getOwningPlayerID () == getClient ().getOurPlayerID ()) || ((spell.isResurrectEnemyUnits () != null) && (spell.isResurrectEnemyUnits ()))))
 					{
 						// Make sure this type of unit can be resurrected by this spell
-						final String magicRealmLifeformTypeID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (thisUnit, thisUnit.getUnitHasSkill (),
-							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ());
-						
+						final String magicRealmLifeformTypeID = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+								getClient ().getClientDB ()).getModifiedUnitMagicRealmLifeformType ().getPickID ();
+								
 						if (spell.getSpellValidUnitTarget ().stream ().anyMatch (t -> magicRealmLifeformTypeID.equals (t.getTargetMagicRealmID ())))
 							deadUnits.add (thisUnit);
 					};						
@@ -905,8 +906,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	 * 
 	 * @throws MomException If we encounter an unknown research unexpected status
 	 * @throws RecordNotFoundException If we can't find a research status for a particular spell
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 */
-	public final void updateSpellBook () throws MomException, RecordNotFoundException
+	public final void updateSpellBook () throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		log.trace ("Entering updateSpellBook");
 
@@ -921,16 +923,17 @@ public final class SpellBookUI extends MomClientFrameUI
 			// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
 			// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
 			// overrideMaximumMP isn't essential, but there's no point us listing spells in the spell book that the unit doesn't have enough MP to cast.
-			overrideMaximumMP = getUnitUtils ().getBasicSkillValue (getCombatUI ().getCastingSource ().getCastingUnit ().getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
+			final ExpandedUnitDetails castingUnit = getUnitUtils ().expandUnitDetails (getCombatUI ().getCastingSource ().getCastingUnit (), null, null, null,
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+
+			if (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT))
+				overrideMaximumMP = castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
+			
 			if (overrideMaximumMP > 0)
 			{
-				final String unitMagicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (getCombatUI ().getCastingSource ().getCastingUnit (),
-					getCombatUI ().getCastingSource ().getCastingUnit ().getUnitHasSkill (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ());
-				
-				overridePickID = getClient ().getClientDB ().findPick (unitMagicRealmID, "updateSpellBook").getCastSpellsFromPickID ();
+				overridePickID = castingUnit.getModifiedUnitMagicRealmLifeformType ().getCastSpellsFromPickID ();
 				if (overridePickID == null)
-					overridePickID = unitMagicRealmID;
+					overridePickID = castingUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ();
 			}
 			
 			if (overridePickID == null)

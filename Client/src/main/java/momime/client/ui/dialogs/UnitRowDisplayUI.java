@@ -38,16 +38,12 @@ import momime.client.utils.UnitNameType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitSkill;
-import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -79,9 +75,6 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
@@ -257,15 +250,14 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			for (final UnitSkill thisSkill : getClient ().getClientDB ().getUnitSkills ())
 				if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitRowDisplayUI").getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
 					unitAttributeIDs.add (thisSkill.getUnitSkillID ());
-			
-			final List<UnitSkillAndValue> mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), unit, getClient ().getClientDB ());
+
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
+				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			for (int attrNo = 1; attrNo <= 6; attrNo++)
 			{
 				final String unitAttributeID = unitAttributeIDs.get (attrNo-1);
-				final int attrValue = getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, unitAttributeID, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					null, null, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				final int attrValue = xu.getModifiedSkillValue (unitAttributeID);
 				
 				if (attrValue > 0)
 				{
@@ -273,7 +265,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 					contentPane.add (getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont (), new Integer (attrValue).toString ()),
 						"frmUnitRowUnit" + row + "Attribute" + attrNo + "Value");
 					
-					final BufferedImage attributeImage = getUnitClientUtils ().getUnitSkillComponentBreakdownIcon (unit, unitAttributeID); 
+					final BufferedImage attributeImage = getUnitClientUtils ().getUnitSkillComponentBreakdownIcon (xu, unitAttributeID); 
 					if (attributeImage != null)
 						contentPane.add (getUtils ().createImage (attributeImage), "frmUnitRowUnit" + row + "Attribute" + attrNo + "Icon");
 				}
@@ -282,11 +274,11 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			// There's space on the form for up to 12 unit skills
 			int skillNo = 0;
 			
-			for (final UnitSkillAndValue thisSkill : mergedSkills)
-				if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitRowDisplayUI").getUnitSkillTypeID () != UnitSkillTypeID.ATTRIBUTE)
+			for (final String thisSkillID : xu.listModifiedSkillIDs ())
+				if (getGraphicsDB ().findUnitSkill (thisSkillID, "UnitRowDisplayUI").getUnitSkillTypeID () != UnitSkillTypeID.ATTRIBUTE)
 					if (skillNo < 12)
 					{
-						final BufferedImage skillImage = getUnitClientUtils ().getUnitSkillSingleIcon (unit, thisSkill.getUnitSkillID ());
+						final BufferedImage skillImage = getUnitClientUtils ().getUnitSkillSingleIcon (xu, thisSkillID);
 						if (skillImage != null)
 						{
 							skillNo++;
@@ -462,22 +454,6 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
-	}
-
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
 	}
 
 	/**

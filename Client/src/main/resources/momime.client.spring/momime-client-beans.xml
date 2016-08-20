@@ -458,7 +458,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
@@ -858,7 +857,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 	</bean>
 
 	<bean id="overlandMapBitmapGenerator" class="momime.client.calculations.OverlandMapBitmapGeneratorImpl">
@@ -1329,7 +1327,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
@@ -1930,7 +1927,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />

@@ -5,22 +5,11 @@ import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageTypeImmunity;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MemoryUnit;
-import momime.common.utils.UnitSkillUtils;
-import momime.common.utils.UnitUtils;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.server.database.DamageTypeSvr;
 import momime.server.database.PickSvr;
 import momime.server.database.RangedAttackTypeSvr;
@@ -59,9 +48,6 @@ public final class TestDamageTypeCalculationsImpl
 		weaponGrade.setEnhancesDamageType (false);
 		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
-		// Other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Damage types
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		damageType.setEnhancedVersion ("DT02");
@@ -71,19 +57,15 @@ public final class TestDamageTypeCalculationsImpl
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setWeaponGrade (0);
-		
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db)).thenReturn ("LTN");
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertSame (damageType, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, spells, db));
+		assertSame (damageType, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db));
 	}
 	
 	/**
@@ -112,9 +94,6 @@ public final class TestDamageTypeCalculationsImpl
 		weaponGrade.setEnhancesDamageType (false);
 		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
-		// Other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Damage types
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		damageType.setEnhancedVersion ("DT02");
@@ -124,19 +103,15 @@ public final class TestDamageTypeCalculationsImpl
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setWeaponGrade (0);
-
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db)).thenReturn ("LTH");
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertSame (enhanced, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, spells, db));
+		assertSame (enhanced, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db));
 	}
 	
 	/**
@@ -164,9 +139,6 @@ public final class TestDamageTypeCalculationsImpl
 		weaponGrade.setEnhancesDamageType (true);
 		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
-		// Other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Damage types
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		damageType.setEnhancedVersion ("DT02");
@@ -176,19 +148,15 @@ public final class TestDamageTypeCalculationsImpl
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setWeaponGrade (1);
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db)).thenReturn ("LTN");
-		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertSame (enhanced, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, spells, db));
+		assertSame (enhanced, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db));
 	}
 	
 	/**
@@ -216,9 +184,6 @@ public final class TestDamageTypeCalculationsImpl
 		weaponGrade.setEnhancesDamageType (true);
 		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
-		// Other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-
 		// Damage types
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
@@ -227,19 +192,15 @@ public final class TestDamageTypeCalculationsImpl
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setWeaponGrade (1);
-
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db)).thenReturn ("LTN");
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertSame (damageType, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, spells, db));
+		assertSame (damageType, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db));
 	}
 	
 	/**
@@ -268,9 +229,6 @@ public final class TestDamageTypeCalculationsImpl
 		weaponGrade.setEnhancesDamageType (false);
 		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
-		// Other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Damage types
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		damageType.setEnhancedVersion ("DT02");
@@ -280,19 +238,16 @@ public final class TestDamageTypeCalculationsImpl
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setWeaponGrade (0);
-
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db)).thenReturn ("LTN");
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertSame (damageType, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, spells, db));
+		assertSame (damageType, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, db));
 	}
 	
 	/**
@@ -322,9 +277,6 @@ public final class TestDamageTypeCalculationsImpl
 		weaponGrade.setEnhancesDamageType (false);
 		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
-		// Other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Damage types
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		damageType.setEnhancedVersion ("DT02");
@@ -334,19 +286,16 @@ public final class TestDamageTypeCalculationsImpl
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setWeaponGrade (0);
-
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db)).thenReturn ("LTH");
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertSame (enhanced, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, spells, db));
+		assertSame (enhanced, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, db));
 	}
 	
 	/**
@@ -375,9 +324,6 @@ public final class TestDamageTypeCalculationsImpl
 		weaponGrade.setEnhancesDamageType (true);
 		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
-		// Other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Damage types
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		damageType.setEnhancedVersion ("DT02");
@@ -387,19 +333,16 @@ public final class TestDamageTypeCalculationsImpl
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setWeaponGrade (1);
-
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db)).thenReturn ("LTN");
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertSame (enhanced, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, spells, db));
+		assertSame (enhanced, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, db));
 	}
 	
 	/**
@@ -428,9 +371,6 @@ public final class TestDamageTypeCalculationsImpl
 		weaponGrade.setEnhancesDamageType (true);
 		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
-		// Other lists
-		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
-		
 		// Damage types
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
@@ -439,19 +379,16 @@ public final class TestDamageTypeCalculationsImpl
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitID ("UN001");
-		attacker.setWeaponGrade (1);
-
-		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (attacker, attacker.getUnitHasSkill (), spells, db)).thenReturn ("LTN");
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.getWeaponGrade ()).thenReturn (weaponGrade);
+		when (attacker.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (attacker.getRangedAttackType ()).thenReturn (rat);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitUtils (unitUtils);
 		
 		// Run method
-		assertSame (damageType, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, spells, db));
+		assertSame (damageType, calc.determineSkillDamageType (attacker, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, db));
 	}
 	
 	/**
@@ -461,30 +398,20 @@ public final class TestDamageTypeCalculationsImpl
 	@Test
 	public final void testGetDefenderDefenceStrength_NoImmunities () throws Exception
 	{
-		// These are just used as inputs for mocked methods
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-
 		// Damage being applied
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
 		
 		// Unit being hit
-		final MemoryUnit defender = new MemoryUnit ();
-		
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (5, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, mem, db));
+		assertEquals (5, calc.getDefenderDefenceStrength (defender, attackDamage, 1));
 	}
 
 	/**
@@ -494,30 +421,20 @@ public final class TestDamageTypeCalculationsImpl
 	@Test
 	public final void testGetDefenderDefenceStrength_ArmourPiercing () throws Exception
 	{
-		// These are just used as inputs for mocked methods
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-
 		// Damage being applied
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
 		
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
 		
 		// Unit being hit
-		final MemoryUnit defender = new MemoryUnit ();
-		
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (2, calc.getDefenderDefenceStrength (defender, null, attackDamage, 2, players, mem, db));
+		assertEquals (2, calc.getDefenderDefenceStrength (defender, attackDamage, 2));
 	}
 
 	/**
@@ -527,11 +444,6 @@ public final class TestDamageTypeCalculationsImpl
 	@Test
 	public final void testGetDefenderDefenceStrength_ImmunityWeDontHave () throws Exception
 	{
-		// These are just used as inputs for mocked methods
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-
 		// Damage being applied
 		final DamageTypeImmunity imm = new DamageTypeImmunity ();
 		imm.setBoostsDefenceTo (50);
@@ -543,22 +455,14 @@ public final class TestDamageTypeCalculationsImpl
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
 		
 		// Unit being hit
-		final MemoryUnit defender = new MemoryUnit ();
-		
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (-1);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (5, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, mem, db));
+		assertEquals (5, calc.getDefenderDefenceStrength (defender, attackDamage, 1));
 	}
 
 	/**
@@ -568,11 +472,6 @@ public final class TestDamageTypeCalculationsImpl
 	@Test
 	public final void testGetDefenderDefenceStrength_ImmunityWeDoHave () throws Exception
 	{
-		// These are just used as inputs for mocked methods
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-
 		// Damage being applied
 		final DamageTypeImmunity imm = new DamageTypeImmunity ();
 		imm.setBoostsDefenceTo (50);
@@ -584,22 +483,15 @@ public final class TestDamageTypeCalculationsImpl
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
 		
 		// Unit being hit
-		final MemoryUnit defender = new MemoryUnit ();
-		
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (0);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
+		when (defender.hasModifiedSkill ("US001")).thenReturn (true);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (50, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, mem, db));
+		assertEquals (50, calc.getDefenderDefenceStrength (defender, attackDamage, 1));
 	}
 
 	/**
@@ -609,11 +501,6 @@ public final class TestDamageTypeCalculationsImpl
 	@Test
 	public final void testGetDefenderDefenceStrength_ImmunityWithArmourPiercing () throws Exception
 	{
-		// These are just used as inputs for mocked methods
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
-		final FogOfWarMemory mem = new FogOfWarMemory ();
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-
 		// Damage being applied
 		final DamageTypeImmunity imm = new DamageTypeImmunity ();
 		imm.setBoostsDefenceTo (50);
@@ -625,21 +512,14 @@ public final class TestDamageTypeCalculationsImpl
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
 		
 		// Unit being hit
-		final MemoryUnit defender = new MemoryUnit ();
-		
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (5);
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US001", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			attackDamage.getAttackFromSkillID (), attackDamage.getAttackFromMagicRealmID (), players, mem, db)).thenReturn (0);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
+		when (defender.hasModifiedSkill ("US001")).thenReturn (true);
 		
 		// Set up object to test
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
-		calc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
-		assertEquals (50, calc.getDefenderDefenceStrength (defender, null, attackDamage, 2, players, mem, db));
+		assertEquals (50, calc.getDefenderDefenceStrength (defender, attackDamage, 2));
 	}
 }

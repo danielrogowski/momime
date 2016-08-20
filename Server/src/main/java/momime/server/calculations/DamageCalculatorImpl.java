@@ -20,7 +20,6 @@ import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
@@ -193,7 +192,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 					
 					// If life stealing damage didn't apply, just use whatever is defined against the unit skill like normal
 					if (damageType == null)
-						damageType = getDamageTypeCalculations ().determineSkillDamageType (attacker.getUnit (), attackSkillID, mem.getMaintainedSpell (), db);
+						damageType = getDamageTypeCalculations ().determineSkillDamageType (xuAttacker, attackSkillID, db);
 					
 					if (xuDefender.isUnitImmuneToDamageType (damageType))
 						attackDamage = null;
@@ -314,29 +313,21 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * absorbed or every figure is killed.
 	 * 
 	 * @param defender Unit being hit
-	 * @param attacker Unit making the attack - this is only used for immunity purposes, e.g. do they have a skill that can punch through our weapon immunity?  So its fine to pass null here
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateSingleFigureDamage (final ExpandedUnitDetails defender, final MemoryUnit attacker,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players,
-		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	public final int calculateSingleFigureDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateSingleFigureDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
 		
-		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getMemoryUnit (), attacker, attackDamage, 1, players, mem, db);
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attackDamage, 1);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
 		
@@ -349,29 +340,21 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * damage except that the defender's defence stat is halved.
 	 * 
 	 * @param defender Unit being hit
-	 * @param attacker Unit making the attack - this is only used for immunity purposes, e.g. do they have a skill that can punch through our weapon immunity?  So its fine to pass null here
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateArmourPiercingDamage (final ExpandedUnitDetails defender, final MemoryUnit attacker,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	public final int calculateArmourPiercingDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateArmourPiercingDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
 		
-		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getMemoryUnit (), attacker, attackDamage, 2, players, mem, db);
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attackDamage, 2);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
 		
@@ -463,25 +446,17 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * making their own to hit and defence rolls.
 	 * 
 	 * @param defender Unit being hit
-	 * @param attacker Unit making the attack - this is only used for immunity purposes, e.g. do they have a skill that can punch through our weapon immunity?  So its fine to pass null here
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
-	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateMultiFigureDamage (final ExpandedUnitDetails defender, final MemoryUnit attacker,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
+	public final int calculateMultiFigureDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering calculateMultiFigureDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
 		
@@ -495,7 +470,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// Set up defender stats
 		damageCalculationMsg.setDefenderFigures (defender.calculateAliveFigureCount ());
 		damageCalculationMsg.setUnmodifiedDefenceStrength (Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)));
-		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender.getMemoryUnit (), attacker, attackDamage, 1, players, mem, db));
+		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attackDamage, 1));
 		damageCalculationMsg.setChanceToDefend (3 + Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)));
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());
 

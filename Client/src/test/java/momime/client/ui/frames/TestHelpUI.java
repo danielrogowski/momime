@@ -50,7 +50,6 @@ import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSkillComponent;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.ExpandedUnitDetails;
@@ -236,7 +235,7 @@ public final class TestHelpUI
 		final BufferedImage skillIcon = utils.loadImage ("/momime.client.graphics/unitSkills/US020-icon.png");
 		
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
-		when (unitClientUtils.getUnitSkillSingleIcon (any (AvailableUnit.class), eq ("US020"))).thenReturn (skillIcon);
+		when (unitClientUtils.getUnitSkillSingleIcon (any (ExpandedUnitDetails.class), eq ("US020"))).thenReturn (skillIcon);
 		
 		// Unit variable stats in help text
 		final UnitStatsLanguageVariableReplacer unitStatsReplacer = mock (UnitStatsLanguageVariableReplacer.class);

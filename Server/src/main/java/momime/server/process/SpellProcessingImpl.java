@@ -36,8 +36,6 @@ import momime.common.database.StoredDamageTypeID;
 import momime.common.database.SummonedUnit;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -69,7 +67,6 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
@@ -112,9 +109,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -313,9 +307,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 								null, player, UnitStatusID.ALIVE, players, sd, db);
 						
 						// Let it move this turn
-						newUnit.setDoubleOverlandMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (newUnit, newUnit.getUnitHasSkill (),
-							CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-							null, null, players, gsk.getTrueMap (), db));
+						newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
+							players, gsk.getTrueMap (), db).getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 					}
 
 					// Show on new turn messages for the player who summoned it
@@ -574,9 +567,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 				combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 
 			// Allow it to be moved this combat turn
-			targetUnit.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (targetUnit, targetUnit.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-				null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+			targetUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
+					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 		}
 		
 		// Combat summons
@@ -607,9 +600,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 					combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 				
 				// Allow it to be moved this combat turn
-				tu.setDoubleCombatMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (tu, tu.getUnitHasSkill (),
-					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-					null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+				tu.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (tu, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
+						(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 				
 				// Make sure we remove it after combat
 				tu.setWasSummonedInCombat (true);
@@ -970,22 +963,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
-	}
-	
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
 	}
 	
 	/**

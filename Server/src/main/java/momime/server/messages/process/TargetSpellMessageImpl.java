@@ -128,6 +128,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		String citySpellEffectID = null;
 		String unitSkillID = null;
 		MemoryUnit unit = null;
+		ExpandedUnitDetails xu = null;
 		if (maintainedSpell == null)
 			error = "Can't find an instance of this spell awaiting targetting";
 		
@@ -200,7 +201,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					else
 					{
 						// Common routine used by both the client and server does the guts of the validation work
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
+						xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -387,8 +388,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				// If its a unit enchantment, does it grant any secondary permanent effects? (Black Channels making units Undead)
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 					for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())
-						if ((effect.isPermanent () != null) && (effect.isPermanent ()) &&
-							(getUnitUtils ().getBasicSkillValue (unit.getUnitHasSkill (), effect.getUnitSkillID ()) < 0))
+						if ((effect.isPermanent () != null) && (effect.isPermanent ()) && (!xu.hasBasicSkill (effect.getUnitSkillID ())))
 						{
 							final UnitSkillAndValue permanentEffect = new UnitSkillAndValue ();
 							permanentEffect.setUnitSkillID (effect.getUnitSkillID ());

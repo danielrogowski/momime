@@ -41,6 +41,7 @@ import momime.common.messages.servertoclient.FogOfWarStateMessageData;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
@@ -254,7 +255,8 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			for (final MemoryUnit thisUnit : trueMap.getUnit ())
 				if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
 				{
-					final int scoutingRange = getServerUnitCalculations ().calculateUnitScoutingRange (thisUnit, players, trueMap, db);
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+					final int scoutingRange = getServerUnitCalculations ().calculateUnitScoutingRange (xu, db);
 
 					// If standing in a tower, can see both planes
 					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get

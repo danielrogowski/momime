@@ -19,14 +19,10 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
@@ -50,9 +46,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	/** Unit utils */
 	private UnitUtils unitUtils;	
 	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 
@@ -71,20 +64,16 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
 	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
 	 * @param attackSkillID Which skill they are attacking with (melee or ranged)
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return Chosen attack resolution
 	 * @throws RecordNotFoundException If the unit skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
 	 */
 	@Override
-	public AttackResolutionSvr chooseAttackResolution (final MemoryUnit attacker, final MemoryUnit defender, final String attackSkillID,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public AttackResolutionSvr chooseAttackResolution (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender, final String attackSkillID,
+		final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering chooseAttackResolution: Unit URN " + attacker.getUnitURN () + " hitting Unit URN " + defender.getUnitURN () + " with " + attackSkillID);
+		log.trace ("Entering chooseAttackResolution: Attacker " + attacker.getDebugIdentifier () + ", defender " + defender.getDebugIdentifier () + ", skillID " + attackSkillID);
 	
 		final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "chooseAttackResolution");
 		
@@ -103,14 +92,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				final AttackResolutionConditionSvr condition = conditions.next ();
 				
 				// Check this condition; these are things like haste + first strike, so its ok to pass in nulls here - we don't know the actual attack steps yet
-				final MemoryUnit unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
-				final MemoryUnit enemy = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? defender : attacker;
-				final List<MemoryUnit> enemies = new ArrayList<MemoryUnit> ();
-				enemies.add (enemy);
-				
-				if (getUnitSkillUtils ().getModifiedSkillValue (unitToTest, unitToTest.getUnitHasSkill (), condition.getUnitSkillID (), enemies,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) < 0)
-					
+				final ExpandedUnitDetails unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
+				if (!unitToTest.hasModifiedSkill (condition.getUnitSkillID ()))					
 					conditionsMatch = false;
 			}
 			
@@ -258,7 +241,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						if ((step != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())))
 						{
 							final int penalty = getServerUnitCalculations ().calculateRangedAttackDistancePenalty
-								(attacker.getUnit (), defender.getUnit (), combatMapCoordinateSystem, players, mem, db);
+								(xuUnitMakingAttack, xuUnitBeingAttackedHPcheck, combatMapCoordinateSystem);
 							
 							if (penalty > 0)
 							{
@@ -292,15 +275,12 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							{
 								case SINGLE_FIGURE:
 									thisDamage = getDamageCalculator ().calculateSingleFigureDamage (xuUnitBeingAttacked,
-										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
-										attackingPlayer, defendingPlayer, potentialDamage,
-										players, mem, db); 
+										attackingPlayer, defendingPlayer, potentialDamage);
 									break;
 									
 								case ARMOUR_PIERCING:
 									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage (xuUnitBeingAttacked,
-										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
-										attackingPlayer, defendingPlayer, potentialDamage, players, mem, db); 
+										attackingPlayer, defendingPlayer, potentialDamage); 
 									break;
 									
 								case ILLUSIONARY:
@@ -310,8 +290,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				
 								case MULTI_FIGURE:
 									thisDamage = getDamageCalculator ().calculateMultiFigureDamage (xuUnitBeingAttacked,
-										(unitMakingAttack == null) ? null : unitMakingAttack.getUnit (),
-										attackingPlayer, defendingPlayer, potentialDamage, players, mem, db); 
+										attackingPlayer, defendingPlayer, potentialDamage); 
 									break;
 									
 								case DOOM:
@@ -461,22 +440,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		unitUtils = utils;
 	}
 	
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-
 	/**
 	 * @return Unit calculations
 	 */

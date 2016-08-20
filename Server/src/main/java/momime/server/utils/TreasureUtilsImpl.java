@@ -27,8 +27,6 @@ import momime.common.database.PickPrerequisite;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SummonedUnit;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -46,7 +44,7 @@ import momime.common.utils.HeroItemUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.database.MapFeatureSvr;
@@ -97,9 +95,6 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
 	
@@ -117,6 +112,9 @@ public final class TreasureUtilsImpl implements TreasureUtils
 
 	/** Resource calculations */
 	private ServerResourceCalculations serverResourceCalculations;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/**
 	 * The treasure reward process detailed in the strategy guide (Appendix C) and on the MoM Wiki is awkward to implement, and in
@@ -431,9 +429,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, players, gsk.getTrueMap (), sd, db);
 					
 						// Let it move this turn
-						hero.setDoubleOverlandMovesLeft (2 * getUnitSkillUtils ().getModifiedSkillValue (hero, hero.getUnitHasSkill (),
-							CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-							null, null, players, gsk.getTrueMap (), db));
+						hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null, players, gsk.getTrueMap (), db).getModifiedSkillValue
+							(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 					}
 					break;
 
@@ -796,22 +793,6 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	}
 
 	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
-	/**
 	 * @return Server-only unit utils
 	 */
 	public final UnitServerUtils getUnitServerUtils ()
@@ -905,5 +886,21 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
 	{
 		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

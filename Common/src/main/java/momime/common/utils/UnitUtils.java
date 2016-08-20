@@ -8,16 +8,12 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.CommonDatabase;
-import momime.common.database.ExperienceLevel;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
-import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 
@@ -65,23 +61,6 @@ public interface UnitUtils
 	public Unit initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
-	 * @param skills List of unit skills to check; this can either be the unmodified list read straight from unit.getUnitHasSkill () or UnitHasSkillMergedList
-	 * @param unitSkillID Unique identifier for this skill
-	 * @return Basic value of the specified skill (defined in the XML or heroes rolled randomly); whether skills granted from spells are included depends on whether we pass in a UnitHasSkillMergedList or not; -1 if we do not have the skill
-	 */
-	public int getBasicSkillValue (final List<UnitSkillAndValue> skills, final String unitSkillID);
-
-	/**
-	 * @param spells List of known maintained spells
-	 * @param unit Unit whose skill list this is
-	 * @param db Lookup lists built over the XML database
-	 * @return List of all skills this unit has, with skills gained from spells (both enchantments such as Holy Weapon and curses such as Vertigo) merged into the list
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
-	 */
-	public UnitHasSkillMergedList mergeSpellEffectsIntoSkillList (final List<MemoryMaintainedSpell> spells, final MemoryUnit unit, final CommonDatabase db)
-		throws RecordNotFoundException;
-
-	/**
 	 * Calculates and stores all derived skill, upkeep and other values for a particular unit and stores them for easy and quick lookup.
 	 * Note the calculated values depend in part on which unit(s) we're in combat with and if we're calculating stats for purposes of defending an incoming attack.
 	 * e.g. the +2 defence from Long Range will only be included vs incoming ranged attacks; the +3 bonus from Resist Elements will only be included vs incoming Chaos+Nature based attacks
@@ -108,21 +87,6 @@ public interface UnitUtils
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
-	 * @param unit Unit to get value for
-	 * @param includeBonuses Whether to include level increases from Warlord+Crusade
-	 * @param players Players list
-	 * @param combatAreaEffects List of combat area effects known to us (we may not be the owner of the unit)
-	 * @param db Lookup lists built over the XML database
-	 * @return Experience level of this unit (0-5 for regular units, 0-8 for heroes); for units that don't gain experience (e.g. summoned), returns null
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws RecordNotFoundException If we can't find the unit, unit type, magic realm or so on
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	public ExperienceLevel getExperienceLevel (final AvailableUnit unit, final boolean includeBonuses, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException;
-
-	/**
 	 * Since Available Units cannot be in combat, this is quite a bit simpler than the MomUnit version
 	 *
 	 * The unit has to:
@@ -140,19 +104,6 @@ public interface UnitUtils
 	 */
 	public boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabase db)
 		throws RecordNotFoundException;
-
-	/**
-	 * @param unit Unit we want to check
-	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
-	 * @param spells Known spells
-	 * @param db Lookup lists built over the XML database
-	 * @return True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
-	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
-	 * @throws MomException If no matching merger record exists when multiple lifeform type modifications apply
-	 */
-	public String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitSkillAndValue> skills,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
-		throws RecordNotFoundException, MomException;
 
 	/**
 	 * @param units Unit stack

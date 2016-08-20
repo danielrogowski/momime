@@ -18,6 +18,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.server.database.ServerDatabaseEx;
 
 /**
@@ -27,16 +28,12 @@ public interface ServerUnitCalculations
 {
 	/**
 	 * @param unit The unit to check
-	 * @param players Pre-locked players list
-	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How many squares this unit can see; by default = 1, flying units automatically get 2, and the Scouting unit skill can push this even higher
 	 * @throws RecordNotFoundException If we can't find the player who owns the unit, or the unit has a skill that we can't find in the cache
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public int calculateUnitScoutingRange (final MemoryUnit unit, final List<PlayerServerDetails> players,
-		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	public int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
 
 	/**
 	 * @param x X coordinate of the location we want to check
@@ -107,15 +104,9 @@ public interface ServerUnitCalculations
 	 * @param attacker Unit firing the ranged attack
 	 * @param defender Unit being shot
 	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return To hit penalty incurred from the distance between the attacker and defender, NB. this is not capped in any way so may get very high values here
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public int calculateRangedAttackDistancePenalty (final MemoryUnit attacker, final MemoryUnit defender,
-		final CombatMapSize combatMapCoordinateSystem, final List<PlayerServerDetails> players,
-		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	public int calculateRangedAttackDistancePenalty (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender,
+		final CombatMapSize combatMapCoordinateSystem) throws MomException;
 }

@@ -152,7 +152,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		// Kick off animation
 		mu.setCombatHeading (getDirection ());
-		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (mu, true);
+		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
 		
 		// Play walking sound effect
 		getUnitClientUtils ().playCombatActionSound (mu, movingActionID);

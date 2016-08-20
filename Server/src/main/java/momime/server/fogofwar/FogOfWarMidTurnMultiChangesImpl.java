@@ -318,8 +318,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueUnits)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
-				final String magicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (thisUnit, thisUnit.getUnitHasSkill (), trueMap.getMaintainedSpell (), db);
-				final PickSvr magicRealm = db.findPick (magicRealmID, "healUnitsAndGainExperience");
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final PickSvr magicRealm = (PickSvr) xu.getModifiedUnitMagicRealmLifeformType ();
 				
 				boolean sendMsg = false;
 
@@ -373,8 +373,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
 				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null))
 			{
-				final String magicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (trueUnit, trueUnit.getUnitHasSkill (), trueMap.getMaintainedSpell (), db);
-				final PickSvr magicRealm = db.findPick (magicRealmID, "grantExperienceToUnitsInCombat");
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
+				final PickSvr magicRealm = (PickSvr) xu.getModifiedUnitMagicRealmLifeformType ();
 
 				final int exp = getUnitSkillDirectAccess ().getDirectSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				if ((magicRealm.isGainExperienceEachTurn ()) && (exp >= 0))

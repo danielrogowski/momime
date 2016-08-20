@@ -23,15 +23,10 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
-import momime.common.database.RangedAttackType;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -42,13 +37,11 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 
@@ -69,9 +62,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 	
@@ -89,34 +79,26 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	
 	/**
 	 * @param unit The unit to check
-	 * @param players Pre-locked players list
-	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return How many squares this unit can see; by default = 1, flying units automatically get 2, and the Scouting unit skill can push this even higher
 	 * @throws RecordNotFoundException If we can't find the player who owns the unit, or the unit has a skill that we can't find in the cache
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final int calculateUnitScoutingRange (final MemoryUnit unit, final List<PlayerServerDetails> players,
-		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering calculateUnitScoutingRange: Unit URN " + unit.getUnitURN () + ", " + unit.getUnitID ());
+		log.trace ("Entering calculateUnitScoutingRange: " + unit.getDebugIdentifier ());
 
 		int scoutingRange = 1;
 
-		// Make sure we only bother to do this once
-		final UnitHasSkillMergedList mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (mem.getMaintainedSpell (), unit, db);
-
 		// Actual scouting skill
-		scoutingRange = Math.max (scoutingRange, getUnitSkillUtils ().getModifiedSkillValue
-			(unit, mergedSkills, ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING, null,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db));
+		if (unit.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING))
+			scoutingRange = Math.max (scoutingRange, unit.getModifiedSkillValue (ServerDatabaseValues.UNIT_SKILL_ID_SCOUTING));
 
 		// Scouting range granted by other skills (i.e. flight skills)
-		for (final UnitSkillAndValue thisSkill : mergedSkills)
+		for (final String thisSkillID : unit.listModifiedSkillIDs ())
 		{
-			final Integer unitSkillScoutingRange = db.findUnitSkill (thisSkill.getUnitSkillID (), "calculateUnitScoutingRange").getUnitSkillScoutingRange ();
+			final Integer unitSkillScoutingRange = db.findUnitSkill (thisSkillID, "calculateUnitScoutingRange").getUnitSkillScoutingRange ();
 			if (unitSkillScoutingRange != null)
 				scoutingRange = Math.max (scoutingRange, unitSkillScoutingRange);
 		}
@@ -625,46 +607,29 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @param attacker Unit firing the ranged attack
 	 * @param defender Unit being shot
 	 * @param combatMapCoordinateSystem Combat map coordinate system
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
 	 * @return To hit penalty incurred from the distance between the attacker and defender, NB. this is not capped in any way so may get very high values here
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final int calculateRangedAttackDistancePenalty (final MemoryUnit attacker, final MemoryUnit defender,
-		final CombatMapSize combatMapCoordinateSystem, final List<PlayerServerDetails> players,
-		final FogOfWarMemory mem, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final int calculateRangedAttackDistancePenalty (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender,
+		final CombatMapSize combatMapCoordinateSystem) throws MomException
 	{
-		log.trace ("Entering calculateRangedAttackDistancePenalty: Attacker Unit URN " + attacker.getUnitURN () + ", Defender Unit URN " + defender.getUnitURN ());
+		log.trace ("Entering calculateRangedAttackDistancePenalty: Attacker " + attacker.getDebugIdentifier () + ", Defender " + defender.getDebugIdentifier ());
 
-		final UnitSvr unitDef = db.findUnit (attacker.getUnitID (), "calculateRangedAttackDistancePenalty");
-		final RangedAttackType rat = db.findRangedAttackType (unitDef.getRangedAttackType (), "calculateRangedAttackDistancePenalty");
-		
 		// Magic attacks suffer no penalty
 		int penalty;
-		if (rat.getMagicRealmID () != null)
+		if (attacker.getRangedAttackType ().getMagicRealmID () != null)
 			penalty = 0;
 		else
 		{
 			final double distance = getCoordinateSystemUtils ().determineReal2DDistanceBetween
-				(combatMapCoordinateSystem, (MapCoordinates2DEx) attacker.getCombatPosition (), (MapCoordinates2DEx) defender.getCombatPosition ());
+				(combatMapCoordinateSystem, attacker.getCombatPosition (), defender.getCombatPosition ());
 			
 			penalty = (int) (distance / 3);
 			
 			// Long range skill?
-			if (penalty > 1)
-			{
-				final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-				defenders.add (defender);
-				
-				if (getUnitSkillUtils ().getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE, defenders,
-					UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, mem, db) >= 0)
-				
-					penalty = 1;
-			}
+			if ((penalty > 1) && (attacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_LONG_RANGE)))				
+				penalty = 1;
 		}
 		
 		log.trace ("Exiting calculateRangedAttackDistancePenalty = " + penalty);
@@ -687,22 +652,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		unitUtils = utils;
 	}
 
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
 	/**
 	 * @return Unit calculations
 	 */

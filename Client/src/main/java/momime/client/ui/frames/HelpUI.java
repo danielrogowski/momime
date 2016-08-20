@@ -636,7 +636,7 @@ public final class HelpUI extends MomClientFrameUI
 		unitSkillID = id;
 		unit = u;
 
-		final BufferedImage image = getUnitClientUtils ().getUnitSkillSingleIcon (unit.getUnit (), unitSkillID);
+		final BufferedImage image = getUnitClientUtils ().getUnitSkillSingleIcon (unit, unitSkillID);
 		if (image != null)
 		{
 			imageLabel.setIcon (new ImageIcon (image));

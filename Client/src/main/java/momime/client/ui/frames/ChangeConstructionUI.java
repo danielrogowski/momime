@@ -371,7 +371,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
-			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (xu, true);
 			getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), movingActionID, 4, unitsList);
 
 			unitsItems.addElement (xu);

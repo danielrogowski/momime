@@ -50,7 +50,6 @@ import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.HeroItemServerUtils;
@@ -205,18 +204,20 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 				else
 				{
-					final UnitSvr unitDef = mom.getServerDB ().findUnit (combatCastingUnit.getUnitID (), "requestCastSpell");
+					final ExpandedUnitDetails xuCombatCastingUnit = getUnitUtils ().expandUnitDetails (combatCastingUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					
 					if (combatCastingFixedSpellNumber != null)
 					{
 						// Validation for using fixed spells, e.g. Giant Spiders casting Web
 						if ((combatCastingFixedSpellNumber < 0) || (combatCastingFixedSpellNumber >= combatCastingUnit.getFixedSpellsRemaining ().size ()) ||
-							(combatCastingFixedSpellNumber >= unitDef.getUnitCanCast ().size ()))
+							(combatCastingFixedSpellNumber >= xuCombatCastingUnit.getUnitDefinition ().getUnitCanCast ().size ()))
 							msg = "This unit doesn't have the fixed spell number that you are trying to cast.";
 						
 						else if (combatCastingUnit.getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) <= 0)
 							msg = "The unit has all of this kind of spell used up already for this combat.";
 						
-						else if (!spellID.equals (unitDef.getUnitCanCast ().get (combatCastingFixedSpellNumber).getUnitSpellID ()))
+						else if (!spellID.equals (xuCombatCastingUnit.getUnitDefinition ().getUnitCanCast ().get (combatCastingFixedSpellNumber).getUnitSpellID ()))
 							msg = "The spell you are trying to cast doesn't match the fixed spell that this unit has.";
 					}
 					else if (combatCastingSlotNumber != null)
@@ -241,14 +242,11 @@ public final class SpellQueueingImpl implements SpellQueueing
 						// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
 						// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
 						String overridePickID = null;
-						if (getUnitUtils ().getBasicSkillValue (combatCastingUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) > 0)
+						if (xuCombatCastingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT))
 						{
-							final String unitMagicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (combatCastingUnit,
-								combatCastingUnit.getUnitHasSkill (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
-								
-							overridePickID = mom.getServerDB ().findPick (unitMagicRealmID, "requestCastSpell").getCastSpellsFromPickID ();
+							overridePickID = xuCombatCastingUnit.getModifiedUnitMagicRealmLifeformType ().getCastSpellsFromPickID ();
 							if (overridePickID == null)
-								overridePickID = unitMagicRealmID;
+								overridePickID = xuCombatCastingUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ();
 						}
 
 						boolean knowSpell;
@@ -257,7 +255,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 						else
 						{
 							knowSpell = (researchStatus == SpellResearchStatusID.AVAILABLE);
-							final Iterator<UnitCanCast> knownSpellsIter = unitDef.getUnitCanCast ().iterator ();
+							final Iterator<UnitCanCast> knownSpellsIter = xuCombatCastingUnit.getUnitDefinition ().getUnitCanCast ().iterator ();
 							while ((!knowSpell) && (knownSpellsIter.hasNext ()))
 							{
 								final UnitCanCast thisKnownSpell = knownSpellsIter.next ();
@@ -447,8 +445,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 					
 					else
 					{
-						final String unitMagicRealmID = getUnitUtils ().getModifiedUnitMagicRealmLifeformTypeID (combatTargetUnit,
-								combatTargetUnit.getUnitHasSkill (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), mom.getServerDB ());
+						final ExpandedUnitDetails xuCombatTargetUnit = getUnitUtils ().expandUnitDetails (combatTargetUnit, null, null, null,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
+						final String unitMagicRealmID = xuCombatTargetUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ();
 						
 						if (spell.getSpellValidUnitTarget ().stream ().noneMatch (t -> unitMagicRealmID.equals (t.getTargetMagicRealmID ())))
 							msg = "This spell cannot resurrect this type of unit.";

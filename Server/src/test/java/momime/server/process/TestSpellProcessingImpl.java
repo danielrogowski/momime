@@ -26,8 +26,6 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SummonedUnit;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -44,12 +42,13 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
@@ -362,8 +361,13 @@ public final class TestSpellProcessingImpl
 		
 		// Mock creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final MemoryUnit unit = new MemoryUnit ();
 		when (midTurn.addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, null, null,
-			player3, UnitStatusID.ALIVE, players, sd, db)).thenReturn (new MemoryUnit ());
+			player3, UnitStatusID.ALIVE, players, sd, db)).thenReturn (unit);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Set up test object		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
@@ -372,7 +376,7 @@ public final class TestSpellProcessingImpl
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 		proc.setRandomUtils (randomUtils);
 		proc.setUnitServerUtils (unitServerUtils);
-		proc.setUnitSkillUtils (mock (UnitSkillUtils.class));
+		proc.setUnitUtils (unitUtils);
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
@@ -479,6 +483,11 @@ public final class TestSpellProcessingImpl
 			when (unitServerUtils.findUnitWithPlayerAndID (trueMap.getUnit (), 7, "UN00" + n)).thenReturn (hero);				
 		}
 
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (theHero, null, null, null, players, trueMap, db)).thenReturn (xu);
+		
 		// Fix random results
 		final RandomUtils randomUtils = mock (RandomUtils.class);
 		when (randomUtils.nextInt (7)).thenReturn (5);
@@ -492,7 +501,7 @@ public final class TestSpellProcessingImpl
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 		proc.setRandomUtils (randomUtils);
 		proc.setUnitServerUtils (unitServerUtils);
-		proc.setUnitSkillUtils (mock (UnitSkillUtils.class));
+		proc.setUnitUtils (unitUtils);
 
 		// Run test
 		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
@@ -981,11 +990,12 @@ public final class TestSpellProcessingImpl
 		when (midTurn.addUnitOnServerAndClients (gsk, "UN004", attackingFrom, attackingFrom,
 			combatLocation, attackingPlayer, UnitStatusID.ALIVE, players, sd, db)).thenReturn (summonedUnit);
 		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (summonedUnit, null, null, null, players, trueMap, db)).thenReturn (xu);
+		
 		// Mock unit speed
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (summonedUnit, summonedUnit.getUnitHasSkill (),
-			CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH,
-			null, null, players, trueMap, db)).thenReturn (49);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (49);
 		
 		// Set up test object
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -999,7 +1009,7 @@ public final class TestSpellProcessingImpl
 		proc.setServerResourceCalculations (serverResourceCalc);
 		proc.setOverlandMapServerUtils (overlandMapServerUtils);
 		proc.setCombatProcessing (combatProcessing);
-		proc.setUnitSkillUtils (unitSkillUtils);
+		proc.setUnitUtils (unitUtils);
 		
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, mom);

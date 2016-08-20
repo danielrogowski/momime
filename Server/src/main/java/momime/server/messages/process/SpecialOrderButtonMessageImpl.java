@@ -7,12 +7,18 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
@@ -20,7 +26,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
@@ -30,14 +36,6 @@ import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Client sends this to server when a special order button is clicked with a particular unit stack
@@ -55,9 +53,6 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
@@ -130,7 +125,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		if (getUnitURN ().size () == 0)
 			error = "You must select at least one unit to give a special order to.";
 
-		final List<MemoryUnit> unitsWithNecessarySkillID = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> unitsWithNecessarySkillID = new ArrayList<ExpandedUnitDetails> ();
 
 		final Iterator<Integer> unitUrnIterator = getUnitURN ().iterator ();
 		while ((error == null) && (unitUrnIterator.hasNext ()))
@@ -146,12 +141,15 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				error = "Some of the units you are trying to give a special order to are dead/dismissed";
 			else if (!thisUnit.getUnitLocation ().equals (getMapLocation ()))
 				error = "Some of the units you are trying to give a special order to are not at the right location";
-			
-			// Does it have the necessary skill?
-			else if ((necessarySkillID == null) || (getUnitSkillUtils ().getModifiedSkillValue (thisUnit, thisUnit.getUnitHasSkill (), necessarySkillID, null,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) >= 0))
+			else
+			{
+				// Does it have the necessary skill?
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
-				unitsWithNecessarySkillID.add (thisUnit);
+				if ((necessarySkillID == null) || (xu.hasModifiedSkill (necessarySkillID)))				
+					unitsWithNecessarySkillID.add (xu);
+			}
 		}
 
 		// We must have at least one unit
@@ -210,8 +208,8 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (getSpecialOrder () == UnitSpecialOrder.PATROL) ||
 				(getSpecialOrder () == UnitSpecialOrder.PURIFY))
 			{
-				for (final MemoryUnit trueUnit : unitsWithNecessarySkillID)
-					getUnitServerUtils ().setAndSendSpecialOrder (trueUnit, getSpecialOrder (), sender,
+				for (final ExpandedUnitDetails trueUnit : unitsWithNecessarySkillID)
+					getUnitServerUtils ().setAndSendSpecialOrder (trueUnit.getMemoryUnit (), getSpecialOrder (), sender,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 			}
 			else
@@ -221,7 +219,7 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 				{
 					case BUILD_CITY:
 						getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), sender,
-							unitsWithNecessarySkillID.get (0), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+							unitsWithNecessarySkillID.get (0).getMemoryUnit (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						break;
 						
 					case MELD_WITH_NODE:
@@ -293,22 +291,6 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 		unitUtils = utils;
 	}
 
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
 	/**
 	 * @return Server-only unit utils
 	 */

@@ -147,8 +147,7 @@ public final class TestDamageProcessorImpl
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
 
 		final AttackResolutionSvr attackResolution = new AttackResolutionSvr ();
-		when (attackResolutionProc.chooseAttackResolution (attacker, defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, players,
-			trueMap, db)).thenReturn (attackResolution);
+		when (attackResolutionProc.chooseAttackResolution (xuAttacker, xuDefender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db)).thenReturn (attackResolution);
 		
 		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
 		
@@ -328,8 +327,7 @@ public final class TestDamageProcessorImpl
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
 
 		final AttackResolutionSvr attackResolution = new AttackResolutionSvr ();
-		when (attackResolutionProc.chooseAttackResolution (attacker, defender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, players,
-			trueMap, db)).thenReturn (attackResolution);
+		when (attackResolutionProc.chooseAttackResolution (xuAttacker, xuDefender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, db)).thenReturn (attackResolution);
 		
 		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
 		

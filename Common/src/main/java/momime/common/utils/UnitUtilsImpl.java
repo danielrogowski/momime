@@ -18,7 +18,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.AddsToSkill;
 import momime.common.database.CombatAreaAffectsPlayersID;
 import momime.common.database.CombatAreaEffect;
@@ -29,7 +28,6 @@ import momime.common.database.ExperienceLevel;
 import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.HeroItemTypeAttackType;
-import momime.common.database.MergedFromPick;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackType;
@@ -195,82 +193,6 @@ public final class UnitUtilsImpl implements UnitUtils
 		return unitDefinition;
 	}
 
-	/**
-	 * @param skills List of unit skills to check; this can either be the unmodified list read straight from unit.getUnitHasSkill () or UnitHasSkillMergedList
-	 * @param unitSkillID Unique identifier for this skill
-	 * @return Basic value of the specified skill (defined in the XML or heroes rolled randomly); whether skills granted from spells are included depends on whether we pass in a UnitHasSkillMergedList or not; -1 if we do not have the skill
-	 */
-	@Override
-	public final int getBasicSkillValue (final List<UnitSkillAndValue> skills, final String unitSkillID)
-	{
-		int skillValue = -1;
-		final Iterator<UnitSkillAndValue> iter = skills.iterator ();
-
-		while ((skillValue < 0) && (iter.hasNext ()))
-		{
-			final UnitSkillAndValue thisSkill = iter.next ();
-			if (thisSkill.getUnitSkillID ().equals (unitSkillID))
-			{
-				if (thisSkill.getUnitSkillValue () == null)
-					skillValue = 0;
-				else
-					skillValue = thisSkill.getUnitSkillValue ();
-			}
-		}
-
-		return skillValue;
-	}
-
-	/**
-	 * @param spells List of known maintained spells
-	 * @param unit Unit whose skill list this is
-	 * @param db Lookup lists built over the XML database
-	 * @return List of all skills this unit has, with skills gained from spells (both enchantments such as Holy Weapon and curses such as Vertigo) merged into the list
-	 * @throws RecordNotFoundException If the definition of a spell that is cast on the unit cannot be found in the db
-	 */
-	@Override
-	public final UnitHasSkillMergedList mergeSpellEffectsIntoSkillList (final List<MemoryMaintainedSpell> spells, final MemoryUnit unit, final CommonDatabase db)
-		throws RecordNotFoundException
-	{
-		log.trace ("Entering mergeSpellEffectsIntoSkillList: " + unit.getUnitID () + ", " + spells.size () + ", " + unit.getUnitHasSkill ().size ());
-
-		// To avoid getModifiedSkillValue () getting stuck in a loop, we HAVE to return a MomUnitSkillValueMergedList object with the
-		// different implementation of getModifiedSkillValue (), even if there's no spells cast on this unit that grant extra skills
-		final UnitHasSkillMergedList mergedSkills = new UnitHasSkillMergedList ();
-		mergedSkills.addAll (unit.getUnitHasSkill ());
-
-		// Add skills granted by spells cast on this unit
-		for (final MemoryMaintainedSpell thisSpell : spells)
-			if ((thisSpell.getUnitURN () != null) && (thisSpell.getUnitURN () == unit.getUnitURN ()))
-			{
-				final UnitSkillAndValue spellSkill = new UnitSkillAndValue ();
-				spellSkill.setUnitSkillID (thisSpell.getUnitSkillID ());
-				
-				// Get the strength of this skill from the spell definition
-				final Spell spellDef = db.findSpell (thisSpell.getSpellID (), "mergeSpellEffectsIntoSkillList");
-				boolean found = false;
-				final Iterator<UnitSpellEffect> iter = spellDef.getUnitSpellEffect ().iterator ();
-				while ((!found) && (iter.hasNext ()))
-				{
-					final UnitSpellEffect effect = iter.next ();
-					if (effect.getUnitSkillID ().equals (thisSpell.getUnitSkillID ()))
-					{
-						found = true;
-						spellSkill.setUnitSkillValue (effect.getUnitSkillValue ());
-					}
-				}
-				
-				if (!found)
-					throw new RecordNotFoundException ("UnitSpellEffect", thisSpell.getUnitSkillID (), "mergeSpellEffectsIntoSkillList");
-				
-				mergedSkills.add (spellSkill);
-			}
-
-		log.trace ("Exiting mergeSpellEffectsIntoSkillList = " + mergedSkills.size ());
-
-		return mergedSkills;
-	}
-	
 	/**
 	 * Calculates and stores all derived skill, upkeep and other values for a particular unit and stores them for easy and quick lookup.
 	 * Note the calculated values depend in part on which unit(s) we're in combat with and if we're calculating stats for purposes of defending an incoming attack.
@@ -824,82 +746,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
-	 * @param unit Unit to get value for
-	 * @param includeBonuses Whether to include level increases from Warlord+Crusade
-	 * @param players Players list
-	 * @param combatAreaEffects List of combat area effects known to us (we may not be the owner of the unit)
-	 * @param db Lookup lists built over the XML database
-	 * @return Experience level of this unit (0-5 for regular units, 0-8 for heroes); for units that don't gain experience (e.g. summoned), returns null
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws RecordNotFoundException If we can't find the unit, unit type, magic realm or so on
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	@Override
-	public final ExperienceLevel getExperienceLevel (final AvailableUnit unit, final boolean includeBonuses, final List<? extends PlayerPublicDetails> players,
-		final List<MemoryCombatAreaEffect> combatAreaEffects, final CommonDatabase db)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
-	{
-		log.trace ("Entering getExperienceLevel: " + unit.getUnitID () + ", " + includeBonuses);
-
-		// Experience can never be increased by spells, combat area effects, weapon grades, etc. etc. therefore safe to do this from the basic skill value on the unmerged list
-		final int experienceSkillValue = getBasicSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
-
-		final ExperienceLevel result;
-		if (experienceSkillValue < 0)
-			result = null;		// This type of unit doesn't gain experience (e.g. summoned)
-		else
-		{
-			// Check all experience levels defined under the unit type
-			// This checks them all so we aren't relying on them being defined in the correct orer
-			final String unitMagicRealmID = db.findUnit (unit.getUnitID (), "getExperienceLevel").getUnitMagicRealm ();
-			final String unitTypeID = db.findPick (unitMagicRealmID, "getExperienceLevel").getUnitTypeID ();
-			final UnitType unitType = db.findUnitType (unitTypeID, "getExperienceLevel");
-
-			ExperienceLevel levelFromExperience = null;
-			for (final ExperienceLevel experienceLevel : unitType.getExperienceLevel ())
-
-				// Careful - getExperienceRequired () can be null, for normal units' Ultra-Elite and Champion statuses
-				// Levels that actually require 0 experience must state a 0 in the XML rather than omit the field
-				if ((experienceLevel.getExperienceRequired () != null) && (experienceSkillValue >= experienceLevel.getExperienceRequired ()) &&
-					((levelFromExperience == null) || (levelFromExperience.getLevelNumber () < experienceLevel.getLevelNumber ())))
-						levelFromExperience = experienceLevel;
-
-			// Check we got one
-			if (levelFromExperience == null)
-				throw new MomException ("Unit " + unit.getUnitID () + " of type " + unitTypeID + " with " + experienceSkillValue + " experience cannot find any appropraite experience level");
-
-			// Now we've found the level that we're at due to actual experience, see if we get any level bonuses, i.e. Warlord retort or Crusade spell
-			if (includeBonuses)
-			{
-				int levelIncludingBonuses = levelFromExperience.getLevelNumber ();
-
-				// Does the player have the Warlord retort?
-				final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "getExperienceLevel");
-				final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
-				if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_WARLORD) > 0)
-					levelIncludingBonuses++;
-
-				// Does the player have the Crusade CAE?
-				if (getMemoryCombatAreaEffectUtils ().findCombatAreaEffect (combatAreaEffects, null, CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, unit.getOwningPlayerID ()) != null)
-					levelIncludingBonuses++;
-
-				// Now we have to ensure that the level we've attained actually exists, this is fine for units but a hero might reach Demi-God naturally,
-				// then giving them +1 level on top of that will move them to an undefined level
-				do
-				{
-					levelFromExperience = UnitTypeUtils.findExperienceLevel (unitType, levelIncludingBonuses);
-					levelIncludingBonuses--;
-				} while (levelFromExperience == null);
-			}
-
-			result = levelFromExperience;
-		}
-
-		log.trace ("Exiting getExperienceLevel = " + result);
-		return result;
-	}
-
-	/**
 	 * Since Available Units cannot be in combat, this is quite a bit simpler than the MomUnit version
 	 *
 	 * The unit has to:
@@ -994,91 +840,6 @@ public final class UnitUtilsImpl implements UnitUtils
 
 		log.trace ("Exiting doesCombatAreaEffectApplyToUnit = " + applies);
 		return applies;
-	}
-
-	/**
-	 * @param unit Unit we want to check
-	 * @param skills List of skills the unit has, either just unit.getUnitHasSkill () or can pre-merge with spell skill list by calling mergeSpellEffectsIntoSkillList
-	 * @param spells Known spells
-	 * @param db Lookup lists built over the XML database
-	 * @return True magic realm/lifeform type ID of this unit, taking into account skills/spells that may modify the value (e.g. Chaos Channels, Undead)
-	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the cache
-	 * @throws MomException If no matching merger record exists when multiple lifeform type modifications apply
-	 */
-	@Override
-	public final String getModifiedUnitMagicRealmLifeformTypeID (final AvailableUnit unit, final List<UnitSkillAndValue> skills,
-		final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
-		throws RecordNotFoundException, MomException
-	{
-		log.trace ("Entering getModifiedUnitMagicRealmLifeformTypeID: " + unit.getUnitID ());
-
-		// If its an actual unit, check if the caller pre-merged the list of skills with skills from spells, or if we need to do it here
-		final List<UnitSkillAndValue> mergedSkills;
-		if ((unit instanceof MemoryUnit) && (!(skills instanceof UnitHasSkillMergedList)))
-			mergedSkills = mergeSpellEffectsIntoSkillList (spells, (MemoryUnit) unit, db);
-		else
-			mergedSkills = skills;
-
-		// Check if any skills or spells override this
-		final List<String> changedMagicRealmLifeformTypeIDs = new ArrayList<String> ();
-		for (final UnitSkillAndValue thisSkill : mergedSkills)
-		{
-			final String changedMagicRealmLifeformTypeID = db.findUnitSkill (thisSkill.getUnitSkillID (), "getModifiedUnitMagicRealmLifeformTypeID").getChangesUnitToMagicRealm ();
-			if (changedMagicRealmLifeformTypeID != null)
-				changedMagicRealmLifeformTypeIDs.add (changedMagicRealmLifeformTypeID);
-		}
-
-		// Now what we do depends on how many modifications we found
-		final String magicRealmLifeformTypeID;
-		
-		// No modifications - use value from unit definition, unaltered
-		if (changedMagicRealmLifeformTypeIDs.size () == 0)
-			magicRealmLifeformTypeID = db.findUnit (unit.getUnitID (), "getModifiedUnitMagicRealmLifeformTypeID").getUnitMagicRealm ();
-
-		// Exactly one modification - use the value set by that skill (i.e. unit is Undead or Chaos Channeled)
-		else if (changedMagicRealmLifeformTypeIDs.size () == 1)
-			magicRealmLifeformTypeID = changedMagicRealmLifeformTypeIDs.get (0);
-		
-		// Multiple - look for a magic realm whose merge list matches our list (i.e. unit is Undead AND Chaos Channeled)
-		else
-		{
-			final Iterator<? extends Pick> iter = db.getPicks ().iterator ();
-			String match = null;
-			while ((match == null) && (iter.hasNext ()))
-			{
-				final Pick pick = iter.next ();
-				
-				if (pick.getMergedFromPick ().size () == changedMagicRealmLifeformTypeIDs.size ())
-				{
-					boolean ok = true;
-					for (final MergedFromPick mergedFromPick : pick.getMergedFromPick ())
-						if (!changedMagicRealmLifeformTypeIDs.contains (mergedFromPick.getMergedFromPickID ()))
-							ok = false;
-				
-					if (ok)
-						match = pick.getPickID ();
-				}
-			}
-			
-			if (match != null)
-				magicRealmLifeformTypeID = match;
-			else
-			{
-				final StringBuilder msg = new StringBuilder ();
-				changedMagicRealmLifeformTypeIDs.forEach (s ->
-				{
-					if (msg.length () > 0)
-						msg.append (", ");
-					
-					msg.append (s);
-				});
-				
-				throw new MomException ("No magic realm/lifeform type (Pick) found that merges lifeform types: " + msg);
-			}
-		}
-		
-		log.trace ("Exiting getModifiedUnitMagicRealmLifeformTypeID = " + magicRealmLifeformTypeID);
-		return magicRealmLifeformTypeID;
 	}
 
 	/**

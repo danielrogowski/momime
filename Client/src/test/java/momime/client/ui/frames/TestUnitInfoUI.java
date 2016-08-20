@@ -34,7 +34,6 @@ import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.common.calculations.UnitHasSkillMergedList;
 import momime.common.database.Unit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -137,11 +136,8 @@ public final class TestUnitInfoUI
 		
 		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
-		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
+		when (clientUnitCalc.findPreferredMovementSkillGraphics (xu)).thenReturn (movementSkill);
 
-		// Skills
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
-		
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Longbowmen");
@@ -275,10 +271,7 @@ public final class TestUnitInfoUI
 		
 		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
-		when (clientUnitCalc.findPreferredMovementSkillGraphics (unit)).thenReturn (movementSkill);
-
-		// Skills
-		when (unitUtils.mergeSpellEffectsIntoSkillList (fow.getMaintainedSpell (), unit, db)).thenReturn (new UnitHasSkillMergedList ());
+		when (clientUnitCalc.findPreferredMovementSkillGraphics (xu)).thenReturn (movementSkill);
 
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);

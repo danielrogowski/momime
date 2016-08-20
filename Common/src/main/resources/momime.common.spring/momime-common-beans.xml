@@ -225,12 +225,6 @@
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
-	<bean id="unitSkillUtils" class="momime.common.utils.UnitSkillUtilsImpl">
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
-	</bean>
-	
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>

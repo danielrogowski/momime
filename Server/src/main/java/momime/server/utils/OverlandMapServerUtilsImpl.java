@@ -25,8 +25,6 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -38,7 +36,7 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.database.CityNameContainerSvr;
 import momime.server.database.PlaneSvr;
@@ -59,9 +57,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
@@ -215,7 +210,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void attemptToMeldWithNode (final MemoryUnit attackingSpirit, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+	public final void attemptToMeldWithNode (final ExpandedUnitDetails attackingSpirit, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
@@ -231,18 +226,15 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			successful = true;
 		else
 		{
-			final int attackingStrength = getUnitSkillUtils ().getModifiedSkillValue (attackingSpirit, attackingSpirit.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, null,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, trueMap, db);
+			final int attackingStrength = attackingSpirit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
 			
 			// Create test unit
 			final AvailableUnit defendingSpirit = new AvailableUnit ();
 			defendingSpirit.setUnitID (tc.getNodeSpiritUnitID ());
 			getUnitUtils ().initializeUnitSkills (defendingSpirit, -1, db);
-
-			final int defendingStrength = getUnitSkillUtils ().getModifiedSkillValue (defendingSpirit, defendingSpirit.getUnitHasSkill (),
-				CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE, null,
-				UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, trueMap, db);
+			
+			final int defendingStrength = getUnitUtils ().expandUnitDetails (defendingSpirit, null, null, null, players, trueMap, db).getModifiedSkillValue
+				(CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
 			
 			// Decide who wins
 			successful = (getRandomUtils ().nextInt (defendingStrength + attackingStrength) < attackingStrength);
@@ -252,7 +244,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		if (successful)
 		{
 			// Add messages about it
-			final PlayerServerDetails attackingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, attackingSpirit.getOwningPlayerID (), "attemptToMeldWithNode (a)");
+			final PlayerServerDetails attackingPlayer = (PlayerServerDetails) attackingSpirit.getOwningPlayer ();
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
 			{
 				final NewTurnMessageNode msg = new NewTurnMessageNode ();
@@ -307,7 +299,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		}
 		
 		// Kill off the spirit
-		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit, KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit.getMemoryUnit (), KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
 
 		log.trace ("Exiting attemptToMeldWithNode = " + successful);
 	}
@@ -386,22 +378,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		unitUtils = utils;
 	}
 
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
-	}
-	
 	/**
 	 * @return Methods for updating true map + players' memory
 	 */

@@ -192,7 +192,7 @@ public final class TestDamageCalculatorImpl
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
-		when (damageTypeCalculations.determineSkillDamageType (attacker, "US001", fow.getMaintainedSpell (), db)).thenReturn (damageType);
+		when (damageTypeCalculations.determineSkillDamageType (xuAttacker, "US001", db)).thenReturn (damageType);
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -297,7 +297,7 @@ public final class TestDamageCalculatorImpl
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
-		when (damageTypeCalculations.determineSkillDamageType (attacker, "US001", fow.getMaintainedSpell (), db)).thenReturn (damageType);
+		when (damageTypeCalculations.determineSkillDamageType (xuAttacker, "US001", db)).thenReturn (damageType);
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -506,8 +506,8 @@ public final class TestDamageCalculatorImpl
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
 		final DamageTypeSvr damageType = new DamageTypeSvr ();
-		when (damageTypeCalculations.determineSkillDamageType (attacker,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, fow.getMaintainedSpell (), db)).thenReturn (damageType);
+		when (damageTypeCalculations.determineSkillDamageType (xuAttacker,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db)).thenReturn (damageType);
 		
 		// Set up object to test
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
@@ -688,12 +688,6 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateSingleFigureDamage () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -709,8 +703,6 @@ public final class TestDamageCalculatorImpl
 		defendingPD.setHuman (false);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
-		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
 		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
@@ -729,7 +721,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, fow, db)).thenReturn (4);
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 1)).thenReturn (4);
 		
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
 
@@ -748,7 +740,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
+		assertEquals (3, calc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, attackDamage));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -782,12 +774,6 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateArmourPiercingDamage () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -803,8 +789,6 @@ public final class TestDamageCalculatorImpl
 		defendingPD.setHuman (false);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
-		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
 		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
@@ -823,7 +807,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (defender, null, attackDamage, 2, players, fow, db)).thenReturn (2);		// halved by Armour Piercing
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 2)).thenReturn (2);		// halved by Armour Piercing
 
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
 
@@ -842,7 +826,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (3, calc.calculateArmourPiercingDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
+		assertEquals (3, calc.calculateArmourPiercingDamage (xuDefender, attackingPlayer, defendingPlayer, attackDamage));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -957,12 +941,6 @@ public final class TestDamageCalculatorImpl
 	@Test
 	public final void testCalculateMultiFigureDamage () throws Exception
 	{
-		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
 		attackingPD.setPlayerID (3);
@@ -978,8 +956,6 @@ public final class TestDamageCalculatorImpl
 		defendingPD.setHuman (false);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
-		
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
 		
 		// Set up unit
 		final MemoryUnit defender = new MemoryUnit ();
@@ -998,7 +974,7 @@ public final class TestDamageCalculatorImpl
 		
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (defender, null, attackDamage, 1, players, fow, db)).thenReturn (4);
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 1)).thenReturn (4);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 		when (xuDefender.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2
@@ -1020,7 +996,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (5, calc.calculateMultiFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, players, fow, db));
+		assertEquals (5, calc.calculateMultiFigureDamage (xuDefender, attackingPlayer, defendingPlayer, attackDamage));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());

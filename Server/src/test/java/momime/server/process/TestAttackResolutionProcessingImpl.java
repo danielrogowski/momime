@@ -19,14 +19,11 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
@@ -54,32 +51,12 @@ public final class TestAttackResolutionProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
-		// Set up players
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-
 		// Units
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitURN (1);
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.hasModifiedSkill ("US001")).thenReturn (false);
 
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (2);
-		
-		final List<MemoryUnit> attackers = new ArrayList<MemoryUnit> ();
-		attackers.add (attacker);
-		
-		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-		defenders.add (defender);
-
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", defenders,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", attackers,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (1);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.hasModifiedSkill ("US002")).thenReturn (true);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
 		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
@@ -104,10 +81,9 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		proc.setUnitSkillUtils (unitSkillUtils);
 
 		// Run method
-		final AttackResolutionSvr chosen = proc.chooseAttackResolution (attacker, defender, "UA01", players, fow, db);
+		final AttackResolutionSvr chosen = proc.chooseAttackResolution (attacker, defender, "UA01", db);
 		
 		// Check results
 		assertSame (res2, chosen);
@@ -123,32 +99,12 @@ public final class TestAttackResolutionProcessingImpl
 		// Mock database
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
-		// Set up other lists
-		final FogOfWarMemory fow = new FogOfWarMemory ();
-		
-		// Set up players
-		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();		
-
 		// Units
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		
-		final MemoryUnit attacker = new MemoryUnit ();
-		attacker.setUnitURN (1);
+		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
+		when (attacker.hasModifiedSkill ("US001")).thenReturn (false);
 
-		final MemoryUnit defender = new MemoryUnit ();
-		defender.setUnitURN (2);
-
-		final List<MemoryUnit> attackers = new ArrayList<MemoryUnit> ();
-		attackers.add (attacker);
-		
-		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-		defenders.add (defender);
-
-		when (unitSkillUtils.getModifiedSkillValue (attacker, attacker.getUnitHasSkill (), "US001", defenders,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-
-		when (unitSkillUtils.getModifiedSkillValue (defender, defender.getUnitHasSkill (), "US002", attackers,
-			UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
+		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.hasModifiedSkill ("US002")).thenReturn (false);	// <---
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
 		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
@@ -173,10 +129,9 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		proc.setUnitSkillUtils (unitSkillUtils);
 
 		// Run method
-		proc.chooseAttackResolution (attacker, defender, "UA01", players, fow, db);
+		proc.chooseAttackResolution (attacker, defender, "UA01", db);
 	}
 	
 	/**
@@ -385,8 +340,7 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender, players, fow, db)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender)).thenReturn (3);
 		
 		// Range penalty
 		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
@@ -508,10 +462,8 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender, players, fow, db)).thenReturn (3);
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer,
-			potentialDamageToAttacker, players, fow, db)).thenReturn (4);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToAttacker)).thenReturn (4);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -705,8 +657,7 @@ public final class TestAttackResolutionProcessingImpl
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer,
-			potentialDamageToDefender, players, fow, db)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender)).thenReturn (3);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();

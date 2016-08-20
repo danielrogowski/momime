@@ -63,7 +63,7 @@ public interface UnitClientUtils
 	 * @return Icon for this unit skill, or null if there isn't one
 	 * @throws IOException If there's a problem finding the unit skill icon
 	 */
-	public BufferedImage getUnitSkillComponentBreakdownIcon (final AvailableUnit unit, final String unitSkillID) throws IOException;
+	public BufferedImage getUnitSkillComponentBreakdownIcon (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException;
 	
 	/**
 	 * Finds the right icon for skills displayed in the bottom half of the unit info screen, where we just display a single icon for
@@ -78,7 +78,7 @@ public interface UnitClientUtils
 	 * @return Icon for this unit skill, or null if there isn't one
 	 * @throws IOException If there's a problem finding the unit skill icon
 	 */
-	public BufferedImage getUnitSkillSingleIcon (final AvailableUnit unit, final String unitSkillID) throws IOException;
+	public BufferedImage getUnitSkillSingleIcon (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException;
 	
 	/**
 	 * Kills a unit, either permanently removing it or marking it as dead in case it gets Raise or Animate Dead cast on it later

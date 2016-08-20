@@ -1,23 +1,13 @@
 package momime.client.calculations;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.messages.AvailableUnit;
-import momime.common.messages.MemoryUnit;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -34,9 +24,6 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
-	/** Unit skill utils */
-	private UnitSkillUtils unitSkillUtils;
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -48,32 +35,19 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	 * 
 	 * @param unit Unit to determine the movement graphics for
 	 * @return Movement graphics node
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If this unit has no skills which have movement graphics, or we can't find its experience level
 	 */
 	@Override
-	public final UnitSkillGfx findPreferredMovementSkillGraphics (final AvailableUnit unit)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final UnitSkillGfx findPreferredMovementSkillGraphics (final ExpandedUnitDetails unit) throws MomException
 	{
 		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID ());
-		
-		// Pre-merge in skills granted from spells (e.g. chaos channels flight) so that we only do it once time
-		final List<UnitSkillAndValue> mergedSkills;
-		if (unit instanceof MemoryUnit)
-			mergedSkills = getUnitUtils ().mergeSpellEffectsIntoSkillList (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				(MemoryUnit) unit, getClient ().getClientDB ());
-		else
-			mergedSkills = unit.getUnitHasSkill ();
 		
 		// Check all movement skills
 		UnitSkillGfx bestMatch = null;
 		for (final UnitSkillGfx thisSkill : getGraphicsDB ().getUnitSkills ())
 			if (thisSkill.getMovementIconImagePreference () != null)
 				if ((bestMatch == null) || (thisSkill.getMovementIconImagePreference () < bestMatch.getMovementIconImagePreference ()))
-					if (getUnitSkillUtils ().getModifiedSkillValue (unit, mergedSkills, thisSkill.getUnitSkillID (), null,
-						UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, getClient ().getPlayers (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) >= 0)
+					if (unit.hasModifiedSkill (thisSkill.getUnitSkillID ()))
 						bestMatch = thisSkill;
 		
 		if (bestMatch == null)
@@ -100,13 +74,11 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	 * @param unit Unit to determine the combat action ID for
 	 * @param isMoving Whether the unit is standing still or moving
 	 * @return Action ID for a unit standing still or moving
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 * @throws MomException If this unit has no skills which have movement graphics, we can't find its experience level, or a movement skill doesn't specify an action ID
 	 */
 	@Override
-	public final String determineCombatActionID (final AvailableUnit unit, final boolean isMoving)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final String determineCombatActionID (final ExpandedUnitDetails unit, final boolean isMoving)
+		throws MomException
 	{
 		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID () + ", " + isMoving);
 		
@@ -152,22 +124,6 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
-	}
-
-	/**
-	 * @return Unit skill utils
-	 */
-	public final UnitSkillUtils getUnitSkillUtils ()
-	{
-		return unitSkillUtils;
-	}
-
-	/**
-	 * @param utils Unit skill utils
-	 */
-	public final void setUnitSkillUtils (final UnitSkillUtils utils)
-	{
-		unitSkillUtils = utils;
 	}
 
 	/**

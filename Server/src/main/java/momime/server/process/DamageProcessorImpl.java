@@ -191,8 +191,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			}
 			else
 			{
-				final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (attacker, defender, attackSkillID, mom.getPlayers (),
-					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (xuAttacker, xuDefender, attackSkillID, mom.getServerDB ());
 				
 				steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
 			}

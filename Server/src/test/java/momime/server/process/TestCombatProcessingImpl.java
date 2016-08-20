@@ -49,7 +49,6 @@ import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
@@ -3465,7 +3464,6 @@ public final class TestCombatProcessingImpl
 		when (unitCalc.calculateDoubleMovementToEnterCombatTile (combatMap.getRow ().get (8).getCell ().get (3), db)).thenReturn (1);
 		
 		// Non-flying unit
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
 		when (xu.unitIgnoresCombatTerrain (db)).thenReturn (false);
 
 		// Set up object to test
@@ -3474,7 +3472,6 @@ public final class TestCombatProcessingImpl
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setUnitUtils (unitUtils);
-		proc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
 		proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom);

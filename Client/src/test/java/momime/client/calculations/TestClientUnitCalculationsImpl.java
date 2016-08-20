@@ -7,21 +7,18 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.common.MomException;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.utils.UnitSkillUtils;
-
-import org.junit.Test;
-
-import com.ndg.multiplayer.session.PlayerPublicDetails;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Tests the ClientUnitCalculationsImpl class
@@ -67,20 +64,18 @@ public final class TestClientUnitCalculationsImpl
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 
 		// Unit to test
-		final AvailableUnit unit = new AvailableUnit ();
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
 
 		// Give the unit skills US02 and US03
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US02", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US03", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US04", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US05", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
+		when (unit.hasModifiedSkill ("US01")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US02")).thenReturn (true);
+		when (unit.hasModifiedSkill ("US03")).thenReturn (true);
+		when (unit.hasModifiedSkill ("US04")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US05")).thenReturn (false);
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
 		calc.setGraphicsDB (gfx);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setClient (client);
 		
 		// Run test
@@ -126,20 +121,18 @@ public final class TestClientUnitCalculationsImpl
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 
 		// Unit to test
-		final AvailableUnit unit = new AvailableUnit ();
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
 
 		// Give the unit skills US02 and US03
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US02", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US03", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US04", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US05", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (-1);
+		when (unit.hasModifiedSkill ("US01")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US02")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US03")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US04")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US05")).thenReturn (false);
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
 		calc.setGraphicsDB (gfx);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setClient (client);
 		
 		// Run test
@@ -181,16 +174,14 @@ public final class TestClientUnitCalculationsImpl
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		
 		// Unit to test
-		final AvailableUnit unit = new AvailableUnit ();
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
 
-		// Give the unit skills US02 and US03
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
+		// Give the unit skills US01 only
+		when (unit.hasModifiedSkill ("US01")).thenReturn (true);
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
 		calc.setGraphicsDB (gfx);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setClient (client);
 		
 		// Run test
@@ -231,16 +222,14 @@ public final class TestClientUnitCalculationsImpl
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		
 		// Unit to test
-		final AvailableUnit unit = new AvailableUnit ();
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
 
-		// Give the unit skills US02 and US03
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (unit, unit.getUnitHasSkill (), "US01", null, UnitSkillComponent.ALL, UnitSkillPositiveNegative.BOTH, null, null, players, fow, db)).thenReturn (0);
+		// Give the unit skills US01 only
+		when (unit.hasModifiedSkill ("US01")).thenReturn (true);
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
 		calc.setGraphicsDB (gfx);
-		calc.setUnitSkillUtils (unitSkillUtils);
 		calc.setClient (client);
 		
 		// Run test

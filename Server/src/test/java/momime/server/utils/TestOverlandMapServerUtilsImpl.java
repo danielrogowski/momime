@@ -37,8 +37,6 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
@@ -53,7 +51,7 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
-import momime.common.utils.UnitSkillUtils;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.database.CityNameContainerSvr;
@@ -327,10 +325,14 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		// Units
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
-		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
-		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
+		
+		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
+		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xuAttackingSpirit.getOwningPlayer ()).thenReturn (attacker);
+		when (xuAttackingSpirit.getOwningPlayerID ()).thenReturn (attackerPd.getPlayerID ());
+		when (xuAttackingSpirit.getUnitID ()).thenReturn ("GS");
+		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
@@ -340,7 +342,7 @@ public final class TestOverlandMapServerUtilsImpl
 		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
+		utils.attemptToMeldWithNode (xuAttackingSpirit, trueMap, players, sd, db);
 		
 		// Check results
 		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
@@ -428,10 +430,14 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		// Units
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
-		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
-		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
+
+		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
+		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xuAttackingSpirit.getOwningPlayer ()).thenReturn (attacker);
+		when (xuAttackingSpirit.getOwningPlayerID ()).thenReturn (attackerPd.getPlayerID ());
+		when (xuAttackingSpirit.getUnitID ()).thenReturn ("GS");
+		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges fogOfWarMidTurnChanges = mock (FogOfWarMidTurnChanges.class);
@@ -441,7 +447,7 @@ public final class TestOverlandMapServerUtilsImpl
 		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run method
-		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
+		utils.attemptToMeldWithNode (xuAttackingSpirit, trueMap, players, sd, db);
 		
 		// Check results
 		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
@@ -536,18 +542,24 @@ public final class TestOverlandMapServerUtilsImpl
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defenderPd.getPlayerID (), "attemptToMeldWithNode (d)")).thenReturn (defender);
 		
 		// Units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
-		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
-		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
+
+		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
+		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xuAttackingSpirit.getOwningPlayer ()).thenReturn (attacker);
+		when (xuAttackingSpirit.getOwningPlayerID ()).thenReturn (attackerPd.getPlayerID ());
+		when (xuAttackingSpirit.getUnitID ()).thenReturn ("GS");
+		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
+		
+		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuDefendingSpirit);
 		
 		// Unit stats
-		// Can get away with matching attackingSpirit.getUnitHasSkill () for the defender also, because they're both just empty lists
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (2, 1);
+		when (xuAttackingSpirit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE)).thenReturn (2);
+		when (xuDefendingSpirit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE)).thenReturn (1);
 		
 		// Fix random result
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -558,13 +570,12 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
-		utils.setUnitSkillUtils (unitSkillUtils);
 		utils.setRandomUtils (randomUtils);
 		utils.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		utils.setUnitUtils (mock (UnitUtils.class));
+		utils.setUnitUtils (unitUtils);
 		
 		// Run method
-		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
+		utils.attemptToMeldWithNode (xuAttackingSpirit, trueMap, players, sd, db);
 		
 		// Check results
 		assertEquals ("GS", nodeCell.getNodeSpiritUnitID ());
@@ -668,18 +679,24 @@ public final class TestOverlandMapServerUtilsImpl
 		players.add (defender);
 		
 		// Units
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+
 		final MemoryUnit attackingSpirit = new MemoryUnit ();
-		attackingSpirit.setOwningPlayerID (attacker.getPlayerDescription ().getPlayerID ());
-		attackingSpirit.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
-		attackingSpirit.setUnitID ("GS");
 		attackingSpirit.setStatus (UnitStatusID.ALIVE);
 		
+		final ExpandedUnitDetails xuAttackingSpirit = mock (ExpandedUnitDetails.class);
+		when (xuAttackingSpirit.getUnitLocation ()).thenReturn (new MapCoordinates3DEx (20, 10, 1));
+		when (xuAttackingSpirit.getOwningPlayer ()).thenReturn (attacker);
+		when (xuAttackingSpirit.getOwningPlayerID ()).thenReturn (attackerPd.getPlayerID ());
+		when (xuAttackingSpirit.getUnitID ()).thenReturn ("GS");
+		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
+		
+		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuDefendingSpirit);
+		
 		// Unit stats
-		// Can get away with matching attackingSpirit.getUnitHasSkill () for the defender also, because they're both just empty lists
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (any (AvailableUnit.class), eq (attackingSpirit.getUnitHasSkill ()),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (2, 1);
+		when (xuAttackingSpirit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE)).thenReturn (2);
+		when (xuDefendingSpirit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE)).thenReturn (1);
 		
 		// Fix random result
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -690,12 +707,11 @@ public final class TestOverlandMapServerUtilsImpl
 		
 		final OverlandMapServerUtilsImpl utils = new OverlandMapServerUtilsImpl ();
 		utils.setFogOfWarMidTurnChanges (fogOfWarMidTurnChanges);
-		utils.setUnitSkillUtils (unitSkillUtils);
 		utils.setRandomUtils (randomUtils);
-		utils.setUnitUtils (mock (UnitUtils.class));
+		utils.setUnitUtils (unitUtils);
 		
 		// Run method
-		utils.attemptToMeldWithNode (attackingSpirit, trueMap, players, sd, db);
+		utils.attemptToMeldWithNode (xuAttackingSpirit, trueMap, players, sd, db);
 		
 		// Check results
 		assertEquals ("MS", nodeCell.getNodeSpiritUnitID ());

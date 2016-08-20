@@ -189,7 +189,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
@@ -417,13 +416,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="unitSkillDirectAccess" class="momime.server.utils.UnitSkillDirectAccessImpl" />
@@ -443,7 +442,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="serverUnitCalculations" class="momime.server.calculations.ServerUnitCalculationsImpl">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
@@ -467,7 +465,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="damageTypeCalculations" class="momime.server.calculations.DamageTypeCalculationsImpl">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 	</bean>
 
 	<bean id="damageCalculator" class="momime.server.calculations.DamageCalculatorImpl">
@@ -558,7 +555,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
@@ -605,7 +601,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="attackResolutionProcessing" class="momime.server.process.AttackResolutionProcessingImpl">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
@@ -634,7 +629,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
@@ -648,7 +642,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillUtils" ref="unitSkillUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />

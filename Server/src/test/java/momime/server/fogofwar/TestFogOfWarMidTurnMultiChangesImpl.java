@@ -39,6 +39,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
@@ -389,9 +390,12 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit1.getUnitDamage ().add (unit1dmg1);
 		unit1.getUnitDamage ().add (unit1dmg2);
 		unit1.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit1, unit1.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
 		when (direct.getDirectSkillValue (unit1.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
 
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (xu1.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		
 		// Summoned unit that has taken 1 kind of damage
 		final UnitDamage unit2dmg1 = new UnitDamage ();
 		unit2dmg1.setDamageType (StoredDamageTypeID.PERMANENT);
@@ -404,8 +408,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit2.getUnitDamage ().add (unit2dmg1);
 		for (int n = 0; n < 2; n++)
 			unit2.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit2, unit2.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
 		when (direct.getDirectSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (-1);
+
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
+		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
 		// Hero that has taken no damage
 		final MemoryUnit unit3 = new MemoryUnit ();
@@ -414,8 +421,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit3.setOwningPlayerID (1);
 		for (int n = 0; n < 3; n++)
 			unit3.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit3, unit3.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
 		when (direct.getDirectSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
+
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
+		when (xu3.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
 		// Summoned unit that has taken no damage
 		final MemoryUnit unit4 = new MemoryUnit ();
@@ -424,8 +434,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit4.setOwningPlayerID (1);
 		for (int n = 0; n < 4; n++)
 			unit4.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit4, unit4.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
 		when (direct.getDirectSkillValue (unit4.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (-1);
+
+		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
+		when (xu4.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
 		// Dead hero
 		final UnitDamage unit5dmg1 = new UnitDamage ();
@@ -439,8 +452,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit5.getUnitDamage ().add (unit5dmg1);
 		for (int n = 0; n < 5; n++)
 			unit5.getUnitHasSkill ().add (null);	// Just to make lists unique for mocks
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit5, unit5.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("LTN");
 		when (direct.getDirectSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (10);
+
+		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
+		when (xu5.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		
 		// Units list
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -522,10 +538,12 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit1.setCombatPosition (new MapCoordinates2DEx (5, 6));
 		unit1.setCombatHeading (1);
 		trueMap.getUnit ().add (unit1);
-		
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit1, unit1.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
 		when (direct.getDirectSkillValue (unit1.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
+		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (xu1.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
+		
 		// Normal unit, in combat, on the wrong side
 		final MemoryUnit unit2 = new MemoryUnit ();
 		unit2.setStatus (UnitStatusID.ALIVE);
@@ -534,17 +552,21 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit2.setCombatPosition (new MapCoordinates2DEx (5, 6));
 		unit2.setCombatHeading (1);
 		trueMap.getUnit ().add (unit2);
-		
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit2, unit2.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
 		when (direct.getDirectSkillValue (unit2.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+
+		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
+		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Normal unit, not in combat, on the correct side
 		final MemoryUnit unit3 = new MemoryUnit ();
 		unit3.setStatus (UnitStatusID.ALIVE);
 		trueMap.getUnit ().add (unit3);
-		
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit3, unit3.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
 		when (direct.getDirectSkillValue (unit3.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+
+		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
+		when (xu3.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
 		
 		// Summoned unit, in combat, on the correct side
 		final MemoryUnit unit4 = new MemoryUnit ();
@@ -554,9 +576,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit4.setCombatPosition (new MapCoordinates2DEx (5, 6));
 		unit4.setCombatHeading (1);
 		trueMap.getUnit ().add (unit4);
-		
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit4, unit4.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("S");
 		when (direct.getDirectSkillValue (unit4.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
+
+		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
+		when (xu4.getModifiedUnitMagicRealmLifeformType ()).thenReturn (summonedUnit);
 		
 		// Dead unit, in combat, on the correct side
 		final MemoryUnit unit5 = new MemoryUnit ();
@@ -566,10 +590,12 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit5.setCombatPosition (new MapCoordinates2DEx (5, 6));
 		unit5.setCombatHeading (1);
 		trueMap.getUnit ().add (unit5);
-		
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit5, unit5.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
 		when (direct.getDirectSkillValue (unit5.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
+		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
+		when (xu5.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
+		
 		// Normal unit, in combat, on the correct side
 		final MemoryUnit unit6 = new MemoryUnit ();
 		unit6.setStatus (UnitStatusID.ALIVE);
@@ -578,10 +604,12 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		unit6.setCombatPosition (new MapCoordinates2DEx (5, 7));
 		unit6.setCombatHeading (1);
 		trueMap.getUnit ().add (unit6);
-		
-		when (unitUtils.getModifiedUnitMagicRealmLifeformTypeID (unit6, unit6.getUnitHasSkill (), trueMap.getMaintainedSpell (), db)).thenReturn ("N");
 		when (direct.getDirectSkillValue (unit6.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)).thenReturn (11);
 
+		final ExpandedUnitDetails xu6 = mock (ExpandedUnitDetails.class);
+		when (unitUtils.expandUnitDetails (unit6, null, null, null, players, trueMap, db)).thenReturn (xu6);
+		when (xu6.getModifiedUnitMagicRealmLifeformType ()).thenReturn (normalUnit);
+		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		

@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,9 +28,6 @@ import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
-import momime.common.database.UnitSkillAndValue;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -49,7 +43,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.UnitSkillUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
@@ -212,16 +205,14 @@ public final class TestSimultaneousTurnsProcessingImpl
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (null);	// <--
 
 		// Movement speed
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (2);
+		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
 		
 		// Set up test object
 		final SimultaneousTurnsProcessingImpl proc = new SimultaneousTurnsProcessingImpl ();
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
-		proc.setUnitSkillUtils (unitSkillUtils);
 		
 		// Run method
 		assertFalse (proc.findAndProcessOneCellPendingMovement (mom));
@@ -341,10 +332,9 @@ public final class TestSimultaneousTurnsProcessingImpl
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (move3Cell);
 		
 		// Movement speed
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (2);
+		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
 		// (This proves that it works via total, not remaining move, because then the list would be 1, 2, 2, 3, 3, 3)
@@ -359,7 +349,6 @@ public final class TestSimultaneousTurnsProcessingImpl
 		final SimultaneousTurnsProcessingImpl proc = new SimultaneousTurnsProcessingImpl ();
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
-		proc.setUnitSkillUtils (unitSkillUtils);
 		proc.setRandomUtils (random);
 		
 		// Run method
@@ -487,10 +476,9 @@ public final class TestSimultaneousTurnsProcessingImpl
 		when (midTurn.determineOneCellPendingMovement (move3Stack, player2, move3, move3Unit.getDoubleOverlandMovesLeft (), mom)).thenReturn (move3Cell);
 
 		// Movement speed
-		final UnitSkillUtils unitSkillUtils = mock (UnitSkillUtils.class);
-		when (unitSkillUtils.getModifiedSkillValue (any (MemoryUnit.class), anyListOf (UnitSkillAndValue.class),
-			eq (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED), eq (null), eq (UnitSkillComponent.ALL), eq (UnitSkillPositiveNegative.BOTH),
-			eq (null), eq (null), eq (players), eq (fow), eq (db))).thenReturn (2);
+		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
 		
 		// List gets built up as 1, 1, 2, 2, 3, 3 so pick the last 2
 		// (This proves that it works via total, not remaining move, because then the list would be 1, 2, 2, 3, 3, 3)
@@ -505,7 +493,6 @@ public final class TestSimultaneousTurnsProcessingImpl
 		final SimultaneousTurnsProcessingImpl proc = new SimultaneousTurnsProcessingImpl ();
 		proc.setFogOfWarMidTurnMultiChanges (midTurn);
 		proc.setUnitUtils (unitUtils);
-		proc.setUnitSkillUtils (unitSkillUtils);
 		proc.setRandomUtils (random);
 		
 		// Run method
@@ -1157,13 +1144,19 @@ public final class TestSimultaneousTurnsProcessingImpl
 		when (cityCalc.markWithinExistingCityRadius (trueTerrain, 1, overlandMapSize)).thenReturn (falseArea, trueArea);
 		
 		// Player2 has 2 spirits he's trying to take a node from Player1 with; first fails, second succeeds, so third doesn't need to try
+		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final List<MemoryUnit> spirits = new ArrayList<MemoryUnit> ();
+		final List<ExpandedUnitDetails> xuSpirits = new ArrayList<ExpandedUnitDetails> ();
 		for (int n = 0; n < 2; n++)
 		{
 			final MemoryUnit spirit = new MemoryUnit ();
 			spirit.setOwningPlayerID (pd2.getPlayerID ());
 			spirit.setUnitLocation (new MapCoordinates3DEx (50, 20, 0));
 			spirits.add (spirit);
+
+			final ExpandedUnitDetails xuSpirit = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (spirit, null, null, null, players, trueMap, db)).thenReturn (xuSpirit);
+			xuSpirits.add (xuSpirit);
 		}
 
 		when (unitServerUtils.listUnitsWithSpecialOrder (trueMap.getUnit (), UnitSpecialOrder.MELD_WITH_NODE)).thenReturn (spirits);
@@ -1188,6 +1181,7 @@ public final class TestSimultaneousTurnsProcessingImpl
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 		proc.setRandomUtils (randomUtils);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setUnitUtils (unitUtils);
 		
 		// Run method
 		proc.processSpecialOrders (mom);
@@ -1210,7 +1204,7 @@ public final class TestSimultaneousTurnsProcessingImpl
 		assertEquals ("Another city was built before yours and is within 3 squares of where you are trying to build, so you cannot build here anymore", popup.getText ());
 		
 		// Both spirits tried to meld (the melding method is mocked, so we don't even know whether they succeeded)
-		for (final MemoryUnit spirit : spirits)
-			verify (overlandMapServerUtils, times (1)).attemptToMeldWithNode (spirit, trueMap, players, sd, db);
+		for (final ExpandedUnitDetails xuSpirit : xuSpirits)
+			verify (overlandMapServerUtils, times (1)).attemptToMeldWithNode (xuSpirit, trueMap, players, sd, db);
 	}
 }

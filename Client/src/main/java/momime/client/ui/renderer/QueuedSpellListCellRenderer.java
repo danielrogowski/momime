@@ -70,6 +70,7 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 	/**
 	 * Output spell name
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getListCellRendererComponent (final JList<? extends QueuedSpell> list, final QueuedSpell queued,
 		final int index, final boolean isSelected, final boolean cellHasFocus)

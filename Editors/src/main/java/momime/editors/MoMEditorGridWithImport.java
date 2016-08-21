@@ -44,6 +44,7 @@ public abstract class MoMEditorGridWithImport extends XmlEditorGridWithImport
 	 * Descendant classes can override this if they wish to add any filters to the file open dialog
 	 * @param lbxChooser The file open dialog
 	 */
+	@SuppressWarnings ("unused")
 	protected void addOtherFilters (final JFileChooser lbxChooser)
 	{
 	};

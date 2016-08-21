@@ -98,6 +98,7 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	/**
 	 * Return this panel to draw itself
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getListCellRendererComponent (final JList<? extends CitiesListEntry> list,
 		final CitiesListEntry city, final int index, final boolean isSelected, final boolean cellHasFocus)

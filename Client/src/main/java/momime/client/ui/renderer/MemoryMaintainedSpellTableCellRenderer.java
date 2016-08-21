@@ -39,6 +39,7 @@ public final class MemoryMaintainedSpellTableCellRenderer extends JLabel impleme
 	/**
 	 * Output mirror in caster wizard's colour, and overland enchantment image
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getTableCellRendererComponent (final JTable table, final Object value,
 		final boolean isSelected, final boolean hasFocus, final int row, final int column)

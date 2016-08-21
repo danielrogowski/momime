@@ -50,8 +50,10 @@ public final class UnitAttributeListCellRenderer extends JPanel implements ListC
 	/**
 	 * Sets up the image and label to draw the list cell
 	 */
+	@SuppressWarnings ("unused")
 	@Override
-	public final Component getListCellRendererComponent (final JList<? extends UnitAttributeWithBreakdownImage> list, final UnitAttributeWithBreakdownImage value, final int index, final boolean isSelected, final boolean cellHasFocus)
+	public final Component getListCellRendererComponent (final JList<? extends UnitAttributeWithBreakdownImage> list, final UnitAttributeWithBreakdownImage value,
+		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		textLabel.setFont (getFont ());
 		textLabel.setForeground (getForeground ());

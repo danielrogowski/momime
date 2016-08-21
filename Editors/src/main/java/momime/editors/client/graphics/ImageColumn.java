@@ -79,6 +79,7 @@ public final class ImageColumn extends XmlGridColumn
      * @param tableSorter The sort/filter used in displaying the data (most implementations can ignore this)
 	 * @return The column value to display for this record
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Object getColumnValueObj (final Element record, final int rowIndex, final int columnIndex, final TableRowSorter<XmlTableModel> tableSorter)
 	{

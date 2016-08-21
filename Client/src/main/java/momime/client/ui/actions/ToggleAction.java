@@ -23,7 +23,7 @@ public class ToggleAction extends AbstractAction
 	 * Toggle the state 
 	 */
 	@Override
-	public final void actionPerformed (final ActionEvent e)
+	public final void actionPerformed (@SuppressWarnings ("unused") final ActionEvent e)
 	{
 		selected = !selected;
 		selectedChanged ();

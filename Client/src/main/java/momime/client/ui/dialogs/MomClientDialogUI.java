@@ -94,7 +94,7 @@ public abstract class MomClientDialogUI extends LanguageVariableUIImpl
 					 * Maybe close the dialog with a mouse click
 					 */
 					@Override
-					public final void mouseClicked (final MouseEvent ev)
+					public final void mouseClicked (@SuppressWarnings ("unused") final MouseEvent ev)
 					{
 						if (isCloseOnClick ())
 							dialog.dispose ();

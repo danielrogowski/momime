@@ -75,6 +75,7 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	/**
 	 * Return this panel to draw itself
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getListCellRendererComponent (final JList<? extends NumberedHeroItem> list,
 		final NumberedHeroItem value, final int index, final boolean isSelected, final boolean cellHasFocus)

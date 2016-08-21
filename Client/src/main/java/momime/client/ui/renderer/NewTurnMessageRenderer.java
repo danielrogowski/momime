@@ -25,6 +25,7 @@ public final class NewTurnMessageRenderer implements ListCellRenderer<NewTurnMes
 	/**
 	 * Determines the component to use to draw this cell
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getListCellRendererComponent (final JList<? extends NewTurnMessageUI> list, final NewTurnMessageUI msg,
 		final int index, final boolean isSelected, final boolean cellHasFocus)

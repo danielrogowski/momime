@@ -64,8 +64,10 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	/**
 	 * Sets up the label to draw the list cell
 	 */
+	@SuppressWarnings ("unused")
 	@Override
-	public final Component getListCellRendererComponent (final JList<? extends Building> list, final Building building, final int index, final boolean isSelected, final boolean cellHasFocus)
+	public final Component getListCellRendererComponent (final JList<? extends Building> list, final Building building,
+		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Look up the name of the building
 		final BuildingLang buildingLang = getLanguage ().findBuilding (building.getBuildingID ());

@@ -74,7 +74,7 @@ public final class TestBreakdownLanguageVariableReplacerImpl
 		 * @return Replacement value; or null if the code is not recognized
 		 */
 		@Override
-		public final String determineVariableValue (final String code)
+		public final String determineVariableValue (@SuppressWarnings ("unused") final String code)
 		{
 			// This isn't needed by any of the unit tests here
 			return null;

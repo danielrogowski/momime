@@ -71,7 +71,7 @@ public final class TestAudioPlayerImpl
 		doAnswer (new Answer<Void> ()
 		{
 			@Override
-			public final Void answer (final InvocationOnMock invocation) throws Throwable
+			public final Void answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
 			{
 				obj.setLoop (false);
 				return null;
@@ -164,7 +164,7 @@ public final class TestAudioPlayerImpl
 		doAnswer (new Answer<Void> ()
 		{
 			@Override
-			public final Void answer (final InvocationOnMock invocation) throws Throwable
+			public final Void answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
 			{
 				obj.setLoop (false);
 				return null;
@@ -225,7 +225,7 @@ public final class TestAudioPlayerImpl
 		doAnswer (new Answer<Void> ()
 		{
 			@Override
-			public final Void answer (final InvocationOnMock invocation) throws Throwable
+			public final Void answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
 			{
 				obj.setLoop (false);
 				return null;
@@ -283,7 +283,7 @@ public final class TestAudioPlayerImpl
 		final Answer<Void> delayHalfSecond = new Answer<Void> ()
 		{
 			@Override
-			public final Void answer (final InvocationOnMock invocation) throws Throwable
+			public final Void answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
 			{
 				Thread.sleep (500);
 				return null;

@@ -132,6 +132,7 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 	/**
 	 * Show the hero portrait, and either the item slots or the item itself if there is one in the slot
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getTableCellRendererComponent (final JTable table, final Object value,
 		final boolean isSelected, final boolean hasFocus, final int row, final int column)

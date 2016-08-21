@@ -62,6 +62,7 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 	/**
 	 * Return this panel to draw itself
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getListCellRendererComponent (final JList<? extends Entry<MapCoordinates3DEx, List<MemoryUnit>>> list,
 		final Entry<MapCoordinates3DEx, List<MemoryUnit>> value, final int index, final boolean isSelected, final boolean cellHasFocus)

@@ -156,7 +156,7 @@ public final class TestNewTurnMessageProcessingImpl
 		when (messageFactory.createNewTurnMessageCategory ()).thenAnswer (new Answer<NewTurnMessageCategory> ()
 		{
 			@Override
-			public final NewTurnMessageCategory answer (final InvocationOnMock invocation) throws Throwable
+			public final NewTurnMessageCategory answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
 			{
 				return new NewTurnMessageCategory ();
 			}

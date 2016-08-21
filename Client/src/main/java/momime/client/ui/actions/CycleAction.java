@@ -83,7 +83,7 @@ public class CycleAction<E> extends AbstractAction
 	 * Select the next item 
 	 */
 	@Override
-	public final void actionPerformed (final ActionEvent e)
+	public final void actionPerformed (@SuppressWarnings ("unused") final ActionEvent e)
 	{
 		if (items.size () > 1)
 		{

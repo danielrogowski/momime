@@ -35,6 +35,7 @@ public final class MemoryMaintainedSpellListCellRenderer extends JLabel implemen
 	/**
 	 * Output spell name in caster wizard's colour
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final Component getListCellRendererComponent (final JList<? extends MemoryMaintainedSpell> list, final MemoryMaintainedSpell spell,
 		final int index, final boolean isSelected, final boolean cellHasFocus)

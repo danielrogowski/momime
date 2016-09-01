@@ -81,7 +81,8 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 		log.trace ("Entering getDefenderDefenceStrength: " + defender.getDebugIdentifier () + " hit by " + attackDamage);
 
 		// Work out basic stat
-		int defenderDefenceStrength = Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)) / divisor;
+		int defenderDefenceStrength = !defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE) ? 0 :
+			Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)) / divisor;
 		
 		// See if we have any immunity to the type of damage
 		for (final DamageTypeImmunity imm : attackDamage.getDamageType ().getDamageTypeImmunity ())

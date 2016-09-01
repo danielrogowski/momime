@@ -231,7 +231,7 @@ public final class TestCitiesListUI
 		
 		// Display form		
 		cities.setVisible (true);
-		Thread.sleep (50000);
+		Thread.sleep (5000);
 		cities.setVisible (false);
 	}
 }

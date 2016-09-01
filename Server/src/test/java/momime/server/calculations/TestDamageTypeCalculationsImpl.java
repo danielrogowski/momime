@@ -405,6 +405,7 @@ public final class TestDamageTypeCalculationsImpl
 		
 		// Unit being hit
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
 		
 		// Set up object to test
@@ -428,6 +429,7 @@ public final class TestDamageTypeCalculationsImpl
 		
 		// Unit being hit
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
 		
 		// Set up object to test
@@ -456,6 +458,7 @@ public final class TestDamageTypeCalculationsImpl
 		
 		// Unit being hit
 		final ExpandedUnitDetails defender = mock (ExpandedUnitDetails.class);
+		when (defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (5);
 		
 		// Set up object to test

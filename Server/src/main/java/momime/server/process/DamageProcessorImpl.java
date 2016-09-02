@@ -153,30 +153,26 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final AttackDamage commonPotentialDamageToDefenders = (spell == null) ? null :
 			getDamageCalculator ().attackFromSpell (spell, variableDamage, castingPlayer, attackingPlayer, defendingPlayer, mom.getServerDB ());
 		
-		// We can list the attackers as enemies when generating defender stats, but not the type of attack,
-		// which we don't know until we start going through the individual steps, since there might be multiple parts to the attack
-		final ExpandedUnitDetails xuAttacker;
-		final List<ExpandedUnitDetails> xuAttackers;
-		if (attacker == null)
-		{
-			xuAttacker = null;
-			xuAttackers = null;
-		}
-		else
-		{
-			xuAttacker = getUnitUtils ().expandUnitDetails (attacker, null, null, null,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-			
-			xuAttackers = new ArrayList<ExpandedUnitDetails> ();
-			xuAttackers.add (xuAttacker);
-		}
-		
 		// Process our attack against each defender
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		for (final MemoryUnit defender : defenders)
 		{
-			final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender, xuAttackers, null, null,
+			// Calculate the attacker stats, with the defender listed as the opponent.
+			// This is important for the call to chooseAttackResolution, since the defender may have Negate First Strike.
+			final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			
+			final ExpandedUnitDetails xuAttacker;
+			if (attacker == null)
+				xuAttacker = null;
+			else
+			{
+				final List<ExpandedUnitDetails> xuDefenders = new ArrayList<ExpandedUnitDetails> ();
+				xuDefenders.add (xuDefender);
+				
+				xuAttacker = getUnitUtils ().expandUnitDetails (attacker, xuDefenders, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			}
 
 			// For attacks based on unit attributes (i.e. melee or ranged attacks), use the full routine to work out the sequence of steps to resolve the attack.
 			// If its an attack from a spell, just make a dummy list with a null in it - processAttackResolutionStep looks for this.

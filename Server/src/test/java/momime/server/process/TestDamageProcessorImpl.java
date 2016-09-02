@@ -138,10 +138,10 @@ public final class TestDamageProcessorImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuDefender);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
@@ -316,12 +316,12 @@ public final class TestDamageProcessorImpl
 
 		// Expanded unit detalis
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		
+
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (defender), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuDefender);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);

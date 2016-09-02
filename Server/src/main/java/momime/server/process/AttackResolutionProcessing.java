@@ -28,7 +28,8 @@ public interface AttackResolutionProcessing
 	/**
 	 * When one unit initiates a basic attack in combat against another, determines the most appropriate attack resolution rules to deal with processing the attack.
 	 * 
-	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat) 
+	 * @param attacker Unit making the attack (may be owned by the player that is defending in combat)
+	 * 	Note the attacker stats must be calculated listing the defender as the opponent, in order for Negate First Strike to work correctly 
 	 * @param defender Unit being attacked (may be owned by the player that is attacking in combat)
 	 * @param attackSkillID Which skill they are attacking with (melee or ranged)
 	 * @param db Lookup lists built over the XML database

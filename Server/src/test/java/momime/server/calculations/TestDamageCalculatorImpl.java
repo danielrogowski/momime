@@ -184,6 +184,7 @@ public final class TestDamageCalculatorImpl
 		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has 6 figures...
 		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
@@ -289,6 +290,7 @@ public final class TestDamageCalculatorImpl
 		when (xuAttacker.calculateAliveFigureCount ()).thenReturn (6);		// Attacker has 6 figures...
 		when (xuAttacker.hasModifiedSkill ("US001")).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue ("US001")).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
@@ -497,6 +499,7 @@ public final class TestDamageCalculatorImpl
 		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (true);
 		when (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (3);	// ..and strength 3 attack per figure, so 18 hits...
+		when (xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (true);
 		when (xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);	// ..with 40% chance to hit on each
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
@@ -724,6 +727,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
 		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 1)).thenReturn (4);
 		
+		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
 
 		// Fix random number generator rolls
@@ -811,6 +815,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
 		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 2)).thenReturn (2);		// halved by Armour Piercing
 
+		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
 
 		// Fix random number generator rolls
@@ -891,6 +896,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
 
+		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
 
 		// Fix random number generator rolls
@@ -979,6 +985,8 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
 		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 1)).thenReturn (4);
+		
+		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (3);	// Each defending figure normally has 3 hearts...
 		when (xuDefender.calculateHitPointsRemainingOfFirstFigure ()).thenReturn (2);	// ...but 1st one is already hurt and only has 2

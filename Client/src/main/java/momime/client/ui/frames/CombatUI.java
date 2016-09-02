@@ -1721,7 +1721,8 @@ public final class CombatUI extends MomClientFrameUI
 				combatMapSize, getClient ().getClientDB ());
 			
 			// Calculate unit stats
-			final int chanceToHit = Math.min (10, 3 + xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
+			final int chanceToHit = Math.min (10, 3 + (!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT) ? 0 :
+				xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)));
 			final int chanceToHitTimesFigures = chanceToHit * xu.calculateAliveFigureCount ();
 						
 			// Melee attack / average hits / image

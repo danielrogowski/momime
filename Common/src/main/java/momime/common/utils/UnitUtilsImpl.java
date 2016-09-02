@@ -60,7 +60,19 @@ import momime.common.messages.UnitStatusID;
 public final class UnitUtilsImpl implements UnitUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UnitUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (UnitUtilsImpl.class);
+
+	/**
+	 * The majority of skills, if we don't have the skill at all, then bonuses don't apply to it.
+	 * e.g. Settlers have no melee attack - just because they might gain 20 exp doesn't mean they start attacking with their pitchforks.
+	 * e.g. Units with no ranged attack don't suddenly gain one.
+	 * e.g. Phantom Warriors have no defence, but this is in the nature of the type of unit, and I think it makes sense to not allow them to gain a defence thru bonuses.
+	 * 
+	 * Movement speed, HP and Resistance are N/A here, because all units MUST define a value for those (see ServerDatabaseExImpl.consistencyChecks ())
+	 * So the two that are left, that we must treat differently, are + to hit and + to block.  Most units don't have those values defined, but bonuses definitely still apply.
+	 */
+	private static final String [] SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL = new String []
+		{CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK};
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -483,7 +495,8 @@ public final class UnitUtilsImpl implements UnitUtils
 		// Movement speed, HP and Resistance are N/A here, because all units MUST define a value for those (see ServerDatabaseExImpl.consistencyChecks ())
 		// So the two that are left, that we must treat differently, are + to hit and + to block.  Most units don't have those values defined, but bonuses definitely still apply.
 		// So if they aren't in the list already then add them, and use "0" rather than "null" so we don't skip calculating the component breakdown.
-		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK})
+		// If we fail to actually find any bonuses to either of these, then we strip them back out of modifiedSkillValues lower down.
+		for (final String unitSkillID : SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL)
 			if (!basicSkillValuesWithNegatedSkillsRemoved.containsKey (unitSkillID))
 				basicSkillValuesWithNegatedSkillsRemoved.put (unitSkillID, 0);
 		
@@ -707,11 +720,17 @@ public final class UnitUtilsImpl implements UnitUtils
 							}
 				}
 		
-		// STEP 17 - Basic upkeep values - just copy from the unit definition
+		// STEP 17 - If we falied to find any + to hit / + to block values and we have no basic value then there's no point keeping it in the list
+		// We know the entry has to exist and have a valid map in it from the code above, but it may be an empty map
+		for (final String unitSkillID : SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL)
+			if (modifiedSkillValues.get (unitSkillID).isEmpty ())
+				modifiedSkillValues.remove (unitSkillID);
+		
+		// STEP 18 - Basic upkeep values - just copy from the unit definition
 		final Map<String, Integer> basicUpkeepValues = unitDef.getUnitUpkeep ().stream ().collect
 			(Collectors.toMap (u -> u.getProductionTypeID (), u -> u.getUndoubledProductionValue ()));
 		
-		// STEP 18 - Modify upkeep values
+		// STEP 19 - Modify upkeep values
 		final Map<String, Integer> modifiedUpkeepValues;
 
 		// Upkeep for undead is zeroed for normal units and adds +50% for summoned creatures

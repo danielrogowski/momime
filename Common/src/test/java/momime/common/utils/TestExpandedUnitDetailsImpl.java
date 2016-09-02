@@ -98,7 +98,7 @@ public final class TestExpandedUnitDetailsImpl
 	
 	/**
 	 * Tests the getModifiedSkillValue method on a valueless skill, e.g. First Strike
-	 * Also checks the special case of +to hit/block when we have no modifiers
+	 * Also checks the special case of experience when it has no value yet
 	 * @throws Exception If there is a problem
 	 */
 	@Test
@@ -106,7 +106,7 @@ public final class TestExpandedUnitDetailsImpl
 	{
 		final Map<String, Map<UnitSkillComponent, Integer>> modifiedSkillValues = new HashMap<String, Map<UnitSkillComponent, Integer>> ();
 		modifiedSkillValues.put ("US001", null);
-		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, null);
+		modifiedSkillValues.put (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, null);
 
 		// Set up test unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -115,7 +115,7 @@ public final class TestExpandedUnitDetailsImpl
 		
 		// Run method
 		assertNull (xu.getModifiedSkillValue ("US001"));
-		assertEquals (0, xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT).intValue ());
+		assertEquals (0, xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE).intValue ());
 	}
 	
 	/**

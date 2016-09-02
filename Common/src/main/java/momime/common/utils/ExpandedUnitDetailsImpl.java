@@ -331,11 +331,8 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		Integer total;
 		if ((components == null) || (components.isEmpty ()))
 		{
-			// Exception here is if this is the +to hit or +to defend skill and we have no modifiers whatsoever, we must still return 0
-			total = ((unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)) ||
-				(unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)) ||
-				(unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)))
-				? 0 : null;
+			// Exception here is if this is the experience skill and we're still at 0, it'll be an empty list but we must still return 0 not a null
+			total = (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ? 0 : null;
 		}
 		else
 		{

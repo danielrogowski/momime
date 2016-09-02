@@ -338,7 +338,7 @@ public final class TestUnitUtilsImpl
 	/**
 	 * Tests the expandSkillList method on a summoned available unit which has no skills which grant other skills
 	 * and we provide no info about enemies or the type of incoming attack, so is about the most simple example possible.
-	 * Also prove that even if we have no stats whatsoever that contribute to +to hit, that we still get a 0 value out (not a null).
+	 * Also prove that even if we have no stats whatsoever that contribute to +to hit, that we get a null out (since this was changed).
 	 * @throws Exception If there is a problem
 	 */
 	@Test
@@ -431,8 +431,7 @@ public final class TestUnitUtilsImpl
 		assertNull (details.getModifiedSkillValue ("US003"));
 		
 		assertFalse (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
-		assertTrue (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
-		assertEquals (0, details.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT).intValue ());
+		assertFalse (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
 	}
 
 	/**
@@ -514,8 +513,7 @@ public final class TestUnitUtilsImpl
 		assertNull (details.getModifiedSkillValue ("US003"));
 		
 		assertFalse (details.hasBasicSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
-		assertTrue (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
-		assertEquals (0, details.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT).intValue ());
+		assertFalse (details.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
 	}
 	
 	/**

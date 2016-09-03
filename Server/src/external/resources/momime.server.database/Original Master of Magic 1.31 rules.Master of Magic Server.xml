@@ -6677,6 +6677,9 @@
 		<heroItemBonusPrerequisite pickID="MB03">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="HS16">
+			<unitSkillValue>3</unitSkillValue>
+		</heroItemBonusStat>
 		<heroItemBonusDescription>Flaming</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB35">
@@ -6685,6 +6688,7 @@
 		<heroItemBonusPrerequisite pickID="MB03">
 			<quantity>5</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="US028" />
 		<heroItemBonusDescription>Lightning</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB36">
@@ -6709,6 +6713,7 @@
 		<heroItemBonusPrerequisite pickID="MB02">
 			<quantity>5</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="US031" />
 		<heroItemBonusDescription>Vampiric</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB39">
@@ -6733,6 +6738,10 @@
 		<heroItemBonusPrerequisite pickID="MB01">
 			<quantity>3</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS121" />
+		<heroItemBonusStat unitSkillID="US129">
+			<unitSkillValue>4</unitSkillValue>
+		</heroItemBonusStat>
 		<heroItemBonusDescription>Holy Avenger</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB42">
@@ -6741,6 +6750,7 @@
 		<heroItemBonusPrerequisite pickID="MB01">
 			<quantity>6</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS131" />
 		<heroItemBonusDescription>True Sight</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB43">
@@ -6749,6 +6759,7 @@
 		<heroItemBonusPrerequisite pickID="MB04">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS002" />
 		<heroItemBonusDescription>Resist Elements</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB44">
@@ -6757,6 +6768,7 @@
 		<heroItemBonusPrerequisite pickID="MB04">
 			<quantity>4</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS021" />
 		<heroItemBonusDescription>Elemental Armor</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB45">
@@ -6765,6 +6777,7 @@
 		<heroItemBonusPrerequisite pickID="MB04">
 			<quantity>3</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS004" />
 		<heroItemBonusDescription>Giant Strength</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB46">
@@ -6773,6 +6786,9 @@
 		<heroItemBonusPrerequisite pickID="MB04">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="US027">
+			<unitSkillValue>1</unitSkillValue>
+		</heroItemBonusStat>
 		<heroItemBonusDescription>Stoning</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB47">
@@ -6781,6 +6797,7 @@
 		<heroItemBonusPrerequisite pickID="MB05">
 			<quantity>6</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="US035" />
 		<heroItemBonusDescription>Phantasmal</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB48">
@@ -6789,6 +6806,7 @@
 		<heroItemBonusPrerequisite pickID="MB05">
 			<quantity>3</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS044" />
 		<heroItemBonusDescription>Guardian Wind</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB49">
@@ -6797,6 +6815,7 @@
 		<heroItemBonusPrerequisite pickID="MB05">
 			<quantity>7</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS070" />
 		<heroItemBonusDescription>Haste</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB50">
@@ -6805,6 +6824,7 @@
 		<heroItemBonusPrerequisite pickID="MB05">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS041" />
 		<heroItemBonusDescription>Resist Magic</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB51">
@@ -6813,6 +6833,7 @@
 		<heroItemBonusPrerequisite pickID="MB05">
 			<quantity>5</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS069" />
 		<heroItemBonusDescription>Magic Immunity</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB52">
@@ -6821,6 +6842,7 @@
 		<heroItemBonusPrerequisite pickID="MB02">
 			<quantity>4</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS181" />
 		<heroItemBonusDescription>Wraithform</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB53">
@@ -6829,6 +6851,7 @@
 		<heroItemBonusPrerequisite pickID="MB02">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS164" />
 		<heroItemBonusDescription>Cloak of Fear</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB54">
@@ -6837,6 +6860,7 @@
 		<heroItemBonusPrerequisite pickID="MB01">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS121" />
 		<heroItemBonusDescription>Bless</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB55">
@@ -6845,6 +6869,7 @@
 		<heroItemBonusPrerequisite pickID="MB01">
 			<quantity>4</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS144" />
 		<heroItemBonusDescription>Righteousness</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB56">
@@ -6853,6 +6878,7 @@
 		<heroItemBonusPrerequisite pickID="MB01">
 			<quantity>5</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS143" />
 		<heroItemBonusDescription>Invulnerability</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB57">
@@ -6861,6 +6887,7 @@
 		<heroItemBonusPrerequisite pickID="MB01">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS123" />
 		<heroItemBonusDescription>Endurance</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB58">
@@ -6869,6 +6896,7 @@
 		<heroItemBonusPrerequisite pickID="MB01">
 			<quantity>5</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS138" />
 		<heroItemBonusDescription>Planar Travel</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB59">
@@ -6877,6 +6905,7 @@
 		<heroItemBonusPrerequisite pickID="MB01">
 			<quantity>6</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS141" />
 		<heroItemBonusDescription>Lion Heart</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB60">
@@ -6885,6 +6914,7 @@
 		<heroItemBonusPrerequisite pickID="MB04">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS008" />
 		<heroItemBonusDescription>Water Walking</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB61">
@@ -6893,6 +6923,7 @@
 		<heroItemBonusPrerequisite pickID="MB04">
 			<quantity>6</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS031" />
 		<heroItemBonusDescription>Regeneration</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB62">
@@ -6901,6 +6932,7 @@
 		<heroItemBonusPrerequisite pickID="MB04">
 			<quantity>3</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS016" />
 		<heroItemBonusDescription>Pathfinding</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB63">
@@ -6909,6 +6941,7 @@
 		<heroItemBonusPrerequisite pickID="MB05">
 			<quantity>3</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS056" />
 		<heroItemBonusDescription>Flight</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB64">
@@ -6917,6 +6950,7 @@
 		<heroItemBonusPrerequisite pickID="MB05">
 			<quantity>5</quantity>
 		</heroItemBonusPrerequisite>
+		<heroItemBonusStat unitSkillID="SS062" />
 		<heroItemBonusDescription>Invisibility</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB65">
@@ -10930,6 +10964,10 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US122">
 		<changesUnitToMagicRealm>LTU</changesUnitToMagicRealm>
+		<grantsSkill grantsSkillID="US005" />
+		<grantsSkill grantsSkillID="US010" />
+		<grantsSkill grantsSkillID="US011" />
+		<grantsSkill grantsSkillID="US047" />
 		<unitSkillDescription>Undead (killed by Ghouls/Life Steal)</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US123">
@@ -18378,7 +18416,9 @@
 		<unitHasSkill unitSkillID="US034">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
-		<unitHasSkill unitSkillID="US129" />
+		<unitHasSkill unitSkillID="US129">
+			<unitSkillValue>4</unitSkillValue>
+		</unitHasSkill>
 		<unitName>Angel</unitName>
 	</unit>
 	<unit unitID="UN179">

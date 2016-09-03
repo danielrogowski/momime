@@ -175,8 +175,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 					{
 						// Special attack magic realms are defined against the unit skill rather than the realm of the attacker
 						// so e.g. Sky Drakes have lightning breath, which is a skill that deals Chaos damage, rather than the Sky Drake being a Sorcery creature... which is also a bit weird
-						final UnitSkillSvr unitSkillDef = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
-						attackFromMagicRealmID = unitSkillDef.getMagicRealmID ();
+						attackFromMagicRealmID = unitSkill.getMagicRealmID ();
 					}
 		
 					// Figure out the type of damage, and check whether the defender is immune to it.
@@ -212,13 +211,14 @@ public final class DamageCalculatorImpl implements DamageCalculator
 						damageCalculationMsg.setStoredDamageTypeID (damageType.getStoredDamageTypeID ());
 						
 						// Different skills deal different types of damage; illusionary attack skill overrides the damage resolution type, if the defender isn't immune to it
-						if ((xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK)) &&
-							((attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) ||
-							(attackSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))))
-							
-							damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
-						else
-							damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
+						damageCalculationMsg.setDamageResolutionTypeID (unitSkill.getDamageResolutionTypeID ());
+						if ((unitSkill.isDamageResolutionTypeUpgradeable () != null) && (unitSkill.isDamageResolutionTypeUpgradeable ()))
+						{
+							if (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK))
+								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
+							else if (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_ARMOUR_PIERCING))
+								damageCalculationMsg.setDamageResolutionTypeID (DamageResolutionTypeID.ARMOUR_PIERCING);
+						}
 						
 						// Some skills hit just once from the whole attacking unit, some hit once per figure
 						if (unitSkill.getDamagePerFigure () == null)

@@ -449,6 +449,7 @@ public final class TestDamageCalculatorImpl
 		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
 		unitSkill.setDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_FIGURE_COMBINED);
+		unitSkill.setDamageResolutionTypeUpgradeable (true);
 		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "attackFromUnitSkill")).thenReturn (unitSkill);
 
 		// Set up other lists

@@ -1186,6 +1186,12 @@ e.g. Bless, Endurance, Flame Blade, Confusion, Black Sleep - i.e. the list of sp
 							<xsd:documentation>Rules for determining the amount of damage dealt by attack skills, e.g. gaze, breath or touch attacks.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="damageResolutionTypeUpgradeable" type="xsd:boolean" nxe:label="Damage Res. Type upgradeable?">
+						<xsd:annotation>
+							<xsd:documentation>Can the damage resolution type be upgraded by the armour piercing / illusionary attack skills?
+Melee, ranged, thrown can, but fire breath for example also deals "single figure" damage, but cannot.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="damagePerFigure" type="momimecommon:damagePerFigureID" nxe:label="Damage Per Figure" nxe:showmaincolumn="false">
 						<xsd:annotation>
 							<xsd:documentation>False if the unit attacks as a whole (so a damaged unit deals the same damage as a fully healed unit); true if each figure

@@ -52,8 +52,11 @@ public final class ServerDatabaseValues
 
 	/** Converts melee damage dealt into life stealing stored damage type (ghouls) */
 	public final static String UNIT_SKILL_ID_CREATE_UNDEAD = "US019";
+
+	/** Converts melee and ranged damage dealt into armour piercing damage resolution type (elven lords/storm giants) */
+	public final static String UNIT_SKILL_ID_ARMOUR_PIERCING = "US028";
 	
-	/** Converts melee damage dealt into illusionary damage resolution type (phantom warriors/beasts) */
+	/** Converts melee and ranged damage dealt into illusionary damage resolution type (phantom warriors/beasts) */
 	public final static String UNIT_SKILL_ID_ILLUSIONARY_ATTACK = "US035";
 	
 	/** Scouting range */

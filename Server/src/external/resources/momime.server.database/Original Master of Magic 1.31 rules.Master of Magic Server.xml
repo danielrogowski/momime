@@ -9058,6 +9058,7 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT01</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
+		<damageResolutionTypeUpgradeable>true</damageResolutionTypeUpgradeable>
 		<damagePerFigure>S</damagePerFigure>
 		<attackResolution>
 			<attackResolutionDescription>Attacker has Haste, Defender is asleep</attackResolutionDescription>
@@ -10693,6 +10694,7 @@
 		<unitSkillDescription>Ranged Attack Strength</unitSkillDescription>
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
+		<damageResolutionTypeUpgradeable>true</damageResolutionTypeUpgradeable>
 		<damagePerFigure>S</damagePerFigure>
 		<attackResolution>
 			<attackResolutionDescription>Hasted ranged attack</attackResolutionDescription>
@@ -10996,6 +10998,7 @@
 		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT01</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
+		<damageResolutionTypeUpgradeable>true</damageResolutionTypeUpgradeable>
 		<damagePerFigure>S</damagePerFigure>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">

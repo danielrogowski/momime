@@ -257,10 +257,10 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			for (int attrNo = 1; attrNo <= 6; attrNo++)
 			{
 				final String unitAttributeID = unitAttributeIDs.get (attrNo-1);
-				final int attrValue = xu.getModifiedSkillValue (unitAttributeID);
-				
-				if (attrValue > 0)
+				if (xu.hasModifiedSkill (unitAttributeID))
 				{
+					final int attrValue = xu.getModifiedSkillValue (unitAttributeID);
+					
 					// Show number and icon for this unit attribute
 					contentPane.add (getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont (), new Integer (attrValue).toString ()),
 						"frmUnitRowUnit" + row + "Attribute" + attrNo + "Value");

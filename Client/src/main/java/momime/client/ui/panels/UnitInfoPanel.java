@@ -66,8 +66,6 @@ import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitCanCast;
-import momime.common.database.UnitSkillComponent;
-import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
@@ -692,7 +690,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Add each skill
 		getUnitSkillListCellRenderer ().setUnit (getUnit ());
-		for (final String unitSkillID : getUnit ().listModifiedSkillIDs ().stream ().sorted ().collect (Collectors.toList ()))
+		for (final String unitSkillID : getUnit ().listBasicSkillIDs ().stream ().sorted ().collect (Collectors.toList ()))
 		{
 			// Which list do we display it in?
 			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "UnitInfoPanel");
@@ -702,9 +700,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 																															(getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED))) ||
 				((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.FIXED) && (getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.FIXED)))
 			{
-				// Display as unit attribute
-				// Omit any that have no positive component at all (this is so + to hit and + to block don't show up if the unit has no value there)
-				if (getUnit ().filterModifiedSkillValue (unitSkillID, UnitSkillComponent.ALL, UnitSkillPositiveNegative.POSITIVE) > 0)
+				// Display as unit attribute - these have to display modified values, so we show curses and bonuses as extra or greyed out icons
+				if (getUnit ().hasModifiedSkill (unitSkillID))
 					unitAttributesItems.addElement (new UnitAttributeWithBreakdownImage (unitSkillID,
 						getUnitClientUtils ().generateAttributeImage (getUnit (), unitSkillID)));
 			}
@@ -717,7 +714,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			{
 				final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
 				skill.setUnitSkillID (unitSkillID);
-				skill.setUnitSkillValue (getUnit ().getModifiedSkillValue (unitSkillID));
+				skill.setUnitSkillValue (getUnit ().hasModifiedSkill (unitSkillID) ? getUnit ().getModifiedSkillValue (unitSkillID) : getUnit ().getBasicSkillValue (unitSkillID));
+				skill.setDarkened (!getUnit ().hasModifiedSkill (unitSkillID));
 				unitSkillsItems.addElement (skill);
 			}
 			

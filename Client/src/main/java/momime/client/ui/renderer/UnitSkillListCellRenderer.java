@@ -1,5 +1,6 @@
 package momime.client.ui.renderer;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -23,6 +24,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.SpellLang;
 import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.UnitSkillOrHeroItemSlot;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
@@ -34,7 +36,10 @@ import momime.common.utils.ExpandedUnitDetails;
 public final class UnitSkillListCellRenderer extends JLabel implements ListCellRenderer<UnitSkillOrHeroItemSlot>
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UnitSkillListCellRenderer.class);
+	private static final Log log = LogFactory.getLog (UnitSkillListCellRenderer.class);
+	
+	/** Value to multiply icon images by in order to dark them */
+	private static final int DARKEN_IMAGE = 0xA0A0A0;
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
@@ -122,6 +127,10 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 			}
 		}
 		
+		// Darken text?
+		setForeground (value.isDarkened () ? Color.GRAY : MomUIConstants.AQUA);
+		
+		// Figure out which image icon to show
 		setIcon (null);
 		try
 		{
@@ -151,7 +160,10 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 				}
 			}
 			
-			setIcon (new ImageIcon (image));
+			// Darken it?
+			final BufferedImage useImage = value.isDarkened () ? getUtils ().multiplyImageByColour (image, DARKEN_IMAGE) : image;
+			
+			setIcon (new ImageIcon (useImage));
 		}
 		catch (final Exception e)
 		{

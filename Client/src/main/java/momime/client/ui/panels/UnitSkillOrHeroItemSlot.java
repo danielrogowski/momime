@@ -22,6 +22,9 @@ public final class UnitSkillOrHeroItemSlot
 	
 	/** Filled in only if the row represents a hero item slot that has an item in it */
 	private NumberedHeroItem heroItem;
+	
+	/** Whether to show the icon and text darkened on the unit info panel */
+	private boolean darkened;
 
 	/**
 	 * @return Filled in only if the row represents a unit skill or spell effect
@@ -101,5 +104,21 @@ public final class UnitSkillOrHeroItemSlot
 	public final void setHeroItem (final NumberedHeroItem item)
 	{
 		heroItem = item;
+	}
+
+	/**
+	 * @return Whether to show the icon and text darkened on the unit info panel
+	 */
+	public final boolean isDarkened ()
+	{
+		return darkened;
+	}
+
+	/**
+	 * @param d Whether to show the icon and text darkened on the unit info panel
+	 */
+	public final void setDarkened (final boolean d)
+	{
+		darkened = d;
 	}
 }

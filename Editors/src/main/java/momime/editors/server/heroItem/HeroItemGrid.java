@@ -33,7 +33,7 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 public final class HeroItemGrid extends MoMEditorGridWithImport
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (HeroItemGrid.class);
+	private static final Log log = LogFactory.getLog (HeroItemGrid.class);
 	
 	/** If we generate this in the skill list, then don't output the item at all - this is to filter out the 2 items with the deactivated merging skill */
 	private static final String DONT_OUTPUT_ITEM = "X";

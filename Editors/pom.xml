@@ -114,12 +114,12 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-server</artifactId>
-			<version>0.9.7.3-SNAPSHOT</version>
+			<version>0.9.7.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>0.9.7.3-SNAPSHOT</version>
+			<version>0.9.7.3</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>

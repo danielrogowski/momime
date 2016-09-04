@@ -29,7 +29,7 @@ import momime.server.database.ServerDatabaseConstants;
 public final class LanguageEditorMain extends XmlEditorMain
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (LanguageEditorMain.class);
+	private static final Log log = LogFactory.getLog (LanguageEditorMain.class);
 
 	/**
 	 * Adds a special menu option

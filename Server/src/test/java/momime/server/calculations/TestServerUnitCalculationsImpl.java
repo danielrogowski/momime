@@ -55,7 +55,6 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
-import momime.server.database.v0_9_7.Unit;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 
@@ -357,7 +356,7 @@ public final class TestServerUnitCalculationsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final Unit spearmenDef = new Unit ();
+		final UnitSvr spearmenDef = new UnitSvr ();
 		
 		// Create map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
@@ -521,7 +520,7 @@ public final class TestServerUnitCalculationsImpl
 	{
 		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
 
-		final Unit spearmenDef = new Unit ();
+		final UnitSvr spearmenDef = new UnitSvr ();
 		
 		// Create map
 		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");

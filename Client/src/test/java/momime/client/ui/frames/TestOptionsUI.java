@@ -20,7 +20,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.config.v0_9_7.MomImeClientConfig;
+import momime.client.config.v0_9_8.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseEx;

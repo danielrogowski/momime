@@ -17,7 +17,7 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileTypeGfx;
-import momime.client.graphics.database.v0_9_7.TileTypeMiniMap;
+import momime.client.graphics.database.TileTypeMiniMapGfx;
 import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -49,7 +49,7 @@ public final class TestMiniMapBitmapGeneratorImpl
 
 			if (n < 4)
 			{
-				final TileTypeMiniMap miniMap = new TileTypeMiniMap ();
+				final TileTypeMiniMapGfx miniMap = new TileTypeMiniMapGfx ();
 				miniMap.setPlaneNumber (0);
 				miniMap.setMiniMapPixelColour ("00000" + n);
 				tileType.getTileTypeMiniMap ().add (miniMap);

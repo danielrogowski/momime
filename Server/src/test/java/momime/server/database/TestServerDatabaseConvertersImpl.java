@@ -35,7 +35,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.server.ServerTestData;
-import momime.server.database.v0_9_7.ServerDatabase;
+import momime.server.database.v0_9_8.ServerDatabase;
 import momime.server.utils.UnitSkillDirectAccess;
 
 /**

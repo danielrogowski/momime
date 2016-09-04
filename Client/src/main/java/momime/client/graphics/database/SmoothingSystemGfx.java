@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_7.SmoothingReduction;
-import momime.client.graphics.database.v0_9_7.SmoothingSystem;
+import momime.client.graphics.database.v0_9_8.SmoothingReduction;
+import momime.client.graphics.database.v0_9_8.SmoothingSystem;
 import momime.common.MomException;
 
 import org.apache.commons.logging.Log;

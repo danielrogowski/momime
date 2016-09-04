@@ -2,7 +2,7 @@ package momime.server.database;
 
 import java.util.List;
 
-import momime.server.database.v0_9_7.PickType;
+import momime.server.database.v0_9_8.PickType;
 
 /**
  * Just for typecasting the list of pick type counts

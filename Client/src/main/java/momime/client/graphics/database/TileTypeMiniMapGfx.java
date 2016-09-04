@@ -1,10 +1,10 @@
 package momime.client.graphics.database;
 
-import momime.client.graphics.database.v0_9_8.RangedAttackTypeWeaponGrade;
+import momime.client.graphics.database.v0_9_8.TileTypeMiniMap;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions
  */
-public final class RangedAttackTypeWeaponGradeGfx extends RangedAttackTypeWeaponGrade
+public final class TileTypeMiniMapGfx extends TileTypeMiniMap
 {
 }

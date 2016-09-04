@@ -48,6 +48,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.database.MapFeatureSvr;
+import momime.server.database.MapFeatureTreasureBookRewardSvr;
 import momime.server.database.PickFreeSpellSvr;
 import momime.server.database.PickSvr;
 import momime.server.database.PickTypeSvr;
@@ -56,9 +57,8 @@ import momime.server.database.SpellRankSvr;
 import momime.server.database.SpellSvr;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSvr;
-import momime.server.database.v0_9_7.MapFeatureTreasureBookReward;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
  * Methods dealing with choosing treasure to reward to a player for capturing a lair/node/tower
@@ -211,7 +211,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	@Override
 	public final TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
 		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering rollTreasureReward: Value " + treasureValue + " for player " + player.getPlayerDescription ().getPlayerID ());
@@ -448,7 +448,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			if (mapFeatureID != null)
 			{
 				final MapFeatureSvr mapFeature = db.findMapFeature (mapFeatureID, "rollTreasureReward");
-				for (final MapFeatureTreasureBookReward book : mapFeature.getMapFeatureTreasureBookReward ())
+				for (final MapFeatureTreasureBookRewardSvr book : mapFeature.getMapFeatureTreasureBookRewards ())
 					availableSpellBookIDs.add (book.getPickID ());
 			}
 			

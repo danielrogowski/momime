@@ -44,7 +44,6 @@ import momime.client.graphics.database.UnitSkillComponentImageGfx;
 import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.graphics.database.UnitSkillWeaponGradeGfx;
 import momime.client.graphics.database.UnitTypeGfx;
-import momime.client.graphics.database.v0_9_7.UnitSkillWeaponGrade;
 import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.RaceLang;
@@ -636,7 +635,7 @@ public final class TestUnitClientUtilsImpl
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		
-		final UnitSkillWeaponGrade skillWeaponGradeGfx = new UnitSkillWeaponGrade ();
+		final UnitSkillWeaponGradeGfx skillWeaponGradeGfx = new UnitSkillWeaponGradeGfx ();
 		skillWeaponGradeGfx.setSkillImageFile ("s.png");
 		
 		final UnitSkillGfx skillGfx = new UnitSkillGfx ();

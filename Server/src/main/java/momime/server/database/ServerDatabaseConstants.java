@@ -6,7 +6,7 @@ package momime.server.database;
 public final class ServerDatabaseConstants
 {
 	/** Version string - used to build the namespaces of the XSD/XML files */
-	private static final String MOM_IME_VERSION = "v0_9_7";
+	private static final String MOM_IME_VERSION = "v0_9_8";
 
 	/** Path and name to locate the server XSD file on the classpath */
 	public static final String SERVER_XSD_LOCATION = "/momime.server.database/MoMIMEServerDatabase.xsd";

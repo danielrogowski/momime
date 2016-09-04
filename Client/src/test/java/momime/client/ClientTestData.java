@@ -36,7 +36,7 @@ import momime.client.graphics.database.PickGfx;
 import momime.client.graphics.database.SmoothedTileTypeGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.graphics.database.WizardGfx;
-import momime.client.graphics.database.v0_9_7.GraphicsDatabase;
+import momime.client.graphics.database.v0_9_8.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;

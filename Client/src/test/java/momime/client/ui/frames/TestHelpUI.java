@@ -27,7 +27,7 @@ import momime.client.graphics.database.HeroItemSlotTypeGfx;
 import momime.client.graphics.database.PickGfx;
 import momime.client.graphics.database.UnitSkillComponentImageGfx;
 import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.v0_9_7.UnitSkillWeaponGrade;
+import momime.client.graphics.database.UnitSkillWeaponGradeGfx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.CitySpellEffectLang;
 import momime.client.language.database.CombatAreaEffectLang;
@@ -199,7 +199,7 @@ public final class TestHelpUI
 		int weaponGradeNumber = 0;
 		for (final String imageFilename : new String [] {"Normal", "Alchemy", "Mithril", "Adamantium"})
 		{
-			final UnitSkillWeaponGrade weaponGrade = new UnitSkillWeaponGrade ();
+			final UnitSkillWeaponGradeGfx weaponGrade = new UnitSkillWeaponGradeGfx ();
 			weaponGrade.setWeaponGradeNumber (weaponGradeNumber);
 			weaponGrade.setSkillImageFile ("/momime.client.graphics/unitSkills/melee" + imageFilename + ".png");
 			meleeGfx.getUnitSkillWeaponGrade ().add (weaponGrade);

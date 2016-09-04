@@ -14,7 +14,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
  * Methods dealing with choosing treasure to reward to a player for capturing a lair/node/tower
@@ -57,7 +57,7 @@ public interface TreasureUtils
 	 */
 	public TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
 		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**

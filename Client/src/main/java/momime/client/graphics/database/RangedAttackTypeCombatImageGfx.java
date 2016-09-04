@@ -1,6 +1,6 @@
 package momime.client.graphics.database;
 
-import momime.client.graphics.database.v0_9_7.RangedAttackTypeCombatImage;
+import momime.client.graphics.database.v0_9_8.RangedAttackTypeCombatImage;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions

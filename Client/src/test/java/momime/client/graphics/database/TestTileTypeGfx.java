@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
-import momime.client.graphics.database.v0_9_7.TileTypeMiniMap;
-
 /**
  * Tests the TileTypeGfx class
  */
@@ -26,7 +24,7 @@ public final class TestTileTypeGfx
 		{
 			n++;
 			
-			final TileTypeMiniMap miniMap = new TileTypeMiniMap ();
+			final TileTypeMiniMapGfx miniMap = new TileTypeMiniMapGfx ();
 			miniMap.setPlaneNumber (n);
 			miniMap.setMiniMapPixelColour (c);
 			

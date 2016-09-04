@@ -52,7 +52,7 @@ import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
-import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
+import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.utils.UnitServerUtils;
 import momime.server.utils.UnitSkillDirectAccess;
 
@@ -677,7 +677,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueTerrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCell);
 		moveToCell.setMapFeatureID ("MF01");
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
@@ -908,7 +908,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueTerrain.getPlane ().get (0).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCell);
 		moveToCell.setMapFeatureID ("MF01");
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Lets say we're moving onto a tower, so plane on moveTo changes to 0
@@ -1054,7 +1054,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		trueTerrain.getPlane ().get (1).getRow ().get (11).getCell ().get (20).setTerrainData (moveToCellOtherPlane);
 		moveToCellOtherPlane.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
 		
-		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
 		gsk.setTrueMap (trueMap);
 		
 		// Lets say we're moving onto a tower, so plane on moveTo changes to 0

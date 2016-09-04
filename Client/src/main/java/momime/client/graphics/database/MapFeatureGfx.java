@@ -3,7 +3,7 @@ package momime.client.graphics.database;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import momime.client.graphics.database.v0_9_7.MapFeature;
+import momime.client.graphics.database.v0_9_8.MapFeature;
 import momime.common.MomException;
 
 import org.apache.commons.logging.Log;

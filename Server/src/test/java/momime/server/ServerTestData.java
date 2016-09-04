@@ -54,7 +54,7 @@ import momime.server.database.ServerDatabaseFactory;
 import momime.server.database.ServerDatabaseObjectFactory;
 import momime.server.database.SpellSettingSvr;
 import momime.server.database.UnitSettingSvr;
-import momime.server.database.v0_9_7.ServerDatabase;
+import momime.server.database.v0_9_8.ServerDatabase;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.UnitSkillDirectAccess;
 

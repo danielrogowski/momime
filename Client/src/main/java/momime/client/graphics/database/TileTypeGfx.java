@@ -3,8 +3,8 @@ package momime.client.graphics.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_7.TileType;
-import momime.client.graphics.database.v0_9_7.TileTypeMiniMap;
+import momime.client.graphics.database.v0_9_8.TileType;
+import momime.client.graphics.database.v0_9_8.TileTypeMiniMap;
 
 /**
  * Adds a map over the planes, so we can find the minimap colours quickly

@@ -1,6 +1,6 @@
 package momime.client.language.database;
 
-import momime.client.language.database.v0_9_7.Plane;
+import momime.client.language.database.v0_9_8.Plane;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions

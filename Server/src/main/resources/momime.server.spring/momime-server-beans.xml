@@ -37,7 +37,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="serverConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.server.config.v0_9_7.MomImeServerConfig</value>
+    			<value>momime.server.config.v0_9_8.MomImeServerConfig</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -46,7 +46,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="schema" ref="serverConfigSchema" />
 	</bean>
 	
-	<bean id="serverConfig" class="momime.server.config.v0_9_7.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
+	<bean id="serverConfig" class="momime.server.config.v0_9_8.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
 		<constructor-arg value="${configDir}MoMIMEServerConfig.xml" />
 	</bean>
 	
@@ -59,7 +59,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="serverDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.server.database.v0_9_7.ServerDatabase</value>
+    			<value>momime.server.database.v0_9_8.ServerDatabase</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -323,8 +323,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     			<value>com.ndg.multiplayer.persistence.SavedGame</value>
 	   			<value>momime.common.messages.MomSessionDescription</value>
 	   			<value>momime.common.messages.MomGeneralPublicKnowledge</value>
-	   			<value>momime.server.messages.v0_9_7.MomGeneralServerKnowledge</value>
-	   			<value>momime.server.messages.v0_9_7.ServerGridCell</value>
+	   			<value>momime.server.messages.v0_9_8.MomGeneralServerKnowledge</value>
+	   			<value>momime.server.messages.v0_9_8.ServerGridCell</value>
 	   			<value>momime.common.messages.MomPersistentPlayerPublicKnowledge</value>
 	   			<value>momime.common.messages.MomPersistentPlayerPrivateKnowledge</value>
     		</list>

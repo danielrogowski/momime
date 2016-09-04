@@ -509,8 +509,12 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		// First go through listing the attributes our selected bonuses are granting a bonus to
 		final List<String> bonusSkillIDs = new ArrayList<String> ();
 		for (final String bonusID : selectedBonusIDs)
-			for (final UnitSkillAndValue bonusStat : getClient ().getClientDB ().findHeroItemBonus (bonusID, "updateBonusColouring").getHeroItemBonusStat ())
-				bonusSkillIDs.add (bonusStat.getUnitSkillID ());
+		{
+			final HeroItemBonus bonus = getClient ().getClientDB ().findHeroItemBonus (bonusID, "updateBonusColouring");
+			if ((bonus.isAllowCombiningWithBonusesToSameStat () == null) || (!bonus.isAllowCombiningWithBonusesToSameStat ()))
+				for (final UnitSkillAndValue bonusStat : bonus.getHeroItemBonusStat ())
+					bonusSkillIDs.add (bonusStat.getUnitSkillID ());
+		}
 		
 		// Now can go through all the buttons, highlighting any that are selected, dulling any that aren't selected,
 		// and greying out any that give a bonus to an attribute that we've already picked - we can't pick both Atk+1 and Atk+2
@@ -524,13 +528,19 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			}
 			else
 			{
+				// Don't allow picking too many bonuses
 				boolean ok = (getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemBonuses () == null) ||
 					(selectedBonusIDs.size () < getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemBonuses ());
-				
-				final Iterator<HeroItemBonusStat> bonusStatIter = getClient ().getClientDB ().findHeroItemBonus (bonusButton.getKey (), "updateBonusColouring").getHeroItemBonusStat ().iterator ();
-				while ((ok) && (bonusStatIter.hasNext ()))
-					if (bonusSkillIDs.contains (bonusStatIter.next ().getUnitSkillID ()))
-						ok = false;
+
+				// Don't allow both Atk+1 and Atk+2
+				final HeroItemBonus bonus = getClient ().getClientDB ().findHeroItemBonus (bonusButton.getKey (), "updateBonusColouring");
+				if ((bonus.isAllowCombiningWithBonusesToSameStat () == null) || (!bonus.isAllowCombiningWithBonusesToSameStat ()))
+				{
+					final Iterator<HeroItemBonusStat> bonusStatIter = bonus.getHeroItemBonusStat ().iterator ();
+					while ((ok) && (bonusStatIter.hasNext ()))
+						if (bonusSkillIDs.contains (bonusStatIter.next ().getUnitSkillID ()))
+							ok = false;
+				}
 				
 				bonusAction.setEnabled (ok);
 				bonusButton.getValue ().setForeground (ok ? MomUIConstants.DULL_GOLD : MomUIConstants.GRAY);

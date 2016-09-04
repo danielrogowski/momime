@@ -1343,6 +1343,12 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		        </xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="craftingCostMultiplierApplies" type="xsd:boolean" nxe:label="Cost multiplier applies?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="allowCombiningWithBonusesToSameStat" type="xsd:boolean" nxe:label="Allow combining with bonuses to same stat?" nxe:gridwidth="150">
+		        <xsd:annotation>
+		        	<xsd:documentation>This is for the "Flaming" hero item bonus.  Normally two bonuses cannot be chosen if they provide a bonus to the same stat, so you cannot
+pick both e.g. +1 and +2 attack on the same item.  However "Flaming" looks identical to +3 attack, so we need some flag that indicates that its OK to have both Flaming and +attack together.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusPrerequisite" type="momimecommon:pickAndQuantity" nxe:label="Prerequisites" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusStat" type="momimecommon:heroItemBonusStat" nxe:label="Bonus Stat" nxe:gridwidth="100" />
 		</xsd:sequence>

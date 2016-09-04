@@ -117,7 +117,7 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 							if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
 								error = "Bonus " + bonusDef.getHeroItemBonusDescription () + " requires at least " + prereq.getQuantity () + " picks in magic realm " + prereq.getPickID ();
 					
-					if (error == null)
+					if ((error == null) && ((bonusDef.isAllowCombiningWithBonusesToSameStat () == null) || (!bonusDef.isAllowCombiningWithBonusesToSameStat ())))
 						for (final UnitSkillAndValue bonusStat : bonusDef.getHeroItemBonusStat ())
 							if (bonusSkillIDs.contains (bonusStat.getUnitSkillID ()))
 								error = "More than one bonus was selected that gives a bonus to stat " + bonusStat.getUnitSkillID ();

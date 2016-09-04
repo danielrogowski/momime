@@ -6674,6 +6674,7 @@
 	<heroItemBonus heroItemBonusID="IB34">
 		<bonusCraftingCost>300</bonusCraftingCost>
 		<craftingCostMultiplierApplies>false</craftingCostMultiplierApplies>
+		<allowCombiningWithBonusesToSameStat>true</allowCombiningWithBonusesToSameStat>
 		<heroItemBonusPrerequisite pickID="MB03">
 			<quantity>2</quantity>
 		</heroItemBonusPrerequisite>

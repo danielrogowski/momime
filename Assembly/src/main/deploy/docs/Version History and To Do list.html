@@ -102,30 +102,26 @@
 			</td>
 		</tr>
 		<tr>
-			<td align=left>0.9.8</td>
+			<td align=left>Further 0.9.8.x releases</td>
 			<td align=left></td>
-			<td align=left><b>Planned features:</b>
+			<td align=left>
+				<b>Planned features:</b>
 				<ul>
-					<li>All uncommon spells working (including that the AI will cast them)
+					<li>All common and uncommon spells working (including that the AI will cast them)
+					<li>Continue implementing skills that don't work properly yet (need a list)
 					<li>Non-corporeal units should appear translucent in combat
 					<li>Buildings and population being destroyed during city combats
 					<li>Roads
 					<li>Improve minimap: Show white box indicating current view area; click on map to jump to a location; add checkbox on Option screen to have the map scroll with the view rather than remain fixed
+					<li>Flying units can only be engaged in combat by other flying units, or units with ranged/thrown/breath/etc attacks
 				</ul>
 			</td>
 		</tr>
 		<tr>
-			<td align=left>Further 0.9.7.x releases</td>
+			<td align=left>0.9.8.0</td>
 			<td align=left></td>
 			<td align=left>
-				<b>Planned for 0.9.7.3:</b>
-				<ul>
-					<li>Remaining unit skills that negate one another, e.g. Negate First Strike negates First Strike, Elemental Armour negates Resist Elements
-					<li>All unit skills and abilities working (except engineers building roads)
-					<li>All common spells working (including that the AI will cast them)
-				</ul>
-				
-				<b>Planned for 0.9.7.4:</b>
+				<b>Planned features:</b>
 				<ul>
 					<li>AI calculates unit factory rating for its cities and thus can choose the best city to build units at
 					<li>AI calculates defence rating for its cities and thus knows the friendly zones in which it needs to build more units
@@ -135,8 +131,58 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.7.2</b></td>
-			<td align=left><b>17 Feb 2016</b></td>
+			<td align=left><b>Current version: 0.9.7.3</b></td>
+			<td align=left><b>4 Sep 2016</b></td>
+			<td align=left>
+				<b>Spells that now work correctly:</b>
+				<ul>
+					<li>Dispel Magic, Dispel Magic true
+					<li>Recall Hero, Word of Recall
+					<li>Earth Lore
+					<li>Corruption
+					<li>Disrupt Wall
+					<li>Earth to Mud
+					<li>Black Sleep
+					<li>Damage from Psionic Blast is now downgraded from Illusionary to Single Figure if the target has Immunity to Illusions or True Sight
+				</ul>
+
+				<b>Skills that now work correctly:</b>
+				<ul>
+					<li>Negate First Strike
+					<li>Purify
+					<li>Elemental Armour and Resist Elements will no longer stack
+					<li>Iron Skin and Stone Skin will no longer stack
+					<li>Illusionary Attack now upgrades the kind of damage dealt by other attacks (melee, ranged, thrown) to be Illusionary, unless the target has Immunity to Illusions or True Sight
+					<li>Armour Piercing now upgrades the kind of damage dealt by other attacks (melee, ranged, thrown) to be armour piercing
+					<li>Holy Weapon, Eldritch Weapon and Flame Blade now negate Weapon Immunity
+					<li>Undead units now get all their invulnerabilities
+				</ul>
+
+				<b>Other major new features:</b>
+				<ul>
+					<li>Hero items now grant skills based on their imbued properties
+					<li>Skills that grant other skills now work correctly (e.g. Invulerability grants a secondary Weapon Immunity effect)
+				</ul>
+				
+				<b>Minor new features:</b>
+				<ul>
+					<li>Flying and non-corporeal units now ignore terrain in combat, so they neither are impeded by ridges nor gain the benefit of roads; and can also fly over Wall of Stone/City Walls
+					<li>Undead now have a visibly different appearance in combat and on the unit info screen
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed bug stopping conditional skill bonuses from applying (e.g. bonuses from Resist Elements that only apply when the incoming attack is Nature or Chaos-based)
+					<li>Fixed bug where if a unit makes a melee attack in combat and dies from the counterattack, it would still prompt the now dead unit to make another move
+					<li>Can no longer target city curses (e.g. Famine) at cities that you cannot currently see (avoids awkwardness if the city has since been destroyed but you aren't aware of it because you haven't seen it for a long time)
+					<li>Fixed movement rate rules for non-corporeal creatures so they take a full movement point per tile instead of a half (though I decided to set this up slightly differently than the original MoM)
+					<li>Fix incorrect case of searches for ".Master of Magic Language.xml" files
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.7.2</td>
+			<td align=left>17 Feb 2016</td>
 			<td align=left>
 				<b>Major new features:</b>
 				<ul>

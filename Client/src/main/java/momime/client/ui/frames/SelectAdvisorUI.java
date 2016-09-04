@@ -33,7 +33,7 @@ import momime.common.database.Shortcut;
 public final class SelectAdvisorUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SelectAdvisorUI.class);
+	private static final Log log = LogFactory.getLog (SelectAdvisorUI.class);
 
 	/** Width of the gold border */
 	public final static int BORDER_WIDTH = 15;

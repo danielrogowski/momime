@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MemoryGridCellUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (MemoryGridCellUtilsImpl.class);
 	
 	/**
 	 * This is used because the data structures hold blank for an unknown tile type that we can't see, but the XML files

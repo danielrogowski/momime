@@ -17,7 +17,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class MapFeatureGfx extends MapFeature
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MapFeatureGfx.class);
+	private static final Log log = LogFactory.getLog (MapFeatureGfx.class);
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;

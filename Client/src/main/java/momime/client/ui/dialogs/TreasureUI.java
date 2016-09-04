@@ -47,7 +47,7 @@ import momime.common.utils.UnitUtils;
 public final class TreasureUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MessageBoxUI.class);
+	private static final Log log = LogFactory.getLog (MessageBoxUI.class);
 
 	/** Bullet point prefix for each line of treasure reward */
 	private final static String BULLET_POINT = "\u2022 ";

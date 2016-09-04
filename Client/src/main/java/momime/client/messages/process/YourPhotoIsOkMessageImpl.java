@@ -21,7 +21,7 @@ import momime.common.utils.PlayerKnowledgeUtils;
 public final class YourPhotoIsOkMessageImpl extends YourPhotoIsOkMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (YourPhotoIsOkMessageImpl.class);
+	private static final Log log = LogFactory.getLog (YourPhotoIsOkMessageImpl.class);
 
 	/** New Game UI */
 	private NewGameUI newGameUI;

@@ -26,7 +26,7 @@ import momime.client.ui.MomUIConstants;
 public final class CalculationBoxUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CalculationBoxUI.class);
+	private static final Log log = LogFactory.getLog (CalculationBoxUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx calculationBoxLayout;

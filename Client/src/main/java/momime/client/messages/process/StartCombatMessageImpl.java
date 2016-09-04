@@ -30,7 +30,7 @@ import momime.common.utils.UnitUtils;
 public final class StartCombatMessageImpl extends StartCombatMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (StartCombatMessageImpl.class);
+	private static final Log log = LogFactory.getLog (StartCombatMessageImpl.class);
 
 	/** Combat UI */
 	private CombatUI combatUI;

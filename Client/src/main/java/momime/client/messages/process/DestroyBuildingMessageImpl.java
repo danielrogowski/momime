@@ -24,7 +24,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DestroyBuildingMessageImpl.class);
+	private static final Log log = LogFactory.getLog (DestroyBuildingMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

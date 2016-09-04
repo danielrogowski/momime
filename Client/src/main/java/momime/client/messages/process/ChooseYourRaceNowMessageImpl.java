@@ -20,7 +20,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class ChooseYourRaceNowMessageImpl extends ChooseYourRaceNowMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChooseYourRaceNowMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChooseYourRaceNowMessageImpl.class);
 
 	/** New Game UI */
 	private NewGameUI newGameUI;

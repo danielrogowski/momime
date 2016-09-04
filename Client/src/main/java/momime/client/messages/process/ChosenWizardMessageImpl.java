@@ -24,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ChosenWizardMessageImpl extends ChosenWizardMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChosenWizardMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChosenWizardMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

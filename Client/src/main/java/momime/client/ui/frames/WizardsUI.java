@@ -50,7 +50,7 @@ import momime.common.utils.PlayerKnowledgeUtils;
 public final class WizardsUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (WizardsUI.class);
+	private static final Log log = LogFactory.getLog (WizardsUI.class);
 
 	/** Special inset for books */
 	private final static int NO_INSET = 0;

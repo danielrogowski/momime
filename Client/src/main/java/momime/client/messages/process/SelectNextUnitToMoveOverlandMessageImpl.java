@@ -22,7 +22,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class SelectNextUnitToMoveOverlandMessageImpl extends SelectNextUnitToMoveOverlandMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
+	private static final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;

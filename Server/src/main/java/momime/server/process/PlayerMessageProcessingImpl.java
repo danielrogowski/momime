@@ -87,7 +87,7 @@ import momime.server.utils.UnitServerUtils;
 public final class PlayerMessageProcessingImpl implements PlayerMessageProcessing
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PlayerMessageProcessingImpl.class);
+	private static final Log log = LogFactory.getLog (PlayerMessageProcessingImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;

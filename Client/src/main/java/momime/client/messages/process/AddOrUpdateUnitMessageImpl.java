@@ -37,7 +37,7 @@ import momime.common.utils.UnitUtils;
 public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AddOrUpdateUnitMessageImpl.class);
+	private static final Log log = LogFactory.getLog (AddOrUpdateUnitMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

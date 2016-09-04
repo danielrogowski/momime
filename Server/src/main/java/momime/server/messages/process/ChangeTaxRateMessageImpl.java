@@ -23,7 +23,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChangeTaxRateMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChangeTaxRateMessageImpl.class);
 
 	/** City processing methods */
 	private CityProcessing cityProcessing;

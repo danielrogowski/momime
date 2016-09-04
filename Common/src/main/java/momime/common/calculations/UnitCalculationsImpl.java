@@ -49,7 +49,7 @@ import momime.common.utils.UnitUtils;
 public final class UnitCalculationsImpl implements UnitCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UnitCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (UnitCalculationsImpl.class);
 	
 	/** Initial state where each combat map tile hasn't been checked yet */ 
 	private final static int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;

@@ -51,7 +51,7 @@ import momime.common.database.SpellBookSectionID;
 public final class LanguageDatabaseExImpl extends LanguageDatabase implements LanguageDatabaseEx
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (LanguageDatabaseExImpl.class);
+	private static final Log log = LogFactory.getLog (LanguageDatabaseExImpl.class);
 	
 	/** Map of plane IDs to plane objects */
 	private Map<Integer, PlaneLang> planesMap;

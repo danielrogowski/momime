@@ -35,7 +35,7 @@ import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (HeroItemServerUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (HeroItemServerUtilsImpl.class);
 
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;

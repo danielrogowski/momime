@@ -34,7 +34,7 @@ import momime.common.messages.OverlandMapCityData;
 public final class ZoneAIImpl implements ZoneAI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ZoneAIImpl.class);
+	private static final Log log = LogFactory.getLog (ZoneAIImpl.class);
 	
 	/** Boolean operations for 2D maps */
 	private BooleanMapAreaOperations2D booleanMapAreaOperations2D;

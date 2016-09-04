@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 public final class PlayerPickUtilsImpl implements PlayerPickUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PlayerPickUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (PlayerPickUtilsImpl.class);
 	
 	/**
 	 * @param srcPicks List of picks to copy

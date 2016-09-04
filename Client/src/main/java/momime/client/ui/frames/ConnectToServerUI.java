@@ -44,7 +44,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 public final class ConnectToServerUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ConnectToServerUI.class);
+	private static final Log log = LogFactory.getLog (ConnectToServerUI.class);
 	
 	/** Large font */
 	private Font largeFont;

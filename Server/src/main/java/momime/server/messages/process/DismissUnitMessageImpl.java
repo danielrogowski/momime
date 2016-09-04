@@ -31,7 +31,7 @@ import momime.server.utils.UnitServerUtils;
 public final class DismissUnitMessageImpl extends DismissUnitMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DismissUnitMessageImpl.class);
+	private static final Log log = LogFactory.getLog (DismissUnitMessageImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;

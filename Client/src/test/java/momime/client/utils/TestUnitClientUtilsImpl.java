@@ -73,7 +73,7 @@ import momime.common.utils.UnitUtils;
 public final class TestUnitClientUtilsImpl
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TestUnitClientUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (TestUnitClientUtilsImpl.class);
 	
 	/** Colour for a transparent pixel */
 	private static final int TRANSPARENT = 0;

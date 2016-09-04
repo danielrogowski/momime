@@ -22,7 +22,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class EndOfContinuedMovementMessageImpl extends EndOfContinuedMovementMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (EndOfContinuedMovementMessageImpl.class);
+	private static final Log log = LogFactory.getLog (EndOfContinuedMovementMessageImpl.class);
 
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;

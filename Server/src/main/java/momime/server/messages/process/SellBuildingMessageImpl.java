@@ -31,7 +31,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class SellBuildingMessageImpl extends SellBuildingMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SellBuildingMessageImpl.class);
+	private static final Log log = LogFactory.getLog (SellBuildingMessageImpl.class);
 
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

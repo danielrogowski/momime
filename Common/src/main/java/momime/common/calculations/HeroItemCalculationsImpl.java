@@ -24,7 +24,7 @@ import momime.common.utils.PlayerPickUtils;
 public final class HeroItemCalculationsImpl implements HeroItemCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (HeroItemCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (HeroItemCalculationsImpl.class);
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;

@@ -64,7 +64,7 @@ import com.ndg.random.RandomUtils;
 public final class CityProcessingImpl implements CityProcessing
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CityProcessingImpl.class);
+	private static final Log log = LogFactory.getLog (CityProcessingImpl.class);
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;

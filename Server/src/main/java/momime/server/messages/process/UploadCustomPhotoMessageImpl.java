@@ -20,7 +20,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class UploadCustomPhotoMessageImpl extends UploadCustomPhotoMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UploadCustomPhotoMessageImpl.class);
+	private static final Log log = LogFactory.getLog (UploadCustomPhotoMessageImpl.class);
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc

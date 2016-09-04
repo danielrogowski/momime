@@ -14,7 +14,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 public final class ServerXsdResourceResolver extends CommonXsdResourceResolver
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ServerXsdResourceResolver.class);
+	private static final Log log = LogFactory.getLog (ServerXsdResourceResolver.class);
 	
 	/**
 	 * Creates a resolver to allow finding referenced MoM IME XSD files

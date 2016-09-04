@@ -16,7 +16,7 @@ import momime.common.utils.UnitUtils;
 public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ClientUnitCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (ClientUnitCalculationsImpl.class);
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;

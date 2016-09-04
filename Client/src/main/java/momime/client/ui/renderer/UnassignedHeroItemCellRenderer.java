@@ -32,7 +32,7 @@ import momime.common.messages.NumberedHeroItem;
 public final class UnassignedHeroItemCellRenderer extends JPanel implements ListCellRenderer<NumberedHeroItem>
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UnassignedHeroItemCellRenderer.class);
+	private static final Log log = LogFactory.getLog (UnassignedHeroItemCellRenderer.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx unassignedHeroItemLayout;

@@ -22,7 +22,7 @@ import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OverlandCastQueuedMessageImpl.class);
+	private static final Log log = LogFactory.getLog (OverlandCastQueuedMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

@@ -24,7 +24,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class UpdateRemainingResearchCostMessageImpl extends UpdateRemainingResearchCostMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UpdateRemainingResearchCostMessageImpl.class);
+	private static final Log log = LogFactory.getLog (UpdateRemainingResearchCostMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

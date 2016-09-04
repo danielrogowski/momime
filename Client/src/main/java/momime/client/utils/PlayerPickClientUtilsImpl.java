@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PlayerPickClientUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (PlayerPickClientUtilsImpl.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

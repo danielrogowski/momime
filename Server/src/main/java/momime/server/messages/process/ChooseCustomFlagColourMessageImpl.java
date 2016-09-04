@@ -16,7 +16,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseCustomFlagColourMessageImpl extends ChooseCustomFlagColourMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChooseCustomFlagColourMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChooseCustomFlagColourMessageImpl.class);
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc

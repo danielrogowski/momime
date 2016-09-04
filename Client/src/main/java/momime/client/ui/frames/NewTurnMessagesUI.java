@@ -38,7 +38,7 @@ import momime.client.utils.AnimationController;
 public final class NewTurnMessagesUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (NewTurnMessagesUI.class);
+	private static final Log log = LogFactory.getLog (NewTurnMessagesUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx newTurnMessagesLayout;

@@ -43,7 +43,7 @@ import momime.common.messages.OverlandMapCityData;
 public final class MiniCityViewUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MiniCityViewUI.class);
+	private static final Log log = LogFactory.getLog (MiniCityViewUI.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx miniCityViewLayout;

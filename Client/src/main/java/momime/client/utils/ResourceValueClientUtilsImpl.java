@@ -22,7 +22,7 @@ import momime.common.database.ProductionTypeAndUndoubledValue;
 public final class ResourceValueClientUtilsImpl implements ResourceValueClientUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ResourceValueClientUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (ResourceValueClientUtilsImpl.class);
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;

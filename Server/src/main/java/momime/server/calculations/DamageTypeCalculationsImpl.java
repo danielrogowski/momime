@@ -21,7 +21,7 @@ import momime.server.database.WeaponGradeSvr;
 public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DamageTypeCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (DamageTypeCalculationsImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

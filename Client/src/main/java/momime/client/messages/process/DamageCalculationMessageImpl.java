@@ -23,7 +23,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class DamageCalculationMessageImpl extends DamageCalculationMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DamageCalculationMessageImpl.class);
+	private static final Log log = LogFactory.getLog (DamageCalculationMessageImpl.class);
 
 	/** UI for displaying damage calculations */
 	private DamageCalculationsUI damageCalculationsUI;

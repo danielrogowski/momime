@@ -22,7 +22,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class AddNewTurnMessagesMessageImpl extends AddNewTurnMessagesMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
+	private static final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
 	
 	/** New turn messages helper methods */
 	private NewTurnMessageProcessing newTurnMessageProcessing;

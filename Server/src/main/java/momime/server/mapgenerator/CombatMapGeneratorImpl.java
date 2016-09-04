@@ -39,7 +39,7 @@ import com.ndg.random.RandomUtils;
 public final class CombatMapGeneratorImpl implements CombatMapGenerator
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatMapGeneratorImpl.class);
+	private static final Log log = LogFactory.getLog (CombatMapGeneratorImpl.class);
 
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

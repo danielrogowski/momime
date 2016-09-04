@@ -55,7 +55,7 @@ import momime.common.utils.MemoryBuildingUtils;
 public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements GraphicsDatabaseEx
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (GraphicsDatabaseExImpl.class);
+	private static final Log log = LogFactory.getLog (GraphicsDatabaseExImpl.class);
 	
 	/** Map of pick IDs to pick objects */
 	private Map<String, PickGfx> picksMap;

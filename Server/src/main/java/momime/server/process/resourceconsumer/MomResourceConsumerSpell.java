@@ -24,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class MomResourceConsumerSpell implements MomResourceConsumer
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomResourceConsumerSpell.class);
+	private static final Log log = LogFactory.getLog (MomResourceConsumerSpell.class);
 	
 	/** True map spell that is consuming resources */
 	private MemoryMaintainedSpell spell;

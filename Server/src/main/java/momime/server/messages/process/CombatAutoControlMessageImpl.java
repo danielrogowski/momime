@@ -26,7 +26,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class CombatAutoControlMessageImpl extends CombatAutoControlMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatAutoControlMessageImpl.class);
+	private static final Log log = LogFactory.getLog (CombatAutoControlMessageImpl.class);
 
 	/** Combat processing */
 	private CombatProcessing combatProcessing;

@@ -24,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class ChatMessageImpl extends ChatMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChatMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChatMessageImpl.class);
 
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;

@@ -47,7 +47,7 @@ import momime.server.utils.UnitServerUtils;
 public final class DamageProcessorImpl implements DamageProcessor
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DamageProcessorImpl.class);
+	private static final Log log = LogFactory.getLog (DamageProcessorImpl.class);
 
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;

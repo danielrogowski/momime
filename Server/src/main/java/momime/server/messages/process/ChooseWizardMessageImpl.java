@@ -22,7 +22,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseWizardMessageImpl extends ChooseWizardMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChooseWizardMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChooseWizardMessageImpl.class);
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;

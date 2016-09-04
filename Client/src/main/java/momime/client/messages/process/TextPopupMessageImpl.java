@@ -20,7 +20,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class TextPopupMessageImpl extends TextPopupMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TextPopupMessageImpl.class);
+	private static final Log log = LogFactory.getLog (TextPopupMessageImpl.class);
 
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;

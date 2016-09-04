@@ -47,7 +47,7 @@ import momime.common.messages.clienttoserver.SellBuildingMessage;
 public final class MessageBoxUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MessageBoxUI.class);
+	private static final Log log = LogFactory.getLog (MessageBoxUI.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx messageBoxLayout;

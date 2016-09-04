@@ -47,7 +47,7 @@ import momime.server.utils.UnitServerUtils;
 public final class DamageCalculatorImpl implements DamageCalculator
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DamageCalculatorImpl.class);
+	private static final Log log = LogFactory.getLog (DamageCalculatorImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

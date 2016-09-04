@@ -53,7 +53,7 @@ import momime.server.knowledge.ServerGridCellEx;
 public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OverlandMapServerUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (OverlandMapServerUtilsImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;

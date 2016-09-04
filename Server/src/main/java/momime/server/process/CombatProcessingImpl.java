@@ -66,7 +66,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	private static final int COMBAT_SETUP_UNITS_PER_ROW = 5;
 	
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatProcessingImpl.class);
+	private static final Log log = LogFactory.getLog (CombatProcessingImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

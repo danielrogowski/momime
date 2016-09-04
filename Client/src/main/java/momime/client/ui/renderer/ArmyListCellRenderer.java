@@ -29,7 +29,7 @@ import momime.common.messages.MemoryUnit;
 public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoordinates3DEx, List<MemoryUnit>>>
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ArmyListCellRenderer.class);
+	private static final Log log = LogFactory.getLog (ArmyListCellRenderer.class);
 	
 	/** Border between the top of the image and the unit icons */
 	public static final int TOP_BORDER = 2;

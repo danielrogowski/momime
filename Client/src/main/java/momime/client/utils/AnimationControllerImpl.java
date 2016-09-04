@@ -63,7 +63,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class AnimationControllerImpl implements AnimationController
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AnimationControllerImpl.class);
+	private static final Log log = LogFactory.getLog (AnimationControllerImpl.class);
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;

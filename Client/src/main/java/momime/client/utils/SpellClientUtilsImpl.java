@@ -42,7 +42,7 @@ import momime.common.utils.PlayerPickUtils;
 public final class SpellClientUtilsImpl implements SpellClientUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SpellClientUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (SpellClientUtilsImpl.class);
 
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

@@ -98,7 +98,7 @@ import momime.common.utils.UnitUtils;
 public final class CityViewUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CityViewUI.class);
+	private static final Log log = LogFactory.getLog (CityViewUI.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx cityViewLayout;

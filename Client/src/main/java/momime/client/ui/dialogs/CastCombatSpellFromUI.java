@@ -40,7 +40,7 @@ import momime.common.messages.NumberedHeroItem;
 public final class CastCombatSpellFromUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CastCombatSpellFromUI.class);
+	private static final Log log = LogFactory.getLog (CastCombatSpellFromUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx selectAdvisorLayout;

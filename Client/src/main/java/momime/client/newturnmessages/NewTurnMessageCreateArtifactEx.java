@@ -24,7 +24,7 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageMusic, NewTurnMessageClickable
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (NewTurnMessageCreateArtifactEx.class);
+	private static final Log log = LogFactory.getLog (NewTurnMessageCreateArtifactEx.class);
 
 	/** Current status of this NTM */
 	private NewTurnMessageStatus status;

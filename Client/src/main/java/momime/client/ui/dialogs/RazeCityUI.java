@@ -27,7 +27,7 @@ import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
 public final class RazeCityUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (RazeCityUI.class);
+	private static final Log log = LogFactory.getLog (RazeCityUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx razeCityLayout;

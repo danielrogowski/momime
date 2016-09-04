@@ -25,7 +25,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class AlchemyMessageImpl extends AlchemyMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AlchemyMessageImpl.class);
+	private static final Log log = LogFactory.getLog (AlchemyMessageImpl.class);
 
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;

@@ -43,7 +43,7 @@ import momime.server.utils.UnitServerUtils;
 public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SpecialOrderButtonMessageImpl.class);
+	private static final Log log = LogFactory.getLog (SpecialOrderButtonMessageImpl.class);
 
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;

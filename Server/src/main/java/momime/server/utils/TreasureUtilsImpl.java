@@ -66,7 +66,7 @@ import momime.server.messages.v0_9_7.MomGeneralServerKnowledge;
 public final class TreasureUtilsImpl implements TreasureUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TreasureUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (TreasureUtilsImpl.class);
 	
 	/** Minimum award of gold/mana; it is assumed that this is the cheapest possible reward */
 	private final static int MINIMUM_RESOURCE_REWARD = 50;

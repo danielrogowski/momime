@@ -71,7 +71,7 @@ import momime.common.utils.PlayerPickUtils;
 public final class CityCalculationsImpl implements CityCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CityCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (CityCalculationsImpl.class);
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

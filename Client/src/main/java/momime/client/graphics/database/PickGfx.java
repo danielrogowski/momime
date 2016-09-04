@@ -14,7 +14,7 @@ import momime.common.database.RecordNotFoundException;
 public final class PickGfx extends Pick
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PickGfx.class);
+	private static final Log log = LogFactory.getLog (PickGfx.class);
 	
 	/** Random utils */
 	private RandomUtils randomUtils;

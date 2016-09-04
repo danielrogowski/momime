@@ -58,7 +58,7 @@ import com.ndg.random.RandomUtils;
 public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OverlandMapGeneratorImpl.class);
+	private static final Log log = LogFactory.getLog (OverlandMapGeneratorImpl.class);
 	
 	/** Where to write the generated map to */
 	private MomGeneralServerKnowledgeEx gsk;

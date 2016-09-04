@@ -46,7 +46,7 @@ import momime.common.utils.UnitUtils;
 public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OverlandMapProcessingImpl.class);
+	private static final Log log = LogFactory.getLog (OverlandMapProcessingImpl.class);
 	
 	/** Ordered list of units that we have to give orders to this turn */
 	private final List<MemoryUnit> unitsLeftToMoveOverland = new ArrayList<MemoryUnit> ();

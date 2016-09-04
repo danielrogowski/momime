@@ -58,7 +58,7 @@ import momime.server.utils.HeroItemServerUtils;
 public final class MomSessionThread extends MultiplayerSessionThread implements MomSessionVariables
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomSessionThread.class);
+	private static final Log log = LogFactory.getLog (MomSessionThread.class);
 
 	/** Prefix for all session loggers */
 	public static final String MOM_SESSION_LOGGER_PREFIX = "MoMIMESession.";

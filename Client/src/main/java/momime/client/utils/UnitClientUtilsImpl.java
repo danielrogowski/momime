@@ -64,7 +64,7 @@ import momime.common.utils.UnitUtils;
 public final class UnitClientUtilsImpl implements UnitClientUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UnitClientUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (UnitClientUtilsImpl.class);
 
 	/** Attribute icons leave a gap every so often to make them easier to count */
 	private final static int ATTRIBUTE_ICONS_PER_GROUP = 5;

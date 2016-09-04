@@ -17,7 +17,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class AnimationGfx extends Animation
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AnimationGfx.class);
+	private static final Log log = LogFactory.getLog (AnimationGfx.class);
 	
 	/** All frames of an animation must share the same width (these aren't private because a unit test sets them) */
 	int animationWidth;

@@ -30,7 +30,7 @@ import momime.server.utils.PlayerPickServerUtils;
 public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChooseCustomPicksMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChooseCustomPicksMessageImpl.class);
 	
 	/** Server-only pick utils */
 	private PlayerPickServerUtils playerPickServerUtils;

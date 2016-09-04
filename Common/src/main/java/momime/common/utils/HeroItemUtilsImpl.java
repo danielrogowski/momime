@@ -14,7 +14,7 @@ import momime.common.messages.NumberedHeroItem;
 public final class HeroItemUtilsImpl implements HeroItemUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (HeroItemUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (HeroItemUtilsImpl.class);
 	
 	/**
 	 * @param heroItemURN Hero Item URN to search for

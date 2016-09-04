@@ -29,7 +29,7 @@ import momime.common.messages.SpellResearchStatusID;
 public final class SpellUtilsImpl implements SpellUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SpellUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (SpellUtilsImpl.class);
 
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;

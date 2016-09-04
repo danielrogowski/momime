@@ -98,7 +98,7 @@ import momime.common.utils.SpellUtils;
 public final class OverlandMapRightHandPanel extends MomClientPanelUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OverlandMapRightHandPanel.class);
+	private static final Log log = LogFactory.getLog (OverlandMapRightHandPanel.class);
 	
 	/** Bullet point prefix for each line explaining why we cannot end turn right now */
 	private final static String BULLET_POINT = "\u2022 ";

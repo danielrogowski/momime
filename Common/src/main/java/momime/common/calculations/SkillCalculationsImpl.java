@@ -17,7 +17,7 @@ import org.apache.commons.logging.LogFactory;
 public final class SkillCalculationsImpl implements SkillCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SkillCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (SkillCalculationsImpl.class);
 	
 	/**
 	 * @param currentSkill Current casting skill of the wizard

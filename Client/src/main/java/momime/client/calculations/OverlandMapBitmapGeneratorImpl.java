@@ -41,7 +41,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGenerator
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OverlandMapBitmapGeneratorImpl.class);
+	private static final Log log = LogFactory.getLog (OverlandMapBitmapGeneratorImpl.class);
 
 	/** $50000000 matches the alpha value on the partial border images */
 	private final static Color PARTIAL_FOW_COLOUR = new Color (0, 0, 0, 0x50);

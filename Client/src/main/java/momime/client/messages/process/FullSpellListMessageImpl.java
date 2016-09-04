@@ -24,7 +24,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class FullSpellListMessageImpl extends FullSpellListMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (FullSpellListMessageImpl.class);
+	private static final Log log = LogFactory.getLog (FullSpellListMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

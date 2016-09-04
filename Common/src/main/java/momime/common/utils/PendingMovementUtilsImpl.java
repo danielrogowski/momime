@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 public final class PendingMovementUtilsImpl implements PendingMovementUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PendingMovementUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (PendingMovementUtilsImpl.class);
 	
 	/**
 	 * Cancels any pending moves for this unit

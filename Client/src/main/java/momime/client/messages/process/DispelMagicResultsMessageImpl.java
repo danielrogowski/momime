@@ -35,7 +35,7 @@ import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DispelMagicResultsMessageImpl.class);
+	private static final Log log = LogFactory.getLog (DispelMagicResultsMessageImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;

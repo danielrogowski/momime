@@ -29,7 +29,7 @@ import momime.server.process.SpellProcessing;
 public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwitchOffMaintainedSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (RequestSwitchOffMaintainedSpellMessageImpl.class);
+	private static final Log log = LogFactory.getLog (RequestSwitchOffMaintainedSpellMessageImpl.class);
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;

@@ -38,7 +38,7 @@ import momime.common.messages.OverlandMapCityData;
 public final class CombatEndedUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatEndedUI.class);
+	private static final Log log = LogFactory.getLog (CombatEndedUI.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx combatEndedLayout;

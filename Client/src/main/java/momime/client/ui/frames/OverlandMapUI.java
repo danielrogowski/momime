@@ -91,7 +91,7 @@ import momime.common.utils.TargetSpellResult;
 public final class OverlandMapUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OverlandMapUI.class);
+	private static final Log log = LogFactory.getLog (OverlandMapUI.class);
 
 	/** Number of pixels at the edge of the window where the map scrolls */
 	private final static int MOUSE_SCROLL_WIDTH = 8;

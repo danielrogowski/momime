@@ -48,7 +48,7 @@ import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 public final class CityServerUtilsImpl implements CityServerUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CityServerUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (CityServerUtilsImpl.class);
 	
 	/** MemoryBuilding utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

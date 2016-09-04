@@ -29,7 +29,7 @@ import momime.server.utils.UnitServerUtils;
 public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends CancelPendingMovementAndSpecialOrdersMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CancelPendingMovementAndSpecialOrdersMessageImpl.class);
+	private static final Log log = LogFactory.getLog (CancelPendingMovementAndSpecialOrdersMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

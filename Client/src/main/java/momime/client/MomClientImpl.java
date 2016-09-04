@@ -65,7 +65,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 public final class MomClientImpl extends MultiplayerSessionClient implements MomClient
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomClientImpl.class);
+	private static final Log log = LogFactory.getLog (MomClientImpl.class);
 
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;

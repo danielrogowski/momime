@@ -28,7 +28,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class MagicSlider extends JPanel
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MagicSlider.class);
+	private static final Log log = LogFactory.getLog (MagicSlider.class);
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;

@@ -20,7 +20,7 @@ import org.apache.commons.logging.LogFactory;
 public final class SmoothingSystemGfx extends SmoothingSystem
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SmoothingSystemGfx.class);
+	private static final Log log = LogFactory.getLog (SmoothingSystemGfx.class);
 	
 	/** Map of smoothed bitmasks, to the list of unsmoothed bitmasks that reduce to it */
 	private final Map<String, List<String>> bitmasksMap = new HashMap<String, List<String>> ();

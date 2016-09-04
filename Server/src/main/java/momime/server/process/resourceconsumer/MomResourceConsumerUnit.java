@@ -25,7 +25,7 @@ import momime.server.fogofwar.KillUnitActionID;
 public final class MomResourceConsumerUnit implements MomResourceConsumer
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomResourceConsumerUnit.class);
+	private static final Log log = LogFactory.getLog (MomResourceConsumerUnit.class);
 	
 	/** True map unit that is consuming resources */
 	private MemoryUnit unit;

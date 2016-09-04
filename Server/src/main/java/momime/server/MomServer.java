@@ -25,7 +25,7 @@ import com.ndg.multiplayer.sessionbase.SessionDescription;
 public final class MomServer extends MultiplayerSessionServer
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomServer.class);
+	private static final Log log = LogFactory.getLog (MomServer.class);
 	
 	/** Message to send new game database to clients as they connect */
 	private NewGameDatabaseMessage newGameDatabaseMessage;

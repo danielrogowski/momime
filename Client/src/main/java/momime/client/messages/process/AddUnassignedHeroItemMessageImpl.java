@@ -22,7 +22,7 @@ import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 public final class AddUnassignedHeroItemMessageImpl extends AddUnassignedHeroItemMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AddUnassignedHeroItemMessageImpl.class);
+	private static final Log log = LogFactory.getLog (AddUnassignedHeroItemMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

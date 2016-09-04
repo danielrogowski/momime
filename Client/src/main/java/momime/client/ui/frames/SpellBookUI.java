@@ -88,7 +88,7 @@ import momime.common.utils.UnitUtils;
 public final class SpellBookUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SpellBookUI.class);
+	private static final Log log = LogFactory.getLog (SpellBookUI.class);
 	
 	/** Large font */
 	private Font largeFont;

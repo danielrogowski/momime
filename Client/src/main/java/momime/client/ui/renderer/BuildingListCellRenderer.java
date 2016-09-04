@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
 public final class BuildingListCellRenderer extends JPanel implements ListCellRenderer<Building>
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (BuildingListCellRenderer.class);
+	private static final Log log = LogFactory.getLog (BuildingListCellRenderer.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

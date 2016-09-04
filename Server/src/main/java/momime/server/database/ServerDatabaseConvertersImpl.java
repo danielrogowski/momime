@@ -33,7 +33,7 @@ import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 public final class ServerDatabaseConvertersImpl implements ServerDatabaseConverters
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ServerDatabaseConvertersImpl.class);
+	private static final Log log = LogFactory.getLog (ServerDatabaseConvertersImpl.class);
 	
 	/** Extension that XML files for the server must have */
 	public static final String SERVER_XML_FILE_EXTENSION = ".Master of Magic Server.xml";

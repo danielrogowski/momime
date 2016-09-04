@@ -22,7 +22,7 @@ import momime.common.utils.UnitUtils;
 public final class KillUnitMessageImpl extends KillUnitMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (KillUnitMessageImpl.class);
+	private static final Log log = LogFactory.getLog (KillUnitMessageImpl.class);
 
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;

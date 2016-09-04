@@ -64,7 +64,7 @@ import momime.server.database.ServerDatabaseValues;
 public class FogOfWarProcessingImpl implements FogOfWarProcessing
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (FogOfWarProcessingImpl.class);
+	private static final Log log = LogFactory.getLog (FogOfWarProcessingImpl.class);
 	
 	/** FOW duplication utils */
 	private FogOfWarDuplication fogOfWarDuplication;

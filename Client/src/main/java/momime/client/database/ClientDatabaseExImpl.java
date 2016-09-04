@@ -37,7 +37,7 @@ import momime.common.database.WeaponGrade;
 public final class ClientDatabaseExImpl extends ClientDatabase implements ClientDatabaseEx
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ClientDatabaseExImpl.class);
+	private static final Log log = LogFactory.getLog (ClientDatabaseExImpl.class);
 	
 	/** Map of plane numbers to plane XML objects */
 	private Map<Integer, Plane> planesMap;

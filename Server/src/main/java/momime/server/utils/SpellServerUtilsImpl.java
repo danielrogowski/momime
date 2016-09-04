@@ -20,7 +20,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 public final class SpellServerUtilsImpl implements SpellServerUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SpellServerUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (SpellServerUtilsImpl.class);
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;

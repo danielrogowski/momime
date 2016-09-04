@@ -50,7 +50,7 @@ import momime.server.utils.UnitServerUtils;
 public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsProcessing
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SimultaneousTurnsProcessingImpl.class);
+	private static final Log log = LogFactory.getLog (SimultaneousTurnsProcessingImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

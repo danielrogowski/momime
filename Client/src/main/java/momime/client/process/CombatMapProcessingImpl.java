@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 public final class CombatMapProcessingImpl implements CombatMapProcessing
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatMapProcessingImpl.class);
+	private static final Log log = LogFactory.getLog (CombatMapProcessingImpl.class);
 	
 	/** Ordered list of units that we have to give orders to this combat turn; if it isn't our turn, this is empty */
 	private final List<MemoryUnit> unitsLeftToMoveCombat = new ArrayList<MemoryUnit> ();

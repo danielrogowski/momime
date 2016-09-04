@@ -23,7 +23,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class StartGameMessageImpl extends StartGameMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (StartGameMessageImpl.class);
+	private static final Log log = LogFactory.getLog (StartGameMessageImpl.class);
 
 	/** New Game UI */
 	private NewGameUI newGameUI;

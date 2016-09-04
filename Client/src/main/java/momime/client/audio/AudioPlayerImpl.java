@@ -21,7 +21,7 @@ import com.ndg.random.RandomUtils;
 public final class AudioPlayerImpl implements AudioPlayer
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AudioPlayerImpl.class);
+	private static final Log log = LogFactory.getLog (AudioPlayerImpl.class);
 	
 	/** Random utils */
 	private RandomUtils randomUtils;

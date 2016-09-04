@@ -64,7 +64,7 @@ import momime.common.utils.SpellUtils;
 public final class MagicSlidersUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MagicSlidersUI.class);
+	private static final Log log = LogFactory.getLog (MagicSlidersUI.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx magicSlidersLayout;

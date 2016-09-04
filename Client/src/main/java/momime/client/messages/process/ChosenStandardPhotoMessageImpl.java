@@ -25,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChosenStandardPhotoMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChosenStandardPhotoMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

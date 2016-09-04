@@ -33,7 +33,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public class RequestCastSpellMessageImpl extends RequestCastSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (RequestCastSpellMessageImpl.class);
+	private static final Log log = LogFactory.getLog (RequestCastSpellMessageImpl.class);
 
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;

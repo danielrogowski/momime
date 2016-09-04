@@ -37,7 +37,7 @@ import momime.server.database.ServerDatabaseEx;
 public final class ServerCityCalculationsImpl implements ServerCityCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ServerCityCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (ServerCityCalculationsImpl.class);
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

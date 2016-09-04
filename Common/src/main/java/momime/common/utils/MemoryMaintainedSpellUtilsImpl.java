@@ -41,7 +41,7 @@ import momime.common.messages.UnitStatusID;
 public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpellUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MemoryMaintainedSpellUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (MemoryMaintainedSpellUtilsImpl.class);
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;

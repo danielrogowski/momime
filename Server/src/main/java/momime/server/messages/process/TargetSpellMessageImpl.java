@@ -58,7 +58,7 @@ import momime.server.utils.CityServerUtils;
 public final class TargetSpellMessageImpl extends TargetSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TargetSpellMessageImpl.class);
+	private static final Log log = LogFactory.getLog (TargetSpellMessageImpl.class);
 
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

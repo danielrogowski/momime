@@ -19,7 +19,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class ChooseInitialSpellsNowMessageImpl extends ChooseInitialSpellsNowMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChooseInitialSpellsNowMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ChooseInitialSpellsNowMessageImpl.class);
 
 	/** New Game UI */
 	private NewGameUI newGameUI;

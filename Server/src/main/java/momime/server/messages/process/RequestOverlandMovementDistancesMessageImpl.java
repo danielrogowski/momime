@@ -40,7 +40,7 @@ import momime.server.calculations.ServerUnitCalculations;
 public final class RequestOverlandMovementDistancesMessageImpl extends RequestOverlandMovementDistancesMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (RequestOverlandMovementDistancesMessageImpl.class);
+	private static final Log log = LogFactory.getLog (RequestOverlandMovementDistancesMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

@@ -23,7 +23,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class PendingMovementMessageImpl extends PendingMovementMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PendingMovementMessageImpl.class);
+	private static final Log log = LogFactory.getLog (PendingMovementMessageImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;

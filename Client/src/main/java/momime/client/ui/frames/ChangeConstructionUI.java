@@ -61,7 +61,7 @@ import momime.common.utils.UnitUtils;
 public final class ChangeConstructionUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ChangeConstructionUI.class);
+	private static final Log log = LogFactory.getLog (ChangeConstructionUI.class);
 
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;

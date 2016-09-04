@@ -47,7 +47,7 @@ import momime.common.database.UnitSkillTypeID;
 public final class OptionsUI extends MomClientFrameUI implements LanguageChangeMaster
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OptionsUI.class);
+	private static final Log log = LogFactory.getLog (OptionsUI.class);
 	
 	/** Suffix we expect language files to have */
 	private static final String FILE_SUFFIX = ".Master of Magic Language.xml";

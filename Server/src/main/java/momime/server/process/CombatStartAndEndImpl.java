@@ -81,7 +81,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	static final int COMBAT_SETUP_ATTACKER_ROWS = 4;
 	
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatStartAndEndImpl.class);
+	private static final Log log = LogFactory.getLog (CombatStartAndEndImpl.class);
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;

@@ -28,7 +28,7 @@ import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 public final class AddBuildingMessageImpl extends AddBuildingMessage implements CustomDurationServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AddBuildingMessageImpl.class);
+	private static final Log log = LogFactory.getLog (AddBuildingMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

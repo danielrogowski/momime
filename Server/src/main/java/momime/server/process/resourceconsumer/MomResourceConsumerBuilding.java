@@ -25,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class MomResourceConsumerBuilding implements MomResourceConsumer
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomResourceConsumerBuilding.class);
+	private static final Log log = LogFactory.getLog (MomResourceConsumerBuilding.class);
 	
 	/** True map building that is consuming resources */
 	private MemoryBuilding building;

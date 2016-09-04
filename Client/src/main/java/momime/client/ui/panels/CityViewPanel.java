@@ -34,7 +34,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class CityViewPanel extends JPanel
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CityViewPanel.class);
+	private static final Log log = LogFactory.getLog (CityViewPanel.class);
 
 	/** Multiplayer client */
 	private MomClient client;

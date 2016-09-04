@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class LanguageVariableReplacerImpl implements LanguageVariableReplacer
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (LanguageVariableReplacerImpl.class);
+	private static final Log log = LogFactory.getLog (LanguageVariableReplacerImpl.class);
 	
 	/**
 	 * @param description Text containing codes to replace

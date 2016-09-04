@@ -21,7 +21,7 @@ import momime.common.messages.servertoclient.TreasureRewardMessage;
 public final class TreasureRewardMessageImpl extends TreasureRewardMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TreasureRewardMessageImpl.class);
+	private static final Log log = LogFactory.getLog (TreasureRewardMessageImpl.class);
 
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;

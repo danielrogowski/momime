@@ -26,7 +26,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MemoryBuildingUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (MemoryBuildingUtilsImpl.class);
 	
 	/**
 	 * Checks to see if the specified building exists

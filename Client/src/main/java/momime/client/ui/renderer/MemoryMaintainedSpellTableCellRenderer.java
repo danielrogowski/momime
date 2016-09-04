@@ -25,7 +25,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class MemoryMaintainedSpellTableCellRenderer extends JLabel implements TableCellRenderer
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MemoryMaintainedSpellTableCellRenderer.class);
+	private static final Log log = LogFactory.getLog (MemoryMaintainedSpellTableCellRenderer.class);
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;

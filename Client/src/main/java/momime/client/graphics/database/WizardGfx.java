@@ -15,7 +15,7 @@ import com.ndg.random.RandomUtils;
 public final class WizardGfx extends Wizard
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (WizardGfx.class);
+	private static final Log log = LogFactory.getLog (WizardGfx.class);
 	
 	/** Random utils */
 	private RandomUtils randomUtils;

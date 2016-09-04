@@ -30,7 +30,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class MomAIImpl implements MomAI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MomAIImpl.class);
+	private static final Log log = LogFactory.getLog (MomAIImpl.class);
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;

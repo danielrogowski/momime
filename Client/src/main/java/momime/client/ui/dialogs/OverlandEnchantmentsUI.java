@@ -45,7 +45,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 public final class OverlandEnchantmentsUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MessageBoxUI.class);
+	private static final Log log = LogFactory.getLog (MessageBoxUI.class);
 	
 	/**
 	 * AnimationID for the swirls in the mirror.  I had to tidy up some frames of this, some of the original frames have a black border (the area outside the circle),

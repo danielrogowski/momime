@@ -14,7 +14,7 @@ import momime.common.database.HeroItemBonus;
 public final class HeroItemClientUtilsImpl implements HeroItemClientUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (HeroItemClientUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (HeroItemClientUtilsImpl.class);
 	
 	/**
 	 * Given a list of attribute bonuses, slots in a null when we swap from a bonus to one attribute to a bonus to another

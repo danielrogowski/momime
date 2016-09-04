@@ -22,7 +22,7 @@ import com.ndg.random.RandomUtils;
 public final class SmoothedTileTypeGfx extends SmoothedTileType
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SmoothedTileTypeGfx.class);
+	private static final Log log = LogFactory.getLog (SmoothedTileTypeGfx.class);
 
 	/** Map of unsmoothed bitmasks to sets of possible images */
 	private final Map<String, List<SmoothedTileGfx>> bitmasksMap = new HashMap<String, List<SmoothedTileGfx>> ();

@@ -19,7 +19,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class OverlandMovementTypesMessageImpl extends OverlandMovementTypesMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (OverlandMovementTypesMessageImpl.class);
+	private static final Log log = LogFactory.getLog (OverlandMovementTypesMessageImpl.class);
 
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;

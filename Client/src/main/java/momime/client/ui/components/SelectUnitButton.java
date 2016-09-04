@@ -28,7 +28,7 @@ import momime.common.utils.ExpandedUnitDetails;
 public final class SelectUnitButton extends JToggleButton
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SelectUnitButton.class);
+	private static final Log log = LogFactory.getLog (SelectUnitButton.class);
 	
 	/** Diameter of experience rings */
 	private static final int EXPERIENCE_RING_SIZE = 4;

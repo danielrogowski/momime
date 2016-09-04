@@ -53,7 +53,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 public final class CityAIImpl implements CityAI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CityAIImpl.class);
+	private static final Log log = LogFactory.getLog (CityAIImpl.class);
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;

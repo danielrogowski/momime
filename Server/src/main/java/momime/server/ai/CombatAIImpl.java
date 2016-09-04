@@ -40,7 +40,7 @@ import momime.server.process.CombatProcessing;
 public final class CombatAIImpl implements CombatAI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatAIImpl.class);
+	private static final Log log = LogFactory.getLog (CombatAIImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;

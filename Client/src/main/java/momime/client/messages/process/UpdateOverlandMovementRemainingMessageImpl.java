@@ -23,7 +23,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class UpdateOverlandMovementRemainingMessageImpl extends UpdateOverlandMovementRemainingMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
+	private static final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

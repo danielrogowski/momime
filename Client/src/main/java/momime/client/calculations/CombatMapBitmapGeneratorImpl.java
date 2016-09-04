@@ -34,7 +34,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenerator
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatMapBitmapGeneratorImpl.class);
+	private static final Log log = LogFactory.getLog (CombatMapBitmapGeneratorImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;

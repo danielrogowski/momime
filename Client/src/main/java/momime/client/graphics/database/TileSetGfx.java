@@ -25,7 +25,7 @@ import com.ndg.swing.NdgUIUtils;
 public final class TileSetGfx extends TileSet
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TileSetGfx.class);
+	private static final Log log = LogFactory.getLog (TileSetGfx.class);
 	
 	/** All animations used by tiles in the same tile set must share the same number of frames, which gets set here; if tile set is all static images, will be set to 1 */
 	private int animationFrameCount;

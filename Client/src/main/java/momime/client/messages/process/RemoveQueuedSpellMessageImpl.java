@@ -20,7 +20,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class RemoveQueuedSpellMessageImpl extends RemoveQueuedSpellMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (RemoveQueuedSpellMessageImpl.class);
+	private static final Log log = LogFactory.getLog (RemoveQueuedSpellMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

@@ -9,7 +9,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class LanguageVariableReplacerTokenImpl extends LanguageVariableReplacerImpl
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (LanguageVariableReplacerTokenImpl.class);
+	private static final Log log = LogFactory.getLog (LanguageVariableReplacerTokenImpl.class);
 
 	/**
 	 * @param c Char to test 

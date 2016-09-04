@@ -35,7 +35,7 @@ import momime.common.utils.UnitUtils;
 public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIntoOrTakeUnitOutOfCombatMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SetUnitIntoOrTakeUnitOutOfCombatMessageImpl.class);
+	private static final Log log = LogFactory.getLog (SetUnitIntoOrTakeUnitOutOfCombatMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

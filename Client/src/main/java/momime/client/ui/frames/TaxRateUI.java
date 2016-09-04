@@ -35,7 +35,7 @@ import momime.common.messages.clienttoserver.ChangeTaxRateMessage;
 public final class TaxRateUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TaxRateUI.class);
+	private static final Log log = LogFactory.getLog (TaxRateUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx selectAdvisorLayout;

@@ -25,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class DamageCalculationDefenceDataEx extends DamageCalculationDefenceData implements DamageCalculationText
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DamageCalculationDefenceDataEx.class);
+	private static final Log log = LogFactory.getLog (DamageCalculationDefenceDataEx.class);
 	
 	/** Unit being attacked */
 	private MemoryUnit defenderUnit;

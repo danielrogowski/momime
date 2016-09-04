@@ -23,7 +23,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class CombatMapUtilsImpl implements CombatMapUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CombatMapUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (CombatMapUtilsImpl.class);
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;

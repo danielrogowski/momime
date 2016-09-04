@@ -31,7 +31,7 @@ import momime.common.utils.SpellUtils;
 public final class QueuedSpellListCellRenderer extends JPanel implements ListCellRenderer<QueuedSpell>
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (QueuedSpellListCellRenderer.class);
+	private static final Log log = LogFactory.getLog (QueuedSpellListCellRenderer.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

@@ -20,7 +20,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class NewGameDatabaseMessageImpl extends NewGameDatabaseMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (NewGameDatabaseMessageImpl.class);
+	private static final Log log = LogFactory.getLog (NewGameDatabaseMessageImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;

@@ -39,7 +39,7 @@ import momime.common.messages.MomSessionDescription;
 public final class LoadGameUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (LoadGameUI.class);
+	private static final Log log = LogFactory.getLog (LoadGameUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx joinGameLayout;

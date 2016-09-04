@@ -20,7 +20,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class TaxRateChangedMessageImpl extends TaxRateChangedMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TaxRateChangedMessageImpl.class);
+	private static final Log log = LogFactory.getLog (TaxRateChangedMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

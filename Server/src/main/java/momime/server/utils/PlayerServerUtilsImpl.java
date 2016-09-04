@@ -16,7 +16,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 public final class PlayerServerUtilsImpl implements PlayerServerUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (PlayerServerUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (PlayerServerUtilsImpl.class);
 
 	/**
 	 * @param players List of players to check

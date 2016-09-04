@@ -15,7 +15,7 @@ import com.ndg.random.RandomUtils;
 final class HeightMapGenerator
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (HeightMapGenerator.class);
+	private static final Log log = LogFactory.getLog (HeightMapGenerator.class);
 	
 	/** Coordinate system we are generating a height map for */
 	private final CoordinateSystem coordinateSystem;

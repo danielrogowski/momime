@@ -27,7 +27,7 @@ import momime.common.messages.servertoclient.UpdateCityMessage;
 public final class UpdateCityMessageImpl extends UpdateCityMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UpdateCityMessageImpl.class);
+	private static final Log log = LogFactory.getLog (UpdateCityMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

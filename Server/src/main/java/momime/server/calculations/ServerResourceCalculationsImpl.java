@@ -67,7 +67,7 @@ import momime.server.utils.UnitServerUtils;
 public final class ServerResourceCalculationsImpl implements ServerResourceCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ServerResourceCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (ServerResourceCalculationsImpl.class);
 
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;

@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 public final class ResourceValueUtilsImpl implements ResourceValueUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ResourceValueUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (ResourceValueUtilsImpl.class);
 	
 	/** Skill calculations */
 	private SkillCalculations skillCalculations;

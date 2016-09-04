@@ -32,7 +32,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisibility
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (FogOfWarMidTurnVisibilityImpl.class);
+	private static final Log log = LogFactory.getLog (FogOfWarMidTurnVisibilityImpl.class);
 	
 	/** Single cell FOW calculations */
 	private FogOfWarCalculations fogOfWarCalculations;

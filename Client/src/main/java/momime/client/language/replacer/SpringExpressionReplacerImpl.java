@@ -16,7 +16,7 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
 public final class SpringExpressionReplacerImpl extends LanguageVariableReplacerImpl implements SpringExpressionReplacer
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SpringExpressionReplacerImpl.class);
+	private static final Log log = LogFactory.getLog (SpringExpressionReplacerImpl.class);
 	
 	/** Context to use when evaluating expressions */ 
 	private EvaluationContext evaluationContext;

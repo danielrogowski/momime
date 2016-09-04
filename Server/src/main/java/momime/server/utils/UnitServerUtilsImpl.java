@@ -52,7 +52,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 public final class UnitServerUtilsImpl implements UnitServerUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UnitServerUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (UnitServerUtilsImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;

@@ -26,7 +26,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 public final class TestLanguageDatabases
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TestLanguageDatabases.class);
+	private static final Log log = LogFactory.getLog (TestLanguageDatabases.class);
 	
 	/**
 	 * Tests that all available language XML files conform to the language XSD, excluding all the links to the server XSD

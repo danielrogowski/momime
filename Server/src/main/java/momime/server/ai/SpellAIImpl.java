@@ -24,7 +24,7 @@ import com.ndg.random.RandomUtils;
 public final class SpellAIImpl implements SpellAI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (SpellAIImpl.class);
+	private static final Log log = LogFactory.getLog (SpellAIImpl.class);
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;

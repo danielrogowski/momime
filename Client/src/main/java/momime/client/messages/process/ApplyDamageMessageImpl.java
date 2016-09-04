@@ -55,7 +55,7 @@ import momime.common.utils.UnitUtils;
 public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
+	private static final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
 	
 	/** FPS that we show ranged missiles at */
 	private static final int RANGED_ATTACK_FPS = 10;

@@ -41,7 +41,7 @@ import momime.server.utils.UnitServerUtils;
 public final class AttackResolutionProcessingImpl implements AttackResolutionProcessing
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AttackResolutionProcessingImpl.class);
+	private static final Log log = LogFactory.getLog (AttackResolutionProcessingImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;	

@@ -24,7 +24,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (NextTurnButtonMessageImpl.class);
+	private static final Log log = LogFactory.getLog (NextTurnButtonMessageImpl.class);
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;

@@ -21,7 +21,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class UpdateCombatMapMessageImpl extends UpdateCombatMapMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UpdateCombatMapMessageImpl.class);
+	private static final Log log = LogFactory.getLog (UpdateCombatMapMessageImpl.class);
 
 	/** Combat UI */
 	private CombatUI combatUI;

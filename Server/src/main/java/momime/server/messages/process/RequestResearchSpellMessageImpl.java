@@ -29,7 +29,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class RequestResearchSpellMessageImpl extends RequestResearchSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (RequestResearchSpellMessageImpl.class);
+	private static final Log log = LogFactory.getLog (RequestResearchSpellMessageImpl.class);
 
 	/** Spell utils */
 	private SpellUtils spellUtils;

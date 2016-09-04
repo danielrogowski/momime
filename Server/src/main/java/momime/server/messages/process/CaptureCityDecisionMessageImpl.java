@@ -24,7 +24,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (CaptureCityDecisionMessageImpl.class);
+	private static final Log log = LogFactory.getLog (CaptureCityDecisionMessageImpl.class);
 
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;

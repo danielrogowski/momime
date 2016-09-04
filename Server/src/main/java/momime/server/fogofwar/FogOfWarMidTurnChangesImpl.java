@@ -73,7 +73,7 @@ import momime.server.utils.UnitServerUtils;
 public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (FogOfWarMidTurnChangesImpl.class);
+	private static final Log log = LogFactory.getLog (FogOfWarMidTurnChangesImpl.class);
 	
 	/** Single cell FOW calculations */
 	private FogOfWarCalculations fogOfWarCalculations;

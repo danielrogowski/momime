@@ -43,7 +43,7 @@ import momime.server.utils.UnitSkillDirectAccess;
 public final class ServerDatabaseExImpl extends ServerDatabase implements ServerDatabaseEx
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ServerDatabaseExImpl.class);
+	private static final Log log = LogFactory.getLog (ServerDatabaseExImpl.class);
 	
 	/** Unit skill values direct access */
 	private UnitSkillDirectAccess unitSkillDirectAccess;

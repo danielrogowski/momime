@@ -33,7 +33,7 @@ import momime.common.messages.servertoclient.UpdateTerrainMessageData;
 public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisibleAreaChangedMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (FogOfWarVisibleAreaChangedMessageImpl.class);
+	private static final Log log = LogFactory.getLog (FogOfWarVisibleAreaChangedMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

@@ -31,7 +31,7 @@ import momime.common.messages.QueuedSpell;
 public final class QueuedSpellsUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (QueuedSpellsUI.class);
+	private static final Log log = LogFactory.getLog (QueuedSpellsUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx queuedSpellsLayout;

@@ -19,7 +19,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 public final class ErasePendingMovementsMessageImpl extends ErasePendingMovementsMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ErasePendingMovementsMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ErasePendingMovementsMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

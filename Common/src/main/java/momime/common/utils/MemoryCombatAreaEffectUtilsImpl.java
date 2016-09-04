@@ -20,7 +20,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEffectUtils
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MemoryCombatAreaEffectUtilsImpl.class);
+	private static final Log log = LogFactory.getLog (MemoryCombatAreaEffectUtilsImpl.class);
 	
 	/**
 	 * Checks to see if the specified CAE exists

@@ -50,7 +50,7 @@ import momime.common.utils.MemoryBuildingUtils;
 public final class ClientCityCalculationsImpl implements ClientCityCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ClientCityCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (ClientCityCalculationsImpl.class);
 	
 	/** Indentation used on calculation breakdowns that are additions to the previous line */
 	private static final String INDENT = "     ";

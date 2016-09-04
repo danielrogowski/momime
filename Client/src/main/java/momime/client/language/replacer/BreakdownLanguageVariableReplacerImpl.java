@@ -19,7 +19,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageVariableReplacerTokenImpl implements BreakdownLanguageVariableReplacer<B>
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (BreakdownLanguageVariableReplacerImpl.class);
+	private static final Log log = LogFactory.getLog (BreakdownLanguageVariableReplacerImpl.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

@@ -22,7 +22,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 public final class MiniMapBitmapGeneratorImpl implements MiniMapBitmapGenerator
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MiniMapBitmapGeneratorImpl.class);
+	private static final Log log = LogFactory.getLog (MiniMapBitmapGeneratorImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

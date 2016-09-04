@@ -25,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class ReplacePicksMessageImpl extends ReplacePicksMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ReplacePicksMessageImpl.class);
+	private static final Log log = LogFactory.getLog (ReplacePicksMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

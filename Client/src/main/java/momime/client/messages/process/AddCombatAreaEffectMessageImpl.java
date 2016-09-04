@@ -27,7 +27,7 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (AddCombatAreaEffectMessageImpl.class);
+	private static final Log log = LogFactory.getLog (AddCombatAreaEffectMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

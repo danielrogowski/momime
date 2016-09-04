@@ -51,7 +51,7 @@ import momime.server.fogofwar.KillUnitActionID;
 public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (ServerUnitCalculationsImpl.class);
+	private static final Log log = LogFactory.getLog (ServerUnitCalculationsImpl.class);
 	
 	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
 	private static final int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;

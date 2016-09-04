@@ -32,7 +32,7 @@ import momime.client.ui.MomUIConstants;
 public final class DamageCalculationsUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (DamageCalculationsUI.class);
+	private static final Log log = LogFactory.getLog (DamageCalculationsUI.class);
 	
 	/** How many messages we allow before we start rolling the old ones off the top of the list */
 	private static final int MAX_MESSAGES = 200;

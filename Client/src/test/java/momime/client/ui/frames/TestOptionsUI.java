@@ -38,7 +38,7 @@ import momime.common.database.UnitSkillTypeID;
 public final class TestOptionsUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (TestOptionsUI.class);
+	private static final Log log = LogFactory.getLog (TestOptionsUI.class);
 	
 	/**
 	 * Tests the OptionsUI form

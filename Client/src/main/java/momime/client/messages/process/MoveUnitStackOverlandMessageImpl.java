@@ -32,7 +32,7 @@ import momime.common.utils.UnitUtils;
 public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlandMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
+	private static final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

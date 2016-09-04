@@ -32,7 +32,7 @@ import momime.common.messages.MemoryUnit;
 public final class UnitInfoUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private final Log log = LogFactory.getLog (UnitInfoUI.class);
+	private static final Log log = LogFactory.getLog (UnitInfoUI.class);
 
 	/** Multiplayer client */
 	private MomClient client;

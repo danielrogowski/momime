@@ -7,7 +7,7 @@ Here's some quick notes on how to get a game up and running in case some parts a
     C:\Program Files, or anywhere else Windows doesn't like files being modified.
     Straight under C:\, in your user home folder, or on another drive letter are fine.
 
- 2) You must have a Java Runtime Environment (JRE) 7 or higher.
+ 2) You must have a Java Runtime Environment (JRE) 8 or higher.
 
  3) Run the server.  After a few seconds it'll say
     "Listening for client connection requests on port 18250".

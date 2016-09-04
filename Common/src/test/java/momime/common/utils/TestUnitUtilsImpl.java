@@ -31,6 +31,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.GrantsSkill;
 import momime.common.database.HeroItemBonus;
+import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.HeroItemTypeAttackType;
@@ -1552,7 +1553,7 @@ public final class TestUnitUtilsImpl
 		// Imbuable properties
 		for (int n = 1; n <= 4; n++)
 		{
-			final UnitSkillAndValue imbueBonus = new UnitSkillAndValue ();
+			final HeroItemBonusStat imbueBonus = new HeroItemBonusStat ();
 			imbueBonus.setUnitSkillID ((n == 2) ? "US010" : ("US00" + (n+3)));
 			
 			if (n >= 3)
@@ -1563,7 +1564,7 @@ public final class TestUnitUtilsImpl
 			when (db.findHeroItemBonus ("IB0" + n, "expandUnitDetails")).thenReturn (imbue);
 		}
 
-		final UnitSkillAndValue plusAttackBonus = new UnitSkillAndValue ();
+		final HeroItemBonusStat plusAttackBonus = new HeroItemBonusStat ();
 		plusAttackBonus.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM);
 		plusAttackBonus.setUnitSkillValue (3);
 		

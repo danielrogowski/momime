@@ -12,7 +12,7 @@ import org.junit.Test;
 
 import momime.common.MomException;
 import momime.common.database.HeroItemBonus;
-import momime.common.database.UnitSkillAndValue;
+import momime.common.database.HeroItemBonusStat;
 
 /**
  * Tests the HeroItemClientUtilsImpl class
@@ -36,7 +36,7 @@ public final class TestHeroItemClientUtilsImpl
 		assertEquals (0, bonuses.size ());
 		
 		// List with only 1 item
-		final UnitSkillAndValue firstBonusStat = new UnitSkillAndValue ();
+		final HeroItemBonusStat firstBonusStat = new HeroItemBonusStat ();
 		firstBonusStat.setUnitSkillID ("UA01");
 		
 		final HeroItemBonus firstBonus = new HeroItemBonus ();
@@ -48,7 +48,7 @@ public final class TestHeroItemClientUtilsImpl
 		assertSame (firstBonus, bonuses.get (0));
 		
 		// 2 items which give bonuses to the same stat
-		final UnitSkillAndValue secondBonusStat = new UnitSkillAndValue ();
+		final HeroItemBonusStat secondBonusStat = new HeroItemBonusStat ();
 		secondBonusStat.setUnitSkillID ("UA01");
 		
 		final HeroItemBonus secondBonus = new HeroItemBonus ();
@@ -63,7 +63,7 @@ public final class TestHeroItemClientUtilsImpl
 		// Real example with 2-3-1
 		for (final String skillID : new String [] {"UA02", "UA02", "UA02", "UA03"})
 		{
-			final UnitSkillAndValue otherBonusStat = new UnitSkillAndValue ();
+			final HeroItemBonusStat otherBonusStat = new HeroItemBonusStat ();
 			otherBonusStat.setUnitSkillID (skillID);
 			
 			final HeroItemBonus otherBonus = new HeroItemBonus ();
@@ -118,7 +118,7 @@ public final class TestHeroItemClientUtilsImpl
 
 		for (int n = 0; n < 2; n++)
 		{
-			final UnitSkillAndValue firstBonusStat = new UnitSkillAndValue ();
+			final HeroItemBonusStat firstBonusStat = new HeroItemBonusStat ();
 			firstBonusStat.setUnitSkillID ("UA01");
 			firstBonus.getHeroItemBonusStat ().add (firstBonusStat);
 		}

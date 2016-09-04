@@ -1344,9 +1344,27 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="craftingCostMultiplierApplies" type="xsd:boolean" nxe:label="Cost multiplier applies?" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusPrerequisite" type="momimecommon:pickAndQuantity" nxe:label="Prerequisites" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusStat" type="momimecommon:unitSkillAndValue" nxe:label="Bonus Stat" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusStat" type="momimecommon:heroItemBonusStat" nxe:label="Bonus Stat" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemBonusID" type="momimecommon:heroItemBonusID" use="required" nxe:label="Item Bonus ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+
+	<xsd:complexType name="heroItemBonusStat" nxe:singular="Hero Item Bonus Stat" nxe:plural="Hero Item Bonus Stats">
+        <xsd:annotation>
+        	<xsd:documentation>Lists the skills that a particular hero item bonus grants.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+			<xsd:extension base="momimecommon:unitSkillAndValue">
+				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="appliesOnlyToAttacksAppropriateForTypeOfHeroItem" type="xsd:boolean" nxe:label="Applies only to attacks appropriate for type of hero item?">
+				        <xsd:annotation>
+				        	<xsd:documentation>Attack bonuses such as "Lightning" only grant their effect when the hero is making an attack that's appropriate for the type of hero item the bonus is imbued in.
+e.g. The Elven Archer hero can use both swords and bows, but if she has a Sword of Lightning then it doesn't make her ranged attacks armour piercing.</xsd:documentation>
+				        </xsd:annotation>
+					</xsd:element>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
 	</xsd:complexType>
 
 	<xsd:complexType name="heroItemTypeAllowedBonus" nxe:singular="Bonus" nxe:plural="Bonuses" nxe:submenu="Hero items">

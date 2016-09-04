@@ -6688,7 +6688,9 @@
 		<heroItemBonusPrerequisite pickID="MB03">
 			<quantity>5</quantity>
 		</heroItemBonusPrerequisite>
-		<heroItemBonusStat unitSkillID="US028" />
+		<heroItemBonusStat unitSkillID="US028">
+			<appliesOnlyToAttacksAppropriateForTypeOfHeroItem>true</appliesOnlyToAttacksAppropriateForTypeOfHeroItem>
+		</heroItemBonusStat>
 		<heroItemBonusDescription>Lightning</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB36">
@@ -6713,7 +6715,9 @@
 		<heroItemBonusPrerequisite pickID="MB02">
 			<quantity>5</quantity>
 		</heroItemBonusPrerequisite>
-		<heroItemBonusStat unitSkillID="US031" />
+		<heroItemBonusStat unitSkillID="US031">
+			<appliesOnlyToAttacksAppropriateForTypeOfHeroItem>true</appliesOnlyToAttacksAppropriateForTypeOfHeroItem>
+		</heroItemBonusStat>
 		<heroItemBonusDescription>Vampiric</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB39">
@@ -6788,6 +6792,7 @@
 		</heroItemBonusPrerequisite>
 		<heroItemBonusStat unitSkillID="US027">
 			<unitSkillValue>1</unitSkillValue>
+			<appliesOnlyToAttacksAppropriateForTypeOfHeroItem>true</appliesOnlyToAttacksAppropriateForTypeOfHeroItem>
 		</heroItemBonusStat>
 		<heroItemBonusDescription>Stoning</heroItemBonusDescription>
 	</heroItemBonus>
@@ -6797,7 +6802,9 @@
 		<heroItemBonusPrerequisite pickID="MB05">
 			<quantity>6</quantity>
 		</heroItemBonusPrerequisite>
-		<heroItemBonusStat unitSkillID="US035" />
+		<heroItemBonusStat unitSkillID="US035">
+			<appliesOnlyToAttacksAppropriateForTypeOfHeroItem>true</appliesOnlyToAttacksAppropriateForTypeOfHeroItem>
+		</heroItemBonusStat>
 		<heroItemBonusDescription>Phantasmal</heroItemBonusDescription>
 	</heroItemBonus>
 	<heroItemBonus heroItemBonusID="IB48">

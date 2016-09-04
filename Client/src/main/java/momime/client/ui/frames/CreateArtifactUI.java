@@ -46,6 +46,7 @@ import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
+import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.RecordNotFoundException;
@@ -526,7 +527,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 				boolean ok = (getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemBonuses () == null) ||
 					(selectedBonusIDs.size () < getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemBonuses ());
 				
-				final Iterator<UnitSkillAndValue> bonusStatIter = getClient ().getClientDB ().findHeroItemBonus (bonusButton.getKey (), "updateBonusColouring").getHeroItemBonusStat ().iterator ();
+				final Iterator<HeroItemBonusStat> bonusStatIter = getClient ().getClientDB ().findHeroItemBonus (bonusButton.getKey (), "updateBonusColouring").getHeroItemBonusStat ().iterator ();
 				while ((ok) && (bonusStatIter.hasNext ()))
 					if (bonusSkillIDs.contains (bonusStatIter.next ().getUnitSkillID ()))
 						ok = false;

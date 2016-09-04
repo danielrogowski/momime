@@ -12,10 +12,10 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
+import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.UnitSetting;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
@@ -375,7 +375,7 @@ public final class TestHeroItemServerUtilsImpl
 			bonus.setBonusCraftingCost (100 * n);
 			bonus.setHeroItemBonusDescription ("B" + n);
 			
-			final UnitSkillAndValue stat = new UnitSkillAndValue ();
+			final HeroItemBonusStat stat = new HeroItemBonusStat ();
 			stat.setUnitSkillID ("UA01");
 			stat.setUnitSkillValue (n);
 			bonus.getHeroItemBonusStat ().add (stat);

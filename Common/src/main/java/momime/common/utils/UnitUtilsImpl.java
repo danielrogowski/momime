@@ -25,6 +25,7 @@ import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.HeroItemTypeAttackType;
@@ -319,10 +320,20 @@ public final class UnitUtilsImpl implements UnitUtils
 							basicSkillValues.put (basicStat.getUnitSkillID (), null);
 					
 					// Bonuses imbued on the item
+					if ("UA01".equals (attackFromSkillID))
+					{
+						System.out.println ("here");
+					}
+					
 					for (final HeroItemTypeAllowedBonus bonus : slot.getHeroItem ().getHeroItemChosenBonus ())
-						for (final UnitSkillAndValue bonusStat : db.findHeroItemBonus (bonus.getHeroItemBonusID (), "expandUnitDetails").getHeroItemBonusStat ())
+						for (final HeroItemBonusStat bonusStat : db.findHeroItemBonus (bonus.getHeroItemBonusID (), "expandUnitDetails").getHeroItemBonusStat ())
 							if ((bonusStat.getUnitSkillValue () == null) && (!basicSkillValues.containsKey (bonusStat.getUnitSkillID ())))
-								basicSkillValues.put (bonusStat.getUnitSkillID (), null);
+
+								// Some bonuses only apply if the attackFromSkillID matches the kind of item they're imbued in
+								if ((bonusStat.isAppliesOnlyToAttacksAppropriateForTypeOfHeroItem () == null) || (!bonusStat.isAppliesOnlyToAttacksAppropriateForTypeOfHeroItem ()) ||
+									((attackFromSkillID != null) && (heroItemType.getHeroItemTypeAttackType ().stream ().anyMatch (t -> t.getUnitSkillID ().equals (attackFromSkillID)))))
+								
+									basicSkillValues.put (bonusStat.getUnitSkillID (), null);
 				}
 		
 		// STEP 5 - Now check all skills to see if any grant other skills

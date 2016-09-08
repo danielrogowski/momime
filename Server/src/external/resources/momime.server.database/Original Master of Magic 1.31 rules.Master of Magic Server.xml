@@ -9063,11 +9063,11 @@
 	</heroItem>
 	<unitSkill unitSkillID="UA01">
 		<unitSkillDescription>Melee Attack Strength</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT01</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damageResolutionTypeUpgradeable>true</damageResolutionTypeUpgradeable>
 		<damagePerFigure>S</damagePerFigure>
+		<aiRatingAdditive>10</aiRatingAdditive>
 		<attackResolution>
 			<attackResolutionDescription>Attacker has Haste, Defender is asleep</attackResolutionDescription>
 			<attackResolutionCondition>
@@ -10700,10 +10700,10 @@
 	</unitSkill>
 	<unitSkill unitSkillID="UA02">
 		<unitSkillDescription>Ranged Attack Strength</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damageResolutionTypeUpgradeable>true</damageResolutionTypeUpgradeable>
 		<damagePerFigure>S</damagePerFigure>
+		<aiRatingAdditive>20</aiRatingAdditive>
 		<attackResolution>
 			<attackResolutionDescription>Hasted ranged attack</attackResolutionDescription>
 			<attackResolutionCondition>
@@ -10739,21 +10739,29 @@
 	</unitSkill>
 	<unitSkill unitSkillID="UA03">
 		<unitSkillDescription>+ to Hit</unitSkillDescription>
+		<aiRatingAdditive>25</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="UA04">
 		<unitSkillDescription>Defence</unitSkillDescription>
+		<aiRatingAdditive>10</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="UA05">
 		<unitSkillDescription>Resistance</unitSkillDescription>
+		<aiRatingAdditive>10</aiRatingAdditive>
+		<aiRatingDiminishesAfter>5</aiRatingDiminishesAfter>
 	</unitSkill>
 	<unitSkill unitSkillID="UA06">
 		<unitSkillDescription>Hit Points</unitSkillDescription>
+		<aiRatingAdditive>25</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="UA07">
 		<unitSkillDescription>+ to Block</unitSkillDescription>
+		<aiRatingAdditive>25</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="UA08">
 		<unitSkillDescription>Movement</unitSkillDescription>
+		<aiRatingAdditive>5</aiRatingAdditive>
+		<aiRatingDiminishesAfter>2</aiRatingDiminishesAfter>
 	</unitSkill>
 	<unitSkill unitSkillID="USX01">
 		<unitSkillDescription>Movement: Walking</unitSkillDescription>
@@ -10763,11 +10771,13 @@
 	</unitSkill>
 	<unitSkill unitSkillID="USX03">
 		<unitSkillDescription>Movement: Swimming</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="USX04">
 		<ignoreCombatTerrain>true</ignoreCombatTerrain>
 		<unitSkillDescription>Movement: Flying</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
+		<aiRatingAdditive>40</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US000">
 		<unitSkillDescription>Movement: Teleporting</unitSkillDescription>
@@ -10780,15 +10790,19 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US004">
 		<unitSkillDescription>Plane Shift</unitSkillDescription>
+		<aiRatingAdditive>40</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US005">
 		<unitSkillDescription>Immunity: Poison</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US006">
 		<unitSkillDescription>Immunity: Fire</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US007">
 		<unitSkillDescription>Immunity: Stoning</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US008">
 		<negatedBySkill>
@@ -10804,18 +10818,23 @@
 			<negatedByUnitID>E</negatedByUnitID>
 		</negatedBySkill>
 		<unitSkillDescription>Immunity: Weapon</unitSkillDescription>
+		<aiRatingAdditive>5</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US009">
 		<unitSkillDescription>Immunity: Missiles</unitSkillDescription>
+		<aiRatingAdditive>40</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US010">
 		<unitSkillDescription>Immunity: Illusions</unitSkillDescription>
+		<aiRatingAdditive>30</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US011">
 		<unitSkillDescription>Immunity: Cold</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US012">
 		<unitSkillDescription>Immunity: Magic</unitSkillDescription>
+		<aiRatingAdditive>80</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US014">
 		<addsToSkill>
@@ -10826,12 +10845,15 @@
 			<negateOnlyVersusAttacksFromSkillID>true</negateOnlyVersusAttacksFromSkillID>
 		</addsToSkill>
 		<unitSkillDescription>Large Shield</unitSkillDescription>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US015">
 		<unitSkillDescription>Wall Crusher</unitSkillDescription>
+		<aiRatingAdditive>5</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US016">
 		<unitSkillDescription>Healer</unitSkillDescription>
+		<aiRatingAdditive>25</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US017">
 		<unitSkillDescription>Create Outpost</unitSkillDescription>
@@ -10846,14 +10868,16 @@
 			<negatedByUnitID>E</negatedByUnitID>
 		</negatedBySkill>
 		<unitSkillDescription>Invisibility</unitSkillDescription>
+		<aiRatingAdditive>30</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US019">
 		<unitSkillDescription>Create Undead</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT13</damageTypeID>
+		<aiRatingAdditive>30</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US020">
 		<unitSkillDescription>Movement: Path Finding</unitSkillDescription>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US022">
 		<ignoreCombatTerrain>true</ignoreCombatTerrain>
@@ -10862,31 +10886,35 @@
 	<unitSkill unitSkillID="US023">
 		<unitSkillDescription>Movement: Wind Walking</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
+		<aiRatingAdditive>100</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US024">
 		<unitSkillDescription>Regeneration</unitSkillDescription>
+		<aiRatingMultiplicative>1.5</aiRatingMultiplicative>
 	</unitSkill>
 	<unitSkill unitSkillID="US025">
 		<unitSkillDescription>Purify</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US026">
 		<unitSkillDescription>Stoning Gaze</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT10</damageTypeID>
 		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB04</magicRealmID>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US027">
 		<unitSkillDescription>Stoning Touch</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT10</damageTypeID>
 		<damageResolutionTypeID>F</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB04</magicRealmID>
+		<aiRatingAdditive>12</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US028">
 		<unitSkillDescription>Armour Piercing</unitSkillDescription>
+		<aiRatingAdditive>30</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US029">
 		<negatedBySkill>
@@ -10894,29 +10922,30 @@
 			<negatedByUnitID>E</negatedByUnitID>
 		</negatedBySkill>
 		<unitSkillDescription>First Strike</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US030">
 		<unitSkillDescription>Poison Attack</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT09</damageTypeID>
 		<damageResolutionTypeID>T</damageResolutionTypeID>
 		<damagePerFigure>C</damagePerFigure>
+		<aiRatingAdditive>10</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US031">
 		<unitSkillDescription>Life Stealing</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT13</damageTypeID>
 		<damageResolutionTypeID>R</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US032">
 		<unitSkillDescription>Immolation</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT06</damageTypeID>
 		<damageResolutionTypeID>M</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
+		<aiRatingAdditive>5</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US033">
 		<addsToSkill>
@@ -10950,21 +10979,25 @@
 			<negatedByUnitID>E</negatedByUnitID>
 		</negatedBySkill>
 		<unitSkillDescription>Illusionary Attack</unitSkillDescription>
+		<aiRatingAdditive>50</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US036">
 		<unitSkillDescription>Road Building</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US037">
 		<unitSkillDescription>Scouting</unitSkillDescription>
+		<aiRatingAdditive>18</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US040">
 		<unitSkillDescription>Meld with Node</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US046">
 		<unitSkillDescription>Negate First Strike</unitSkillDescription>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US047">
 		<unitSkillDescription>Immunity: Death</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US051">
 		<unitSkillDescription>Caster (unit version)</unitSkillDescription>
@@ -10979,6 +11012,7 @@
 		<grantsSkill grantsSkillID="US011" />
 		<grantsSkill grantsSkillID="US047" />
 		<unitSkillDescription>Undead (killed by Ghouls/Life Steal)</unitSkillDescription>
+		<aiRatingMultiplicative>0.2</aiRatingMultiplicative>
 	</unitSkill>
 	<unitSkill unitSkillID="US123">
 		<addsToSkill>
@@ -11000,68 +11034,70 @@
 	</unitSkill>
 	<unitSkill unitSkillID="US125">
 		<unitSkillDescription>Long Range</unitSkillDescription>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US126">
 		<unitSkillDescription>Thrown Weapons</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT01</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damageResolutionTypeUpgradeable>true</damageResolutionTypeUpgradeable>
 		<damagePerFigure>S</damagePerFigure>
+		<aiRatingAdditive>10</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US128">
 		<unitSkillDescription>Cause Fear</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT08</damageTypeID>
 		<damageResolutionTypeID>Y</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US129">
 		<unitSkillDescription>Touch Dispels Evil</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT11</damageTypeID>
 		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB01</magicRealmID>
+		<aiRatingAdditive>10</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US130">
 		<unitSkillDescription>Doom Gaze</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT02</damageTypeID>
 		<damageResolutionTypeID>D</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US131">
 		<unitSkillDescription>Death Gaze</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT08</damageTypeID>
 		<damageResolutionTypeID>P</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
+		<aiRatingAdditive>12</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US132">
 		<unitSkillDescription>Ranged Attack Ammo</unitSkillDescription>
 	</unitSkill>
 	<unitSkill unitSkillID="US133">
 		<unitSkillDescription>Lightning Breath</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT05</damageTypeID>
 		<damageResolutionTypeID>A</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US134">
 		<unitSkillDescription>Fire Breath</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT06</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
+		<aiRatingAdditive>10</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US135">
 		<unitSkillDescription>Summon Demons</unitSkillDescription>
+		<aiRatingAdditive>30</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="US169">
 		<unitSkillDescription>Movement: Merging</unitSkillDescription>
@@ -11091,6 +11127,7 @@
 		<unitSkillDescription>Armsmaster</unitSkillDescription>
 		<heroSkillTypeID>F</heroSkillTypeID>
 		<maxOccurrences>2</maxOccurrences>
+		<aiRatingAdditive>40</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="HS04">
 		<addsToSkill>
@@ -11110,6 +11147,7 @@
 	<unitSkill unitSkillID="HS06">
 		<unitSkillDescription>Charmed</unitSkillDescription>
 		<maxOccurrences>1</maxOccurrences>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="HS07">
 		<addsToSkill>
@@ -11176,6 +11214,7 @@
 	</unitSkill>
 	<unitSkill unitSkillID="HS15">
 		<unitSkillDescription>- Spell Save</unitSkillDescription>
+		<aiRatingAdditive>25</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="HS16">
 		<unitSkillDescription>Attack(s) appropriate for type of hero item</unitSkillDescription>
@@ -11233,9 +11272,11 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS008">
 		<unitSkillDescription>Water Walking</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS016">
 		<unitSkillDescription>Path Finding</unitSkillDescription>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS021">
 		<addsToSkill>
@@ -11274,6 +11315,7 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS031">
 		<unitSkillDescription>Regeneration</unitSkillDescription>
+		<aiRatingMultiplicative>1.5</aiRatingMultiplicative>
 	</unitSkill>
 	<unitSkill unitSkillID="SS041">
 		<addsToSkill>
@@ -11285,14 +11327,17 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS044">
 		<unitSkillDescription>Guardian Wind</unitSkillDescription>
+		<aiRatingAdditive>40</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS054">
 		<unitSkillDescription>Spell Lock</unitSkillDescription>
+		<aiRatingAdditive>20</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS056">
 		<ignoreCombatTerrain>true</ignoreCombatTerrain>
 		<unitSkillDescription>Flight</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
+		<aiRatingAdditive>40</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS062">
 		<negatedBySkill>
@@ -11304,16 +11349,20 @@
 			<negatedByUnitID>E</negatedByUnitID>
 		</negatedBySkill>
 		<unitSkillDescription>Invisibility</unitSkillDescription>
+		<aiRatingAdditive>30</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS063">
 		<unitSkillDescription>Wind Walking</unitSkillDescription>
 		<unitSkillScoutingRange>2</unitSkillScoutingRange>
+		<aiRatingAdditive>100</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS069">
 		<unitSkillDescription>Magic Immunity</unitSkillDescription>
+		<aiRatingAdditive>80</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS070">
 		<unitSkillDescription>Haste</unitSkillDescription>
+		<aiRatingAdditive>120</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS086">
 		<unitSkillDescription>Eldritch Weapon</unitSkillDescription>
@@ -11330,7 +11379,6 @@
 	<unitSkill unitSkillID="SS093B">
 		<changesUnitToMagicRealm>LTC</changesUnitToMagicRealm>
 		<unitSkillDescription>Chaos Channels - Fire Breath</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT06</damageTypeID>
 		<damageResolutionTypeID>S</damageResolutionTypeID>
 		<damagePerFigure>S</damagePerFigure>
@@ -11369,11 +11417,11 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS099">
 		<unitSkillDescription>Immolation</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT06</damageTypeID>
 		<damageResolutionTypeID>M</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB03</magicRealmID>
+		<aiRatingAdditive>5</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS121">
 		<addsToSkill>
@@ -11436,9 +11484,11 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS131">
 		<unitSkillDescription>True Sight</unitSkillDescription>
+		<aiRatingAdditive>30</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS138">
 		<unitSkillDescription>Planar Travel</unitSkillDescription>
+		<aiRatingAdditive>40</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS141">
 		<addsToSkill>
@@ -11471,6 +11521,7 @@
 	<unitSkill unitSkillID="SS143">
 		<grantsSkill grantsSkillID="US008" />
 		<unitSkillDescription>Invulnerability</unitSkillDescription>
+		<aiRatingAdditive>40</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS144">
 		<addsToSkill>
@@ -11501,11 +11552,11 @@
 	</unitSkill>
 	<unitSkill unitSkillID="SS164">
 		<unitSkillDescription>Cloak of Fear</unitSkillDescription>
-		<onlyIfHaveAlready>false</onlyIfHaveAlready>
 		<damageTypeID>DT08</damageTypeID>
 		<damageResolutionTypeID>Y</damageResolutionTypeID>
 		<damagePerFigure>U</damagePerFigure>
 		<magicRealmID>MB02</magicRealmID>
+		<aiRatingAdditive>15</aiRatingAdditive>
 	</unitSkill>
 	<unitSkill unitSkillID="SS175">
 		<addsToSkill>

@@ -1206,6 +1206,33 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 							</xsd:appinfo>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="aiRatingAdditive" type="momimesvr:aiRatingAdditive" nxe:label="AI Rating Add" nxe:gridwidth="60">
+						<xsd:annotation>
+							<xsd:documentation>How valuable the AI rates this skill, e.g. +10 for each melee attack point, +20 for each ranged attack point, +30 for Flight and so on.
+Valueless skills are taken as if they were strength 1, so will add just this value.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="aiRatingDiminishesAfter" type="momimecommon:unitSkillValue" nxe:label="AI Rating Dim. after" nxe:gridwidth="80">
+						<xsd:annotation>
+							<xsd:documentation>Most skills like melee/ranged attack and defence are great the higher value you can get, but others like Resistance diminish their usefulness
+in high scored - there's little point having any resistance above 15 or so.  So if set, stat scores beyond this value will have their usefulness rated -1 per point.
+e.g. If aiRatingAdditive = 10 and aiRatingDiminishesAfter = 5 and unit has score of 8, it would be rated as 10+10+10+10+10+9+8+7</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="aiRatingMultiplicative" type="momimesvr:aiRatingMultiplicative" nxe:label="AI Rating Mult." nxe:gridwidth="60">
+						<xsd:annotation>
+							<xsd:documentation>Most skills have their values just added together to calculate a rating for the unit.  But some skills by their nature have their usefulness dictated by
+how good the unit was already, e.g. put Regeneration on a crap unit of spearmen and it is still a crap unit of spearmen, but put it on a powerful unit and it is exceptionally useful.
+Conversely, the Undead skill drastically reduces the value of a unit, no matter how good it was before, so has a multiplicative modifier of less than 1.
+
+Multiple multiplicative modifiers are multiplied together, so if a unit has a x2 and x3 skill, then its overall value will be the sum of additive modifiers x6.
+
+The number of figures left alive in a unit is also a multiplicative modifier, fractional if the lead figure has taken damage, e.g. if an 8 figure unit has lost half the health of
+the lead figure then the unit's value will be multiplied by x7.5.
+
+The value of multiplicative skills is ignored, so don't use this for any skill that may take a value.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="attackResolution" type="momimesvr:attackResolution" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -1718,6 +1745,14 @@ Defaults to 1 if omitted.</xsd:documentation>
 	
 	<xsd:simpleType name="aiResearchOrder">
 		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="aiRatingAdditive">
+		<xsd:restriction base="xsd:int" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="aiRatingMultiplicative">
+		<xsd:restriction base="xsd:double" />
 	</xsd:simpleType>
 	
 <!-- Combat map generation, new for 0.9.3 -->

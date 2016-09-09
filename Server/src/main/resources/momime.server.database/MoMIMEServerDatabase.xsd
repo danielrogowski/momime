@@ -776,6 +776,10 @@
 			<xsd:selector xpath="heroItemSlotType/heroSlotAllowedItemType" />
 			<xsd:field xpath="@heroItemTypeID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:heroItemTypePK" name="heroItemSlotTypeIDFKheroItemType">
+			<xsd:selector xpath="heroItemSlotType" />
+			<xsd:field xpath="basicHeroItemForAiRatingItemTypeID" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:unitSkillPK" name="heroItemBonusStatFKunitSkill">
 			<xsd:selector xpath="heroItemBonus/heroItemBonusStat" />
 			<xsd:field xpath="@unitSkillID" />
@@ -798,6 +802,10 @@
 		</xsd:keyref>
 		<xsd:keyref refer="momimesvr:heroItemBonusPK" name="heroItemChosenBonusFKheroItemBonus">
 			<xsd:selector xpath="heroItem/heroItemChosenBonus" />
+			<xsd:field xpath="@heroItemBonusID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimesvr:heroItemBonusPK" name="basicHeroItemForAiRatingChosenBonusFKheroItemBonus">
+			<xsd:selector xpath="heroItemSlotType/basicHeroItemForAiRatingChosenBonus" />
 			<xsd:field xpath="@heroItemBonusID" />
 		</xsd:keyref>
 
@@ -1675,6 +1683,14 @@ Defaults to 1 if omitted.</xsd:documentation>
 			<xsd:extension base="momimecommon:heroItemSlotType">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="slotTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="basicHeroItemForAiRatingItemTypeID" type="momimecommon:heroItemTypeID" nxe:label="AI basic rating Item Type ID" nxe:gridwidth="100">
+						<xsd:annotation>
+							<xsd:appinfo>
+								<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
+							</xsd:appinfo>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="basicHeroItemForAiRatingChosenBonus" type="momimecommon:heroItemTypeAllowedBonus" nxe:label="AI basic rating Bonuses" nxe:gridwidth="100" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

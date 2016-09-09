@@ -252,6 +252,15 @@ public interface ServerDatabaseEx extends CommonDatabase
 	public HeroItemBonusSvr findHeroItemBonus (final String heroItemBonusID, final String caller) throws RecordNotFoundException;
 	
 	/**
+	 * @param heroItemSlotTypeID Hero item slot type ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return HeroItemSlotType object
+	 * @throws RecordNotFoundException If the hero item slot type ID doesn't exist
+	 */
+	@Override
+	public HeroItemSlotTypeSvr findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException;
+	
+	/**
 	 * @param damageTypeID Damage type ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return DamageType object

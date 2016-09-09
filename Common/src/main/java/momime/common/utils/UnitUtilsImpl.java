@@ -320,11 +320,6 @@ public final class UnitUtilsImpl implements UnitUtils
 							basicSkillValues.put (basicStat.getUnitSkillID (), null);
 					
 					// Bonuses imbued on the item
-					if ("UA01".equals (attackFromSkillID))
-					{
-						System.out.println ("here");
-					}
-					
 					for (final HeroItemTypeAllowedBonus bonus : slot.getHeroItem ().getHeroItemChosenBonus ())
 						for (final HeroItemBonusStat bonusStat : db.findHeroItemBonus (bonus.getHeroItemBonusID (), "expandUnitDetails").getHeroItemBonusStat ())
 							if ((bonusStat.getUnitSkillValue () == null) && (!basicSkillValues.containsKey (bonusStat.getUnitSkillID ())))

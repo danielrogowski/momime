@@ -17,6 +17,7 @@ import momime.server.database.v0_9_8.DamageType;
 import momime.server.database.v0_9_8.DifficultyLevel;
 import momime.server.database.v0_9_8.FogOfWarSetting;
 import momime.server.database.v0_9_8.HeroItemBonus;
+import momime.server.database.v0_9_8.HeroItemSlotType;
 import momime.server.database.v0_9_8.LandProportion;
 import momime.server.database.v0_9_8.MapFeature;
 import momime.server.database.v0_9_8.MapFeatureMagicRealm;
@@ -424,6 +425,15 @@ public final class ServerDatabaseObjectFactory extends ObjectFactory
 	public final HeroItemBonus createHeroItemBonus ()
 	{
 		return new HeroItemBonusSvr ();
+	}
+
+	/**
+	 * @return Custom extended HeroItemSlotType
+	 */
+	@Override
+	public final HeroItemSlotType createHeroItemSlotType ()
+	{
+		return new HeroItemSlotTypeSvr ();
 	}
 
 	/**

@@ -6376,6 +6376,8 @@
 		<heroSlotAllowedItemType heroItemTypeID="IT02" />
 		<heroSlotAllowedItemType heroItemTypeID="IT03" />
 		<slotTypeDescription>Melee weapon</slotTypeDescription>
+		<basicHeroItemForAiRatingItemTypeID>IT03</basicHeroItemForAiRatingItemTypeID>
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB06" />
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST02">
 		<heroSlotAllowedItemType heroItemTypeID="IT01" />
@@ -6383,6 +6385,8 @@
 		<heroSlotAllowedItemType heroItemTypeID="IT03" />
 		<heroSlotAllowedItemType heroItemTypeID="IT04" />
 		<slotTypeDescription>Bow or Melee weapon</slotTypeDescription>
+		<basicHeroItemForAiRatingItemTypeID>IT04</basicHeroItemForAiRatingItemTypeID>
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB06" />
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST03">
 		<heroSlotAllowedItemType heroItemTypeID="IT01" />
@@ -6391,21 +6395,33 @@
 		<heroSlotAllowedItemType heroItemTypeID="IT05" />
 		<heroSlotAllowedItemType heroItemTypeID="IT06" />
 		<slotTypeDescription>Melee or Magic weapon</slotTypeDescription>
+		<basicHeroItemForAiRatingItemTypeID>IT05</basicHeroItemForAiRatingItemTypeID>
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB06" />
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST04">
 		<heroSlotAllowedItemType heroItemTypeID="IT05" />
 		<heroSlotAllowedItemType heroItemTypeID="IT06" />
 		<slotTypeDescription>Magic weapon</slotTypeDescription>
+		<basicHeroItemForAiRatingItemTypeID>IT05</basicHeroItemForAiRatingItemTypeID>
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB06" />
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST05">
 		<heroSlotAllowedItemType heroItemTypeID="IT07" />
 		<slotTypeDescription>Miscellaneous accessory</slotTypeDescription>
+		<basicHeroItemForAiRatingItemTypeID>IT07</basicHeroItemForAiRatingItemTypeID>
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB02" />
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB08" />
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB21" />
 	</heroItemSlotType>
 	<heroItemSlotType heroItemSlotTypeID="IST06">
 		<heroSlotAllowedItemType heroItemTypeID="IT08" />
 		<heroSlotAllowedItemType heroItemTypeID="IT09" />
 		<heroSlotAllowedItemType heroItemTypeID="IT10" />
 		<slotTypeDescription>Armour</slotTypeDescription>
+		<basicHeroItemForAiRatingItemTypeID>IT09</basicHeroItemForAiRatingItemTypeID>
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB08" />
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB21" />
+		<basicHeroItemForAiRatingChosenBonus heroItemBonusID="IB17" />
 	</heroItemSlotType>
 	<heroItemBonus heroItemBonusID="IB01">
 		<bonusCraftingCost>50</bonusCraftingCost>

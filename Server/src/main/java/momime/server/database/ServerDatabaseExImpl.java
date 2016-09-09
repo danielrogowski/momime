@@ -109,7 +109,7 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	private Map<String, CitySpellEffectSvr> citySpellEffectsMap;
 	
 	/** Map of hero item slot type IDs to hero item slot type objects */
-	private Map<String, HeroItemSlotType> heroItemSlotTypesMap;
+	private Map<String, HeroItemSlotTypeSvr> heroItemSlotTypesMap;
 
 	/** Map of hero item type IDs to hero item type objects */
 	private Map<String, HeroItemType> heroItemTypesMap;
@@ -228,9 +228,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 			citySpellEffectsMap.put (thisCitySpellEffect.getCitySpellEffectID (), (CitySpellEffectSvr) thisCitySpellEffect);
 		
 		// Create hero item slot types map
-		heroItemSlotTypesMap = new HashMap<String, HeroItemSlotType> ();
+		heroItemSlotTypesMap = new HashMap<String, HeroItemSlotTypeSvr> ();
 		for (final HeroItemSlotType thisHeroItemSlotType : getHeroItemSlotType ())
-			heroItemSlotTypesMap.put (thisHeroItemSlotType.getHeroItemSlotTypeID (), thisHeroItemSlotType);
+			heroItemSlotTypesMap.put (thisHeroItemSlotType.getHeroItemSlotTypeID (), (HeroItemSlotTypeSvr) thisHeroItemSlotType);
 
 		// Create hero item types map
 		heroItemTypesMap = new HashMap<String, HeroItemType> ();
@@ -871,9 +871,9 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	 * @throws RecordNotFoundException If the hero item slot type ID doesn't exist
 	 */
 	@Override
-	public final HeroItemSlotType findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException
+	public final HeroItemSlotTypeSvr findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException
 	{
-		final HeroItemSlotType found = heroItemSlotTypesMap.get (heroItemSlotTypeID);
+		final HeroItemSlotTypeSvr found = heroItemSlotTypesMap.get (heroItemSlotTypeID);
 		if (found == null)
 			throw new RecordNotFoundException (HeroItemSlotType.class, heroItemSlotTypeID, caller);
 

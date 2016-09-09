@@ -14,7 +14,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
@@ -31,6 +30,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.database.HeroItemSlotTypeSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -161,7 +161,7 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 								else
 								{
 									final String slotTypeID = unitDef.getHeroItemSlot ().get (getToSlotNumber ()).getHeroItemSlotTypeID ();
-									final HeroItemSlotType slotType = mom.getServerDB ().findHeroItemSlotType (slotTypeID, "RequestMoveHeroItemMessageImpl");
+									final HeroItemSlotTypeSvr slotType = mom.getServerDB ().findHeroItemSlotType (slotTypeID, "RequestMoveHeroItemMessageImpl");
 									boolean ok = false;
 									for (final HeroSlotAllowedItemType allowed : slotType.getHeroSlotAllowedItemType ())
 										if (allowed.getHeroItemTypeID ().equals (item.getHeroItemTypeID ()))

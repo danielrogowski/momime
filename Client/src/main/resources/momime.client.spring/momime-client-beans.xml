@@ -1861,6 +1861,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="anim" ref="anim" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->

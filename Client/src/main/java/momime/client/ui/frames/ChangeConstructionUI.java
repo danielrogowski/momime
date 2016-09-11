@@ -43,6 +43,7 @@ import momime.client.ui.renderer.UnitListCellRenderer;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.MomException;
+import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.Unit;
@@ -104,6 +105,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+
+	/** City calculations */
+	private CityCalculations cityCalculations;
 	
 	/** Client city calculations */
 	private ClientCityCalculations clientCityCalculations;
@@ -359,7 +363,9 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		
 		// Which units can we construct?
 		unitsItems.clear ();
-		for (final Unit thisUnit : getClientCityCalculations ().listUnitsCityCanConstruct (getCityLocation ()))
+		for (final Unit thisUnit : getCityCalculations ().listUnitsCityCanConstruct (getCityLocation (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+			getClient ().getClientDB ()))
 		{
 			// Create a sample unit for it now, so the list box can keep it to redraw the unit every frame
 			final AvailableUnit sampleUnit = new AvailableUnit ();
@@ -641,6 +647,22 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		multiplayerSessionUtils = util;
 	}
 
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+	
 	/**
 	 * @return Client city calculations
 	 */

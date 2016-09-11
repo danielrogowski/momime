@@ -26,7 +26,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Race;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Unit;
 import momime.common.database.UnitPrerequisite;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
@@ -578,37 +577,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		return buildList;
 	}
 		
-	/**
-	 * @param cityLocation City location
-	 * @return List of all units that the player can choose between to construct at the city
-	 */
-	@Override
-	public final List<Unit> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation)
-	{
-		log.trace ("Entering listUnitsCityCanConstruct: " + cityLocation);
-
-		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
-		
-		final List<Unit> buildList = new ArrayList<Unit> ();
-		for (final Unit thisUnit : getClient ().getClientDB ().getUnits ())
-			
-			// If its a regular unit
-			if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
-				
-				// and unit either specifies no race (e.g. Trireme) or matches the race inhabiting this city
-				((thisUnit.getUnitRaceID () == null) || (thisUnit.getUnitRaceID ().equals (cityData.getCityRaceID ()))) &&
-				
-				// and we have the necessary buildings to construct this unit
-				(getMemoryBuildingUtils ().meetsUnitRequirements (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
-					cityLocation, thisUnit)))
-				
-				buildList.add (thisUnit);
-		
-		log.trace ("Exiting listUnitsCityCanConstruct = " + buildList.size ());
-		return buildList;
-	}
-
 	/**
 	 * @return Multiplayer client
 	 */

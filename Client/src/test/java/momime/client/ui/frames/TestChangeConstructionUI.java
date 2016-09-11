@@ -38,6 +38,7 @@ import momime.client.ui.renderer.UnitSkillListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CommonDatabaseConstants;
@@ -240,6 +241,8 @@ public final class TestChangeConstructionUI
 		layout.buildMaps ();
 		
 		// Set up panel
+		final CityCalculations cityCalc = mock (CityCalculations.class);
+
 		final UnitInfoPanel panel = new UnitInfoPanel ();
 		panel.setUnitInfoLayout (layout);
 		panel.setUtils (utils);
@@ -263,6 +266,7 @@ public final class TestChangeConstructionUI
 		changeConstruction.setLanguageChangeMaster (langMaster);
 		changeConstruction.setClient (client);
 		changeConstruction.setGraphicsDB (gfx);
+		changeConstruction.setCityCalculations (cityCalc);
 		changeConstruction.setClientCityCalculations (clientCityCalculations);
 		changeConstruction.setUnitInfoPanel (panel);
 		changeConstruction.setBuildingListCellRenderer (buildingRenderer);

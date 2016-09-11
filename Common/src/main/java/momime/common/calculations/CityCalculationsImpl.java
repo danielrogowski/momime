@@ -1,5 +1,6 @@
 package momime.common.calculations;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +39,7 @@ import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.TileType;
+import momime.common.database.Unit;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
@@ -1316,6 +1318,39 @@ public final class CityCalculationsImpl implements CityCalculations
 			result = (totalCost - builtSoFar) * 2;
 		
 		return result;
+	}
+
+	/**
+	 * @param cityLocation City location
+	 * @param map Known terrain
+	 * @param buildings List of known buildings
+	 * @param db Lookup lists built over the XML database
+	 * @return List of all units that the player can choose between to construct at the city
+	 */
+	@Override
+	public final List<Unit> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CommonDatabase db)
+	{
+		log.trace ("Entering listUnitsCityCanConstruct: " + cityLocation);
+
+		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+		
+		final List<Unit> buildList = new ArrayList<Unit> ();
+		for (final Unit thisUnit : db.getUnits ())
+			
+			// If its a regular unit
+			if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&
+				
+				// and unit either specifies no race (e.g. Trireme) or matches the race inhabiting this city
+				((thisUnit.getUnitRaceID () == null) || (thisUnit.getUnitRaceID ().equals (cityData.getCityRaceID ()))) &&
+				
+				// and we have the necessary buildings to construct this unit
+				(getMemoryBuildingUtils ().meetsUnitRequirements (buildings, cityLocation, thisUnit)))
+				
+				buildList.add (thisUnit);
+		
+		log.trace ("Exiting listUnitsCityCanConstruct = " + buildList.size ());
+		return buildList;
 	}
 	
 	/**

@@ -317,7 +317,8 @@ public final class CitiesListUI extends MomClientFrameUI
 
 								popup.addSeparator ();
 								
-								for (final Unit unit : getClientCityCalculations ().listUnitsCityCanConstruct (cityLocation))
+								for (final Unit unit : getCityCalculations ().listUnitsCityCanConstruct (cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getClientDB ()))									
 								{
 									final UnitLang unitLang = getLanguage ().findUnit (unit.getUnitID ());
 									final String unitName = (unitLang == null) ? null : unitLang.getUnitName ();

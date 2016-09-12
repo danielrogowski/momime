@@ -677,6 +677,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="spellAI" ref="spellAI" />
 		<property name="cityAI" ref="cityAI" />
+		<property name="unitAI" ref="unitAI" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">
@@ -684,6 +685,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+	</bean>
+
+	<bean id="unitAI" class="momime.server.ai.UnitAIImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="spellUtils" ref="spellUtils" />
 	</bean>
 	
 	<!-- Fog of War -->

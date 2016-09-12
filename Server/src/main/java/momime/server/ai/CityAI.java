@@ -62,15 +62,14 @@ public interface CityAI
 	 * AI player decides what to build in this city
 	 *
 	 * @param cityLocation Location of the city
-	 * @param cityData Info on the city
-	 * @param trueTerrain True overland terrain
-	 * @param trueBuildings True list of buildings
+	 * @param cityData True info on the city, so it can be updated
+	 * @param knownTerrain Known overland terrain
+	 * @param knownBuildings Known list of buildings
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
 	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryBuilding> trueBuildings,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
-		throws RecordNotFoundException;
+		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
+		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException;
 }

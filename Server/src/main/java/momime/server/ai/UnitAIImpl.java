@@ -1,29 +1,46 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.calculations.CityCalculations;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellSetting;
+import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.HeroItemBonusSvr;
 import momime.server.database.HeroItemSlotTypeSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.SpellSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.utils.UnitSkillDirectAccess;
@@ -31,7 +48,7 @@ import momime.server.utils.UnitSkillDirectAccess;
 /**
  * Methods for AI players evaluating the strength of units
  */
-public final class UnitAIImpl
+public final class UnitAIImpl implements UnitAI
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (UnitAIImpl.class);
@@ -41,6 +58,21 @@ public final class UnitAIImpl
 	
 	/** Unit skill values direct access */
 	private UnitSkillDirectAccess unitSkillDirectAccess;
+	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Spell utils */
+	private SpellUtils spellUtils;
 	
 	/**
 	 * @param xu Unit to calculate value for
@@ -110,10 +142,11 @@ public final class UnitAIImpl
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
+	@Override
 	public final int calculateUnitCurrentRating (final AvailableUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering calculateUnitCurrentRating: " + unit.getUnitID () + " owner by player ID " + unit.getOwningPlayerID ());
+		log.trace ("Entering calculateUnitCurrentRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
 		
 		final int rating = calculateUnitRating (getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db), db);
 		
@@ -168,10 +201,11 @@ public final class UnitAIImpl
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
+	@Override
 	public final int calculateUnitPotentialRating (final AvailableUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering calculateUnitCurrentRating: " + unit.getUnitID () + " owner by player ID " + unit.getOwningPlayerID ());
+		log.trace ("Entering calculateUnitPotentialRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
 		
 		// Since MoM is single threaded (with respect to each session) we can temporarily fiddle with the existing unit details, then put it back the way it was afterwards
 		final int experience = getUnitSkillDirectAccess ().getDirectSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
@@ -235,10 +269,156 @@ public final class UnitAIImpl
 				mu.getHeroItemSlot ().get (slotNumber).setHeroItem (heroItems.get (slotNumber));
 		}
 		
-		log.trace ("Exiting calculateUnitCurrentRating = " + rating);
+		log.trace ("Exiting calculateUnitPotentialRating = " + rating);
 		return rating;
 	}
 
+	/**
+	 * @param unit Unit to calculate value for
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return Value AI estimates for the quality, usefulness and effectiveness for defensive purposes
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public final int calculateUnitAverageRating (final AvailableUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering calculateUnitAverageRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
+		
+		final int rating = (calculateUnitCurrentRating (unit, players, mem, db) + calculateUnitPotentialRating (unit, players, mem, db)) / 2;
+
+		log.trace ("Exiting calculateUnitAverageRating = " + rating);
+		return rating;
+	}
+	
+	/**
+	 * @param player AI player who is considering constructing the specified unit
+	 * @param players Players list
+	 * @param unit Unit they want to construct
+	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether or not we can afford the additional maintenance cost of this unit - will ignore rations since we can always allocate more farmers
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	final boolean canAffordUnitMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final AvailableUnit unit,
+		final SpellSetting spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering canAffordUnitMaintenance: " + unit.getUnitID () + " owned by player ID " + player.getPlayerDescription ().getPlayerID ());
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		
+		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
+		
+		// Now we can check its upkeep
+		boolean ok = true;
+		final Iterator<String> iter = xu.listModifiedUpkeepProductionTypeIDs ().iterator ();
+		while ((ok) && (iter.hasNext ()))
+		{
+			final String productionTypeID = iter.next ();
+			if ((!productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)) &&
+				(xu.getModifiedUpkeepValue (productionTypeID) > getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionTypeID, spellSettings, db)))
+				
+				ok = false;
+		}
+		
+		log.trace ("Exiting canAffordUnitMaintenance = " + ok);
+		return ok;
+	}
+	
+	/**
+	 * Lists every unit this AI player can build at every city they own, as well as any units they can summon, sorted with the best units first.
+	 * This won't list heroes, since if we cast Summon Hero/Champion, we never know which one we're going to get.
+	 * Will not include any units that we wouldn't be able to afford the maintenance cost of if we constructed them
+	 * (mana for summoned units; gold for units constructed in cities - will ignore rations since we can always allocate more farmers).
+	 * 
+	 * @param player AI player who is considering constructing a unit
+	 * @param players Players list
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return List of all possible units this AI player can construct or summon, sorted with the best first
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public final List<AIConstructableUnit> listAllUnitsWeCanConstruct (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering listAllUnitsWeCanConstruct: Player ID " + player.getPlayerDescription ().getPlayerID ());
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+
+		final List<AIConstructableUnit> results = new ArrayList<AIConstructableUnit> ();
+		
+		// Units we can construct in cities
+		for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				{
+					final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					{
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+						
+						final List<Unit> unitDefs = getCityCalculations ().listUnitsCityCanConstruct (cityLocation,
+							priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (), db);
+						
+						for (final Unit unitDef : unitDefs)
+						{
+							// Need real example of the unit so that we property take into account if we have
+							// e.g. retorts that make it cheaper to maintained summoned creatures, or so on 
+							final AvailableUnit unit = new AvailableUnit ();
+							unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
+							unit.setUnitID (unitDef.getUnitID ());
+							unit.setUnitLocation (cityLocation);
+
+							// Need to get experience and weapon grade right so we tend to construct units in cities with e.g. a Fighters' or Alchemists' Guild
+							final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings (priv.getFogOfWarMemory ().getBuilding (), cityLocation, db);
+							
+							unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+								(priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMap (), cityLocation, pub.getPick (), sd.getOverlandMapSize (), db));
+							
+							getUnitUtils ().initializeUnitSkills (unit, startingExperience, db);
+							
+							if (canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db))
+								results.add (new AIConstructableUnit ((UnitSvr) unitDef, cityLocation, null,
+									calculateUnitAverageRating (unit, players, priv.getFogOfWarMemory (), db)));
+						}									
+					}
+				}
+		
+		// Summonining spells we know
+		for (final SpellSvr spell : db.getSpells ())
+			if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getSummonedUnit ().size () == 1) && (spell.getOverlandCastingCost () != null) &&
+				(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
+			{
+				final AvailableUnit unit = new AvailableUnit ();
+				unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
+				unit.setUnitID (spell.getSummonedUnit ().get (0).getSummonedUnitID ());
+				
+				final UnitSvr unitDef = (UnitSvr) getUnitUtils ().initializeUnitSkills (unit, null, db);
+
+				if (canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db))
+					results.add (new AIConstructableUnit (unitDef, null, spell,
+						calculateUnitAverageRating (unit, players, priv.getFogOfWarMemory (), db)));
+			}
+		
+		// Sort the results
+		Collections.sort (results);
+		
+		log.trace ("Exiting listAllUnitsWeCanConstruct = " + results.size ());
+		return results;
+	}
+	
 	/**
 	 * @return Unit utils
 	 */
@@ -269,5 +449,85 @@ public final class UnitAIImpl
 	public final void setUnitSkillDirectAccess (final UnitSkillDirectAccess direct)
 	{
 		unitSkillDirectAccess = direct;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
+	}
+	
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Spell utils
+	 */
+	public final SpellUtils getSpellUtils ()
+	{
+		return spellUtils;
+	}
+
+	/**
+	 * @param utils Spell utils
+	 */
+	public final void setSpellUtils (final SpellUtils utils)
+	{
+		spellUtils = utils;
 	}
 }

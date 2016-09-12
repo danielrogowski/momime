@@ -318,18 +318,17 @@ public final class CityAIImpl implements CityAI
 	 * AI player decides what to build in this city
 	 *
 	 * @param cityLocation Location of the city
-	 * @param cityData Info on the city
-	 * @param trueTerrain True overland terrain
-	 * @param trueBuildings True list of buildings
+	 * @param cityData True info on the city, so it can be updated
+	 * @param knownTerrain Known overland terrain
+	 * @param knownBuildings Known list of buildings
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
 	@Override
-	public final void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryBuilding> trueBuildings,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
-		throws RecordNotFoundException
+	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
+		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
+		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering decideWhatToBuild: " + cityLocation);
 
@@ -369,8 +368,8 @@ public final class CityAIImpl implements CityAI
 			// Keep buildings in the list even if we don't yet have the pre-requisites necessary to build them
 			final List<BuildingSvr> buildingOptions = new ArrayList<BuildingSvr> ();
 			for (final BuildingSvr building : db.getBuildings ())
-				if ((building.getAiBuildingTypeID () == buildingType) && (getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, building.getBuildingID ()) == null) &&
-					(getServerCityCalculations ().canEventuallyConstructBuilding (trueTerrain, trueBuildings, cityLocation, building, sd.getOverlandMapSize (), db)))
+				if ((building.getAiBuildingTypeID () == buildingType) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, building.getBuildingID ()) == null) &&
+					(getServerCityCalculations ().canEventuallyConstructBuilding (knownTerrain, knownBuildings, cityLocation, building, sd.getOverlandMapSize (), db)))
 
 					buildingOptions.add (building);
 
@@ -384,7 +383,7 @@ public final class CityAIImpl implements CityAI
 			{
 				final BuildingSvr thisBuilding = buildingOptions.get (buildingIndex);
 
-				if (getMemoryBuildingUtils ().meetsBuildingRequirements (trueBuildings, cityLocation, thisBuilding))
+				if (getMemoryBuildingUtils ().meetsBuildingRequirements (knownBuildings, cityLocation, thisBuilding))
 				{
 					// Got one we can decide upon
 					cityData.setCurrentlyConstructingBuildingID (thisBuilding.getBuildingID ());
@@ -399,7 +398,7 @@ public final class CityAIImpl implements CityAI
 					for (final BuildingPrerequisite prereq : thisBuilding.getBuildingPrerequisite ())
 					{
 						final BuildingSvr buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
-						if ((!buildingOptions.contains (buildingPrereq)) && (getMemoryBuildingUtils ().findBuilding (trueBuildings, cityLocation, buildingPrereq.getBuildingID ()) == null))
+						if ((!buildingOptions.contains (buildingPrereq)) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, buildingPrereq.getBuildingID ()) == null))
 							buildingOptions.add (buildingPrereq);
 					}
 
@@ -414,9 +413,6 @@ public final class CityAIImpl implements CityAI
 			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_TRADE_GOODS);
 			cityData.setCurrentlyConstructingUnitID (null);
 		}
-
-		// Put this into the calling method, just to make this easier to test
-		// FogOfWarMidTurnChanges.updatePlayerMemoryOfCity (trueTerrain, players, cityLocation, sd);
 
 		log.trace ("Exiting decideWhatToBuild = " + cityData.getCurrentlyConstructingBuildingID () + ", " + cityData.getCurrentlyConstructingUnitID ()); 
 	}

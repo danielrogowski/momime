@@ -5,24 +5,28 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
-import momime.common.messages.OverlandMapCityData;
-import momime.common.utils.PlayerKnowledgeUtils;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
+import momime.common.messages.UnitStatusID;
+import momime.common.utils.PlayerKnowledgeUtils;
+import momime.server.database.ServerDatabaseEx;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.messages.ServerMemoryGridCellUtils;
 
 /**
  * Overall AI strategy + control
@@ -40,6 +44,9 @@ public final class MomAIImpl implements MomAI
 
 	/** AI decisions about spells */
 	private SpellAI spellAI;
+
+	/** AI decisions about units */
+	private UnitAI unitAI;
 	
 	/**
 	 *
@@ -61,20 +68,81 @@ public final class MomAIImpl implements MomAI
 	{
 		log.trace ("Entering aiPlayerTurn: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		// First find out what the best units we can construct or summon are - this gives us
+		// something to gauge existing units by, to know if they're now obsolete or not
+		final List<AIConstructableUnit> constructableUnits = getUnitAI ().listAllUnitsWeCanConstruct (player, players, sd, db);
+		for (final AIConstructableUnit unit : constructableUnits)
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " could make unit " + unit);
+		
+		// Estimate the total strength of all the units we have at every point on the map for attack and defense purposes,
+		// as well as the strength of all enemy units for attack purposes.
+		final Integer [] [] [] ourUnitAverage = new Integer [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final Integer [] [] [] ourUnitCurrent = new Integer [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final Integer [] [] [] enemyUnitCurrent = new Integer [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		for (final MemoryUnit mu : priv.getFogOfWarMemory ().getUnit ())
+			if (mu.getStatus () == UnitStatusID.ALIVE)
+			{
+				final int currentRating = getUnitAI ().calculateUnitCurrentRating (mu, players, priv.getFogOfWarMemory (), db);
+				if (mu.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ())
+				{
+					// Our unit
+					final Integer current = ourUnitCurrent [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()];
+					ourUnitCurrent [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()] =
+						(current == null) ? currentRating : (current + currentRating);
+
+					final int averageRating = getUnitAI ().calculateUnitAverageRating (mu, players, priv.getFogOfWarMemory (), db);
+					final Integer average = ourUnitAverage [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()];
+					ourUnitAverage [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()] =
+						(average == null) ? averageRating : (average + averageRating);
+				}
+				else
+				{
+					// Enemy unit
+					final Integer current = enemyUnitCurrent [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()];
+					enemyUnitCurrent [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()] =
+						(current == null) ? currentRating : (current + currentRating);
+				}
+			}
+		
+		// Go through every defensive position that we either own, or is unoccupied and we should capture, seeing if we have enough units there defending
+		for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+				{
+					final Integer ours = ourUnitAverage [z] [y] [x];
+					final Integer theirs = enemyUnitCurrent [z] [y] [x];
+					
+					final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					final OverlandMapCityData cityData = mc.getCityData ();
+					final OverlandMapTerrainData terrainData = mc.getTerrainData ();
+					if (((cityData != null) || (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db))) && (theirs == null)) 
+					{
+						final Integer defenceRating = ourUnitAverage [z] [y] [x];
+						
+						final String description = (cityData != null) ? ("city belonging to " + cityData.getCityOwnerID ()) : (terrainData.getTileTypeID () + "/" + terrainData.getMapFeatureID ());
+						
+						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " sees " + description +
+							" at (" + x + ", " + y + ", " + z + ") which is currently guarded by " + defenceRating + " points worth of our units");
+					}
+				}
+
 		// Decide what to build in all of this players' cities
 		// Note we do this EVERY TURN - we don't wait for the previous building to complete - this allows the AI player to change their mind
 		// e.g. if a city has minimal defence and has a university almost built and then a
 		// group of halbardiers show up 2 squares away, you're going to want to stuff the university and rush buy the best unit you can afford
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
-					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
+					final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 					{
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 
-						getCityAI ().decideWhatToBuild (cityLocation, cityData, trueMap.getMap (), trueMap.getBuilding (), sd, db);
+						getCityAI ().decideWhatToBuild (cityLocation, cityData, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (), sd, db);
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 					}
 				}
@@ -83,9 +151,6 @@ public final class MomAIImpl implements MomAI
 		getCityAI ().setOptionalFarmersInAllCities (trueMap, players, player, db, sd);
 
 		// Do we need to choose a spell to research?
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (priv.getSpellIDBeingResearched () == null))
 			getSpellAI ().decideWhatToResearch (player, db);
 
@@ -138,5 +203,21 @@ public final class MomAIImpl implements MomAI
 	public final void setSpellAI (final SpellAI ai)
 	{
 		spellAI = ai;
+	}
+
+	/**
+	 * @return AI decisions about units
+	 */
+	public final UnitAI getUnitAI ()
+	{
+		return unitAI;
+	}
+
+	/**
+	 * @param ai AI decisions about units
+	 */
+	public final void setUnitAI (final UnitAI ai)
+	{
+		unitAI = ai;
 	}
 }

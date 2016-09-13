@@ -292,7 +292,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			if (buildingProduction.getPercentageBonus () > 0)
 				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "PercentageBonusFromBuilding")));
 			
-			// Consumption from buildings, mainly gold maintainence
+			// Consumption from buildings, mainly gold maintenance
 			if (buildingProduction.getConsumptionAmount () > 0)
 				consumptionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "BuildingConsumption")));
 		}

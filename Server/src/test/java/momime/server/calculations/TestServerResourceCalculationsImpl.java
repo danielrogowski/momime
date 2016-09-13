@@ -198,7 +198,7 @@ public final class TestServerResourceCalculationsImpl
 		assertEquals (-17, priv.getResourceValue ().get (0).getAmountPerTurn ());
 		assertEquals (0, priv.getResourceValue ().get (0).getAmountStored ());
 
-		// Wizard has Channeler, halfing spell maintainence (half of 17 is 8.5, proves that maintainence is rounded up)
+		// Wizard has Channeler, halfing spell maintenance (half of 17 is 8.5, proves that maintenance is rounded up)
 		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
 
 		calc.recalculateAmountsPerTurn (player, players, trueMap, sd, db);

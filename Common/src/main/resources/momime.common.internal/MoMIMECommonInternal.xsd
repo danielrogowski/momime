@@ -318,7 +318,7 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 	<xsd:complexType name="cityProductionBreakdownBuilding">
 		<xsd:annotation>
 			<xsd:documentation>Buildings can generate production e.g. shrine, production % bonuses e.g. marketplace generates +25% gold,
-				consumption e.g. gold maintainence cost of buildings, or any combination of all three.</xsd:documentation>
+				consumption e.g. gold maintenance cost of buildings, or any combination of all three.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" />

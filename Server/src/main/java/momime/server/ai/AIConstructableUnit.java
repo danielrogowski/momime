@@ -8,7 +8,7 @@ import momime.server.database.UnitSvr;
 /**
  * Holds details about a unit an AI player could build
  */
-class AIConstructableUnit implements Comparable<AIConstructableUnit>
+final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 {
 	/** The type of unit we can construct */
 	private final UnitSvr unit;
@@ -22,18 +22,23 @@ class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	/** The average rating calculated for the unit if we construct it */
 	private final int averageRating;
 	
+	/** Whether we could afford the maintenance cost if we added another one of these units to our army */
+	private final boolean canAffordMaintenance;
+	
 	/**
 	 * @param aUnit The type of unit we can construct
 	 * @param aCityLocation The city where the unit can be constructed, or null if its a summoning spell
 	 * @param aSpell The spell that summons the unit, or null if its a unit we're constructing in a city
 	 * @param anAverageRating The average rating calculated for the unit if we construct it
+	 * @param aCanAffordMaintenance Whether we could afford the maintenance cost if we added another one of these units to our army
 	 */
-	AIConstructableUnit (final UnitSvr aUnit, final MapCoordinates3DEx aCityLocation, final SpellSvr aSpell, final int anAverageRating)
+	AIConstructableUnit (final UnitSvr aUnit, final MapCoordinates3DEx aCityLocation, final SpellSvr aSpell, final int anAverageRating, final boolean aCanAffordMaintenance)
 	{
 		unit = aUnit;
 		cityLocation = aCityLocation;
 		spell = aSpell;
 		averageRating = anAverageRating;
+		canAffordMaintenance = aCanAffordMaintenance;
 	}
 
 	/**
@@ -51,9 +56,9 @@ class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	@Override
 	public final String toString ()
 	{
-		return getUnit ().getUnitID () +
-			((getCityLocation () != null) ? (" constructed at " + getCityLocation ()) : (" summoned by " + getSpell ().getSpellName ())) +
-			" has average rating of " + getAverageRating ();
+		return getUnit ().getUnitName () + " (" + getUnit ().getUnitID () + ") " +
+			((getCityLocation () != null) ? ("constructed at " + getCityLocation ()) : ("summoned by " + getSpell ().getSpellName ())) +
+			" has average rating of " + getAverageRating () + ", can afford = " + isCanAffordMaintenance ();
 	}
 	
 	/**
@@ -86,5 +91,13 @@ class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	public final int getAverageRating ()
 	{
 		return averageRating;
+	}
+
+	/**
+	 * @return Whether we could afford the maintenance cost if we added another one of these units to our army
+	 */
+	public final boolean isCanAffordMaintenance ()
+	{
+		return canAffordMaintenance;
 	}
 }

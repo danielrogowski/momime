@@ -678,6 +678,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellAI" ref="spellAI" />
 		<property name="cityAI" ref="cityAI" />
 		<property name="unitAI" ref="unitAI" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">

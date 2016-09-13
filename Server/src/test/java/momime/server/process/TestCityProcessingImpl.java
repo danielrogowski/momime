@@ -746,7 +746,7 @@ public final class TestCityProcessingImpl
 	}
 
 	/**
-	 * Tests the sellBuilding method when we were forced to sell it (couldn't afford gold maintainence)
+	 * Tests the sellBuilding method when we were forced to sell it (couldn't afford gold maintenance)
 	 * @throws Exception If there is a problem
 	 */
 	@Test

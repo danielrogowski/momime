@@ -441,12 +441,18 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			final PlayerServerDetails raidersPlayer = mom.addPlayer (createAiPlayerDescription
 				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, "checkIfCanStartGame")), null, null, true, null);
 
+			final MomPersistentPlayerPrivateKnowledge raidersPriv = (MomPersistentPlayerPrivateKnowledge) raidersPlayer.getPersistentPlayerPrivateKnowledge ();
+			raidersPriv.getSpellResearchStatus ().forEach (r -> r.setStatus (SpellResearchStatusID.UNAVAILABLE));
+			
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_RAIDERS, raidersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// Add monsters
 			final PlayerServerDetails monstersPlayer = mom.addPlayer (createAiPlayerDescription
 				(mom.getServerDB ().findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "checkIfCanStartGame")), null, null, true, null);
 
+			final MomPersistentPlayerPrivateKnowledge monstersPriv = (MomPersistentPlayerPrivateKnowledge) monstersPlayer.getPersistentPlayerPrivateKnowledge ();
+			monstersPriv.getSpellResearchStatus ().forEach (r -> r.setStatus (SpellResearchStatusID.UNAVAILABLE));
+			
 			chooseWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, monstersPlayer, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// Broadcast player data
@@ -794,7 +800,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		else
 		{
 			mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-			getMomAI ().aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+			getMomAI ().aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+				mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getSessionDescription (), mom.getServerDB ());
 			
 			// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 			nextTurnButton (mom, currentPlayer);
@@ -841,7 +848,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			if (!aiPlayer.getPlayerDescription ().isHuman ())
 			{
 				mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + aiPlayer.getPlayerDescription ().getPlayerName () + "...");
-				getMomAI ().aiPlayerTurn (aiPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+				getMomAI ().aiPlayerTurn (aiPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getSessionDescription (), mom.getServerDB ());
 			
 				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 				nextTurnButton (mom, aiPlayer);

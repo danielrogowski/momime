@@ -123,7 +123,7 @@ public final class UnitAIImpl implements UnitAI
 		if ((!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) &&
 			(!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)))
 			
-			multipliers = multipliers * 0.2;
+			multipliers = multipliers / 20;
 		
 		// Apply multiplicative modifiers
 		total = (int) (total * multipliers);
@@ -389,9 +389,9 @@ public final class UnitAIImpl implements UnitAI
 							
 							getUnitUtils ().initializeUnitSkills (unit, startingExperience, db);
 							
-							if (canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db))
-								results.add (new AIConstructableUnit ((UnitSvr) unitDef, cityLocation, null,
-									calculateUnitAverageRating (unit, players, priv.getFogOfWarMemory (), db)));
+							results.add (new AIConstructableUnit ((UnitSvr) unitDef, cityLocation, null,
+								calculateUnitAverageRating (unit, players, priv.getFogOfWarMemory (), db),
+								canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
 						}									
 					}
 				}
@@ -407,9 +407,9 @@ public final class UnitAIImpl implements UnitAI
 				
 				final UnitSvr unitDef = (UnitSvr) getUnitUtils ().initializeUnitSkills (unit, null, db);
 
-				if (canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db))
-					results.add (new AIConstructableUnit (unitDef, null, spell,
-						calculateUnitAverageRating (unit, players, priv.getFogOfWarMemory (), db)));
+				results.add (new AIConstructableUnit (unitDef, null, spell,
+					calculateUnitAverageRating (unit, players, priv.getFogOfWarMemory (), db),
+					canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
 			}
 		
 		// Sort the results

@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -23,6 +24,7 @@ import momime.common.database.SpellSetting;
 import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -30,8 +32,10 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitDamage;
+import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -43,6 +47,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
+import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.utils.UnitSkillDirectAccess;
 
 /**
@@ -417,6 +422,128 @@ public final class UnitAIImpl implements UnitAI
 		
 		log.trace ("Exiting listAllUnitsWeCanConstruct = " + results.size ());
 		return results;
+	}
+
+	/**
+	 * Calculates the current and average rating of every unit we can see on the map.
+	 * 
+	 * @param ourUnits Array to populate our unit ratings into
+	 * @param enemyUnits Array to populate enemy unit ratings into
+	 * @param playerID Player ID to consider as "our" units
+	 * @param mem Memory data known to playerID
+	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public final void calculateUnitRatingsAtEveryMapCell (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
+		final int playerID, final FogOfWarMemory mem, final List<PlayerServerDetails> players, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering calculateUnitRatingsAtEveryMapCell: AI Player ID " + playerID);
+		
+		for (final MemoryUnit mu : mem.getUnit ())
+			if (mu.getStatus () == UnitStatusID.ALIVE)
+			{
+				final AIUnitsAndRatings [] [] [] unitArray = (mu.getOwningPlayerID () == playerID) ? ourUnits : enemyUnits;
+				AIUnitsAndRatings unitList = unitArray [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()];
+				if (unitList == null)
+				{
+					unitList = new AIUnitsAndRatingsImpl ();
+					unitArray [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()] = unitList; 
+				}
+				
+				unitList.add (new AIUnitAndRatings (mu,
+					calculateUnitCurrentRating (mu, players, mem, db),
+					calculateUnitAverageRating (mu, players, mem, db)));
+			}
+
+		log.trace ("Exiting calculateUnitRatingsAtEveryMapCell");
+	}
+	
+	/**
+	 * Checks every city, node, lair and tower that we either own or is undefended, and checks how much short of our desired defence level it currently is.
+	 * As a side effect, any units where we have too much defence, or units which are not in a defensive location, are put into a list of mobile units.
+	 * 
+	 * @param ourUnits Array of our unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param mobileUnits List to populate with details of all units that are in excess of defensive requirements, or are not in defensive positions
+	 * @param playerID Player ID to consider as "our" units
+	 * @param mem Memory data known to playerID
+	 * @param desiredDefenceRating How much defence we are aiming for at every location
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @return List of all defence locations, and how many points short we are of our desired defence level
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 */
+	@Override
+	public final List<AIDefenceLocation> evaluateCurrentDefence (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
+		final List<AIUnitAndRatings> mobileUnits, final int playerID, final FogOfWarMemory mem, final int desiredDefenceRating,
+		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
+	{
+		log.trace ("Entering evaluateCurrentDefence: AI Player ID " + playerID);
+		
+		final List<AIDefenceLocation> underdefendedLocations = new ArrayList<AIDefenceLocation> ();
+		
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+				{
+					final AIUnitsAndRatings ours = ourUnits [z] [y] [x];
+					final AIUnitsAndRatings theirs = enemyUnits [z] [y] [x];
+					
+					final MemoryGridCell mc = mem.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					final OverlandMapCityData cityData = mc.getCityData ();
+					final OverlandMapTerrainData terrainData = mc.getTerrainData ();
+					if (((cityData != null) || (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db))) && (theirs == null)) 
+					{
+						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
+						
+						final int defenceRating = (ours == null) ? 0 : ours.stream ().mapToInt (u -> u.getAverageRating ()).sum ();
+						final String description = (cityData != null) ? ("city belonging to " + cityData.getCityOwnerID ()) : (terrainData.getTileTypeID () + "/" + terrainData.getMapFeatureID ());
+						
+						final int thisDesiredDefenceRating = desiredDefenceRating * (getMemoryBuildingUtils ().findBuilding
+							(mem.getBuilding (), coords, CommonDatabaseConstants.BUILDING_FORTRESS) == null ? 1 : 2);
+						
+						log.debug ("AI Player ID " + playerID + " sees " + description +
+							" at (" + x + ", " + y + ", " + z + "), CDR = " + defenceRating + ", DDR = " + thisDesiredDefenceRating);
+						
+						if (defenceRating < thisDesiredDefenceRating)
+							underdefendedLocations.add (new AIDefenceLocation (coords, thisDesiredDefenceRating - defenceRating));
+						else if (defenceRating > thisDesiredDefenceRating)
+						{
+							// Maybe we have too much defence?  Can we lose a unit or two without becoming underdefended?
+							Collections.sort (ours);
+							int defenceSoFar = 0;
+							final Iterator<AIUnitAndRatings> iter = ours.iterator ();
+							while (iter.hasNext ())
+							{
+								final AIUnitAndRatings thisUnit = iter.next ();
+								if (defenceSoFar >= thisDesiredDefenceRating)
+								{
+									iter.remove ();
+									mobileUnits.add (thisUnit);
+								}
+								else
+									defenceSoFar = defenceSoFar + thisUnit.getAverageRating ();
+							}
+						}
+					}
+
+					// All units not in defensive positions are automatically mobile
+					else if (ours != null)
+					{
+						mobileUnits.addAll (ours);
+						ourUnits [z] [y] [x] = null;
+					}
+				}
+		
+		Collections.sort (underdefendedLocations);
+
+		log.trace ("Exiting evaluateCurrentDefence");
+		return underdefendedLocations;
 	}
 	
 	/**

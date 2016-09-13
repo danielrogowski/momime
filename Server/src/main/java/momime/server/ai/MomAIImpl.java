@@ -1,8 +1,6 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -16,22 +14,15 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MemoryGridCell;
-import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
-import momime.common.messages.OverlandMapTerrainData;
-import momime.common.messages.UnitStatusID;
-import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.messages.ServerMemoryGridCellUtils;
 
 /**
  * Overall AI strategy + control
@@ -52,9 +43,6 @@ public final class MomAIImpl implements MomAI
 
 	/** AI decisions about units */
 	private UnitAI unitAI;
-	
-	/** Memory building utils */
-	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/**
 	 *
@@ -101,80 +89,13 @@ public final class MomAIImpl implements MomAI
 			// as well as the strength of all enemy units for attack purposes.
 			final AIUnitsAndRatings [] [] [] ourUnits = new AIUnitsAndRatings [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 			final AIUnitsAndRatings [] [] [] enemyUnits = new AIUnitsAndRatings [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-			for (final MemoryUnit mu : priv.getFogOfWarMemory ().getUnit ())
-				if (mu.getStatus () == UnitStatusID.ALIVE)
-				{
-					final AIUnitsAndRatings [] [] [] unitArray = (mu.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) ? ourUnits : enemyUnits;
-					AIUnitsAndRatings unitList = unitArray [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()];
-					if (unitList == null)
-					{
-						unitList = new AIUnitsAndRatingsImpl ();
-						unitArray [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()] = unitList; 
-					}
-					
-					unitList.add (new AIUnitAndRatings (mu,
-						getUnitAI ().calculateUnitCurrentRating (mu, players, priv.getFogOfWarMemory (), db),
-						getUnitAI ().calculateUnitAverageRating (mu, players, priv.getFogOfWarMemory (), db)));
-				}
+			getUnitAI ().calculateUnitRatingsAtEveryMapCell (ourUnits, enemyUnits, player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), players, db);
 			
 			// Go through every defensive position that we either own, or is unoccupied and we should capture, seeing if we have enough units there defending
-			final List<AIDefenceLocation> underdefendedLocations = new ArrayList<AIDefenceLocation> ();
 			final List<AIUnitAndRatings> mobileUnits = new ArrayList<AIUnitAndRatings> ();
-			
-			for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
-				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-					{
-						final AIUnitsAndRatings ours = ourUnits [z] [y] [x];
-						final AIUnitsAndRatings theirs = enemyUnits [z] [y] [x];
-						
-						final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-						final OverlandMapCityData cityData = mc.getCityData ();
-						final OverlandMapTerrainData terrainData = mc.getTerrainData ();
-						if (((cityData != null) || (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db))) && (theirs == null)) 
-						{
-							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
-							
-							final int defenceRating = (ours == null) ? 0 : ours.stream ().mapToInt (u -> u.getAverageRating ()).sum ();
-							final String description = (cityData != null) ? ("city belonging to " + cityData.getCityOwnerID ()) : (terrainData.getTileTypeID () + "/" + terrainData.getMapFeatureID ());
-							
-							final int thisDesiredDefenceRating = desiredDefenceRating * (getMemoryBuildingUtils ().findBuilding
-								(priv.getFogOfWarMemory ().getBuilding (), coords, CommonDatabaseConstants.BUILDING_FORTRESS) == null ? 1 : 2);
-							
-							log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " sees " + description +
-								" at (" + x + ", " + y + ", " + z + "), CDR = " + defenceRating + ", DDR = " + thisDesiredDefenceRating);
-							
-							if (defenceRating < thisDesiredDefenceRating)
-								underdefendedLocations.add (new AIDefenceLocation (coords, thisDesiredDefenceRating - defenceRating));
-							else if (defenceRating > thisDesiredDefenceRating)
-							{
-								// Maybe we have too much defence?  Can we lose a unit or two without becoming underdefended?
-								Collections.sort (ours);
-								int defenceSoFar = 0;
-								final Iterator<AIUnitAndRatings> iter = ours.iterator ();
-								while (iter.hasNext ())
-								{
-									final AIUnitAndRatings thisUnit = iter.next ();
-									if (defenceSoFar >= thisDesiredDefenceRating)
-									{
-										iter.remove ();
-										mobileUnits.add (thisUnit);
-									}
-									else
-										defenceSoFar = defenceSoFar + thisUnit.getAverageRating ();
-								}
-							}
-						}
+			final List<AIDefenceLocation> underdefendedLocations = getUnitAI ().evaluateCurrentDefence (ourUnits, enemyUnits, mobileUnits,
+				player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), desiredDefenceRating, sd.getOverlandMapSize (), db);
 
-						// All units not in defensive positions are automatically mobile
-						else if (ours != null)
-						{
-							mobileUnits.addAll (ours);
-							ourUnits [z] [y] [x] = null;
-						}
-					}
-			
-			Collections.sort (underdefendedLocations);
 			for (final AIDefenceLocation location : underdefendedLocations)
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);
 			
@@ -272,21 +193,5 @@ public final class MomAIImpl implements MomAI
 	public final void setUnitAI (final UnitAI ai)
 	{
 		unitAI = ai;
-	}
-
-	/**
-	 * @return Memory building utils
-	 */
-	public final MemoryBuildingUtils getMemoryBuildingUtils ()
-	{
-		return memoryBuildingUtils;
-	}
-
-	/**
-	 * @param utils Memory building utils
-	 */
-	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
-	{
-		memoryBuildingUtils = utils;
 	}
 }

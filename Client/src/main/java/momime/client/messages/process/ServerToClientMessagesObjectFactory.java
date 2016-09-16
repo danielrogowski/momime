@@ -58,7 +58,6 @@ import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
-import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.YourPhotoIsOkMessage;
@@ -181,15 +180,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final PendingSaleMessage createPendingSaleMessage ()
 	{
 		return getFactory ().createPendingSaleMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final UpdateOverlandMovementRemainingMessage createUpdateOverlandMovementRemainingMessage ()
-	{
-		return getFactory ().createUpdateOverlandMovementRemainingMessage ();
 	}
 
 	/**

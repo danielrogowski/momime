@@ -1147,4 +1147,118 @@ public final class TestFogOfWarMidTurnMultiChangesImpl
 		assertEquals (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY, moveToCell.getMapFeatureID ());
 		assertEquals (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY, moveToCellOtherPlane.getMapFeatureID ());
 	}
+
+	/**
+	 * Tests the resetUnitOverlandMovement method for all players
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testResetUnitOverlandMovement_AllPlayers () throws Exception
+	{
+		// Empty mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Session description
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		
+		// Other lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Create units owned by 3 players
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		for (int playerID = 1; playerID <= 3; playerID++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setOwningPlayerID (playerID);
+			fow.getUnit ().add (spearmen);
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
+			when (xuSpearmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+
+			final MemoryUnit hellHounds = new MemoryUnit ();
+			hellHounds.setOwningPlayerID (playerID);
+			fow.getUnit ().add (hellHounds);
+
+			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
+			when (xuHellHounds.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		}
+
+		// Set up object to test
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
+		multi.setUnitUtils (unitUtils);
+		multi.setFogOfWarMidTurnChanges (midTurn);
+		
+		// Run method
+		multi.resetUnitOverlandMovement (0, players, fow, fogOfWarSettings, db);
+
+		// Check results
+		assertEquals (2, fow.getUnit ().get (0).getDoubleOverlandMovesLeft ());
+		assertEquals (4, fow.getUnit ().get (1).getDoubleOverlandMovesLeft ());
+		assertEquals (2, fow.getUnit ().get (2).getDoubleOverlandMovesLeft ());
+		assertEquals (4, fow.getUnit ().get (3).getDoubleOverlandMovesLeft ());
+		assertEquals (2, fow.getUnit ().get (4).getDoubleOverlandMovesLeft ());
+		assertEquals (4, fow.getUnit ().get (5).getDoubleOverlandMovesLeft ());
+	}
+
+	/**
+	 * Tests the resetUnitOverlandMovement method for a single player
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testResetUnitOverlandMovement_OnePlayer () throws Exception
+	{
+		// Empty mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		// Session description
+		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
+		
+		// Other lists
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		
+		// Create units owned by 3 players
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		for (int playerID = 1; playerID <= 3; playerID++)
+		{
+			final MemoryUnit spearmen = new MemoryUnit ();
+			spearmen.setOwningPlayerID (playerID);
+			fow.getUnit ().add (spearmen);
+			
+			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fow, db)).thenReturn (xuSpearmen);
+			when (xuSpearmen.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
+
+			final MemoryUnit hellHounds = new MemoryUnit ();
+			hellHounds.setOwningPlayerID (playerID);
+			fow.getUnit ().add (hellHounds);
+
+			final ExpandedUnitDetails xuHellHounds = mock (ExpandedUnitDetails.class);
+			when (unitUtils.expandUnitDetails (hellHounds, null, null, null, players, fow, db)).thenReturn (xuHellHounds);
+			when (xuHellHounds.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
+		}
+
+		// Set up object to test
+		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		
+		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
+		multi.setUnitUtils (unitUtils);
+		multi.setFogOfWarMidTurnChanges (midTurn);
+
+		// Run method
+		multi.resetUnitOverlandMovement (2, players, fow, fogOfWarSettings, db);
+
+		// Check results
+		assertEquals (0, fow.getUnit ().get (0).getDoubleOverlandMovesLeft ());
+		assertEquals (0, fow.getUnit ().get (1).getDoubleOverlandMovesLeft ());
+		assertEquals (2, fow.getUnit ().get (2).getDoubleOverlandMovesLeft ());
+		assertEquals (4, fow.getUnit ().get (3).getDoubleOverlandMovesLeft ());
+		assertEquals (0, fow.getUnit ().get (4).getDoubleOverlandMovesLeft ());
+		assertEquals (0, fow.getUnit ().get (5).getDoubleOverlandMovesLeft ());
+	}
 }

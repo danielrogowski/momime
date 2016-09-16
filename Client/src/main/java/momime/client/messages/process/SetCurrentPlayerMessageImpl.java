@@ -20,7 +20,6 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
-import momime.common.calculations.UnitCalculations;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 
 /**
@@ -39,9 +38,6 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	
 	/** City calculations */
 	private CityCalculations cityCalculations;
-	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
@@ -96,11 +92,6 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 		
 		// Allow selling buildings
 		getCityCalculations ().blankBuildingsSoldThisTurn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCurrentPlayerID ());
-
-		// Give units full movement
-		if (getCurrentPlayerID () == getClient ().getOurPlayerID ())
-			getUnitCalculations ().resetUnitOverlandMovement (getCurrentPlayerID (),
-				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		// This gets triggered before the server sends us any continued movement
 		// (i.e. before the server processes pending movements).		
@@ -159,22 +150,6 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
-	}
-
-	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
 	}
 
 	/**

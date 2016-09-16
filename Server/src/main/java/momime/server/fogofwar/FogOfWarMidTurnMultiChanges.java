@@ -248,4 +248,22 @@ public interface FogOfWarMidTurnMultiChanges
 	public List<Integer> determineMovementPath (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException;
+
+	/**
+	 * Gives all units full movement back again overland
+	 *
+	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
+	 * @param players Players list
+	 * @param trueMap True terrain, list of units and so on
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<PlayerServerDetails> players,
+		final FogOfWarMemory trueMap, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

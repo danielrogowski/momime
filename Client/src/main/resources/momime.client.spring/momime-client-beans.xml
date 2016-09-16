@@ -305,7 +305,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
@@ -317,7 +316,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
@@ -344,12 +342,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype">
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
-	</bean>
-
-	<bean id="updateOverlandMovementRemainingMessage" class="momime.client.messages.process.UpdateOverlandMovementRemainingMessageImpl" scope="prototype">
-		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype">

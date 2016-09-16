@@ -68,31 +68,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
-	
-	/**
-	 * Gives all units full movement back again overland
-	 *
-	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	@Override
-	public final void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
-	{
-		log.trace ("Entering resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
-
-		for (final MemoryUnit thisUnit : mem.getUnit ())
-			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
-				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db).getModifiedSkillValue
-					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
-
-		log.trace ("Exiting resetUnitOverlandMovement");
-	}
 
 	/**
 	 * Gives all units full movement back again for their combat turn

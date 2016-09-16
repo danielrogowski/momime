@@ -102,15 +102,7 @@ public final class MomAIImpl implements MomAI
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);
 			
 			for (final AIUnitAndRatings mu : mobileUnits)
-			{
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can move " + mu);
-				
-				// This is a bit of a hack but the alternative is that resetUnitOverlandMovement is done entirely server side and the movement rates are
-				// sent to the client with the FOW routines which I'm reluctant to do.. it'd be technically more correct but a huge unnecessary flood of
-				// messages over the network for something as simple as setting movement rates.
-				mu.getUnit ().setDoubleOverlandMovesLeft (getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "aiPlayerTurn-M").getDoubleOverlandMovesLeft ());
-			}
 			
 			// Try to find somewhere to move each mobile unit to.
 			// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.

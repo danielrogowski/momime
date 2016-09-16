@@ -26,20 +26,6 @@ import momime.common.utils.ExpandedUnitDetails;
 public interface UnitCalculations
 {
 	/**
-	 * Gives all units full movement back again overland
-	 *
-	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
-	 * @param players Players list
-	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param db Lookup lists built over the XML database
-	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
-	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
-	 * @throws MomException If we cannot find any appropriate experience level for this unit
-	 */
-	public void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<? extends PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException;
-
-	/**
 	 * Gives all units full movement back again for their combat turn
 	 *
 	 * @param playerID Player whose units to update 

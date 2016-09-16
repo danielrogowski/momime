@@ -72,11 +72,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public UpdateOverlandMovementRemainingMessageImpl createUpdateOverlandMovementRemainingMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public DamageCalculationMessageImpl createDamageCalculationMessage ();
 
 	/**

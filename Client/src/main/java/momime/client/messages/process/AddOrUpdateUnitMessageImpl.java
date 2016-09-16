@@ -80,6 +80,10 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 				getOverlandMapProcessing ().removeUnitFromLeftToMoveOverland (oldUnit);
 				getOverlandMapProcessing ().selectNextUnitToMoveOverland ();
 			}
+			
+			// Also remove if it has no movement (but in this case a separate message it sent to trigger selecting the next unit)
+			else if (getMemoryUnit ().getDoubleOverlandMovesLeft () == 0)
+				getOverlandMapProcessing ().removeUnitFromLeftToMoveOverland (oldUnit);
 
 			// Check this now, before we trash over the oldUnit values
 			final boolean selectNextCombatUnit = ((getMemoryUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()) && (getMemoryUnit ().getCombatLocation () != null) &&

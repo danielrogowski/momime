@@ -17,7 +17,6 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.calculations.CityCalculations;
-import momime.common.calculations.UnitCalculations;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 
 /**
@@ -45,9 +44,6 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
-	
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -77,10 +73,6 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 		if (getMessage ().size () > 0)
 			getNewTurnMessagesUI ().setVisible (true);
 		
-		// Give units full movement
-		getUnitCalculations ().resetUnitOverlandMovement (0,
-			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-
 		// Simultaneous turns games have no 'continued movement' at the start of a turn, since its all processed at the end of the previous turn
 		getOverlandMapProcessing ().setProcessingContinuedMovement (false);
 		getOverlandMapProcessing ().buildUnitsLeftToMoveList ();
@@ -183,21 +175,5 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
-	}
-
-	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
 	}
 }

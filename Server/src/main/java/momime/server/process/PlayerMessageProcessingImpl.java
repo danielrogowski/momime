@@ -685,7 +685,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		// Give units their full movement back again
 		// NB. Do this after our cities may have constructed new units above
-		getUnitCalculations ().resetUnitOverlandMovement (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		getFogOfWarMidTurnMultiChanges ().resetUnitOverlandMovement (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+			mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 		
 		// Now need to do one final recalc to take into account
 		// 1) Cities producing more food/gold due to increased population

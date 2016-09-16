@@ -39,8 +39,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
-import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingMessage;
-import momime.common.messages.servertoclient.UpdateOverlandMovementRemainingUnit;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
@@ -696,23 +694,17 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// Tell the client how much movement each unit has left, while we're at it recheck the lowest movement remaining of anyone in the stack
 				if ((!combatInitiated) || (processCombats))
 				{
-					final UpdateOverlandMovementRemainingMessage movementRemainingMsg = new UpdateOverlandMovementRemainingMessage ();
 					doubleMovementRemaining = Integer.MAX_VALUE;
 	
 					// If entering a combat, ALL units have their movement zeroed, even ones sitting in transports; for regular movement only the transports' movementRemaining is updated
 					for (final ExpandedUnitDetails thisUnit : (combatInitiated ? allUnits : movingUnits))
 					{
-						final UpdateOverlandMovementRemainingUnit msgUnit = new UpdateOverlandMovementRemainingUnit ();
-						msgUnit.setUnitURN (thisUnit.getUnitURN ());
-						msgUnit.setDoubleMovesLeft (thisUnit.getDoubleOverlandMovesLeft ());
-						movementRemainingMsg.getUnit ().add (msgUnit);
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 	
 						if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 							doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 					}
-					
-					if (unitStackOwner.getPlayerDescription ().isHuman ())
-						unitStackOwner.getConnection ().sendMessageToClient (movementRemainingMsg);
 				}
 
 				// Make our 1 movement?
@@ -957,6 +949,39 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		return result;
 	}
 
+	/**
+	 * Gives all units full movement back again overland
+	 *
+	 * @param onlyOnePlayerID If zero, will reset movmenet for units belonging to all players; if specified will reset movement only for units belonging to the specified player
+	 * @param players Players list
+	 * @param trueMap True terrain, list of units and so on
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws RecordNotFoundException If the unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<PlayerServerDetails> players,
+		final FogOfWarMemory trueMap, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
+
+		for (final MemoryUnit thisUnit : trueMap.getUnit ())
+			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
+			{
+				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db).getModifiedSkillValue
+					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings);
+			}
+		
+		log.trace ("Exiting resetUnitOverlandMovement");
+	}
+	
 	/**
 	 * @return Single cell FOW calculations
 	 */

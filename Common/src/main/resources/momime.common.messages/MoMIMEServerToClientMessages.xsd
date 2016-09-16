@@ -404,28 +404,6 @@ This is that tells the client where to draw the white arrows showing the unit st
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:complexType name="updateOverlandMovementRemainingUnit">
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleMovesLeft" type="momimecommon:integerMapDistance" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
-	<xsd:element name="updateOverlandMovementRemainingMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server tells the client how much movement each unit in a stack has left after completing its move (in case it can move again.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unit" type="momimestoc:updateOverlandMovementRemainingUnit" />
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="selectNextUnitToMoveOverlandMessage">
 	    <xsd:annotation>
     		<xsd:documentation>When the server is sending a sequence of messages resulting from a unit moving, it sends this to say that the

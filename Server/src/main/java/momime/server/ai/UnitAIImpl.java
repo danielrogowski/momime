@@ -5,17 +5,23 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.RecordNotFoundException;
@@ -34,6 +40,7 @@ import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
@@ -41,12 +48,15 @@ import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.HeroItemBonusSvr;
 import momime.server.database.HeroItemSlotTypeSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.utils.UnitSkillDirectAccess;
 
@@ -78,6 +88,18 @@ public final class UnitAIImpl implements UnitAI
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;
+	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/**
 	 * @param xu Unit to calculate value for
@@ -547,6 +569,117 @@ public final class UnitAIImpl implements UnitAI
 	}
 	
 	/**
+	 * AI decides where to move a unit to on the overland map.
+	 * 
+	 * @param mu The unit to move
+	 * @param underdefendedLocations Locations we should consider a priority to aim for
+	 * @param player Player who owns the unit
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we found something to do or not
+	 * @throws RecordNotFoundException If an expected record cannot be found
+	 * @throws PlayerNotFoundException If a player cannot be found
+	 * @throws MomException If there is a significant problem in the game logic
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final boolean decideUnitMovement (final AIUnitAndRatings mu, final List<AIDefenceLocation> underdefendedLocations,
+		final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering decideUnitMovement: AI Player ID " + mu.getUnit ().getOwningPlayerID () + ", " + mu);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		// Create a stack for the units (so transports pick up any units stacked with them)
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
+		selectedUnits.add (getUnitUtils ().expandUnitDetails (mu.getUnit (), null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()));
+		
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
+		
+		// Work out where the unit can reach
+		final int [] [] [] doubleMovementDistances			= new int [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+		
+		final MapCoordinates3DEx moveFrom = (MapCoordinates3DEx) mu.getUnit ().getUnitLocation ();
+
+		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
+			mu.getUnit ().getOwningPlayerID (), priv.getFogOfWarMemory (),
+			unitStack, mu.getUnit ().getDoubleOverlandMovesLeft (), doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
+			mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		
+		// Check all priority target locations to see how far away they all are (some may be unreachable, if water in the way or on the other plane, for example).
+		// We keep a list of all destinations that are the same distance away, and scrub the list and start over if we find a closer one.
+		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+		Integer doubleDestinationDistance = null;
+		for (final AIDefenceLocation location : underdefendedLocations)
+		{
+			final int doubleThisDistance = doubleMovementDistances [location.getMapLocation ().getZ ()] [location.getMapLocation ().getY ()] [location.getMapLocation ().getX ()];
+			if (doubleThisDistance >= 0)
+			{
+				// We can get there, eventually
+				if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+				{
+					doubleDestinationDistance = doubleThisDistance;
+					destinations.clear ();
+					destinations.add (location.getMapLocation ());
+				}
+				else if (doubleThisDistance == doubleDestinationDistance)
+					destinations.add (location.getMapLocation ());
+			}
+		}
+		
+		// If we've got no priority target locations, or they are all unreachable, then next aim for the closest unscouted terrain
+		
+		// Move, if we found somewhere to go
+		final boolean moved = (destinations != null);
+		if (moved)
+		{
+			final MapCoordinates3DEx destination = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+			
+			// If its a simultaneous turns game, then move as far as we can in one turn.
+			// If its a one-player-at-a-time game, then move only 1 cell.
+			// This is basically a copy of FogOfWarMidTurnChangesImpl.determineMovementDirection.
+			MapCoordinates3DEx coords = new MapCoordinates3DEx (destination);
+			MapCoordinates3DEx lastCoords = null;
+			while (((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (!canMoveToInOneTurn [coords.getZ ()] [coords.getY ()] [coords.getX ()])) ||
+						((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) && ((coords.getX () != moveFrom.getX ()) || (coords.getY () != moveFrom.getY ()))))
+			{
+				lastCoords = new MapCoordinates3DEx (coords);
+				final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
+					movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
+				
+				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
+					throw new MomException ("decideUnitMovement: Server map tracing moved to a cell off the map");
+			}
+			
+			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)
+				coords = lastCoords;
+			
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " decided to move " + mu + " to " + coords + " which will take " +
+				doubleDestinationDistance + " movement to reach, eventually aiming for " + destination);
+			
+			if (coords == null)
+				throw new MomException ("decideUnitMovement: Ended up with null coords");
+
+			// We need the true unit versions to execute the move
+			final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideUnitMovement");
+
+			final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
+			trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+			
+			// Execute move
+			getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
+				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
+		}
+		
+		log.trace ("Exiting decideUnitMovement = " + moved);
+		return moved;
+	}
+	
+	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()
@@ -656,5 +789,69 @@ public final class UnitAIImpl implements UnitAI
 	public final void setSpellUtils (final SpellUtils utils)
 	{
 		spellUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
 	}
 }

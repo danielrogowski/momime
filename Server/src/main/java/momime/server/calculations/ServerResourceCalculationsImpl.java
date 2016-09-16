@@ -210,15 +210,18 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	{
 		log.trace ("Entering sendGlobalProductionValues: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
-
-		final UpdateGlobalEconomyMessage msg = new UpdateGlobalEconomyMessage ();
-		msg.getResourceValue ().addAll (priv.getResourceValue ());
-		msg.setOverlandCastingSkillRemainingThisTurn (trans.getOverlandCastingSkillRemainingThisTurn ());
-		msg.setCastingSkillRemainingThisCombat (castingSkillRemainingThisCombat);
-
-		player.getConnection ().sendMessageToClient (msg);
+		if (player.getPlayerDescription ().isHuman ())
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+	
+			final UpdateGlobalEconomyMessage msg = new UpdateGlobalEconomyMessage ();
+			msg.getResourceValue ().addAll (priv.getResourceValue ());
+			msg.setOverlandCastingSkillRemainingThisTurn (trans.getOverlandCastingSkillRemainingThisTurn ());
+			msg.setCastingSkillRemainingThisCombat (castingSkillRemainingThisCombat);
+	
+			player.getConnection ().sendMessageToClient (msg);
+		}
 
 		log.trace ("Exiting sendGlobalProductionValues");
 	}

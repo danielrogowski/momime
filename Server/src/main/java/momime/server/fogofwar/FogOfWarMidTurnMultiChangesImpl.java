@@ -710,7 +710,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 						if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 							doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 					}
-					unitStackOwner.getConnection ().sendMessageToClient (movementRemainingMsg);
+					
+					if (unitStackOwner.getPlayerDescription ().isHuman ())
+						unitStackOwner.getConnection ().sendMessageToClient (movementRemainingMsg);
 				}
 
 				// Make our 1 movement?
@@ -785,7 +787,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		if (!combatInitiated)
 		{
 			// No combat, so tell the client to ask for the next unit to move
-			unitStackOwner.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());
+			if (unitStackOwner.getPlayerDescription ().isHuman ())
+				unitStackOwner.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());
 		}
 		else if (!processCombats)
 			log.debug ("Would have started combat, but processCombats is false");

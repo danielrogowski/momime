@@ -800,8 +800,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		else
 		{
 			mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-			getMomAI ().aiPlayerTurn (currentPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-				mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getSessionDescription (), mom.getServerDB ());
+			getMomAI ().aiPlayerTurn (currentPlayer, mom);
 			
 			// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 			nextTurnButton (mom, currentPlayer);
@@ -848,8 +847,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			if (!aiPlayer.getPlayerDescription ().isHuman ())
 			{
 				mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + aiPlayer.getPlayerDescription ().getPlayerName () + "...");
-				getMomAI ().aiPlayerTurn (aiPlayer, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getGeneralPublicKnowledge ().getTurnNumber (), mom.getSessionDescription (), mom.getServerDB ());
+				getMomAI ().aiPlayerTurn (aiPlayer, mom);
 			
 				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 				nextTurnButton (mom, aiPlayer);

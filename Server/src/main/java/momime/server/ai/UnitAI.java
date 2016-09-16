@@ -2,6 +2,9 @@ package momime.server.ai;
 
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import com.ndg.map.CoordinateSystem;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -11,6 +14,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomSessionDescription;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 
 /**
@@ -111,4 +115,22 @@ public interface UnitAI
 	public List<AIDefenceLocation> evaluateCurrentDefence (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final List<AIUnitAndRatings> mobileUnits, final int playerID, final FogOfWarMemory mem, final int desiredDefenceRating,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException;
+
+	/**
+	 * AI decides where to move a unit to on the overland map.
+	 * 
+	 * @param mu The unit to move
+	 * @param underdefendedLocations Locations we should consider a priority to aim for
+	 * @param player Player who owns the unit
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we found something to do or not
+	 * @throws RecordNotFoundException If an expected record cannot be found
+	 * @throws PlayerNotFoundException If a player cannot be found
+	 * @throws MomException If there is a significant problem in the game logic
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public boolean decideUnitMovement (final AIUnitAndRatings mu, final List<AIDefenceLocation> underdefendedLocations,
+		final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

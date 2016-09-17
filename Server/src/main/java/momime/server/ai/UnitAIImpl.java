@@ -632,9 +632,33 @@ public final class UnitAIImpl implements UnitAI
 		}
 		
 		// If we've got no priority target locations, or they are all unreachable, then next aim for the closest unscouted terrain
+		if (destinations.isEmpty ())
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+						if ((mc.getTerrainData () == null) || (mc.getTerrainData ().getTileTypeID () == null))
+						{
+							final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+							if (doubleThisDistance >= 0)
+							{
+								// We can get there, eventually
+								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
+								if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+								{
+									doubleDestinationDistance = doubleThisDistance;
+									destinations.clear ();
+									destinations.add (location);
+								}
+								else if (doubleThisDistance == doubleDestinationDistance)
+									destinations.add (location);
+							}
+						}
+					}
 		
 		// Move, if we found somewhere to go
-		final boolean moved = (destinations != null);
+		boolean moved = !destinations.isEmpty ();
 		if (moved)
 		{
 			final MapCoordinates3DEx destination = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
@@ -662,17 +686,19 @@ public final class UnitAIImpl implements UnitAI
 				doubleDestinationDistance + " movement to reach, eventually aiming for " + destination);
 			
 			if (coords == null)
-				throw new MomException ("decideUnitMovement: Ended up with null coords");
-
-			// We need the true unit versions to execute the move
-			final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideUnitMovement");
-
-			final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
-			trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
-			
-			// Execute move
-			getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
-				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
+				moved = false;		// Until I understand when and how this happens sometimes
+			else
+			{
+				// We need the true unit versions to execute the move
+				final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideUnitMovement");
+	
+				final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
+				trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+				
+				// Execute move
+				getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
+					(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
+			}
 		}
 		
 		log.trace ("Exiting decideUnitMovement = " + moved);

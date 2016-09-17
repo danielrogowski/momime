@@ -43,7 +43,7 @@ final class AIUnitAndRatings implements Comparable<AIUnitAndRatings>
 	@Override
 	public final String toString ()
 	{
-		return "Unit URN " + getUnit ().getUnitURN () + ", which is a " + getUnit ().getUnitID ();
+		return "Unit URN " + getUnit ().getUnitURN () + ", which is a " + getUnit ().getUnitID () + " currently at " + getUnit ().getUnitLocation ();
 	}
 	
 	/**

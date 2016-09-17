@@ -338,6 +338,11 @@ public final class CityProcessingImpl implements CityProcessing
 										// Did we construct a unit?
 										else if (unit != null)
 										{
+											// AI players need to reset construction back to default so they reconsider what to construct next,
+											// otherwise they'd construct the same unit forever.
+											if (!cityOwner.getPlayerDescription ().isHuman ())
+												cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+											
 											// Check if the city has space for the unit
 											final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
 												(cityLocation, unit.getUnitID (), cityData.getCityOwnerID (), gsk.getTrueMap (), players, sd, db);

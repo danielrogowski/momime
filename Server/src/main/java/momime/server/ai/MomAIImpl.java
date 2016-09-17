@@ -15,6 +15,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -127,16 +128,17 @@ public final class MomAIImpl implements MomAI
 				}
 			}
 
-		// Decide what to build in all of this players' cities
-		// Note we do this EVERY TURN - we don't wait for the previous building to complete - this allows the AI player to change their mind
-		// e.g. if a city has minimal defence and has a university almost built and then a
-		// group of halbardiers show up 2 squares away, you're going to want to stuff the university and rush buy the best unit you can afford
+		// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
+		// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
+		// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
 		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				{
 					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) &&
+						((CommonDatabaseConstants.BUILDING_HOUSING.equals (cityData.getCurrentlyConstructingBuildingID ())) ||
+						(CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 

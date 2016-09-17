@@ -331,7 +331,8 @@ public final class CityAIImpl implements CityAI
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering decideWhatToBuild: " + cityLocation);
-
+		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " deciding what to construct in city " + cityLocation);
+		
 		// Convert list of buildings that our race can't build into a string list, so its easier to search
 		final RaceSvr race = db.findRace (cityData.getCityRaceID (), "decideWhatToBuild");
 		final List<String> raceCannotBuild = new ArrayList<String> ();
@@ -414,6 +415,9 @@ public final class CityAIImpl implements CityAI
 			cityData.setCurrentlyConstructingUnitID (null);
 		}
 
+		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " set city at " + cityLocation + " to construct " +
+			cityData.getCurrentlyConstructingBuildingID () + "/" + cityData.getCurrentlyConstructingUnitID ());
+		
 		log.trace ("Exiting decideWhatToBuild = " + cityData.getCurrentlyConstructingBuildingID () + ", " + cityData.getCurrentlyConstructingUnitID ()); 
 	}
 

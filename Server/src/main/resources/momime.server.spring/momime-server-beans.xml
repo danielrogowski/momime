@@ -701,6 +701,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 	
 	<!-- Fog of War -->

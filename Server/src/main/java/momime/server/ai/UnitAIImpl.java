@@ -45,6 +45,7 @@ import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
@@ -100,6 +101,9 @@ public final class UnitAIImpl implements UnitAI
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
+	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/**
 	 * @param xu Unit to calculate value for
@@ -513,52 +517,56 @@ public final class UnitAIImpl implements UnitAI
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
 				{
-					final AIUnitsAndRatings ours = ourUnits [z] [y] [x];
-					final AIUnitsAndRatings theirs = enemyUnits [z] [y] [x];
-					
+					// Only process towers on the first plane
 					final MemoryGridCell mc = mem.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-					final OverlandMapCityData cityData = mc.getCityData ();
 					final OverlandMapTerrainData terrainData = mc.getTerrainData ();
-					if (((cityData != null) || (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db))) && (theirs == null)) 
-					{
-						final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
+					if ((z == 0) || (!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData)))
+					{					
+						final AIUnitsAndRatings ours = ourUnits [z] [y] [x];
+						final AIUnitsAndRatings theirs = enemyUnits [z] [y] [x];
 						
-						final int defenceRating = (ours == null) ? 0 : ours.stream ().mapToInt (u -> u.getAverageRating ()).sum ();
-						final String description = (cityData != null) ? ("city belonging to " + cityData.getCityOwnerID ()) : (terrainData.getTileTypeID () + "/" + terrainData.getMapFeatureID ());
-						
-						final int thisDesiredDefenceRating = desiredDefenceRating * (getMemoryBuildingUtils ().findBuilding
-							(mem.getBuilding (), coords, CommonDatabaseConstants.BUILDING_FORTRESS) == null ? 1 : 2);
-						
-						log.debug ("AI Player ID " + playerID + " sees " + description +
-							" at (" + x + ", " + y + ", " + z + "), CDR = " + defenceRating + ", DDR = " + thisDesiredDefenceRating);
-						
-						if (defenceRating < thisDesiredDefenceRating)
-							underdefendedLocations.add (new AIDefenceLocation (coords, thisDesiredDefenceRating - defenceRating));
-						else if (defenceRating > thisDesiredDefenceRating)
+						final OverlandMapCityData cityData = mc.getCityData ();
+						if (((cityData != null) || (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db))) && (theirs == null)) 
 						{
-							// Maybe we have too much defence?  Can we lose a unit or two without becoming underdefended?
-							Collections.sort (ours);
-							int defenceSoFar = 0;
-							final Iterator<AIUnitAndRatings> iter = ours.iterator ();
-							while (iter.hasNext ())
+							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
+							
+							final int defenceRating = (ours == null) ? 0 : ours.stream ().mapToInt (u -> u.getAverageRating ()).sum ();
+							final String description = (cityData != null) ? ("city belonging to " + cityData.getCityOwnerID ()) : (terrainData.getTileTypeID () + "/" + terrainData.getMapFeatureID ());
+							
+							final int thisDesiredDefenceRating = desiredDefenceRating * (getMemoryBuildingUtils ().findBuilding
+								(mem.getBuilding (), coords, CommonDatabaseConstants.BUILDING_FORTRESS) == null ? 1 : 2);
+							
+							log.debug ("AI Player ID " + playerID + " sees " + description +
+								" at (" + x + ", " + y + ", " + z + "), CDR = " + defenceRating + ", DDR = " + thisDesiredDefenceRating);
+							
+							if (defenceRating < thisDesiredDefenceRating)
+								underdefendedLocations.add (new AIDefenceLocation (coords, thisDesiredDefenceRating - defenceRating));
+							else if (defenceRating > thisDesiredDefenceRating)
 							{
-								final AIUnitAndRatings thisUnit = iter.next ();
-								if (defenceSoFar >= thisDesiredDefenceRating)
+								// Maybe we have too much defence?  Can we lose a unit or two without becoming underdefended?
+								Collections.sort (ours);
+								int defenceSoFar = 0;
+								final Iterator<AIUnitAndRatings> iter = ours.iterator ();
+								while (iter.hasNext ())
 								{
-									iter.remove ();
-									mobileUnits.add (thisUnit);
+									final AIUnitAndRatings thisUnit = iter.next ();
+									if (defenceSoFar >= thisDesiredDefenceRating)
+									{
+										iter.remove ();
+										mobileUnits.add (thisUnit);
+									}
+									else
+										defenceSoFar = defenceSoFar + thisUnit.getAverageRating ();
 								}
-								else
-									defenceSoFar = defenceSoFar + thisUnit.getAverageRating ();
 							}
 						}
-					}
-
-					// All units not in defensive positions are automatically mobile
-					else if (ours != null)
-					{
-						mobileUnits.addAll (ours);
-						ourUnits [z] [y] [x] = null;
+	
+						// All units not in defensive positions are automatically mobile
+						else if (ours != null)
+						{
+							mobileUnits.addAll (ours);
+							ourUnits [z] [y] [x] = null;
+						}
 					}
 				}
 		
@@ -879,5 +887,21 @@ public final class UnitAIImpl implements UnitAI
 	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
 	{
 		fogOfWarMidTurnMultiChanges = obj;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

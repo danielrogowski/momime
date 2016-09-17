@@ -634,7 +634,7 @@ public final class UnitAIImpl implements UnitAI
 		// If we've got no priority target locations, or they are all unreachable, then next aim for the closest unscouted terrain
 		
 		// Move, if we found somewhere to go
-		final boolean moved = false; // (destinations != null);  Disable for now until I get the mess around doubleOverlandMovementRemaining sorted for human players
+		final boolean moved = (destinations != null);
 		if (moved)
 		{
 			final MapCoordinates3DEx destination = destinations.get (getRandomUtils ().nextInt (destinations.size ()));

@@ -107,24 +107,25 @@ public final class MomAIImpl implements MomAI
 			// Try to find somewhere to move each mobile unit to.
 			// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.
 			// In "simultaneous turns" games, we will move anywhere that we can reach in one turn.
-			while (mobileUnits.size () > 0)
-			{
-				final AIUnitAndRatings thisUnit = mobileUnits.get (getRandomUtils ().nextInt (mobileUnits.size ()));
-				if (thisUnit.getUnit ().getDoubleOverlandMovesLeft () <= 0)
+			if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+				while (mobileUnits.size () > 0)
 				{
-					// Not really sure how this could happen, but just to be safe
-					mobileUnits.remove (thisUnit);
-				}
-				else
-				{
-					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move " + thisUnit);
-					
-					final boolean moved = getUnitAI ().decideUnitMovement (thisUnit, underdefendedLocations, player, mom);
-					if ((!moved) || (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (thisUnit.getUnit ().getDoubleOverlandMovesLeft () <= 0))
+					final AIUnitAndRatings thisUnit = mobileUnits.get (getRandomUtils ().nextInt (mobileUnits.size ()));
+					if (thisUnit.getUnit ().getDoubleOverlandMovesLeft () <= 0)
+					{
+						// Not really sure how this could happen, but just to be safe
 						mobileUnits.remove (thisUnit);
+					}
+					else
+					{
+						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move " + thisUnit);
+						
+						final boolean moved = getUnitAI ().decideUnitMovement (thisUnit, underdefendedLocations, player, mom);
+						if ((!moved) || (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (thisUnit.getUnit ().getDoubleOverlandMovesLeft () <= 0))
+							mobileUnits.remove (thisUnit);
+					}
 				}
 			}
-		}
 
 		// Decide what to build in all of this players' cities
 		// Note we do this EVERY TURN - we don't wait for the previous building to complete - this allows the AI player to change their mind

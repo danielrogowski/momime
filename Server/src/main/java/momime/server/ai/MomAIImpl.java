@@ -151,6 +151,18 @@ public final class MomAIImpl implements MomAI
 				unitFactories = bestConstructableUnits.stream ().map (u -> u.getCityLocation ()).distinct ().collect (Collectors.toList ());
 				unitFactories.forEach (c -> log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s city at " + c + " is designated as a unit factory")); 
 			}
+			
+			int needForNewUnits = 0;
+			if ((unitFactories != null) && (!unitFactories.isEmpty ()))
+			{
+				// We need some kind of rating for how badly we think we need to construct more combat units.
+				// So base this on, 1) how many locations are underdefended, 2) whether we have sufficient mobile units.
+				// We'll then roll this number against a d10 for each unit factory, so if our need = 6, then there's a 60% chance we'll decide to construct a unit there.
+				// This could be a bit more clever, like "are there places we want to attack that we need more/stronger units to consider the attack",
+				// but I don't want the AI churning out armies of swordsmen just to try to beat a great drake.
+				needForNewUnits = underdefendedLocations.size () +
+					(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 10) - mobileUnits.size ();
+			}
 
 			// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
 			// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
@@ -166,7 +178,7 @@ public final class MomAIImpl implements MomAI
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 	
-							getCityAI ().decideWhatToBuild (cityLocation, cityData, (unitFactories != null) && (unitFactories.contains (cityLocation)),
+							getCityAI ().decideWhatToBuild (cityLocation, cityData, (unitFactories != null) && (unitFactories.contains (cityLocation)), needForNewUnits,
 								priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
 								mom.getSessionDescription (), mom.getServerDB ());
 							

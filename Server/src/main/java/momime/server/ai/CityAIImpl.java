@@ -320,6 +320,7 @@ public final class CityAIImpl implements CityAI
 	 * @param cityLocation Location of the city
 	 * @param cityData True info on the city, so it can be updated
 	 * @param isUnitFactory Is this one of our unit factories? (i.e. one of our cities that can construct the best units we can currently make?)
+	 * @param needForNewUnits Estimate of how badly we need to construct new units; 0 or lower = we've got plenty; 10 or higher = desperate for more units
 	 * @param knownTerrain Known overland terrain
 	 * @param knownBuildings Known list of buildings
 	 * @param sd Session description
@@ -327,12 +328,13 @@ public final class CityAIImpl implements CityAI
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
 	@Override
-	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData, final boolean isUnitFactory,
+	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData, final boolean isUnitFactory, final int needForNewUnits,
 		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering decideWhatToBuild: " + cityLocation);
-		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " deciding what to construct in " + (isUnitFactory ? "unit factory " : "city ") + cityLocation);
+		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " deciding what to construct in " + (isUnitFactory ? "unit factory " : "city ") + cityLocation +
+			(isUnitFactory ? ", need = " + needForNewUnits : ""));
 		
 		// Convert list of buildings that our race can't build into a string list, so its easier to search
 		final RaceSvr race = db.findRace (cityData.getCityRaceID (), "decideWhatToBuild");

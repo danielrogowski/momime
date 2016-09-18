@@ -177,8 +177,14 @@ public final class MomAIImpl implements MomAI
 							(CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+							final boolean isUnitFactory = (unitFactories != null) && (unitFactories.contains (cityLocation));
+
+							// Only consider constructing the one of the two best units we can make here, and then only if we can afford them
+							final List<String> constructableHere = !isUnitFactory ? null :
+								constructableUnits.stream ().filter (u -> cityLocation.equals (u.getCityLocation ())).sorted ().limit (2).filter
+									(u -> u.isCanAffordMaintenance ()).map (u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
 	
-							getCityAI ().decideWhatToBuild (cityLocation, cityData, (unitFactories != null) && (unitFactories.contains (cityLocation)), needForNewUnits,
+							getCityAI ().decideWhatToBuild (cityLocation, cityData, isUnitFactory, needForNewUnits, constructableHere,
 								priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
 								mom.getSessionDescription (), mom.getServerDB ());
 							

@@ -310,7 +310,7 @@ public final class TestCityAIImpl
 		cityData.setCityRaceID ("RC09");
 		while (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
-			ai.decideWhatToBuild (cityLocation, cityData, false, 0, trueTerrain, trueBuildings, sd, db);
+			ai.decideWhatToBuild (cityLocation, cityData, false, 0, null, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -362,7 +362,7 @@ public final class TestCityAIImpl
 		cityData.setCurrentlyConstructingBuildingID (null);
 		while (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
-			ai.decideWhatToBuild (cityLocation, cityData, false, 0, trueTerrain, trueBuildings, sd, db);
+			ai.decideWhatToBuild (cityLocation, cityData, false, 0, null, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MemoryBuilding building = new MemoryBuilding ();

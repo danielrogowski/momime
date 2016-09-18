@@ -63,13 +63,14 @@ public interface CityAI
 	 *
 	 * @param cityLocation Location of the city
 	 * @param cityData True info on the city, so it can be updated
+	 * @param isUnitFactory Is this one of our unit factories? (i.e. one of our cities that can construct the best units we can currently make?)
 	 * @param knownTerrain Known overland terrain
 	 * @param knownBuildings Known list of buildings
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
-	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
+	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData, final boolean isUnitFactory,
 		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException;
 }

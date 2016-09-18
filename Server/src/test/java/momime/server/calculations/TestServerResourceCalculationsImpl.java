@@ -349,6 +349,7 @@ public final class TestServerResourceCalculationsImpl
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
+		pd.setHuman (true);
 		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 		

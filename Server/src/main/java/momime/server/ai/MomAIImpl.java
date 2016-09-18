@@ -2,6 +2,8 @@ package momime.server.ai;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.OptionalInt;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -126,32 +128,56 @@ public final class MomAIImpl implements MomAI
 							mobileUnits.remove (thisUnit);
 					}
 				}
+			
+			// Which city can build the best units? (even if we can't afford to make another one)
+			final OptionalInt bestAverageRatingFromConstructableUnits = constructableUnits.stream ().filter
+				(u -> u.getCityLocation () != null).mapToInt (u -> u.getAverageRating ()).max ();
+			
+			final List<MapCoordinates3DEx> unitFactories;
+			if (!bestAverageRatingFromConstructableUnits.isPresent ())
+			{
+				unitFactories = null;
+				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't construct any units in any cities");
+			}
+			else
+			{
+				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s best unit(s) it can construct in any cities are UAR = " + bestAverageRatingFromConstructableUnits.getAsInt ());
+
+				// What units can we make that match our best?
+				// This restricts to only units we can afford maintenance of, so if our economy is struggling, we may get an empty list here.
+				final List<AIConstructableUnit> bestConstructableUnits = constructableUnits.stream ().filter
+					(u -> (u.getCityLocation () != null) && (u.isCanAffordMaintenance ()) && (u.getAverageRating () == bestAverageRatingFromConstructableUnits.getAsInt ())).collect (Collectors.toList ());
+				
+				unitFactories = bestConstructableUnits.stream ().map (u -> u.getCityLocation ()).distinct ().collect (Collectors.toList ());
+				unitFactories.forEach (c -> log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s city at " + c + " is designated as a unit factory")); 
 			}
 
-		// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
-		// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
-		// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
-		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
-				{
-					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) &&
-						((CommonDatabaseConstants.BUILDING_HOUSING.equals (cityData.getCurrentlyConstructingBuildingID ())) ||
-						(CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
+			// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
+			// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
+			// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
-						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-
-						getCityAI ().decideWhatToBuild (cityLocation, cityData, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
-							mom.getSessionDescription (), mom.getServerDB ());
-						
-						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+						final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) &&
+							((CommonDatabaseConstants.BUILDING_HOUSING.equals (cityData.getCurrentlyConstructingBuildingID ())) ||
+							(CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
+						{
+							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+	
+							getCityAI ().decideWhatToBuild (cityLocation, cityData, (unitFactories != null) && (unitFactories.contains (cityLocation)),
+								priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
+								mom.getSessionDescription (), mom.getServerDB ());
+							
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+						}
 					}
-				}
 
-		// This relies on knowing what's being built in each city, so do it 2nd
-		getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player, mom.getServerDB (), mom.getSessionDescription ());
+			// This relies on knowing what's being built in each city, so do it 2nd
+			getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player, mom.getServerDB (), mom.getSessionDescription ());
+		}
 
 		// Do we need to choose a spell to research?
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (priv.getSpellIDBeingResearched () == null))

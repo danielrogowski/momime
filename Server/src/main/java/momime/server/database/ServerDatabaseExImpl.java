@@ -947,6 +947,16 @@ public final class ServerDatabaseExImpl extends ServerDatabase implements Server
 	{
 		return (List<DamageTypeSvr>) (List<?>) getDamageType ();
 	}
+
+	/**
+	 * @return Complete list of all AI unit categories in game
+	 */
+	@Override
+	@SuppressWarnings ("unchecked")
+	public final List<AiUnitCategorySvr> getAiUnitCategories ()
+	{
+		return (List<AiUnitCategorySvr>) (List<?>) getAiUnitCategory ();
+	}
 	
 	/** 
 	 * @return Unit skill values direct access

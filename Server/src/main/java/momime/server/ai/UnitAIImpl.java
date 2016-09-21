@@ -544,6 +544,8 @@ public final class UnitAIImpl implements UnitAI
 							else if (defenceRating > thisDesiredDefenceRating)
 							{
 								// Maybe we have too much defence?  Can we lose a unit or two without becoming underdefended?
+								// Important note: the sorting order makes this tend to keep stronger units guarding cities and
+								// send weaker units out over the map, in that way we ensure that weaker units get killed off and replaced.
 								Collections.sort (ours);
 								int defenceSoFar = 0;
 								final Iterator<AIUnitAndRatings> iter = ours.iterator ();

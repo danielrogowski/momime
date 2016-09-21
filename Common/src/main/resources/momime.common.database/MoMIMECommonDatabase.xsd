@@ -2352,6 +2352,84 @@ Units with special orders won't be asked for movement orders and look visibly di
 		</xsd:restriction>
 	</xsd:simpleType>
 
+	<xsd:simpleType name="aiMovementCode">
+		<xsd:annotation>
+			<xsd:documentation>Condition checks and rules the AI can use to decide where to move overland.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="R"><xsd:annotation>
+				<xsd:documentation>If there are any reachable undefended (our/their empty cities, empty nodes/lairs/towers) or underdefended locations (our cities/nodes/towers), then head there.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="REINFORCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>If there are any reachable defended locations (their cities/nodes/lairs/towers) where the sum of our UARs > the sum of their UARs, then head there/attack them.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_STATIONARY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="W"><xsd:annotation>
+				<xsd:documentation>If there are any reachable enemy unit stacks where the sum of our UARs > the sum of their UARs, then head there/attack them.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_WANDERING" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>If there is any reachable unscouted terrain with an adjacent land tile then head there.
+(This doesn't imply the units can walk on land - boats use this to trace coastlines).</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SCOUT_LAND" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="Z"><xsd:annotation>
+				<xsd:documentation>If there is any reachable unscouted terrain then head there.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SCOUT_ALL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="J"><xsd:annotation>
+				<xsd:documentation>If there are any reachable defended locations (their cities/nodes/lairs/towers) where the sum of their UARs >= the sum of our UARs,
+and any other reachable stacks of our units of the same category, then head to join the unit stacks together.  (This needs some care so that in simultaneous turns games,
+the two unit stacks don't keep crossing past each other).</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="JOIN_STACK" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>If there is a reachable Tower that is garrisoned by our units, and if we imagine we are standing at the tower and recheck all
+preceeding movement codes then we would have something useful to do on the other plane, then head to the tower.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PLANE_SHIFT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="T"><xsd:annotation>
+				<xsd:documentation>If we are in a transport then stay there.  If we aren't in a transport but can reach one that has space remaining, then head for it.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="GET_IN_TRANSPORT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>If we can reach any of our defended locations (cities/nodes/towers) then head there.
+Also, this flags up an alert that there are units on this island/continent that have nothing to do, so red flags the entire continent as "transport needed here".</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OVERDEFEND" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>If we can reach a good spot to build a city then head there and do so.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BUILD_CITY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="E"><xsd:annotation>
+				<xsd:documentation>If we can see any two of our cities on the same land mass unconnected by road, then trace a path between them a build road there.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BUILD_ROAD" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="O"><xsd:annotation>
+				<xsd:documentation>If we can reach any corrupted terrain that's in the resource radius for one of our cities then head there and purify it.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PURIFY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>If we can reach any node not captured by us that has no enemy defending it then head there and try to meld with it.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="MELD_WITH_NODE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="C"><xsd:annotation>
+				<xsd:documentation>If we are currently carrying any unit stack(s) then check all islands/continents we could take them to.  Imagine we unloaded the units there,
+then use the movement codes of the unit stack(s) being carried to see if they would have something useful to do on that island/continent.  If so, then take them there.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CARRY_UNITS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="L"><xsd:annotation>
+				<xsd:documentation>If we are currently empty, and can reach any island/continent that was red flagged by the OVERDEFEND (D) code, then head there.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="LOAD_UNITS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>If we are on the same plane as our Wizard's Fortress, then head to the island/continent that it is on.</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FORTRESS_ISLAND" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>	
+
 	<xsd:simpleType name="rangedAttackTypeActionID">
         <xsd:annotation>
         	<xsd:documentation>Types of action we can define an image for a ranged attack type for.</xsd:documentation>

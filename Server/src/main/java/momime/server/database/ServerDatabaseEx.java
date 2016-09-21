@@ -349,4 +349,9 @@ public interface ServerDatabaseEx extends CommonDatabase
 	 * @return Complete list of all damage types in game
 	 */
 	public List<DamageTypeSvr> getDamageTypes ();
+
+	/**
+	 * @return Complete list of all AI unit categories in game
+	 */
+	public List<AiUnitCategorySvr> getAiUnitCategories ();
 }

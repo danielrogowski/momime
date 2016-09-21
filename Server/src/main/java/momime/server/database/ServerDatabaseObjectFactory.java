@@ -2,6 +2,7 @@ package momime.server.database;
 
 import javax.xml.bind.annotation.XmlRegistry;
 
+import momime.server.database.v0_9_8.AiUnitCategory;
 import momime.server.database.v0_9_8.AttackResolution;
 import momime.server.database.v0_9_8.AttackResolutionCondition;
 import momime.server.database.v0_9_8.AttackResolutionStep;
@@ -455,7 +456,16 @@ public final class ServerDatabaseObjectFactory extends ObjectFactory
 	}
 
 	/**
-	 * @return Custom extended DamageType
+	 * @return Custom extended AiUnitCategory
+	 */
+	@Override
+	public final AiUnitCategory createAiUnitCategory ()
+	{
+		return new AiUnitCategorySvr ();
+	}
+
+	/**
+	 * @return Custom extended MapFeatureTreasureBookReward
 	 */
 	@Override
 	public final MapFeatureTreasureBookReward createMapFeatureTreasureBookReward ()

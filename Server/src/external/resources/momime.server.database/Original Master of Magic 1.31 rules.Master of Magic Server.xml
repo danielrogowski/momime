@@ -11799,12 +11799,12 @@
 		</damageTypeImmunity>
 		<storedDamageTypeID>H</storedDamageTypeID>
 		<damageTypeName>Unmagical melee damage</damageTypeName>
-		<damageTypeDescription>Standard hits from normal units without magical weapons.  Can be blocked by Weapon Immunity.</damageTypeDescription>
+		<damageTypeDescription>Standard hits from normal units without magical weapons. Can be blocked by Weapon Immunity.</damageTypeDescription>
 	</damageType>
 	<damageType damageTypeID="DT02">
 		<storedDamageTypeID>H</storedDamageTypeID>
 		<damageTypeName>Enchanted melee damage / other unblockable damage</damageTypeName>
-		<damageTypeDescription>Defined as anything that bypasses Weapon Immunity but not "magical enough" to be blocked by Magic Immunity, so cannot be blocked by anything.  Standard hits from normal units with magical/mithril/adamantium/flame blade/eldritch weapon/etc; and hits from heroes or summoned creatures, undead or chaos channeled units.  Rock RATs (too large to be blocked by Weapon or Missile Immunity; not magical enough to be blocked by Magic Immunity); Doom Gaze.</damageTypeDescription>
+		<damageTypeDescription>Defined as anything that bypasses Weapon Immunity but not "magical enough" to be blocked by Magic Immunity, so cannot be blocked by anything. Standard hits from normal units with magical/mithril/adamantium/flame blade/eldritch weapon/etc; and hits from heroes or summoned creatures, undead or chaos channeled units. Rock RATs (too large to be blocked by Weapon or Missile Immunity; not magical enough to be blocked by Magic Immunity); Doom Gaze.</damageTypeDescription>
 	</damageType>
 	<damageType damageTypeID="DT03">
 		<enhancedVersion>DT04</enhancedVersion>
@@ -11819,7 +11819,7 @@
 		</damageTypeImmunity>
 		<storedDamageTypeID>H</storedDamageTypeID>
 		<damageTypeName>Unmagical ranged damage</damageTypeName>
-		<damageTypeDescription>Standard shots from normal units without magical weapons.  Can be blocked by Weapon Immunity and Missile Immunity.</damageTypeDescription>
+		<damageTypeDescription>Standard shots from normal units without magical weapons. Can be blocked by Weapon Immunity and Missile Immunity.</damageTypeDescription>
 	</damageType>
 	<damageType damageTypeID="DT04">
 		<damageTypeImmunity unitSkillID="US009">
@@ -11830,7 +11830,7 @@
 		</damageTypeImmunity>
 		<storedDamageTypeID>H</storedDamageTypeID>
 		<damageTypeName>Enchanted ranged damage</damageTypeName>
-		<damageTypeDescription>Defined as anything that bypasses Weapon Immunity but not "magical enough" to be blocked by Magic Immunity.  Still blocked by Missile Immunity.  Standard shots from normal units with magical/mithril/adamantium/flame blade/eldritch weapon/etc; and shots from heroes or summoned creatures, undead or chaos channeled units.</damageTypeDescription>
+		<damageTypeDescription>Defined as anything that bypasses Weapon Immunity but not "magical enough" to be blocked by Magic Immunity. Still blocked by Missile Immunity. Standard shots from normal units with magical/mithril/adamantium/flame blade/eldritch weapon/etc; and shots from heroes or summoned creatures, undead or chaos channeled units.</damageTypeDescription>
 	</damageType>
 	<damageType damageTypeID="DT05">
 		<damageTypeImmunity unitSkillID="US012">
@@ -11905,7 +11905,7 @@
 		<damageTypeImmunity unitSkillID="SS069" />
 		<storedDamageTypeID>L</storedDamageTypeID>
 		<damageTypeName>Life stealing damage</damageTypeName>
-		<damageTypeDescription>Blocked by Death Immunity and Magic Immunity.  Stores as its own unique damage type.</damageTypeDescription>
+		<damageTypeDescription>Blocked by Death Immunity and Magic Immunity. Stores as its own unique damage type.</damageTypeDescription>
 	</damageType>
 	<unit unitID="UN001">
 		<unitMagicRealm>LTH</unitMagicRealm>
@@ -23143,6 +23143,177 @@
 	<citySpellEffect citySpellEffectID="SE196">
 		<citySpellEffectName>Pestilence</citySpellEffectName>
 	</citySpellEffect>
+	<aiUnitCategory aiUnitCategoryID="LC">
+		<aiUnitCategoryDescription>Land combat units not in a transport</aiUnitCategoryDescription>
+		<movementCode aiMovementCode="R" />
+		<movementCode aiMovementCode="A" />
+		<movementCode aiMovementCode="W" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="J" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="LS">
+		<aiUnitCategoryDescription>Land settlers not in a transport</aiUnitCategoryDescription>
+		<unitSkillID>US017</unitSkillID>
+		<movementCode aiMovementCode="B" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="LE">
+		<aiUnitCategoryDescription>Land engineers not in a transport</aiUnitCategoryDescription>
+		<unitSkillID>US036</unitSkillID>
+		<movementCode aiMovementCode="E" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="LP">
+		<aiUnitCategoryDescription>Land priests not in a transport</aiUnitCategoryDescription>
+		<unitSkillID>US025</unitSkillID>
+		<movementCode aiMovementCode="O" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="LN">
+		<aiUnitCategoryDescription>Land spirits not in a transport</aiUnitCategoryDescription>
+		<unitSkillID>US040</unitSkillID>
+		<movementCode aiMovementCode="N" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="FC">
+		<aiUnitCategoryDescription>Flying/Swimming combat units</aiUnitCategoryDescription>
+		<allTerrainPassable>true</allTerrainPassable>
+		<movementCode aiMovementCode="R" />
+		<movementCode aiMovementCode="A" />
+		<movementCode aiMovementCode="W" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="J" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="Z" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="FS">
+		<aiUnitCategoryDescription>Flying/Swimming settlers</aiUnitCategoryDescription>
+		<unitSkillID>US017</unitSkillID>
+		<allTerrainPassable>true</allTerrainPassable>
+		<movementCode aiMovementCode="B" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="Z" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="FE">
+		<aiUnitCategoryDescription>Flying/Swimming engineers</aiUnitCategoryDescription>
+		<unitSkillID>US036</unitSkillID>
+		<allTerrainPassable>true</allTerrainPassable>
+		<movementCode aiMovementCode="E" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="Z" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="FP">
+		<aiUnitCategoryDescription>Flying/Swimming priests</aiUnitCategoryDescription>
+		<unitSkillID>US025</unitSkillID>
+		<allTerrainPassable>true</allTerrainPassable>
+		<movementCode aiMovementCode="O" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="Z" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="FN">
+		<aiUnitCategoryDescription>Flying/Swimming spirits</aiUnitCategoryDescription>
+		<unitSkillID>US040</unitSkillID>
+		<allTerrainPassable>true</allTerrainPassable>
+		<movementCode aiMovementCode="N" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="Z" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="NT">
+		<aiUnitCategoryDescription>Naval transports</aiUnitCategoryDescription>
+		<transport>true</transport>
+		<movementCode aiMovementCode="C" />
+		<movementCode aiMovementCode="L" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="Z" />
+		<movementCode aiMovementCode="F" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="FT">
+		<aiUnitCategoryDescription>Flying transports</aiUnitCategoryDescription>
+		<transport>true</transport>
+		<allTerrainPassable>true</allTerrainPassable>
+		<movementCode aiMovementCode="C" />
+		<movementCode aiMovementCode="L" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="Z" />
+		<movementCode aiMovementCode="F" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="TC">
+		<aiUnitCategoryDescription>Land combat units in a transport</aiUnitCategoryDescription>
+		<inTransport>true</inTransport>
+		<movementCode aiMovementCode="R" />
+		<movementCode aiMovementCode="A" />
+		<movementCode aiMovementCode="W" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="J" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="TS">
+		<aiUnitCategoryDescription>Land settlers in a transport</aiUnitCategoryDescription>
+		<unitSkillID>US017</unitSkillID>
+		<inTransport>true</inTransport>
+		<movementCode aiMovementCode="B" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="TE">
+		<aiUnitCategoryDescription>Land engineers in a transport</aiUnitCategoryDescription>
+		<unitSkillID>US036</unitSkillID>
+		<inTransport>true</inTransport>
+		<movementCode aiMovementCode="E" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="TP">
+		<aiUnitCategoryDescription>Land priests in a transport</aiUnitCategoryDescription>
+		<unitSkillID>US025</unitSkillID>
+		<inTransport>true</inTransport>
+		<movementCode aiMovementCode="O" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
+	<aiUnitCategory aiUnitCategoryID="TN">
+		<aiUnitCategoryDescription>Land spirits in a transport</aiUnitCategoryDescription>
+		<unitSkillID>US040</unitSkillID>
+		<inTransport>true</inTransport>
+		<movementCode aiMovementCode="N" />
+		<movementCode aiMovementCode="S" />
+		<movementCode aiMovementCode="P" />
+		<movementCode aiMovementCode="T" />
+		<movementCode aiMovementCode="D" />
+	</aiUnitCategory>
 	<overlandMapSize overlandMapSizeID="MS01">
 		<coordinateSystemType>S</coordinateSystemType>
 		<width>30</width>

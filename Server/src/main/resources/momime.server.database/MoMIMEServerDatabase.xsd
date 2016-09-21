@@ -183,6 +183,7 @@
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimecommon:movementRateRule" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimesvr:citySpellEffect" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="aiUnitCategory" type="momimesvr:aiUnitCategory" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSize" type="momimesvr:overlandMapSize">
 				<xsd:key name="overlandMapSizePlanePK">
 					<xsd:selector xpath="overlandMapSizePlane" />
@@ -390,6 +391,12 @@
 		<xsd:key name="damageTypePK">
 			<xsd:selector xpath="damageType" />
 			<xsd:field xpath="@damageTypeID" />
+		</xsd:key>
+
+		<!-- Overland AI, new for 0.9.8.0 -->
+		<xsd:key name="aiUnitCategoryPK">
+			<xsd:selector xpath="aiUnitCategory" />
+			<xsd:field xpath="@aiUnitCategoryID" />
 		</xsd:key>
 		
 <!-- Foreign keys -->
@@ -835,6 +842,12 @@
 		<xsd:keyref refer="momimesvr:damageTypePK" name="spellFKdamageType">
 			<xsd:selector xpath="spell" />
 			<xsd:field xpath="attackSpellDamageTypeID" />
+		</xsd:keyref>
+		
+		<!-- Overland AI, new for 0.9.8.0 -->
+		<xsd:keyref refer="momimesvr:unitSkillPK" name="aiUnitCategoryFKunitSkill">
+			<xsd:selector xpath="aiUnitCategory" />
+			<xsd:field xpath="unitSkillID" />
 		</xsd:keyref>
 		
 	</xsd:element>
@@ -1726,6 +1739,41 @@ Defaults to 1 if omitted.</xsd:documentation>
 		</xsd:complexContent>
 	</xsd:complexType>
 	
+<!-- Overland AI, new for 0.9.8.0 -->
+
+	<xsd:complexType name="aiUnitCategory" nxe:singular="AI unit category" nxe:plural="AI unit categories" nxe:submenu="AI">
+        <xsd:annotation>
+        	<xsd:documentation>Different categories that the AI classifies its units under.  Each category then has its own set of movement codes so the
+AI can decide how units in that category should move on the overland map.
+
+Ordering of this list is very significant.
+- Testing which category a unit falls under works from the bottom-up, and stops when the first match is found.
+- Actually processing each category to decide their movement works from the top-down.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiUnitCategoryDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillID" type="momimecommon:unitSkillID" nxe:label="Must have skill?" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="transport" type="xsd:boolean" nxe:label="Must be a transport?" nxe:gridwidth="140" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="inTransport" type="xsd:boolean" nxe:label="Must be in a transport?" nxe:gridwidth="140" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="allTerrainPassable" type="xsd:boolean" nxe:label="Must be able to pass all terrain types?" nxe:gridwidth="220" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementCode" type="momimesvr:aiMovementCodeContainer" />
+		</xsd:sequence>
+		<xsd:attribute name="aiUnitCategoryID" type="momimesvr:aiUnitCategoryID" use="required" nxe:label="AI unit category ID" nxe:gridwidth="120" />
+	</xsd:complexType>
+	
+	<xsd:complexType name="aiMovementCodeContainer" nxe:singular="AI movement code" nxe:plural="AI movement codes" nxe:submenu="AI">
+        <xsd:annotation>
+        	<xsd:documentation>Ordered list of movement codes that the AI will try in order to decide where to move units overland.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:attribute name="aiMovementCode" type="momimecommon:aiMovementCode" use="required" nxe:label="AI movement code" nxe:gridwidth="120" />
+	</xsd:complexType>
+	
 <!-- MoM-specific data types -->
 
 	<xsd:simpleType name="fame">
@@ -1781,4 +1829,10 @@ Defaults to 1 if omitted.</xsd:documentation>
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 
+<!-- Overland AI, new for 0.9.8.0 -->
+
+	<xsd:simpleType name="aiUnitCategoryID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
 </xsd:schema>

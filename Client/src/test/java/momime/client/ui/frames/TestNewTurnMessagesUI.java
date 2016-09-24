@@ -36,11 +36,11 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 public final class TestNewTurnMessagesUI
 {
 	/**
-	 * Tests the NewTurnMessagesUI form
+	 * Tests the NewTurnMessagesUI form with a small number of messages
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testNewTurnMessagesUI () throws Exception
+	public final void testNewTurnMessagesUI_Small () throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -130,6 +130,116 @@ public final class TestNewTurnMessagesUI
 		msg3.setOldPopulation (23100);
 		msg3.setNewPopulation (22850);
 		msgs.add (msg3);
+		
+		// Layout
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		layout.buildMaps ();
+		
+		// Set up form
+		final NewTurnMessagesUI scroll = new NewTurnMessagesUI ();
+		scroll.setNewTurnMessagesLayout (layout);
+		scroll.setUtils (utils);
+		scroll.setLanguageHolder (langHolder);
+		scroll.setLanguageChangeMaster (langMaster);
+		scroll.setAnim (mock (AnimationController.class));
+		scroll.setNewTurnMessages (msgs);
+		
+		// Display form		
+		scroll.setVisible (true);
+		Thread.sleep (5000);
+		scroll.setVisible (false);
+	}
+
+	/**
+	 * Tests the NewTurnMessagesUI form with a large number of messages, enough to make it scroll
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testNewTurnMessagesUI_Large () throws Exception
+	{
+		// Set look and feel
+		final NdgUIUtils utils = new NdgUIUtilsImpl ();
+		utils.useNimbusLookAndFeel ();
+
+		// Mock entries from the language XML
+		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		when (lang.findCategoryEntry ("NewTurnMessages", "Title")).thenReturn ("Messages");
+		when (lang.findCategoryEntry ("NewTurnMessages", "CityGrowthCategory")).thenReturn ("City Growth");
+		when (lang.findCategoryEntry ("NewTurnMessages", "CityDeathCategory")).thenReturn ("City Death");
+		when (lang.findCategoryEntry ("NewTurnMessages", "CityGrowth")).thenReturn ("CITY_NAME population has grown from OLD_POPULATION to NEW_POPULATION");
+		when (lang.findCategoryEntry ("NewTurnMessages", "CityDeath")).thenReturn ("CITY_NAME population has dropped from OLD_POPULATION to NEW_POPULATION");
+
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguage (lang);
+
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+
+		// City names
+		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (ClientTestData.createOverlandMapCoordinateSystem ());
+		
+		for (int x = 1; x <= 20; x++)
+		{
+			final OverlandMapCityData city1 = new OverlandMapCityData ();
+			city1.setCityName ("City #" + x);
+			terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (x).setCityData (city1);
+
+			final OverlandMapCityData city2 = new OverlandMapCityData ();
+			city2.setCityName ("City #" + (20+x));
+			terrain.getPlane ().get (0).getRow ().get (11).getCell ().get (x).setCityData (city2);
+		}
+
+		final FogOfWarMemory fow = new FogOfWarMemory ();
+		fow.setMap (terrain);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (fow);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		
+		// Dummy list of messages to display
+		final TextUtilsImpl textUtils = new TextUtilsImpl ();
+		
+		final List<NewTurnMessageUI> msgs = new ArrayList<NewTurnMessageUI> ();
+		
+		final NewTurnMessageCategory cat1 = new NewTurnMessageCategory ();
+		cat1.setLanguageHolder (langHolder);
+		cat1.setLargeFont (CreateFontsForTests.getLargeFont ());
+		cat1.setSortOrder (NewTurnMessageSortOrder.SORT_ORDER_CITY_GROWTH);
+		msgs.add (cat1);
+		
+		for (int x = 1; x <= 20; x++)
+		{
+			final NewTurnMessagePopulationChangeEx msg = new NewTurnMessagePopulationChangeEx ();
+			msg.setLanguageHolder (langHolder);
+			msg.setSmallFont (CreateFontsForTests.getSmallFont ());
+			msg.setClient (client);
+			msg.setCityLocation (new MapCoordinates3DEx (x, 10, 0));
+			msg.setTextUtils (textUtils);
+			msg.setOldPopulation (4567);
+			msg.setNewPopulation (5678);
+			msgs.add (msg);
+		}
+		
+		final NewTurnMessageCategory cat2 = new NewTurnMessageCategory ();
+		cat2.setLanguageHolder (langHolder);
+		cat2.setLargeFont (CreateFontsForTests.getLargeFont ());
+		cat2.setSortOrder (NewTurnMessageSortOrder.SORT_ORDER_CITY_DEATH);
+		msgs.add (cat2);
+		
+		for (int x = 1; x <= 20; x++)
+		{
+			final NewTurnMessagePopulationChangeEx msg = new NewTurnMessagePopulationChangeEx ();
+			msg.setLanguageHolder (langHolder);
+			msg.setSmallFont (CreateFontsForTests.getSmallFont ());
+			msg.setClient (client);
+			msg.setCityLocation (new MapCoordinates3DEx (x, 11, 0));
+			msg.setTextUtils (textUtils);
+			msg.setOldPopulation (23100);
+			msg.setNewPopulation (22850);
+			msgs.add (msg);
+		}
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));

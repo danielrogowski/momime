@@ -7,4 +7,8 @@ import java.util.List;
  */
 interface AIUnitsAndRatings extends List<AIUnitAndRatings>
 {
+	/**
+	 * @return Sum of all UARs in this unit stack added together
+	 */
+	public int totalAverageRatings ();
 }

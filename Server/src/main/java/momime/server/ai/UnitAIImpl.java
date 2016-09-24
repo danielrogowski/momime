@@ -51,6 +51,7 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.database.AiUnitCategorySvr;
 import momime.server.database.HeroItemBonusSvr;
 import momime.server.database.HeroItemSlotTypeSvr;
 import momime.server.database.ServerDatabaseEx;
@@ -116,48 +117,45 @@ public final class UnitAIImpl implements UnitAI
 		throws MomException, RecordNotFoundException
 	{		
 		log.trace ("Entering calculateUnitRating: " + xu.getDebugIdentifier ());
-		
-		// Add 10% for each figure over 1 that the unit has
-		double multipliers = ((double) xu.calculateHitPointsRemaining ()) / ((double) xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS));
-		multipliers = ((multipliers - 1d) / 10d) + 1d;
 
-		// Go through all skills totalling up additive and multiplicative bonuses from skills
+		// Units with no attacks whatsoever (settlers) aren't even considered to be combat units
 		int total = 0;
-		for (final String unitSkillID : xu.listModifiedSkillIDs ())
+		if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) ||
+			(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)))
 		{
-			Integer value = xu.getModifiedSkillValue (unitSkillID);
-			if ((value == null) || (value == 0))
-				value = 1;
-			
-			final UnitSkillSvr skillDef = db.findUnitSkill (unitSkillID, "calculateUnitRating");
-			if (skillDef.getAiRatingMultiplicative () != null)
-				multipliers = multipliers * skillDef.getAiRatingMultiplicative ();
-			
-			else if (skillDef.getAiRatingAdditive () != null)
+			// Add 10% for each figure over 1 that the unit has
+			double multipliers = ((double) xu.calculateHitPointsRemaining ()) / ((double) xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS));
+			multipliers = ((multipliers - 1d) / 10d) + 1d;
+	
+			// Go through all skills totalling up additive and multiplicative bonuses from skills
+			for (final String unitSkillID : xu.listModifiedSkillIDs ())
 			{
-				if ((skillDef.getAiRatingDiminishesAfter () == null) || (value <= skillDef.getAiRatingDiminishesAfter ()))
-					total = total + (value * skillDef.getAiRatingAdditive ());
-				else
+				Integer value = xu.getModifiedSkillValue (unitSkillID);
+				if ((value == null) || (value == 0))
+					value = 1;
+				
+				final UnitSkillSvr skillDef = db.findUnitSkill (unitSkillID, "calculateUnitRating");
+				if (skillDef.getAiRatingMultiplicative () != null)
+					multipliers = multipliers * skillDef.getAiRatingMultiplicative ();
+				
+				else if (skillDef.getAiRatingAdditive () != null)
 				{
-					// Diminishing skill - add on the fixed part
-					total = total + (skillDef.getAiRatingDiminishesAfter () * skillDef.getAiRatingAdditive ());
-					int leftToAdd = Math.min (value - skillDef.getAiRatingDiminishesAfter (), skillDef.getAiRatingAdditive () - 1);
-					for (int n = 1; n <= leftToAdd; n++)
-						total = total + (skillDef.getAiRatingAdditive () - n);
+					if ((skillDef.getAiRatingDiminishesAfter () == null) || (value <= skillDef.getAiRatingDiminishesAfter ()))
+						total = total + (value * skillDef.getAiRatingAdditive ());
+					else
+					{
+						// Diminishing skill - add on the fixed part
+						total = total + (skillDef.getAiRatingDiminishesAfter () * skillDef.getAiRatingAdditive ());
+						int leftToAdd = Math.min (value - skillDef.getAiRatingDiminishesAfter (), skillDef.getAiRatingAdditive () - 1);
+						for (int n = 1; n <= leftToAdd; n++)
+							total = total + (skillDef.getAiRatingAdditive () - n);
+					}
 				}
 			}
-		}
-
-		// If the unit has no attacks whatsoever (settlers) then severaly hamper its rating since its clearly not a combat unit,
-		// and this is supposed to be an estimate of units' capability in combat.
-		// This is to stop Troll Settlers getting a massive rating because of their 40 HP
-		if ((!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) &&
-			(!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)))
 			
-			multipliers = multipliers / 20;
-		
-		// Apply multiplicative modifiers
-		total = (int) (total * multipliers);
+			// Apply multiplicative modifiers
+			total = (int) (total * multipliers);
+		}
 		
 		log.trace ("Exiting calculateUnitRating = " + total);
 		return total;
@@ -530,7 +528,7 @@ public final class UnitAIImpl implements UnitAI
 						{
 							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 							
-							final int defenceRating = (ours == null) ? 0 : ours.stream ().mapToInt (u -> u.getAverageRating ()).sum ();
+							final int defenceRating = (ours == null) ? 0 : ours.totalAverageRatings ();
 							final String description = (cityData != null) ? ("city belonging to " + cityData.getCityOwnerID ()) : (terrainData.getTileTypeID () + "/" + terrainData.getMapFeatureID ());
 							
 							final int thisDesiredDefenceRating = desiredDefenceRating * (getMemoryBuildingUtils ().findBuilding
@@ -713,6 +711,92 @@ public final class UnitAIImpl implements UnitAI
 		
 		log.trace ("Exiting decideUnitMovement = " + moved);
 		return moved;
+	}
+	
+	/**
+	 * @param xu Unit to test
+	 * @param category Category to test whether the unit matches or not
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the unit matches the specified category or not
+	 * @throws RecordNotFoundException If we encounter a transport that we can't find the unit definition for
+	 */
+	final boolean unitMatchesCategory (final ExpandedUnitDetails xu, final AiUnitCategorySvr category, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering unitMatchesCategory: " + xu.getDebugIdentifier () + ", category " + category.getAiUnitCategoryID ());
+
+		// Do the relatively easy checks first
+		boolean matches = ((category.getUnitSkillID () == null) || (xu.hasModifiedSkill (category.getUnitSkillID ()))) &&
+			((category.isTransport () == null) || (!category.isTransport ()) || ((xu.getUnitDefinition ().getTransportCapacity () != null) && (xu.getUnitDefinition ().getTransportCapacity () > 0))) &&
+			((category.isAllTerrainPassable () == null) || (!category.isAllTerrainPassable ()) || (getUnitCalculations ().areAllTerrainTypesPassable (xu, xu.listModifiedSkillIDs (), db)));
+			
+		// Now check if we need to be loaded in a transport, which is a bit more involved
+		if (matches && (category.isInTransport () != null) && (category.isInTransport ()))
+		{
+			final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get (xu.getUnitLocation ().getZ ()).getRow ().get
+				(xu.getUnitLocation ().getY ()).getCell ().get (xu.getUnitLocation ().getX ()).getTerrainData ();
+			
+			// If the current terrain is passable to us, then we aren't in a transport, and so the category doesn't match
+			matches = false;
+			if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, xu.listModifiedSkillIDs (), getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), db) == null)
+			{
+				// Look for a transport in the same space that can carry us
+				final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();
+				while ((!matches) && (iter.hasNext ()))
+				{
+					final MemoryUnit thisUnit = iter.next ();
+					if ((thisUnit.getOwningPlayerID () == xu.getOwningPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+						(xu.getUnitLocation ().equals (thisUnit.getUnitLocation ())))
+					{
+						final Integer thisTransportCapacity = db.findUnit (thisUnit.getUnitID (), "unitMatchesCategory").getTransportCapacity ();
+						if ((thisTransportCapacity != null) && (thisTransportCapacity > 0))
+							matches = true;
+					}
+				}
+			}
+		}
+		
+		log.trace ("Exiting unitMatchesCategory = " + matches);
+		return matches;
+	}
+	
+	/**
+	 * @param mu Unit to check
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return AI category for this unit 
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	final AiUnitCategorySvr determineUnitCategory (final MemoryUnit mu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering determineUnitCategory: Unit URN " + mu.getUnitURN ());
+		
+		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, mem, db);
+
+		// Check categories from the bottom up, since the end categories are the most specific
+		AiUnitCategorySvr category = null;
+		int catNo = db.getAiUnitCategories ().size () - 1;
+		while ((category == null) && (catNo >= 0))
+		{
+			final AiUnitCategorySvr thisCategory = db.getAiUnitCategories ().get (catNo);
+			if (unitMatchesCategory (xu, thisCategory, mem, db))
+				category = thisCategory;
+			else
+				catNo--;
+		}
+		
+		// If the database is set up correctly then the first category (i.e. the one we hit last) will have
+		// no conditions and automatically match, so this will never happen
+		if (category == null)
+			throw new MomException ("No unit category matched for unit URN " + mu.getUnitURN ());
+
+		log.trace ("Exiting determineUnitCategory = " + category.getAiUnitCategoryID ());
+		return category;
 	}
 	
 	/**

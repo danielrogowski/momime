@@ -890,18 +890,23 @@ public final class CombatProcessingImpl implements CombatProcessing
 		if (defendingPlayer != null)
 		{
 			// Update player memory on server
+			// Note there are circumstances in which they may already not know about the unit - e.g. if it is a dead hero, then from the point
+			// of view of the combat participant who is not the owner of the hero, it was already permanently removed from their list when it died.
 			final MomPersistentPlayerPrivateKnowledge defPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-			final MemoryUnit defUnit = getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), defPriv.getFogOfWarMemory ().getUnit (), "setUnitIntoOrTakeUnitOutOfCombat-D");
-			defUnit.setCombatLocation (combatLocation);
-			defUnit.setCombatPosition (combatPosition);
-			defUnit.setCombatHeading (combatHeading);
-			defUnit.setCombatSide (combatSide);
-			
-			// Update on client
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
+			final MemoryUnit defUnit = getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), defPriv.getFogOfWarMemory ().getUnit ());
+			if (defUnit != null)
 			{
-				log.debug ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to defender's client");
-				defendingPlayer.getConnection ().sendMessageToClient (msg);
+				defUnit.setCombatLocation (combatLocation);
+				defUnit.setCombatPosition (combatPosition);
+				defUnit.setCombatHeading (combatHeading);
+				defUnit.setCombatSide (combatSide);
+				
+				// Update on client
+				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				{
+					log.debug ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to defender's client");
+					defendingPlayer.getConnection ().sendMessageToClient (msg);
+				}
 			}
 		}
 
@@ -916,17 +921,20 @@ public final class CombatProcessingImpl implements CombatProcessing
 		{
 			// Update player memory on server
 			final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-			final MemoryUnit atkUnit = getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), atkPriv.getFogOfWarMemory ().getUnit (), "setUnitIntoOrTakeUnitOutOfCombat-A");
-			atkUnit.setCombatLocation (combatLocation);
-			atkUnit.setCombatPosition (combatPosition);
-			atkUnit.setCombatHeading (combatHeading);
-			atkUnit.setCombatSide (combatSide);
-
-			// Update on client
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			final MemoryUnit atkUnit = getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), atkPriv.getFogOfWarMemory ().getUnit ());
+			if (atkUnit != null)
 			{
-				log.debug ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to attacker's client");
-				attackingPlayer.getConnection ().sendMessageToClient (msg);
+				atkUnit.setCombatLocation (combatLocation);
+				atkUnit.setCombatPosition (combatPosition);
+				atkUnit.setCombatHeading (combatHeading);
+				atkUnit.setCombatSide (combatSide);
+	
+				// Update on client
+				if (attackingPlayer.getPlayerDescription ().isHuman ())
+				{
+					log.debug ("setUnitIntoOrTakeUnitOutOfCombat sending change in URN " + trueUnit.getUnitURN () + " to attacker's client");
+					attackingPlayer.getConnection ().sendMessageToClient (msg);
+				}
 			}
 		}
 		

@@ -9,8 +9,10 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.Action;
@@ -689,8 +691,14 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		upkeepLabel.setVisible (upkeepImage != null);
 		
 		// Add each skill
+		// Note we need both basic skills (so that we display skills even if they're being negated, like Resist Elements and Elemental Armour together)
+		// and modified skills (so that we display skills that we gain from bonuses even without having the original skill, for +to hit/block)
+		final Set<String> basicAndModifiedSkillIDs = new HashSet<String> ();
+		basicAndModifiedSkillIDs.addAll (getUnit ().listBasicSkillIDs ());
+		basicAndModifiedSkillIDs.addAll (getUnit ().listModifiedSkillIDs ());
+		
 		getUnitSkillListCellRenderer ().setUnit (getUnit ());
-		for (final String unitSkillID : getUnit ().listBasicSkillIDs ().stream ().sorted ().collect (Collectors.toList ()))
+		for (final String unitSkillID : basicAndModifiedSkillIDs.stream ().sorted ().collect (Collectors.toList ()))
 		{
 			// Which list do we display it in?
 			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "UnitInfoPanel");

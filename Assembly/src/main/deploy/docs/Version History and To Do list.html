@@ -131,8 +131,24 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.7.3</b></td>
-			<td align=left><b>4 Sep 2016</b></td>
+			<td align=left><b>Current version: 0.9.7.4</b></td>
+			<td align=left><b>25 Sep 2016</b></td>
+			<td align=left>
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed crash when capturing empty cities
+					<li>Fixed crash in the combat cleanup code which happened after a hero died in combat
+					<li>Units with no basic +to hit / +to block skill that gain it through some bonus (e.g. casting Holy Weapon or gaining experience) would never show it on the unit info screen (but the damage calculations would use it - visual bug only)
+					<li>New turn messages scroll will now show a scroll bar if you generate a huge number of messages in a single turn
+					<li>City construction that requires for example 100 production points completes when 100 production have been put towards it; previously it would require 101
+					<li>Stop overland map window being resized down below 640x480
+					<li>Fixed so area on the main map screen underneath the resource area is kept black rather than sometimes having leftover bits of map visible there
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.7.3</td>
+			<td align=left>4 Sep 2016</td>
 			<td align=left>
 				<b>Spells that now work correctly:</b>
 				<ul>

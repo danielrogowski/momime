@@ -341,7 +341,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 				final int mapZoomedWidth = (overlandMapBitmaps [terrainAnimFrame].getWidth () * mapViewZoom) / 10;
 				final int mapZoomedHeight = (overlandMapBitmaps [terrainAnimFrame].getHeight () * mapViewZoom) / 10;
 				
-				g.setClip (0, 0, mapZoomedWidth, mapZoomedHeight);
+				g.setClip (0, 0, Math.min (sceneryPanel.getWidth (), mapZoomedWidth), Math.min (sceneryPanel.getHeight (), mapZoomedHeight));
 				
 				// Need to draw it 1-2 times in each direction, depending on wrapping params
 				final int xRepeatCount = getClient ().getSessionDescription ().getOverlandMapSize ().isWrapsLeftToRight () ? 2 : 1;
@@ -783,6 +783,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 		
 		// Stop frame being shrunk smaller than this
 		getFrame ().setContentPane (contentPane);
+		getFrame ().pack ();
+		getFrame ().setMinimumSize (getFrame ().getSize ());
 		
 		// Capture mouse clicks on the scenery panel
 		sceneryPanel.addMouseListener (new MouseAdapter ()

@@ -341,6 +341,7 @@ public final class TestUnitInfoPanel
 			unit.getUnitHasSkill ().add (skill);
 			
 			modifiedSkillIDs.add (skillID);
+			when (xu.hasModifiedSkill (skillID)).thenReturn (n % 2 == 0);
 
 			// Icon
 			when (unitClientUtils.getUnitSkillSingleIcon (xu, skillID)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));

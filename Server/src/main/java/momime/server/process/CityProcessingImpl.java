@@ -312,7 +312,7 @@ public final class CityProcessingImpl implements CityProcessing
 										productionAmount.getCappedProductionAmount () - productionAmount.getConsumptionAmount () + productionAmount.getConvertToProductionAmount ());
 
 									// Is it finished?
-									if (cityData.getProductionSoFar () > productionCost)
+									if (cityData.getProductionSoFar () >= productionCost)
 									{
 										// Did we construct a building?
 										if (building != null)

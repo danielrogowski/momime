@@ -14,7 +14,9 @@ import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -109,7 +111,9 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		newTurnMessagesList.setCellRenderer (new NewTurnMessageRenderer ());		// The renderer has no injections (yet) so doesn't have a spring prototype
 		newTurnMessagesList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
-		contentPane.add (newTurnMessagesList, "frmNewTurnMessagesList");
+		final JScrollPane spellsScroll = getUtils ().createTransparentScrollPane (newTurnMessagesList);
+		spellsScroll.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		contentPane.add (spellsScroll, "frmNewTurnMessagesList");
 		
 		contentPane.add (getUtils ().createImageButton (closeAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
 			"frmNewTurnMessagesClose");

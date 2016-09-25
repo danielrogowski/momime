@@ -456,13 +456,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 
 				// If still in combat, only set to DEAD in player's memory on server, rather than removing entirely
 				if (newStatusInPlayersMemoryOnServer == null)
+				{
+					log.debug ("Removing unit URN " + trueUnit.getUnitURN () + " from player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
 					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
+				}
 				else
+				{
+					log.debug ("Marking unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnServer + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory on server");
 					getUnitUtils ().findUnitURN (trueUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "killUnitOnServerAndClients").setStatus (newStatusInPlayersMemoryOnServer);
+				}
 				
 				if (player.getPlayerDescription ().isHuman ())
 				{
 					// New status has to be set per player depending on who can see it
+					log.debug ("Telling client to mark unit URN " + trueUnit.getUnitURN () + " as " + newStatusInPlayersMemoryOnClient + " in player ID " + player.getPlayerDescription ().getPlayerID () + "'s memory");
+
 					final KillUnitMessage msg = new KillUnitMessage ();
 					msg.setUnitURN (trueUnit.getUnitURN ());
 					msg.setNewStatus (newStatusInPlayersMemoryOnClient);
@@ -479,7 +487,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			// Complete remove unit
 			case PERMANENT_DAMAGE:
-				log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (freed)");
+				log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory");
 				getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
 				break;
 
@@ -489,12 +497,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			case LACK_OF_PRODUCTION:
 				if (isHero)
 				{
-					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated (dismissed or lack of production)");
+					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " back to generated in server's true memory (dismissed or lack of production)");
 					trueUnit.setStatus (UnitStatusID.GENERATED);
 				}
 				else
 				{
-					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (dismissed or lack of production)");
+					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory (dismissed or lack of production)");
 					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
 				}
 				break;
@@ -503,7 +511,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			// All units killed by combat damage are kept around for the moment, since one of the players in the combat may Raise Dead them.
 			// Heroes are kept at DEAD even after the combat ends, in case the player resurrects them.
 			case HEALABLE_COMBAT_DAMAGE:
-				log.debug ("Setting unit with unit URN " + trueUnit.getUnitURN () + " to dead (combat)");
+				log.debug ("Marking unit with unit URN " + trueUnit.getUnitURN () + " as dead in server's true memory (combat damage)");
 				trueUnit.setStatus (UnitStatusID.DEAD);
 				break;
 
@@ -512,12 +520,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			case HEALABLE_OVERLAND_DAMAGE:
 				if (isHero)
 				{
-					log.debug ("Setting hero with unit URN " + trueUnit.getUnitURN () + " to dead (overland)");
+					log.debug ("Marking hero with unit URN " + trueUnit.getUnitURN () + " as dead in server's true memory (overland damage)");
 					trueUnit.setStatus (UnitStatusID.DEAD);
 				}
 				else
 				{
-					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " (overland damage)");
+					log.debug ("Permanently removing unit URN " + trueUnit.getUnitURN () + " from server's true memory (overland damage)");
 					getUnitUtils ().removeUnitURN (trueUnit.getUnitURN (), trueMap.getUnit ());
 				}
 				break;

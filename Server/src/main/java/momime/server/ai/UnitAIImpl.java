@@ -2,8 +2,11 @@ package momime.server.ai;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -577,143 +580,6 @@ public final class UnitAIImpl implements UnitAI
 	}
 	
 	/**
-	 * AI decides where to move a unit to on the overland map.
-	 * 
-	 * @param mu The unit to move
-	 * @param underdefendedLocations Locations we should consider a priority to aim for
-	 * @param player Player who owns the unit
-	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether we found something to do or not
-	 * @throws RecordNotFoundException If an expected record cannot be found
-	 * @throws PlayerNotFoundException If a player cannot be found
-	 * @throws MomException If there is a significant problem in the game logic
-	 * @throws JAXBException If there is a problem sending the reply to the client
-	 * @throws XMLStreamException If there is a problem sending the reply to the client
-	 */
-	@Override
-	public final boolean decideUnitMovement (final AIUnitAndRatings mu, final List<AIDefenceLocation> underdefendedLocations,
-		final PlayerServerDetails player, final MomSessionVariables mom)
-		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
-	{
-		log.trace ("Entering decideUnitMovement: AI Player ID " + mu.getUnit ().getOwningPlayerID () + ", " + mu);
-		
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		
-		// Create a stack for the units (so transports pick up any units stacked with them)
-		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
-		selectedUnits.add (getUnitUtils ().expandUnitDetails (mu.getUnit (), null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()));
-		
-		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
-		
-		// Work out where the unit can reach
-		final int [] [] [] doubleMovementDistances			= new int [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		
-		final MapCoordinates3DEx moveFrom = (MapCoordinates3DEx) mu.getUnit ().getUnitLocation ();
-
-		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
-			mu.getUnit ().getOwningPlayerID (), priv.getFogOfWarMemory (),
-			unitStack, mu.getUnit ().getDoubleOverlandMovesLeft (), doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-			mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-		
-		// Check all priority target locations to see how far away they all are (some may be unreachable, if water in the way or on the other plane, for example).
-		// We keep a list of all destinations that are the same distance away, and scrub the list and start over if we find a closer one.
-		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-		Integer doubleDestinationDistance = null;
-		for (final AIDefenceLocation location : underdefendedLocations)
-		{
-			final int doubleThisDistance = doubleMovementDistances [location.getMapLocation ().getZ ()] [location.getMapLocation ().getY ()] [location.getMapLocation ().getX ()];
-			if (doubleThisDistance >= 0)
-			{
-				// We can get there, eventually
-				if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
-				{
-					doubleDestinationDistance = doubleThisDistance;
-					destinations.clear ();
-					destinations.add (location.getMapLocation ());
-				}
-				else if (doubleThisDistance == doubleDestinationDistance)
-					destinations.add (location.getMapLocation ());
-			}
-		}
-		
-		// If we've got no priority target locations, or they are all unreachable, then next aim for the closest unscouted terrain
-		if (destinations.isEmpty ())
-			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
-					{
-						final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
-						if ((mc.getTerrainData () == null) || (mc.getTerrainData ().getTileTypeID () == null))
-						{
-							final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
-							if (doubleThisDistance >= 0)
-							{
-								// We can get there, eventually
-								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
-								if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
-								{
-									doubleDestinationDistance = doubleThisDistance;
-									destinations.clear ();
-									destinations.add (location);
-								}
-								else if (doubleThisDistance == doubleDestinationDistance)
-									destinations.add (location);
-							}
-						}
-					}
-		
-		// Move, if we found somewhere to go
-		boolean moved = !destinations.isEmpty ();
-		if (moved)
-		{
-			final MapCoordinates3DEx destination = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			
-			// If its a simultaneous turns game, then move as far as we can in one turn.
-			// If its a one-player-at-a-time game, then move only 1 cell.
-			// This is basically a copy of FogOfWarMidTurnChangesImpl.determineMovementDirection.
-			MapCoordinates3DEx coords = new MapCoordinates3DEx (destination);
-			MapCoordinates3DEx lastCoords = null;
-			while (((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (!canMoveToInOneTurn [coords.getZ ()] [coords.getY ()] [coords.getX ()])) ||
-						((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) && ((coords.getX () != moveFrom.getX ()) || (coords.getY () != moveFrom.getY ()))))
-			{
-				lastCoords = new MapCoordinates3DEx (coords);
-				final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
-					movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
-				
-				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
-					throw new MomException ("decideUnitMovement: Server map tracing moved to a cell off the map");
-			}
-			
-			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)
-				coords = lastCoords;
-			
-			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " decided to move " + mu + " to " + coords + " which will take " +
-				doubleDestinationDistance + " movement to reach, eventually aiming for " + destination);
-			
-			if (coords == null)
-				moved = false;		// Until I understand when and how this happens sometimes
-			else
-			{
-				// We need the true unit versions to execute the move
-				final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideUnitMovement");
-	
-				final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
-				trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
-				
-				// Execute move
-				getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
-					(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
-			}
-		}
-		
-		log.trace ("Exiting decideUnitMovement = " + moved);
-		return moved;
-	}
-	
-	/**
 	 * @param xu Unit to test
 	 * @param category Category to test whether the unit matches or not
 	 * @param mem Known overland terrain, units, buildings and so on
@@ -799,6 +665,203 @@ public final class UnitAIImpl implements UnitAI
 		return category;
 	}
 	
+	/**
+	 * @param units Flat list of units to convert
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return Units split by category and their map location, so units are grouped into stacks only of matching types
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public final Map<String, List<AIUnitsAndRatings>> categoriseAndStackUnits (final List<AIUnitAndRatings> units,
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering categoriseAndStackUnits");		
+
+		// Process each unit in turn
+		final Map<String, List<AIUnitsAndRatings>> categories = new HashMap<String, List<AIUnitsAndRatings>> ();
+		for (final AIUnitAndRatings unit : units)
+		{
+			final String categoryID = determineUnitCategory (unit.getUnit (), players, mem, db).getAiUnitCategoryID ();
+			
+			// Does the category exist already?
+			List<AIUnitsAndRatings> locations = categories.get (categoryID);
+			if (locations == null)
+			{
+				locations = new ArrayList<AIUnitsAndRatings> ();
+				categories.put (categoryID, locations);
+			}
+			
+			// Does the location exist already?
+			final AIUnitsAndRatings location;
+			final Optional<AIUnitsAndRatings> locationWrapper = locations.stream ().filter (l -> l.get (0).getUnit ().getUnitLocation ().equals (unit.getUnit ().getUnitLocation ())).findAny ();
+			if (locationWrapper.isPresent ())
+				location = locationWrapper.get ();
+			else
+			{
+				location = new AIUnitsAndRatingsImpl ();
+				locations.add (location);
+			}
+			
+			// Now can finally add it
+			location.add (unit);
+		}
+		
+		log.trace ("Exiting categoriseAndStackUnits = " + categories.size ());
+		return categories;
+	}
+	
+	/**
+	 * AI decides where to move a unit to on the overland map.
+	 * 
+	 * @param units The units to move
+	 * @param underdefendedLocations Locations we should consider a priority to aim for
+	 * @param player Player who owns the unit
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we found something to do or not
+	 * @throws RecordNotFoundException If an expected record cannot be found
+	 * @throws PlayerNotFoundException If a player cannot be found
+	 * @throws MomException If there is a significant problem in the game logic
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final boolean decideUnitMovement (final AIUnitsAndRatings units, final List<AIDefenceLocation> underdefendedLocations,
+		final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering decideUnitMovement: AI Player ID " + player.getPlayerDescription ().getPlayerID () + ", first Unit URN " + units.get (0).getUnit ().getUnitURN ()); 
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		// Create a stack for the units (so transports pick up any units stacked with them)
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
+		for (final AIUnitAndRatings mu : units)
+			selectedUnits.add (getUnitUtils ().expandUnitDetails (mu.getUnit (), null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()));
+		
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
+		
+		// Work out where the unit can reach
+		final int [] [] [] doubleMovementDistances			= new int [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getSessionDescription ().getOverlandMapSize ().getDepth ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
+		
+		final MapCoordinates3DEx moveFrom = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+
+		// Get the list of units who are actually moving
+		final List<ExpandedUnitDetails> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
+		// What's the lowest movement remaining of any unit in the stack
+		int doubleMovementRemaining = Integer.MAX_VALUE;
+		for (final ExpandedUnitDetails thisUnit : movingUnits)
+			if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
+				doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
+		
+		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
+			player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (),
+			unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
+			mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		
+		// Check all priority target locations to see how far away they all are (some may be unreachable, if water in the way or on the other plane, for example).
+		// We keep a list of all destinations that are the same distance away, and scrub the list and start over if we find a closer one.
+		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+		Integer doubleDestinationDistance = null;
+		for (final AIDefenceLocation location : underdefendedLocations)
+		{
+			final int doubleThisDistance = doubleMovementDistances [location.getMapLocation ().getZ ()] [location.getMapLocation ().getY ()] [location.getMapLocation ().getX ()];
+			if (doubleThisDistance >= 0)
+			{
+				// We can get there, eventually
+				if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+				{
+					doubleDestinationDistance = doubleThisDistance;
+					destinations.clear ();
+					destinations.add (location.getMapLocation ());
+				}
+				else if (doubleThisDistance == doubleDestinationDistance)
+					destinations.add (location.getMapLocation ());
+			}
+		}
+		
+		// If we've got no priority target locations, or they are all unreachable, then next aim for the closest unscouted terrain
+		if (destinations.isEmpty ())
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+						if ((mc.getTerrainData () == null) || (mc.getTerrainData ().getTileTypeID () == null))
+						{
+							final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+							if (doubleThisDistance >= 0)
+							{
+								// We can get there, eventually
+								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
+								if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+								{
+									doubleDestinationDistance = doubleThisDistance;
+									destinations.clear ();
+									destinations.add (location);
+								}
+								else if (doubleThisDistance == doubleDestinationDistance)
+									destinations.add (location);
+							}
+						}
+					}
+		
+		// Move, if we found somewhere to go
+		boolean moved = !destinations.isEmpty ();
+		if (moved)
+		{
+			final MapCoordinates3DEx destination = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+			
+			// If its a simultaneous turns game, then move as far as we can in one turn.
+			// If its a one-player-at-a-time game, then move only 1 cell.
+			// This is basically a copy of FogOfWarMidTurnChangesImpl.determineMovementDirection.
+			MapCoordinates3DEx coords = new MapCoordinates3DEx (destination);
+			MapCoordinates3DEx lastCoords = null;
+			while (((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (!canMoveToInOneTurn [coords.getZ ()] [coords.getY ()] [coords.getX ()])) ||
+						((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) && ((coords.getX () != moveFrom.getX ()) || (coords.getY () != moveFrom.getY ()))))
+			{
+				lastCoords = new MapCoordinates3DEx (coords);
+				final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
+					movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
+				
+				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
+					throw new MomException ("decideUnitMovement: Server map tracing moved to a cell off the map");
+			}
+			
+			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)
+				coords = lastCoords;
+			
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " decided to move from " + moveFrom + " to " + coords + " which will take " +
+				doubleDestinationDistance + " movement to reach, eventually aiming for " + destination);
+			
+			if (coords == null)
+				moved = false;		// Until I understand when and how this happens sometimes
+			else
+			{
+				// We need the true unit versions to execute the move
+				final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
+				for (final AIUnitAndRatings mu : units)
+				{
+					final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideUnitMovement");
+					trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+				}
+				
+				// Execute move
+				getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
+					(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
+			}
+		}
+		
+		log.trace ("Exiting decideUnitMovement = " + moved);
+		return moved;
+	}
 	/**
 	 * @return Unit utils
 	 */

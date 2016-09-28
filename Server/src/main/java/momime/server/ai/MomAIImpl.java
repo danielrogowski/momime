@@ -2,6 +2,7 @@ package momime.server.ai;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import momime.common.messages.TurnSystem;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.database.AiUnitCategorySvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 /**
@@ -110,24 +112,34 @@ public final class MomAIImpl implements MomAI
 			// Try to find somewhere to move each mobile unit to.
 			// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.
 			// In "simultaneous turns" games, we will move anywhere that we can reach in one turn.
-			if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
-				while (mobileUnits.size () > 0)
+			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (!mobileUnits.isEmpty ()))
+			{
+				final Map<String, List<AIUnitsAndRatings>> categories = getUnitAI ().categoriseAndStackUnits (mobileUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());				
+				
+				// Now move units in the order their categories are listed in the database
+				for (final AiUnitCategorySvr category : mom.getServerDB ().getAiUnitCategories ())
 				{
-					final AIUnitAndRatings thisUnit = mobileUnits.get (getRandomUtils ().nextInt (mobileUnits.size ()));
-					if (thisUnit.getUnit ().getDoubleOverlandMovesLeft () <= 0)
-					{
-						// Not really sure how this could happen, but just to be safe
-						mobileUnits.remove (thisUnit);
-					}
-					else
-					{
-						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move " + thisUnit);
-						
-						final boolean moved = getUnitAI ().decideUnitMovement (thisUnit, underdefendedLocations, player, mom);
-						if ((!moved) || (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (thisUnit.getUnit ().getDoubleOverlandMovesLeft () <= 0))
-							mobileUnits.remove (thisUnit);
-					}
+					final List<AIUnitsAndRatings> locations = categories.get (category.getAiUnitCategoryID ());
+					if (locations != null)
+						for (final AIUnitsAndRatings unitStack : locations)
+						{
+							// In one-at-a-time games, we move one cell at a time so we can rethink actions as we see more of the map.
+							// In simultaneous turns games, we move as far as we can in one go since we won't learn anything new about the map until we finish allocating all movement.
+							boolean stop = false;
+							while ((!stop) && (unitStack.stream ().mapToInt (u -> u.getUnit ().getDoubleOverlandMovesLeft ()).min ().getAsInt () > 0))
+							{
+								log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move stack of " + category.getAiUnitCategoryID () + " from " +
+									unitStack.get (0).getUnit ().getUnitLocation () + ", first Unit URN " + unitStack.get (0).getUnit ().getUnitURN ());
+								
+								if (!getUnitAI ().decideUnitMovement (unitStack, underdefendedLocations, player, mom))
+									stop = true;
+								
+								if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
+									stop = true;
+							}
+						}
 				}
+			}
 			
 			// Which city can build the best units? (even if we can't afford to make another one)
 			final OptionalInt bestAverageRatingFromConstructableUnits = constructableUnits.stream ().filter

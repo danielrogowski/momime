@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -117,9 +118,23 @@ public interface UnitAI
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException;
 
 	/**
+	 * @param units Flat list of units to convert
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return Units split by category and their map location, so units are grouped into stacks only of matching types
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	public Map<String, List<AIUnitsAndRatings>> categoriseAndStackUnits (final List<AIUnitAndRatings> units,
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
 	 * AI decides where to move a unit to on the overland map.
 	 * 
-	 * @param mu The unit to move
+	 * @param units The units to move
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -130,7 +145,7 @@ public interface UnitAI
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public boolean decideUnitMovement (final AIUnitAndRatings mu, final List<AIDefenceLocation> underdefendedLocations,
+	public boolean decideUnitMovement (final AIUnitsAndRatings units, final List<AIDefenceLocation> underdefendedLocations,
 		final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

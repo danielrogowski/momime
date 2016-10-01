@@ -348,13 +348,13 @@ public final class TestCityAIImpl
 		assertEquals ("BL12", trueBuildings.get (21).getBuildingID ());		// Gold - Try to build an Merchants' Guild but can't, Ship Yard is a prerequisite of it, and Ship Wrights' Guild is a prerequisite of that
 		assertEquals ("BL13", trueBuildings.get (22).getBuildingID ());		// Gold - Try to build an Merchants' Guild but can't, Ship Yard is a prerequisite of it
 		assertEquals ("BL28", trueBuildings.get (23).getBuildingID ());		// Gold - Merchants' Guild
-		assertEquals ("BL18", trueBuildings.get (24).getBuildingID ());		// Unrest without Magic Power - Oracle
-		assertEquals ("BL03", trueBuildings.get (25).getBuildingID ());		// Units - Barracks
-		assertEquals ("BL04", trueBuildings.get (26).getBuildingID ());		// Units - Armoury
-		assertEquals ("BL05", trueBuildings.get (27).getBuildingID ());		// Units - Fighters' Guild
-		assertEquals ("BL06", trueBuildings.get (28).getBuildingID ());		// Units - Armourers' Guild
-		assertEquals ("BL07", trueBuildings.get (29).getBuildingID ());		// Units - War College
-		assertEquals ("BL11", trueBuildings.get (30).getBuildingID ());		// Units - Fantastic Stables
+		assertEquals ("BL03", trueBuildings.get (24).getBuildingID ());		// Units - Barracks
+		assertEquals ("BL04", trueBuildings.get (25).getBuildingID ());		// Units - Armoury
+		assertEquals ("BL05", trueBuildings.get (26).getBuildingID ());		// Units - Fighters' Guild
+		assertEquals ("BL06", trueBuildings.get (27).getBuildingID ());		// Units - Armourers' Guild
+		assertEquals ("BL07", trueBuildings.get (28).getBuildingID ());		// Units - War College
+		assertEquals ("BL11", trueBuildings.get (29).getBuildingID ());		// Units - Fantastic Stables
+		assertEquals ("BL18", trueBuildings.get (30).getBuildingID ());		// Unrest without Magic Power - Oracle
 
 		// Try again with Barbarians, who can't build Animsts' Guilds, Universities or Cathedrals
 		trueBuildings.clear ();

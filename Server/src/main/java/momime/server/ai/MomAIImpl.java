@@ -131,7 +131,7 @@ public final class MomAIImpl implements MomAI
 								log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move stack of " + category.getAiUnitCategoryID () + " from " +
 									unitStack.get (0).getUnit ().getUnitLocation () + ", first Unit URN " + unitStack.get (0).getUnit ().getUnitURN ());
 								
-								if (!getUnitAI ().decideUnitMovement (unitStack, underdefendedLocations, player, mom))
+								if (!getUnitAI ().decideAndExecuteUnitMovement (unitStack, underdefendedLocations, player, mom))
 									stop = true;
 								
 								if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)

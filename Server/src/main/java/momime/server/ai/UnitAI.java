@@ -11,9 +11,11 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.AiMovementCode;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
@@ -132,7 +134,22 @@ public interface UnitAI
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
-	 * AI decides where to move a unit to on the overland map.
+	 * Uses an ordered list of AI movement codes to try to decide what to do with a particular unit stack
+	 * 
+	 * @param movementCodes List of movement codes to try
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @return See AIMovementDecision for explanation of return values
+	 * @throws MomException If we encounter a movement code that we don't know how to process
+	 */
+	public AIMovementDecision decideUnitMovement (final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
+		final List<AIDefenceLocation> underdefendedLocations, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
+		throws MomException;
+	
+	/**
+	 * AI decides where to move a unit to on the overland map and actually does the move.
 	 * 
 	 * @param units The units to move
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
@@ -145,7 +162,7 @@ public interface UnitAI
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public boolean decideUnitMovement (final AIUnitsAndRatings units, final List<AIDefenceLocation> underdefendedLocations,
+	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final List<AIDefenceLocation> underdefendedLocations,
 		final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

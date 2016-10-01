@@ -702,6 +702,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="unitAIMovement" ref="unitAIMovement" />
+	</bean>
+
+	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
 	<!-- Fog of War -->

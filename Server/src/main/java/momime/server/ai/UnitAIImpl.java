@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -749,8 +750,64 @@ public final class UnitAIImpl implements UnitAI
 					decision = getUnitAIMovement ().considerUnitMovement_Reinforce (doubleMovementDistances, underdefendedLocations);
 					break;
 					
+				case ATTACK_STATIONARY:
+					decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (doubleMovementDistances);
+					break;
+					
+				case ATTACK_WANDERING:
+					decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (doubleMovementDistances);
+					break;
+					
+				case SCOUT_LAND:
+					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (doubleMovementDistances, terrain, sys);
+					break;
+					
 				case SCOUT_ALL:
 					decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (doubleMovementDistances, terrain, sys);
+					break;
+					
+				case JOIN_STACK:
+					decision = getUnitAIMovement ().considerUnitMovement_JoinStack (doubleMovementDistances);
+					break;
+					
+				case PLANE_SHIFT:
+					decision = getUnitAIMovement ().considerUnitMovement_PlaneShift (doubleMovementDistances);
+					break;
+					
+				case GET_IN_TRANSPORT:
+					decision = getUnitAIMovement ().considerUnitMovement_GetInTransport (doubleMovementDistances);
+					break;
+					
+				case OVERDEFEND:
+					decision = getUnitAIMovement ().considerUnitMovement_Overdefend (doubleMovementDistances);
+					break;
+				
+				case BUILD_CITY:
+					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (doubleMovementDistances);
+					break;
+				
+				case BUILD_ROAD:
+					decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (doubleMovementDistances);
+					break;
+				
+				case PURIFY:
+					decision = getUnitAIMovement ().considerUnitMovement_Purify (doubleMovementDistances);
+					break;
+					
+				case MELD_WITH_NODE:
+					decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (doubleMovementDistances);
+					break;
+				
+				case CARRY_UNITS:
+					decision = getUnitAIMovement ().considerUnitMovement_CarryUnits (doubleMovementDistances);
+					break;
+					
+				case LOAD_UNITS:
+					decision = getUnitAIMovement ().considerUnitMovement_LoadUnits (doubleMovementDistances);
+					break;
+					
+				case FORTRESS_ISLAND:
+					decision = getUnitAIMovement ().considerUnitMovement_FortressIsland (doubleMovementDistances);
 					break;
 					
 				default:
@@ -766,6 +823,7 @@ public final class UnitAIImpl implements UnitAI
 	 * AI decides where to move a unit to on the overland map.
 	 * 
 	 * @param units The units to move
+	 * @param category What category of units these are
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -777,7 +835,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final List<AIDefenceLocation> underdefendedLocations,
+	public final boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
 		final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
@@ -813,11 +871,8 @@ public final class UnitAIImpl implements UnitAI
 			unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 			mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 		
-		// Hard code the list of movement codes for now
-		final List<AiMovementCode> movementCodes = new ArrayList<AiMovementCode> ();
-		movementCodes.add (AiMovementCode.REINFORCE);
-		movementCodes.add (AiMovementCode.SCOUT_ALL);
-		
+		// Use list of movement codes from the unit stack's category
+		final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
 		final AIMovementDecision destination = decideUnitMovement (movementCodes, doubleMovementDistances,
 			underdefendedLocations, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
 		

@@ -71,6 +71,66 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	}
 
 	/**
+	 * AI tries to move units to attack defended stationary locations (nodes/lairs/towers/cities) where the sum of our UARs > the sum of their UARs.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_AttackStationary (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_AttackStationary");
+
+		log.warn ("AI movement code ATTACK_STATIONARY is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_AttackStationary = " + decision);
+		return decision;
+	}
+	
+	/**
+	 * AI tries to move units to attack enemy unit stacks wandering around the map where the sum of our UARs > the sum of their UARs.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_AttackWandering (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_AttackWandering");
+
+		log.warn ("AI movement code ATTACK_WANDERING is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_AttackWandering = " + decision);
+		return decision;
+	}
+
+	/**
+	 * AI tries to move units to scout any unknown terrain that is adjacent to at least one tile that we know to be land.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_ScoutLand (final int [] [] [] doubleMovementDistances,
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
+	{
+		log.trace ("Entering considerUnitMovement_ScoutLand");
+
+		log.warn ("AI movement code SCOUT_LAND is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_ScoutLand = " + decision);
+		return decision;
+	}
+	
+	/**
 	 * AI tries to move units to scout any unknown terrain.
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
@@ -121,6 +181,217 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		return decision;
 	}
 
+	/**
+	 * AI looks to see if any defended locations (nodes/lairs/towers/cities) are too well defended to attack at the moment,
+	 * and if it can see any then will look to merge together our units into a bigger stack.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_JoinStack (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_JoinStack");
+
+		log.warn ("AI movement code JOIN_STACK is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_JoinStack = " + decision);
+		return decision;
+	}
+
+	/**
+	 * AI looks for a tower garissoned by our units, and imagines that we are stood there and rechecks preceeding movement codes.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_PlaneShift (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_PlaneShift");
+
+		log.warn ("AI movement code PLANE_SHIFT is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_PlaneShift = " + decision);
+		return decision;
+	}
+	
+	/**
+	 * AI looks for a transport to get in (or stay where we are if we are already in one).
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_GetInTransport (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_GetInTransport");
+
+		log.warn ("AI movement code GET_IN_TRANSPORT is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_GetInTransport = " + decision);
+		return decision;
+	}
+
+	/**
+	 * AI looks for any of our locations (nodes/cities/towers) that we can reach, regardless of if they already have plenty of defence.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_Overdefend (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_Overdefend");
+
+		log.warn ("AI movement code OVERDEFEND is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_Overdefend = " + decision);
+		return decision;
+	}
+
+	/**
+	 * AI looks for a good place for settlers to build a city
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_BuildCity");
+
+		log.warn ("AI movement code BUILD_CITY is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_BuildCity = " + decision);
+		return decision;
+	}
+
+	/**
+	 * AI looks for a good place for engineers to build a road
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_BuildRoad (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_BuildRoad");
+
+		log.warn ("AI movement code BUILD_ROAD is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_BuildRoad = " + decision);
+		return decision;
+	}
+
+	/**
+	 * AI looks for any corrupted land that priests need to purify
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_Purify (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_Purify");
+
+		log.warn ("AI movement code PURIFY is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_Purify = " + decision);
+		return decision;
+	}
+
+	/**
+	 * AI looks for a node that a magic/guardian spirit can meld with
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_MeldWithNode (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_MeldWithNode");
+
+		log.warn ("AI movement code MELD_WITH_NODE is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_MeldWithNode = " + decision);
+		return decision;
+	}
+	
+	/**
+	 * AI transports look for a suitable island to carry units to, if we are holding any.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_CarryUnits (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_CarryUnits");
+
+		log.warn ("AI movement code CARRY_UNITS is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_CarryUnits = " + decision);
+		return decision;
+	}
+	
+	/**
+	 * AI transports that are empty head for any islands where any unit stacks went on OVERDEFEND.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_LoadUnits (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_LoadUnits");
+
+		log.warn ("AI movement code LOAD_UNITS is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_LoadUnits = " + decision);
+		return decision;
+	}
+	
+	/**
+	 * If we are on the same plane as our Wizards' Fortress, then head the island that it is on.
+	 * (This is intended for transport ships that have nothing better to do, so we're assuming we can't actually get *onto* the island).
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	@Override
+	public final AIMovementDecision considerUnitMovement_FortressIsland (final int [] [] [] doubleMovementDistances)
+	{
+		log.trace ("Entering considerUnitMovement_FortressIsland");
+
+		log.warn ("AI movement code FORTRESS_ISLAND is not yet implemented");
+		
+		final AIMovementDecision decision = null;
+		
+		log.trace ("Exiting considerUnitMovement_FortressIsland = " + decision);
+		return decision;
+	}
+	
 	/**
 	 * @return Random number generator
 	 */

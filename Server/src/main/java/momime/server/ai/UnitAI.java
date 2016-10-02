@@ -18,6 +18,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
+import momime.server.database.AiUnitCategorySvr;
 import momime.server.database.ServerDatabaseEx;
 
 /**
@@ -152,6 +153,7 @@ public interface UnitAI
 	 * AI decides where to move a unit to on the overland map and actually does the move.
 	 * 
 	 * @param units The units to move
+	 * @param category What category of units these are
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -162,7 +164,7 @@ public interface UnitAI
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final List<AIDefenceLocation> underdefendedLocations,
+	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
 		final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

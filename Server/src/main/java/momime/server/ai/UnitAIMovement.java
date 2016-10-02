@@ -25,6 +25,33 @@ public interface UnitAIMovement
 		final List<AIDefenceLocation> underdefendedLocations);
 
 	/**
+	 * AI tries to move units to attack defended stationary locations (nodes/lairs/towers/cities) where the sum of our UARs > the sum of their UARs.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_AttackStationary (final int [] [] [] doubleMovementDistances);
+	
+	/**
+	 * AI tries to move units to attack enemy unit stacks wandering around the map where the sum of our UARs > the sum of their UARs.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_AttackWandering (final int [] [] [] doubleMovementDistances);
+
+	/**
+	 * AI tries to move units to scout any unknown terrain that is adjacent to at least one tile that we know to be land.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_ScoutLand (final int [] [] [] doubleMovementDistances,
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys);
+	
+	/**
 	 * AI tries to move units to scout any unknown terrain.
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
@@ -34,4 +61,94 @@ public interface UnitAIMovement
 	 */
 	public AIMovementDecision considerUnitMovement_ScoutAll (final int [] [] [] doubleMovementDistances,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys);
+
+	/**
+	 * AI looks to see if any defended locations (nodes/lairs/towers/cities) are too well defended to attack at the moment,
+	 * and if it can see any then will look to merge together our units into a bigger stack.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_JoinStack (final int [] [] [] doubleMovementDistances);
+
+	/**
+	 * AI looks for a tower garissoned by our units, and imagines that we are stood there and rechecks preceeding movement codes.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_PlaneShift (final int [] [] [] doubleMovementDistances);
+	
+	/**
+	 * AI looks for a transport to get in (or stay where we are if we are already in one).
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_GetInTransport (final int [] [] [] doubleMovementDistances);
+
+	/**
+	 * AI looks for any of our locations (nodes/cities/towers) that we can reach, regardless of if they already have plenty of defence.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_Overdefend (final int [] [] [] doubleMovementDistances);
+
+	/**
+	 * AI looks for a good place for settlers to build a city
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances);
+
+	/**
+	 * AI looks for a good place for engineers to build a road
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_BuildRoad (final int [] [] [] doubleMovementDistances);
+
+	/**
+	 * AI looks for any corrupted land that priests need to purify
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_Purify (final int [] [] [] doubleMovementDistances);
+
+	/**
+	 * AI looks for a node that a magic/guardian spirit can meld with
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_MeldWithNode (final int [] [] [] doubleMovementDistances);
+	
+	/**
+	 * AI transports look for a suitable island to carry units to, if we are holding any.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_CarryUnits (final int [] [] [] doubleMovementDistances);
+	
+	/**
+	 * AI transports that are empty head for any islands where any unit stacks went on OVERDEFEND.
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_LoadUnits (final int [] [] [] doubleMovementDistances);
+	
+	/**
+	 * If we are on the same plane as our Wizards' Fortress, then head the island that it is on.
+	 * (This is intended for transport ships that have nothing better to do, so we're assuming we can't actually get *onto* the island).
+	 * 
+	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @return See AIMovementDecision for explanation of return values
+	 */
+	public AIMovementDecision considerUnitMovement_FortressIsland (final int [] [] [] doubleMovementDistances);
 }

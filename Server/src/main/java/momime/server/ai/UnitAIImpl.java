@@ -729,13 +729,15 @@ public final class UnitAIImpl implements UnitAI
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
 	@Override
-	public final AIMovementDecision decideUnitMovement (final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
-		final List<AIDefenceLocation> underdefendedLocations, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
-		throws MomException
+	public AIMovementDecision decideUnitMovement (final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
+		final List<AIDefenceLocation> underdefendedLocations, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering decideUnitMovement");
 		
@@ -759,7 +761,7 @@ public final class UnitAIImpl implements UnitAI
 					break;
 					
 				case SCOUT_LAND:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (doubleMovementDistances, terrain, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (doubleMovementDistances, terrain, sys, db);
 					break;
 					
 				case SCOUT_ALL:
@@ -874,7 +876,7 @@ public final class UnitAIImpl implements UnitAI
 		// Use list of movement codes from the unit stack's category
 		final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
 		final AIMovementDecision destination = decideUnitMovement (movementCodes, doubleMovementDistances,
-			underdefendedLocations, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
+			underdefendedLocations, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 		
 		// Move, if we found somewhere to go
 		boolean moved = (destination != null) && (destination.getDestination () != null);

@@ -489,8 +489,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    	else
 	    	{
 	    		final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "isLocationValidTargetForSpell");
-	    		final Boolean isLand = tileType.isLand ();
-	    		if ((isLand == null) || (!isLand))
+	    		if ((tileType.isLand () == null) || (!tileType.isLand ()))
 	    			result = TargetSpellResult.MUST_TARGET_LAND;
 	    		
 	    		// Cannot cast corruption on nodes

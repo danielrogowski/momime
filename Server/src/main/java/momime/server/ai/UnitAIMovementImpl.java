@@ -7,11 +7,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
 
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.OverlandMapTerrainData;
+import momime.server.database.ServerDatabaseEx;
+import momime.server.database.TileTypeSvr;
 
 /**
  * Provides a method for processing each movement code that the AI uses to decide where to send units overland.
@@ -27,6 +32,9 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/** Random number generator */
 	private RandomUtils randomUtils;
 
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * AI tries to move units to any location that lacks defence or can be captured without a fight.
 	 * 
@@ -114,17 +122,70 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_ScoutLand (final int [] [] [] doubleMovementDistances,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_ScoutLand");
 
-		log.warn ("AI movement code SCOUT_LAND is not yet implemented");
+		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+		Integer doubleDestinationDistance = null;
 		
-		final AIMovementDecision decision = null;
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+				{
+					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					if ((mc.getTerrainData () == null) || (mc.getTerrainData ().getTileTypeID () == null))
+					{
+						final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+						if (doubleThisDistance >= 0)
+						{
+							// We can get there, eventually
+							// Now look for an adjacent land tile
+							boolean found = false;
+							for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (sys.getCoordinateSystemType ()); d++)
+							{
+								final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
+								if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, d))
+								{
+									final OverlandMapTerrainData terrainData = terrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get
+										(coords.getX ()).getTerrainData ();
+									
+									if ((terrainData != null) && (terrainData.getTileTypeID () != null))
+									{
+										final TileTypeSvr tileType = db.findTileType (terrainData.getTileTypeID (), "considerUnitMovement_ScoutLand");
+										if ((tileType.isLand () != null) && (tileType.isLand ()))
+											found = true;
+									}
+								}
+							}
+
+							if (found)
+							{
+								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
+								if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+								{
+									doubleDestinationDistance = doubleThisDistance;
+									destinations.clear ();
+									destinations.add (location);
+								}
+								else if (doubleThisDistance == doubleDestinationDistance)
+									destinations.add (location);
+							}
+						}
+					}
+				}
+		
+		final AIMovementDecision decision;
+		if (destinations.isEmpty ())
+			decision = null;		// No reachable unscouted locations adjacent to known land tiles
+		else
+			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
 		
 		log.trace ("Exiting considerUnitMovement_ScoutLand = " + decision);
 		return decision;
@@ -173,7 +234,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		
 		final AIMovementDecision decision;
 		if (destinations.isEmpty ())
-			decision = null;		// No reachable underdefended locations
+			decision = null;		// No reachable unscouted locations
 		else
 			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
 		
@@ -406,5 +467,21 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

@@ -547,7 +547,6 @@
 		<combatTerrainFeatures>20</combatTerrainFeatures>
 	</tileType>
 	<tileType tileTypeID="TT08">
-		<land>false</land>
 		<goldBonus>10</goldBonus>
 		<goldBonusSurroundingTiles>true</goldBonusSurroundingTiles>
 		<doubleFood>1</doubleFood>
@@ -556,7 +555,6 @@
 		<canPlaceLair>false</canPlaceLair>
 	</tileType>
 	<tileType tileTypeID="TT09">
-		<land>false</land>
 		<canBuildCity>false</canBuildCity>
 		<tileTypeDescription>Ocean</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
@@ -574,7 +572,6 @@
 		<combatTerrainFeatures>20</combatTerrainFeatures>
 	</tileType>
 	<tileType tileTypeID="TT11">
-		<land>false</land>
 		<goldBonus>10</goldBonus>
 		<goldBonusSurroundingTiles>true</goldBonusSurroundingTiles>
 		<doubleFood>1</doubleFood>

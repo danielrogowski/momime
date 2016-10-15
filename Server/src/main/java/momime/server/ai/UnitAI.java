@@ -142,12 +142,14 @@ public interface UnitAI
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
 	public AIMovementDecision decideUnitMovement (final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
-		final List<AIDefenceLocation> underdefendedLocations, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
-		throws MomException;
+		final List<AIDefenceLocation> underdefendedLocations, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException;
 	
 	/**
 	 * AI decides where to move a unit to on the overland map and actually does the move.

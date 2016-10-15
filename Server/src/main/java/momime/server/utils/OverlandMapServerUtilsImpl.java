@@ -42,6 +42,7 @@ import momime.server.database.CityNameContainerSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
@@ -101,10 +102,9 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, d))
 			{
 				final OverlandMapTerrainData terrain = map.getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-
-				// NB. IsLand is Boolean so could be null, but should be set for all tile types produced by the map generator
-				// the only tile types for which it is null are those which are special references for the movement tables, e.g. road tiles
-				if ((db.findTileType (terrain.getTileTypeID (), "setContinentalRace").isLand ()) && (continentalRace.get (coords) == null))
+				final TileTypeSvr tileType = db.findTileType (terrain.getTileTypeID (), "setContinentalRace");
+				
+				if ((tileType.isLand () != null) && (tileType.isLand ()) && (continentalRace.get (coords) == null))
 					setContinentalRace (map, continentalRace, coords.getX (), coords.getY (), plane, raceID, db);
 			}
 		}
@@ -137,10 +137,9 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 				for (int y = 0; y < sys.getHeight (); y++)
 				{
 					final OverlandMapTerrainData terrain = map.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-
-					// NB. IsLand is Boolean so could be null, but should be set for all tile types produced by the map generator
-					// the only tile types for which it is null are those which are special references for the movement tables, e.g. road tiles
-					if ((db.findTileType (terrain.getTileTypeID (), "decideAllContinentalRaces").isLand ()) &&
+					final TileTypeSvr tileType = db.findTileType (terrain.getTileTypeID (), "decideAllContinentalRaces");
+					
+					if ((tileType.isLand () != null) && (tileType.isLand ()) &&
 						(continentalRace.get (x, y, plane.getPlaneNumber ()) == null))
 
 						setContinentalRace (map, continentalRace, x, y, plane.getPlaneNumber (),

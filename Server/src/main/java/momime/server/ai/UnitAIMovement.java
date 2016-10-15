@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.ndg.map.CoordinateSystem;
 
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.server.database.ServerDatabaseEx;
 
 /**
  * Provides a method for processing each movement code that the AI uses to decide where to send units overland.
@@ -46,10 +48,12 @@ public interface UnitAIMovement
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	public AIMovementDecision considerUnitMovement_ScoutLand (final int [] [] [] doubleMovementDistances,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys);
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException;
 	
 	/**
 	 * AI tries to move units to scout any unknown terrain.

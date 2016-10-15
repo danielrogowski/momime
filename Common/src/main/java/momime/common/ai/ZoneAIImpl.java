@@ -150,23 +150,10 @@ public final class ZoneAIImpl implements ZoneAI
 					else if ((mc.getTerrainData () != null) && (mc.getTerrainData ().getTileTypeID () != null))
 					{
 						final TileType tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "calculateFriendlyZone");
-						if ((tileType.isLand () != null) && (!tileType.isLand ()))
+						if ((tileType.isLand () == null) || (!tileType.isLand ()))
 							zone.set (x, y, plane, false);
 					}
 				}
-		
-		// Remove any area close to enemy units
-		// Taking this out - or how will the AI detect that its being invaded if their border automatically shrinks as enemy units get close? :)
-		/*
-		for (final MemoryUnit unit : fogOfWarMemory.getUnit ())
-			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () != playerID) && (unit.getUnitLocation () != null))
-			{
-				final MapArea3Dto2D<Boolean> zone2D = new MapArea3Dto2D<Boolean> ();
-				zone2D.setStorage (zone);
-				zone2D.setZ (unit.getUnitLocation ().getZ ());
-				
-				getBooleanMapAreaOperations2D ().deselectRadius (zone2D, unit.getUnitLocation ().getX (), unit.getUnitLocation ().getY (), 1);
-			} */
 		
 		// Reselect our cities, in case those cells were deselected by an enemy standing next to one of them
 		for (final MapCoordinates3DEx cityLocation : cityLocations)

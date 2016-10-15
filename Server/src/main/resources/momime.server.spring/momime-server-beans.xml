@@ -707,6 +707,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
 	<!-- Fog of War -->

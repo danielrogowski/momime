@@ -14,9 +14,12 @@ import com.ndg.random.RandomUtils;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
+import momime.server.messages.ServerMemoryGridCellUtils;
 
 /**
  * Provides a method for processing each movement code that the AI uses to decide where to send units overland.
@@ -34,6 +37,9 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/**
 	 * AI tries to move units to any location that lacks defence or can be captured without a fight.
@@ -81,17 +87,60 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI tries to move units to attack defended stationary locations (nodes/lairs/towers/cities) where the sum of our UARs > the sum of their UARs.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_AttackStationary (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_AttackStationary (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_AttackStationary");
 
-		log.warn ("AI movement code ATTACK_STATIONARY is not yet implemented");
+		final int ourCurrentRating = units.totalCurrentRatings ();
+		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+		Integer doubleDestinationDistance = null;
+
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+				{
+					// Only process towers on the first plane
+					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					final OverlandMapTerrainData terrainData = mc.getTerrainData ();
+					if ((z == 0) || (!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData)))
+					{					
+						final OverlandMapCityData cityData = mc.getCityData ();
+						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
+						final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+						if (((cityData != null) || (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db))) &&
+							(enemyUnitStack != null) && (enemyUnitStack.totalCurrentRatings () < ourCurrentRating) && (doubleThisDistance >= 0))
+						{
+							// We can get there eventually, and stand a chance of beating them
+							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
+							if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+							{
+								doubleDestinationDistance = doubleThisDistance;
+								destinations.clear ();
+								destinations.add (location);
+							}
+							else if (doubleThisDistance == doubleDestinationDistance)
+								destinations.add (location);
+						}
+					}
+				}
 		
-		final AIMovementDecision decision = null;
+		final AIMovementDecision decision;
+		if (destinations.isEmpty ())
+			decision = null;		// No reachable enemy unit defence positions that we stand a chance of beating
+		else
+			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
 		
 		log.trace ("Exiting considerUnitMovement_AttackStationary = " + decision);
 		return decision;
@@ -100,17 +149,56 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI tries to move units to attack enemy unit stacks wandering around the map where the sum of our UARs > the sum of their UARs.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_AttackWandering (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_AttackWandering (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_AttackWandering");
 
-		log.warn ("AI movement code ATTACK_WANDERING is not yet implemented");
+		final int ourCurrentRating = units.totalCurrentRatings ();
+		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+		Integer doubleDestinationDistance = null;
+
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+				{
+					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					final OverlandMapTerrainData terrainData = mc.getTerrainData ();
+					final OverlandMapCityData cityData = mc.getCityData ();
+					final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
+					final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+					if ((cityData == null) && (!ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)) &&
+						(enemyUnitStack != null) && (enemyUnitStack.totalCurrentRatings () < ourCurrentRating) && (doubleThisDistance >= 0))
+					{
+						// We can get there eventually, and stand a chance of beating them
+						final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
+						if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+						{
+							doubleDestinationDistance = doubleThisDistance;
+							destinations.clear ();
+							destinations.add (location);
+						}
+						else if (doubleThisDistance == doubleDestinationDistance)
+							destinations.add (location);
+					}
+				}
 		
-		final AIMovementDecision decision = null;
+		final AIMovementDecision decision;
+		if (destinations.isEmpty ())
+			decision = null;		// No reachable wandering enemy units that we stand a chance of beating
+		else
+			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
 		
 		log.trace ("Exiting considerUnitMovement_AttackWandering = " + decision);
 		return decision;
@@ -483,5 +571,21 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

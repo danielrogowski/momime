@@ -8,6 +8,15 @@ import java.util.ArrayList;
 final class AIUnitsAndRatingsImpl extends ArrayList<AIUnitAndRatings> implements AIUnitsAndRatings
 {
 	/**
+	 * @return Sum of all UCRs in this unit stack added together
+	 */
+	@Override
+	public final int totalCurrentRatings ()
+	{
+		return stream ().mapToInt (u -> u.getCurrentRating ()).sum ();
+	}
+	
+	/**
 	 * @return Sum of all UARs in this unit stack added together
 	 */
 	@Override

@@ -137,9 +137,11 @@ public interface UnitAI
 	/**
 	 * Uses an ordered list of AI movement codes to try to decide what to do with a particular unit stack
 	 * 
+	 * @param units The units to move
 	 * @param movementCodes List of movement codes to try
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
@@ -147,9 +149,9 @@ public interface UnitAI
 	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
-	public AIMovementDecision decideUnitMovement (final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
-		final List<AIDefenceLocation> underdefendedLocations, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
-		throws MomException, RecordNotFoundException;
+	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
+		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain,
+		final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException;
 	
 	/**
 	 * AI decides where to move a unit to on the overland map and actually does the move.
@@ -157,6 +159,7 @@ public interface UnitAI
 	 * @param units The units to move
 	 * @param category What category of units these are
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether we found something to do or not
@@ -167,6 +170,6 @@ public interface UnitAI
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
-		final PlayerServerDetails player, final MomSessionVariables mom)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

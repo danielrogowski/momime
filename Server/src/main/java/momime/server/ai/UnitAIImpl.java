@@ -724,9 +724,11 @@ public final class UnitAIImpl implements UnitAI
 	/**
 	 * Uses an ordered list of AI movement codes to try to decide what to do with a particular unit stack
 	 * 
+	 * @param units The units to move
 	 * @param movementCodes List of movement codes to try
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
@@ -735,9 +737,9 @@ public final class UnitAIImpl implements UnitAI
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
 	@Override
-	public AIMovementDecision decideUnitMovement (final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
-		final List<AIDefenceLocation> underdefendedLocations, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
-		throws MomException, RecordNotFoundException
+	public final AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
+		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain,
+		final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering decideUnitMovement");
 		
@@ -753,11 +755,11 @@ public final class UnitAIImpl implements UnitAI
 					break;
 					
 				case ATTACK_STATIONARY:
-					decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, doubleMovementDistances, enemyUnits, terrain, sys, db);
 					break;
 					
 				case ATTACK_WANDERING:
-					decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_AttackWandering (units, doubleMovementDistances, enemyUnits, terrain, sys, db);
 					break;
 					
 				case SCOUT_LAND:
@@ -827,6 +829,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param units The units to move
 	 * @param category What category of units these are
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether we found something to do or not
@@ -838,7 +841,7 @@ public final class UnitAIImpl implements UnitAI
 	 */
 	@Override
 	public final boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
-		final PlayerServerDetails player, final MomSessionVariables mom)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering decideAndExecuteUnitMovement: AI Player ID " + player.getPlayerDescription ().getPlayerID () + ", first Unit URN " + units.get (0).getUnit ().getUnitURN ()); 
@@ -875,8 +878,8 @@ public final class UnitAIImpl implements UnitAI
 		
 		// Use list of movement codes from the unit stack's category
 		final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
-		final AIMovementDecision destination = decideUnitMovement (movementCodes, doubleMovementDistances,
-			underdefendedLocations, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+		final AIMovementDecision destination = decideUnitMovement (units, movementCodes, doubleMovementDistances,
+			underdefendedLocations, enemyUnits, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 		
 		// Move, if we found somewhere to go
 		boolean moved = (destination != null) && (destination.getDestination () != null);

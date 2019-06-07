@@ -15,6 +15,8 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.PersistentPlayerPublicKnowledge;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.multiplayer.sessionbase.SessionDescription;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 
@@ -48,8 +50,6 @@ import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.mapgenerator.OverlandMapGeneratorImpl;
 import momime.server.process.PlayerMessageProcessing;
-import momime.server.ui.MomServerUI;
-import momime.server.ui.MomServerUIHolder;
 import momime.server.utils.HeroItemServerUtils;
 
 /**
@@ -60,14 +60,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (MomSessionThread.class);
 
-	/** Prefix for all session loggers */
-	public static final String MOM_SESSION_LOGGER_PREFIX = "MoMIMESession.";
-	
 	/** Lookup lists built over the XML database */
 	private ServerDatabaseEx db;
-
-	/** Logger for logging key messages relating to this session */
-	private Log sessionLogger;
 
 	/** Overland map generator for this session */
 	private OverlandMapGenerator overlandMapGenerator;	
@@ -99,31 +93,25 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	{
 		log.trace ("Entering initializeNewGame: Session ID " + getSessionDescription ().getSessionID ());
 
-		// Start logger for this sesssion.  These are much the same as the class loggers, except named MoMIMESession.1, MoMIMESession.2 and so on.
-		if (getUI () != null)
-			getUI ().createWindowForNewSession (getSessionDescription ());
-		
-		setSessionLogger (LogFactory.getLog (MOM_SESSION_LOGGER_PREFIX + getSessionDescription ().getSessionID ()));
-
 		// Load server XML
-		getSessionLogger ().info ("Loading server XML...");
+		log.info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
 			ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
 		final ServerDatabaseExImpl sdb = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
 
 		// Create hash maps to look up all the values from the DB
-		getSessionLogger ().info ("Building maps and running checks over XML data...");
+		log.info ("Building maps and running checks over XML data...");
 		sdb.buildMaps ();
 		sdb.consistencyChecks ();
 		setServerDB (sdb); 
 		
 		// Create client database
-		getSessionLogger ().info ("Generating client XML...");
+		log.info ("Generating client XML...");
 		getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
 			(getServerDB (), getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ()));
 		
 		// Generate the overland map
-		getSessionLogger ().info ("Generating overland map...");
+		log.info ("Generating overland map...");
 		final OverlandMapGeneratorImpl mapGen = (OverlandMapGeneratorImpl) getOverlandMapGenerator ();
 		mapGen.setSessionDescription (getSessionDescription ());
 		mapGen.setServerDB (getServerDB ());
@@ -135,7 +123,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		for (final HeroItem item : getServerDB ().getHeroItem ())
 			getGeneralServerKnowledge ().getAvailableHeroItem ().add (getHeroItemServerUtils ().createNumberedHeroItem (item, getGeneralServerKnowledge ()));
 
-		getSessionLogger ().info ("Session startup completed");
+		log.info ("Session startup completed");
 		log.trace ("Exiting initializeNewGame");
 	}
 	
@@ -151,26 +139,20 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	{
 		log.trace ("Entering preInitializeLoadedGame");
 
-		// Start logger for this sesssion.  These are much the same as the class loggers, except named MoMIMESession.1, MoMIMESession.2 and so on.
-		if (getUI () != null)
-			getUI ().createWindowForNewSession (getSessionDescription ());
-		
-		setSessionLogger (LogFactory.getLog (MOM_SESSION_LOGGER_PREFIX + getSessionDescription ().getSessionID ()));
-
 		// Load server XML
-		getSessionLogger ().info ("Loading server XML...");
+		log.info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
 			ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
 		final ServerDatabaseExImpl sdb = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
 		
 		// Create hash maps to look up all the values from the DB
-		getSessionLogger ().info ("Building maps and running checks over XML data...");
+		log.info ("Building maps and running checks over XML data...");
 		sdb.buildMaps ();
 		sdb.consistencyChecks ();
 		setServerDB (sdb); 
 
 		// Create client database
-		getSessionLogger ().info ("Generating client XML...");
+		log.info ("Generating client XML...");
 		getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
 			(getServerDB (), getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ()));
 		
@@ -215,31 +197,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 			getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);
 		
 		log.trace ("Exiting playerAdded");
-	}
-	
-	/**
-	 * @return UI being used by server
-	 */
-	public final MomServerUI getUI ()
-	{
-		return MomServerUIHolder.getUI ();
-	}		
-
-	/**
-	 * @return Logger for logging key messages relating to this session
-	 */
-	@Override
-	public final Log getSessionLogger ()
-	{
-		return sessionLogger;
-	}
-
-	/**
-	 * @param logger Logger for logging key messages relating to this session
-	 */
-	public final void setSessionLogger (final Log logger)
-	{
-		sessionLogger = logger;
 	}
 	
 	/**
@@ -305,19 +262,25 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	}
 	
 	/**
+	 * @param sd Session description, in case any info here is needed to populate the player knowledge structure
+	 * @param pd Player description, in case any info here is needed to populate the player knowledge structure
 	 * @return Descendant of PersistentPlayerPublicKnowledge, or can be left as null if not required
 	 */
+	@SuppressWarnings ("unused")
 	@Override
-	protected final PersistentPlayerPublicKnowledge createPersistentPlayerPublicKnowledge ()
+	protected final PersistentPlayerPublicKnowledge createPersistentPlayerPublicKnowledge (final SessionDescription sd, final PlayerDescription pd)
 	{
 		return new MomPersistentPlayerPublicKnowledge ();
 	}
 
 	/**
+	 * @param sd Session description, in case any info here is needed to populate the player knowledge structure
+	 * @param pd Player description, in case any info here is needed to populate the player knowledge structure
 	 * @return Descendant of PersistentPlayerPrivateKnowledge, or can be left as null if not required
 	 */
+	@SuppressWarnings ("unused")
 	@Override
-	protected final PersistentPlayerPrivateKnowledge createPersistentPlayerPrivateKnowledge ()
+	protected final PersistentPlayerPrivateKnowledge createPersistentPlayerPrivateKnowledge (final SessionDescription sd, final PlayerDescription pd)
 	{
 		log.trace ("Entering createPersistentPlayerPrivateKnowledge");
 		
@@ -408,41 +371,27 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	}
 
 	/**
+	 * @param sd Session description, in case any info here is needed to populate the player knowledge structure
+	 * @param pd Player description, in case any info here is needed to populate the player knowledge structure
 	 * @return Descendant of TransientPlayerPublicKnowledge, or can be left as null if not required
 	 */
+	@SuppressWarnings ("unused")
 	@Override
-	public final TransientPlayerPublicKnowledge createTransientPlayerPublicKnowledge ()
+	public final TransientPlayerPublicKnowledge createTransientPlayerPublicKnowledge (final SessionDescription sd, final PlayerDescription pd)
 	{
 		return new MomTransientPlayerPublicKnowledge ();
 	}
 
 	/**
+	 * @param sd Session description, in case any info here is needed to populate the player knowledge structure
+	 * @param pd Player description, in case any info here is needed to populate the player knowledge structure
 	 * @return Descendant of TransientPlayerPrivateKnowledge, or can be left as null if not required
 	 */
+	@SuppressWarnings ("unused")
 	@Override
-	public final TransientPlayerPrivateKnowledge createTransientPlayerPrivateKnowledge ()
+	public final TransientPlayerPrivateKnowledge createTransientPlayerPrivateKnowledge (final SessionDescription sd, final PlayerDescription pd)
 	{
 		return new MomTransientPlayerPrivateKnowledge ();
-	}
-
-	/**
-	 * Let the UI know when sessions are added
-	 */
-	@Override
-	public final void sessionAdded ()
-	{
-		if (getUI () != null)
-			getUI ().sessionAdded (this);
-	}
-
-	/**
-	 * Let the UI know when sessions are removed
-	 */
-	@Override
-	public final void sessionRemoved ()
-	{
-		if (getUI () != null)
-			getUI ().sessionRemoved (this);
 	}
 
 	/**

@@ -13,7 +13,7 @@ public final class GraphicsEditor
 	@SuppressWarnings ("resource")
 	public final static void main (final String [] args)
 	{
-		System.setProperty ("log4j.configuration", "file:MoMIMEEditorsLogging.properties");
+		System.setProperty ("log4j.configurationFile", "MoMIMEEditorsLogging.xml");
 		
 		// Start up the editor via Spring
 		new ClassPathXmlApplicationContext ("/momime.editors.spring/graphics-editor-beans.xml");

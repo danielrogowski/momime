@@ -9,8 +9,8 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<files>
 		<file>
-			<source>MoMIMEEditorsLogging-sample.properties</source>
-			<destName>MoMIMEEditorsLogging.properties</destName>
+			<source>MoMIMEEditorsLogging-sample.xml</source>
+			<destName>MoMIMEEditorsLogging.xml</destName>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>

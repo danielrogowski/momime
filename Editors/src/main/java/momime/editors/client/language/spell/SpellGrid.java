@@ -8,7 +8,7 @@ import java.nio.ByteOrder;
 
 import javax.swing.JFileChooser;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.ndg.archive.LbxArchiveReader;
 import com.ndg.swing.filefilters.ExtensionFileFilter;

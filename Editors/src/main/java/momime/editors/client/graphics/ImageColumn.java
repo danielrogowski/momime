@@ -9,7 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.table.TableRowSorter;
 import javax.xml.namespace.QName;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.ndg.xmleditor.doc.ListOfXmlDocuments;
 import com.ndg.xmleditor.grid.XmlTableModel;

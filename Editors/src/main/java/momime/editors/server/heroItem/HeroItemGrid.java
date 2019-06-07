@@ -13,7 +13,7 @@ import javax.swing.JFileChooser;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.ndg.archive.LbxArchiveReader;
 import com.ndg.swing.filefilters.SpecificFilenameFilter;

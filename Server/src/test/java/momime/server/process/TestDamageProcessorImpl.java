@@ -2,9 +2,9 @@ package momime.server.process;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Matchers.anyListOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,7 +31,6 @@ import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
-import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -138,7 +137,8 @@ public final class TestDamageProcessorImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
@@ -243,7 +243,7 @@ public final class TestDamageProcessorImpl
 		verify (midTurnMulti, times (1)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.DEFENDER, trueMap, players, db, fogOfWarSettings);
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
 		
-		verify (combatStartAndEnd, times (0)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), any (PlayerServerDetails.class), any (CaptureCityDecisionID.class), eq (mom));
+		verify (combatStartAndEnd, times (0)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), any (PlayerServerDetails.class), eq (null), eq (mom));
 	}
 
 	/**
@@ -318,7 +318,8 @@ public final class TestDamageProcessorImpl
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (attacker), anyListOf (ExpandedUnitDetails.class), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
@@ -420,7 +421,7 @@ public final class TestDamageProcessorImpl
 		verify (midTurnMulti, times (0)).grantExperienceToUnitsInCombat (combatLocation, UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);
 		
 		// Defending player won
-		verify (combatStartAndEnd, times (1)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), any (CaptureCityDecisionID.class), eq (mom));
+		verify (combatStartAndEnd, times (1)).combatEnded (eq (combatLocation), eq (attackingPlayer), eq (defendingPlayer), eq (defendingPlayer), eq (null), eq (mom));
 	}
 
 	/**

@@ -23,9 +23,9 @@ public class RaceImplicitCannotBuild
 	
 	/**
 	 * Creates and fixes details of one building that a particular race cannot build and the reason(s) why not
-	 * @param aBuildingId
-	 * @param aBuildingName
-	 * @param aReasons
+	 * @param aBuildingId The ID of the building that we cannot build
+	 * @param aBuildingName The name of the building that we cannot build
+	 * @param aReasons List of building names that are the reasons why we implicitly cannot build this building; may be null
 	 */
 	public RaceImplicitCannotBuild (String aBuildingId, String aBuildingName, String aReasons)
 	{

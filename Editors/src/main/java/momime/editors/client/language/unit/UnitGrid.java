@@ -12,7 +12,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.filechooser.FileFilter;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.ndg.swing.GridBagConstraintsHorizontalFill;
 import com.ndg.swing.GridBagConstraintsNoFill;

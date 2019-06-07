@@ -9,7 +9,7 @@ import javax.swing.JTable;
 
 import momime.editors.server.ServerEditorDatabaseConstants;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.ndg.swing.UneditableArrayTableModel;
 import com.ndg.xml.JdomUtils;

@@ -9,8 +9,8 @@ import javax.swing.JSeparator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jdom.Attribute;
-import org.jdom.Element;
+import org.jdom2.Attribute;
+import org.jdom2.Element;
 
 import com.ndg.swing.actions.MessageDialogAction;
 import com.ndg.xml.JdomUtils;
@@ -105,7 +105,7 @@ public final class LanguageEditorMain extends XmlEditorMain
 			
 			if ((entityDefinition != null) && (serverNode.getAttributes ().size () == 1))
 			{
-				final Attribute serverAttribute = (Attribute) serverNode.getAttributes ().get (0);
+				final Attribute serverAttribute = serverNode.getAttributes ().get (0);
 
 				// Look for a matching entry in the language XML file
 				Element languageNode = JdomUtils.findDomChildNodeWithTextAttribute (languageContainer, entityName, serverAttribute.getName (), serverAttribute.getValue ());

@@ -7,7 +7,7 @@ import javax.xml.namespace.QName;
 
 import momime.editors.server.ServerEditorDatabaseConstants;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.constants.XsdConstants;

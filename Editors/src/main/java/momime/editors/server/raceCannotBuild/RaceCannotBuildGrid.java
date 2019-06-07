@@ -11,7 +11,7 @@ import javax.swing.JTable;
 
 import momime.editors.server.ServerEditorDatabaseConstants;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.ndg.xml.JdomUtils;
 import com.ndg.xmleditor.editor.XmlEditorException;

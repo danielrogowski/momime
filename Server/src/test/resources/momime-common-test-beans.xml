@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd" >
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd" >
 
 	<!-- This is needed by testBuildNewGameDatabase - Spring doesn't like if XML file A imports B and C, and both B and C import D -
 			D ends up being included twice.  The MoM server and client beans files import the MoM common beans file, and the multiplayer

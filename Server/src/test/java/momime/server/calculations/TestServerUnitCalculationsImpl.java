@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySetOf;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
@@ -310,9 +311,9 @@ public final class TestServerUnitCalculationsImpl
 		final List<ExpandedUnitDetails> units = new ArrayList<ExpandedUnitDetails> ();
 		
 		final ExpandedUnitDetails spearmenUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySetOf (String.class), eq ("TT01"), eq (db))).thenReturn (4);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySetOf (String.class), eq ("TT02"), eq (db))).thenReturn (6);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySetOf (String.class), eq ("TT03"), eq (db))).thenReturn (null);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT01"), eq (db))).thenReturn (4);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT02"), eq (db))).thenReturn (6);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (spearmenUnit), anySet (), eq ("TT03"), eq (db))).thenReturn (null);
 		
 		units.add (spearmenUnit);
 
@@ -324,7 +325,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Stacking a faster unit with it makes no difference - it always chooses the slowest movement rate
 		final ExpandedUnitDetails flyingUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (flyingUnit), anySetOf (String.class), any (String.class), eq (db))).thenReturn (2);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (flyingUnit), anySet (), any (String.class), eq (db))).thenReturn (2);
 		
 		units.add (flyingUnit);
 		
@@ -336,7 +337,7 @@ public final class TestServerUnitCalculationsImpl
 		
 		// Stack a slower unit
 		final ExpandedUnitDetails pathfindingUnit = mock (ExpandedUnitDetails.class);
-		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (pathfindingUnit), anySetOf (String.class), any (String.class), eq (db))).thenReturn (5);
+		when (unitCalc.calculateDoubleMovementToEnterTileType (eq (pathfindingUnit), anySet (), any (String.class), eq (db))).thenReturn (5);
 		
 		units.add (pathfindingUnit);
 		
@@ -466,7 +467,7 @@ public final class TestServerUnitCalculationsImpl
 					if (distanceCell != null)
 					{
 						// Impassable
-						if (distanceCell.getCellType () == Cell.CELL_TYPE_BLANK)
+						if (distanceCell.getCellType () == CellType.BLANK)
 							assertEquals (x + "," + y, -2, doubleMovementDistances [1] [y] [x]);
 						else
 						{
@@ -726,7 +727,7 @@ public final class TestServerUnitCalculationsImpl
 						if (distanceCell != null)
 						{
 							// Impassable
-							if (distanceCell.getCellType () == Cell.CELL_TYPE_BLANK)
+							if (distanceCell.getCellType () == CellType.BLANK)
 								assertEquals (x + "," + y, -2, doubleMovementDistances [plane.getPlaneNumber ()] [y] [x]);
 							else
 							{

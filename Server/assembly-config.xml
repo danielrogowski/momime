@@ -14,8 +14,8 @@
 			<outputDirectory>/</outputDirectory>
 		</file>
 		<file>
-			<source>MoMIMEServerLogging-sample.properties</source>
-			<destName>MoMIMEServerLogging.properties</destName>
+			<source>MoMIMEServerLogging-sample.xml</source>
+			<destName>MoMIMEServerLogging.xml</destName>
 			<outputDirectory>/</outputDirectory>
 		</file>
 	</files>

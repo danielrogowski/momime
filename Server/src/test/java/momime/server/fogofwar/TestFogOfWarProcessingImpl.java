@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Test;
@@ -349,7 +350,7 @@ public final class TestFogOfWarProcessingImpl
 						final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
 	
 						// The "A" cells mark locations we can only see after we cast Awareness
-						if ((cell != null) && (cell.getCellType () != Cell.CELL_TYPE_BLANK) && (!cell.getStringCellValue ().equals ("A")))
+						if ((cell != null) && (cell.getCellType () != CellType.BLANK) && (!cell.getStringCellValue ().equals ("A")))
 							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
 						else
 							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
@@ -366,7 +367,7 @@ public final class TestFogOfWarProcessingImpl
 					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					{
 						final Cell cell = workbook.getSheetAt (plane.getPlaneNumber ()).getRow (y + 1).getCell (x + 1);
-						if ((cell != null) && (cell.getCellType () != Cell.CELL_TYPE_BLANK))
+						if ((cell != null) && (cell.getCellType () != CellType.BLANK))
 							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));
 						else
 							assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.NEVER_SEEN, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));

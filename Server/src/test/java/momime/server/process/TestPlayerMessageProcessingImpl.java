@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -367,7 +366,6 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getSessionLogger ()).thenReturn (LogFactory.getLog (TestPlayerMessageProcessingImpl.class));
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -461,7 +459,6 @@ public final class TestPlayerMessageProcessingImpl
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
-		when (mom.getSessionLogger ()).thenReturn (LogFactory.getLog (TestPlayerMessageProcessingImpl.class));
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getServerDB ()).thenReturn (db);

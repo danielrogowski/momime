@@ -113,7 +113,7 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	{
 		log.trace ("Entering endUpdates");
 		
-		getBooleanMapAreaOperations3D ().enlarge (areaToSmooth, null);
+		getBooleanMapAreaOperations3D ().enlarge (areaToSmooth, null, false);
 		getOverlandMapBitmapGenerator ().smoothMapTerrain (areaToSmooth);
 		
 		log.trace ("Exiting endUpdates");

@@ -38,7 +38,7 @@ public final class MomClientKickOff
 					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
 			
 			// Initialize logging first, in case debug logging for spring itself is enabled
-			System.setProperty ("log4j.configuration", "file:" + configDir + "MoMIMEClientLogging.properties");
+			System.setProperty ("log4j.configurationFile", "" + configDir + "MoMIMEClientLogging.xml");
 
 			// Everything is now set to start with spring
 			new ClassPathXmlApplicationContext ("/momime.client.spring/momime-client-beans.xml");			

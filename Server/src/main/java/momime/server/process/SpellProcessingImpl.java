@@ -490,7 +490,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 				areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
 				
 				getCombatMapOperations ().processCellsWithinRadius (areaBridge, targetLocation.getX (), targetLocation.getY (),
-					spell.getSpellScoutingRange (), (tile) -> tile.setMud (true));
+					spell.getSpellScoutingRange (), (tile) ->
+				{
+					tile.setMud (true);
+					return true;
+				});
 			}
 			
 			// Show animation for it

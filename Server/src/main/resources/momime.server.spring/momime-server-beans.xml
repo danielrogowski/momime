@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 	
 	<import resource="../com.ndg.multiplayer.server/session-server-beans.xml" />
 	<import resource="../momime.common.spring/momime-common-beans.xml" />
@@ -10,10 +10,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Version of the server - process this first so it displays on the UI as soon as possible -->
 	
 	<context:property-placeholder location="classpath:MoMIMEServerVersion.properties" />
-	
-	<bean id="versionSetter" class="momime.server.ui.MomServerUIVersionSetter">
-		<property name="version" value="${momime.server.version}" />
-	</bean>
 	
 	<!-- General XSD objects (may move these into common project at some stage) -->
 	
@@ -278,12 +274,49 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 	</bean>
 	
-	<!-- Singleton beans for server -->
+	<!-- User registry -->
+
+		<bean id="userRegistrySchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg type="java.net.URL" value="/com.ndg.multiplayer.userregistry/MultiplayerSessionUserRegistry.xsd" />
+	</bean>
+	
+	<bean id="userRegistryJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>com.ndg.multiplayer.userregistry.UserRegistry</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+
+	<bean id="userRegistryUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="userRegistryJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="userRegistrySchema" />
+	</bean>
+	
+	<bean id="userRegistryMarshaller" class="javax.xml.bind.Marshaller" factory-bean="userRegistryJaxbContext" factory-method="createMarshaller">
+		<property name="schema" ref="userRegistrySchema" />
+	</bean>
+	
+	<bean id="configureUserRegistryMarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="userRegistryMarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>jaxb.formatted.output</value>
+				<value type="java.lang.Boolean">true</value>
+			</list>
+		</property>
+	</bean>
 	
 	<bean id="userRegistry" class="com.ndg.multiplayer.server.users.MultiplayerSessionUserRegistryImpl" init-method="loadUserRegistry">
 		<property name="xmlFilename" value="#{serverConfig.userRegistryFilename}" />
-		<property name="schemaFactory" ref="schemaFactory" />
+		<property name="userRegistryUnmarshaller" ref="userRegistryUnmarshaller" />
+		<property name="userRegistryMarshaller" ref="userRegistryMarshaller" />
+		<property name="userRegistryObjectFactory" ref="defaultUserRegistryObjectFactory" />
 	</bean>
+	
+	<bean id="userRegistryPlayer" class="com.ndg.multiplayer.userregistry.Player" scope="prototype" />
+	
+	<!-- Singleton beans for server -->
 
 	<bean id="serverDatabaseConverters" class="momime.server.database.ServerDatabaseConvertersImpl" />
 	

@@ -80,7 +80,7 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 			throw new MomException ("calculateDoubleFarmingRate: Race " + cityData.getCityRaceID () + " has no farmers defined");
 
 		// Find how many rations each farmer produces
-		ProductionTypeAndDoubledValue rations = null;;
+		ProductionTypeAndDoubledValue rations = null;
 		final Iterator<ProductionTypeAndDoubledValue> prodIter = farmer.getRacePopulationTaskProduction ().iterator ();
 		while ((rations == null) && (prodIter.hasNext ()))
 		{

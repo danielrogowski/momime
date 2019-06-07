@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +32,6 @@ import momime.client.database.ClientDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.server.ServerTestData;
 import momime.server.database.v0_9_8.ServerDatabase;
@@ -59,7 +58,7 @@ public final class TestServerDatabaseConvertersImpl
 			{
 				// Make make all the consistency checks pass
 				final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
-				when (direct.getDirectSkillValue (anyListOf (UnitSkillAndValue.class), anyString ())).thenReturn (2);
+				when (direct.getDirectSkillValue (anyList (), anyString ())).thenReturn (2);
 				
 				final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
 				db.setUnitSkillDirectAccess (direct);

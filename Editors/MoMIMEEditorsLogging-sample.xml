@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+	<Appenders>
+		<Console name="LogToConsole" target="SYSTEM_OUT">
+			<PatternLayout>
+				<Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %p %t] %c:%L - %m%n</Pattern>
+			</PatternLayout>
+		</Console>
+<!--	<File name="LogToFile" fileName="MoMIMEEditors.log">
+			<PatternLayout>
+				<Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS} %p %t] %c:%L - %m%n</Pattern>
+			</PatternLayout>
+		</File> -->
+	</Appenders>
+	<Loggers>
+		<Logger name="com.ndg" level="debug" additivity="false">
+			<AppenderRef ref="LogToConsole" />
+			<!-- <AppenderRef ref="LogToFile" /> -->
+		</Logger>
+		<Logger name="momime" level="debug" additivity="false">
+			<AppenderRef ref="LogToConsole" />
+			<!-- <AppenderRef ref="LogToFile" /> -->
+		</Logger>
+		<Root level="info">
+			<AppenderRef ref="LogToConsole" />
+			<!-- <AppenderRef ref="LogToFile" /> -->
+		</Root>
+	</Loggers>
+</Configuration>

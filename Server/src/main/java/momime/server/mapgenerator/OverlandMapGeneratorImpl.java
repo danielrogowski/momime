@@ -663,7 +663,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 							possibleNextCells.set (copyX, copyY, thisBlob.get (copyX, copyY));
 					
 					// Create a ring around the current blob, i.e. this will tell us all the possible cells we could expand the blob into
-					getBooleanMapAreaOperations2D ().enlarge (possibleNextCells, BLOB_EXPANSION_DIRECTIONS);
+					getBooleanMapAreaOperations2D ().enlarge (possibleNextCells, BLOB_EXPANSION_DIRECTIONS, false);
 
 					// Deselect any that are not grass
 					for (int grassX = 0; grassX < sd.getOverlandMapSize ().getWidth (); grassX++)

@@ -6,18 +6,16 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.server.ServerToClientSessionConnection;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
-
-import org.apache.commons.logging.Log;
-
-import com.ndg.multiplayer.server.ServerToClientSessionConnection;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Container for all the values held against a session
@@ -48,11 +46,6 @@ public interface MomSessionVariables
 	 * @return All information about all players in this session - some may be AI players or disconnected
 	 */
 	public List<PlayerServerDetails> getPlayers ();
-	
-	/**
-	 * @return Logger for logging key messages relating to this session
-	 */
-	public Log getSessionLogger ();
 	
 	/**
 	 * @return Overland map generator for this session

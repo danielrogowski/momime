@@ -5,9 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anySetOf;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -1150,7 +1150,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Unit can enter this type of tile
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT01"),
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
 			any (ServerDatabaseEx.class))).thenReturn (1);
 		
 		// Put 8 units in the city so we just fit
@@ -1228,11 +1228,11 @@ public final class TestUnitServerUtilsImpl
 		
 		// Unit can enter tiles TT01 and TT02, but TT03 is impassable
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT01"),
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
 			any (ServerDatabaseEx.class))).thenReturn (1);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT02"),
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT02"),
 			any (ServerDatabaseEx.class))).thenReturn (1);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT03"),
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT03"),
 			any (ServerDatabaseEx.class))).thenReturn (null);
 		
 		// Put 9 units in the city so we can't fit
@@ -1312,7 +1312,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Easiest thing to do is make the tile type impassable, then we can't fit anywhere
 		final UnitCalculations calc = mock (UnitCalculations.class);
-		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySetOf (String.class), eq ("TT01"),
+		when (calc.calculateDoubleMovementToEnterTileType (any (ExpandedUnitDetails.class), anySet (), eq ("TT01"),
 			any (ServerDatabaseEx.class))).thenReturn (null);
 
 		// Set up object to test

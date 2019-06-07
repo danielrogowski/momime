@@ -407,7 +407,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		{
 			// Add AI wizards
 			log.debug ("checkIfCanStartGame: Yes, " + mom.getSessionDescription ().getAiPlayerCount () + " AI wizards to add");
-			mom.getSessionLogger ().info ("All Human players joined - adding AI player(s) and starting game...");
+			log.info ("All Human players joined - adding AI player(s) and starting game...");
 
 			if (mom.getSessionDescription ().getAiPlayerCount () > 0)
 			{
@@ -457,7 +457,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Broadcast player data
 			log.debug ("checkIfCanStartGame: Broadcasting player picks and determining which spells not chosen for free will be researchable");
-			mom.getSessionLogger ().info ("Broadcasting player picks and randomizing initial spells...");
+			log.info ("Broadcasting player picks and randomizing initial spells...");
 
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 			{
@@ -519,33 +519,33 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 
 			// Add monsters in nodes/lairs/towers - can only do this after we've added the players
-			mom.getSessionLogger ().info ("Filling nodes, lairs & towers with monsters...");
+			log.info ("Filling nodes, lairs & towers with monsters...");
 			mom.getOverlandMapGenerator ().fillNodesLairsAndTowersWithMonsters (monstersPlayer);
 
 			// Sort out heroes
-			mom.getSessionLogger ().info ("Loading list of heroes for each player...");
+			log.info ("Loading list of heroes for each player...");
 			createHeroes (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 
 			if (mom.getSessionDescription ().getUnitSetting ().isRollHeroSkillsAtStartOfGame ())
 			{
-				mom.getSessionLogger ().info ("Randomzing hero skills for each player...");
+				log.info ("Randomzing hero skills for each player...");
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 					if (mom.getServerDB ().findUnit (thisUnit.getUnitID (), "checkIfCanStartGame").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 						getUnitServerUtils ().generateHeroNameAndRandomSkills (thisUnit, mom.getServerDB ());
 			}
 
 			// Create cities
-			mom.getSessionLogger ().info ("Creating starting cities...");
+			log.info ("Creating starting cities...");
 			getCityProcessing ().createStartingCities (mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// Now we've created starting cities, we can figure out the initial fog of war area that each player can see
-			mom.getSessionLogger ().info ("Generating and sending initial fog of war...");
+			log.info ("Generating and sending initial fog of war...");
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), thisPlayer,
 					mom.getPlayers (), "checkIfCanStartGame", mom.getSessionDescription (), mom.getServerDB ());
 
 			// Give each wizard initial skill and gold, and setting optional farmers in all cities
-			mom.getSessionLogger ().info ("Setting wizards' initial skill and gold, and optional farmers in all cities");
+			log.info ("Setting wizards' initial skill and gold, and optional farmers in all cities");
 			for (final PlayerServerDetails thisPlayer : mom.getPlayers ())
 			{
 				final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) thisPlayer.getPersistentPlayerPublicKnowledge ();
@@ -576,15 +576,15 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 			// Calculate and send initial production values - This is especially important in one-at-a-time games with more
 			// than one human player, since e.g. player 2 won't otherwise be sent their power base figure until player 1 hits 'next turn'
-			mom.getSessionLogger ().info ("Calculating initial production values...");
+			log.info ("Calculating initial production values...");
 			getServerResourceCalculations ().recalculateGlobalProductionValues (0, false, mom);
 
 			// Kick off the game - this shows the map screen for the first time
-			mom.getSessionLogger ().info ("Starting game...");
+			log.info ("Starting game...");
 			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), new StartGameMessage ());
 
 			// Kick off the first turn
-			mom.getSessionLogger ().info ("Kicking off first turn...");
+			log.info ("Kicking off first turn...");
 			switch (mom.getSessionDescription ().getTurnSystem ())
 			{
 				case ONE_PLAYER_AT_A_TIME:
@@ -622,7 +622,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		if (getPlayerPickServerUtils ().allPlayersAreConnected (mom.getPlayers ()))
 		{
 			// Use the same Start Game message as when starting a new game; this tells the client to close out the "Wait for players" list and show the overland map
-			mom.getSessionLogger ().info ("Starting game...");
+			log.info ("Starting game...");
 			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), new StartGameMessage ());
 			
 			// Start up the first turn
@@ -661,9 +661,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		log.trace ("Entering startPhase: Player ID " + onlyOnePlayerID);
 
 		if (onlyOnePlayerID == 0)
-			mom.getSessionLogger ().info ("Start phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
+			log.info ("Start phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
-			mom.getSessionLogger ().info ("Start phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
+			log.info ("Start phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
 				(mom.getPlayers (), onlyOnePlayerID, "startPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Heal hurt units 1pt and gain 1exp
@@ -795,12 +795,12 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		if (currentPlayer.getPlayerDescription ().isHuman ())
 		{
-			mom.getSessionLogger ().info ("Human turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
+			log.info ("Human turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
 			currentPlayer.getConnection ().sendMessageToClient (new EndOfContinuedMovementMessage ());
 		}
 		else
 		{
-			mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
+			log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
 			getMomAI ().aiPlayerTurn (currentPlayer, mom);
 			
 			// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
@@ -847,7 +847,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		for (final PlayerServerDetails aiPlayer : mom.getPlayers ())
 			if (!aiPlayer.getPlayerDescription ().isHuman ())
 			{
-				mom.getSessionLogger ().info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + aiPlayer.getPlayerDescription ().getPlayerName () + "...");
+				log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + aiPlayer.getPlayerDescription ().getPlayerName () + "...");
 				getMomAI ().aiPlayerTurn (aiPlayer, mom);
 			
 				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
@@ -942,9 +942,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		log.trace ("Entering endPhase: Player ID " + onlyOnePlayerID);
 
 		if (onlyOnePlayerID == 0)
-			mom.getSessionLogger ().info ("End phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
+			log.info ("End phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
-			mom.getSessionLogger ().info ("End phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
+			log.info ("End phase for turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + getMultiplayerSessionServerUtils ().findPlayerWithID
 				(mom.getPlayers (), onlyOnePlayerID, "endPhase").getPlayerDescription ().getPlayerName () + "...");
 
 		// Put mana into casting spells
@@ -957,7 +957,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
 		// Kick off the next turn
-		mom.getSessionLogger ().info ("Kicking off next turn...");
+		log.info ("Kicking off next turn...");
 		switch (mom.getSessionDescription ().getTurnSystem ())
 		{
 			case ONE_PLAYER_AT_A_TIME:
@@ -1117,9 +1117,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		log.trace ("Entering continueMovement: Player ID " + onlyOnePlayerID);
 
 		if (onlyOnePlayerID == 0)
-			mom.getSessionLogger ().info ("Continuing pending movements for everyone...");
+			log.info ("Continuing pending movements for everyone...");
 		else
-			mom.getSessionLogger ().info ("Continuing pending movements for " + getMultiplayerSessionServerUtils ().findPlayerWithID
+			log.info ("Continuing pending movements for " + getMultiplayerSessionServerUtils ().findPlayerWithID
 				(mom.getPlayers (), onlyOnePlayerID, "continueMovement").getPlayerDescription ().getPlayerName () + "...");
 		
 		for (final PlayerServerDetails player : mom.getPlayers ())

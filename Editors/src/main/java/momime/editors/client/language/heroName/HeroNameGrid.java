@@ -11,7 +11,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 import com.ndg.archive.LbxArchiveReader;
 import com.ndg.swing.GridBagConstraintsHorizontalFill;

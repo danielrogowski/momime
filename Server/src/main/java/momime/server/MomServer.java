@@ -7,8 +7,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
-import momime.server.ui.MomServerUI;
-import momime.server.ui.MomServerUIHolder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,14 +108,6 @@ public final class MomServer extends MultiplayerSessionServer
 		newGameDatabaseMessage = msg;
 	}
 	
-	/**
-	 * @return UI to display server status
-	 */
-	public final MomServerUI getUI ()
-	{
-		return MomServerUIHolder.getUI ();
-	}
-
 	/** 
 	 * @return Factory interface for creating MomSessionThreads
 	 */

@@ -13,14 +13,14 @@
 		</File> -->
 	</Appenders>
 	<Loggers>
-		<Logger name="com.ndg" level="debug" additivity="false">
+		<!-- <Logger name="com.ndg" level="debug" additivity="false">
 			<AppenderRef ref="LogToConsole" />
-			<!-- <AppenderRef ref="LogToFile" /> -->
+			<AppenderRef ref="LogToFile" />
 		</Logger>
 		<Logger name="momime" level="debug" additivity="false">
 			<AppenderRef ref="LogToConsole" />
-			<!-- <AppenderRef ref="LogToFile" /> -->
-		</Logger>
+			<AppenderRef ref="LogToFile" />
+		</Logger> -->
 		<Root level="info">
 			<AppenderRef ref="LogToConsole" />
 			<!-- <AppenderRef ref="LogToFile" /> -->

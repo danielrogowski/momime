@@ -62,7 +62,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the SimultaneousTurnsProcessingImpl class
  */
-public final class TestSimultaneousTurnsProcessingImpl
+public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 {
 	/**
 	 * Tests the findAndProcessOneCellPendingMovement method when there are no pending movements at all 
@@ -867,8 +867,8 @@ public final class TestSimultaneousTurnsProcessingImpl
 		players.add (player2);	
 
 		// Session variables
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (map);
@@ -1024,14 +1024,14 @@ public final class TestSimultaneousTurnsProcessingImpl
 		when (db.findTileType ("TT01", "processSpecialOrders-t")).thenReturn (tt);
 		
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		

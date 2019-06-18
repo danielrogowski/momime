@@ -72,7 +72,7 @@ import momime.server.utils.OverlandMapServerUtils;
 /**
  * Tests the CombatStartAndEndImpl class
  */
-public final class TestCombatStartAndEndImpl
+public final class TestCombatStartAndEndImpl extends ServerTestData
 {
 	/**
 	 * Tests the startCombat method with a null list of attackers
@@ -82,8 +82,8 @@ public final class TestCombatStartAndEndImpl
 	public final void testStartCombat_NullAttackerList () throws Exception
 	{
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -114,8 +114,8 @@ public final class TestCombatStartAndEndImpl
 	public final void testStartCombat_EmptyAttackerList () throws Exception
 	{
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -149,8 +149,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -219,7 +219,7 @@ public final class TestCombatStartAndEndImpl
 		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);
 		
 		// Combat map generator
-		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
+		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
@@ -296,8 +296,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -372,7 +372,7 @@ public final class TestCombatStartAndEndImpl
 		final MapCoordinates3DEx attackingFrom = new MapCoordinates3DEx (21, 10, 1);
 		
 		// Combat map generator
-		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
+		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
@@ -448,8 +448,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -523,7 +523,7 @@ public final class TestCombatStartAndEndImpl
 		tc.setCityData (cityData);
 		
 		// Combat map generator
-		final CombatMapSize combatMapCoordinateSystem = ServerTestData.createCombatMapSize ();
+		final CombatMapSize combatMapCoordinateSystem = createCombatMapSize ();
 		sd.setCombatMapSize (combatMapCoordinateSystem);
 		
 		final CombatMapGenerator mapGen = mock (CombatMapGenerator.class);
@@ -594,8 +594,8 @@ public final class TestCombatStartAndEndImpl
 	public final void testCombatEnded_CaptureCityUndecided () throws Exception
 	{
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -659,8 +659,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -765,8 +765,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -906,8 +906,8 @@ public final class TestCombatStartAndEndImpl
 		when (db.getPlanes ()).thenReturn (planes);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1040,8 +1040,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final OverlandMapSize sys = createOverlandMapSize ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1239,8 +1239,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final OverlandMapSize sys = createOverlandMapSize ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1439,8 +1439,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1584,8 +1584,8 @@ public final class TestCombatStartAndEndImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);

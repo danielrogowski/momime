@@ -49,7 +49,7 @@ import com.ndg.random.RandomUtilsImpl;
 /**
  * Tests the CombatMapGeneratorImpl class
  */
-public final class TestCombatMapGeneratorImpl
+public final class TestCombatMapGeneratorImpl extends ServerTestData
 {
 	/**
 	 * Tests the setAllToGrass method
@@ -58,7 +58,7 @@ public final class TestCombatMapGeneratorImpl
 	public final void testSetAllToGrass ()
 	{
 		final CombatMapGeneratorImpl mapGen = new CombatMapGeneratorImpl ();
-		final MapAreaOfCombatTiles map = mapGen.setAllToGrass (ServerTestData.createCombatMapCoordinateSystem ());
+		final MapAreaOfCombatTiles map = mapGen.setAllToGrass (createCombatMapCoordinateSystem ());
 		
 		// Check results
 		int count = 0;
@@ -90,12 +90,12 @@ public final class TestCombatMapGeneratorImpl
 	@Test
 	public final void testSetTerrainFeaturesRandomly ()
 	{
-		final CoordinateSystem sys = ServerTestData.createCombatMapCoordinateSystem ();
+		final CoordinateSystem sys = createCombatMapCoordinateSystem ();
 		
 		final CombatMapGeneratorImpl mapGen = new CombatMapGeneratorImpl ();
 		mapGen.setRandomUtils (new RandomUtilsImpl ());
 		
-		final MapAreaOfCombatTiles map = ServerTestData.createCombatMap ();
+		final MapAreaOfCombatTiles map = createCombatMap ();
 		final CombatMapUtilsImpl utils = new CombatMapUtilsImpl ();
 
 		// Test none
@@ -141,12 +141,12 @@ public final class TestCombatMapGeneratorImpl
 	@Test
 	public final void testPlaceCombatMapElements () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
-		final MapAreaOfCombatTiles map = ServerTestData.createCombatMap ();
+		final ServerDatabaseEx db = loadServerDatabase ();
+		final MapAreaOfCombatTiles map = createCombatMap ();
 		
 		// Needs the overland map too, to reference the map cell for what terrain is there, and the building+spell lists
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueMap = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueMap = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueTerrain = new FogOfWarMemory ();
 		trueTerrain.setMap (trueMap);
@@ -354,12 +354,12 @@ public final class TestCombatMapGeneratorImpl
 	@Test
 	public final void testGenerateCombatMap () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
-		fow.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
+		fow.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 		
 		// Need real random number generator to generate a meaningful map
 		final RandomUtils random = new RandomUtilsImpl ();
@@ -413,7 +413,7 @@ public final class TestCombatMapGeneratorImpl
 		final StoredCombatMap container = new StoredCombatMap ();
 		container.setCombatMap (map);
 		
-		final URL xsdResource = new Object ().getClass ().getResource ("/momime.unittests.mapstorage/MapStorage.xsd");
+		final URL xsdResource = getClass ().getResource ("/momime.unittests.mapstorage/MapStorage.xsd");
 		assertNotNull ("Map storage XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);

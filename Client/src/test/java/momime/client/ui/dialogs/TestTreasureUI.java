@@ -38,7 +38,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Tests the TreasureUI class
  */
-public final class TestTreasureUI
+public final class TestTreasureUI extends ClientTestData
 {
 	/**
 	 * Tests the TreasureUI form
@@ -172,7 +172,7 @@ public final class TestTreasureUI
 		}
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/TreasureUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/TreasureUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

@@ -52,7 +52,7 @@ import momime.server.database.SpellSvr;
 /**
  * Tests the FogOfWarProcessing class
  */
-public final class TestFogOfWarProcessingImpl
+public final class TestFogOfWarProcessingImpl extends ServerTestData
 {
 	/**
 	 * Tests the canSee method
@@ -60,11 +60,11 @@ public final class TestFogOfWarProcessingImpl
 	@Test
 	public final void testCanSee ()
 	{
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fogOfWarArea = createFogOfWarArea (sys);
 		
 		// True terrain
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		// Towers
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -104,11 +104,11 @@ public final class TestFogOfWarProcessingImpl
 	@Test
 	public final void testCanSeeRadius ()
 	{
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fogOfWarArea = createFogOfWarArea (sys);
 
 		// True terrain
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		// Towers
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -183,12 +183,12 @@ public final class TestFogOfWarProcessingImpl
 		when (db.findSpell ("SP110", "markVisibleArea")).thenReturn (curseDef);
 		
 		// Map
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -338,10 +338,10 @@ public final class TestFogOfWarProcessingImpl
 		proc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
 
 		// Test with no special spells
-		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
+		priv.setFogOfWar (createFogOfWarArea (sd.getOverlandMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
-		try (final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/markVisibleArea.xlsx")))
+		try (final Workbook workbook = WorkbookFactory.create (getClass ().getResourceAsStream ("/markVisibleArea.xlsx")))
 		{
 			for (final PlaneSvr plane : db.getPlanes ())
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
@@ -359,7 +359,7 @@ public final class TestFogOfWarProcessingImpl
 			// Awareness
 			when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 	
-			priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
+			priv.setFogOfWar (createFogOfWarArea (sd.getOverlandMapSize ()));
 			proc.markVisibleArea (trueMap, player, players, sd, db);
 	
 			for (final PlaneSvr plane : db.getPlanes ())
@@ -377,7 +377,7 @@ public final class TestFogOfWarProcessingImpl
 		// Nature Awareness
 		when (spellUtils.findMaintainedSpell (trueMap.getMaintainedSpell (), 2, ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
 
-		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sd.getOverlandMapSize ()));
+		priv.setFogOfWar (createFogOfWarArea (sd.getOverlandMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
 		for (final PlaneSvr plane : db.getPlanes ())

@@ -24,7 +24,7 @@ import momime.common.messages.NumberedHeroItem;
 /**
  * Tests the HeroItemInfoUI class
  */
-public final class TestHeroItemInfoUI
+public final class TestHeroItemInfoUI extends ClientTestData
 {
 	/**
 	 * Tests the HeroItemInfoUI form
@@ -79,7 +79,7 @@ public final class TestHeroItemInfoUI
 		}
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemInfoUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemInfoUI.xml"));
 		layout.buildMaps ();
 	
 		// Set up form

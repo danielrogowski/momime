@@ -34,7 +34,7 @@ import momime.server.database.UnitSvr;
 /**
  * Tests the CityServerUtilsImpl class
  */
-public final class TestCityServerUtilsImpl
+public final class TestCityServerUtilsImpl extends ServerTestData
 {
 	/**
 	 * Tests the validateCityConstruction method when the ID requested is neither a valid building or unit
@@ -47,8 +47,8 @@ public final class TestCityServerUtilsImpl
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -98,8 +98,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -158,8 +158,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -215,8 +215,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -268,8 +268,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -321,8 +321,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -373,8 +373,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -420,8 +420,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -467,8 +467,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -514,8 +514,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -561,8 +561,8 @@ public final class TestCityServerUtilsImpl
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -600,8 +600,8 @@ public final class TestCityServerUtilsImpl
 	public final void testValidateOptionalFarmers () throws Exception
 	{
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -697,8 +697,8 @@ public final class TestCityServerUtilsImpl
 	public final void testFindCityWithinRadius ()
 	{
 		// Set up map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
 		
 		// Place a city
 		terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (new OverlandMapCityData ());

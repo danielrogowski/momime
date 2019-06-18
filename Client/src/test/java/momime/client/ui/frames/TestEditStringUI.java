@@ -17,7 +17,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the EditStringUI class
  */
-public final class TestEditStringUI
+public final class TestEditStringUI extends ClientTestData
 {
 	/**
 	 * Tests the EditStringUI form, with fixed text
@@ -40,7 +40,7 @@ public final class TestEditStringUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/EditStringUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/EditStringUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form
@@ -83,7 +83,7 @@ public final class TestEditStringUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/EditStringUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/EditStringUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

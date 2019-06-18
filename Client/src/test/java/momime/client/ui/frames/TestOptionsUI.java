@@ -35,7 +35,7 @@ import momime.common.database.UnitSkillTypeID;
 /**
  * Tests the OptionsUI class
  */
-public final class TestOptionsUI
+public final class TestOptionsUI extends ClientTestData
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (TestOptionsUI.class);
@@ -89,7 +89,7 @@ public final class TestOptionsUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// This is dependant on way too many values to mock them all - so use the real graphics DB
-		final GraphicsDatabaseEx gfx = ClientTestData.loadGraphicsDatabase (utils, null);
+		final GraphicsDatabaseEx gfx = loadGraphicsDatabase (utils, null);
 		
 		// Animation controller
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
@@ -130,7 +130,7 @@ public final class TestOptionsUI
 		unitClientUtils.setUtils (utils);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/OptionsUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/OptionsUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

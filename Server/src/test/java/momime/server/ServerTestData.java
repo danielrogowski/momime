@@ -61,13 +61,13 @@ import momime.server.utils.UnitSkillDirectAccess;
 /**
  * Common constants for server test cases
  */
-public final class ServerTestData
+public class ServerTestData
 {
 	/**
 	 * @return Parsed server database with all the hash maps built, needed by those tests that require too much data to mock out, but generally avoid using this if at all possible 
 	 * @throws Exception If there is a problem
 	 */
-	public final static ServerDatabaseEx loadServerDatabase () throws Exception
+	public final ServerDatabaseEx loadServerDatabase () throws Exception
 	{
 		// Need to set up a proper factory to create classes with spring injections
 		final ServerDatabaseObjectFactory factory = new ServerDatabaseObjectFactory ();
@@ -83,7 +83,7 @@ public final class ServerTestData
 		});
 
 		// XSD
-		final URL xsdResource = new Object ().getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
+		final URL xsdResource = getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
 		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -109,11 +109,11 @@ public final class ServerTestData
 	 * @return Location of server XML to test with
 	 * @throws IOException If we are unable to locate the server XML file
 	 */
-	public final static File locateServerXmlFile () throws IOException
+	public final File locateServerXmlFile () throws IOException
 	{
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEServer project, then modify that location
-		final URL serverXSD = new Object ().getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
+		final URL serverXSD = getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
 		final File serverXsdFile = new File (serverXSD.getFile ());
 		return new File (serverXsdFile, "../../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
 	}
@@ -130,7 +130,7 @@ public final class ServerTestData
 	 * @return Session description, built from selecting the specified parts from the server database
 	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
 	 */
-	public final static MomSessionDescription createMomSessionDescription (final ServerDatabaseEx db,
+	public final MomSessionDescription createMomSessionDescription (final ServerDatabaseEx db,
 		final String overlandMapSizeID, final String landProportionID, final String nodeStrengthID, final String difficultyLevelID,
 		final String fogOfWarSettingID, final String unitSettingID, final String spellSettingID)
 		throws RecordNotFoundException
@@ -218,7 +218,7 @@ public final class ServerTestData
 	/**
 	 * @return Demo MoM overland map-like coordinate system with a 60x40 square map wrapping left-to-right but not top-to-bottom
 	 */
-	public final static CoordinateSystem createOverlandMapCoordinateSystem ()
+	public final CoordinateSystem createOverlandMapCoordinateSystem ()
 	{
 		final CoordinateSystem sys = new CoordinateSystem ();
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
@@ -232,7 +232,7 @@ public final class ServerTestData
 	/**
 	 * @return Overland map coordinate system that can be included into session description
 	 */
-	public final static OverlandMapSize createOverlandMapSize ()
+	public final OverlandMapSize createOverlandMapSize ()
 	{
 		final OverlandMapSize sys = new OverlandMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
@@ -250,7 +250,7 @@ public final class ServerTestData
 	/**
 	 * @return Demo MoM combat map-like coordinate system with a 60x40 diamond non-wrapping map
 	 */
-	public final static CoordinateSystem createCombatMapCoordinateSystem ()
+	public final CoordinateSystem createCombatMapCoordinateSystem ()
 	{
 		final CoordinateSystem sys = new CoordinateSystem ();
 		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
@@ -262,7 +262,7 @@ public final class ServerTestData
 	/**
 	 * @return Combat map coordinate system that can be included into session description
 	 */
-	public final static CombatMapSize createCombatMapSize ()
+	public final CombatMapSize createCombatMapSize ()
 	{
 		final CombatMapSize sys = new CombatMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
@@ -277,7 +277,7 @@ public final class ServerTestData
 	 * @param sys Overland map coordinate system
 	 * @return FOW area prepopulated with "Never Seen"
 	 */
-	public final static MapVolumeOfFogOfWarStates createFogOfWarArea (final CoordinateSystem sys)
+	public final MapVolumeOfFogOfWarStates createFogOfWarArea (final CoordinateSystem sys)
 	{
 		final MapVolumeOfFogOfWarStates map = new MapVolumeOfFogOfWarStates ();
 		for (int plane = 0; plane < sys.getDepth (); plane++)
@@ -302,7 +302,7 @@ public final class ServerTestData
 	 * @param sys Overland map coordinate system
 	 * @return Strings area prepopulated with nulls
 	 */
-	public final static MapVolumeOfStrings createStringsVolume (final CoordinateSystem sys)
+	public final MapVolumeOfStrings createStringsVolume (final CoordinateSystem sys)
 	{
 		final MapVolumeOfStrings map = new MapVolumeOfStrings ();
 		for (int plane = 0; plane < sys.getDepth (); plane++)
@@ -327,7 +327,7 @@ public final class ServerTestData
 	 * @param sys Overland map coordinate system
 	 * @return Map area prepopulated with empty cells
 	 */
-	public final static MapVolumeOfMemoryGridCells createOverlandMap (final CoordinateSystem sys)
+	public final MapVolumeOfMemoryGridCells createOverlandMap (final CoordinateSystem sys)
 	{
 		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
 		for (int plane = 0; plane < sys.getDepth (); plane++)
@@ -355,7 +355,7 @@ public final class ServerTestData
 	 * @throws IOException If the file cannot be read
 	 * @throws InvalidFormatException If the file is not a valid Excel file
 	 */
-	public final static MapVolumeOfMemoryGridCells createOverlandMapFromExcel (final CoordinateSystem sys, final Workbook workbook)
+	public final MapVolumeOfMemoryGridCells createOverlandMapFromExcel (final CoordinateSystem sys, final Workbook workbook)
 		throws IOException, InvalidFormatException
 	{
 		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
@@ -401,7 +401,7 @@ public final class ServerTestData
 	/**
 	 * @return Map area prepopulated with empty cells
 	 */
-	public final static MapAreaOfCombatTiles createCombatMap ()
+	public final MapAreaOfCombatTiles createCombatMap ()
 	{
 		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
 		for (int y = 0; y < CommonDatabaseConstants.COMBAT_MAP_HEIGHT; y++)

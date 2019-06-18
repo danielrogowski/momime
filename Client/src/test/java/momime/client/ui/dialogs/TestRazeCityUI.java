@@ -17,7 +17,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the RazeCityUI class
  */
-public final class TestRazeCityUI
+public final class TestRazeCityUI extends ClientTestData
 {
 	/**
 	 * Tests the RazeCityUI form
@@ -43,7 +43,7 @@ public final class TestRazeCityUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/RazeCityUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/RazeCityUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

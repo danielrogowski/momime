@@ -33,7 +33,7 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 /**
  * Tests the FogOfWarMidTurnVisibilityImpl class
  */
-public final class TestFogOfWarMidTurnVisibilityImpl
+public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 {
 	/**
 	 * Tests the canSeeUnitMidTurn method
@@ -155,14 +155,14 @@ public final class TestFogOfWarMidTurnVisibilityImpl
 		final FogOfWarSetting settings = new FogOfWarSetting ();
 		settings.setCitiesSpellsAndCombatAreaEffects (FogOfWarValue.ALWAYS_SEE_ONCE_SEEN);
 		
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 
 		// Player who is trying to see it
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
-		priv.setFogOfWar (ServerTestData.createFogOfWarArea (sys));
+		priv.setFogOfWar (createFogOfWarArea (sys));
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, null);
 
@@ -216,8 +216,8 @@ public final class TestFogOfWarMidTurnVisibilityImpl
 	@Test
 	public final void testCanSeeCombatAreaEffectMidTurn_Global ()
 	{
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fogOfWarArea = createFogOfWarArea (sys);
 
 		// The CAE we're trying to see
 		final MemoryCombatAreaEffect cae = new MemoryCombatAreaEffect ();
@@ -236,8 +236,8 @@ public final class TestFogOfWarMidTurnVisibilityImpl
 	@Test
 	public final void testCanSeeCombatAreaEffectMidTurn_Localized ()
 	{
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfFogOfWarStates fogOfWarArea = createFogOfWarArea (sys);
 
 		// Set up object to test
 		final FogOfWarCalculations fow = mock (FogOfWarCalculations.class);

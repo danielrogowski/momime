@@ -24,7 +24,7 @@ import momime.common.database.ProductionTypeAndUndoubledValue;
 /**
  * Tests the ResourceValueClientUtilsImpl class
  */
-public final class TestResourceValueClientUtilsImpl
+public final class TestResourceValueClientUtilsImpl extends ClientTestData
 {
 	/** Colour for a transparent pixel */
 	private static final int TRANSPARENT = 0;
@@ -67,8 +67,8 @@ public final class TestResourceValueClientUtilsImpl
 	public final void testGenerateProductionImage_WithoutTens () throws IOException
 	{
 		// Create different colour sample images
-		final BufferedImage plusOneImage = ClientTestData.createSolidImage (1, 1, PLUS_ONE);
-		final BufferedImage minusOneImage = ClientTestData.createSolidImage (1, 1, MINUS_ONE);
+		final BufferedImage plusOneImage = createSolidImage (1, 1, PLUS_ONE);
+		final BufferedImage minusOneImage = createSolidImage (1, 1, MINUS_ONE);
 
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);
@@ -129,10 +129,10 @@ public final class TestResourceValueClientUtilsImpl
 	public final void testGenerateProductionImage_WithTens () throws IOException
 	{
 		// Create different colour sample images
-		final BufferedImage plusOneImage = ClientTestData.createSolidImage (1, 1, PLUS_ONE);
-		final BufferedImage minusOneImage = ClientTestData.createSolidImage (1, 1, MINUS_ONE);
-		final BufferedImage plusTenImage = ClientTestData.createSolidImage (1, 1, PLUS_TEN);
-		final BufferedImage minusTenImage = ClientTestData.createSolidImage (1, 1, MINUS_TEN);
+		final BufferedImage plusOneImage = createSolidImage (1, 1, PLUS_ONE);
+		final BufferedImage minusOneImage = createSolidImage (1, 1, MINUS_ONE);
+		final BufferedImage plusTenImage = createSolidImage (1, 1, PLUS_TEN);
+		final BufferedImage minusTenImage = createSolidImage (1, 1, MINUS_TEN);
 		
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);
@@ -205,10 +205,10 @@ public final class TestResourceValueClientUtilsImpl
 	public final void testGenerateUpkeepImage_WithoutTens () throws IOException
 	{
 		// Create different colour sample images
-		final BufferedImage plusOneImage = ClientTestData.createSolidImage (1, 1, PLUS_ONE);
-		final BufferedImage plusHalfImage = ClientTestData.createSolidImage (1, 1, PLUS_HALF);
-		final BufferedImage plusOneMana = ClientTestData.createSolidImage (1, 1, PLUS_ONE_MANA);
-		final BufferedImage plusHalfMana = ClientTestData.createSolidImage (1, 1, PLUS_HALF_MANA);
+		final BufferedImage plusOneImage = createSolidImage (1, 1, PLUS_ONE);
+		final BufferedImage plusHalfImage = createSolidImage (1, 1, PLUS_HALF);
+		final BufferedImage plusOneMana = createSolidImage (1, 1, PLUS_ONE_MANA);
+		final BufferedImage plusHalfMana = createSolidImage (1, 1, PLUS_HALF_MANA);
 		
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);
@@ -318,12 +318,12 @@ public final class TestResourceValueClientUtilsImpl
 	public final void testGenerateUpkeepImage_WithTens () throws IOException
 	{
 		// Create different colour sample images
-		final BufferedImage plusOneImage = ClientTestData.createSolidImage (1, 1, PLUS_ONE);
-		final BufferedImage plusTenImage = ClientTestData.createSolidImage (1, 1, PLUS_TEN);
-		final BufferedImage plusHalfImage = ClientTestData.createSolidImage (1, 1, PLUS_HALF);
-		final BufferedImage plusOneMana = ClientTestData.createSolidImage (1, 1, PLUS_ONE_MANA);
-		final BufferedImage plusTenMana = ClientTestData.createSolidImage (1, 1, PLUS_TEN_MANA);
-		final BufferedImage plusHalfMana = ClientTestData.createSolidImage (1, 1, PLUS_HALF_MANA);
+		final BufferedImage plusOneImage = createSolidImage (1, 1, PLUS_ONE);
+		final BufferedImage plusTenImage = createSolidImage (1, 1, PLUS_TEN);
+		final BufferedImage plusHalfImage = createSolidImage (1, 1, PLUS_HALF);
+		final BufferedImage plusOneMana = createSolidImage (1, 1, PLUS_ONE_MANA);
+		final BufferedImage plusTenMana = createSolidImage (1, 1, PLUS_TEN_MANA);
+		final BufferedImage plusHalfMana = createSolidImage (1, 1, PLUS_HALF_MANA);
 		
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
 		when (utils.loadImage ("I+1")).thenReturn (plusOneImage);

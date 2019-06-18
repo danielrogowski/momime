@@ -40,7 +40,7 @@ import momime.server.utils.UnitSkillDirectAccess;
 /**
  * Tests the ServerDatabaseConverters class
  */
-public final class TestServerDatabaseConvertersImpl
+public final class TestServerDatabaseConvertersImpl extends ServerTestData
 {
 	/**
 	 * Tests the buildNewGameDatabase method
@@ -76,7 +76,7 @@ public final class TestServerDatabaseConvertersImpl
 		final Schema xsd = schemaFactory.newSchema (xsdResource);
 		
 		// Locate XML
-		final File serverXml = ServerTestData.locateServerXmlFile ();
+		final File serverXml = locateServerXmlFile ();
 		assertNotNull ("MoM IME Server XML could not be found", serverXml);
 		
 		final Map<String, File> map = new HashMap<String, File> ();
@@ -125,7 +125,7 @@ public final class TestServerDatabaseConvertersImpl
 	@Test
 	public final void testBuildClientDatabase_Valid () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		final ServerDatabaseConvertersImpl conv = new ServerDatabaseConvertersImpl ();
 
 		for (int humanSpellPicks = 0; humanSpellPicks <= 20; humanSpellPicks++)
@@ -147,7 +147,7 @@ public final class TestServerDatabaseConvertersImpl
 	@Test(expected=RecordNotFoundException.class)
 	public final void testBuildClientDatabase_PickCountDoesntExist () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		final ServerDatabaseConvertersImpl conv = new ServerDatabaseConvertersImpl ();
 
 		conv.buildClientDatabase (db, 21);

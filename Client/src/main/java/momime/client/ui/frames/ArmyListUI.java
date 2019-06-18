@@ -29,7 +29,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.xml.ws.Holder;
+import com.ndg.utils.Holder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -374,14 +374,14 @@ public final class ArmyListUI extends MomClientFrameUI
 			unitStacksMap.entrySet ().stream ().sorted ((e1, e2) -> e2.getValue ().size () - e1.getValue ().size ()).forEach ((e) ->
 			{
 				if (e.getKey ().equals (selectLocation))
-					index.value = unitStacksItems.size ();
+					index.setValue (unitStacksItems.size ());
 
 				unitStacksItems.addElement (e);
 			});
 			
 			// Select a unit stack from the list
-			if (index.value != null)
-				unitStacksList.setSelectedIndex (index.value);
+			if (index.getValue () != null)
+				unitStacksList.setSelectedIndex (index.getValue ());
 			else if (unitStacksItems.size () > 0)
 				unitStacksList.setSelectedIndex (0);
 			

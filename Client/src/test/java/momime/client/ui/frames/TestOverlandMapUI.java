@@ -49,7 +49,7 @@ import momime.common.utils.ResourceValueUtils;
 /**
  * Tests the OverlandMapUI class
  */
-public final class TestOverlandMapUI
+public final class TestOverlandMapUI extends ClientTestData
 {
 	/**
 	 * Tests the OverlandMapUI form
@@ -97,7 +97,7 @@ public final class TestOverlandMapUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Set up session description
-		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
@@ -164,10 +164,10 @@ public final class TestOverlandMapUI
 		});
 		
 		// Layouts
-		final XmlLayoutContainerEx rhpLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel.xml"));
+		final XmlLayoutContainerEx rhpLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel.xml"));
 		rhpLayout.buildMaps ();
 
-		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
+		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
 		surveyorLayout.buildMaps ();
 		
 		// Set up right hand panel
@@ -191,7 +191,7 @@ public final class TestOverlandMapUI
 		// Give it some dummy images for the terrain
 		final BufferedImage [] overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];
 		for (int n = 0; n < overlandMapBitmaps.length; n++)
-			overlandMapBitmaps [n] = ClientTestData.createSolidImage (60 * 20, 40 * 18, (new int [] {0x200000, 0x002000, 0x000020}) [n]);
+			overlandMapBitmaps [n] = createSolidImage (60 * 20, 40 * 18, (new int [] {0x200000, 0x002000, 0x000020}) [n]);
 		
 		final OverlandMapBitmapGenerator gen = mock (OverlandMapBitmapGenerator.class);
 		when (gen.generateOverlandMapBitmaps (0, 0, 0, overlandMapSize.getWidth (), overlandMapSize.getHeight ())).thenReturn (overlandMapBitmaps);

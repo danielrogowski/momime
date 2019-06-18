@@ -58,7 +58,7 @@ import momime.common.utils.SpellUtils;
 /**
  * Tests the HelpUI class
  */
-public final class TestHelpUI
+public final class TestHelpUI extends ClientTestData
 {
 	/**
 	 * @return HelpUI form ready to test with
@@ -286,7 +286,7 @@ public final class TestHelpUI
 		replacer.setHtmlImage (true);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

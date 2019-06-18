@@ -22,7 +22,7 @@ import com.ndg.random.RandomUtils;
 /**
  * Tests the ServerSpellCalculations class
  */
-public final class TestServerSpellCalculationsImpl
+public final class TestServerSpellCalculationsImpl extends ServerTestData
 {
 	/**
 	 * Tests the randomizeResearchableSpells method
@@ -31,7 +31,7 @@ public final class TestServerSpellCalculationsImpl
 	@Test
 	public final void testRandomizeResearchableSpells () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		// Every spell is initially unavailbale
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
@@ -160,7 +160,7 @@ public final class TestServerSpellCalculationsImpl
 	@Test
 	public final void testRandomizeSpellsResearchableNow () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		// Every spell is initially unavailbale
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();

@@ -43,7 +43,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Tests the ArmyListUI class
  */
-public final class TestArmyListUI
+public final class TestArmyListUI extends ClientTestData
 {
 	/**
 	 * Tests the ArmyListUI form
@@ -88,7 +88,7 @@ public final class TestArmyListUI
 		when (gfx.findUnit (eq ("UN001"), anyString ())).thenReturn (unitGfx);
 		
 		// Session description
-		final OverlandMapSize mapSize = ClientTestData.createOverlandMapSize ();
+		final OverlandMapSize mapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (mapSize);
@@ -142,11 +142,11 @@ public final class TestArmyListUI
 
 		// Mock the minimap bitmaps provided by the RHP
 		final MiniMapBitmapGenerator gen = mock (MiniMapBitmapGenerator.class);
-		when (gen.generateMiniMapBitmap (0)).thenReturn (ClientTestData.createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x004000));
-		when (gen.generateMiniMapBitmap (1)).thenReturn (ClientTestData.createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x402000));
+		when (gen.generateMiniMapBitmap (0)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x004000));
+		when (gen.generateMiniMapBitmap (1)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x402000));
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/ArmyListUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/ArmyListUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

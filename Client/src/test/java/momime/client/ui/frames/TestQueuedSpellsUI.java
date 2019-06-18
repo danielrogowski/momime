@@ -37,7 +37,7 @@ import momime.common.utils.SpellUtils;
 /**
  * Tests the QueuedSpellsUI class
  */
-public final class TestQueuedSpellsUI
+public final class TestQueuedSpellsUI extends ClientTestData
 {
 	/**
 	 * Tests the QueuedSpellsUI form
@@ -129,7 +129,7 @@ public final class TestQueuedSpellsUI
 		renderer.setSpellUtils (spellUtils);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/QueuedSpellsUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/QueuedSpellsUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

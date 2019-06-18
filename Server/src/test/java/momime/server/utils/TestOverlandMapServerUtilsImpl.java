@@ -67,7 +67,7 @@ import momime.server.knowledge.ServerGridCellEx;
 /**
  * Tests the OverlandMapServerUtilsImpl class
  */
-public final class TestOverlandMapServerUtilsImpl
+public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 {
 	/**
 	 * Tests the setContinentalRace method
@@ -88,8 +88,8 @@ public final class TestOverlandMapServerUtilsImpl
 		when (db.findTileType ("O", "setContinentalRace")).thenReturn (ocean);
 
 		// Map and coordinate system
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 		final MapAreaOperations3DImpl<String> op = new MapAreaOperations3DImpl<String> ();
 		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
 
@@ -158,8 +158,8 @@ public final class TestOverlandMapServerUtilsImpl
 		when (db.getPlanes ()).thenReturn (planes);
 		
 		// Map and coordinate system
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 		final MapAreaOperations3DImpl<String> op = new MapAreaOperations3DImpl<String> ();
 		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
 
@@ -283,11 +283,11 @@ public final class TestOverlandMapServerUtilsImpl
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
+		sd.setOverlandMapSize (createOverlandMapSize ());
 		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -388,11 +388,11 @@ public final class TestOverlandMapServerUtilsImpl
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
+		sd.setOverlandMapSize (createOverlandMapSize ());
 		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -487,11 +487,11 @@ public final class TestOverlandMapServerUtilsImpl
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
+		sd.setOverlandMapSize (createOverlandMapSize ());
 		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -629,11 +629,11 @@ public final class TestOverlandMapServerUtilsImpl
 		settings.setTerrainAndNodeAuras (FogOfWarValue.REMEMBER_AS_LAST_SEEN);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
+		sd.setOverlandMapSize (createOverlandMapSize ());
 		sd.setFogOfWarSetting (settings);
 
 		// Map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -748,8 +748,8 @@ public final class TestOverlandMapServerUtilsImpl
 		when (db.getPlanes ()).thenReturn (planes);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 		
 		final OverlandMapCityData ourCity1 = new OverlandMapCityData ();
 		ourCity1.setCityOwnerID (2);

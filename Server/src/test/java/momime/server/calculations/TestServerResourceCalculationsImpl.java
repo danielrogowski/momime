@@ -76,7 +76,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the ServerResourceCalculations class
  */
-public final class TestServerResourceCalculationsImpl
+public final class TestServerResourceCalculationsImpl extends ServerTestData
 {
 	/**
 	 * Tests the recalculateAmountsPerTurn method
@@ -125,7 +125,7 @@ public final class TestServerResourceCalculationsImpl
 		when (db.findSpell ("SP158", "recalculateAmountsPerTurn")).thenReturn (crusadeDef);
 		
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final NodeStrength nodeStrength = new NodeStrength ();
 		nodeStrength.setDoubleNodeAuraMagicPower (3);		// 1.5 mana per node aura cell
@@ -135,7 +135,7 @@ public final class TestServerResourceCalculationsImpl
 		sd.setNodeStrength (nodeStrength);
 
 		// Overland map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -431,8 +431,8 @@ public final class TestServerResourceCalculationsImpl
 		when (buildingUtils.findBuildingConsumption (wizardsGuildDef, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (3);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -598,7 +598,7 @@ public final class TestServerResourceCalculationsImpl
 	@Test
 	public final void testAccumulateGlobalProductionValues () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		// Player
@@ -660,7 +660,7 @@ public final class TestServerResourceCalculationsImpl
 	@Test(expected=MomException.class)
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
@@ -692,7 +692,7 @@ public final class TestServerResourceCalculationsImpl
 	@Test(expected=MomException.class)
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
@@ -724,7 +724,7 @@ public final class TestServerResourceCalculationsImpl
 	@Test
 	public final void testProgressResearch () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		// Player

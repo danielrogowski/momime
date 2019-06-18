@@ -62,7 +62,7 @@ import momime.server.fogofwar.KillUnitActionID;
 /**
  * Tests the ServerUnitCalculationsImpl class
  */
-public final class TestServerUnitCalculationsImpl
+public final class TestServerUnitCalculationsImpl extends ServerTestData
 {
 	/**
 	 * Tests the calculateUnitScoutingRange class
@@ -118,7 +118,7 @@ public final class TestServerUnitCalculationsImpl
 	public final void testCountOurAliveUnitsAtEveryLocation () throws Exception
 	{
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 
 		// Null location
 		final MemoryUnit u1 = new MemoryUnit ();
@@ -193,8 +193,8 @@ public final class TestServerUnitCalculationsImpl
 	{
 		// Remember this is all operating over a player's memory - so it has to also work where we may know nothing about the location at all, i.e. everything is nulls
 		// This is a really key method so there's a ton of test conditions
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 
@@ -355,16 +355,16 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateOverlandMovementDistances_Basic () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final UnitSvr spearmenDef = new UnitSvr ();
 		
 		// Create map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
-		try (final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx")))
+		try (final Workbook workbook = WorkbookFactory.create (getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx")))
 		{
-			final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
+			final MapVolumeOfMemoryGridCells terrain = createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
 		
 			final FogOfWarMemory map = new FogOfWarMemory ();
 			map.setMap (terrain);
@@ -519,16 +519,16 @@ public final class TestServerUnitCalculationsImpl
 	@Test
 	public final void testCalculateOverlandMovementDistances_Tower () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final UnitSvr spearmenDef = new UnitSvr ();
 		
 		// Create map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
-		try (final Workbook workbook = WorkbookFactory.create (new Object ().getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx")))
+		try (final Workbook workbook = WorkbookFactory.create (getClass ().getResourceAsStream ("/calculateOverlandMovementDistances.xlsx")))
 		{
-			final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
+			final MapVolumeOfMemoryGridCells terrain = createOverlandMapFromExcel (sd.getOverlandMapSize (), workbook);
 	
 			final FogOfWarMemory map = new FogOfWarMemory ();
 			map.setMap (terrain);
@@ -788,8 +788,8 @@ public final class TestServerUnitCalculationsImpl
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting (); 
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (terrain);
@@ -881,7 +881,7 @@ public final class TestServerUnitCalculationsImpl
 		rat.setMagicRealmID ("A");
 
 		// Coordinate system
-		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		final CombatMapSize sys = createCombatMapSize ();
 		
 		// Units
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
@@ -907,7 +907,7 @@ public final class TestServerUnitCalculationsImpl
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 
 		// Coordinate system
-		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		final CombatMapSize sys = createCombatMapSize ();
 		
 		// Units
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
@@ -936,7 +936,7 @@ public final class TestServerUnitCalculationsImpl
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 
 		// Coordinate system
-		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		final CombatMapSize sys = createCombatMapSize ();
 		
 		// Units
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
@@ -965,7 +965,7 @@ public final class TestServerUnitCalculationsImpl
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 
 		// Coordinate system
-		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		final CombatMapSize sys = createCombatMapSize ();
 		
 		// Units
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
@@ -994,7 +994,7 @@ public final class TestServerUnitCalculationsImpl
 		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
 
 		// Coordinate system
-		final CombatMapSize sys = ServerTestData.createCombatMapSize ();
+		final CombatMapSize sys = createCombatMapSize ();
 		
 		// Units
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);

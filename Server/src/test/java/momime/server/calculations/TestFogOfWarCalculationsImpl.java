@@ -20,7 +20,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 /**
  * Tests the FogOfWarCalculations class
  */
-public final class TestFogOfWarCalculationsImpl
+public final class TestFogOfWarCalculationsImpl extends ServerTestData
 {
 	/**
 	 * Tests the canSeeMidTurn method
@@ -51,11 +51,11 @@ public final class TestFogOfWarCalculationsImpl
 	@Test
 	public final void testCanSeeMidTurnOnAnyPlaneIfTower () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
-		final MapVolumeOfFogOfWarStates fogOfWarArea = ServerTestData.createFogOfWarArea (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
+		final MapVolumeOfFogOfWarStates fogOfWarArea = createFogOfWarArea (sys);
 
 		final FogOfWarCalculationsImpl calc = new FogOfWarCalculationsImpl ();
 		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());

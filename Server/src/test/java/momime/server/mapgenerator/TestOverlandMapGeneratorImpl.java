@@ -70,7 +70,7 @@ import com.ndg.random.RandomUtilsImpl;
 /**
  * Tests the OverlandMapGenerator class
  */
-public final class TestOverlandMapGeneratorImpl
+public final class TestOverlandMapGeneratorImpl extends ServerTestData
 {
 	/**
 	 * Tests the setAllToWater method
@@ -79,7 +79,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testSetAllToWater ()
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
@@ -121,7 +121,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testMakeTundra ()
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final LandProportion landProportion = new LandProportion ();
 		landProportion.setTundraRowCount (4);
@@ -175,7 +175,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testPlaceTowersOfWizardry () throws MomException
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		overlandMapSize.setTowersOfWizardryCount (6);
 		overlandMapSize.setTowersOfWizardrySeparation (10);
 		
@@ -254,7 +254,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testPlaceTowersOfWizardry_Tundra () throws MomException
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		overlandMapSize.setTowersOfWizardryCount (6);
 		overlandMapSize.setTowersOfWizardrySeparation (10);
 		
@@ -341,7 +341,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testPlaceTowersOfWizardry_Full () throws MomException
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		overlandMapSize.setTowersOfWizardryCount (61);
 		overlandMapSize.setTowersOfWizardrySeparation (10);
 		
@@ -431,7 +431,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testCheckAllDirectionsLeadToGrass ()
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
@@ -493,7 +493,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testPlaceTerrainFeatures () throws Exception
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final LandProportionPlane landProportionArcanus = new LandProportionPlane ();
 		landProportionArcanus.setFeatureChance (17);
@@ -612,13 +612,13 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testPlaceNodeRings_TestOnly ()
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
 		// Map storage
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -658,13 +658,13 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testPlaceNodeRings_Update ()
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
 		// Map storage
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -716,7 +716,7 @@ public final class TestOverlandMapGeneratorImpl
 		mapSizeMyrror.setNumberOfNodesOnPlane (18);
 		mapSizeMyrror.setPlaneNumber (1);
 		
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		overlandMapSize.getMapSizePlane ().add (mapSizeArcanus);
 		overlandMapSize.getMapSizePlane ().add (mapSizeMyrror);
 
@@ -905,7 +905,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testPlaceLairs () throws Exception
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
@@ -1129,9 +1129,9 @@ public final class TestOverlandMapGeneratorImpl
 	@Test
 	public final void testGenerateOverlandTerrain () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -1187,7 +1187,7 @@ public final class TestOverlandMapGeneratorImpl
 		final StoredOverlandMap container = new StoredOverlandMap ();
 		container.setOverlandMap (fow.getMap ());
 		
-		final URL xsdResource = new Object ().getClass ().getResource ("/momime.unittests.mapstorage/MapStorage.xsd");
+		final URL xsdResource = getClass ().getResource ("/momime.unittests.mapstorage/MapStorage.xsd");
 		assertNotNull ("Map storage XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -1205,7 +1205,7 @@ public final class TestOverlandMapGeneratorImpl
 	public final void testGenerateInitialCombatAreaEffects () throws Exception
 	{
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);

@@ -71,7 +71,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Tests the UnitInfoPanel class
  */
-public final class TestUnitInfoPanel
+public final class TestUnitInfoPanel extends ClientTestData
 {
 	/**
 	 * Tests the info panel to display a building
@@ -167,7 +167,7 @@ public final class TestUnitInfoPanel
 		final Action pantsAction = new LoggingAction ("Pants", (ev) -> {});
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
 		layout.buildMaps ();
 		
 		// Set up panel
@@ -366,7 +366,7 @@ public final class TestUnitInfoPanel
 			unitAttrGfx.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
 			when (gfx.findUnitSkill (eq (attrID), anyString ())).thenReturn (unitAttrGfx);
 			
-			when (unitClientUtils.generateAttributeImage (xu, attrID)).thenReturn (ClientTestData.createSolidImage (289, 15, unitAttrNo * 35));
+			when (unitClientUtils.generateAttributeImage (xu, attrID)).thenReturn (createSolidImage (289, 15, unitAttrNo * 35));
 			
 			// Unit stat
 			final UnitSkillAndValue attr = new UnitSkillAndValue ();
@@ -418,7 +418,7 @@ public final class TestUnitInfoPanel
 		skillRenderer.setUnitClientUtils (unitClientUtils);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
 		layout.buildMaps ();
 		
 		// Set up panel

@@ -49,7 +49,7 @@ import momime.common.utils.SpellUtils;
 /**
  * Tests the MagicSlidersUI class
  */
-public final class TestMagicSlidersUI
+public final class TestMagicSlidersUI extends ClientTestData
 {
 	/**
 	 * Tests the MagicSlidersUI form
@@ -218,7 +218,7 @@ public final class TestMagicSlidersUI
 		resourceValueUtils.setSkillCalculations (skillCalc);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/MagicSlidersUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/MagicSlidersUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

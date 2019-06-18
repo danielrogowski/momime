@@ -42,7 +42,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the MiniCityViewUI class
  */
-public final class TestMiniCityViewUI
+public final class TestMiniCityViewUI extends ClientTestData
 {
 	/**
 	 * Tests the TestMiniCityViewUI form from casting a spell
@@ -82,12 +82,12 @@ public final class TestMiniCityViewUI
 		cityData.setCitySizeID ("CS01");
 		cityData.setCityName ("Blahdy Blah");
 		
-		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (overlandMapSize);
 		final MemoryGridCell mc = terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20);
 		mc.setCityData (cityData);
 		
@@ -157,7 +157,7 @@ public final class TestMiniCityViewUI
 		panel.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());		// Since we need it to really look for the spell
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MiniCityViewUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MiniCityViewUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

@@ -32,7 +32,7 @@ import momime.common.messages.NumberedHeroItem;
 /**
  * Tests the CastCombatSpellFromUI class
  */
-public final class TestCastCombatSpellFromUI
+public final class TestCastCombatSpellFromUI extends ClientTestData
 {
 	/**
 	 * Tests the CastCombatSpellFromUI form
@@ -110,7 +110,7 @@ public final class TestCastCombatSpellFromUI
 		castingSources.add (new CastCombatSpellFrom (unit, null, 1));
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SelectAdvisorUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SelectAdvisorUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

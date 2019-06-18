@@ -69,7 +69,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Tests the UnitClientUtilsImpl class
  */
-public final class TestUnitClientUtilsImpl
+public final class TestUnitClientUtilsImpl extends ClientTestData
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (TestUnitClientUtilsImpl.class);
@@ -416,7 +416,7 @@ public final class TestUnitClientUtilsImpl
 		utils.useNimbusLookAndFeel ();
 		
 		// This is dependant on way too many values to mock them all - so use the real graphics DB
-		final GraphicsDatabaseEx gfx = ClientTestData.loadGraphicsDatabase (utils, null);
+		final GraphicsDatabaseEx gfx = loadGraphicsDatabase (utils, null);
 		
 		// Animation controller
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
@@ -641,33 +641,33 @@ public final class TestUnitClientUtilsImpl
 		final UnitSkillGfx skillGfx = new UnitSkillGfx ();
 		skillGfx.getUnitSkillWeaponGrade ().add (skillWeaponGradeGfx);
 		when (gfx.findUnitSkill ("UA01", "getUnitSkillComponentBreakdownIcon")).thenReturn (skillGfx);
-		when (utils.loadImage ("s.png")).thenReturn (ClientTestData.createSolidImage (1, 1, SKILL_ICON));
+		when (utils.loadImage ("s.png")).thenReturn (createSolidImage (1, 1, SKILL_ICON));
 		
 		// Attribute component backgrounds
 		final UnitSkillComponentImageGfx basicComponentBackground = new UnitSkillComponentImageGfx ();
 		basicComponentBackground.setUnitSkillComponentImageFile ("b.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.BASIC, "generateAttributeImage")).thenReturn (basicComponentBackground);
-		when (utils.loadImage ("b.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_BASIC));
+		when (utils.loadImage ("b.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_BASIC));
 
 		final UnitSkillComponentImageGfx weaponGradeComponentBackground = new UnitSkillComponentImageGfx ();
 		weaponGradeComponentBackground.setUnitSkillComponentImageFile ("w.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.WEAPON_GRADE, "generateAttributeImage")).thenReturn (weaponGradeComponentBackground);
-		when (utils.loadImage ("w.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_WEAPON_GRADE));
+		when (utils.loadImage ("w.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_WEAPON_GRADE));
 
 		final UnitSkillComponentImageGfx experienceComponentBackground = new UnitSkillComponentImageGfx ();
 		experienceComponentBackground.setUnitSkillComponentImageFile ("e.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.EXPERIENCE, "generateAttributeImage")).thenReturn (experienceComponentBackground);
-		when (utils.loadImage ("e.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_EXPERIENCE));
+		when (utils.loadImage ("e.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_EXPERIENCE));
 
 		final UnitSkillComponentImageGfx heroSkillsComponentBackground = new UnitSkillComponentImageGfx ();
 		heroSkillsComponentBackground.setUnitSkillComponentImageFile ("h.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "generateAttributeImage")).thenReturn (heroSkillsComponentBackground);
-		when (utils.loadImage ("h.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_HERO_SKILLS));
+		when (utils.loadImage ("h.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_HERO_SKILLS));
 
 		final UnitSkillComponentImageGfx caeComponentBackground = new UnitSkillComponentImageGfx ();
 		caeComponentBackground.setUnitSkillComponentImageFile ("c.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "generateAttributeImage")).thenReturn (caeComponentBackground);
-		when (utils.loadImage ("c.png")).thenReturn (ClientTestData.createSolidImage (2, 1, BACKGROUND_CAE));
+		when (utils.loadImage ("c.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_CAE));
 		
 		// Player's memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();

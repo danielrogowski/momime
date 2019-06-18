@@ -20,7 +20,7 @@ import momime.common.database.CommonXsdResourceResolver;
  * So we can't tell whether entries are missing, but we can do
  * basic checks against the XSD like optional/mandatory fields and that no unknown fields are present.
  */
-public final class TestGraphicsDatabase
+public final class TestGraphicsDatabase extends ClientTestData
 {
 	/**
 	 * Tests that all available language XML files conform to the language XSD, excluding all the links to the server XSD
@@ -38,6 +38,6 @@ public final class TestGraphicsDatabase
 		final Validator xsd = schemaFactory.newSchema (xsdResource).newValidator ();
 
 		// Validate XML
-		xsd.validate (new StreamSource (ClientTestData.locateDefaultGraphicsXmlFile ()));
+		xsd.validate (new StreamSource (locateDefaultGraphicsXmlFile ()));
 	}
 }

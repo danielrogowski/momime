@@ -45,7 +45,7 @@ import momime.common.utils.ResourceValueUtils;
 /**
  * Tests the HeroItemsUI class
  */
-public final class TestHeroItemsUI
+public final class TestHeroItemsUI extends ClientTestData
 {
 	/**
 	 * Tests the HeroItemsUI form
@@ -175,13 +175,13 @@ public final class TestHeroItemsUI
 		};
 		
 		// Layouts
-		final XmlLayoutContainerEx cellLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemsUI-Unassigned.xml"));
+		final XmlLayoutContainerEx cellLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemsUI-Unassigned.xml"));
 		cellLayout.buildMaps ();
 
-		final XmlLayoutContainerEx tableLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemsUI-Hero.xml"));
+		final XmlLayoutContainerEx tableLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemsUI-Hero.xml"));
 		tableLayout.buildMaps ();
 		
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemsUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemsUI.xml"));
 		layout.buildMaps ();
 
 		// Bank items renderer

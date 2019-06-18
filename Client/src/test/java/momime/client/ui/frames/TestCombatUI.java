@@ -75,7 +75,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Tests the CombatUI class
  */
-public final class TestCombatUI
+public final class TestCombatUI extends ClientTestData
 {
 	/**
 	 * Tests the CombatUI form
@@ -150,8 +150,8 @@ public final class TestCombatUI
 		when (db.findMapFeature ("MF01", "CombatUI")).thenReturn (mapFeature);
 		
 		// Overland map
-		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -164,8 +164,8 @@ public final class TestCombatUI
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Combat map
-		final CombatMapSize combatMapSize = ClientTestData.createCombatMapSize ();
-		final MapAreaOfCombatTiles combatMap = ClientTestData.createCombatMap (combatMapSize);
+		final CombatMapSize combatMapSize = createCombatMapSize ();
+		final MapAreaOfCombatTiles combatMap = createCombatMap (combatMapSize);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -272,7 +272,7 @@ public final class TestCombatUI
 		// Give it some dummy images for the terrain
 		final BufferedImage [] combatMapBitmaps = new BufferedImage [combatMapTileSet.getAnimationFrameCount ()];
 		for (int n = 0; n < combatMapBitmaps.length; n++)
-			combatMapBitmaps [n] = ClientTestData.createSolidImage (640, 362, (new int [] {0x200000, 0x002000, 0x000020}) [n]);
+			combatMapBitmaps [n] = createSolidImage (640, 362, (new int [] {0x200000, 0x002000, 0x000020}) [n]);
 		
 		final CombatMapBitmapGenerator gen = mock (CombatMapBitmapGenerator.class);
 		when (gen.generateCombatMapBitmaps (combatMap)).thenReturn (combatMapBitmaps);
@@ -317,7 +317,7 @@ public final class TestCombatUI
 		when (clientUnitCalculations.findPreferredMovementSkillGraphics (xuSelectedUnit)).thenReturn (movementSkill);
 		
 		// Layouts
-		final Unmarshaller unmarshaller = ClientTestData.createXmlLayoutUnmarshaller ();
+		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
 		final XmlLayoutContainerEx mainLayout = (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/CombatUI-Main.xml"));
 		final XmlLayoutContainerEx bottomLayout = (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/CombatUI-Bottom.xml"));
 		mainLayout.buildMaps ();

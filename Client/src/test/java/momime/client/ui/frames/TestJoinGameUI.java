@@ -28,7 +28,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the JoinGameUI class
  */
-public final class TestJoinGameUI
+public final class TestJoinGameUI extends ClientTestData
 {
 	/**
 	 * Tests the JoinGameUI form
@@ -96,7 +96,7 @@ public final class TestJoinGameUI
 		sessions.add (spd);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/JoinGameUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/JoinGameUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

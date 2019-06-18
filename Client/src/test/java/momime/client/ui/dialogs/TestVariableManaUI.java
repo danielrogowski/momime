@@ -38,7 +38,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the VariableManaUI class
  */
-public final class TestVariableManaUI
+public final class TestVariableManaUI extends ClientTestData
 {
 	/**
 	 * Tests the VariableManaUI form, on a spell where it takes multiple MP points to raise 1 damage point
@@ -114,7 +114,7 @@ public final class TestVariableManaUI
 		final CombatUI combatUI = new CombatUI ();
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/VariableManaUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/VariableManaUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form
@@ -212,7 +212,7 @@ public final class TestVariableManaUI
 		final CombatUI combatUI = new CombatUI ();
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/VariableManaUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/VariableManaUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

@@ -33,7 +33,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the NewTurnMessagesUI class
  */
-public final class TestNewTurnMessagesUI
+public final class TestNewTurnMessagesUI extends ClientTestData
 {
 	/**
 	 * Tests the NewTurnMessagesUI form with a small number of messages
@@ -61,7 +61,7 @@ public final class TestNewTurnMessagesUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// City names
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (ClientTestData.createOverlandMapCoordinateSystem ());
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (createOverlandMapCoordinateSystem ());
 		
 		final OverlandMapCityData city1 = new OverlandMapCityData ();
 		city1.setCityName ("Foo");
@@ -132,7 +132,7 @@ public final class TestNewTurnMessagesUI
 		msgs.add (msg3);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form
@@ -176,7 +176,7 @@ public final class TestNewTurnMessagesUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// City names
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (ClientTestData.createOverlandMapCoordinateSystem ());
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (createOverlandMapCoordinateSystem ());
 		
 		for (int x = 1; x <= 20; x++)
 		{
@@ -242,7 +242,7 @@ public final class TestNewTurnMessagesUI
 		}
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewTurnMessagesUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

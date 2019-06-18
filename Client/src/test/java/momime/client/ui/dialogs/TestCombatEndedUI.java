@@ -24,7 +24,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the CombatEndedUI class
  */
-public final class TestCombatEndedUI
+public final class TestCombatEndedUI extends ClientTestData
 {
 	/**
 	 * Tests the CombatEndedUI form
@@ -54,8 +54,8 @@ public final class TestCombatEndedUI
 		when (client.getOurPlayerID ()).thenReturn (1);
 		
 		// Overland map
-		final CoordinateSystem sys = ClientTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -71,7 +71,7 @@ public final class TestCombatEndedUI
 		msg.setCombatLocation (new MapCoordinates3DEx (20, 10, 0));
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/CombatEndedUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/CombatEndedUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

@@ -63,7 +63,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the DamageProcessorImpl class
  */
-public final class TestDamageProcessorImpl
+public final class TestDamageProcessorImpl extends ServerTestData
 {
 	/**
 	 * Tests the resolveAttack method on a melee attack which kills the defender (owned by the attackingPlayer)
@@ -114,7 +114,7 @@ public final class TestDamageProcessorImpl
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
-		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize (); 
+		final CombatMapSize combatMapSize = createCombatMapSize (); 
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
@@ -295,7 +295,7 @@ public final class TestDamageProcessorImpl
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
-		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize (); 
+		final CombatMapSize combatMapSize = createCombatMapSize (); 
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
@@ -465,7 +465,7 @@ public final class TestDamageProcessorImpl
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
-		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize (); 
+		final CombatMapSize combatMapSize = createCombatMapSize (); 
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
@@ -623,7 +623,7 @@ public final class TestDamageProcessorImpl
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
-		final CombatMapSize combatMapSize = ServerTestData.createCombatMapSize (); 
+		final CombatMapSize combatMapSize = createCombatMapSize (); 
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);

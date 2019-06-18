@@ -46,7 +46,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Tests the UnitInfoUI class
  */
-public final class TestUnitInfoUI
+public final class TestUnitInfoUI extends ClientTestData
 {
 	/**
 	 * Tests the UnitInfoUI form displaying one of our units
@@ -146,7 +146,7 @@ public final class TestUnitInfoUI
 		final AnimationController anim = mock (AnimationController.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
 		layout.buildMaps ();
 		
 		// Set up panel
@@ -281,7 +281,7 @@ public final class TestUnitInfoUI
 		final AnimationController anim = mock (AnimationController.class);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
 		layout.buildMaps ();
 		
 		// Set up panel

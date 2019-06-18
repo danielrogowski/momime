@@ -13,7 +13,7 @@ import org.junit.Test;
 /**
  * Tests the ClientMemoryGridCellUtils class
  */
-public final class TestServerMemoryGridCellUtils
+public final class TestServerMemoryGridCellUtils extends ServerTestData
 {
 	/**
 	 * Tests the isNodeLairTower method when both the whole terrain data is null
@@ -22,7 +22,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_TerrainDataNull () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		assertFalse (ServerMemoryGridCellUtils.isNodeLairTower (null, db));
 	}
@@ -34,7 +34,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_BothNull () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 
@@ -48,7 +48,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_TileTypeNo () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
@@ -63,7 +63,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_TileTypeYes () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("TT12");
@@ -78,7 +78,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureNo () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("MF01");
@@ -93,7 +93,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureYes () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setMapFeatureID ("MF12A");
@@ -108,7 +108,7 @@ public final class TestServerMemoryGridCellUtils
 	@Test
 	public final void testIsNodeLairTower_MapFeatureYes_WithTileType () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);

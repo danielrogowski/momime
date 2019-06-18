@@ -48,7 +48,7 @@ import momime.common.utils.SpellUtils;
 /**
  * Tests the CreateArtifactUI class
  */
-public final class TestCreateArtifactUI
+public final class TestCreateArtifactUI extends ClientTestData
 {
 	/**
 	 * Tests the CreateArtifactUI form
@@ -182,7 +182,7 @@ public final class TestCreateArtifactUI
 		spellDef.setHeroItemBonusMaximumCraftingCost (0);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CreateArtifactUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CreateArtifactUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

@@ -53,7 +53,7 @@ import momime.server.utils.UnitSkillDirectAccessImpl;
 /**
  * Tests the UnitAIImpl class
  */
-public final class TestUnitAIImpl
+public final class TestUnitAIImpl extends ServerTestData
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (TestUnitAIImpl.class);
@@ -236,7 +236,7 @@ public final class TestUnitAIImpl
 	public final void testUnitBaseRatings () throws Exception
 	{
 		// Need the real database
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		
 		// Other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -294,7 +294,7 @@ public final class TestUnitAIImpl
 	public final void testUnitPotentialRatings () throws Exception
 	{
 		// Need the real database
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		
 		// Other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -551,8 +551,8 @@ public final class TestUnitAIImpl
 		when (xu.getOwningPlayerID ()).thenReturn (3);
 		
 		// Fog of war memory
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory mem = new FogOfWarMemory ();
 		mem.setMap (terrain);

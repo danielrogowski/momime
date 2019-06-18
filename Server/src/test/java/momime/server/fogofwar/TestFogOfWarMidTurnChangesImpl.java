@@ -60,7 +60,7 @@ import momime.server.knowledge.ServerGridCellEx;
 /**
  * Tests the FogOfWarMidTurnChangesImpl class
  */
-public final class TestFogOfWarMidTurnChangesImpl
+public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 {
 	/**
 	 * Tests the updatePlayerMemoryOfTerrain method
@@ -71,7 +71,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 	{
 		// Session description
 		final FogOfWarValue fowSetting = FogOfWarValue.REMEMBER_AS_LAST_SEEN;
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 
 		// FOW visibility rules
 		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
@@ -79,7 +79,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, fowSetting)).thenReturn (true);
 		
 		// True terrain
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		final MemoryGridCell tc = trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		
 		final OverlandMapTerrainData td = new OverlandMapTerrainData ();
@@ -101,11 +101,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 					pd.setHuman (human);
 					
 					// Mock whether the player can see the location
-					final MapVolumeOfFogOfWarStates vis = ServerTestData.createFogOfWarArea (sys);
+					final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
 					vis.getPlane ().get (1).getRow ().get (10).getCell ().set (20, canSee ? FogOfWarStateID.CAN_SEE : FogOfWarStateID.NEVER_SEEN);
 					
 					final FogOfWarMemory fow = new FogOfWarMemory ();
-					fow.setMap (ServerTestData.createOverlandMap (sys));
+					fow.setMap (createOverlandMap (sys));
 					
 					final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 					priv.setFogOfWar (vis);
@@ -174,7 +174,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setCitiesSpellsAndCombatAreaEffects (fowSetting);
 		
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 
 		// FOW visibility rules
 		final FogOfWarCalculations single = mock (FogOfWarCalculations.class);
@@ -182,7 +182,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, fowSetting)).thenReturn (true);
 		
 		// True terrain
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		final MemoryGridCell tc = trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		
 		// Players can see the location or not, have up to date info already or not, and be human/AI, so create 8 players
@@ -201,10 +201,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 					pd.setHuman (human);
 					
 					// Mock whether the player can see the location
-					final MapVolumeOfFogOfWarStates vis = ServerTestData.createFogOfWarArea (sys);
+					final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
 					vis.getPlane ().get (1).getRow ().get (10).getCell ().set (20, canSee ? FogOfWarStateID.CAN_SEE : FogOfWarStateID.NEVER_SEEN);
 
-					final MapVolumeOfMemoryGridCells terrain = ServerTestData.createOverlandMap (sys);
+					final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
 					final OverlandMapCityData playerCityData = new OverlandMapCityData ();
 					terrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (playerCityData);
 					
@@ -1406,10 +1406,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		final CoordinateSystem mapSize = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem mapSize = createOverlandMapCoordinateSystem ();
 
 		// True map details on server
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (mapSize);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setAttackingPlayerID (1);
 		gc.setDefendingPlayerID (2);
@@ -1648,10 +1648,10 @@ public final class TestFogOfWarMidTurnChangesImpl
 
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
-		final CoordinateSystem mapSize = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem mapSize = createOverlandMapCoordinateSystem ();
 
 		// True map details on server
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (mapSize);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setAttackingPlayerID (1);
 		gc.setDefendingPlayerID (2);
@@ -2120,7 +2120,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setCitiesSpellsAndCombatAreaEffects (fowSetting);
 
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (sys);
@@ -2132,7 +2132,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, fowSetting)).thenReturn (true);
 		
 		// Server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -2156,11 +2156,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 				pd.setHuman (human);
 				
 				// Mock whether the player can see the city
-				final MapVolumeOfFogOfWarStates vis = ServerTestData.createFogOfWarArea (sys);
+				final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
 				vis.getPlane ().get (1).getRow ().get (10).getCell ().set (20, canSee ? FogOfWarStateID.CAN_SEE : FogOfWarStateID.NEVER_SEEN);
 				
 				final FogOfWarMemory fow = new FogOfWarMemory ();
-				fow.setMap (ServerTestData.createOverlandMap (sys));
+				fow.setMap (createOverlandMap (sys));
 				
 				final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 				priv.setFogOfWar (vis);
@@ -2263,7 +2263,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setCitiesSpellsAndCombatAreaEffects (fowSetting);
 
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (sys);
@@ -2275,7 +2275,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, fowSetting)).thenReturn (true);
 		
 		// Server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -2299,11 +2299,11 @@ public final class TestFogOfWarMidTurnChangesImpl
 				pd.setHuman (human);
 				
 				// Mock whether the player can see the city
-				final MapVolumeOfFogOfWarStates vis = ServerTestData.createFogOfWarArea (sys);
+				final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
 				vis.getPlane ().get (1).getRow ().get (10).getCell ().set (20, canSee ? FogOfWarStateID.CAN_SEE : FogOfWarStateID.NEVER_SEEN);
 				
 				final FogOfWarMemory fow = new FogOfWarMemory ();
-				fow.setMap (ServerTestData.createOverlandMap (sys));
+				fow.setMap (createOverlandMap (sys));
 				
 				final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 				priv.setFogOfWar (vis);
@@ -2414,7 +2414,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setCitiesSpellsAndCombatAreaEffects (fowSetting);
 
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (sys);
@@ -2426,7 +2426,7 @@ public final class TestFogOfWarMidTurnChangesImpl
 		when (single.canSeeMidTurn (FogOfWarStateID.CAN_SEE, fowSetting)).thenReturn (true);
 		
 		// Overland map
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 
@@ -2445,13 +2445,13 @@ public final class TestFogOfWarMidTurnChangesImpl
 				pd.setHuman (human);
 				
 				// Mock whether the player can see the city
-				final MapVolumeOfFogOfWarStates vis = ServerTestData.createFogOfWarArea (sys);
+				final MapVolumeOfFogOfWarStates vis = createFogOfWarArea (sys);
 				vis.getPlane ().get (1).getRow ().get (10).getCell ().set (20, canSee ? FogOfWarStateID.CAN_SEE : FogOfWarStateID.NEVER_SEEN);
 				
 				// Need to make the spell lists unique for verify to work correctly
 				final FogOfWarMemory fow = new FogOfWarMemory ();
 				fow.getBuilding ().add (new MemoryBuilding ());
-				fow.setMap (ServerTestData.createOverlandMap (sys));
+				fow.setMap (createOverlandMap (sys));
 				
 				final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 				priv.setFogOfWar (vis);

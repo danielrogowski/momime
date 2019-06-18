@@ -44,7 +44,7 @@ import momime.server.database.ServerDatabaseValues;
 /**
  * Tests the ServerCityCalculations class
  */
-public final class TestServerCityCalculationsImpl
+public final class TestServerCityCalculationsImpl extends ServerTestData
 {
 	/**
 	 * Tests the calculateDoubleFarmingRate method
@@ -53,10 +53,10 @@ public final class TestServerCityCalculationsImpl
 	@Test
 	public final void testCalculateDoubleFarmingRate () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
@@ -158,13 +158,13 @@ public final class TestServerCityCalculationsImpl
 		when (db.findRace ("RC03", "calculateDoubleFarmingRate")).thenReturn (halfling);
 
 		// Session description
-		final OverlandMapSize overlandMapSize = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
 		// Overland map
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (overlandMapSize);
 
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
@@ -294,7 +294,7 @@ public final class TestServerCityCalculationsImpl
 	@Test
 	public final void testCalculateCityScoutingRange () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
@@ -347,10 +347,10 @@ public final class TestServerCityCalculationsImpl
 	@Test
 	public final void testCanEventuallyConstructBuilding () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
+		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 

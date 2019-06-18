@@ -17,7 +17,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the CalculationBoxUI class
  */
-public final class TestCalculationBoxUI
+public final class TestCalculationBoxUI extends ClientTestData
 {
 	/**
 	 * Tests the CalculationBoxUI form, with fixed text
@@ -41,7 +41,7 @@ public final class TestCalculationBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CalculationBoxUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CalculationBoxUI.xml"));
 		layout.buildMaps ();
 
 		// Set up form
@@ -84,7 +84,7 @@ public final class TestCalculationBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CalculationBoxUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CalculationBoxUI.xml"));
 		layout.buildMaps ();
 
 		// Set up form
@@ -127,7 +127,7 @@ public final class TestCalculationBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CalculationBoxUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CalculationBoxUI.xml"));
 		layout.buildMaps ();
 
 		// Set up form

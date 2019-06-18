@@ -26,7 +26,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the TaxRateUI class
  */
-public final class TestTaxRateUI
+public final class TestTaxRateUI extends ClientTestData
 {
 	/**
 	 * Tests the TaxRateUI form
@@ -75,7 +75,7 @@ public final class TestTaxRateUI
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (ppk);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SelectAdvisorUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SelectAdvisorUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

@@ -22,7 +22,7 @@ import com.ndg.random.RandomUtils;
 /**
  * Tests the SpellAI class
  */
-public final class TestSpellAIImpl
+public final class TestSpellAIImpl extends ServerTestData
 {
 	/**
 	 * Tests the chooseSpellToResearchAI method with a valid spell list
@@ -31,7 +31,7 @@ public final class TestSpellAIImpl
 	@Test
 	public final void testChooseSpellToResearchAI_Valid () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 		
 		// Fix random result
 		final RandomUtils random = mock (RandomUtils.class);
@@ -67,7 +67,7 @@ public final class TestSpellAIImpl
 	@Test
 	public final void testChooseFreeSpellAI () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		// Fix random result
 		final RandomUtils random = mock (RandomUtils.class);

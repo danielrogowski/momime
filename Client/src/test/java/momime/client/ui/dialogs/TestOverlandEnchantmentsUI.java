@@ -42,7 +42,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the OverlandEnchantmentsUI class
  */
-public final class TestOverlandEnchantmentsUI
+public final class TestOverlandEnchantmentsUI extends ClientTestData
 {
 	/**
 	 * Tests the OverlandEnchantmentsUI form
@@ -136,7 +136,7 @@ public final class TestOverlandEnchantmentsUI
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

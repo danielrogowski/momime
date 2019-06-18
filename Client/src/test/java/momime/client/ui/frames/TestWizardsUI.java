@@ -31,7 +31,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the WizardsUI class
  */
-public final class TestWizardsUI
+public final class TestWizardsUI extends ClientTestData
 {
 	/**
 	 * Tests the WizardsUI form
@@ -108,7 +108,7 @@ public final class TestWizardsUI
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/WizardsUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/WizardsUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

@@ -78,7 +78,7 @@ import com.ndg.random.RandomUtils;
 /**
  * Tests the CityProcessingImpl class
  */
-public final class TestCityProcessingImpl
+public final class TestCityProcessingImpl extends ServerTestData
 {
 	/** buildingID for a Granary */
 	private final String GRANARY = "BL29";
@@ -151,7 +151,7 @@ public final class TestCityProcessingImpl
 		when (db.getBuildings ()).thenReturn (buildings);
 		
 		// Session description
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sys.setRaiderCityCount (2);
 
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
@@ -165,7 +165,7 @@ public final class TestCityProcessingImpl
 		sd.setDifficultyLevel (difficultyLevel);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -426,14 +426,14 @@ public final class TestCityProcessingImpl
 		when (db.findUnit ("UN001", "growCitiesAndProgressConstructionProjects")).thenReturn (unit);				
 		
 		// Session description
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (sys);
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -666,8 +666,8 @@ public final class TestCityProcessingImpl
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Overland map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -762,8 +762,8 @@ public final class TestCityProcessingImpl
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Overland map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -858,8 +858,8 @@ public final class TestCityProcessingImpl
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Overland map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -954,8 +954,8 @@ public final class TestCityProcessingImpl
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Overland map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1037,12 +1037,12 @@ public final class TestCityProcessingImpl
 		when (db.findTaxRate ("TR03", "changeTaxRate")).thenReturn (taxRate);
 		
 		// Session description
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (sys);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);

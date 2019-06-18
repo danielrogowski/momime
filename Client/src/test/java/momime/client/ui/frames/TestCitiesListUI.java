@@ -45,7 +45,7 @@ import momime.common.utils.MemoryBuildingUtils;
 /**
  * Tests the TestCitiesListUI class
  */
-public final class TestCitiesListUI
+public final class TestCitiesListUI extends ClientTestData
 {
 	/**
 	 * Tests the CitiesListUI form
@@ -113,13 +113,13 @@ public final class TestCitiesListUI
 		when (wizardClientUtils.getPlayerName (ourPlayer)).thenReturn ("Rjak");
 
 		// Session description
-		final OverlandMapSize mapSize = ClientTestData.createOverlandMapSize ();
+		final OverlandMapSize mapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (mapSize);
 		
 		// Map
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (mapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -197,12 +197,12 @@ public final class TestCitiesListUI
 
 		// Mock the minimap bitmaps provided by the RHP
 		final MiniMapBitmapGenerator gen = mock (MiniMapBitmapGenerator.class);
-		when (gen.generateMiniMapBitmap (0)).thenReturn (ClientTestData.createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x004000));
-		when (gen.generateMiniMapBitmap (1)).thenReturn (ClientTestData.createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x402000));
+		when (gen.generateMiniMapBitmap (0)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x004000));
+		when (gen.generateMiniMapBitmap (1)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x402000));
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI.xml"));
-		final XmlLayoutContainerEx rowLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI-Row.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI.xml"));
+		final XmlLayoutContainerEx rowLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CitiesListUI-Row.xml"));
 		layout.buildMaps ();
 		rowLayout.buildMaps ();
 

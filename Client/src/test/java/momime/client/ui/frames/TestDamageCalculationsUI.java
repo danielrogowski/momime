@@ -21,7 +21,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the DamageCalculationsUI class
  */
-public final class TestDamageCalculationsUI
+public final class TestDamageCalculationsUI extends ClientTestData
 {
 	/**
 	 * Tests the DamageCalculationsUI form
@@ -46,7 +46,7 @@ public final class TestDamageCalculationsUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/DamageCalculationsUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/DamageCalculationsUI.xml"));
 		layout.buildMaps ();
 
 		// Set up form

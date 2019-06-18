@@ -57,7 +57,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the CityViewUI class
  */
-public final class TestCityViewUI
+public final class TestCityViewUI extends ClientTestData
 {
 	/**
 	 * Tests the CityViewUI form
@@ -162,12 +162,12 @@ public final class TestCityViewUI
 		cityData.setCityOwnerID (ourCity ? 1 : 2);
 		cityData.setProductionSoFar (60);
 		
-		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (overlandMapSize);
 		final MemoryGridCell mc = terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20);
 		mc.setCityData (cityData);
 
@@ -258,7 +258,7 @@ public final class TestCityViewUI
 		when (gen.generateOverlandMapBitmaps (0, 20-3, 10-3, 7, 7)).thenReturn (miniMapBitmaps);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CityViewUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/CityViewUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

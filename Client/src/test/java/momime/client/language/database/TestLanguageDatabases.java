@@ -23,7 +23,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
  * So we can't tell whether entries are missing (and in the non-English files, they likely are missing), but we can do
  * basic checks against the XSD like optional/mandatory fields and that no unknown fields are present.
  */
-public final class TestLanguageDatabases
+public final class TestLanguageDatabases extends ClientTestData
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (TestLanguageDatabases.class);
@@ -44,7 +44,7 @@ public final class TestLanguageDatabases
 		final Validator xsd = schemaFactory.newSchema (xsdResource).newValidator ();
 
 		// Search for language files
-		for (final File languageXml : ClientTestData.locateLanguageXmlFolder ().listFiles ())
+		for (final File languageXml : locateLanguageXmlFolder ().listFiles ())
 			if (languageXml.isFile ())		// Ingore the "Backups" folder
 			{
 				log.info ("Testing language file \"" + languageXml.getName () + "\"");

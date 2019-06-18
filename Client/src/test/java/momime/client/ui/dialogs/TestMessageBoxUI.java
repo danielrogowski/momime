@@ -18,7 +18,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the MessageBoxUI class
  */
-public final class TestMessageBoxUI
+public final class TestMessageBoxUI extends ClientTestData
 {
 	/**
 	 * Tests the MessageBoxUI form, with fixed text
@@ -42,7 +42,7 @@ public final class TestMessageBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form
@@ -86,7 +86,7 @@ public final class TestMessageBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form
@@ -130,7 +130,7 @@ public final class TestMessageBoxUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form
@@ -182,7 +182,7 @@ public final class TestMessageBoxUI
 		final String text = "Here's some fixed text for the message box with no and yes buttons, which is long enough to have to split over a couple of lines.";
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MessageBoxUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

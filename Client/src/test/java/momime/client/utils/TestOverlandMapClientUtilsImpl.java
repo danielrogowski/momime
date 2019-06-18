@@ -15,7 +15,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 /**
  * Tests the OverlandMapClientUtilsImpl class
  */
-public final class TestOverlandMapClientUtilsImpl
+public final class TestOverlandMapClientUtilsImpl extends ClientTestData
 {
 	/**
 	 * Tests the findAdjacentTileType method where the centre tile matches
@@ -24,8 +24,8 @@ public final class TestOverlandMapClientUtilsImpl
 	public final void testFindAdjacentTileType_Centre ()
 	{
 		// Set up sample map
-		final CoordinateSystem sys = ClientTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
 		
 		final OverlandMapTerrainData centre = new OverlandMapTerrainData ();
 		centre.setTileTypeID ("TT02");
@@ -48,8 +48,8 @@ public final class TestOverlandMapClientUtilsImpl
 	public final void testFindAdjacentTileType_Adjacent ()
 	{
 		// Set up sample map
-		final CoordinateSystem sys = ClientTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
 		
 		final OverlandMapTerrainData centre = new OverlandMapTerrainData ();
 		centre.setTileTypeID ("TT02");
@@ -81,8 +81,8 @@ public final class TestOverlandMapClientUtilsImpl
 	public final void testFindAdjacentTileType_NoMatch ()
 	{
 		// Set up sample map
-		final CoordinateSystem sys = ClientTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (sys);
 		
 		final OverlandMapTerrainData centre = new OverlandMapTerrainData ();
 		centre.setTileTypeID ("TT02");

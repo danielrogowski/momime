@@ -54,7 +54,7 @@ import momime.common.utils.UnitUtils;
 /**
  * Tests the UnitRowDisplayUI class
  */
-public final class TestUnitRowDisplayUI
+public final class TestUnitRowDisplayUI extends ClientTestData
 {
 	/**
 	 * Tests the UnitRowDisplayUI form
@@ -206,7 +206,7 @@ public final class TestUnitRowDisplayUI
 		});
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/UnitRowDisplayUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/UnitRowDisplayUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

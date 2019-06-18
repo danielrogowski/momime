@@ -63,7 +63,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 /**
  * Tests the UnitServerUtils class
  */
-public final class TestUnitServerUtilsImpl
+public final class TestUnitServerUtilsImpl extends ServerTestData
 {
 	/**
 	 * Tests the describeBasicSkillValuesInDebugString method
@@ -685,10 +685,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		trueMap.setMap (createOverlandMap (sys));
 		
 		// Map cell we're trying to add to
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
@@ -736,10 +736,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		trueMap.setMap (createOverlandMap (sys));
 		
 		// Map cell we're trying to add to
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
@@ -791,10 +791,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		trueMap.setMap (createOverlandMap (sys));
 		
 		// Map cell we're trying to add to
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
@@ -847,10 +847,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		trueMap.setMap (createOverlandMap (sys));
 		
 		// Map cell we're trying to add to
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
@@ -904,10 +904,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		trueMap.setMap (createOverlandMap (sys));
 		
 		// Map cell we're trying to add to
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
@@ -955,10 +955,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		trueMap.setMap (createOverlandMap (sys));
 		
 		// Map cell we're trying to add to
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
@@ -1006,10 +1006,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		trueMap.setMap (createOverlandMap (sys));
 		
 		// Map cell we're trying to add to
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
@@ -1063,10 +1063,10 @@ public final class TestUnitServerUtilsImpl
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Map
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sys));
+		trueMap.setMap (createOverlandMap (sys));
 		
 		// Map cell we're trying to add to
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData (); 
@@ -1121,7 +1121,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
+		sd.setOverlandMapSize (createOverlandMapSize ());
 
 		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
@@ -1129,7 +1129,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
+		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 		
 		// Unit we're trying to add
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1199,7 +1199,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
+		sd.setOverlandMapSize (createOverlandMapSize ());
 
 		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
@@ -1207,7 +1207,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
+		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 
 		// Unit we're trying to add
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -1283,7 +1283,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setOverlandMapSize (ServerTestData.createOverlandMapSize ());
+		sd.setOverlandMapSize (createOverlandMapSize ());
 
 		final UnitSetting settings = new UnitSetting ();
 		settings.setUnitsPerMapCell (9);
@@ -1291,7 +1291,7 @@ public final class TestUnitServerUtilsImpl
 		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
-		trueMap.setMap (ServerTestData.createOverlandMap (sd.getOverlandMapSize ()));
+		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
 
 		// Unit we're trying to add
 		final UnitUtils unitUtils = mock (UnitUtils.class);

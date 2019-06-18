@@ -55,17 +55,17 @@ import momime.common.messages.MomCombatTile;
  * JAXB to load the server XML are server side only) yet many of the client-side tests need it, this manufactures pieces
  * of test data that are used by more than one test
  */
-public final class ClientTestData
+public class ClientTestData
 {
 	/**
 	 * @return Location of "English.Master of Magic Language.xml" and other language XMLs
 	 * @throws IOException If we are unable to locate the English XML file
 	 */
-	public final static File locateLanguageXmlFolder () throws IOException
+	public final File locateLanguageXmlFolder () throws IOException
 	{
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location
-		final URL languageXSD = new Object ().getClass ().getResource (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION);
+		final URL languageXSD = getClass ().getResource (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION);
 		final File languageFile = new File (languageXSD.getFile ());
 		final File englishXmlFile = new File (languageFile, "../../../../src/external/resources/momime.client.language.database");
 
@@ -76,11 +76,11 @@ public final class ClientTestData
 	 * @return Location of "Default.Master of Magic Graphics.xml" to test with
 	 * @throws IOException If we are unable to locate the default graphics XML file
 	 */
-	public final static File locateDefaultGraphicsXmlFile () throws IOException
+	public final File locateDefaultGraphicsXmlFile () throws IOException
 	{
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location
-		final URL graphicsXSD = new Object ().getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION);
+		final URL graphicsXSD = getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION);
 		final File graphicsFile = new File (graphicsXSD.getFile ());
 		final File graphicsXmlFile = new File (graphicsFile, "../../../../src/external/resources/momime.client.graphics.database/Default.Master of Magic Graphics.xml");
 
@@ -93,7 +93,7 @@ public final class ClientTestData
 	 * @return Parsed graphics database with all the hash maps built, needed by a select few of the tests - usually avoid this because this makes tests really slow
 	 * @throws Exception If there is a problem
 	 */
-	public final static GraphicsDatabaseEx loadGraphicsDatabase (final NdgUIUtils utils, final RandomUtils randomUtils) throws Exception
+	public final GraphicsDatabaseEx loadGraphicsDatabase (final NdgUIUtils utils, final RandomUtils randomUtils) throws Exception
 	{
 		// Need to set up a proper factory to create classes with spring injections
 		final GraphicsDatabaseObjectFactory factory = new GraphicsDatabaseObjectFactory ();
@@ -149,7 +149,7 @@ public final class ClientTestData
 		});
 		
 		// XSD
-		final URL xsdResource = new Object ().getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION_NO_SERVER_LINK);
+		final URL xsdResource = getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION_NO_SERVER_LINK);
 		assertNotNull ("MoM IME Graphics XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -171,7 +171,7 @@ public final class ClientTestData
 	/**
 	 * @return Demo MoM overland map-like coordinate system with a 60x40 square map wrapping left-to-right but not top-to-bottom
 	 */
-	public final static CoordinateSystem createOverlandMapCoordinateSystem ()
+	public final CoordinateSystem createOverlandMapCoordinateSystem ()
 	{
 		final CoordinateSystem sys = new CoordinateSystem ();
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
@@ -185,7 +185,7 @@ public final class ClientTestData
 	/**
 	 * @return Overland map coordinate system that can be included into session description
 	 */
-	public final static OverlandMapSize createOverlandMapSize ()
+	public final OverlandMapSize createOverlandMapSize ()
 	{
 		final OverlandMapSize sys = new OverlandMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.SQUARE);
@@ -204,7 +204,7 @@ public final class ClientTestData
 	 * @param sys Overland map coordinate system
 	 * @return Map area prepopulated with empty cells
 	 */
-	public final static MapVolumeOfMemoryGridCells createOverlandMap (final CoordinateSystem sys)
+	public final MapVolumeOfMemoryGridCells createOverlandMap (final CoordinateSystem sys)
 	{
 		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
 		for (int plane = 0; plane < sys.getDepth (); plane++)
@@ -228,7 +228,7 @@ public final class ClientTestData
 	/**
 	 * @return Demo MoM combat map-like coordinate system with a 60x40 diamond non-wrapping map
 	 */
-	public final static CoordinateSystem createCombatMapCoordinateSystem ()
+	public final CoordinateSystem createCombatMapCoordinateSystem ()
 	{
 		final CoordinateSystem sys = new CoordinateSystem ();
 		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
@@ -240,7 +240,7 @@ public final class ClientTestData
 	/**
 	 * @return Combat map coordinate system that can be included into session description
 	 */
-	public final static CombatMapSize createCombatMapSize ()
+	public final CombatMapSize createCombatMapSize ()
 	{
 		final CombatMapSize sys = new CombatMapSize ();
 		sys.setCoordinateSystemType (CoordinateSystemType.DIAMOND);
@@ -255,7 +255,7 @@ public final class ClientTestData
 	 * @param sys Combat map coordinate system
 	 * @return Map area prepopulated with empty cells
 	 */
-	public final static MapAreaOfCombatTiles createCombatMap (final CoordinateSystem sys)
+	public final MapAreaOfCombatTiles createCombatMap (final CoordinateSystem sys)
 	{
 		final MapAreaOfCombatTiles map = new MapAreaOfCombatTiles ();
 		for (int y = 0; y < sys.getHeight (); y++)
@@ -274,10 +274,10 @@ public final class ClientTestData
 	 * @return XML layout unmarshaller
 	 * @throws Exception If there is a problem
 	 */
-	public final static Unmarshaller createXmlLayoutUnmarshaller () throws Exception
+	public final Unmarshaller createXmlLayoutUnmarshaller () throws Exception
 	{
 		// XSD
-		final URL xsdResource = new Object ().getClass ().getResource (XmlLayoutConstants.XML_LAYOUT_XSD_LOCATION);
+		final URL xsdResource = getClass ().getResource (XmlLayoutConstants.XML_LAYOUT_XSD_LOCATION);
 		assertNotNull ("XML layout XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -296,7 +296,7 @@ public final class ClientTestData
 	 * @param colour Colour to fill in image
 	 * @return Solid colour image to test with 
 	 */
-	public final static BufferedImage createSolidImage (final int width, final int height, final int colour)
+	public final BufferedImage createSolidImage (final int width, final int height, final int colour)
 	{
 		final BufferedImage image = new BufferedImage (width, height, BufferedImage.TYPE_INT_ARGB);
 		final Graphics2D g = image.createGraphics ();
@@ -311,12 +311,5 @@ public final class ClientTestData
 		}
 		
 		return image;
-	}
-	
-	/**
-	 * Prevent instantiation
-	 */
-	private ClientTestData ()
-	{
 	}
 }

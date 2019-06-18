@@ -61,7 +61,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the NewGameUI class
  */
-public final class TestNewGameUI
+public final class TestNewGameUI extends ClientTestData
 {
 	/**
 	 * @return Newly set up NewGameUI to test with
@@ -469,7 +469,7 @@ public final class TestNewGameUI
 		when (client.getServerConnection ()).thenReturn (mock (ClientToServerConnection.class));
 
 		// Layouts
-		final Unmarshaller unmarshaller = ClientTestData.createXmlLayoutUnmarshaller ();
+		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
 		final XmlLayoutContainerEx mainLayout				= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-Main.xml"));
 		final XmlLayoutContainerEx newLayout					= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-New.xml"));
 		final XmlLayoutContainerEx mapSizeLayout			= (XmlLayoutContainerEx) unmarshaller.unmarshal (getClass ().getResource ("/momime.client.ui.frames/NewGameUI-MapSize.xml"));

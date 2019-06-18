@@ -55,7 +55,7 @@ import momime.common.messages.OverlandMapCityData;
 /**
  * Tests the ChangeConstructionUI class
  */
-public final class TestChangeConstructionUI
+public final class TestChangeConstructionUI extends ClientTestData
 {
 	/**
 	 * Tests the ChangeConstructionUI form
@@ -176,12 +176,12 @@ public final class TestChangeConstructionUI
 		cityData.setCitySizeID ("CS01");
 		cityData.setCityName ("Blahdy Blah");
 
-		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (overlandMapSize);
 		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -237,7 +237,7 @@ public final class TestChangeConstructionUI
 		renderer.setUtils (utils);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/UnitInfoPanel.xml"));
 		layout.buildMaps ();
 		
 		// Set up panel

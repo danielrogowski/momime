@@ -35,7 +35,7 @@ import com.ndg.swing.NdgUIUtilsImpl;
 /**
  * Tests the CityViewPanel class
  */
-public final class TestCityViewPanel
+public final class TestCityViewPanel extends ClientTestData
 {
 	/**
 	 * Tests the CityViewPanel panel
@@ -128,12 +128,12 @@ public final class TestCityViewPanel
 		when (gfx.getCityViewElements ()).thenReturn (elements);
 		
 		// Mock what is in this city
-		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
 		
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (overlandMapSize);
 
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);

@@ -30,7 +30,7 @@ import momime.common.messages.OverlandMapTerrainData;
 /**
  * Tests the MiniMapBitmapGeneratorImpl class
  */
-public final class TestMiniMapBitmapGeneratorImpl
+public final class TestMiniMapBitmapGeneratorImpl extends ClientTestData
 {
 	/**
 	 * Tests the generateMiniMapBitmap method
@@ -68,7 +68,7 @@ public final class TestMiniMapBitmapGeneratorImpl
 		sd.setOverlandMapSize (mapSize);
 		
 		// Terrain
-		final MapVolumeOfMemoryGridCells terrain = ClientTestData.createOverlandMap (mapSize);
+		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (mapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);

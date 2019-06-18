@@ -63,7 +63,7 @@ import momime.server.knowledge.ServerGridCellEx;
 /**
  * Tests the SpellQueueingImpl class
  */
-public final class TestSpellQueueingImpl
+public final class TestSpellQueueingImpl extends ServerTestData
 {
 	/**
 	 * Tests trying to cast a spell that we don't have researched
@@ -573,8 +573,8 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -655,8 +655,8 @@ public final class TestSpellQueueingImpl
 		when (db.findSpell ("SP001", "requestCastSpell")).thenReturn (spell);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -754,8 +754,8 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -851,9 +851,9 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -961,9 +961,9 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1075,9 +1075,9 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1189,9 +1189,9 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1312,9 +1312,9 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1432,9 +1432,9 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1562,9 +1562,9 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1693,9 +1693,9 @@ public final class TestSpellQueueingImpl
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1820,9 +1820,9 @@ public final class TestSpellQueueingImpl
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -1950,9 +1950,9 @@ public final class TestSpellQueueingImpl
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -2005,7 +2005,7 @@ public final class TestSpellQueueingImpl
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatMap (ServerTestData.createCombatMap ());
+		gc.setCombatMap (createCombatMap ());
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -2087,9 +2087,9 @@ public final class TestSpellQueueingImpl
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge
-		final OverlandMapSize sys = ServerTestData.createOverlandMapSize ();
+		final OverlandMapSize sys = createOverlandMapSize ();
 		sd.setOverlandMapSize (sys);
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -2142,7 +2142,7 @@ public final class TestSpellQueueingImpl
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
-		gc.setCombatMap (ServerTestData.createCombatMap ());
+		gc.setCombatMap (createCombatMap ());
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);

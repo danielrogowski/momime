@@ -33,7 +33,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the LoadGameUI class
  */
-public final class TestLoadGameUI
+public final class TestLoadGameUI extends ClientTestData
 {
 	/**
 	 * @return Newly created LoadGameUI
@@ -76,7 +76,7 @@ public final class TestLoadGameUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/JoinGameUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/JoinGameUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

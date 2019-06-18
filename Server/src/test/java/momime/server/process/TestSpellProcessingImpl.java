@@ -65,7 +65,7 @@ import momime.server.utils.UnitServerUtils;
 /**
  * Tests the SpellProcessingImpl class
  */
-public final class TestSpellProcessingImpl
+public final class TestSpellProcessingImpl extends ServerTestData
 {
 	/**
 	 * Tests the castOverlandNow spell casting a spell that we haven't researched yet
@@ -665,8 +665,8 @@ public final class TestSpellProcessingImpl
 	public final void testCastCombatNow_NotParticipating () throws Exception
 	{
 		// Server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -716,8 +716,8 @@ public final class TestSpellProcessingImpl
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -815,8 +815,8 @@ public final class TestSpellProcessingImpl
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -918,8 +918,8 @@ public final class TestSpellProcessingImpl
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Server knowledge
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sys);
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);

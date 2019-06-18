@@ -18,7 +18,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the SelectAdvisorUI class
  */
-public final class TestSelectAdvisorUI
+public final class TestSelectAdvisorUI extends ClientTestData
 {
 	/**
 	 * Tests the SelectAdvisorUI form
@@ -51,7 +51,7 @@ public final class TestSelectAdvisorUI
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SelectAdvisorUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SelectAdvisorUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form

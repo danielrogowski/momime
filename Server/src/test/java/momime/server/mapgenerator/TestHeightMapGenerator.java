@@ -16,7 +16,7 @@ import com.ndg.random.RandomUtilsImpl;
 /**
  * Tests the HeightMapGenerator class
  */
-public final class TestHeightMapGenerator
+public final class TestHeightMapGenerator extends ServerTestData
 {
 	/**
 	 * Tests the nearSingularity method
@@ -228,7 +228,7 @@ public final class TestHeightMapGenerator
 	@Test
 	public final void testSetHighestTiles ()
 	{
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final boolean [] [] area = new boolean [sys.getWidth ()] [sys.getHeight ()];
 
 		// Create a dummy height map, this makes 1 cell of height 0, 2 of height 1, 3 of height 2 and so on, and from the other side
@@ -291,7 +291,7 @@ public final class TestHeightMapGenerator
 	@Test
 	public final void testSetLowestTiles ()
 	{
-		final CoordinateSystem sys = ServerTestData.createOverlandMapCoordinateSystem ();
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final boolean [] [] area = new boolean [sys.getWidth ()] [sys.getHeight ()];
 
 		// Create a dummy height map, this makes 1 cell of height 0, 2 of height 1, 3 of height 2 and so on, and from the other side

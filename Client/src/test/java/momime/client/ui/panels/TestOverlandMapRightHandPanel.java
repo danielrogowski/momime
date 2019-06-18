@@ -61,7 +61,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 /**
  * Tests the OverlandMapRightHandPanel class
  */
-public final class TestOverlandMapRightHandPanel
+public final class TestOverlandMapRightHandPanel extends ClientTestData
 {
 	/**
 	 * All the tests need to set the panel up in the same way, so do so via this common method
@@ -161,9 +161,9 @@ public final class TestOverlandMapRightHandPanel
 		when (db.findMapFeature ("MF01", "surveyorLocationOrLanguageChanged")).thenReturn (mapFeature);
 		
 		// Overland map
-		final OverlandMapSize overlandMapSize = ClientTestData.createOverlandMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
-		final MapVolumeOfMemoryGridCells map = ClientTestData.createOverlandMap (overlandMapSize);
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (map);
@@ -261,10 +261,10 @@ public final class TestOverlandMapRightHandPanel
 		});
 		
 		// Layouts
-		final XmlLayoutContainerEx rhpLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel.xml"));
+		final XmlLayoutContainerEx rhpLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel.xml"));
 		rhpLayout.buildMaps ();
 
-		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) ClientTestData.createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
+		final XmlLayoutContainerEx surveyorLayout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.panels/OverlandMapRightHandPanel-Surveyor.xml"));
 		surveyorLayout.buildMaps ();
 		
 		// Set up panel

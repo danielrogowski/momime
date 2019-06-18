@@ -38,7 +38,7 @@ import momime.server.database.ServerDatabaseValues;
 /**
  * Tests the CityAI class
  */
-public final class TestCityAIImpl
+public final class TestCityAIImpl extends ServerTestData
 {
 	/**
 	 * Tests the chooseCityLocation method
@@ -47,10 +47,10 @@ public final class TestCityAIImpl
 	@Test
 	public final void testChooseCityLocation () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells map = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
+		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MapVolumeOfMemoryGridCells map = createOverlandMap (sd.getOverlandMapSize ());
 
 		// Fill map with ocean, then we can't build a city anywhere
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
@@ -176,11 +176,11 @@ public final class TestCityAIImpl
 	@Test
 	public final void testFindWorkersToConvertToFarmers () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
+		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
 
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -264,11 +264,11 @@ public final class TestCityAIImpl
 	@Test
 	public final void testDecideWhatToBuild () throws Exception
 	{
-		final ServerDatabaseEx db = ServerTestData.loadServerDatabase ();
+		final ServerDatabaseEx db = loadServerDatabase ();
 
 		// Map
-		final MomSessionDescription sd = ServerTestData.createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
-		final MapVolumeOfMemoryGridCells trueTerrain = ServerTestData.createOverlandMap (sd.getOverlandMapSize ());
+		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
 		final List<MemoryBuilding> trueBuildings = new ArrayList<MemoryBuilding> ();
 
 		// Need certain types of terrain in order to be able to construct all building types

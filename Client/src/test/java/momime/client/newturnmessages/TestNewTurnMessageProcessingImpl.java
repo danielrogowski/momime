@@ -9,15 +9,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
 import momime.client.MomClient;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageData;
-
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 /**
  * Tests the NewTurnMessageProcessingImpl class
@@ -153,14 +151,7 @@ public final class TestNewTurnMessageProcessingImpl
 		
 		// Factory for creating categories
 		final NewTurnMessagesFactory messageFactory = mock (NewTurnMessagesFactory.class);
-		when (messageFactory.createNewTurnMessageCategory ()).thenAnswer (new Answer<NewTurnMessageCategory> ()
-		{
-			@Override
-			public final NewTurnMessageCategory answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
-			{
-				return new NewTurnMessageCategory ();
-			}
-		});
+		when (messageFactory.createNewTurnMessageCategory ()).thenAnswer ((i) -> new NewTurnMessageCategory ());
 		
 		// Set up object to test
 		final NewTurnMessageProcessingImpl proc = new NewTurnMessageProcessingImpl ();

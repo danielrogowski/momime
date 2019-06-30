@@ -9,6 +9,17 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
+import org.junit.Test;
+
+import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.ClientDatabaseEx;
@@ -44,19 +55,6 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.TurnSystem;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
-
-import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
-import com.ndg.map.areas.storage.MapArea2DArrayListImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the OverlandMapRightHandPanel class
@@ -249,15 +247,11 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
-		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer (new Answer<SelectUnitButton> ()
+		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer ((i) ->
 		{
-			@Override
-			public final SelectUnitButton answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
-			{
-				final SelectUnitButton button = new SelectUnitButton ();
-				button.setUtils (utils);
-				return button;
-			}
+			final SelectUnitButton button = new SelectUnitButton ();
+			button.setUtils (utils);
+			return button;
 		});
 		
 		// Layouts

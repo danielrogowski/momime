@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -152,15 +150,11 @@ public final class TestOverlandMapUI extends ClientTestData
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
-		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer (new Answer<SelectUnitButton> ()
+		when (uiComponentFactory.createSelectUnitButton ()).thenAnswer ((i) ->
 		{
-			@Override
-			public final SelectUnitButton answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
-			{
-				final SelectUnitButton button = new SelectUnitButton ();
-				button.setUtils (utils);
-				return button;
-			}
+			final SelectUnitButton button = new SelectUnitButton ();
+			button.setUtils (utils);
+			return button;
 		});
 		
 		// Layouts

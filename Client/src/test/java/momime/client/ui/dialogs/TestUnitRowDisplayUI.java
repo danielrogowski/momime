@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -192,17 +190,13 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
-		when (uiComponentFactory.createUnitRowDisplayButton ()).thenAnswer (new Answer<UnitRowDisplayButton> ()
+		when (uiComponentFactory.createUnitRowDisplayButton ()).thenAnswer ((i) ->
 		{
-			@Override
-			public final UnitRowDisplayButton answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
-			{
-				final UnitRowDisplayButton button = new UnitRowDisplayButton ();
-				button.setUtils (utils);
-				button.setGraphicsDB (gfx);
-				button.setPlayerColourImageGenerator (gen);
-				return button;
-			}
+			final UnitRowDisplayButton button = new UnitRowDisplayButton ();
+			button.setUtils (utils);
+			button.setGraphicsDB (gfx);
+			button.setPlayerColourImageGenerator (gen);
+			return button;
 		});
 		
 		// Layout

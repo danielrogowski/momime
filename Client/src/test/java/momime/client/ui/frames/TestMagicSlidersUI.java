@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -196,15 +194,11 @@ public final class TestMagicSlidersUI extends ClientTestData
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);
-		when (uiComponentFactory.createMagicSlider ()).thenAnswer (new Answer<MagicSlider> ()
+		when (uiComponentFactory.createMagicSlider ()).thenAnswer ((i) ->
 		{
-			@Override
-			public final MagicSlider answer (@SuppressWarnings ("unused") final InvocationOnMock invocation) throws Throwable
-			{
-				final MagicSlider slider = new MagicSlider ();
-				slider.setUtils (utils);
-				return slider;
-			}
+			final MagicSlider slider = new MagicSlider ();
+			slider.setUtils (utils);
+			return slider;
 		});
 		
 		// With the values moving, we need the real calc production values routine in order to demonstrate the UI working properly

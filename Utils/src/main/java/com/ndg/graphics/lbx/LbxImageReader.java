@@ -662,7 +662,7 @@ public final class LbxImageReader extends ImageReader
 			// Technically we don't need the later ones, but may as well read them just to skip over the bytes in the stream
 			List<Integer> frameOffsets = new ArrayList<Integer> ();
 			for (int frameNo = 0; frameNo <= frameCount; frameNo++)
-				frameOffsets.add (new Integer (iis.readInt ()));		
+				frameOffsets.add (Integer.valueOf (iis.readInt ()));		
 
 			// Keep track of how many bytes we've read from the stream, because the offsets are based from the start of the file
 			long bytesRead = LBX_IMAGE_HEADER_SIZE + ((frameCount + 1) * 4); 

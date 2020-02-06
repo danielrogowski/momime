@@ -369,7 +369,7 @@ public final class NdgBmpWriter extends ImageWriter
 	 * @param uniqueColours Number of unique colours in the image = special value indicating an RLE
 	 * @param stream Stream to output the bits to, or null to just count how many bytes would be written without actually outputting them
 	 * @return Number of bits written
-	 * @throws IOException
+	 * @throws IOException If there is a problem
 	 */
 	private static final long writeRle (final long runLength, final int colourIndex, final int colourBitLength, final int rleBitLength, final int uniqueColours, final ImageOutputStream stream)
 		throws IOException

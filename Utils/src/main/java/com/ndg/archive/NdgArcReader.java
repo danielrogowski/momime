@@ -209,7 +209,10 @@ public final class NdgArcReader
 				for (final ArchivedFile thisFile : contents)
 				{
 					System.out.println (thisFile.getFileName () + "...");
-					extractFromArchiveToFile (new FileInputStream (archiveName), thisFile);
+					try (final FileInputStream inputStream = new FileInputStream (archiveName))
+					{
+						extractFromArchiveToFile (inputStream, thisFile);
+					}
 				}
 
 				System.out.println ("Done!");

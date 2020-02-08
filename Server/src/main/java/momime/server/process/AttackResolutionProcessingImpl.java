@@ -178,7 +178,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering processAttackResolutionStep: Attacking unit URN " + ((attacker != null) ? new Integer (attacker.getUnit ().getUnitURN ()).toString () : "N/A") +
+		log.trace ("Entering processAttackResolutionStep: Attacking unit URN " + ((attacker != null) ? Integer.valueOf (attacker.getUnit ().getUnitURN ()).toString () : "N/A") +
 			", Defending unit URN " + defender.getUnit ().getUnitURN () + ", " + steps.size () + " steps");
 
 		// Zero out damage taken

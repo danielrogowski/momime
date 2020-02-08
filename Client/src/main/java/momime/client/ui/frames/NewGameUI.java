@@ -1415,7 +1415,7 @@ public final class NewGameUI extends MomClientFrameUI
 				{
 					try
 					{
-						final String pickID = updateRetortsFromPicks (retorts.viewToModel (ev.getPoint ()));
+						final String pickID = updateRetortsFromPicks (retorts.viewToModel2D (ev.getPoint ()));
 						if (pickID != null)
 							getHelpUI ().showPickID (pickID);
 					}
@@ -2408,8 +2408,8 @@ public final class NewGameUI extends MomClientFrameUI
 		// Add these last, because they trigger enableOrDisableOkButton
 		for (int playerCount = 0; playerCount <= 13; playerCount++)
 		{
-			changeHumanOpponentsAction.addItem (playerCount, new Integer (playerCount).toString ());
-			changeAIOpponentsAction.addItem (playerCount, new Integer (playerCount).toString ());
+			changeHumanOpponentsAction.addItem (playerCount, Integer.valueOf (playerCount).toString ());
+			changeAIOpponentsAction.addItem (playerCount, Integer.valueOf (playerCount).toString ());
 		}
 		
 		// Lock frame size
@@ -2811,7 +2811,7 @@ public final class NewGameUI extends MomClientFrameUI
 										languageEntryID = "Prerequisites";
 									
 									msg.setText (getLanguage ().findCategoryEntry ("frmCustomPicks", languageEntryID).replaceAll
-										("PICK_COUNT", new Integer (pick.getPickCost ()).toString ()).replaceAll
+										("PICK_COUNT", Integer.valueOf (pick.getPickCost ()).toString ()).replaceAll
 										("PICK", (pickDescription != null) ? pickDescription : pick.getPickID ()).replaceAll
 										("PREREQUISITES", getPlayerPickClientUtils ().describePickPreRequisites (pick)));
 									
@@ -3344,7 +3344,7 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		changeDebugOptionsAction.clearItems ();
 		for (final boolean debugOptions : new boolean [] {false, true})
-			changeDebugOptionsAction.addItem (debugOptions, getLanguage ().findCategoryEntry ("XsdBoolean", new Boolean (debugOptions).toString ().toLowerCase ()));
+			changeDebugOptionsAction.addItem (debugOptions, getLanguage ().findCategoryEntry ("XsdBoolean", Boolean.valueOf (debugOptions).toString ().toLowerCase ()));
 
 		// CUSTOM MAP SIZE PANEL
 		mapSizeEdit.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "MapSize"));
@@ -3978,113 +3978,113 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Map size
 		final OverlandMapSize overlandMapSize = changeMapSizeAction.getSelectedItem ();
-		mapSizeWidth.setText						(new Integer (overlandMapSize.getWidth ()).toString ());
-		mapSizeHeight.setText						(new Integer (overlandMapSize.getHeight ()).toString ());
+		mapSizeWidth.setText						(Integer.valueOf (overlandMapSize.getWidth ()).toString ());
+		mapSizeHeight.setText						(Integer.valueOf (overlandMapSize.getHeight ()).toString ());
 		mapWrapsLeftToRight.setSelected		(overlandMapSize.isWrapsLeftToRight ());
 		mapWrapsTopToBottom.setSelected	(overlandMapSize.isWrapsTopToBottom ());
-		mapZoneWidth.setText						(new Integer (overlandMapSize.getZoneWidth ()).toString ());
-		mapZoneHeight.setText						(new Integer (overlandMapSize.getZoneHeight ()).toString ());
-		towersOfWizardryCount.setText			(new Integer (overlandMapSize.getTowersOfWizardryCount ()).toString ());
-		towersOfWizardrySeparation.setText	(new Integer (overlandMapSize.getTowersOfWizardrySeparation ()).toString ());
-		continentalRaceChance.setText			(new Integer (overlandMapSize.getContinentalRaceChance ()).toString ());
-		citySeparation.setText							(new Integer (overlandMapSize.getCitySeparation ()).toString ());
-		riverCount.setText								(new Integer (overlandMapSize.getRiverCount ()).toString ());
-		raiderCityCount.setText						(new Integer (overlandMapSize.getRaiderCityCount ()).toString ());
+		mapZoneWidth.setText						(Integer.valueOf (overlandMapSize.getZoneWidth ()).toString ());
+		mapZoneHeight.setText						(Integer.valueOf (overlandMapSize.getZoneHeight ()).toString ());
+		towersOfWizardryCount.setText			(Integer.valueOf (overlandMapSize.getTowersOfWizardryCount ()).toString ());
+		towersOfWizardrySeparation.setText	(Integer.valueOf (overlandMapSize.getTowersOfWizardrySeparation ()).toString ());
+		continentalRaceChance.setText			(Integer.valueOf (overlandMapSize.getContinentalRaceChance ()).toString ());
+		citySeparation.setText							(Integer.valueOf (overlandMapSize.getCitySeparation ()).toString ());
+		riverCount.setText								(Integer.valueOf (overlandMapSize.getRiverCount ()).toString ());
+		raiderCityCount.setText						(Integer.valueOf (overlandMapSize.getRaiderCityCount ()).toString ());
 		
 		for (final MapSizePlane plane : overlandMapSize.getMapSizePlane ())
 			if (plane.getPlaneNumber () == 0)
-				arcanusNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
+				arcanusNodeCount.setText (Integer.valueOf (plane.getNumberOfNodesOnPlane ()).toString ());
 			else
-				myrrorNodeCount.setText (new Integer (plane.getNumberOfNodesOnPlane ()).toString ());
+				myrrorNodeCount.setText (Integer.valueOf (plane.getNumberOfNodesOnPlane ()).toString ());
 	    
 		// Land proportion
 		final LandProportion landProportion = changeLandProportionAction.getSelectedItem ();
-		landPercentage.setText			(new Integer (landProportion.getPercentageOfMapIsLand ()).toString ());
-		hillsPercentage.setText			(new Integer (landProportion.getPercentageOfLandIsHills ()).toString ());
-		mountainsPercentage.setText	(new Integer (landProportion.getPercentageOfHillsAreMountains ()).toString ());
-		tundraDistance.setText			(new Integer (landProportion.getTundraRowCount ()).toString ());
+		landPercentage.setText			(Integer.valueOf (landProportion.getPercentageOfMapIsLand ()).toString ());
+		hillsPercentage.setText			(Integer.valueOf (landProportion.getPercentageOfLandIsHills ()).toString ());
+		mountainsPercentage.setText	(Integer.valueOf (landProportion.getPercentageOfHillsAreMountains ()).toString ());
+		tundraDistance.setText			(Integer.valueOf (landProportion.getTundraRowCount ()).toString ());
 		
 		for (final LandProportionTileType tileType : landProportion.getLandProportionTileType ())
 			if (tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOREST))
 			{
-				treesPercentage.setText (new Integer (tileType.getPercentageOfLand ()).toString ());
-				treeAreaSize.setText (new Integer (tileType.getEachAreaTileCount ()).toString ());
+				treesPercentage.setText (Integer.valueOf (tileType.getPercentageOfLand ()).toString ());
+				treeAreaSize.setText (Integer.valueOf (tileType.getEachAreaTileCount ()).toString ());
 			}
 			else if (tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_DESERT))
 			{
-				desertsPercentage.setText (new Integer (tileType.getPercentageOfLand ()).toString ());
-				desertAreaSize.setText (new Integer (tileType.getEachAreaTileCount ()).toString ());
+				desertsPercentage.setText (Integer.valueOf (tileType.getPercentageOfLand ()).toString ());
+				desertAreaSize.setText (Integer.valueOf (tileType.getEachAreaTileCount ()).toString ());
 			}
 			else if (tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_SWAMP))
 			{
-				swampsPercentage.setText (new Integer (tileType.getPercentageOfLand ()).toString ());
-				swampAreaSize.setText (new Integer (tileType.getEachAreaTileCount ()).toString ());
+				swampsPercentage.setText (Integer.valueOf (tileType.getPercentageOfLand ()).toString ());
+				swampAreaSize.setText (Integer.valueOf (tileType.getEachAreaTileCount ()).toString ());
 			}
 		
 		for (final LandProportionPlane plane : landProportion.getLandProportionPlane ())
 			if (plane.getPlaneNumber () == 0)
-				arcanusMineralChance.setText (new Integer (plane.getFeatureChance ()).toString ());
+				arcanusMineralChance.setText (Integer.valueOf (plane.getFeatureChance ()).toString ());
 			else
-				myrrorMineralChance.setText (new Integer (plane.getFeatureChance ()).toString ());
+				myrrorMineralChance.setText (Integer.valueOf (plane.getFeatureChance ()).toString ());
 
 		// Node strength
 		final NodeStrength nodeStrength = changeNodeStrengthAction.getSelectedItem ();
-		doubleNodeAuraMagicPower.setText (new Integer (nodeStrength.getDoubleNodeAuraMagicPower ()).toString ());
+		doubleNodeAuraMagicPower.setText (Integer.valueOf (nodeStrength.getDoubleNodeAuraMagicPower ()).toString ());
 		
 		for (final NodeStrengthPlane plane : nodeStrength.getNodeStrengthPlane ())
 			if (plane.getPlaneNumber () == 0)
 			{
-				arcanusNodeSizeMin.setText (new Integer (plane.getNodeAuraSquaresMinimum ()).toString ());
-				arcanusNodeSizeMax.setText (new Integer (plane.getNodeAuraSquaresMaximum ()).toString ());
+				arcanusNodeSizeMin.setText (Integer.valueOf (plane.getNodeAuraSquaresMinimum ()).toString ());
+				arcanusNodeSizeMax.setText (Integer.valueOf (plane.getNodeAuraSquaresMaximum ()).toString ());
 			}
 			else
 			{
-				myrrorNodeSizeMin.setText (new Integer (plane.getNodeAuraSquaresMinimum ()).toString ());
-				myrrorNodeSizeMax.setText (new Integer (plane.getNodeAuraSquaresMaximum ()).toString ());
+				myrrorNodeSizeMin.setText (Integer.valueOf (plane.getNodeAuraSquaresMinimum ()).toString ());
+				myrrorNodeSizeMax.setText (Integer.valueOf (plane.getNodeAuraSquaresMaximum ()).toString ());
 			}
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = changeDifficultyLevelAction.getSelectedItem ();
-		humanSpellPicks.setText					(new Integer (difficultyLevel.getHumanSpellPicks ()).toString ());
-		aiSpellPicks.setText						(new Integer (difficultyLevel.getAiSpellPicks ()).toString ());
-		humanStartingGold.setText				(new Integer (difficultyLevel.getHumanStartingGold ()).toString ());
-		aiStartingGold.setText						(new Integer (difficultyLevel.getAiStartingGold ()).toString ());
+		humanSpellPicks.setText					(Integer.valueOf (difficultyLevel.getHumanSpellPicks ()).toString ());
+		aiSpellPicks.setText						(Integer.valueOf (difficultyLevel.getAiSpellPicks ()).toString ());
+		humanStartingGold.setText				(Integer.valueOf (difficultyLevel.getHumanStartingGold ()).toString ());
+		aiStartingGold.setText						(Integer.valueOf (difficultyLevel.getAiStartingGold ()).toString ());
 		allowCustomWizards.setSelected		(difficultyLevel.isCustomWizards ());
 		eachWizardOnlyOnce.setSelected		(difficultyLevel.isEachWizardOnlyOnce ());
-		wizardCityStartSize.setText				(new Integer (difficultyLevel.getWizardCityStartSize ()).toString ());
-		maxCitySize.setText						(new Integer (difficultyLevel.getCityMaxSize ()).toString ());
-		raiderCityStartSizeMin.setText			(new Integer (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
-		raiderCityStartSizeMax.setText		(new Integer (difficultyLevel.getRaiderCityStartSizeMax ()).toString ());
-		raiderCitySizeCap.setText				(new Integer (difficultyLevel.getRaiderCityGrowthCap ()).toString ());
-		towersMonstersMin.setText				(new Integer (difficultyLevel.getTowerMonstersMinimum ()).toString ());
-		towersMonstersMax.setText			(new Integer (difficultyLevel.getTowerMonstersMaximum ()).toString ());
-		towersTreasureMin.setText				(new Integer (difficultyLevel.getTowerTreasureMinimum ()).toString ());
-		towersTreasureMax.setText			(new Integer (difficultyLevel.getTowerTreasureMaximum ()).toString ());
-		normalLairCount.setText					(new Integer (difficultyLevel.getNormalLairCount ()).toString ());
-		weakLairCount.setText					(new Integer (difficultyLevel.getWeakLairCount ()).toString ());
+		wizardCityStartSize.setText				(Integer.valueOf (difficultyLevel.getWizardCityStartSize ()).toString ());
+		maxCitySize.setText						(Integer.valueOf (difficultyLevel.getCityMaxSize ()).toString ());
+		raiderCityStartSizeMin.setText			(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
+		raiderCityStartSizeMax.setText		(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMax ()).toString ());
+		raiderCitySizeCap.setText				(Integer.valueOf (difficultyLevel.getRaiderCityGrowthCap ()).toString ());
+		towersMonstersMin.setText				(Integer.valueOf (difficultyLevel.getTowerMonstersMinimum ()).toString ());
+		towersMonstersMax.setText			(Integer.valueOf (difficultyLevel.getTowerMonstersMaximum ()).toString ());
+		towersTreasureMin.setText				(Integer.valueOf (difficultyLevel.getTowerTreasureMinimum ()).toString ());
+		towersTreasureMax.setText			(Integer.valueOf (difficultyLevel.getTowerTreasureMaximum ()).toString ());
+		normalLairCount.setText					(Integer.valueOf (difficultyLevel.getNormalLairCount ()).toString ());
+		weakLairCount.setText					(Integer.valueOf (difficultyLevel.getWeakLairCount ()).toString ());
 		
 		for (final DifficultyLevelPlane plane : difficultyLevel.getDifficultyLevelPlane ())
 			if (plane.getPlaneNumber () == 0)
 			{
-				arcanusNormalLairMonstersMin.setText	(new Integer (plane.getNormalLairMonstersMinimum ()).toString ());
-				arcanusNormalLairMonstersMax.setText	(new Integer (plane.getNormalLairMonstersMaximum ()).toString ());
-				arcanusNormalLairTreasureMin.setText	(new Integer (plane.getNormalLairTreasureMinimum ()).toString ());
-				arcanusNormalLairTreasureMax.setText	(new Integer (plane.getNormalLairTreasureMaximum ()).toString ());
-				arcanusWeakLairMonstersMin.setText		(new Integer (plane.getWeakLairMonstersMinimum ()).toString ());
-				arcanusWeakLairMonstersMax.setText		(new Integer (plane.getWeakLairMonstersMaximum ()).toString ());
-				arcanusWeakLairTreasureMin.setText		(new Integer (plane.getWeakLairTreasureMinimum ()).toString ());
-				arcanusWeakLairTreasureMax.setText		(new Integer (plane.getWeakLairTreasureMaximum ()).toString ());
+				arcanusNormalLairMonstersMin.setText	(Integer.valueOf (plane.getNormalLairMonstersMinimum ()).toString ());
+				arcanusNormalLairMonstersMax.setText	(Integer.valueOf (plane.getNormalLairMonstersMaximum ()).toString ());
+				arcanusNormalLairTreasureMin.setText	(Integer.valueOf (plane.getNormalLairTreasureMinimum ()).toString ());
+				arcanusNormalLairTreasureMax.setText	(Integer.valueOf (plane.getNormalLairTreasureMaximum ()).toString ());
+				arcanusWeakLairMonstersMin.setText		(Integer.valueOf (plane.getWeakLairMonstersMinimum ()).toString ());
+				arcanusWeakLairMonstersMax.setText		(Integer.valueOf (plane.getWeakLairMonstersMaximum ()).toString ());
+				arcanusWeakLairTreasureMin.setText		(Integer.valueOf (plane.getWeakLairTreasureMinimum ()).toString ());
+				arcanusWeakLairTreasureMax.setText		(Integer.valueOf (plane.getWeakLairTreasureMaximum ()).toString ());
 			}
 			else
 			{
-				myrrorNormalLairMonstersMin.setText		(new Integer (plane.getNormalLairMonstersMinimum ()).toString ());
-				myrrorNormalLairMonstersMax.setText		(new Integer (plane.getNormalLairMonstersMaximum ()).toString ());
-				myrrorNormalLairTreasureMin.setText		(new Integer (plane.getNormalLairTreasureMinimum ()).toString ());
-				myrrorNormalLairTreasureMax.setText		(new Integer (plane.getNormalLairTreasureMaximum ()).toString ());
-				myrrorWeakLairMonstersMin.setText		(new Integer (plane.getWeakLairMonstersMinimum ()).toString ());
-				myrrorWeakLairMonstersMax.setText		(new Integer (plane.getWeakLairMonstersMaximum ()).toString ());
-				myrrorWeakLairTreasureMin.setText		(new Integer (plane.getWeakLairTreasureMinimum ()).toString ());
-				myrrorWeakLairTreasureMax.setText		(new Integer (plane.getWeakLairTreasureMaximum ()).toString ());
+				myrrorNormalLairMonstersMin.setText		(Integer.valueOf (plane.getNormalLairMonstersMinimum ()).toString ());
+				myrrorNormalLairMonstersMax.setText		(Integer.valueOf (plane.getNormalLairMonstersMaximum ()).toString ());
+				myrrorNormalLairTreasureMin.setText		(Integer.valueOf (plane.getNormalLairTreasureMinimum ()).toString ());
+				myrrorNormalLairTreasureMax.setText		(Integer.valueOf (plane.getNormalLairTreasureMaximum ()).toString ());
+				myrrorWeakLairMonstersMin.setText		(Integer.valueOf (plane.getWeakLairMonstersMinimum ()).toString ());
+				myrrorWeakLairMonstersMax.setText		(Integer.valueOf (plane.getWeakLairMonstersMaximum ()).toString ());
+				myrrorWeakLairTreasureMin.setText		(Integer.valueOf (plane.getWeakLairTreasureMinimum ()).toString ());
+				myrrorWeakLairTreasureMax.setText		(Integer.valueOf (plane.getWeakLairTreasureMaximum ()).toString ());
 			}
 		
 		// Node difficulty
@@ -4095,17 +4095,17 @@ public final class NewGameUI extends MomClientFrameUI
 			{
 				if (dlns.getPlaneNumber () == 0)
 				{
-					arcanusNodeMonstersMin.setText	(new Integer (dlns.getMonstersMinimum ()).toString ());
-					arcanusNodeMonstersMax.setText	(new Integer (dlns.getMonstersMaximum ()).toString ());
-					arcanusNodeTreasureMin.setText	(new Integer (dlns.getTreasureMinimum ()).toString ());
-					arcanusNodeTreasureMax.setText	(new Integer (dlns.getTreasureMaximum ()).toString ());
+					arcanusNodeMonstersMin.setText	(Integer.valueOf (dlns.getMonstersMinimum ()).toString ());
+					arcanusNodeMonstersMax.setText	(Integer.valueOf (dlns.getMonstersMaximum ()).toString ());
+					arcanusNodeTreasureMin.setText	(Integer.valueOf (dlns.getTreasureMinimum ()).toString ());
+					arcanusNodeTreasureMax.setText	(Integer.valueOf (dlns.getTreasureMaximum ()).toString ());
 				}
 				else
 				{
-					myrrorNodeMonstersMin.setText		(new Integer (dlns.getMonstersMinimum ()).toString ());
-					myrrorNodeMonstersMax.setText		(new Integer (dlns.getMonstersMaximum ()).toString ());
-					myrrorNodeTreasureMin.setText		(new Integer (dlns.getTreasureMinimum ()).toString ());
-					myrrorNodeTreasureMax.setText		(new Integer (dlns.getTreasureMaximum ()).toString ());
+					myrrorNodeMonstersMin.setText		(Integer.valueOf (dlns.getMonstersMinimum ()).toString ());
+					myrrorNodeMonstersMax.setText		(Integer.valueOf (dlns.getMonstersMaximum ()).toString ());
+					myrrorNodeTreasureMin.setText		(Integer.valueOf (dlns.getTreasureMinimum ()).toString ());
+					myrrorNodeTreasureMax.setText		(Integer.valueOf (dlns.getTreasureMaximum ()).toString ());
 				}
 			}
 		
@@ -4124,11 +4124,11 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Unit settings
 		final UnitSetting unitSettings = changeUnitSettingsAction.getSelectedItem ();
-		maxUnitsPerGridCell.setText						(new Integer (unitSettings.getUnitsPerMapCell ()).toString ());
+		maxUnitsPerGridCell.setText						(Integer.valueOf (unitSettings.getUnitsPerMapCell ()).toString ());
 		exceedMaxUnitsDuringCombat.setSelected	(unitSettings.isCanExceedMaximumUnitsDuringCombat ());
 		maximumHeroes.setText								((unitSettings.getMaxHeroes () == null) ? "" : unitSettings.getMaxHeroes ().toString ());
 		maxHeroItemBonuses.setText						((unitSettings.getMaxHeroItemBonuses () == null) ? "" : unitSettings.getMaxHeroItemBonuses ().toString ());
-		maxHeroItemSpellCharges.setText				(new Integer (unitSettings.getMaxHeroItemSpellCharges ()).toString ());
+		maxHeroItemSpellCharges.setText				(Integer.valueOf (unitSettings.getMaxHeroItemSpellCharges ()).toString ());
 		maxHeroItemsInBank.setText						((unitSettings.getMaxHeroItemsInBank () == null) ? "" : unitSettings.getMaxHeroItemsInBank ().toString ());
 		rollHeroSkillsAtStart.setSelected					(unitSettings.isRollHeroSkillsAtStartOfGame ());
 		
@@ -4142,11 +4142,11 @@ public final class NewGameUI extends MomClientFrameUI
 		castingCostReductionMultiplicative.setSelected	(spellSettings.getSpellBooksCastingReductionCombination () == CastingReductionCombination.MULTIPLICATIVE);
 		researchBonusAdditive.setSelected					(spellSettings.getSpellBooksResearchBonusCombination () == CastingReductionCombination.ADDITIVE);
 		researchBonusMultiplicative.setSelected			(spellSettings.getSpellBooksResearchBonusCombination () == CastingReductionCombination.MULTIPLICATIVE);
-		spellBookCountForFirstReduction.setText			(new Integer (spellSettings.getSpellBooksToObtainFirstReduction ()).toString ());
-		castingCostReduction.setText							(new Integer (spellSettings.getSpellBooksCastingReduction ()).toString ());
-		researchBonus.setText									(new Integer (spellSettings.getSpellBooksResearchBonus ()).toString ());
-		castingCostReductionCap.setText						(new Integer (spellSettings.getSpellBooksCastingReductionCap ()).toString ());
-		researchBonusCap.setText								(new Integer (spellSettings.getSpellBooksResearchBonusCap ()).toString ());
+		spellBookCountForFirstReduction.setText			(Integer.valueOf (spellSettings.getSpellBooksToObtainFirstReduction ()).toString ());
+		castingCostReduction.setText							(Integer.valueOf (spellSettings.getSpellBooksCastingReduction ()).toString ());
+		researchBonus.setText									(Integer.valueOf (spellSettings.getSpellBooksResearchBonus ()).toString ());
+		castingCostReductionCap.setText						(Integer.valueOf (spellSettings.getSpellBooksCastingReductionCap ()).toString ());
+		researchBonusCap.setText								(Integer.valueOf (spellSettings.getSpellBooksResearchBonusCap ()).toString ());
 		
 		// Debug options
 		disableFogOfWar.setSelected (false);

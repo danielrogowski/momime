@@ -51,7 +51,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "APPLICABLE_POPULATION":
-				text = new Integer (getBreakdown ().getApplicablePopulation ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getApplicablePopulation ()).toString ();
 				break;
 
 			case "PRODUCTION_PER_PERSON":
@@ -63,11 +63,11 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "CONSUMPTION_PER_PERSON":
-				text = new Integer (getBreakdown ().getConsumptionAmountEachPopulation ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getConsumptionAmountEachPopulation ()).toString ();
 				break;
 				
 			case "CONSUMPTION_ALL_PEOPLE":
-				text = new Integer (getBreakdown ().getConsumptionAmountAllPopulation ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getConsumptionAmountAllPopulation ()).toString ();
 				break;
 				
 			case "FORTRESS_NAME":
@@ -77,7 +77,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				
 			case "PLANE_NAME":
 				final PlaneLang plane = getLanguage ().findPlane (getBreakdown ().getFortressPlane ());
-				text = (plane == null) ? new Integer (getBreakdown ().getFortressPlane ()).toString () : plane.getPlaneDescription ();
+				text = (plane == null) ? Integer.valueOf (getBreakdown ().getFortressPlane ()).toString () : plane.getPlaneDescription ();
 				break;
 				
 			case "FORTRESS_PLANE_PRODUCTION":
@@ -85,27 +85,27 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "GOLD_TRADE_BONUS_TILE_TYPE":
-				text = new Integer (getBreakdown ().getTradePercentageBonusFromTileType ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTradePercentageBonusFromTileType ()).toString ();
 				break;
 				
 			case "GOLD_TRADE_BONUS_ROADS":
-				text = new Integer (getBreakdown ().getTradePercentageBonusFromRoads ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTradePercentageBonusFromRoads ()).toString ();
 				break;
 				
 			case "GOLD_TRADE_BONUS_RACE":
-				text = new Integer (getBreakdown ().getTradePercentageBonusFromRace ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTradePercentageBonusFromRace ()).toString ();
 				break;
 				
 			case "GOLD_TRADE_BONUS_TOTAL":
-				text = new Integer (getBreakdown ().getTradePercentageBonusUncapped ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTradePercentageBonusUncapped ()).toString ();
 				break;
 				
 			case "GOLD_TRADE_BONUS_CAPPED":
-				text = new Integer (getBreakdown ().getTradePercentageBonusCapped ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTradePercentageBonusCapped ()).toString ();
 				break;
 				
 			case "CURRENT_POPULATION_DIV_1000":
-				text = new Integer (getBreakdown ().getTotalPopulation ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTotalPopulation ()).toString ();
 				break;
 				
 			case "UNMODIFIED_PRODUCTION_AMOUNT":
@@ -113,35 +113,35 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "ROUNDED_PRODUCTION_AMOUNT":
-				text = new Integer (getBreakdown ().getBaseProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getBaseProductionAmount ()).toString ();
 				break;
 				
 			case "PERCENTAGE_BONUS":
-				text = new Integer (getBreakdown ().getPercentageBonus ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getPercentageBonus ()).toString ();
 				break;
 				
 			case "PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS":
-				text = new Integer (getBreakdown ().getModifiedProductionAmount () - getBreakdown ().getBaseProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount () - getBreakdown ().getBaseProductionAmount ()).toString ();
 				break;
 				
 			case "PRODUCTION_TOTAL":
-				text = new Integer (getBreakdown ().getModifiedProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount ()).toString ();
 				break;
 				
 			case "PRODUCTION_CAPPED":
-				text = new Integer (getBreakdown ().getCappedProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getCappedProductionAmount ()).toString ();
 				break;
 				
 			case "CONSUMPTION_AMOUNT":
-				text = new Integer (getBreakdown ().getConsumptionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getConsumptionAmount ()).toString ();
 				break;
 				
 			case "NET_GAIN":
-				text = new Integer (getBreakdown ().getCappedProductionAmount () - getBreakdown ().getConsumptionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getCappedProductionAmount () - getBreakdown ().getConsumptionAmount ()).toString ();
 				break;
 				
 			case "NET_LOSS":
-				text = new Integer (getBreakdown ().getConsumptionAmount () - getBreakdown ().getCappedProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getConsumptionAmount () - getBreakdown ().getCappedProductionAmount ()).toString ();
 				break;
 
 			case "CONVERT_PRODUCTION_FROM_TYPE":
@@ -150,11 +150,11 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "CONVERT_PRODUCTION_FROM_AMOUNT":
-				text = new Integer (getBreakdown ().getConvertFromProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getConvertFromProductionAmount ()).toString ();
 				break;
 				
 			case "CONVERT_PRODUCTION_TO_AMOUNT":
-				text = new Integer (getBreakdown ().getConvertToProductionAmount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getConvertToProductionAmount ()).toString ();
 				break;
 				
 			// Dependant on current population task
@@ -169,7 +169,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "NUMBER_DOING_TASK":
-				text = new Integer (getCurrentPopulationTask ().getCount ()).toString ();
+				text = Integer.valueOf (getCurrentPopulationTask ().getCount ()).toString ();
 				break;
 				
 			case "PRODUCTION_PER_TASK":
@@ -187,7 +187,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "TILE_COUNT":
-				text = new Integer (getCurrentTileType ().getCount ()).toString ();
+				text = Integer.valueOf (getCurrentTileType ().getCount ()).toString ();
 				break;
 				
 			case "PRODUCTION_PER_TILE":
@@ -199,11 +199,11 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "PERCENTAGE_PER_TILE":
-				text = new Integer (getCurrentTileType ().getPercentageBonusEachTile ()).toString ();
+				text = Integer.valueOf (getCurrentTileType ().getPercentageBonusEachTile ()).toString ();
 				break;
 				
 			case "PERCENTAGE_ALL_TILES":
-				text = new Integer (getCurrentTileType ().getPercentageBonusAllTiles ()).toString ();
+				text = Integer.valueOf (getCurrentTileType ().getPercentageBonusAllTiles ()).toString ();
 				break;
 
 			// Dependant on current map feature
@@ -213,7 +213,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "MAP_FEATURE_COUNT":
-				text = new Integer (getCurrentMapFeature ().getCount ()).toString ();
+				text = Integer.valueOf (getCurrentMapFeature ().getCount ()).toString ();
 				break;
 
 			case "PRODUCTION_PER_MAP_FEATURE":
@@ -225,7 +225,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "MINERAL_BONUS_FROM_RACE":
-				text = new Integer (getCurrentMapFeature ().getRaceMineralBonusMultiplier ()).toString ();
+				text = Integer.valueOf (getCurrentMapFeature ().getRaceMineralBonusMultiplier ()).toString ();
 				break;
 				
 			case "MAP_FEATURE_PRODUCTION_AMOUNT_AFTER_RACE_BONUS":
@@ -233,7 +233,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "BUILDING_MINERAL_PERCENTAGE_BONUS":
-				text = new Integer (getCurrentMapFeature ().getBuildingMineralPercentageBonus ()).toString ();
+				text = Integer.valueOf (getCurrentMapFeature ().getBuildingMineralPercentageBonus ()).toString ();
 				break;
 
 			case "MAP_FEATURE_PRODUCTION_AMOUNT_FINAL":
@@ -251,7 +251,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "RELIGIOUS_PERCENTAGE_BONUS":
-				text = new Integer (getCurrentBuilding ().getReligiousBuildingPercentageBonus ()).toString ();
+				text = Integer.valueOf (getCurrentBuilding ().getReligiousBuildingPercentageBonus ()).toString ();
 				break;
 				
 			case "BUILDING_MODIFIED_PRODUCTION":
@@ -263,11 +263,11 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "BUILDING_PERCENTAGE_VALUE":
-				text = new Integer (getCurrentBuilding ().getPercentageBonus ()).toString ();
+				text = Integer.valueOf (getCurrentBuilding ().getPercentageBonus ()).toString ();
 				break;
 
 			case "BUILDING_CONSUMPTION":
-				text = new Integer (getCurrentBuilding ().getConsumptionAmount ()).toString ();
+				text = Integer.valueOf (getCurrentBuilding ().getConsumptionAmount ()).toString ();
 				break;
 
 			// Dependant on current pick type
@@ -278,7 +278,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "PICK_COUNT":
-				text = new Integer (getCurrentPickType ().getCount ()).toString ();
+				text = Integer.valueOf (getCurrentPickType ().getCount ()).toString ();
 				break;
 				
 			case "PRODUCTION_PER_PICK":

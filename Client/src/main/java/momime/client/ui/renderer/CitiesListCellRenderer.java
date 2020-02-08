@@ -104,10 +104,10 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		final CitiesListEntry city, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		cityName.setText (city.getCityName ());
-		cityPopulation.setText (new Integer (city.getCityPopulation () / 1000).toString ());
-		cityRations.setText (new Integer (city.getRations ()).toString ());
-		cityGold.setText (new Integer (city.getGold ()).toString ());
-		cityProduction.setText (new Integer (city.getProduction ()).toString ());
+		cityPopulation.setText (Integer.valueOf (city.getCityPopulation () / 1000).toString ());
+		cityRations.setText (Integer.valueOf (city.getRations ()).toString ());
+		cityGold.setText (Integer.valueOf (city.getGold ()).toString ());
+		cityProduction.setText (Integer.valueOf (city.getProduction ()).toString ());
 		
 		final RaceLang race = getLanguage ().findRace (city.getCityRaceID ());
 		final String raceName = (race != null) ? race.getRaceName () : null;

@@ -21,7 +21,7 @@ public final class TestProductionTypeGfx
 		for (int n = 1; n <= 3; n++)
 		{
 			final ProductionTypeImageGfx image = new ProductionTypeImageGfx ();
-			image.setProductionValue (new Integer (n).toString ());
+			image.setProductionValue (Integer.valueOf (n).toString ());
 			image.setProductionImageFile ("Blah" + n + ".png");
 			
 			productionType.getProductionTypeImage ().add (image);

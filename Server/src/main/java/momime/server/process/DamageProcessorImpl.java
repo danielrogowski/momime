@@ -104,7 +104,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	{
 		if (log.isTraceEnabled ())
 		{
-			String msg = "Entering resolveAttack: Attacking unit URN " + ((attacker != null) ? new Integer (attacker.getUnitURN ()).toString () : "N/A") + ", Defending unit URN(s) ";
+			String msg = "Entering resolveAttack: Attacking unit URN " + ((attacker != null) ? Integer.valueOf (attacker.getUnitURN ()).toString () : "N/A") + ", Defending unit URN(s) ";
 			
 			for (final MemoryUnit defender : defenders)
 				msg = msg + defender.getUnitURN () + ", ";

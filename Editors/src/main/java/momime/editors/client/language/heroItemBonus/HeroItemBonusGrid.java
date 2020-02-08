@@ -84,7 +84,7 @@ public final class HeroItemBonusGrid extends MoMEditorGridWithImport
 					{
 						// Add the main heroItemBonus record
 						heroItemBonusNumber++;
-						final String heroItemBonusID = "IB" + StringUtils.padStart (new Integer (heroItemBonusNumber).toString (), "0", 2);
+						final String heroItemBonusID = "IB" + StringUtils.padStart (Integer.valueOf (heroItemBonusNumber).toString (), "0", 2);
 						
 						final Element heroItemElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_HERO_ITEM_BONUS);
 						heroItemElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_HERO_ITEM_BONUS_ID, heroItemBonusID);

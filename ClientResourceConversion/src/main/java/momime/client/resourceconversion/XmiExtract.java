@@ -23,6 +23,7 @@ public final class XmiExtract
 		System.out.println ("Extracting " + lbxName + " sub file " + subFileNumber);
 		try (final FileInputStream in1 = new FileInputStream ("C:\\32 bit Program Files\\DosBox - Master of Magic\\Magic\\" + lbxName + ".LBX"))
 		{
+			@SuppressWarnings ("resource")
 			final ImageInputStream in2 = LbxArchiveReader.getSubFileImageInputStream (in1, subFileNumber);
 			try (final FileOutputStream out = new FileOutputStream ("E:\\Install Games\\Master of Magic\\Music\\XMIs\\" + lbxName + "_" + subFileNumber + ".xmi"))
 			{

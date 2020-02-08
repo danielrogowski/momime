@@ -120,7 +120,7 @@ public final class HeroNameGrid extends MoMEditorGridWithImport
 					String heroName = StreamUtils.readNullTerminatedFixedLengthStringFromStream (lbxStream, recordSize, "Name " + heroNameNo + " for hero " + unitNo);
 
 					// Look up the hero class, e.g. Dwarf, Assassin, Chosen
-					final String unitId = "UN" + StringUtils.padStart (new Integer (unitNo).toString (), "0", 3);
+					final String unitId = "UN" + StringUtils.padStart (Integer.valueOf (unitNo).toString (), "0", 3);
 					final String heroClass = JdomUtils.findDomChildNodeWithTextAttribute (getContainer (), ServerEditorDatabaseConstants.TAG_ENTITY_UNIT,
 						ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, unitId).getChildText (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_NAME);
 

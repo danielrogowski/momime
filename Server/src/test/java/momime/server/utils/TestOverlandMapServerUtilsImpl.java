@@ -91,7 +91,8 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 		final MapAreaOperations3DImpl<String> op = new MapAreaOperations3DImpl<String> ();
-		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
+		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl ();
+		op.setCoordinateSystemUtils (coordinateSystemUtils);
 
 		// Fill map with ocean
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
@@ -162,6 +163,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
 		final MapAreaOperations3DImpl<String> op = new MapAreaOperations3DImpl<String> ();
 		final CoordinateSystemUtilsImpl coordinateSystemUtils = new CoordinateSystemUtilsImpl (); 
+		op.setCoordinateSystemUtils (coordinateSystemUtils);
 
 		// Fill map with ocean
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())

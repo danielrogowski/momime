@@ -11,7 +11,7 @@
 		<file>
 			<source>MoMIMEEditorsLogging-sample.xml</source>
 			<destName>MoMIMEEditorsLogging.xml</destName>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</file>
 	</files>
 </assembly>

@@ -26,7 +26,7 @@ public final class RecordNotFoundException extends IOException
 	 */
 	public RecordNotFoundException (final String table, final int keyValue, final String caller)
 	{
-		this (table, new Integer (keyValue).toString (), caller);
+		this (table, Integer.valueOf (keyValue).toString (), caller);
 	}
 
 	/**

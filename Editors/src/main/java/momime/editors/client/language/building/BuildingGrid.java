@@ -62,7 +62,7 @@ public final class BuildingGrid extends MoMEditorGridWithImport
 
 				// Add to XML
 				final Element buildingElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING);
-				buildingElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_BUILDING_ID, "BL" + StringUtils.padStart (new Integer (recordNo).toString (), "0", 2));
+				buildingElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_BUILDING_ID, "BL" + StringUtils.padStart (Integer.valueOf (recordNo).toString (), "0", 2));
 
 				final Element helpTextElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_HELP_TEXT);
 				helpTextElement.setText (buildingHelpText);

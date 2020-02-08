@@ -99,7 +99,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 			upkeepList = upkeepList + thisUpkeep.replaceAll
 				("PRODUCTION_TYPE", (productionTypeDescription != null) ? productionTypeDescription : upkeep.getProductionTypeID ()).replaceAll
 				("HALF_UPKEEP_VALUE", getTextUtils ().halfIntToStr (upkeep.getUndoubledProductionValue ())).replaceAll
-				("UPKEEP_VALUE", new Integer (upkeep.getUndoubledProductionValue ()).toString ());
+				("UPKEEP_VALUE", Integer.valueOf (upkeep.getUndoubledProductionValue ()).toString ());
 		}
 		
 		// Did we find any?

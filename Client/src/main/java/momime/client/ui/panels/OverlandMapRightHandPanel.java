@@ -1152,7 +1152,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				getSurveyorLocation ().getZ (), getClient ().getSessionDescription ().getOverlandMapSize ()).get (getSurveyorLocation ().getX (), getSurveyorLocation ().getY ()))
 			{
 				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity").replaceAll
-					("CITY_SEPARATION", new Integer (getClient ().getSessionDescription ().getOverlandMapSize ().getCitySeparation ()).toString ());
+					("CITY_SEPARATION", Integer.valueOf (getClient ().getSessionDescription ().getOverlandMapSize ().getCitySeparation ()).toString ());
 			}
 			else
 			{
@@ -1162,13 +1162,13 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
 				
 				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CanBuildCity").replaceAll
-					("MAXIMUM_POPULATION", new Integer (getCityCalculations ().listCityFoodProductionFromTerrainTiles
+					("MAXIMUM_POPULATION", Integer.valueOf (getCityCalculations ().listCityFoodProductionFromTerrainTiles
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
 						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getDoubleProductionAmount ()).toString () + ",000").replaceAll
-					("PRODUCTION_BONUS", new Integer (getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
+					("PRODUCTION_BONUS", Integer.valueOf (getCityCalculations ().listCityProductionPercentageBonusesFromTerrainTiles
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
 						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getPercentageBonus ()).toString ()).replaceAll
-					("GOLD_BONUS", new Integer (gold.getTradePercentageBonusFromTileType ()).toString ());
+					("GOLD_BONUS", Integer.valueOf (gold.getTradePercentageBonusFromTileType ()).toString ());
 			}
 		}
 		

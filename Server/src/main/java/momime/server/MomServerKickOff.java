@@ -1,10 +1,10 @@
 package momime.server;
 
-import java.security.InvalidParameterException;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ndg.utils.ProcessUtilsImpl;
 
 import momime.common.MomCommonConstants;
-
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * The MomServer class declares a log, so as soon as the classloader touches it, it fires up log4j.
@@ -26,16 +26,7 @@ public final class MomServerKickOff
 			System.setProperty ("configDir", configDir);
 			
 			// Ensure minimum required JVM version
-			final String [] javaVersion = System.getProperty ("java.version").split ("\\.");
-			final int majorVersion = Integer.parseInt (javaVersion [0]);
-			final int minorVersion = Integer.parseInt (javaVersion [1]);
-
-			if ((majorVersion < MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION) ||
-				((majorVersion == MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION) && (minorVersion < MomCommonConstants.JAVA_REQUIRED_MINOR_VERSION)))
-				
-				throw new InvalidParameterException ("MoM IME requires a Java Virtual Machine version " +
-					MomCommonConstants.JAVA_REQUIRED_MAJOR_VERSION + "." + MomCommonConstants.JAVA_REQUIRED_MINOR_VERSION +
-					" or newer to run, but only detected version " + majorVersion + "." + minorVersion);
+			new ProcessUtilsImpl ().ensureMinimumJavaVersion ("MoM IME Server", MomCommonConstants.JAVA_REQUIRED_VERSION);
 			
 			// Initialize logging first, in case debug logging for spring itself is enabled
 			System.setProperty ("log4j.configurationFile", "" + configDir + "MoMIMEServerLogging.xml");

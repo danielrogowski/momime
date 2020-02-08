@@ -199,7 +199,7 @@ public final class CombatAIImpl implements CombatAI
 				}
 			}
 		
-		log.trace ("Exiting selectBestTarget : Unit URN " + ((bestUnit == null) ? "null" : new Integer (bestUnit.getUnitURN ()).toString ()));
+		log.trace ("Exiting selectBestTarget : Unit URN " + ((bestUnit == null) ? "null" : Integer.valueOf (bestUnit.getUnitURN ()).toString ()));
 		return bestUnit;
 	}
 	

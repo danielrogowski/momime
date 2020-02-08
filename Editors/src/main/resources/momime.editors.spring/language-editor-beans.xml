@@ -86,6 +86,7 @@
 	
 	<bean id="ask" class="com.ndg.xmleditor.editor.AskForXsdAndXmlFileLocations" init-method="init">
 		<property name="utils" ref="utils" />
+		<property name="processUtils" ref="processUtils" />
 		<property name="dispatcher" ref="dispatcher" />
 		<property name="parser" ref="parser" />
 		<property name="schemaFactory" ref="schemaFactory" />

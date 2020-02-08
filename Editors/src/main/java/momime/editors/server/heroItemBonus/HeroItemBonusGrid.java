@@ -139,7 +139,7 @@ public final class HeroItemBonusGrid extends MoMEditorGridWithImport
 					{
 						// Add the main heroItemBonus record
 						heroItemBonusNumber++;
-						final String heroItemBonusID = "IB" + StringUtils.padStart (new Integer (heroItemBonusNumber).toString (), "0", 2);
+						final String heroItemBonusID = "IB" + StringUtils.padStart (Integer.valueOf (heroItemBonusNumber).toString (), "0", 2);
 						
 						final Element heroItemElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_HERO_ITEM_BONUS);
 						heroItemElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_HERO_ITEM_BONUS_ID, heroItemBonusID);
@@ -161,7 +161,7 @@ public final class HeroItemBonusGrid extends MoMEditorGridWithImport
 							bonusStatElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_SKILL_ID, unitSkillID);
 							
 							final Element bonusStatValueElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_SKILL_VALUE);
-							bonusStatValueElement.setText (new Integer (count).toString ());
+							bonusStatValueElement.setText (Integer.valueOf (count).toString ());
 							bonusStatElement.addContent (bonusStatValueElement);
 							
 							heroItemElement.addContent (bonusStatElement);
@@ -173,7 +173,7 @@ public final class HeroItemBonusGrid extends MoMEditorGridWithImport
 							prereqElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_PICK_ID, pickID);
 							
 							final Element quantityElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_QUANTITY);
-							quantityElement.setText (new Integer (count).toString ());
+							quantityElement.setText (Integer.valueOf (count).toString ());
 							prereqElement.addContent (quantityElement);
 							
 							heroItemElement.addContent (prereqElement);
@@ -195,7 +195,7 @@ public final class HeroItemBonusGrid extends MoMEditorGridWithImport
 						{
 							if ((itemTypeFlags & flagBitmask) > 0)
 							{
-								final String heroItemTypeID = "IT" + StringUtils.padStart (new Integer (itemType).toString (), "0", 2);
+								final String heroItemTypeID = "IT" + StringUtils.padStart (Integer.valueOf (itemType).toString (), "0", 2);
 								final Element heroItemType = JdomUtils.findDomChildNodeWithTextAttribute (getMdiEditor ().getXmlDocuments ().get (0).getXml (),
 									ServerEditorDatabaseConstants.TAG_ENTITY_HERO_ITEM_TYPE, ServerEditorDatabaseConstants.TAG_ATTRIBUTE_HERO_ITEM_TYPE_ID, heroItemTypeID);
 								

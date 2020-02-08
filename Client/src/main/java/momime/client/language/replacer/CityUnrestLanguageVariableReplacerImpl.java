@@ -23,23 +23,23 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 		switch (code)
 		{
 			case "CURRENT_POPULATION_DIV_1000":
-				text = new Integer (getBreakdown ().getPopulation ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getPopulation ()).toString ();
 				break;
 
 			case "TAX_PERCENTAGE":
-				text = new Integer (getBreakdown ().getTaxPercentage ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTaxPercentage ()).toString ();
 				break;
 
 			case "RACE_PERCENTAGE":
-				text = new Integer (getBreakdown ().getRacialPercentage ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getRacialPercentage ()).toString ();
 				break;
 
 			case "TOTAL_PERCENTAGE":
-				text = new Integer (getBreakdown ().getTotalPercentage ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTotalPercentage ()).toString ();
 				break;
 
 			case "BASE_UNREST":
-				text = new Integer (getBreakdown ().getBaseValue ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getBaseValue ()).toString ();
 				break;
 				
 			case "RACE_LITERAL":
@@ -47,11 +47,11 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 				break;
 				
 			case "RELIGIOUS_BUILDING_REDUCTION":
-				text = new Integer (getBreakdown ().getReligiousBuildingReduction ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getReligiousBuildingReduction ()).toString ();
 				break;
 				
 			case "RETORT_PERCENTAGE":
-				text = new Integer (getBreakdown ().getReligiousBuildingRetortPercentage ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getReligiousBuildingRetortPercentage ()).toString ();
 				break;
 
 			case "RETORT_LIST":
@@ -59,27 +59,27 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 				break;
 
 			case "RETORT_VALUE":
-				text = new Integer (getBreakdown ().getReligiousBuildingRetortValue ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getReligiousBuildingRetortValue ()).toString ();
 				break;
 				
 			case "UNIT_REDUCTION":
-				text = new Integer (getBreakdown ().getUnitReduction ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getUnitReduction ()).toString ();
 				break;
 				
 			case "UNIT_COUNT":
-				text = new Integer (getBreakdown ().getUnitCount ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getUnitCount ()).toString ();
 				break;
 				
 			case "BASE_TOTAL":
-				text = new Integer (getBreakdown ().getBaseTotal ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getBaseTotal ()).toString ();
 				break;
 				
 			case "MINIMUM_FARMERS":
-				text = new Integer (getBreakdown ().getMinimumFarmers ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getMinimumFarmers ()).toString ();
 				break;
 				
 			case "TOTAL_AFTER_FARMERS":
-				text = new Integer (getBreakdown ().getTotalAfterFarmers ()).toString ();
+				text = Integer.valueOf (getBreakdown ().getTotalAfterFarmers ()).toString ();
 				break;
 				
 			// Dependant on current building

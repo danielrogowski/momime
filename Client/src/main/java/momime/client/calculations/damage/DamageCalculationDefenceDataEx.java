@@ -137,8 +137,8 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 		String text = "          " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll
 			("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
-			("DEFENDER_FIGURES", new Integer (getDefenderFigures ()).toString ()).replaceAll
-			("FINAL_HITS", new Integer (getFinalHits ()).toString ());
+			("DEFENDER_FIGURES", Integer.valueOf (getDefenderFigures ()).toString ()).replaceAll
+			("FINAL_HITS", Integer.valueOf (getFinalHits ()).toString ());
 
 		// All of these are only applicable if we actually make to hit/to defend rolls, so may be null
 		if (getActualHits () != null)
@@ -151,10 +151,10 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 			text = text.replaceAll ("MODIFIED_DEFENCE_STRENGTH", getModifiedDefenceStrength ().toString ());
 		
 		if (getChanceToHit () != null)
-			text = text.replaceAll ("CHANCE_TO_HIT", new Integer (getChanceToHit () * 10).toString ());
+			text = text.replaceAll ("CHANCE_TO_HIT", Integer.valueOf (getChanceToHit () * 10).toString ());
 		
 		if (getChanceToDefend () != null)
-			text = text.replaceAll ("CHANCE_TO_DEFEND", new Integer (getChanceToDefend () * 10).toString ());
+			text = text.replaceAll ("CHANCE_TO_DEFEND", Integer.valueOf (getChanceToDefend () * 10).toString ());
 		
 		if (getTenTimesAverageDamage () != null)
 			text = text.replaceAll ("AVERAGE_DAMAGE", getTextUtils ().insertDecimalPoint (getTenTimesAverageDamage (), 1));

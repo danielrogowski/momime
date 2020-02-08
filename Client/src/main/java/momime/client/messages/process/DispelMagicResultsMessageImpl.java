@@ -86,7 +86,7 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 			String line = getLanguage ().findCategoryEntry ("DispelMagic", languageEntryID).replaceAll
 				("SPELL_NAME", (spellName != null) ? spellName : result.getSpellID ()).replaceAll
 				("CASTING_COST", getTextUtils ().intToStrCommas (result.getCastingCost ())).replaceAll
-				("PERCENTAGE", new Integer ((int) (result.getChance () * 100d)).toString ());
+				("PERCENTAGE", Integer.valueOf ((int) (result.getChance () * 100d)).toString ());
 			
 			if (getCastingPlayerID () == getClient ().getOurPlayerID ())
 				line = line.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (getMultiplayerSessionUtils ().findPlayerWithID

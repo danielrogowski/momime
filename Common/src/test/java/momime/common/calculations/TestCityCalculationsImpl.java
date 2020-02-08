@@ -1792,6 +1792,7 @@ public final class TestCityCalculationsImpl
 		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
 		overlandMapSize.setWidth (sys.getWidth ());
 		overlandMapSize.setHeight (sys.getHeight ());
+		overlandMapSize.setDepth (sys.getDepth ());
 		overlandMapSize.setCoordinateSystemType (sys.getCoordinateSystemType ());
 		overlandMapSize.setWrapsLeftToRight (sys.isWrapsLeftToRight ());
 		overlandMapSize.setWrapsTopToBottom (sys.isWrapsTopToBottom ());
@@ -2592,6 +2593,7 @@ public final class TestCityCalculationsImpl
 		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
 		overlandMapSize.setWidth (sys.getWidth ());
 		overlandMapSize.setHeight (sys.getHeight ());
+		overlandMapSize.setDepth (sys.getDepth ());
 		overlandMapSize.setCoordinateSystemType (sys.getCoordinateSystemType ());
 		overlandMapSize.setWrapsLeftToRight (sys.isWrapsLeftToRight ());
 		overlandMapSize.setWrapsTopToBottom (sys.isWrapsTopToBottom ());
@@ -2736,7 +2738,9 @@ public final class TestCityCalculationsImpl
 		// Map
 		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
-		final MapAreaOperations2DImpl<Boolean> op = new MapAreaOperations2DImpl<Boolean> (); 
+		
+		final MapAreaOperations2DImpl<Boolean> op = new MapAreaOperations2DImpl<Boolean> ();
+		op.setCoordinateSystemUtils (coordinateSystemUtils);
 
 		// Coordinate system
 		final OverlandMapSize overlandMapSize = new OverlandMapSize ();

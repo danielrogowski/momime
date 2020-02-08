@@ -31,6 +31,6 @@ public final class UnitTypeLang extends UnitType
 	public final String findExperienceLevelName (final int expLvl)
 	{
 		final String name = experienceLevelNamesMap.get (expLvl);
-		return (name != null) ? name : new Integer (expLvl).toString ();
+		return (name != null) ? name : Integer.valueOf (expLvl).toString ();
 	}
 }

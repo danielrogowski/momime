@@ -127,7 +127,7 @@ public final class SpellGrid extends MoMEditorGridWithImport
 
 								// Add to XML
 								final Element spellElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_SPELL);
-								spellElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_SPELL_ID, "SP" + StringUtils.padStart (new Integer (recordNo).toString (), "0", 3));
+								spellElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_SPELL_ID, "SP" + StringUtils.padStart (Integer.valueOf (recordNo).toString (), "0", 3));
 
 								final Element nameElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_NAME);
 								nameElement.setText (spellName);

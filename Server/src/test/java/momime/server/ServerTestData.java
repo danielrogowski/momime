@@ -376,7 +376,7 @@ public class ServerTestData
 						final int tileTypeNumber = (int) cell.getNumericCellValue ();
 						if (tileTypeNumber > 0)
 						{
-							String tileTypeID = new Integer (tileTypeNumber).toString ();
+							String tileTypeID = Integer.valueOf (tileTypeNumber).toString ();
 							while (tileTypeID.length () < 2)
 								tileTypeID = "0" + tileTypeID;
 

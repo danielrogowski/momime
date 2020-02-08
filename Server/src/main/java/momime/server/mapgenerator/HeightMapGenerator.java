@@ -300,7 +300,7 @@ final class HeightMapGenerator
 						count++;
 
 			// Add to the list
-			heightCounts.add (new Integer (count));
+			heightCounts.add (Integer.valueOf (count));
 			tilesDone = tilesDone + count;
 		}
 

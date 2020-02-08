@@ -1092,7 +1092,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	{
 		if (log.isTraceEnabled ())
 		{
-			String msg = "Entering sendCombatDamageToClients: Attacking unit URN " + ((tuAttacker != null) ? new Integer (tuAttacker.getUnitURN ()).toString () : "N/A") +
+			String msg = "Entering sendCombatDamageToClients: Attacking unit URN " + ((tuAttacker != null) ? Integer.valueOf (tuAttacker.getUnitURN ()).toString () : "N/A") +
 				", Defending unit URN(s) ";
 			
 			for (final MemoryUnit tuDefender : tuDefenders)

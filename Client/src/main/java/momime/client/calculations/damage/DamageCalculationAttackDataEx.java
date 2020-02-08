@@ -166,7 +166,7 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		String text = "     " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
 			("ATTACK_TYPE", attackType).replaceAll
-			("POTENTIAL_HITS", (getPotentialHits () == null) ? "0" : new Integer (getPotentialHits ()).toString ());
+			("POTENTIAL_HITS", (getPotentialHits () == null) ? "0" : Integer.valueOf (getPotentialHits ()).toString ());
 		
 		if (getAttackerUnit () != null)
 			text = text.replaceAll ("ATTACKER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getAttackerUnit (), UnitNameType.RACE_UNIT_NAME));

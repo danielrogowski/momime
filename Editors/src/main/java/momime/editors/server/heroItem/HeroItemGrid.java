@@ -112,15 +112,15 @@ public final class HeroItemGrid extends MoMEditorGridWithImport
 				final long effectFlags = (buf [46] < 0 ? buf [46] + 256l : buf [46]) + ((buf [47] < 0 ? buf [47] + 256l : buf [47]) << 8) +
 					((buf [48] < 0 ? buf [48] + 256l : buf [48]) << 16) + ((buf [49] < 0 ? buf [49] + 256l : buf [49]) << 24);
 
-				final String heroItemTypeID = "IT" + StringUtils.padStart (new Integer (itemTypeNumber+1).toString (), "0", 2);
-				final String attackBonusID = (attackBonus == 0) ? null : "IB" + StringUtils.padStart (new Integer (attackBonus).toString (), "0", 2);
-				final String toHitBonusID = (toHitBonus == 0) ? null : "IB" + StringUtils.padStart (new Integer (toHitBonus + 12).toString (), "0", 2);
-				final String defenceBonusID = (defenceBonus == 0) ? null : "IB" + StringUtils.padStart (new Integer (defenceBonus + 6).toString (), "0", 2);
-				final String movementBonusID = (movementBonus == 0) ? null : "IB" + StringUtils.padStart (new Integer (movementBonus + 15).toString (), "0", 2);
-				final String resistanceBonusID = (resistanceBonus == 0) ? null : "IB" + StringUtils.padStart (new Integer (resistanceBonus + 19).toString (), "0", 2);
-				final String spellSkillBonusID = (spellSkillBonus == 0) ? null : "IB" + StringUtils.padStart (new Integer (spellSkillBonus + 25).toString (), "0", 2);
-				final String spellSaveBonusID = (spellSaveBonus == 0) ? null : "IB" + StringUtils.padStart (new Integer (spellSaveBonus + 29).toString (), "0", 2);
-				final String spellID = (spellNumber == 0) ? null : "SP" + StringUtils.padStart (new Integer (spellNumber).toString (), "0", 3);
+				final String heroItemTypeID = "IT" + StringUtils.padStart (Integer.valueOf (itemTypeNumber+1).toString (), "0", 2);
+				final String attackBonusID = (attackBonus == 0) ? null : "IB" + StringUtils.padStart (Integer.valueOf (attackBonus).toString (), "0", 2);
+				final String toHitBonusID = (toHitBonus == 0) ? null : "IB" + StringUtils.padStart (Integer.valueOf (toHitBonus + 12).toString (), "0", 2);
+				final String defenceBonusID = (defenceBonus == 0) ? null : "IB" + StringUtils.padStart (Integer.valueOf (defenceBonus + 6).toString (), "0", 2);
+				final String movementBonusID = (movementBonus == 0) ? null : "IB" + StringUtils.padStart (Integer.valueOf (movementBonus + 15).toString (), "0", 2);
+				final String resistanceBonusID = (resistanceBonus == 0) ? null : "IB" + StringUtils.padStart (Integer.valueOf (resistanceBonus + 19).toString (), "0", 2);
+				final String spellSkillBonusID = (spellSkillBonus == 0) ? null : "IB" + StringUtils.padStart (Integer.valueOf (spellSkillBonus + 25).toString (), "0", 2);
+				final String spellSaveBonusID = (spellSaveBonus == 0) ? null : "IB" + StringUtils.padStart (Integer.valueOf (spellSaveBonus + 29).toString (), "0", 2);
+				final String spellID = (spellNumber == 0) ? null : "SP" + StringUtils.padStart (Integer.valueOf (spellNumber).toString (), "0", 3);
 				
 				// The image numbers need altering - in the original MoM this is an index into ITEMS.LBX, from 0..115
 				// In MoM IME this is just the index within the item type, so there is a sword 0..8 just as there is a separate sheild 0..8
@@ -245,7 +245,7 @@ public final class HeroItemGrid extends MoMEditorGridWithImport
 					heroItem.addContent (heroItemTypeElement);
 
 					final Element imageNumberElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_HERO_ITEM_IMAGE_NUMBER);
-					imageNumberElement.setText (new Integer (imageNumber).toString ());
+					imageNumberElement.setText (Integer.valueOf (imageNumber).toString ());
 					heroItem.addContent (imageNumberElement);
 					
 					if (spellID != null)
@@ -255,7 +255,7 @@ public final class HeroItemGrid extends MoMEditorGridWithImport
 						heroItem.addContent (spellElement);
 
 						final Element spellChargesElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_HERO_ITEM_SPELL_CHARGES);
-						spellChargesElement.setText (new Integer (spellCharges).toString ());
+						spellChargesElement.setText (Integer.valueOf (spellCharges).toString ());
 						heroItem.addContent (spellChargesElement);
 					}
 					

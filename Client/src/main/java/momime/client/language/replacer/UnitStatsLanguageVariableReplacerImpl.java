@@ -86,23 +86,23 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			
 			// Used by skill descriptions
 			case "MANA_TOTAL":
-				text = new Integer (getUnit ().calculateManaTotal ()).toString ();
+				text = Integer.valueOf (getUnit ().calculateManaTotal ()).toString ();
 				break;
 
 			case "MANA_REMAINING":
 				if (getUnit ().isMemoryUnit ())
-					text = new Integer (getUnit ().getManaRemaining ()).toString ();
+					text = Integer.valueOf (getUnit ().getManaRemaining ()).toString ();
 				else
 					text = "MANA_TOTAL";
 				break;
 
 			case "AMMO_TOTAL":
-				text = new Integer (getUnit ().calculateFullRangedAttackAmmo ()).toString ();
+				text = Integer.valueOf (getUnit ().calculateFullRangedAttackAmmo ()).toString ();
 				break;
 				
 			case "AMMO_REMAINING":
 				if (getUnit ().isMemoryUnit ())
-					text = new Integer (getUnit ().getAmmoRemaining ()).toString ();
+					text = Integer.valueOf (getUnit ().getAmmoRemaining ()).toString ();
 				else
 					text = "AMMO_TOTAL";
 				break;
@@ -235,14 +235,14 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 								modifiedLevelNumber--;
 							
 							text = getLanguage ().findCategoryEntry ("frmHelp", "ExperienceForNextLevelWithBoost").replaceAll
-								("EXPERIENCE_REQUIRED", new Integer (expRequired).toString ()).replaceAll
+								("EXPERIENCE_REQUIRED", Integer.valueOf (expRequired).toString ()).replaceAll
 								("NEXT_EXPERIENCE_NATURAL_LEVEL_NAME", unitTypeLang.findExperienceLevelName (naturalExpLvl.getLevelNumber () + 1)).replaceAll
 								("BONUS_LIST", describeLevelBoosters ()).replaceAll
 								("NEXT_EXPERIENCE_LEVEL_NAME", unitTypeLang.findExperienceLevelName (modifiedLevelNumber));
 						}
 						else
 							text = getLanguage ().findCategoryEntry ("frmHelp", "ExperienceForNextLevelWithoutBoost").replaceAll
-								("EXPERIENCE_REQUIRED", new Integer (expRequired).toString ()).replaceAll
+								("EXPERIENCE_REQUIRED", Integer.valueOf (expRequired).toString ()).replaceAll
 								("NEXT_EXPERIENCE_NATURAL_LEVEL_NAME", unitTypeLang.findExperienceLevelName (naturalExpLvl.getLevelNumber () + 1));
 					}
 				}
@@ -252,7 +252,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			default:
 				// This outputs the value of the specified skill, e.g. SKILL_VALUE_US098 outputs how much experience the unit has
 				if (code.startsWith ("SKILL_VALUE_"))
-					text = new Integer (getUnit ().getModifiedSkillValue (code.substring (12))).toString ();
+					text = Integer.valueOf (getUnit ().getModifiedSkillValue (code.substring (12))).toString ();
 				
 				// This outputs 'Super' if the value of the specified skill is 2 or more
 				else if (code.startsWith ("SUPER_"))

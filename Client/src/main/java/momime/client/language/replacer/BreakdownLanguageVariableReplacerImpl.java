@@ -36,7 +36,7 @@ public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageV
 	 */
 	final String listPickDescriptions (final List<String> pickIDs)
 	{
-		log.trace ("Entering listPickDescriptions: " + ((pickIDs == null) ? "null" : new Integer (pickIDs.size ()).toString ()));
+		log.trace ("Entering listPickDescriptions: " + ((pickIDs == null) ? "null" : Integer.valueOf (pickIDs.size ()).toString ()));
 		
 		final StringBuilder retortList = new StringBuilder ();
 		if (pickIDs != null)

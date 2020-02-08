@@ -347,7 +347,7 @@ public final class SpellUtilsImpl implements SpellUtils
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering getSpellsForRealmRankStatusInternal: " +
-			desiredMagicRealmID + ", " + spellRankID + ", " + ((statuses == null) ? null : new Integer (statuses.size ()).toString ()));
+			desiredMagicRealmID + ", " + spellRankID + ", " + ((statuses == null) ? null : Integer.valueOf (statuses.size ()).toString ()));
 
 		final List<Spell> resultList = new ArrayList<Spell> ();
 

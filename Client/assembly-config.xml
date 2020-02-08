@@ -11,12 +11,12 @@
 		<file>
 			<source>MoMIMEClientConfig-sample.xml</source>
 			<destName>MoMIMEClientConfig.xml</destName>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</file>
 		<file>
 			<source>MoMIMEClientLogging-sample.xml</source>
 			<destName>MoMIMEClientLogging.xml</destName>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</file>
 	</files>
 </assembly>

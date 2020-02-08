@@ -104,7 +104,7 @@ public final class TestSpringExpressionReplacerImpl
 		@SuppressWarnings ("unused")
 		public final String myMethod (final String s)
 		{
-			return s + "." + new Integer (getMyValue () + 1);
+			return s + "." + Integer.valueOf (getMyValue () + 1);
 		}
 		
 		/**

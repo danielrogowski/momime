@@ -85,7 +85,7 @@ public final class TestSpellBookUI
 		for (int n = 0; n < 100; n++)
 		{
 			final SpellLang spell = new SpellLang ();
-			String spellID = new Integer (n).toString ();
+			String spellID = Integer.valueOf (n).toString ();
 			if (n < 10)
 				spellID = "0" + spellID;
 			spell.setSpellID ("SP0" + spellID);
@@ -138,7 +138,7 @@ public final class TestSpellBookUI
 		for (int n = 0; n < 100; n++)
 		{
 			final Spell spell = new Spell ();
-			String spellID = new Integer (n).toString ();
+			String spellID = Integer.valueOf (n).toString ();
 			if (n < 10)
 				spellID = "0" + spellID;
 			spell.setSpellID ("SP0" + spellID);

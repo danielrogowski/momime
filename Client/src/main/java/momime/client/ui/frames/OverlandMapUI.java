@@ -1307,7 +1307,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		// Build up description
 		final String monthText = getLanguage ().findCategoryEntry ("Months", "MNTH" + ((month < 10) ? "0" : "") + month);
-		turnLabel.setText (getLanguage ().findCategoryEntry ("frmMapButtonBar", "Turn").replaceAll ("MONTH", monthText).replaceAll ("YEAR", new Integer (year).toString ()).replaceAll ("TURN", new Integer (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
+		turnLabel.setText (getLanguage ().findCategoryEntry ("frmMapButtonBar", "Turn").replaceAll ("MONTH", monthText).replaceAll ("YEAR", Integer.valueOf (year).toString ()).replaceAll ("TURN", Integer.valueOf (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
 
 		log.trace ("Exiting updateTurnLabelText");
 	}

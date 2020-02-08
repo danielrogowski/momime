@@ -732,7 +732,7 @@ public final class TestLanguageDatabaseExImpl
 		for (int n = 1; n <= 2; n++)
 		{
 			final ShortcutKeyLang newKey = new ShortcutKeyLang ();
-			newKey.setNormalKey (new Integer (n).toString ());
+			newKey.setNormalKey (Integer.valueOf (n).toString ());
 			newKey.setShortcut ((n == 1) ? Shortcut.SPELLBOOK : Shortcut.OVERLAND_MOVE_DONE);
 			lang.getShortcutKey ().add (newKey);
 		}

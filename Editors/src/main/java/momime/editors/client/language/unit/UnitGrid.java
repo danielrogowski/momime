@@ -157,7 +157,7 @@ public final class UnitGrid extends MoMEditorGridWithImport
 
 				// Add to XML
 				final Element unitElement = new Element (ServerEditorDatabaseConstants.TAG_ENTITY_UNIT);
-				unitElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, "UN" + StringUtils.padStart (new Integer (unitNo).toString (), "0", 3));
+				unitElement.setAttribute (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, "UN" + StringUtils.padStart (Integer.valueOf (unitNo).toString (), "0", 3));
 
 				final Element nameElement = new Element (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_NAME);
 				nameElement.setText (unitName);

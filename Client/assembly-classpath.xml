@@ -10,11 +10,11 @@
 	<files>
 		<file>
 			<source>target/client-classpath-windows.txt</source>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</file>
 		<file>
 			<source>target/client-classpath-unix.txt</source>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</file>
 	</files>
 </assembly>

@@ -23,7 +23,7 @@ public final class TestCityProductionBreakdownsEx
 		for (int n = 1; n <= 3; n++)
 		{
 			final CityProductionBreakdown productionType = new CityProductionBreakdown ();
-			productionType.setProductionTypeID (new Integer (n).toString ());
+			productionType.setProductionTypeID (Integer.valueOf (n).toString ());
 			breakdowns.getProductionType ().add (productionType);
 		}
 		
@@ -43,7 +43,7 @@ public final class TestCityProductionBreakdownsEx
 		for (int n = 1; n <= 3; n++)
 		{
 			final CityProductionBreakdown productionType = new CityProductionBreakdown ();
-			productionType.setProductionTypeID (new Integer (n).toString ());
+			productionType.setProductionTypeID (Integer.valueOf (n).toString ());
 			breakdowns.getProductionType ().add (productionType);
 		}
 		

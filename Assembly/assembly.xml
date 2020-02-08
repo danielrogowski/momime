@@ -12,12 +12,12 @@
 	<fileSets>
 		<fileSet>
 			<directory>src/main/deploy</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 			<filtered>true</filtered>
 		</fileSet>
 		<fileSet>
 			<directory>target/unpack</directory>
-			<outputDirectory>/</outputDirectory>
+			<outputDirectory></outputDirectory>
 		</fileSet>
 	</fileSets>
 
@@ -25,7 +25,7 @@
 		<file>
 			<source>target/userRegistry/com.ndg.multiplayer.userregistry/MultiplayerSessionUserRegistry_Empty.xml</source>
 			<destName>MoMIMEServerUserRegistry.xml</destName>
-			<outputDirectory>/server/userRegistry</outputDirectory>
+			<outputDirectory>server/userRegistry</outputDirectory>
 		</file>
 	</files>
 

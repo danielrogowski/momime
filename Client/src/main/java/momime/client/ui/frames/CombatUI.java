@@ -1735,7 +1735,7 @@ public final class CombatUI extends MomClientFrameUI
 			else
 			{
 				final int meleeAttack = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
-				selectedUnitMeleeValue.setText (new Integer (meleeAttack).toString ());
+				selectedUnitMeleeValue.setText (Integer.valueOf (meleeAttack).toString ());
 				selectedUnitMeleeAverage = getTextUtils ().insertDecimalPoint (meleeAttack * chanceToHitTimesFigures, 1);
 				selectedUnitMeleeImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitSkillComponentBreakdownIcon
 					(xu, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)));
@@ -1751,7 +1751,7 @@ public final class CombatUI extends MomClientFrameUI
 			else
 			{
 				final int rangedAttack = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
-				selectedUnitRangedValue.setText (new Integer (rangedAttack).toString ());
+				selectedUnitRangedValue.setText (Integer.valueOf (rangedAttack).toString ());
 				selectedUnitRangedAverage = getTextUtils ().insertDecimalPoint (rangedAttack * chanceToHitTimesFigures, 1);
 				selectedUnitRangedImage.setIcon (new ImageIcon (getUnitClientUtils ().getUnitSkillComponentBreakdownIcon
 					(xu, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)));

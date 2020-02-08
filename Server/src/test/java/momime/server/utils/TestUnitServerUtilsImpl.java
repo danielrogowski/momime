@@ -659,7 +659,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		{
 			final MemoryUnit unit = new MemoryUnit ();
 			unit.setOwningPlayerID (n);
-			unit.setUnitID ("UN00" + new Integer (n+1).toString ());
+			unit.setUnitID ("UN00" + Integer.valueOf (n+1).toString ());
 			units.add (unit);
 		}
 

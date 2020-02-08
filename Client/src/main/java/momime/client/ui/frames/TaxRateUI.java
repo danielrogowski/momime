@@ -170,7 +170,7 @@ public final class TaxRateUI extends MomClientFrameUI
 			{
 				String thisText = text.replaceAll
 					("GOLD_PER_POPULATION", getTextUtils ().halfIntToStr (taxRateAction.getKey ().getDoubleTaxGold ())).replaceAll
-					("UNREST_PERCENTAGE", new Integer (taxRateAction.getKey ().getTaxUnrestPercentage ()).toString ());
+					("UNREST_PERCENTAGE", Integer.valueOf (taxRateAction.getKey ().getTaxUnrestPercentage ()).toString ());
 				
 				// Show current tax rate with a *
 				if (taxRateAction.getKey ().getTaxRateID ().equals (getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID ()))

@@ -162,7 +162,7 @@ public final class WizardsUI extends MomClientFrameUI
 				{
 					try
 					{
-						final String pickID = updateRetortsFromPicks (retorts.viewToModel (ev.getPoint ()));
+						final String pickID = updateRetortsFromPicks (retorts.viewToModel2D (ev.getPoint ()));
 						if (pickID != null)
 							getHelpUI ().showPickID (pickID);
 					}

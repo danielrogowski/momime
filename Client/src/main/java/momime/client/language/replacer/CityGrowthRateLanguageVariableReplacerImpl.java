@@ -33,11 +33,11 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "CURRENT_POPULATION_DIV_1000":
-				text = new Integer (getBreakdown ().getCurrentPopulation () / 1000).toString ();
+				text = Integer.valueOf (getBreakdown ().getCurrentPopulation () / 1000).toString ();
 				break;
 				
 			case "MAXIMUM_POPULATION_DIV_1000":
-				text = new Integer (getBreakdown ().getMaximumPopulation () / 1000).toString ();
+				text = Integer.valueOf (getBreakdown ().getMaximumPopulation () / 1000).toString ();
 				break;
 				
 			// Growing
@@ -75,7 +75,7 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
 				{
 					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
-					text = new Integer (growing.getHousingPercentageBonus ()).toString ();
+					text = Integer.valueOf (growing.getHousingPercentageBonus ()).toString ();
 				}
 				else
 					text = null;

@@ -714,7 +714,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			mom.getGeneralPublicKnowledge ().setClientDatabase (null);
 			try
 			{
-				mom.saveGame (new Integer (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
+				mom.saveGame (Integer.valueOf (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
 			}
 			finally
 			{

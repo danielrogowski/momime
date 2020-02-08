@@ -102,7 +102,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	@Override
 	public final BufferedImage generateUpkeepImage (final List<ProductionTypeAndUndoubledValue> upkeeps, final boolean halveManaUpkeep) throws IOException
 	{
-		log.trace ("Entering generateUpkeepImage: " + ((upkeeps == null) ? "null" : new Integer (upkeeps.size ()).toString ()) + ", " + halveManaUpkeep);
+		log.trace ("Entering generateUpkeepImage: " + ((upkeeps == null) ? "null" : Integer.valueOf (upkeeps.size ()).toString ()) + ", " + halveManaUpkeep);
 		
 		BufferedImage image = null;
 		if ((upkeeps != null) && (upkeeps.size () > 0))

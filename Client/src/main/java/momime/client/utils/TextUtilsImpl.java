@@ -36,7 +36,7 @@ public final class TextUtilsImpl implements TextUtils
 	@Override
 	public final String intToStrPlusMinus (final int n)
 	{
-		final String s = new Integer (n).toString ();
+		final String s = Integer.valueOf (n).toString ();
 		return (n > 0) ? "+" + s : s;
 	}
 
@@ -54,7 +54,7 @@ public final class TextUtilsImpl implements TextUtils
 		else if (n == -1)
 			s = "-";
 		else
-			s = new Integer (n / 2).toString ();		
+			s = Integer.valueOf (n / 2).toString ();		
 		
 		if (n % 2 != 0)
 			s = s + HALF;
@@ -80,7 +80,7 @@ public final class TextUtilsImpl implements TextUtils
 	@Override
 	public final String insertDecimalPoint (final int n, final int dp)
 	{
-		String s = new Integer (n).toString ();
+		String s = Integer.valueOf (n).toString ();
 		while (s.length () < dp+1)
 			s = "0" + s;
 		

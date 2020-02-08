@@ -262,7 +262,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 					final int attrValue = xu.getModifiedSkillValue (unitAttributeID);
 					
 					// Show number and icon for this unit attribute
-					contentPane.add (getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont (), new Integer (attrValue).toString ()),
+					contentPane.add (getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont (), Integer.valueOf (attrValue).toString ()),
 						"frmUnitRowUnit" + row + "Attribute" + attrNo + "Value");
 					
 					final BufferedImage attributeImage = getUnitClientUtils ().getUnitSkillComponentBreakdownIcon (xu, unitAttributeID); 

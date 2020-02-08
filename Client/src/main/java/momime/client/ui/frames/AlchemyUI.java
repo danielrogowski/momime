@@ -391,8 +391,8 @@ public final class AlchemyUI extends MomClientFrameUI
 			}
 		
 			// Update the labels
-			String goldText = new Integer (goldValue).toString ();
-			String manaText = new Integer (manaValue).toString ();
+			String goldText = Integer.valueOf (goldValue).toString ();
+			String manaText = Integer.valueOf (manaValue).toString ();
 
 			final ProductionTypeLang goldProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 			if ((goldProduction != null) && (goldProduction.getProductionTypeSuffix () != null))

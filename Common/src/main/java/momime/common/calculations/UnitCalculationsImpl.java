@@ -524,9 +524,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		
 		// So there is a border - check if it includes the requested direction.
 		// Have to check +1/-1 of the requested direction so that flat walls also stop moving in diagonals past the wall.
-		else if ((!tile.getBorderDirections ().contains (new Integer (d).toString ())) &&
-					(!tile.getBorderDirections ().contains (new Integer (getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystemType, d+1)).toString ())) &&
-					(!tile.getBorderDirections ().contains (new Integer (getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystemType, d-1)).toString ())))
+		else if ((!tile.getBorderDirections ().contains (Integer.valueOf (d).toString ())) &&
+					(!tile.getBorderDirections ().contains (Integer.valueOf (getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystemType, d+1)).toString ())) &&
+					(!tile.getBorderDirections ().contains (Integer.valueOf (getCoordinateSystemUtils ().normalizeDirection (combatMapCoordinateSystemType, d-1)).toString ())))
 					
 			ok = true;
 		else

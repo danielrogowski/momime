@@ -796,7 +796,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		final List<Integer> matches = new ArrayList<Integer> ();
 		for (int tileNumber = 0; tileNumber < TERRAIN_BORDER8_NEIGHBOURING_TILES.length; tileNumber++)
 			if (TERRAIN_BORDER8_NEIGHBOURING_TILES [tileNumber].equals (neighbouringTiles))
-				matches.add (new Integer (tileNumber));
+				matches.add (Integer.valueOf (tileNumber));
 
 		if (matches.size () == 0)
 			throw new RecordNotFoundException ("TERRAIN_BORDER8_NEIGHBOURING_TILES", neighbouringTiles, "findTerrainBorder8");
@@ -1021,7 +1021,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			{
 				// Convert direction to a regular 1,3,5,7 value
 				final int d3 = (directionChk * 2) + 1;
-				if ((d3 == d2) || (checkAllDirectionsLeadToGrass (coords.getX (), coords.getY (), plane, new Integer (d3).toString (), riverPending)))
+				if ((d3 == d2) || (checkAllDirectionsLeadToGrass (coords.getX (), coords.getY (), plane, Integer.valueOf (d3).toString (), riverPending)))
 					directionCount++;
 			}
 
@@ -1284,7 +1284,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			final List<MapCoordinates2D> possibleLocations = new ArrayList<MapCoordinates2D> ();
 			if (r == 0)
 			{
-				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (sd.getOverlandMapSize (), coords))
+				if (getCoordinateSystemUtils ().are2DCoordinatesWithinRange (sd.getOverlandMapSize (), coords))
 				{
 					final ServerGridCellEx thisCell = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
 					if (thisCell.getAuraFromNode () == null)

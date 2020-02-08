@@ -147,7 +147,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 								else if ((maxValueInEachDirection == 1) && (gc.getTerrainData ().getRiverDirections () != null))
 								{
 									for (int d = 1; d <= maxDirection; d++)
-										if (gc.getTerrainData ().getRiverDirections ().contains (new Integer (d).toString ()))
+										if (gc.getTerrainData ().getRiverDirections ().contains (Integer.valueOf (d).toString ()))
 											bitmask.append ("0");
 										else
 											bitmask.append ("1");
@@ -160,7 +160,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 										
 										// Want rivers? i.e. is this an ocean tile
 										if ((maxValueInEachDirection == 2) && (gc.getTerrainData ().getRiverDirections () != null) &&
-											(gc.getTerrainData ().getRiverDirections ().contains (new Integer (d).toString ())))
+											(gc.getTerrainData ().getRiverDirections ().contains (Integer.valueOf (d).toString ())))
 											
 											bitmask.append ("2");
 										else
@@ -239,7 +239,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			for (int y = 0; y < countY; y++)
 			{
 				// If close to a non-wrapping edge (possible to put a city on the top/bottom row of tundra on the map), we may move off the end of the map
-				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (overlandMapSize, mapCoords))
+				if (getCoordinateSystemUtils ().are2DCoordinatesWithinRange (overlandMapSize, mapCoords))
 				{
 					// Terrain
 					final SmoothedTileGfx tile = smoothedTiles [mapViewPlane] [mapCoords.getY ()] [mapCoords.getX ()];
@@ -297,7 +297,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			mapCoords.setY (startY);
 			for (int y = 0; y < countY; y++)
 			{
-				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (overlandMapSize, mapCoords))
+				if (getCoordinateSystemUtils ().are2DCoordinatesWithinRange (overlandMapSize, mapCoords))
 				{
 					final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
@@ -335,7 +335,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			mapCoords.setY (startY);
 			for (int y = 0; y < countY; y++)
 			{
-				if (getCoordinateSystemUtils ().areCoordinatesWithinRange (overlandMapSize, mapCoords))
+				if (getCoordinateSystemUtils ().are2DCoordinatesWithinRange (overlandMapSize, mapCoords))
 				{
 					final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 						(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());
@@ -409,7 +409,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 				for (int y = 0; y < countY; y++)
 				{
 					// If close to a non-wrapping edge (possible to put a city on the top/bottom row of tundra on the map), we may move off the end of the map
-					if (getCoordinateSystemUtils ().areCoordinatesWithinRange (overlandMapSize, mapCoords))
+					if (getCoordinateSystemUtils ().are2DCoordinatesWithinRange (overlandMapSize, mapCoords))
 					{
 						final FogOfWarStateID state = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
 							(mapViewPlane).getRow ().get (mapCoords.getY ()).getCell ().get (mapCoords.getX ());

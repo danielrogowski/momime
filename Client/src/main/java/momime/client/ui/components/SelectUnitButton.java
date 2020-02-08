@@ -102,7 +102,7 @@ public final class SelectUnitButton extends JToggleButton
 			try
 			{
 				// Only draw patch of player colour if this unit has been selected to move or belongs to somebody else
-				if ((isSelected ()) || (!new Integer (getUnit ().getOwningPlayerID ()).equals (getClient ().getOurPlayerID ())))
+				if ((isSelected ()) || (!Integer.valueOf (getUnit ().getOwningPlayerID ()).equals (getClient ().getOurPlayerID ())))
 				{
 					final BufferedImage playerColour = getPlayerColourImageGenerator ().getUnitBackgroundImage (getUnit ().getOwningPlayerID ());
 					g.drawImage (playerColour, 6 + offset, 3 + offset, null);

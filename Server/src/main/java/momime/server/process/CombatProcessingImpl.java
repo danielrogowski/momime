@@ -492,7 +492,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		log.trace ("Entering positionCombatUnits: " + currentLocation + ", (" +
-			startX + ", " + startY + "), " + maxRows + ", " + unitHeading + ", " + combatSide + ", " + ((onlyUnitURNs == null) ? "All" : new Integer (onlyUnitURNs.size ()).toString ()));
+			startX + ", " + startY + "), " + maxRows + ", " + unitHeading + ", " + combatSide + ", " + ((onlyUnitURNs == null) ? "All" : Integer.valueOf (onlyUnitURNs.size ()).toString ()));
 		
 		// First check for obstructions, to work out the maximum number of units we can fit on each row
 		final List<Integer> maxUnitsInRow = determineMaxUnitsInRow (startX, startY, unitHeading, maxRows,

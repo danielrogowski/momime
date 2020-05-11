@@ -154,9 +154,10 @@ public final class CityProcessingImpl implements CityProcessing
 					plane = db.getPlanes ().get (getRandomUtils ().nextInt (db.getPlanes ().size ())).getPlaneNumber ();
 
 				// Pick location
-				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, sd, db);
+				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), plane, true, sd, db,
+					"Starter city for \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
 				if (cityLocation == null)
-					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\"");
+					throw new MomException ("createStartingCities: Can't find starting city location for player \"" + thisPlayer.getPlayerDescription ().getPlayerName () + "\" on plane " + plane);
 
 				final ServerGridCellEx cityCell = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 				final OverlandMapCityData city = new OverlandMapCityData ();

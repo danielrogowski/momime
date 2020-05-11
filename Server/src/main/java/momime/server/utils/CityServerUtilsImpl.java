@@ -72,6 +72,32 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
+	 * @param location Location we we base our search from
+	 * @param map Known terrain
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @return Distance to closest city on the same plane as location; null if there are no cities on this plane yet
+	 */
+	@Override
+	public final Integer findClosestCityTo (final MapCoordinates3DEx location, final MapVolumeOfMemoryGridCells map, final CoordinateSystem overlandMapCoordinateSystem)
+	{
+		log.trace ("Entering findClosestCityTo: " + location);
+
+		Integer closestDistance = null;
+		
+		for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
+			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
+				if (map.getPlane ().get (location.getZ ()).getRow ().get (y).getCell ().get (x).getCityData () != null)
+				{
+					final int thisDistance = getCoordinateSystemUtils ().determineStep2DDistanceBetween (overlandMapCoordinateSystem, location.getX (), location.getY (), x, y);
+					if ((closestDistance == null) || (thisDistance < closestDistance))
+						closestDistance = thisDistance;
+				}
+
+		log.trace ("Exiting findClosestCityTo = " + closestDistance);
+		return closestDistance;
+	}
+	
+	/**
 	 * Validates that a building or unit that we want to construct at a particular city is a valid choice
 	 *
 	 * @param player Player who wants to change construction

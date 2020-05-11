@@ -5,6 +5,10 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
@@ -13,10 +17,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Methods for AI players making decisions about where to place cities and what to build in them
@@ -29,15 +29,17 @@ public interface CityAI
 	 *
 	 * @param map Known terrain
 	 * @param plane Plane to place a city on
+	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
+	 * @param purpose What this city is being placed for, just for debug message
 	 * @return Best possible location to put a new city, or null if there's no space left for any new cities on this plane
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+	public MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane, final boolean avoidOtherCities,
+		final MomSessionDescription sd, final ServerDatabaseEx db, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**

@@ -191,6 +191,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final PlayerDescription humanPd = new PlayerDescription ();
 		humanPd.setHuman (true);
 		humanPd.setPlayerID (5);
+		humanPd.setPlayerName ("Human player");
 		final PlayerServerDetails humanPlayer = new PlayerServerDetails (humanPd, humanPpk, humanPriv, null, humanTrans);
 
 		final MomTransientPlayerPrivateKnowledge aiTrans = new MomTransientPlayerPrivateKnowledge ();
@@ -204,6 +205,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final PlayerDescription aiPd = new PlayerDescription ();
 		aiPd.setHuman (false);
 		aiPd.setPlayerID (-1);
+		aiPd.setPlayerName ("AI player");
 		final PlayerServerDetails aiPlayer = new PlayerServerDetails (aiPd, aiPpk, aiPriv, null, aiTrans);
 
 		final MomPersistentPlayerPrivateKnowledge raidersPriv = new MomPersistentPlayerPrivateKnowledge ();
@@ -214,6 +216,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final PlayerDescription raidersPd = new PlayerDescription ();
 		raidersPd.setHuman (false);
 		raidersPd.setPlayerID (-2);
+		raidersPd.setPlayerName ("Raiders");
 		final PlayerServerDetails raidersPlayer = new PlayerServerDetails (raidersPd, raidersPpk, raidersPriv, null, null);
 
 		final MomPersistentPlayerPublicKnowledge monstersPpk = new MomPersistentPlayerPublicKnowledge ();
@@ -221,6 +224,7 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final PlayerDescription monstersPd = new PlayerDescription ();
 		monstersPd.setHuman (false);
 		monstersPd.setPlayerID (-3);
+		monstersPd.setPlayerName ("Monsters");
 		final PlayerServerDetails monstersPlayer = new PlayerServerDetails (monstersPd, monstersPpk, null, null, null);
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -254,8 +258,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final MapCoordinates3DEx raidersArcanusLocation = new MapCoordinates3DEx (7, 27, 0);
 		
 		final CityAI cityAI = mock (CityAI.class);
-		when (cityAI.chooseCityLocation (trueTerrain, 1, sd, db)).thenReturn (humanLocation, raidersMyrrorLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, 0, sd, db)).thenReturn (aiLocation, raidersArcanusLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 1, true, sd, db, "Starter city for \"Human player\"")).thenReturn (humanLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 1, true, sd, db, "Starter city for \"Raiders\"")).thenReturn (raidersMyrrorLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 0, true, sd, db, "Starter city for \"AI player\"")).thenReturn (aiLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, 0, true, sd, db, "Starter city for \"Raiders\"")).thenReturn (raidersArcanusLocation);
 		
 		// Race for each starter city - set these ALL to be the same race; then can test the % choice for this
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();

@@ -704,6 +704,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
 	</bean>
 
 	<bean id="momAI" class="momime.server.ai.MomAIImpl">

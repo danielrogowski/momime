@@ -37,6 +37,45 @@ import momime.server.database.UnitSvr;
 public final class TestCityServerUtilsImpl extends ServerTestData
 {
 	/**
+	 * Tests the findClosestCityTo method with no cities
+	 */
+	@Test
+	public final void testFindClosestCityTo_NoCities ()
+	{
+		// Map
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
+
+		// Set up object
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		assertNull (utils.findClosestCityTo (new MapCoordinates3DEx (57, 20, 1), trueTerrain, sys));
+	}
+	
+	/**
+	 * Tests the findClosestCityTo method with some cities
+	 */
+	@Test
+	public final void testFindClosestCityTo_Normal ()
+	{
+		// Map
+		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
+		
+		trueTerrain.getPlane ().get (0).getRow ().get (19).getCell ().get (56).setCityData (new OverlandMapCityData ());		// Very close, but on wrong plane
+		trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (47).setCityData (new OverlandMapCityData ());		// Close
+		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (42).setCityData (new OverlandMapCityData ());		// Far
+		trueTerrain.getPlane ().get (1).getRow ().get (19).getCell ().get (2).setCityData (new OverlandMapCityData ());		// Very close, around wrapping edge
+
+		// Set up object
+		final CityServerUtilsImpl utils = new CityServerUtilsImpl ();
+		utils.setCoordinateSystemUtils (new CoordinateSystemUtilsImpl ());
+		
+		assertEquals (5, utils.findClosestCityTo (new MapCoordinates3DEx (57, 20, 1), trueTerrain, sys).intValue ());
+	}
+	
+	/**
 	 * Tests the validateCityConstruction method when the ID requested is neither a valid building or unit
 	 * @throws Exception If there is a problem
 	 */

@@ -26,6 +26,14 @@ import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 public interface CityServerUtils
 {
 	/**
+	 * @param location Location we we base our search from
+	 * @param map Known terrain
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
+	 * @return Distance to closest city on the same plane as location; null if there are no cities on this plane yet
+	 */
+	public Integer findClosestCityTo (final MapCoordinates3DEx location, final MapVolumeOfMemoryGridCells map, final CoordinateSystem overlandMapCoordinateSystem);
+	
+	/**
 	 * Validates that a building or unit that we want to construct at a particular city is a valid choice
 	 *
 	 * @param player Player who wants to change construction

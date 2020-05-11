@@ -46,6 +46,7 @@ import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.utils.CityServerUtils;
 
 /**
  * Methods for AI players making decisions about where to place cities and what to build in them
@@ -76,22 +77,27 @@ public final class CityAIImpl implements CityAI
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+	
 	/**
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
 	 * race will most likely be the race chosen for the continent we decide to put the city on, i.e. we have to pick position first, race second
 	 *
 	 * @param map Known terrain
 	 * @param plane Plane to place a city on
+	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
+	 * @param purpose What this city is being placed for, just for debug message
 	 * @return Best possible location to put a new city, or null if there's no space left for any new cities on this plane
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane, final boolean avoidOtherCities,
+		final MomSessionDescription sd, final ServerDatabaseEx db, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering chooseCityLocation: " + plane);
@@ -148,6 +154,15 @@ public final class CityAIImpl implements CityAI
 										thisCityQuality = thisCityQuality + featureCityQualityEstimate;
 								}
 							}
+						
+						// Avoid placing start cities near other cities, especially don't put wizards near each other
+						if (avoidOtherCities)
+						{
+							// What's the closest existing city to these coordinates?
+							Integer closestDistance = getCityServerUtils ().findClosestCityTo (cityLocation, map, sd.getOverlandMapSize ());
+							if (closestDistance != null)
+								thisCityQuality = thisCityQuality + (closestDistance * 2);		// Maximum would be 40 apart (north-south of map) x2 = 80
+						}
 
 						// Is it the best so far?
 						if ((bestLocation == null) || (thisCityQuality > bestCityQuality))
@@ -158,6 +173,8 @@ public final class CityAIImpl implements CityAI
 					}
 				}
 			}
+		
+		log.debug ("AI chose city location " + bestLocation + " with quality " + bestCityQuality + " for " + purpose);
 
 		log.trace ("Exiting chooseCityLocation = " + bestLocation);
 		return bestLocation;
@@ -554,5 +571,21 @@ public final class CityAIImpl implements CityAI
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
 	}
 }

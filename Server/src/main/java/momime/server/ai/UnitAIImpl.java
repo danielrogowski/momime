@@ -505,7 +505,8 @@ public final class UnitAIImpl implements UnitAI
 	 * @param mobileUnits List to populate with details of all units that are in excess of defensive requirements, or are not in defensive positions
 	 * @param playerID Player ID to consider as "our" units
 	 * @param mem Memory data known to playerID
-	 * @param desiredDefenceRating How much defence we are aiming for at every location
+	 * @param highestAverageRating Rating for the best unit we can construct in any city, as a guage for the strength of units we should be defending with
+	 * @param turnNumber Current turn number
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return List of all defence locations, and how many points short we are of our desired defence level
@@ -513,7 +514,7 @@ public final class UnitAIImpl implements UnitAI
 	 */
 	@Override
 	public final List<AIDefenceLocation> evaluateCurrentDefence (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final List<AIUnitAndRatings> mobileUnits, final int playerID, final FogOfWarMemory mem, final int desiredDefenceRating,
+		final List<AIUnitAndRatings> mobileUnits, final int playerID, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering evaluateCurrentDefence: AI Player ID " + playerID);
@@ -540,15 +541,20 @@ public final class UnitAIImpl implements UnitAI
 							final int defenceRating = (ours == null) ? 0 : ours.totalAverageRatings ();
 							final String description = (cityData != null) ? ("city belonging to " + cityData.getCityOwnerID ()) : (terrainData.getTileTypeID () + "/" + terrainData.getMapFeatureID ());
 							
-							final int thisDesiredDefenceRating = desiredDefenceRating * (getMemoryBuildingUtils ().findBuilding
-								(mem.getBuilding (), coords, CommonDatabaseConstants.BUILDING_FORTRESS) == null ? 1 : 2);
+							// For any regular locations, on turn 1..50 we want 1 defender, 51..100 want 2, 101..150 want 3, 151..200 want 4 and 201+ want 5
+							// For wizard's fortress, on turn 1..25 we want 1 defender, 26..50 want 2, and so on up to 201+ want 9
+							final int desiredDefenderCount = (getMemoryBuildingUtils ().findBuilding (mem.getBuilding (), coords, CommonDatabaseConstants.BUILDING_FORTRESS) == null) ?
+								((Math.min (turnNumber, 201) + 49) / 50) :
+								((Math.min (turnNumber, 201) + 24) / 25);
+							
+							final int desiredDefenceRating = highestAverageRating * desiredDefenderCount;
 							
 							log.debug ("AI Player ID " + playerID + " sees " + description +
-								" at (" + x + ", " + y + ", " + z + "), CDR = " + defenceRating + ", DDR = " + thisDesiredDefenceRating);
+								" at (" + x + ", " + y + ", " + z + "), CDR = " + defenceRating + ", DDC = " + desiredDefenderCount + ", DDR = " + desiredDefenceRating);
 							
-							if (defenceRating < thisDesiredDefenceRating)
-								underdefendedLocations.add (new AIDefenceLocation (coords, thisDesiredDefenceRating - defenceRating));
-							else if (defenceRating > thisDesiredDefenceRating)
+							if (defenceRating < desiredDefenceRating)
+								underdefendedLocations.add (new AIDefenceLocation (coords, desiredDefenceRating - defenceRating));
+							else if (defenceRating > desiredDefenceRating)
 							{
 								// Maybe we have too much defence?  Can we lose a unit or two without becoming underdefended?
 								// Important note: the sorting order makes this tend to keep stronger units guarding cities and
@@ -559,7 +565,7 @@ public final class UnitAIImpl implements UnitAI
 								while (iter.hasNext ())
 								{
 									final AIUnitAndRatings thisUnit = iter.next ();
-									if (defenceSoFar >= thisDesiredDefenceRating)
+									if (defenceSoFar >= desiredDefenceRating)
 									{
 										iter.remove ();
 										mobileUnits.add (thisUnit);

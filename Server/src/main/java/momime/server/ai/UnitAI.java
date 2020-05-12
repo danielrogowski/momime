@@ -110,14 +110,15 @@ public interface UnitAI
 	 * @param mobileUnits List to populate with details of all units that are in excess of defensive requirements, or are not in defensive positions
 	 * @param playerID Player ID to consider as "our" units
 	 * @param mem Memory data known to playerID
-	 * @param desiredDefenceRating How much defence we are aiming for at every location
+	 * @param highestAverageRating Rating for the best unit we can construct in any city, as a guage for the strength of units we should be defending with
+	 * @param turnNumber Current turn number
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return List of all defence locations, and how many points short we are of our desired defence level
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	public List<AIDefenceLocation> evaluateCurrentDefence (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final List<AIUnitAndRatings> mobileUnits, final int playerID, final FogOfWarMemory mem, final int desiredDefenceRating,
+		final List<AIUnitAndRatings> mobileUnits, final int playerID, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException;
 
 	/**

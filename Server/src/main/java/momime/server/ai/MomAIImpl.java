@@ -78,19 +78,19 @@ public final class MomAIImpl implements MomAI
 		// First find out what the best units we can construct or summon are - this gives us
 		// something to gauge existing units by, to know if they're now obsolete or not
 		final List<AIConstructableUnit> constructableUnits = getUnitAI ().listAllUnitsWeCanConstruct (player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-		if (constructableUnits.isEmpty ())
-			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't make any units at all");
+		
+		// Ignore summoned units - otherwise at the start the AI realises that Magic Spirits are actually better than the Spearmen + Swordsmen that it has and tries to use them to defend its city.
+		// Similarly later on, the AI shouldn't be trying to fill its cities defensively with all great drakes.
+		final List<AIConstructableUnit> cityConstructableUnits = constructableUnits.stream ().filter (u -> u.getCityLocation () != null).collect (Collectors.toList ());
+		if (cityConstructableUnits.isEmpty ())
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't make any units in cities at all");
 		else
 		{
-			for (final AIConstructableUnit unit : constructableUnits)
+			for (final AIConstructableUnit unit : cityConstructableUnits)
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " could make unit " + unit);
 			
-			// Work out how much defence we want to aim to have at every defensive position.  Even 1 point short will be regarded as underdefended,
-			// so this starts out that 1 defender is fine and will ramp up at turn 50,100,150,200 until we hit a max of wanting 5 defenders.
-			// It'll also start to consider positions as underdefended as better units become available to us.
-			final int highestAverageRating = constructableUnits.get (0).getAverageRating ();
-			final int desiredDefenceRating = (highestAverageRating * Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200)) / 50;
-			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s strongest UAR = " + highestAverageRating + ", so DDR = " + desiredDefenceRating);
+			final int highestAverageRating = cityConstructableUnits.get (0).getAverageRating ();
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s strongest UAR = " + highestAverageRating);
 			
 			// Estimate the total strength of all the units we have at every point on the map for attack and defense purposes,
 			// as well as the strength of all enemy units for attack purposes.
@@ -101,7 +101,8 @@ public final class MomAIImpl implements MomAI
 			// Go through every defensive position that we either own, or is unoccupied and we should capture, seeing if we have enough units there defending
 			final List<AIUnitAndRatings> mobileUnits = new ArrayList<AIUnitAndRatings> ();
 			final List<AIDefenceLocation> underdefendedLocations = getUnitAI ().evaluateCurrentDefence (ourUnits, enemyUnits, mobileUnits,
-				player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), desiredDefenceRating, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+				player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), highestAverageRating, mom.getGeneralPublicKnowledge ().getTurnNumber (),
+				mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 
 			for (final AIDefenceLocation location : underdefendedLocations)
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);

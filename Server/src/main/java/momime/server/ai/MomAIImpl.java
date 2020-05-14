@@ -129,8 +129,8 @@ public final class MomAIImpl implements MomAI
 							boolean stop = false;
 							while ((!stop) && (unitStack.stream ().mapToInt (u -> u.getUnit ().getDoubleOverlandMovesLeft ()).min ().getAsInt () > 0))
 							{
-								log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move stack of " + category.getAiUnitCategoryID () + " from " +
-									unitStack.get (0).getUnit ().getUnitLocation () + ", first Unit URN " + unitStack.get (0).getUnit ().getUnitURN ());
+								log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move stack of " + category.getAiUnitCategoryID () + " - " +
+									category.getAiUnitCategoryDescription () + "  from " + unitStack.get (0).getUnit ().getUnitLocation () + ", first Unit URN " + unitStack.get (0).getUnit ().getUnitURN ());
 								
 								if (!getUnitAI ().decideAndExecuteUnitMovement (unitStack, category, underdefendedLocations, enemyUnits, player, mom))
 									stop = true;
@@ -176,6 +176,7 @@ public final class MomAIImpl implements MomAI
 				needForNewUnits = underdefendedLocations.size () +
 					(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 10) - mobileUnits.size ();
 			}
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnits);
 
 			// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
 			// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
@@ -193,8 +194,9 @@ public final class MomAIImpl implements MomAI
 							final boolean isUnitFactory = (unitFactories != null) && (unitFactories.contains (cityLocation));
 
 							// Only consider constructing the one of the two best units we can make here, and then only if we can afford them
+							// Also explicitly filter out settlers and other non-combat units (which have rating 0)
 							final List<String> constructableHere = !isUnitFactory ? null :
-								constructableUnits.stream ().filter (u -> cityLocation.equals (u.getCityLocation ())).sorted ().limit (2).filter
+								constructableUnits.stream ().filter (u -> (cityLocation.equals (u.getCityLocation ())) && (u.getAverageRating () > 0)).sorted ().limit (2).filter
 									(u -> u.isCanAffordMaintenance ()).map (u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
 	
 							getCityAI ().decideWhatToBuild (cityLocation, cityData, isUnitFactory, needForNewUnits, constructableHere,

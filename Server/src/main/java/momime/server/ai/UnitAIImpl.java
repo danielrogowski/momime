@@ -698,14 +698,16 @@ public final class UnitAIImpl implements UnitAI
 		final Map<String, List<AIUnitsAndRatings>> categories = new HashMap<String, List<AIUnitsAndRatings>> ();
 		for (final AIUnitAndRatings unit : units)
 		{
-			final String categoryID = determineUnitCategory (unit.getUnit (), players, mem, db).getAiUnitCategoryID ();
+			final AiUnitCategorySvr category = determineUnitCategory (unit.getUnit (), players, mem, db);
+			log.debug ("Movable unit URN " + unit.getUnit ().getUnitURN () + " type " + unit.getUnit ().getUnitID () + " at " + unit.getUnit ().getUnitLocation () +
+				" categorized as " + category.getAiUnitCategoryID () + " - " + category.getAiUnitCategoryDescription ());
 			
 			// Does the category exist already?
-			List<AIUnitsAndRatings> locations = categories.get (categoryID);
+			List<AIUnitsAndRatings> locations = categories.get (category.getAiUnitCategoryID ());
 			if (locations == null)
 			{
 				locations = new ArrayList<AIUnitsAndRatings> ();
-				categories.put (categoryID, locations);
+				categories.put (category.getAiUnitCategoryID (), locations);
 			}
 			
 			// Does the location exist already?
@@ -754,6 +756,9 @@ public final class UnitAIImpl implements UnitAI
 		while ((decision == null) && (iter.hasNext ()))
 		{
 			final AiMovementCode movementCode = iter.next ();
+			
+			log.debug ("AI considering movement code " + movementCode + " for stack of " + units.size () + " units at " + units.get (0).getUnit ().getUnitLocation ());
+			
 			switch (movementCode)
 			{
 				case REINFORCE:
@@ -823,6 +828,9 @@ public final class UnitAIImpl implements UnitAI
 				default:
 					throw new MomException ("decideUnitMovement doesn't know what to do with AI movement code: " + movementCode);
 			}
+
+			log.debug ("AI movement code " + movementCode + " for stack of " + units.size () + " units at " + units.get (0).getUnit ().getUnitLocation () +
+				((decision == null) ? " rejected" : (" accepted = " + decision)));
 		}
 		
 		log.trace ("Exiting decideUnitMovement = " + decision);

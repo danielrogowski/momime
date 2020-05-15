@@ -553,7 +553,24 @@ public final class UnitAIImpl implements UnitAI
 								" at (" + x + ", " + y + ", " + z + "), CDR = " + defenceRating + ", DDC = " + desiredDefenderCount + ", DDR = " + desiredDefenceRating);
 							
 							if (defenceRating < desiredDefenceRating)
+							{
 								underdefendedLocations.add (new AIDefenceLocation (coords, desiredDefenceRating - defenceRating));
+								
+								// Even though its underdefended, specialist units like settlers are always movable
+								if (ours != null)
+								{
+									final Iterator<AIUnitAndRatings> iter = ours.iterator ();
+									while (iter.hasNext ())
+									{
+										final AIUnitAndRatings thisUnit = iter.next ();
+										if (thisUnit.getAverageRating () == 0)
+										{
+											iter.remove ();
+											mobileUnits.add (thisUnit);
+										}
+									}
+								}
+							}
 							else if (defenceRating > desiredDefenceRating)
 							{
 								// Maybe we have too much defence?  Can we lose a unit or two without becoming underdefended?
@@ -565,7 +582,7 @@ public final class UnitAIImpl implements UnitAI
 								while (iter.hasNext ())
 								{
 									final AIUnitAndRatings thisUnit = iter.next ();
-									if (defenceSoFar >= desiredDefenceRating)
+									if ((defenceSoFar >= desiredDefenceRating) || (thisUnit.getAverageRating () == 0))
 									{
 										iter.remove ();
 										mobileUnits.add (thisUnit);
@@ -574,6 +591,9 @@ public final class UnitAIImpl implements UnitAI
 										defenceSoFar = defenceSoFar + thisUnit.getAverageRating ();
 								}
 							}
+							
+							if ((ours != null) && (ours.size () == 0))
+								ourUnits [z] [y] [x] = null;
 						}
 	
 						// All units not in defensive positions are automatically mobile

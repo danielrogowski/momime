@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -12,12 +13,14 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -55,6 +58,9 @@ public final class MomAIImpl implements MomAI
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
 	
 	/**
 	 *
@@ -107,8 +113,41 @@ public final class MomAIImpl implements MomAI
 			for (final AIDefenceLocation location : underdefendedLocations)
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);
 			
+			// To think about building new cities, we need to know if we already have a spare settler, and if we have somewhere we want to try to build - on each plane
+			final Map<Integer, AIUnitAndRatings> settlers = new HashMap<Integer, AIUnitAndRatings> ();
 			for (final AIUnitAndRatings mu : mobileUnits)
+			{
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can move " + mu);
+				
+				if (getUnitUtils ().expandUnitDetails (mu.getUnit (), null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()).hasBasicSkill
+					(CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST))
+				{
+					settlers.put (mu.getUnit ().getUnitLocation ().getZ (), mu);
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has a spare settler Unit URN " + mu.getUnit ().getUnitURN () + " at " + mu.getUnit ().getUnitLocation ());
+				}
+			}
+			
+			final Map<Integer, MapCoordinates3DEx> desiredCityLocations = new HashMap<Integer, MapCoordinates3DEx> ();
+			for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
+			{
+				final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (priv.getFogOfWarMemory ().getMap (), plane, false, mom.getSessionDescription (), mom.getServerDB (),
+					"considering building/moving settler");
+				if (desiredCityLocation != null)
+				{
+					// We only use what the AI player really knows from fog of war to determine their pick for city location, but have to do a check
+					// against the real map to see if there's a city too close that we can't see (same happens when human players click Build City)
+					final MapArea2D<Boolean> trueMapWithinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), plane, mom.getSessionDescription ().getOverlandMapSize ());
+
+					if (trueMapWithinExistingCityRadius.get (desiredCityLocation.getX (), desiredCityLocation.getY ()))
+						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " in fact can't put a city at " + desiredCityLocation + " as its too close to a city that they cannot see");
+					else
+					{
+						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can put a city at " + desiredCityLocation);
+						desiredCityLocations.put (plane, desiredCityLocation);
+					}
+				}
+			}
 			
 			// Try to find somewhere to move each mobile unit to.
 			// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.
@@ -313,5 +352,21 @@ public final class MomAIImpl implements MomAI
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
 	}
 }

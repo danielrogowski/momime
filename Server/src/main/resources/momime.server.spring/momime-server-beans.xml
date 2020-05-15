@@ -714,6 +714,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitAI" ref="unitAI" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">

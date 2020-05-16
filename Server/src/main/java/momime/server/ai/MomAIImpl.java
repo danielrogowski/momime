@@ -209,18 +209,31 @@ public final class MomAIImpl implements MomAI
 			{
 				// We need some kind of rating for how badly we think we need to construct more combat units.
 				// So base this on, 1) how many locations are underdefended, 2) whether we have sufficient mobile units.
-				// We'll then roll this number against a d10 for each unit factory, so if our need = 6, then there's a 60% chance we'll decide to construct a unit there.
 				// This could be a bit more clever, like "are there places we want to attack that we need more/stronger units to consider the attack",
 				// but I don't want the AI churning out armies of swordsmen just to try to beat a great drake.
-				needForNewUnits = underdefendedLocations.size () +
+				needForNewUnits = 3 + underdefendedLocations.size () +
 					(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 10) - mobileUnits.size ();
 			}
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnits);
 
+			// Count how many cities we have
+			int numberOfCities = 0;
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+							numberOfCities++;
+					}
+			
 			// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
 			// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
 			// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
 			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			{
+				final boolean wantSettler = (desiredCityLocations.containsKey (z)) && (!settlers.containsKey (z));
+				
 				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					{
@@ -238,7 +251,7 @@ public final class MomAIImpl implements MomAI
 								constructableUnits.stream ().filter (u -> (cityLocation.equals (u.getCityLocation ())) && (u.getAverageRating () > 0)).sorted ().limit (2).filter
 									(u -> u.isCanAffordMaintenance ()).map (u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
 	
-							getCityAI ().decideWhatToBuild (cityLocation, cityData, isUnitFactory, needForNewUnits, constructableHere,
+							getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnits, constructableHere, wantSettler,
 								priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
 								mom.getSessionDescription (), mom.getServerDB ());
 							
@@ -246,6 +259,7 @@ public final class MomAIImpl implements MomAI
 								mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 						}
 					}
+			}
 
 			// This relies on knowing what's being built in each city, so do it 2nd
 			getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player, mom.getServerDB (), mom.getSessionDescription ());

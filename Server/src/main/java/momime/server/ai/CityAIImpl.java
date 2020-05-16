@@ -17,6 +17,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
+import com.ndg.random.WeightedChoicesImpl;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
@@ -25,7 +26,6 @@ import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.AiBuildingTypeID;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
@@ -43,8 +43,8 @@ import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
-import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 
@@ -336,9 +336,11 @@ public final class CityAIImpl implements CityAI
 	 *
 	 * @param cityLocation Location of the city
 	 * @param cityData True info on the city, so it can be updated
+	 * @param numberOfCities Number of cities we own
 	 * @param isUnitFactory Is this one of our unit factories? (i.e. one of our cities that can construct the best units we can currently make?)
 	 * @param needForNewUnits Estimate of how badly we need to construct new units; 0 or lower = we've got plenty; 10 or higher = desperate for more units
 	 * @param combatUnitIDs If we are going to construct a unit, a list of the unit IDs that we should pick from 
+	 * @param wantSettler True if we can see a good spot to put a city, and don't have a settler to move there, so need to build one 
 	 * @param knownTerrain Known overland terrain
 	 * @param knownBuildings Known list of buildings
 	 * @param sd Session description
@@ -347,7 +349,7 @@ public final class CityAIImpl implements CityAI
 	 */
 	@Override
 	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
-		final boolean isUnitFactory, final int needForNewUnits, final List<String> combatUnitIDs,
+		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnits, final List<String> combatUnitIDs, final boolean wantSettler,
 		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
@@ -355,110 +357,182 @@ public final class CityAIImpl implements CityAI
 		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " deciding what to construct in " + (isUnitFactory ? "unit factory " : "city ") + cityLocation +
 			(isUnitFactory ? ", need = " + needForNewUnits : ""));
 		
-		// Construct a unit or a building?
-		if ((isUnitFactory) && (combatUnitIDs != null) && (!combatUnitIDs.isEmpty ()) && (getRandomUtils ().nextInt (10) < needForNewUnits))
+		// Always build a Granary - Marketplace - Farmer's Market first, regardless of anything else
+		boolean decided = tryToConstructBuildingOfType (cityLocation, cityData, AiBuildingTypeID.GROWTH, knownTerrain, knownBuildings, sd, db);
+		if (!decided)
 		{
-			// The list has already been filtered to ensure it lists only units we have the necessary pre-requisite buildings to construct
-			// and only units we can afford the maintenance of, so we can literally just pick one without worrying about it
-			cityData.setCurrentlyConstructingBuildingID (null);
-			cityData.setCurrentlyConstructingUnitID (combatUnitIDs.get (getRandomUtils ().nextInt (combatUnitIDs.size ())));
-		}
-		else
-		{
-			// Convert list of buildings that our race can't build into a string list, so its easier to search
-			final RaceSvr race = db.findRace (cityData.getCityRaceID (), "decideWhatToBuild");
-			final List<String> raceCannotBuild = new ArrayList<String> ();
-			for (final RaceCannotBuild cannotBuild : race.getRaceCannotBuild ())
-				raceCannotBuild.add (cannotBuild.getCannotBuildBuildingID ());
-	
-			// Set list of building priorities depending if this is a unit factory or not
-			final List<AiBuildingTypeID> buildingTypes = new ArrayList<AiBuildingTypeID> ();
-			if (isUnitFactory)
+			// After that, depends on type of city and choose somewhat randomly
+			final WeightedChoicesImpl<AICityConstructionType> choices = new WeightedChoicesImpl<AICityConstructionType> ();
+			choices.setRandomUtils (getRandomUtils ());
+			
+			boolean anyBuildingsLeftToBuild = false;
+			final Iterator<BuildingSvr> iter = db.getBuildings ().iterator ();
+			while ((!anyBuildingsLeftToBuild) && (iter.hasNext ()))
 			{
-				buildingTypes.add (AiBuildingTypeID.GROWTH);
-				buildingTypes.add (AiBuildingTypeID.UNITS);
-				buildingTypes.add (AiBuildingTypeID.PRODUCTION);
-				buildingTypes.add (AiBuildingTypeID.RESEARCH);
-				buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
-				buildingTypes.add (AiBuildingTypeID.GOLD);
-				buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
-			}
-			else
-			{
-				buildingTypes.add (AiBuildingTypeID.GROWTH);
-				buildingTypes.add (AiBuildingTypeID.PRODUCTION);
-				buildingTypes.add (AiBuildingTypeID.RESEARCH);
-				buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
-				buildingTypes.add (AiBuildingTypeID.GOLD);
-				buildingTypes.add (AiBuildingTypeID.UNITS);
-				buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
-			}
-	
-			boolean decided = false;
-	
-			final Iterator<AiBuildingTypeID> buildingTypesIter = buildingTypes.iterator ();
-			while ((!decided) && (buildingTypesIter.hasNext ()))
-			{
-				final AiBuildingTypeID buildingType = buildingTypesIter.next ();
-	
-				// List out all buildings, except those that:
-				// a) are of the wrong type
-				// b) we already have, or
-				// c) our race cannot build
-				// Keep buildings in the list even if we don't yet have the pre-requisites necessary to build them
-				final List<BuildingSvr> buildingOptions = new ArrayList<BuildingSvr> ();
-				for (final BuildingSvr building : db.getBuildings ())
-					if ((building.getAiBuildingTypeID () == buildingType) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, building.getBuildingID ()) == null) &&
-						(getServerCityCalculations ().canEventuallyConstructBuilding (knownTerrain, knownBuildings, cityLocation, building, sd.getOverlandMapSize (), db)))
-	
-						buildingOptions.add (building);
-	
-				// Now step through the list of possible buildings until we find one we have all the pre-requisites for
-				// If we find one that we DON'T have all the pre-requisites for, then add the pre-requisites that we don't have but can build onto the end of the list
-				// In this way we can decide that we want e.g. a Wizards' Guild and this repeating loop will work out all the buildings that we need to build first in order to get it
-	
-				// Use an index so we can add to the tail of the list as we go along
-				int buildingIndex = 0;
-				while ((!decided) && (buildingIndex < buildingOptions.size ()))
+				final BuildingSvr building = iter.next ();
+				
+				if ((getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, building.getBuildingID ()) == null) &&
+					(getServerCityCalculations ().canEventuallyConstructBuilding (knownTerrain, knownBuildings, cityLocation, building, sd.getOverlandMapSize (), db)))
+
+					anyBuildingsLeftToBuild = true;
+			}			
+			
+			if (anyBuildingsLeftToBuild)
+				choices.add (10, AICityConstructionType.BUILDING);
+			
+			if ((isUnitFactory) && (needForNewUnits > 0) && (combatUnitIDs != null) && (combatUnitIDs.size () > 0))		// or we have only 1 city, in which case its our unit factory by definition
+				choices.add (needForNewUnits, AICityConstructionType.COMBAT_UNIT);
+			
+			if ((wantSettler) && ((numberOfCities == 1) || (!isUnitFactory)))		// Don't waste our good unit factory building settlers if there's somewhere else that can do it
+				choices.add (4, AICityConstructionType.SETTLER);
+			
+			// Make random choice
+			// It is possible to get null here (literally nothing to build) if its not a unit factory, nowhere new to build cities, and we have every building already made
+			final AICityConstructionType constructionType = choices.nextWeightedValue ();
+			if (constructionType != null)
+				switch (constructionType)
 				{
-					final BuildingSvr thisBuilding = buildingOptions.get (buildingIndex);
-	
-					if (getMemoryBuildingUtils ().meetsBuildingRequirements (knownBuildings, cityLocation, thisBuilding))
-					{
-						// Got one we can decide upon
-						cityData.setCurrentlyConstructingBuildingID (thisBuilding.getBuildingID ());
-						cityData.setCurrentlyConstructingUnitID (null);
-						decided = true;
-					}
-					else
-					{
-						// We want this, but we need to build something else first - find out what
-						// Note we don't need to check whether each prerequisite can itself be constructed, or for the right tile types, because
-						// canEventuallyConstructBuilding () above already checked all this over the entire prerequisite tree, so all we need to do is add them
-						for (final BuildingPrerequisite prereq : thisBuilding.getBuildingPrerequisite ())
+					case BUILDING:
+						// Set list of building priorities depending if this is a unit factory or not
+						final List<AiBuildingTypeID> buildingTypes = new ArrayList<AiBuildingTypeID> ();
+						if (isUnitFactory)
 						{
-							final BuildingSvr buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
-							if ((!buildingOptions.contains (buildingPrereq)) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, buildingPrereq.getBuildingID ()) == null))
-								buildingOptions.add (buildingPrereq);
+							buildingTypes.add (AiBuildingTypeID.UNITS);		// Doesn't mean build units, it means "buildings that make units better", e.g. Fighters' Guild
+							buildingTypes.add (AiBuildingTypeID.PRODUCTION);
+							buildingTypes.add (AiBuildingTypeID.RESEARCH);
+							buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
+							buildingTypes.add (AiBuildingTypeID.GOLD);
+							buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
 						}
-	
-						buildingIndex++;
-					}
+						else
+						{
+							buildingTypes.add (AiBuildingTypeID.PRODUCTION);
+							buildingTypes.add (AiBuildingTypeID.RESEARCH);
+							buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
+							buildingTypes.add (AiBuildingTypeID.GOLD);
+							buildingTypes.add (AiBuildingTypeID.UNITS);
+							buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
+						}
+				
+						final Iterator<AiBuildingTypeID> buildingTypesIter = buildingTypes.iterator ();
+						while ((!decided) && (buildingTypesIter.hasNext ()))
+						{
+							final AiBuildingTypeID buildingType = buildingTypesIter.next ();
+				
+							if (tryToConstructBuildingOfType (cityLocation, cityData, buildingType, knownTerrain, knownBuildings, sd, db))
+								decided = true;
+						}
+						break;
+						
+					case COMBAT_UNIT:
+						// The list has already been filtered to ensure it lists only units we have the necessary pre-requisite buildings to construct
+						// and only units we can afford the maintenance of, so we can literally just pick one without worrying about it
+						cityData.setCurrentlyConstructingBuildingID (null);
+						cityData.setCurrentlyConstructingUnitID (combatUnitIDs.get (getRandomUtils ().nextInt (combatUnitIDs.size ())));
+						decided = true;
+						break;
+						
+					case SETTLER:
+						String settlerUnitID = null;
+						final Iterator<UnitSvr> unitDefsIter = db.getUnits ().iterator ();
+						while ((settlerUnitID == null) && (unitDefsIter.hasNext ()))
+						{
+							final UnitSvr unitDef = unitDefsIter.next ();
+							if ((cityData.getCityRaceID ().equals (unitDef.getUnitRaceID ())) &&
+								(unitDef.getUnitHasSkill ().stream ().anyMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST))))
+								settlerUnitID = unitDef.getUnitID ();
+						}
+						
+						if (settlerUnitID != null)
+						{
+							cityData.setCurrentlyConstructingBuildingID (null);
+							cityData.setCurrentlyConstructingUnitID (settlerUnitID);
+							decided = true;
+						}
+						
+						break;
 				}
-			}
-	
-			// If no appropriate buildings at all then resort to Trade Gooods
-			if (!decided)
-			{
-				cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_TRADE_GOODS);
-				cityData.setCurrentlyConstructingUnitID (null);
-			}
+		}
+		
+		// If still found nothing to build, then resort to Trade Gooods
+		if (!decided)
+		{
+			cityData.setCurrentlyConstructingBuildingID (CommonDatabaseConstants.BUILDING_TRADE_GOODS);
+			cityData.setCurrentlyConstructingUnitID (null);
 		}
 
 		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " set city at " + cityLocation + " to construct " +
 			cityData.getCurrentlyConstructingBuildingID () + "/" + cityData.getCurrentlyConstructingUnitID ());
 		
 		log.trace ("Exiting decideWhatToBuild = " + cityData.getCurrentlyConstructingBuildingID () + ", " + cityData.getCurrentlyConstructingUnitID ()); 
+	}
+	
+	/**
+	 * @param cityLocation Location of the city
+	 * @param cityData True info on the city, so it can be updated
+	 * @param buildingType Type of building we want to try to construct
+	 * @param knownTerrain Known overland terrain
+	 * @param knownBuildings Known list of buildings
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether we found a suitable building to construct or not
+	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
+	 */
+	final boolean tryToConstructBuildingOfType (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData, final AiBuildingTypeID buildingType,
+		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
+		 final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
+	{
+		log.trace ("Entering tryToConstructBuildingOfType: " + cityLocation + ", " + buildingType);
+		
+		boolean decided = false;
+
+		// List out all buildings, except those that:
+		// a) are of the wrong type
+		// b) we already have, or
+		// c) our race cannot build
+		// Keep buildings in the list even if we don't yet have the pre-requisites necessary to build them
+		final List<BuildingSvr> buildingOptions = new ArrayList<BuildingSvr> ();
+		for (final BuildingSvr building : db.getBuildings ())
+			if ((building.getAiBuildingTypeID () == buildingType) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, building.getBuildingID ()) == null) &&
+				(getServerCityCalculations ().canEventuallyConstructBuilding (knownTerrain, knownBuildings, cityLocation, building, sd.getOverlandMapSize (), db)))
+
+				buildingOptions.add (building);
+
+		// Now step through the list of possible buildings until we find one we have all the pre-requisites for
+		// If we find one that we DON'T have all the pre-requisites for, then add the pre-requisites that we don't have but can build onto the end of the list
+		// In this way we can decide that we want e.g. a Wizards' Guild and this repeating loop will work out all the buildings that we need to build first in order to get it
+
+		// Use an index so we can add to the tail of the list as we go along
+		int buildingIndex = 0;
+		while ((!decided) && (buildingIndex < buildingOptions.size ()))
+		{
+			final BuildingSvr thisBuilding = buildingOptions.get (buildingIndex);
+
+			if (getMemoryBuildingUtils ().meetsBuildingRequirements (knownBuildings, cityLocation, thisBuilding))
+			{
+				// Got one we can decide upon
+				cityData.setCurrentlyConstructingBuildingID (thisBuilding.getBuildingID ());
+				cityData.setCurrentlyConstructingUnitID (null);
+				decided = true;
+			}
+			else
+			{
+				// We want this, but we need to build something else first - find out what
+				// Note we don't need to check whether each prerequisite can itself be constructed, or for the right tile types, because
+				// canEventuallyConstructBuilding () above already checked all this over the entire prerequisite tree, so all we need to do is add them
+				for (final BuildingPrerequisite prereq : thisBuilding.getBuildingPrerequisite ())
+				{
+					final BuildingSvr buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
+					if ((!buildingOptions.contains (buildingPrereq)) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, buildingPrereq.getBuildingID ()) == null))
+						buildingOptions.add (buildingPrereq);
+				}
+
+				buildingIndex++;
+			}
+		}
+		
+		log.trace ("Exiting tryToConstructBuildingOfType = " + decided);
+		return decided;
 	}
 
 	/**

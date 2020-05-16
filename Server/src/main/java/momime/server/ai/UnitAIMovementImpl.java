@@ -12,6 +12,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
 
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
@@ -57,6 +58,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		Integer doubleDestinationDistance = null;
 		
+		// Check all locations we want to head to and find the closest one (or multiple closest ones)
 		for (final AIDefenceLocation location : underdefendedLocations)
 		{
 			final int doubleThisDistance = doubleMovementDistances [location.getMapLocation ().getZ ()] [location.getMapLocation ().getY ()] [location.getMapLocation ().getX ()];
@@ -411,16 +413,30 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for a good place for settlers to build a city
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param currentLocation Current location of settler unit
+	 * @param desiredCityLocation Location where we want to put a city
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final MapCoordinates3DEx desiredCityLocation)
 	{
 		log.trace ("Entering considerUnitMovement_BuildCity");
 
-		log.warn ("AI movement code BUILD_CITY is not yet implemented");
+		// If we have no idea where to put a city, then nothing to do
+		final AIMovementDecision decision;
+		if (desiredCityLocation == null)
+			decision = null;
 		
-		final AIMovementDecision decision = null;
+		// If we're already at the right spot, then go ahead and make a city
+		else if (desiredCityLocation.equals (currentLocation))
+			decision = new AIMovementDecision (UnitSpecialOrder.BUILD_CITY);
+		
+		// If we can head towards the location where we want to put a city then do so
+		else if (doubleMovementDistances [desiredCityLocation.getZ ()] [desiredCityLocation.getY ()] [desiredCityLocation.getX ()] >= 0)
+			decision = new AIMovementDecision (desiredCityLocation);
+		
+		else
+			decision = null;
 		
 		log.trace ("Exiting considerUnitMovement_BuildCity = " + decision);
 		return decision;

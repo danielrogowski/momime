@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -144,6 +145,7 @@ public interface UnitAI
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
+	 * @param desiredCityLocation Location where we want to put a city
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
@@ -151,7 +153,7 @@ public interface UnitAI
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
 	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
-		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain,
+		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final MapCoordinates3DEx desiredCityLocation,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException;
 	
 	/**
@@ -161,9 +163,10 @@ public interface UnitAI
 	 * @param category What category of units these are
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param desiredCityLocation Location where we want to put a city
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether we found something to do or not
+	 * @return Whether we moved or not; if we did something else (like turn a settler into a city, or make an engineer build a road) then returns false
 	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws PlayerNotFoundException If a player cannot be found
 	 * @throws MomException If there is a significant problem in the game logic
@@ -171,6 +174,6 @@ public interface UnitAI
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final PlayerServerDetails player, final MomSessionVariables mom)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final MapCoordinates3DEx desiredCityLocation, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

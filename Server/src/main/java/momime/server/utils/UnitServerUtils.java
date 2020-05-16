@@ -21,6 +21,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 
 /**
@@ -62,7 +63,7 @@ public interface UnitServerUtils
 	 * @return True if this special order results in the unit dying/being removed from play
 	 */
 	public boolean doesUnitSpecialOrderResultInDeath (final UnitSpecialOrder order);
-
+	
 	/**
 	 * Sets a special order on a unit, and sends the special order to the player owning the unit
 	 * 
@@ -81,6 +82,25 @@ public interface UnitServerUtils
 	 */
 	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException;
+
+	/**
+	 * Attempts to process a special order (one of the buttons like Patrol or Build City in the right hand panel) on a unit stack.  Used by both human players and the AI.
+	 * 
+	 * @param unitURNs Units in the selected stack
+	 * @param specialOrder Special order we want to process
+	 * @param mapLocation Where we want to process the special order
+	 * @param player Player who owns the units
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Error message if there was a problem; null = success
+	 * @throws RecordNotFoundException If an expected data item cannot be found
+	 * @throws JAXBException If there is a problem sending the message to the client
+	 * @throws XMLStreamException If there is a problem sending the message to the client
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public String processSpecialOrder (final List<Integer> unitURNs, final UnitSpecialOrder specialOrder, final MapCoordinates3DEx mapLocation,
+		final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException;
 	
 	/**

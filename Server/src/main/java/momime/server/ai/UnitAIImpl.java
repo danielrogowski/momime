@@ -66,6 +66,7 @@ import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.messages.ServerMemoryGridCellUtils;
+import momime.server.utils.UnitServerUtils;
 import momime.server.utils.UnitSkillDirectAccess;
 
 /**
@@ -114,6 +115,9 @@ public final class UnitAIImpl implements UnitAI
 	
 	/** Unit AI movement decisions */
 	private UnitAIMovement unitAIMovement;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
 	
 	/**
 	 * @param xu Unit to calculate value for
@@ -758,6 +762,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
+	 * @param desiredCityLocation Location where we want to put a city
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
@@ -766,7 +771,7 @@ public final class UnitAIImpl implements UnitAI
 	 */
 	@Override
 	public final AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
-		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain,
+		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final MapCoordinates3DEx desiredCityLocation,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering decideUnitMovement");
@@ -818,7 +823,7 @@ public final class UnitAIImpl implements UnitAI
 					break;
 				
 				case BUILD_CITY:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (doubleMovementDistances, (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (), desiredCityLocation);
 					break;
 				
 				case BUILD_ROAD:
@@ -864,9 +869,10 @@ public final class UnitAIImpl implements UnitAI
 	 * @param category What category of units these are
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param desiredCityLocation Location where we want to put a city
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether we found something to do or not
+	 * @return Whether we moved or not; if we did something else (like turn a settler into a city, or make an engineer build a road) then returns false
 	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws PlayerNotFoundException If a player cannot be found
 	 * @throws MomException If there is a significant problem in the game logic
@@ -875,7 +881,7 @@ public final class UnitAIImpl implements UnitAI
 	 */
 	@Override
 	public final boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final PlayerServerDetails player, final MomSessionVariables mom)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final MapCoordinates3DEx desiredCityLocation, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering decideAndExecuteUnitMovement: AI Player ID " + player.getPlayerDescription ().getPlayerID () + ", first Unit URN " + units.get (0).getUnit ().getUnitURN ()); 
@@ -913,11 +919,14 @@ public final class UnitAIImpl implements UnitAI
 		// Use list of movement codes from the unit stack's category
 		final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
 		final AIMovementDecision destination = decideUnitMovement (units, movementCodes, doubleMovementDistances,
-			underdefendedLocations, enemyUnits, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+			underdefendedLocations, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredCityLocation, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 		
 		// Move, if we found somewhere to go
-		boolean moved = (destination != null) && (destination.getDestination () != null);
-		if (moved)
+		final boolean moved;
+		if (destination == null)
+			moved = false;
+		
+		else if (destination.getDestination () != null)
 		{
 			// If its a simultaneous turns game, then move as far as we can in one turn.
 			// If its a one-player-at-a-time game, then move only 1 cell.
@@ -945,6 +954,8 @@ public final class UnitAIImpl implements UnitAI
 				moved = false;		// Until I understand when and how this happens sometimes
 			else
 			{
+				moved = true;
+				
 				// We need the true unit versions to execute the move
 				final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
 				for (final AIUnitAndRatings mu : units)
@@ -958,6 +969,20 @@ public final class UnitAIImpl implements UnitAI
 					(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
 			}
 		}
+		
+		else if (destination.getSpecialOrder () != null)
+		{
+			// This seems backwards, but the return value being true means the unit tries to move again; false means stop trying to move
+			moved = false;
+			final List<Integer> unitURNs = units.stream ().map (u -> u.getUnit ().getUnitURN ()).collect (Collectors.toList ());
+			final String error = getUnitServerUtils ().processSpecialOrder (unitURNs, destination.getSpecialOrder (), (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (), player, mom);
+			
+			if (error != null)
+				log.warn ("AI wanted to process special order " + destination.getSpecialOrder () + " but was rejected for reason: " + error);
+		}
+		
+		else
+			moved = false;
 		
 		log.trace ("Exiting decideAndExecuteUnitMovement = " + moved);
 		return moved;
@@ -1168,5 +1193,21 @@ public final class UnitAIImpl implements UnitAI
 	public final void setUnitAIMovement (final UnitAIMovement ai)
 	{
 		unitAIMovement = ai;
+	}
+
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
 	}
 }

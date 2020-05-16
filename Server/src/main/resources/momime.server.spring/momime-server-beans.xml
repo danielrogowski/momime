@@ -182,13 +182,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="updateMagicPowerDistributionMessage" class="momime.server.messages.process.UpdateMagicPowerDistributionMessageImpl" scope="prototype" />
 	
 	<bean id="specialOrderButtonMessage" class="momime.server.messages.process.SpecialOrderButtonMessageImpl" scope="prototype">
-		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
-		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
-		<property name="cityServerUtils" ref="cityServerUtils" />
-		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
-		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 	
 	<bean id="captureCityDecisionMessage" class="momime.server.messages.process.CaptureCityDecisionMessageImpl" scope="prototype">
@@ -420,6 +414,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="cityCalculations" ref="cityCalculations" />
 	</bean>
 
 	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
@@ -738,6 +737,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="unitAIMovement" ref="unitAIMovement" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
 	</bean>
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">

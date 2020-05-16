@@ -17,6 +17,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -34,6 +35,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
@@ -41,10 +43,16 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerResourceCalculations;
+import momime.server.database.MapFeatureSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.messages.process.SpecialOrderButtonMessageImpl;
+import momime.server.process.PlayerMessageProcessing;
 
 /**
  * Server side only helper methods for dealing with units
@@ -77,6 +85,21 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	
 	/** Unit skill values direct access */
 	private UnitSkillDirectAccess unitSkillDirectAccess;
+	
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+	
+	/** Server-only overland map utils */
+	private OverlandMapServerUtils overlandMapServerUtils;
+	
+	/** Resource calculations */
+	private ServerResourceCalculations serverResourceCalculations;
+
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
 	
 	/**
 	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
@@ -237,7 +260,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering findUnitWithPlayerAndID: Player ID " + player.getPlayerDescription ().getPlayerID () +
+		log.trace ("Entering setAndSendSpecialOrder: Player ID " + player.getPlayerDescription ().getPlayerID () +
 			", Unit URN " + trueUnit.getUnitURN () + ", " + specialOrder);
 
 		// Setting a special order cancels any other kind of move
@@ -250,7 +273,181 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// Update in player's memory and on clients
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings);
 
-		log.trace ("Exiting findUnitWithPlayerAndID");
+		log.trace ("Exiting setAndSendSpecialOrder");
+	}
+	
+	/**
+	 * Attempts to process a special order (one of the buttons like Patrol or Build City in the right hand panel) on a unit stack.  Used by both human players and the AI.
+	 * 
+	 * @param unitURNs Units in the selected stack
+	 * @param specialOrder Special order we want to process
+	 * @param mapLocation Where we want to process the special order
+	 * @param player Player who owns the units
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Error message if there was a problem; null = success
+	 * @throws RecordNotFoundException If an expected data item cannot be found
+	 * @throws JAXBException If there is a problem sending the message to the client
+	 * @throws XMLStreamException If there is a problem sending the message to the client
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	@Override
+	public final String processSpecialOrder (final List<Integer> unitURNs, final UnitSpecialOrder specialOrder, final MapCoordinates3DEx mapLocation,
+		final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering processSpecialOrder: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + specialOrder);
+		
+		// What skill do we need
+		final String necessarySkillID;
+		final boolean allowMultipleUnits;
+		
+		switch (specialOrder)
+		{
+			case BUILD_CITY:
+				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST;
+				allowMultipleUnits = false;
+				break;
+				
+			case MELD_WITH_NODE:
+				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE;
+				allowMultipleUnits = false;
+				break;
+
+			case PURIFY:
+				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY;
+				allowMultipleUnits = true;
+				break;
+				
+			case PATROL:
+				necessarySkillID = null;
+				allowMultipleUnits = true;
+				break;
+				
+			default:
+				throw new MomException (SpecialOrderButtonMessageImpl.class.getName () + " does not know skill ID corresponding to order of " + specialOrder);
+		}
+		
+		// Get map cell
+		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(mapLocation.getZ ()).getRow ().get (mapLocation.getY ()).getCell ().get (mapLocation.getX ());
+		final TileTypeSvr tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "SpecialOrderButtonMessageImpl");
+		final MapFeatureSvr mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
+			(tc.getTerrainData ().getMapFeatureID (), "SpecialOrderButtonMessageImpl");
+		
+		// Process through all the units
+		String error = null;
+		if (unitURNs.size () == 0)
+			error = "You must select at least one unit to give a special order to.";
+
+		final List<ExpandedUnitDetails> unitsWithNecessarySkillID = new ArrayList<ExpandedUnitDetails> ();
+
+		final Iterator<Integer> unitUrnIterator = unitURNs.iterator ();
+		while ((error == null) && (unitUrnIterator.hasNext ()))
+		{
+			final Integer thisUnitURN = unitUrnIterator.next ();
+			final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (thisUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+
+			if (thisUnit == null)
+				error = "Some of the units you are trying to give a special order to could not be found";
+			else if (thisUnit.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ())
+				error = "Some of the units you are trying to give a special order to belong to another player";
+			else if (thisUnit.getStatus () != UnitStatusID.ALIVE)
+				error = "Some of the units you are trying to give a special order to are dead/dismissed";
+			else if (!thisUnit.getUnitLocation ().equals (mapLocation))
+				error = "Some of the units you are trying to give a special order to are not at the right location";
+			else
+			{
+				// Does it have the necessary skill?
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				if ((necessarySkillID == null) || (xu.hasModifiedSkill (necessarySkillID)))				
+					unitsWithNecessarySkillID.add (xu);
+			}
+		}
+
+		// We must have at least one unit
+		if ((error == null) && (unitsWithNecessarySkillID.size () == 0))
+			error = "No unit in the unit stack has the necessary skill to perform the requested special order";
+		
+		// Is it an order that requires us to only have a single unit with the skill?
+		if ((error == null) && (!allowMultipleUnits) && (unitsWithNecessarySkillID.size () > 1))
+			switch (specialOrder)
+			{
+				case BUILD_CITY:
+					error = "You must select only a single settler to build a city with";
+					break;
+					
+				case MELD_WITH_NODE:
+					error = "You must select only a single spirit to meld with a node";
+					break;
+					
+				default:
+					error = "You must select only a single unit with the relevant skill";
+			}
+		
+		// Skill-specific validation
+		if (error == null)
+		{
+			if ((specialOrder == UnitSpecialOrder.BUILD_CITY) && (!tileType.isCanBuildCity ()))
+				error = "You can't build a city on this type of terrain";
+			else if ((specialOrder == UnitSpecialOrder.BUILD_CITY) && (mapFeature != null) && (!mapFeature.isCanBuildCity ()))
+				error = "You can't build a city on top of this type of map feature";
+			else if ((specialOrder == UnitSpecialOrder.BUILD_CITY) && (getCityCalculations ().markWithinExistingCityRadius
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mapLocation.getZ (), mom.getSessionDescription ().getOverlandMapSize ()).get (mapLocation.getX (), mapLocation.getY ())))
+				error = "Cities cannot be built within " + mom.getSessionDescription ().getOverlandMapSize ().getCitySeparation () + " squares of another city";
+			else if ((specialOrder == UnitSpecialOrder.MELD_WITH_NODE) && (tileType.getMagicRealmID () == null))
+				error = "Can only use the meld with node skill with node map squares";
+			else if ((specialOrder == UnitSpecialOrder.MELD_WITH_NODE) && (player.getPlayerDescription ().getPlayerID ().equals (tc.getTerrainData ().getNodeOwnerID ())))
+				error = "You already control this node so cannot meld with it again";
+			else if ((specialOrder == UnitSpecialOrder.PURIFY) && (tc.getTerrainData ().getCorrupted () == null))
+				error = "You can only use purify on corrupted terrain";
+		}
+
+		if (error == null)
+		{
+			// In a simultaneous turns game, settlers are put on special orders and the city isn't built until movement resolution.
+			// But we still have to confirm to the client that their unit selection/build location was fine.
+			// Multi-turn orders like purify and build road also just set the order here and tick up progress later.
+			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (specialOrder == UnitSpecialOrder.PATROL) ||
+				(specialOrder == UnitSpecialOrder.PURIFY))
+			{
+				for (final ExpandedUnitDetails trueUnit : unitsWithNecessarySkillID)
+					setAndSendSpecialOrder (trueUnit.getMemoryUnit (), specialOrder, player,
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+			}
+			else
+			{
+				// In a one-player-at-a-time game, actions take place immediately
+				switch (specialOrder)
+				{
+					case BUILD_CITY:
+						getCityServerUtils ().buildCityFromSettler (mom.getGeneralServerKnowledge (), player,
+							unitsWithNecessarySkillID.get (0).getMemoryUnit (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						break;
+						
+					case MELD_WITH_NODE:
+						// If successful, this will generate messages about the node capture
+						getOverlandMapServerUtils ().attemptToMeldWithNode (unitsWithNecessarySkillID.get (0), mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						
+						getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);						
+						break;
+						
+					default:
+						throw new MomException (SpecialOrderButtonMessageImpl.class.getName () + " does not know how to handle order of " + specialOrder);
+				}
+			}
+			
+			// The settler was probably eating some rations and is now 'dead' so won't be eating those rations anymore
+			// Or the spirit has now melded with the node and so a) is no longer consuming mana and b) we now get the big magic power boost from capturing the node
+			getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
+		}
+		
+		log.trace ("Exiting processSpecialOrder = " + error);
+		return error;
 	}
 
 	/**
@@ -736,5 +933,85 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setUnitSkillDirectAccess (final UnitSkillDirectAccess direct)
 	{
 		unitSkillDirectAccess = direct;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return Server-only overland map utils
+	 */
+	public final OverlandMapServerUtils getOverlandMapServerUtils ()
+	{
+		return overlandMapServerUtils;
+	}
+	
+	/**
+	 * @param utils Server-only overland map utils
+	 */
+	public final void setOverlandMapServerUtils (final OverlandMapServerUtils utils)
+	{
+		overlandMapServerUtils = utils;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final ServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
 	}
 }

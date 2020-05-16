@@ -27,7 +27,8 @@ public interface CityAI
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
 	 * race will most likely be the race chosen for the continent we decide to put the city on, i.e. we have to pick position first, race second
 	 *
-	 * @param map Known terrain
+	 * @param knownMap Known terrain
+	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
 	 * @param plane Plane to place a city on
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
 	 * @param sd Session description
@@ -38,8 +39,8 @@ public interface CityAI
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane, final boolean avoidOtherCities,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final String purpose)
+	public MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells knownMap, final MapVolumeOfMemoryGridCells trueMap,
+		final int plane, final boolean avoidOtherCities, final MomSessionDescription sd, final ServerDatabaseEx db, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**

@@ -13,7 +13,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.areas.storage.MapArea2D;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -130,22 +129,12 @@ public final class MomAIImpl implements MomAI
 			final Map<Integer, MapCoordinates3DEx> desiredCityLocations = new HashMap<Integer, MapCoordinates3DEx> ();
 			for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 			{
-				final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (priv.getFogOfWarMemory ().getMap (), plane, false, mom.getSessionDescription (), mom.getServerDB (),
-					"considering building/moving settler");
+				final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (priv.getFogOfWarMemory ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), plane, false, mom.getSessionDescription (), mom.getServerDB (), "considering building/moving settler");
 				if (desiredCityLocation != null)
 				{
-					// We only use what the AI player really knows from fog of war to determine their pick for city location, but have to do a check
-					// against the real map to see if there's a city too close that we can't see (same happens when human players click Build City)
-					final MapArea2D<Boolean> trueMapWithinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius
-						(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), plane, mom.getSessionDescription ().getOverlandMapSize ());
-
-					if (trueMapWithinExistingCityRadius.get (desiredCityLocation.getX (), desiredCityLocation.getY ()))
-						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " in fact can't put a city at " + desiredCityLocation + " as its too close to a city that they cannot see");
-					else
-					{
-						log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can put a city at " + desiredCityLocation);
-						desiredCityLocations.put (plane, desiredCityLocation);
-					}
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can put a city at " + desiredCityLocation);
+					desiredCityLocations.put (plane, desiredCityLocation);
 				}
 			}
 			

@@ -84,7 +84,8 @@ public final class CityAIImpl implements CityAI
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
 	 * race will most likely be the race chosen for the continent we decide to put the city on, i.e. we have to pick position first, race second
 	 *
-	 * @param map Known terrain
+	 * @param knownMap Known terrain
+	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
 	 * @param plane Plane to place a city on
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
 	 * @param sd Session description
@@ -96,14 +97,14 @@ public final class CityAIImpl implements CityAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells map, final int plane, final boolean avoidOtherCities,
-		final MomSessionDescription sd, final ServerDatabaseEx db, final String purpose)
+	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells knownMap, final MapVolumeOfMemoryGridCells trueMap,
+		final int plane, final boolean avoidOtherCities, final MomSessionDescription sd, final ServerDatabaseEx db, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering chooseCityLocation: " + plane);
 
 		// Mark off all places within 3 squares of an existing city, i.e. those spaces we can't put a new city
-		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (map, plane, sd.getOverlandMapSize ());
+		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (trueMap, plane, sd.getOverlandMapSize ());
 
 		// Now consider every map location as a possible location for a new city
 		MapCoordinates3DEx bestLocation = null;
@@ -113,7 +114,7 @@ public final class CityAIImpl implements CityAI
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 			{
 				// Can we build a city here?
-				final OverlandMapTerrainData terrainData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
+				final OverlandMapTerrainData terrainData = knownMap.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getTerrainData ();
 
 				if ((terrainData != null) && (!withinExistingCityRadius.get (x, y)))
 				{
@@ -126,7 +127,7 @@ public final class CityAIImpl implements CityAI
 						// How good will this city be?
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
 						
-						final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, map, null, cityLocation, null, sd, false, true, db);
+						final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, knownMap, null, cityLocation, null, sd, false, true, db);
 						final CityProductionBreakdown productionProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
 						final CityProductionBreakdown goldProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 						final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
@@ -146,7 +147,7 @@ public final class CityAIImpl implements CityAI
 						for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
 							if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, direction.getDirectionID ()))
 							{
-								final OverlandMapTerrainData checkFeatureData = map.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+								final OverlandMapTerrainData checkFeatureData = knownMap.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
 								if ((checkFeatureData != null) && (checkFeatureData.getMapFeatureID () != null))
 								{
 									final Integer featureCityQualityEstimate = db.findMapFeature (checkFeatureData.getMapFeatureID (), "chooseCityLocation").getCityQualityEstimate ();
@@ -159,7 +160,7 @@ public final class CityAIImpl implements CityAI
 						if (avoidOtherCities)
 						{
 							// What's the closest existing city to these coordinates?
-							Integer closestDistance = getCityServerUtils ().findClosestCityTo (cityLocation, map, sd.getOverlandMapSize ());
+							Integer closestDistance = getCityServerUtils ().findClosestCityTo (cityLocation, knownMap, sd.getOverlandMapSize ());
 							if (closestDistance != null)
 								thisCityQuality = thisCityQuality + (closestDistance * 2);		// Maximum would be 40 apart (north-south of map) x2 = 80
 						}

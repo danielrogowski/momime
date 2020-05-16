@@ -258,10 +258,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final MapCoordinates3DEx raidersArcanusLocation = new MapCoordinates3DEx (7, 27, 0);
 		
 		final CityAI cityAI = mock (CityAI.class);
-		when (cityAI.chooseCityLocation (trueTerrain, 1, true, sd, db, "Starter city for \"Human player\"")).thenReturn (humanLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, 1, true, sd, db, "Starter city for \"Raiders\"")).thenReturn (raidersMyrrorLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, 0, true, sd, db, "Starter city for \"AI player\"")).thenReturn (aiLocation);
-		when (cityAI.chooseCityLocation (trueTerrain, 0, true, sd, db, "Starter city for \"Raiders\"")).thenReturn (raidersArcanusLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, trueTerrain, 1, true, sd, db, "Starter city for \"Human player\"")).thenReturn (humanLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, trueTerrain, 1, true, sd, db, "Starter city for \"Raiders\"")).thenReturn (raidersMyrrorLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, trueTerrain, 0, true, sd, db, "Starter city for \"AI player\"")).thenReturn (aiLocation);
+		when (cityAI.chooseCityLocation (trueTerrain, trueTerrain, 0, true, sd, db, "Starter city for \"Raiders\"")).thenReturn (raidersArcanusLocation);
 		
 		// Race for each starter city - set these ALL to be the same race; then can test the % choice for this
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();

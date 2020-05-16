@@ -81,7 +81,7 @@ public final class TestCityAIImpl extends ServerTestData
 		ai.setCityCalculations (calc);
 		ai.setCoordinateSystemUtils (coordinateSystemUtils);
 		
-		final MapCoordinates3DEx ocean = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx ocean = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertNull (ocean);
 
 		// Fill map with tundra, then we can build a city anywhere but none of them are very good
@@ -90,7 +90,7 @@ public final class TestCityAIImpl extends ServerTestData
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_TUNDRA);
 
-		final MapCoordinates3DEx tundra = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx tundra = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertEquals (0, tundra.getX ());
 		assertEquals (0, tundra.getY ());
 		assertEquals (0, tundra.getZ ());
@@ -105,7 +105,7 @@ public final class TestCityAIImpl extends ServerTestData
 			for (final MemoryGridCell cell : row.getCell ())
 				cell.getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_GRASS);
 
-		final MapCoordinates3DEx grass = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx grass = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertEquals (22, grass.getX ());
 		assertEquals (12, grass.getY ());
 		assertEquals (0, grass.getZ ());
@@ -113,7 +113,7 @@ public final class TestCityAIImpl extends ServerTestData
 		// Putting some gems there is great
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF01");
 
-		final MapCoordinates3DEx gems = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx gems = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertEquals (22, gems.getX ());
 		assertEquals (12, gems.getY ());
 		assertEquals (0, gems.getZ ());
@@ -122,7 +122,7 @@ public final class TestCityAIImpl extends ServerTestData
 		// Note there's no longer a spot where can include all 3 grass tiles, so it picks the first coordinates that it encounters that includes two of the grass tiles
 		map.getPlane ().get (0).getRow ().get (12).getCell ().get (22).getTerrainData ().setMapFeatureID ("MF13");
 
-		final MapCoordinates3DEx lair = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx lair = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertEquals (20, lair.getX ());
 		assertEquals (11, lair.getY ());
 		assertEquals (0, lair.getZ ());
@@ -131,7 +131,7 @@ public final class TestCityAIImpl extends ServerTestData
 		// But we don't get the 20% gold bonus from it unless we move the city to that location, so this proves that the gold bonus is taken into account
 		map.getPlane ().get (0).getRow ().get (11).getCell ().get (21).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_RIVER);
 
-		final MapCoordinates3DEx river = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx river = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertEquals (21, river.getX ());
 		assertEquals (11, river.getY ());
 		assertEquals (0, river.getZ ());
@@ -145,7 +145,7 @@ public final class TestCityAIImpl extends ServerTestData
 		map.getPlane ().get (0).getRow ().get (14).getCell ().get (22).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 		map.getPlane ().get (0).getRow ().get (13).getCell ().get (23).getTerrainData ().setTileTypeID (ServerDatabaseValues.TILE_TYPE_MOUNTAIN);
 
-		final MapCoordinates3DEx mountain = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx mountain = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertEquals (21, mountain.getX ());
 		assertEquals (12, mountain.getY ());
 		assertEquals (0, mountain.getZ ());
@@ -154,7 +154,7 @@ public final class TestCityAIImpl extends ServerTestData
 		// the 25% bonus from the mountains rather than the 20% + 4 from the river and iron ore
 		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF04");
 
-		final MapCoordinates3DEx ironOre = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx ironOre = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertEquals (21, ironOre.getX ());
 		assertEquals (12, ironOre.getY ());
 		assertEquals (0, ironOre.getZ ());
@@ -163,7 +163,7 @@ public final class TestCityAIImpl extends ServerTestData
 		// back to the 20% + 6 from the river and coal rather than the 25% from the mountains
 		map.getPlane ().get (0).getRow ().get (9).getCell ().get (21).getTerrainData ().setMapFeatureID ("MF05");
 
-		final MapCoordinates3DEx coal = ai.chooseCityLocation (map, 0, false, sd, db, null);
+		final MapCoordinates3DEx coal = ai.chooseCityLocation (map, map, 0, false, sd, db, null);
 		assertEquals (21, coal.getX ());
 		assertEquals (11, coal.getY ());
 		assertEquals (0, coal.getZ ());

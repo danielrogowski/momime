@@ -25179,6 +25179,7 @@
 		<languageEntry languageEntryID="BuildingURN" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmUnitInfo">
+		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="Dismiss" />
 		<languageEntry languageEntryID="DismissTitle" />

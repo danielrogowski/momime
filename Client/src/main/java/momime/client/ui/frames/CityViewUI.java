@@ -37,6 +37,7 @@ import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
@@ -68,6 +69,7 @@ import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
+import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
@@ -147,6 +149,9 @@ public final class CityViewUI extends MomClientFrameUI
 
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -1179,7 +1184,12 @@ public final class CityViewUI extends MomClientFrameUI
 
 		if (cityData != null)
 		{
-			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ()); 
+			String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ()); 
+
+			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), cityData.getCityOwnerID ());
+			if (cityOwner != null)
+				cityName = cityName.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (cityOwner));
+			
 			cityNameLabel.setText (cityName);
 			getFrame ().setTitle (cityName);
 			
@@ -1582,6 +1592,22 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setUnitClientUtils (final UnitClientUtils util)
 	{
 		unitClientUtils = util;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
 	}
 	
 	/**

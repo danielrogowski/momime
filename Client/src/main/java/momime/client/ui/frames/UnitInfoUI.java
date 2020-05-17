@@ -12,6 +12,8 @@ import javax.swing.WindowConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
@@ -20,6 +22,7 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -39,6 +42,12 @@ public final class UnitInfoUI extends MomClientFrameUI
 	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
+	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
 	
 	/** Unit info panel */
 	private UnitInfoPanel unitInfoPanel;
@@ -183,7 +192,13 @@ public final class UnitInfoUI extends MomClientFrameUI
 		
 		try
 		{
-			getFrame ().setTitle (getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME));
+			String unitName = getLanguage ().findCategoryEntry ("frmUnitInfo", "Title").replaceAll ("UNIT_NAME", getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME));
+			
+			final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getUnit ().getOwningPlayerID ());
+			if (owningPlayer != null)
+				unitName = unitName.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (owningPlayer));
+			
+			getFrame ().setTitle (unitName);
 		}
 		catch (final RecordNotFoundException e)
 		{
@@ -223,6 +238,38 @@ public final class UnitInfoUI extends MomClientFrameUI
 	public final void setUnitClientUtils (final UnitClientUtils util)
 	{
 		unitClientUtils = util;
+	}
+
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
 	}
 	
 	/**

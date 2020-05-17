@@ -588,7 +588,7 @@ public final class CityAIImpl implements CityAI
 			final int rebelPenalty = numberOfRebels * 3;
 			final int totalValue = goldPerTurn - rebelPenalty;
 			
-			log.debug ("AI player ID " + player.getPlayerDescription () + " would generate " + goldPerTurn + " gold this turn - 3*" + numberOfRebels + " rebels = " + totalValue + " with tax rate ID " + taxRate.getTaxRateID ());
+			log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " would generate " + goldPerTurn + " gold this turn - 3*" + numberOfRebels + " rebels = " + totalValue + " with tax rate ID " + taxRate.getTaxRateID ());
 			
 			if ((bestValue == null) || (totalValue > bestValue))
 			{

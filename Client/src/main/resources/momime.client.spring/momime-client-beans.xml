@@ -1776,6 +1776,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueClientUtils" ref="resourceValueClientUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -1867,6 +1868,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each unitInfoUI -->

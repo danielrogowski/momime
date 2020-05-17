@@ -697,22 +697,22 @@ Also this means they cannot build Alchemists' Guilds and so cannot use Mithril o
 		<buildingHelpText>Each wizard resides in his or her own fortress.  This serves as a base of operations.  If the fortress is lost, the wizard is banished and must cast the Spell of Return.</buildingHelpText>
 	</building>
 	<citySize citySizeID="CS01">
-		<citySizeName>Outpost of CITY_NAME</citySizeName>
+		<citySizeName>PLAYER_NAME's Outpost of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS02">
-		<citySizeName>Hamlet of CITY_NAME</citySizeName>
+		<citySizeName>PLAYER_NAME's Hamlet of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS03">
-		<citySizeName>Village of CITY_NAME</citySizeName>
+		<citySizeName>PLAYER_NAME's Village of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS04">
-		<citySizeName>Town of CITY_NAME</citySizeName>
+		<citySizeName>PLAYER_NAME's Town of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS05">
-		<citySizeName>City of CITY_NAME</citySizeName>
+		<citySizeName>PLAYER_NAME's City of CITY_NAME</citySizeName>
 	</citySize>
 	<citySize citySizeID="CS06">
-		<citySizeName>Capital of CITY_NAME</citySizeName>
+		<citySizeName>PLAYER_NAME's Capital of CITY_NAME</citySizeName>
 	</citySize>
 	<unitType unitTypeID="N">
 		<unitTypeInexperienced>Normal troops begin as recruits.</unitTypeInexperienced>
@@ -5787,6 +5787,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmUnitInfo">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>PLAYER_NAME's UNIT_NAME</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>

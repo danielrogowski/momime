@@ -9,6 +9,16 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
@@ -31,6 +41,7 @@ import momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
+import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.Building;
@@ -45,14 +56,6 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the CityViewUI class
@@ -126,7 +129,7 @@ public final class TestCityViewUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmCity", "OK")).thenReturn ("OK");
 		when (lang.findCategoryEntry ("frmCity", "Rename")).thenReturn ("Rename");
 		
-		when (lang.findCitySizeName ("CS01")).thenReturn ("Test City of CITY_NAME");
+		when (lang.findCitySizeName ("CS01")).thenReturn ("PLAYER_NAME's Test City of CITY_NAME");
 		when (lang.findCategoryEntry ("frmCity", "MaxCitySize")).thenReturn ("maximum MAX_CITY_SIZE");
 		when (lang.findCategoryEntry ("frmCity", "PopulationAndGrowth")).thenReturn ("Population: POPULATION (GROWTH_RATE)");
 
@@ -178,6 +181,20 @@ public final class TestCityViewUI extends ClientTestData
 		priv.setFogOfWarMemory (fow);
 		priv.setTaxRateID ("TR01");
 		
+		// Players
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 1)).thenReturn (player1);
+		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Nigel");
+		
+		final PlayerPublicDetails player2 = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 2)).thenReturn (player2);
+		when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Jafar");
+				
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
 		fowSettings.setSeeEnemyCityConstruction (seeEnemyCityConstruction);
@@ -188,6 +205,7 @@ public final class TestCityViewUI extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
 		when (client.getOurPlayerID ()).thenReturn (1);
+		when (client.getPlayers ()).thenReturn (players);
 		
 		// City production
 		final CityCalculations calc = mock (CityCalculations.class);
@@ -271,6 +289,8 @@ public final class TestCityViewUI extends ClientTestData
 		cityView.setCityViewPanel (panel);
 		cityView.setClient (client);
 		cityView.setCityCalculations (calc);
+		cityView.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		cityView.setWizardClientUtils (wizardClientUtils);
 		cityView.setAnim (anim);
 		cityView.setOverlandMapBitmapGenerator (gen);
 		cityView.setTextUtils (new TextUtilsImpl ());

@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
@@ -34,6 +35,7 @@ import momime.client.utils.AnimationController;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.Unit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -64,6 +66,7 @@ public final class TestUnitInfoUI extends ClientTestData
 
 		when (lang.findCategoryEntry ("frmUnitInfo", "OK")).thenReturn ("OK");
 		when (lang.findCategoryEntry ("frmUnitInfo", "Dismiss")).thenReturn ("Dismiss");
+		when (lang.findCategoryEntry ("frmUnitInfo", "Title")).thenReturn ("PLAYER_NAME's UNIT_NAME");
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -117,6 +120,12 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getPlayers ()).thenReturn (players);
 		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID ())).thenReturn (unitOwner);
+		when (wizardClientUtils.getPlayerName (unitOwner)).thenReturn ("Nigel");
+		
 		// Set up unit to display
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("UN001");
@@ -176,6 +185,8 @@ public final class TestUnitInfoUI extends ClientTestData
 		frame.setClient (client);
 		frame.setUnit (unit);
 		frame.setUnitClientUtils (unitClientUtils);
+		frame.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		frame.setWizardClientUtils (wizardClientUtils);
 		frame.setUnitInfoPanel (panel);
 
 		// Display form		
@@ -199,6 +210,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 
 		when (lang.findCategoryEntry ("frmUnitInfo", "OK")).thenReturn ("OK");
+		when (lang.findCategoryEntry ("frmUnitInfo", "Title")).thenReturn ("PLAYER_NAME's UNIT_NAME");
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
 		langHolder.setLanguage (lang);
@@ -252,6 +264,12 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID () + 1);		// Purposefully make it different
 		when (client.getPlayers ()).thenReturn (players);
 		
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID ())).thenReturn (unitOwner);
+		when (wizardClientUtils.getPlayerName (unitOwner)).thenReturn ("Nigel");
+		
 		// Set up unit to display
 		final MemoryUnit unit = new MemoryUnit ();
 		unit.setUnitID ("UN001");
@@ -311,6 +329,8 @@ public final class TestUnitInfoUI extends ClientTestData
 		frame.setClient (client);
 		frame.setUnit (unit);
 		frame.setUnitClientUtils (unitClientUtils);
+		frame.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		frame.setWizardClientUtils (wizardClientUtils);
 		frame.setUnitInfoPanel (panel);
 
 		// Display form		

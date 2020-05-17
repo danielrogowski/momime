@@ -566,19 +566,34 @@ public final class CityAIImpl implements CityAI
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		String bestTaxRateID = null;
-		Integer bestGoldProduction = null;
+		Integer bestValue = null;
 		
 		for (final TaxRate taxRate : mom.getServerDB ().getTaxRate ())
 		{
 			getCityProcessing ().changeTaxRate (player, taxRate.getTaxRateID (), mom);
 			
 			final int goldPerTurn = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-			log.debug ("AI player ID " + player.getPlayerDescription () + " would generate " + goldPerTurn + " gold this turn with tax rate ID " + taxRate.getTaxRateID ());
 			
-			if ((bestGoldProduction == null) || (goldPerTurn > bestGoldProduction))
+			// Factor in how many rebels we have, otherwise the AI tends to pick really high tax rates which generate the most money but cripple production
+			int numberOfRebels = 0;
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+							numberOfRebels = numberOfRebels + cityData.getNumberOfRebels ();
+					}
+			
+			final int rebelPenalty = numberOfRebels * 3;
+			final int totalValue = goldPerTurn - rebelPenalty;
+			
+			log.debug ("AI player ID " + player.getPlayerDescription () + " would generate " + goldPerTurn + " gold this turn - 3*" + numberOfRebels + " rebels = " + totalValue + " with tax rate ID " + taxRate.getTaxRateID ());
+			
+			if ((bestValue == null) || (totalValue > bestValue))
 			{
 				bestTaxRateID = taxRate.getTaxRateID ();
-				bestGoldProduction = goldPerTurn;
+				bestValue = totalValue;
 			}
 		}
 		

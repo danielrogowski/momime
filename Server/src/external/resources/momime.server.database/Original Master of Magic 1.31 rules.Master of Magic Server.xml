@@ -14175,9 +14175,6 @@
 		<unitUpkeep productionTypeID="RE01">
 			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
-		<unitHasSkill unitSkillID="UA01">
-			<unitSkillValue>1</unitSkillValue>
-		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>
@@ -15370,9 +15367,6 @@
 		<unitUpkeep productionTypeID="RE01">
 			<undoubledProductionValue>1</undoubledProductionValue>
 		</unitUpkeep>
-		<unitHasSkill unitSkillID="UA01">
-			<unitSkillValue>2</unitSkillValue>
-		</unitHasSkill>
 		<unitHasSkill unitSkillID="UA04">
 			<unitSkillValue>1</unitSkillValue>
 		</unitHasSkill>

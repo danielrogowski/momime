@@ -27,6 +27,7 @@ import momime.common.database.AiBuildingTypeID;
 import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TaxRate;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -39,13 +40,16 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.process.CityProcessing;
 import momime.server.utils.CityServerUtils;
 
 /**
@@ -79,6 +83,12 @@ public final class CityAIImpl implements CityAI
 	
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;
+	
+	/** City processing methods */
+	private CityProcessing cityProcessing;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
 	
 	/**
 	 * NB. We don't always know the race of the city we're positioning, when positioning raiders at the start of the game their
@@ -535,6 +545,51 @@ public final class CityAIImpl implements CityAI
 		log.trace ("Exiting tryToConstructBuildingOfType = " + decided);
 		return decided;
 	}
+	
+	/**
+	 * AI player tests every tax rate and chooses the best one
+	 * 
+	 * @param player Player we want to pick tax rate for
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void decideTaxRate (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering decideTaxRate: AI Player ID " + player.getPlayerDescription ().getPlayerID ());
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		String bestTaxRateID = null;
+		Integer bestGoldProduction = null;
+		
+		for (final TaxRate taxRate : mom.getServerDB ().getTaxRate ())
+		{
+			getCityProcessing ().changeTaxRate (player, taxRate.getTaxRateID (), mom);
+			
+			final int goldPerTurn = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+			log.debug ("AI player ID " + player.getPlayerDescription () + " would generate " + goldPerTurn + " gold this turn with tax rate ID " + taxRate.getTaxRateID ());
+			
+			if ((bestGoldProduction == null) || (goldPerTurn > bestGoldProduction))
+			{
+				bestTaxRateID = taxRate.getTaxRateID ();
+				bestGoldProduction = goldPerTurn;
+			}
+		}
+		
+		if (bestTaxRateID != null)
+		{
+			log.debug ("AI player ID " + player.getPlayerDescription () + " choosing tax rate ID " + bestTaxRateID);
+			getCityProcessing ().changeTaxRate (player, bestTaxRateID, mom);
+		}
+		
+		log.trace ("Exiting decideTaxRate");
+	}
 
 	/**
 	 * @return Methods for updating true map + players' memory
@@ -662,5 +717,37 @@ public final class CityAIImpl implements CityAI
 	public final void setCityServerUtils (final CityServerUtils utils)
 	{
 		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return City processing methods
+	 */
+	public final CityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final CityProcessing obj)
+	{
+		cityProcessing = obj;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param utils Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
+	{
+		resourceValueUtils = utils;
 	}
 }

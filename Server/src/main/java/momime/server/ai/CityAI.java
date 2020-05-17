@@ -16,6 +16,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 
 /**
@@ -81,4 +82,18 @@ public interface CityAI
 		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnits, final List<String> combatUnitIDs, final boolean wantSettler,
 		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException;
+
+	/**
+	 * AI player tests every tax rate and chooses the best one
+	 * 
+	 * @param player Player we want to pick tax rate for
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void decideTaxRate (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 }

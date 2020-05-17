@@ -251,11 +251,14 @@ public final class MomAIImpl implements MomAI
 						}
 					}
 			}
-
-			// This relies on knowing what's being built in each city, so do it 2nd
-			getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player, mom.getServerDB (), mom.getSessionDescription ());
 		}
 
+		// Decide optimal tax rate
+		getCityAI ().decideTaxRate (player, mom);
+		
+		// This relies on knowing what's being built in each city and the tax rate, so do it last
+		getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player, mom.getServerDB (), mom.getSessionDescription ());
+		
 		// Do we need to choose a spell to research?
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (priv.getSpellIDBeingResearched () == null))
 			getSpellAI ().decideWhatToResearch (player, mom.getServerDB ());

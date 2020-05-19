@@ -605,6 +605,106 @@ public final class CityAIImpl implements CityAI
 		
 		log.trace ("Exiting decideTaxRate");
 	}
+	
+	/**
+	 * AI checks cities to see if they want to rush buy anything
+	 * 
+	 * @param player Player we want to check for rush buying
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws MomException If there is a problem with city calculations 
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void checkForRushBuying (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering checkForRushBuying: AI Player ID " + player.getPlayerDescription ().getPlayerID ());
+
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		final int goldPerTurn = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		final int goldStored = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+		
+		if ((goldPerTurn >= 2) && (goldStored >= 50))
+		{
+			// Search for cities where we could afford to rush buy whatever is being constructed, and find the one with the lowest production per turn
+			Integer lowestProductionPerTurn = null;
+			MapCoordinates3DEx bestCityLocation = null;
+			Integer bestRushBuyCost = null;
+			Integer bestProductionCost = null;
+			
+			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+					{
+						final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
+						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+						{
+							final Integer productionCost;
+							if (cityData.getCurrentlyConstructingBuildingID () != null)
+							{
+								final BuildingSvr buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "checkForRushBuying");
+								productionCost = buildingDef.getProductionCost ();
+							}
+							else if (cityData.getCurrentlyConstructingUnitID () != null)
+							{
+								final UnitSvr unitDef = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "checkForRushBuying");
+								productionCost = unitDef.getProductionCost ();
+							}
+							else
+								productionCost = null;
+							
+							// Does it even have a production cost?  (Can't rush buy Trade Goods)
+							if (productionCost != null)
+							{
+								final int productionSoFar = (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ();
+								final int rushBuyCost = getCityCalculations ().goldToRushBuy (productionCost, productionSoFar);
+								
+								if (goldStored > rushBuyCost + 20)
+								{
+									// Found something we could rush buy - now how much production does this city generate by itself?
+									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+									final int thisProductionPerTurn = getCityCalculations ().calculateSingleCityProduction (mom.getPlayers (), priv.getFogOfWarMemory ().getMap (),
+										priv.getFogOfWarMemory ().getBuilding (), cityLocation, priv.getTaxRateID (), mom.getSessionDescription (), true, mom.getServerDB (),
+										CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+									
+									if ((lowestProductionPerTurn == null) || (thisProductionPerTurn < lowestProductionPerTurn))
+									{
+										lowestProductionPerTurn = thisProductionPerTurn;
+										bestCityLocation = cityLocation;
+										bestRushBuyCost = rushBuyCost;
+										bestProductionCost = productionCost;
+									}
+								}
+							}
+						}
+					}
+			
+			// Did we find anywhere?
+			if (bestCityLocation == null)
+				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " decided not to rush buy anything");
+			else
+			{
+				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " decided to rush buy project at " + bestCityLocation + " costing " + bestRushBuyCost + " gold");
+				
+				// Same as what RushBuyMessageImpl does for human players
+				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -bestRushBuyCost);
+
+				final OverlandMapCityData cityData = priv.getFogOfWarMemory ().getMap ().getPlane ().get
+					(bestCityLocation.getZ ()).getRow ().get (bestCityLocation.getY ()).getCell ().get (bestCityLocation.getX ()).getCityData ();
+				
+				cityData.setProductionSoFar (bestProductionCost);
+
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), bestCityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+			}
+		}
+		
+		log.trace ("Exiting checkForRushBuying");
+	}
 
 	/**
 	 * @return Methods for updating true map + players' memory

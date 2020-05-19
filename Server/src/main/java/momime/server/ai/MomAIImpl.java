@@ -256,8 +256,11 @@ public final class MomAIImpl implements MomAI
 		// Decide optimal tax rate
 		getCityAI ().decideTaxRate (player, mom);
 		
-		// This relies on knowing what's being built in each city and the tax rate, so do it last
+		// This relies on knowing what's being built in each city and the tax rate, so do it almost last
 		getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player, mom.getServerDB (), mom.getSessionDescription ());
+		
+		// This relies on knowing the production each city is generating, so need the number of farmers + workers set, so do it really last
+		getCityAI ().checkForRushBuying (player, mom);
 		
 		// Do we need to choose a spell to research?
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (priv.getSpellIDBeingResearched () == null))

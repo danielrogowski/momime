@@ -96,4 +96,18 @@ public interface CityAI
 	 */
 	public void decideTaxRate (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * AI checks cities to see if they want to rush buy anything
+	 * 
+	 * @param player Player we want to check for rush buying
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws MomException If there is a problem with city calculations 
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void checkForRushBuying (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

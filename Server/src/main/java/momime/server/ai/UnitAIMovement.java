@@ -66,11 +66,12 @@ public interface UnitAIMovement
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
+	 * @param playerID Player who is moving
 	 * @return See AIMovementDecision for explanation of return values
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	public AIMovementDecision considerUnitMovement_ScoutLand (final int [] [] [] doubleMovementDistances,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException;
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db, final int playerID) throws RecordNotFoundException;
 	
 	/**
 	 * AI tries to move units to scout any unknown terrain.
@@ -78,10 +79,11 @@ public interface UnitAIMovement
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
+	 * @param playerID Player who is moving
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	public AIMovementDecision considerUnitMovement_ScoutAll (final int [] [] [] doubleMovementDistances,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys);
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final int playerID);
 
 	/**
 	 * AI looks to see if any defended locations (nodes/lairs/towers/cities) are too well defended to attack at the moment,

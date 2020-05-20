@@ -5,6 +5,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -110,4 +112,22 @@ public interface CityAI
 	 */
 	public void checkForRushBuying (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param playerID Player we want cities for
+	 * @param plane Which plane we want cities on
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @return List of coordinates of all our cities
+	 */
+	public List<MapCoordinates2DEx> listOurCitiesOnPlane (final int playerID, final int plane, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys);
+
+	/**
+	 * @param x X coordinate of location to search from
+	 * @param y Y coordinate of location to search from
+	 * @param ourCitiesOnPlane List output from listOurCitiesOnPlane
+	 * @param sys Overland map coordinate system
+	 * @return Distance to closest city; 0 if we have no cities on this plane or we are right on top of one
+	 */
+	public int findDistanceToClosestCity (final int x, final int y, final List<MapCoordinates2DEx> ourCitiesOnPlane, final CoordinateSystem sys);
 }

@@ -799,11 +799,11 @@ public final class UnitAIImpl implements UnitAI
 					break;
 					
 				case SCOUT_LAND:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (doubleMovementDistances, terrain, sys, db);
+					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (doubleMovementDistances, terrain, sys, db, units.get (0).getUnit ().getOwningPlayerID ());
 					break;
 					
 				case SCOUT_ALL:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (doubleMovementDistances, terrain, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (doubleMovementDistances, terrain, sys, units.get (0).getUnit ().getOwningPlayerID ());
 					break;
 					
 				case JOIN_STACK:

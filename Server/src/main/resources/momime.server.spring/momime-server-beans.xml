@@ -746,6 +746,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="cityAI" ref="cityAI" />
 	</bean>
 	
 	<!-- Fog of War -->

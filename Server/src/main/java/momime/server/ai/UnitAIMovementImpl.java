@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
 
@@ -41,6 +42,9 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** AI decisions about cities */
+	private CityAI cityAI;
 	
 	/**
 	 * AI tries to move units to any location that lacks defence or can be captured without a fight.
@@ -213,12 +217,13 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
+	 * @param playerID Player who is moving
 	 * @return See AIMovementDecision for explanation of return values
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_ScoutLand (final int [] [] [] doubleMovementDistances,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db, final int playerID) throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_ScoutLand");
 
@@ -226,13 +231,16 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		Integer doubleDestinationDistance = null;
 		
 		for (int z = 0; z < sys.getDepth (); z++)
+		{
+			final List<MapCoordinates2DEx> ourCitiesOnPlane = getCityAI ().listOurCitiesOnPlane (playerID, z, terrain, sys);
+			
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
 				{
 					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
 					if ((mc.getTerrainData () == null) || (mc.getTerrainData ().getTileTypeID () == null))
 					{
-						final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+						int doubleThisDistance = doubleMovementDistances [z] [y] [x];
 						if (doubleThisDistance >= 0)
 						{
 							// We can get there, eventually
@@ -257,6 +265,8 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 
 							if (found)
 							{
+								doubleThisDistance = doubleThisDistance + getCityAI ().findDistanceToClosestCity (x, y, ourCitiesOnPlane, sys);
+
 								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
 								if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
 								{
@@ -270,6 +280,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						}
 					}
 				}
+		}
 		
 		final AIMovementDecision decision;
 		if (destinations.isEmpty ())
@@ -287,11 +298,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
+	 * @param playerID Player who is moving
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_ScoutAll (final int [] [] [] doubleMovementDistances,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final int playerID)
 	{
 		log.trace ("Entering considerUnitMovement_ScoutAll");
 		
@@ -299,15 +311,20 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		Integer doubleDestinationDistance = null;
 		
 		for (int z = 0; z < sys.getDepth (); z++)
+		{
+			final List<MapCoordinates2DEx> ourCitiesOnPlane = getCityAI ().listOurCitiesOnPlane (playerID, z, terrain, sys);
+			
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
 				{
 					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
 					if ((mc.getTerrainData () == null) || (mc.getTerrainData ().getTileTypeID () == null))
 					{
-						final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+						int doubleThisDistance = doubleMovementDistances [z] [y] [x];
 						if (doubleThisDistance >= 0)
 						{
+							doubleThisDistance = doubleThisDistance + getCityAI ().findDistanceToClosestCity (x, y, ourCitiesOnPlane, sys);
+							
 							// We can get there, eventually
 							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
 							if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
@@ -321,6 +338,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						}
 					}
 				}
+		}
 		
 		final AIMovementDecision decision;
 		if (destinations.isEmpty ())
@@ -603,5 +621,21 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return AI decisions about cities
+	 */
+	public final CityAI getCityAI ()
+	{
+		return cityAI;
+	}
+
+	/**
+	 * @param ai AI decisions about cities
+	 */
+	public final void setCityAI (final CityAI ai)
+	{
+		cityAI = ai;
 	}
 }

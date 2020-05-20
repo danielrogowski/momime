@@ -10,9 +10,11 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.storage.MapArea2D;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -704,6 +706,56 @@ public final class CityAIImpl implements CityAI
 		}
 		
 		log.trace ("Exiting checkForRushBuying");
+	}
+	
+	/**
+	 * @param playerID Player we want cities for
+	 * @param plane Which plane we want cities on
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @return List of coordinates of all our cities
+	 */
+	@Override
+	public final List<MapCoordinates2DEx> listOurCitiesOnPlane (final int playerID, final int plane, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
+	{
+		log.trace ("Entering listOurCitiesOnPlane: AI Player ID " + playerID);
+		
+		final List<MapCoordinates2DEx> list = new ArrayList<MapCoordinates2DEx> ();
+
+		for (int y = 0; y < sys.getHeight (); y++)
+			for (int x = 0; x < sys.getWidth (); x++)
+			{
+				final OverlandMapCityData cityData = terrain.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
+				if ((cityData != null) && (cityData.getCityOwnerID () == playerID))
+					list.add (new MapCoordinates2DEx (x, y));
+			}
+		
+		log.trace ("Exiting listOurCitiesOnPlane = " + list.size ());
+		return list;
+	}
+	
+	/**
+	 * @param x X coordinate of location to search from
+	 * @param y Y coordinate of location to search from
+	 * @param ourCitiesOnPlane List output from listOurCitiesOnPlane
+	 * @param sys Overland map coordinate system
+	 * @return Distance to closest city; 0 if we have no cities on this plane or we are right on top of one
+	 */
+	@Override
+	public final int findDistanceToClosestCity (final int x, final int y, final List<MapCoordinates2DEx> ourCitiesOnPlane, final CoordinateSystem sys)
+	{
+		log.trace ("Entering findDistanceToClosestCity: " + x + ", " + y);
+		
+		Integer closestDistance = null;
+		for (final MapCoordinates2DEx cityLocation : ourCitiesOnPlane)
+		{
+			final int thisDistance = getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, x, y, cityLocation.getX (), cityLocation.getY ());
+			if ((closestDistance == null) || (thisDistance < closestDistance))
+				closestDistance = thisDistance;
+		}
+		
+		log.trace ("Exiting findDistanceToClosestCity = " + closestDistance);
+		return (closestDistance == null) ? 0 : closestDistance;
 	}
 
 	/**

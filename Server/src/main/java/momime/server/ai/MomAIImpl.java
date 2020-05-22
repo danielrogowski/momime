@@ -79,6 +79,17 @@ public final class MomAIImpl implements MomAI
 
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		// Count how many cities we have
+		int numberOfCities = 0;
+		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+				{
+					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
+					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
+						numberOfCities++;
+				}
 		
 		// First find out what the best units we can construct or summon are - this gives us
 		// something to gauge existing units by, to know if they're now obsolete or not
@@ -138,10 +149,13 @@ public final class MomAIImpl implements MomAI
 				}
 			}
 			
+			// Raiders have some special handling
+			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
+			
 			// Try to find somewhere to move each mobile unit to.
 			// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.
 			// In "simultaneous turns" games, we will move anywhere that we can reach in one turn.
-			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (!mobileUnits.isEmpty ()))
+			if (((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) || (isRaiders)) && (!mobileUnits.isEmpty ()))
 			{
 				final Map<String, List<AIUnitsAndRatings>> categories = getUnitAI ().categoriseAndStackUnits (mobileUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());				
 				
@@ -171,32 +185,38 @@ public final class MomAIImpl implements MomAI
 						}
 				}
 			}
-			
-			// Which city can build the best units? (even if we can't afford to make another one)
-			final OptionalInt bestAverageRatingFromConstructableUnits = constructableUnits.stream ().filter
-				(u -> u.getCityLocation () != null).mapToInt (u -> u.getAverageRating ()).max ();
-			
+
+			// Raiders consider every city to be a unit factory
 			final List<MapCoordinates3DEx> unitFactories;
-			if (!bestAverageRatingFromConstructableUnits.isPresent ())
-			{
+			if (isRaiders)
 				unitFactories = null;
-				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't construct any units in any cities");
-			}
 			else
 			{
-				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s best unit(s) it can construct in any cities are UAR = " + bestAverageRatingFromConstructableUnits.getAsInt ());
-
-				// What units can we make that match our best?
-				// This restricts to only units we can afford maintenance of, so if our economy is struggling, we may get an empty list here.
-				final List<AIConstructableUnit> bestConstructableUnits = constructableUnits.stream ().filter
-					(u -> (u.getCityLocation () != null) && (u.isCanAffordMaintenance ()) && (u.getAverageRating () == bestAverageRatingFromConstructableUnits.getAsInt ())).collect (Collectors.toList ());
+				// Which city can build the best units? (even if we can't afford to make another one)
+				final OptionalInt bestAverageRatingFromConstructableUnits = constructableUnits.stream ().filter
+					(u -> u.getCityLocation () != null).mapToInt (u -> u.getAverageRating ()).max ();
 				
-				unitFactories = bestConstructableUnits.stream ().map (u -> u.getCityLocation ()).distinct ().collect (Collectors.toList ());
-				unitFactories.forEach (c -> log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s city at " + c + " is designated as a unit factory")); 
+				if (!bestAverageRatingFromConstructableUnits.isPresent ())
+				{
+					unitFactories = null;
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't construct any units in any cities");
+				}
+				else
+				{
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s best unit(s) it can construct in any cities are UAR = " + bestAverageRatingFromConstructableUnits.getAsInt ());
+	
+					// What units can we make that match our best?
+					// This restricts to only units we can afford maintenance of, so if our economy is struggling, we may get an empty list here.
+					final List<AIConstructableUnit> bestConstructableUnits = constructableUnits.stream ().filter
+						(u -> (u.getCityLocation () != null) && (u.isCanAffordMaintenance ()) && (u.getAverageRating () == bestAverageRatingFromConstructableUnits.getAsInt ())).collect (Collectors.toList ());
+					
+					unitFactories = bestConstructableUnits.stream ().map (u -> u.getCityLocation ()).distinct ().collect (Collectors.toList ());
+					unitFactories.forEach (c -> log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s city at " + c + " is designated as a unit factory")); 
+				}
 			}
 			
 			int needForNewUnits = 0;
-			if ((unitFactories != null) && (!unitFactories.isEmpty ()))
+			if ((isRaiders) || ((unitFactories != null) && (!unitFactories.isEmpty ())))
 			{
 				// We need some kind of rating for how badly we think we need to construct more combat units.
 				// So base this on, 1) how many locations are underdefended, 2) whether we have sufficient mobile units.
@@ -206,61 +226,54 @@ public final class MomAIImpl implements MomAI
 					(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 10) - mobileUnits.size ();
 			}
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnits);
-
-			// Count how many cities we have
-			int numberOfCities = 0;
-			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
-					{
-						final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
-							numberOfCities++;
-					}
 			
 			// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
 			// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
 			// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
-			for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-			{
-				final boolean wantSettler = (desiredCityLocations.containsKey (z)) && (!settlers.containsKey (z));
-				
-				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-					for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
-					{
-						final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-						if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) &&
-							((CommonDatabaseConstants.BUILDING_HOUSING.equals (cityData.getCurrentlyConstructingBuildingID ())) ||
-							(CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
+			if (numberOfCities > 0)
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+				{
+					final boolean wantSettler = (desiredCityLocations.containsKey (z)) && (!settlers.containsKey (z));
+					
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 						{
-							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-							final boolean isUnitFactory = (unitFactories != null) && (unitFactories.contains (cityLocation));
-
-							// Only consider constructing the one of the two best units we can make here, and then only if we can afford them
-							// Also explicitly filter out settlers and other non-combat units (which have rating 0)
-							final List<String> constructableHere = !isUnitFactory ? null :
-								constructableUnits.stream ().filter (u -> (cityLocation.equals (u.getCityLocation ())) && (u.getAverageRating () > 0)).sorted ().limit (2).filter
-									(u -> u.isCanAffordMaintenance ()).map (u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
+							final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
+							if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()) &&
+								((CommonDatabaseConstants.BUILDING_HOUSING.equals (cityData.getCurrentlyConstructingBuildingID ())) ||
+								(CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))))
+							{
+								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+								final boolean isUnitFactory = (isRaiders) || ((unitFactories != null) && (unitFactories.contains (cityLocation)));
 	
-							getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnits, constructableHere, wantSettler,
-								priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
-								mom.getSessionDescription (), mom.getServerDB ());
-							
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-								mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+								// Only consider constructing the one of the two best units we can make here, and then only if we can afford them
+								// Also explicitly filter out settlers and other non-combat units (which have rating 0)
+								final List<String> constructableHere = !isUnitFactory ? null :
+									constructableUnits.stream ().filter (u -> (cityLocation.equals (u.getCityLocation ())) && (u.getAverageRating () > 0)).sorted ().limit (2).filter
+										(u -> u.isCanAffordMaintenance ()).map (u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
+		
+								getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnits, constructableHere, wantSettler,
+									priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
+									mom.getSessionDescription (), mom.getServerDB ());
+								
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+							}
 						}
-					}
-			}
+				}
 		}
 
-		// Decide optimal tax rate
-		getCityAI ().decideTaxRate (player, mom);
-		
-		// This relies on knowing what's being built in each city and the tax rate, so do it almost last
-		getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player, mom.getServerDB (), mom.getSessionDescription ());
-		
-		// This relies on knowing the production each city is generating, so need the number of farmers + workers set, so do it really last
-		getCityAI ().checkForRushBuying (player, mom);
+		if (numberOfCities > 0)
+		{
+			// Decide optimal tax rate
+			getCityAI ().decideTaxRate (player, mom);
+			
+			// This relies on knowing what's being built in each city and the tax rate, so do it almost last
+			getCityAI ().setOptionalFarmersInAllCities (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), player, mom.getServerDB (), mom.getSessionDescription ());
+			
+			// This relies on knowing the production each city is generating, so need the number of farmers + workers set, so do it really last
+			getCityAI ().checkForRushBuying (player, mom);
+		}
 		
 		// Do we need to choose a spell to research?
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (priv.getSpellIDBeingResearched () == null))

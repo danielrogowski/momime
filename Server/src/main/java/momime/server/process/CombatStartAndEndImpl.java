@@ -284,32 +284,45 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
+		CaptureCityDecisionID useCaptureCityDecision = captureCityDecision;
+		
 		// If we're walking into a city that we don't already own (its possible we're moving into our own city if this is a "walk in without a fight")
 		// then don't end the combat just yet - first ask the winner whether they want to capture or raze the city
-		if ((winningPlayer == attackingPlayer) && (captureCityDecision == null) && (tc.getCityData () != null) &&
+		if ((winningPlayer == attackingPlayer) && (useCaptureCityDecision == null) && (tc.getCityData () != null) &&
 			(attackingPlayer.getPlayerDescription ().getPlayerID () != tc.getCityData ().getCityOwnerID ()))
 		{
-			log.debug ("Undecided city capture, bulk of method will not run");
-			
-			final AskForCaptureCityDecisionMessage msg = new AskForCaptureCityDecisionMessage ();
-			msg.setCityLocation (combatLocation);
-			if (defendingPlayer != null)
-				msg.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
-			
-			attackingPlayer.getConnection ().sendMessageToClient (msg);
+			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			{
+				log.debug ("Undecided city capture, bulk of method will not run");
+				
+				final AskForCaptureCityDecisionMessage msg = new AskForCaptureCityDecisionMessage ();
+				msg.setCityLocation (combatLocation);
+				if (defendingPlayer != null)
+					msg.setDefendingPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
+				
+				attackingPlayer.getConnection ().sendMessageToClient (msg);
+			}
+			else
+			{
+				log.debug ("AI player ID " + attackingPlayer.getPlayerDescription ().getPlayerID () + " captured a city");
+				useCaptureCityDecision = CaptureCityDecisionID.CAPTURE;
+			}
 		}
-		else
+		
+		// Exact opposite check as above, just now useCaptureCityDecision may have been set
+		if ((winningPlayer != attackingPlayer) || (useCaptureCityDecision != null) || (tc.getCityData () == null) ||
+			(attackingPlayer.getPlayerDescription ().getPlayerID () == tc.getCityData ().getCityOwnerID ()))
 		{
 			// Build the bulk of the CombatEnded message
 			final CombatEndedMessage msg = new CombatEndedMessage ();
 			msg.setCombatLocation (combatLocation);
 			msg.setWinningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
-			msg.setCaptureCityDecisionID (captureCityDecision);
+			msg.setCaptureCityDecisionID (useCaptureCityDecision);
 			msg.setHeroItemCount (tc.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
 			// Deal with the attacking player swiping gold from a city they just took - we do this first so we can send it with the CombatEnded message
 			final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-			if ((captureCityDecision != null) && (defendingPlayer != null))
+			if ((useCaptureCityDecision != null) && (defendingPlayer != null))
 			{
 				// Calc as a long since the the multiplication could give a really big number
 				final MomPersistentPlayerPrivateKnowledge defPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -324,7 +337,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Any gold from razing buildings?
 				final int goldFromRazing; 
-				if (captureCityDecision == CaptureCityDecisionID.RAZE)
+				if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
 				{
 					goldFromRazing = getCityServerUtils ().totalCostOfBuildingsAtLocation (combatLocation,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), mom.getServerDB ()) / 10;
@@ -404,7 +417,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 						moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Deal with cities
-				if (captureCityDecision == CaptureCityDecisionID.CAPTURE)
+				if (useCaptureCityDecision == CaptureCityDecisionID.CAPTURE)
 				{
 					// Destroy enemy wizards' fortress and/or summoning circle
 					final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS);
@@ -448,7 +461,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getPlayers (), combatLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 				}
-				else if (captureCityDecision == CaptureCityDecisionID.RAZE)
+				else if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
 				{
 					// Cancel all spells cast on the city regardless of owner
 					getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients

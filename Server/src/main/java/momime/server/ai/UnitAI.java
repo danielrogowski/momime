@@ -110,6 +110,7 @@ public interface UnitAI
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param mobileUnits List to populate with details of all units that are in excess of defensive requirements, or are not in defensive positions
 	 * @param playerID Player ID to consider as "our" units
+	 * @param isRaiders Whether it is the raiders player
 	 * @param mem Memory data known to playerID
 	 * @param highestAverageRating Rating for the best unit we can construct in any city, as a guage for the strength of units we should be defending with
 	 * @param turnNumber Current turn number
@@ -119,7 +120,7 @@ public interface UnitAI
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	public List<AIDefenceLocation> evaluateCurrentDefence (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final List<AIUnitAndRatings> mobileUnits, final int playerID, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
+		final List<AIUnitAndRatings> mobileUnits, final int playerID, final boolean isRaiders, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException;
 
 	/**
@@ -146,6 +147,7 @@ public interface UnitAI
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
 	 * @param desiredCityLocation Location where we want to put a city
+	 * @param isRaiders Whether it is the raiders player
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
@@ -154,7 +156,7 @@ public interface UnitAI
 	 */
 	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
 		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final MapCoordinates3DEx desiredCityLocation,
-		final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException;
+		final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException;
 	
 	/**
 	 * AI decides where to move a unit to on the overland map and actually does the move.

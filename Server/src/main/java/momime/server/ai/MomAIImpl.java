@@ -107,6 +107,9 @@ public final class MomAIImpl implements MomAI
 			
 			final int highestAverageRating = cityConstructableUnits.get (0).getAverageRating ();
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s strongest UAR = " + highestAverageRating);
+
+			// Raiders have some special handling
+			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
 			
 			// Estimate the total strength of all the units we have at every point on the map for attack and defense purposes,
 			// as well as the strength of all enemy units for attack purposes.
@@ -117,7 +120,7 @@ public final class MomAIImpl implements MomAI
 			// Go through every defensive position that we either own, or is unoccupied and we should capture, seeing if we have enough units there defending
 			final List<AIUnitAndRatings> mobileUnits = new ArrayList<AIUnitAndRatings> ();
 			final List<AIDefenceLocation> underdefendedLocations = getUnitAI ().evaluateCurrentDefence (ourUnits, enemyUnits, mobileUnits,
-				player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (), highestAverageRating, mom.getGeneralPublicKnowledge ().getTurnNumber (),
+				player.getPlayerDescription ().getPlayerID (), isRaiders, priv.getFogOfWarMemory (), highestAverageRating, mom.getGeneralPublicKnowledge ().getTurnNumber (),
 				mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 
 			for (final AIDefenceLocation location : underdefendedLocations)
@@ -148,9 +151,6 @@ public final class MomAIImpl implements MomAI
 					desiredCityLocations.put (plane, desiredCityLocation);
 				}
 			}
-			
-			// Raiders have some special handling
-			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
 			
 			// Try to find somewhere to move each mobile unit to.
 			// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.

@@ -508,6 +508,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param mobileUnits List to populate with details of all units that are in excess of defensive requirements, or are not in defensive positions
 	 * @param playerID Player ID to consider as "our" units
+	 * @param isRaiders Whether it is the raiders player
 	 * @param mem Memory data known to playerID
 	 * @param highestAverageRating Rating for the best unit we can construct in any city, as a guage for the strength of units we should be defending with
 	 * @param turnNumber Current turn number
@@ -518,7 +519,7 @@ public final class UnitAIImpl implements UnitAI
 	 */
 	@Override
 	public final List<AIDefenceLocation> evaluateCurrentDefence (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final List<AIUnitAndRatings> mobileUnits, final int playerID, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
+		final List<AIUnitAndRatings> mobileUnits, final int playerID, final boolean isRaiders, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering evaluateCurrentDefence: AI Player ID " + playerID);
@@ -538,7 +539,9 @@ public final class UnitAIImpl implements UnitAI
 						final AIUnitsAndRatings theirs = enemyUnits [z] [y] [x];
 						
 						final OverlandMapCityData cityData = mc.getCityData ();
-						if (((cityData != null) || (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db))) && (theirs == null)) 
+						if ((theirs == null) &&
+							((cityData != null) ||
+								((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db))))) 
 						{
 							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 							
@@ -763,6 +766,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
 	 * @param desiredCityLocation Location where we want to put a city
+	 * @param isRaiders Whether it is the raiders player
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
@@ -772,7 +776,7 @@ public final class UnitAIImpl implements UnitAI
 	@Override
 	public final AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
 		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final MapCoordinates3DEx desiredCityLocation,
-		final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException
+		final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering decideUnitMovement");
 		
@@ -791,7 +795,7 @@ public final class UnitAIImpl implements UnitAI
 					break;
 					
 				case ATTACK_STATIONARY:
-					decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, doubleMovementDistances, enemyUnits, terrain, sys, db);
+					decision = getUnitAIMovement ().considerUnitMovement_AttackStationary (units, doubleMovementDistances, enemyUnits, isRaiders, terrain, sys, db);
 					break;
 					
 				case ATTACK_WANDERING:
@@ -886,6 +890,7 @@ public final class UnitAIImpl implements UnitAI
 	{
 		log.trace ("Entering decideAndExecuteUnitMovement: AI Player ID " + player.getPlayerDescription ().getPlayerID () + ", first Unit URN " + units.get (0).getUnit ().getUnitURN ()); 
 		
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		// Create a stack for the units (so transports pick up any units stacked with them)
@@ -917,9 +922,11 @@ public final class UnitAIImpl implements UnitAI
 			mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 		
 		// Use list of movement codes from the unit stack's category
+		final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
+
 		final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
-		final AIMovementDecision destination = decideUnitMovement (units, movementCodes, doubleMovementDistances,
-			underdefendedLocations, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredCityLocation, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+		final AIMovementDecision destination = decideUnitMovement (units, movementCodes, doubleMovementDistances, underdefendedLocations,
+			enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredCityLocation, isRaiders, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 		
 		// Move, if we found somewhere to go
 		final boolean moved;

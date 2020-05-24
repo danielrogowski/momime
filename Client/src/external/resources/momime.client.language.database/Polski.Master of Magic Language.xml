@@ -727,21 +727,27 @@ To oznacza również, że nie mogą budować Gildii Alchemików, a przez to uży
 	</building>
 	<citySize citySizeID="CS01">
 		<citySizeName>Przyczółek</citySizeName>
+		<citySizeNameIncludingOwner>Przyczółek</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS02">
 		<citySizeName>Osada</citySizeName>
+		<citySizeNameIncludingOwner>Osada</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS03">
 		<citySizeName>Wioska</citySizeName>
+		<citySizeNameIncludingOwner>Wioska</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS04">
 		<citySizeName>Miasteczko</citySizeName>
+		<citySizeNameIncludingOwner>Miasteczko</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS05">
 		<citySizeName>Miasto</citySizeName>
+		<citySizeNameIncludingOwner>Miasto</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS06">
 		<citySizeName>Stolica</citySizeName>
+		<citySizeNameIncludingOwner>Stolica</citySizeNameIncludingOwner>
 	</citySize>
 	<unitType unitTypeID="N">
 		<unitTypeInexperienced>Normalne jednostki rozpoczynają jako rekruci.</unitTypeInexperienced>

@@ -726,21 +726,27 @@ Cela signifie également qu'ils ne peuvent bâtir de Guildes d'Alchimistes et do
 	</building>
 	<citySize citySizeID="CS01">
 		<citySizeName>Avant-Poste</citySizeName>
+		<citySizeNameIncludingOwner>Avant-Poste</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS02">
 		<citySizeName>Hameau</citySizeName>
+		<citySizeNameIncludingOwner>Hameau</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS03">
 		<citySizeName>Village</citySizeName>
+		<citySizeNameIncludingOwner>Village</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS04">
 		<citySizeName>Bourg</citySizeName>
+		<citySizeNameIncludingOwner>Bourg</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS05">
 		<citySizeName>Cité</citySizeName>
+		<citySizeNameIncludingOwner>Cité</citySizeNameIncludingOwner>
 	</citySize>
 	<citySize citySizeID="CS06">
 		<citySizeName>Capitale</citySizeName>
+		<citySizeNameIncludingOwner>Capitale</citySizeNameIncludingOwner>
 	</citySize>
 	<unitType unitTypeID="N">
 		<unitTypeInexperienced>Les troupes normales débutent comme recrues.</unitTypeInexperienced>

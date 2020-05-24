@@ -1184,7 +1184,7 @@ public final class CityViewUI extends MomClientFrameUI
 
 		if (cityData != null)
 		{
-			String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ()); 
+			String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID (), true).replaceAll ("CITY_NAME", cityData.getCityName ()); 
 
 			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), cityData.getCityOwnerID ());
 			if (cityOwner != null)

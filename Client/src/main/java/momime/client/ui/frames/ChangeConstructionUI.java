@@ -412,7 +412,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		// Dynamic labels
 		if (cityData != null)
 		{
-			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ());
+			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID (), false).replaceAll ("CITY_NAME", cityData.getCityName ());
 			getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmChangeConstruction", "Title").replaceAll ("CITY_NAME", cityName));
 		}
 

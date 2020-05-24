@@ -19,6 +19,7 @@ import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationControllerImpl;
+import momime.client.utils.WizardClientUtils;
 import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -64,7 +65,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCitySizeName ("CS01")).thenReturn ("Test City of CITY_NAME");
+		when (lang.findCitySizeName ("CS01", true)).thenReturn ("PLAYER_NAME's Test City of CITY_NAME");
 		when (lang.findCategoryEntry ("SpellCasting", "YouHaveCast")).thenReturn ("You have cast SPELL_NAME");
 		
 		final CitySpellEffectLang effectLang = new CitySpellEffectLang ();
@@ -81,6 +82,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCitySizeID ("CS01");
 		cityData.setCityName ("Blahdy Blah");
+		cityData.setCityOwnerID (2);
 		
 		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
@@ -101,18 +103,22 @@ public final class TestMiniCityViewUI extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (1);
-		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (player);
+
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (1);
 		
-		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID ())).thenReturn (player);
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID ())).thenReturn (player1);
 		
-		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
+		final PlayerPublicDetails player2 = new PlayerPublicDetails (null, null, null);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 2)).thenReturn (player2);
+		when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Jafar");
+		
+		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
 		
 		// Display at least some landscape, plus the spell itself
 		final CityViewElementGfx landscape = new CityViewElementGfx ();
@@ -138,7 +144,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		spell.setSpellID ("SP001");
 		spell.setCitySpellEffectID ("CSE001");
 		spell.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
-		spell.setCastingPlayerID (pd.getPlayerID ());
+		spell.setCastingPlayerID (pd1.getPlayerID ());
 		
 		final AddMaintainedSpellMessageImpl msg = new AddMaintainedSpellMessageImpl (); 
 		msg.setMaintainedSpell (spell);
@@ -167,6 +173,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		cityView.setLanguageHolder (langHolder);
 		cityView.setLanguageChangeMaster (langMaster);
 		cityView.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		cityView.setWizardClientUtils (wizardClientUtils);
 		cityView.setGraphicsDB (gfx);
 		cityView.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		cityView.setCityViewPanel (panel);

@@ -34,6 +34,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.panels.CityViewPanel;
+import momime.client.utils.WizardClientUtils;
 import momime.common.messages.OverlandMapCityData;
 
 /**
@@ -65,6 +66,9 @@ public final class MiniCityViewUI extends MomClientDialogUI
 
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
@@ -280,7 +284,12 @@ public final class MiniCityViewUI extends MomClientDialogUI
 
 		if (cityData != null)
 		{
-			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ()); 
+			String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID (), true).replaceAll ("CITY_NAME", cityData.getCityName ());
+			
+			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), cityData.getCityOwnerID ());
+			if (cityOwner != null)
+				cityName = cityName.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (cityOwner));
+			
 			cityNameLabel.setText (cityName);
 			getDialog ().setTitle (cityName);
 		}
@@ -441,6 +450,22 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		multiplayerSessionUtils = util;
 	}
 
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
+	}
+	
 	/**
 	 * @return Graphics database
 	 */

@@ -70,7 +70,7 @@ public final class TestChangeConstructionUI extends ClientTestData
 
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCitySizeName ("CS01")).thenReturn ("City of CITY_NAME");
+		when (lang.findCitySizeName ("CS01", false)).thenReturn ("City of CITY_NAME");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Title")).thenReturn ("Change construction for CITY_NAME");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
 		when (lang.findCategoryEntry ("frmChangeConstruction", "Moves")).thenReturn ("Moves");

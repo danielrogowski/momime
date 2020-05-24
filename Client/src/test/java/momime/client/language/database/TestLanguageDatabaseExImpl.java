@@ -366,8 +366,8 @@ public final class TestLanguageDatabaseExImpl
 
 		lang.buildMaps ();
 
-		assertEquals ("CSDesc02", lang.findCitySizeName ("CS02"));
-		assertEquals ("CS04", lang.findCitySizeName ("CS04"));
+		assertEquals ("CSDesc02", lang.findCitySizeName ("CS02", false));
+		assertEquals ("CS04", lang.findCitySizeName ("CS04", false));
 	}
 	
 	/**

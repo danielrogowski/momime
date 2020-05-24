@@ -108,9 +108,10 @@ public interface LanguageDatabaseEx
 	
 	/**
 	 * @param citySizeID City size ID to search for
+	 * @param includePlayerName Whether to include player name before the city name
 	 * @return City size name; or replays back the ID if no description exists
 	 */
-	public String findCitySizeName (final String citySizeID);
+	public String findCitySizeName (final String citySizeID, final boolean includePlayerName);
 
 	/**
 	 * @param citySpellEffectID City spell effect ID to search for

@@ -513,13 +513,22 @@ public final class LanguageDatabaseExImpl extends LanguageDatabase implements La
 	
 	/**
 	 * @param citySizeID City size ID to search for
+	 * @param includePlayerName Whether to include player name before the city name
 	 * @return City size name; or replays back the ID if no description exists
 	 */
 	@Override
-	public final String findCitySizeName (final String citySizeID)
+	public final String findCitySizeName (final String citySizeID, final boolean includePlayerName)
 	{
 		final CitySizeLang thisCitySize = citySizesMap.get (citySizeID);
-		final String citySizeName = (thisCitySize != null) ? thisCitySize.getCitySizeName () : null; 
+		
+		final String citySizeName;
+		if (thisCitySize == null)
+			citySizeName = null;
+		else if (includePlayerName)
+			citySizeName = thisCitySize.getCitySizeNameIncludingOwner ();
+		else
+			citySizeName = thisCitySize.getCitySizeName ();
+		
 		return (citySizeName != null) ? citySizeName : citySizeID;
 	}
 	

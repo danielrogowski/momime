@@ -129,7 +129,7 @@ public final class TestCityViewUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmCity", "OK")).thenReturn ("OK");
 		when (lang.findCategoryEntry ("frmCity", "Rename")).thenReturn ("Rename");
 		
-		when (lang.findCitySizeName ("CS01")).thenReturn ("PLAYER_NAME's Test City of CITY_NAME");
+		when (lang.findCitySizeName ("CS01", true)).thenReturn ("PLAYER_NAME's Test City of CITY_NAME");
 		when (lang.findCategoryEntry ("frmCity", "MaxCitySize")).thenReturn ("maximum MAX_CITY_SIZE");
 		when (lang.findCategoryEntry ("frmCity", "PopulationAndGrowth")).thenReturn ("Population: POPULATION (GROWTH_RATE)");
 

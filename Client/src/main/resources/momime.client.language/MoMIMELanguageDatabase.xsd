@@ -513,6 +513,7 @@
 	<xsd:complexType name="citySize" nxe:singular="City Size" nxe:plural="City Sizes" nxe:submenu="Cities and Races">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="citySizeName" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="citySizeNameIncludingOwner" type="momimecommon:description" nxe:label="Name" nxe:gridwidth="120" />
 		</xsd:sequence>
 		<xsd:attribute name="citySizeID" type="momimecommon:citySizeID" use="required" nxe:label="City Size ID" nxe:gridwidth="100">
 			<xsd:annotation>

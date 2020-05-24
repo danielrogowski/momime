@@ -68,7 +68,7 @@ public final class NewTurnMessageBuildingSoldFromLackOfProductionEx extends NewT
 		
 		if ((cityData != null) && (cityData.getCitySizeID () != null))
 		{
-			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID ()).replaceAll ("CITY_NAME", cityData.getCityName ());
+			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID (), false).replaceAll ("CITY_NAME", cityData.getCityName ());
 			text = text.replaceAll ("CITY_SIZE_AND_NAME", cityName);
 		}
 		

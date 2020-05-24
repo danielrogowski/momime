@@ -23139,8 +23139,8 @@
 		<movementCode aiMovementCode="R" />
 		<movementCode aiMovementCode="A" />
 		<movementCode aiMovementCode="W" />
-		<movementCode aiMovementCode="S" />
 		<movementCode aiMovementCode="J" />
+		<movementCode aiMovementCode="S" />
 		<movementCode aiMovementCode="P" />
 		<movementCode aiMovementCode="T" />
 		<movementCode aiMovementCode="D" />
@@ -23187,8 +23187,8 @@
 		<movementCode aiMovementCode="R" />
 		<movementCode aiMovementCode="A" />
 		<movementCode aiMovementCode="W" />
-		<movementCode aiMovementCode="S" />
 		<movementCode aiMovementCode="J" />
+		<movementCode aiMovementCode="S" />
 		<movementCode aiMovementCode="P" />
 		<movementCode aiMovementCode="Z" />
 		<movementCode aiMovementCode="D" />
@@ -23259,8 +23259,8 @@
 		<movementCode aiMovementCode="R" />
 		<movementCode aiMovementCode="A" />
 		<movementCode aiMovementCode="W" />
-		<movementCode aiMovementCode="S" />
 		<movementCode aiMovementCode="J" />
+		<movementCode aiMovementCode="S" />
 		<movementCode aiMovementCode="P" />
 		<movementCode aiMovementCode="T" />
 		<movementCode aiMovementCode="D" />

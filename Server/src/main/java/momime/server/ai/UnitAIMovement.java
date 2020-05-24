@@ -90,10 +90,21 @@ public interface UnitAIMovement
 	 * AI looks to see if any defended locations (nodes/lairs/towers/cities) are too well defended to attack at the moment,
 	 * and if it can see any then will look to merge together our units into a bigger stack.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param isRaiders Whether it is the raiders player
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
-	public AIMovementDecision considerUnitMovement_JoinStack (final int [] [] [] doubleMovementDistances);
+	public AIMovementDecision considerUnitMovement_JoinStack (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders,
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws RecordNotFoundException;
 
 	/**
 	 * AI looks for a tower garissoned by our units, and imagines that we are stood there and rechecks preceeding movement codes.

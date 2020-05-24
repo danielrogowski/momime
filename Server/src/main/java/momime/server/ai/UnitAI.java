@@ -17,6 +17,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.AiUnitCategorySvr;
@@ -124,6 +125,19 @@ public interface UnitAI
 		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException;
 
 	/**
+	 * @param mu Unit to check
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return AI category for this unit 
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	public AiUnitCategorySvr determineUnitCategory (final MemoryUnit mu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
 	 * @param units Flat list of units to convert
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
@@ -144,6 +158,7 @@ public interface UnitAI
 	 * @param movementCodes List of movement codes to try
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
+	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
 	 * @param desiredCityLocation Location where we want to put a city
@@ -155,8 +170,9 @@ public interface UnitAI
 	 * @throws MomException If we encounter a movement code that we don't know how to process
 	 */
 	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
-		final List<AIDefenceLocation> underdefendedLocations, final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final MapCoordinates3DEx desiredCityLocation,
-		final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db) throws MomException, RecordNotFoundException;
+		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
+		final MapVolumeOfMemoryGridCells terrain, final MapCoordinates3DEx desiredCityLocation, final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException;
 	
 	/**
 	 * AI decides where to move a unit to on the overland map and actually does the move.
@@ -164,6 +180,7 @@ public interface UnitAI
 	 * @param units The units to move
 	 * @param category What category of units these are
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
+	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param desiredCityLocation Location where we want to put a city
 	 * @param player Player who owns the unit
@@ -176,6 +193,7 @@ public interface UnitAI
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final MapCoordinates3DEx desiredCityLocation, final PlayerServerDetails player, final MomSessionVariables mom)
+		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
+		final MapCoordinates3DEx desiredCityLocation, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

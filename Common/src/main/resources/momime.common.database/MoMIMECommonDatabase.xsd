@@ -2380,8 +2380,9 @@ Units with special orders won't be asked for movement orders and look visibly di
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="J"><xsd:annotation>
 				<xsd:documentation>If there are any reachable defended locations (their cities/nodes/lairs/towers) where the sum of their UARs >= the sum of our UARs,
-and any other reachable stacks of our units of the same category, then head to join the unit stacks together.  (This needs some care so that in simultaneous turns games,
-the two unit stacks don't keep crossing past each other).</xsd:documentation>
+but the sum of our UARs if totalled across all reachable stacks of our units of the same category > the sum of their UARs, then head to join the unit stacks together.
+(Wording this to avoid a bunch of swordsmen fruitlessly joining together just because they can see a node full of Sky Drakes).
+(This needs some care so that in simultaneous turns games, the two unit stacks don't keep crossing past each other).</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="JOIN_STACK" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="P"><xsd:annotation>

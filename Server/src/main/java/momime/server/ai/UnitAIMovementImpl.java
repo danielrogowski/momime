@@ -10,10 +10,14 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
+import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSpecialOrder;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
@@ -84,7 +88,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		if (destinations.isEmpty ())
 			decision = null;		// No reachable underdefended locations
 		else
-			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
+		{
+			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+			log.debug ("Unit movement AI - Decided to go help reinforce underdefended location at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			decision = new AIMovementDecision (chosenLocation);
+		}
 		
 		log.trace ("Exiting considerUnitMovement_Reinforce = " + decision);
 		return decision;
@@ -114,6 +122,8 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		Integer doubleDestinationDistance = null;
 
+		// The only way that any location on the plane other than where we are will be reachable is if we're stood right on a tower of wizardry,
+		// in which case this will evaluate which plane to exit off from, which is exactly what we want.  Same is true for most of the other movement codes.
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
 				for (int x = 0; x < sys.getWidth (); x++)
@@ -127,7 +137,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 						final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
 						if (((cityData != null) || ((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))) &&
-							(enemyUnitStack != null) && (enemyUnitStack.totalCurrentRatings () < ourCurrentRating) && (doubleThisDistance >= 0))
+							(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCurrentRatings ()) && (doubleThisDistance >= 0))
 						{
 							// We can get there eventually, and stand a chance of beating them
 							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
@@ -147,7 +157,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		if (destinations.isEmpty ())
 			decision = null;		// No reachable enemy unit defence positions that we stand a chance of beating
 		else
-			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
+		{
+			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+			log.debug ("Unit movement AI - Decided to attack stationary target at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			decision = new AIMovementDecision (chosenLocation);
+		}
 		
 		log.trace ("Exiting considerUnitMovement_AttackStationary = " + decision);
 		return decision;
@@ -186,7 +200,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 					final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
 					if ((cityData == null) && (!ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)) &&
-						(enemyUnitStack != null) && (enemyUnitStack.totalCurrentRatings () < ourCurrentRating) && (doubleThisDistance >= 0))
+						(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCurrentRatings ()) && (doubleThisDistance >= 0))
 					{
 						// We can get there eventually, and stand a chance of beating them
 						final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
@@ -205,7 +219,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		if (destinations.isEmpty ())
 			decision = null;		// No reachable wandering enemy units that we stand a chance of beating
 		else
-			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
+		{
+			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+			log.debug ("Unit movement AI - Decided to attack wandering target at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			decision = new AIMovementDecision (chosenLocation);
+		}
 		
 		log.trace ("Exiting considerUnitMovement_AttackWandering = " + decision);
 		return decision;
@@ -287,7 +305,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		if (destinations.isEmpty ())
 			decision = null;		// No reachable unscouted locations adjacent to known land tiles
 		else
-			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
+		{
+			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+			log.debug ("Unit movement AI - Decided to go scout unknown land at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			decision = new AIMovementDecision (chosenLocation);
+		}
 		
 		log.trace ("Exiting considerUnitMovement_ScoutLand = " + decision);
 		return decision;
@@ -345,7 +367,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		if (destinations.isEmpty ())
 			decision = null;		// No reachable unscouted locations
 		else
-			decision = new AIMovementDecision (destinations.get (getRandomUtils ().nextInt (destinations.size ())));
+		{
+			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+			log.debug ("Unit movement AI - Decided to go scout unknown scenery (possibly not land) at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			decision = new AIMovementDecision (chosenLocation);
+		}
 		
 		log.trace ("Exiting considerUnitMovement_ScoutAll = " + decision);
 		return decision;
@@ -355,17 +381,93 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks to see if any defended locations (nodes/lairs/towers/cities) are too well defended to attack at the moment,
 	 * and if it can see any then will look to merge together our units into a bigger stack.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param isRaiders Whether it is the raiders player
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_JoinStack (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_JoinStack (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders,
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_JoinStack");
 
-		log.warn ("AI movement code JOIN_STACK is not yet implemented");
+		// First of all we have to find the weakest enemy unit stack that we can reach but that is still too strong for us to fight alone
+		final int ourCurrentRating = units.totalCurrentRatings ();
+		Integer weakestEnemyUnitStackWeCannotBeat = null;
+
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+				{
+					// Only process towers on the first plane
+					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					final OverlandMapTerrainData terrainData = mc.getTerrainData ();
+					if ((z == 0) || (!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData)))
+					{					
+						final OverlandMapCityData cityData = mc.getCityData ();
+						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
+						final int enemyUnitStackRating = (enemyUnitStack == null) ? 0 : enemyUnitStack.totalCurrentRatings (); 
+						if (((cityData != null) || ((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))) &&
+							(enemyUnitStack != null) && (enemyUnitStackRating >= ourCurrentRating) && (doubleMovementDistances [z] [y] [x] >= 0))
+						{
+							// We don't care how far away it is - we care how strong they are, not how long it'll take us to get there
+							if ((weakestEnemyUnitStackWeCannotBeat == null) || (enemyUnitStackRating < weakestEnemyUnitStackWeCannotBeat))
+								weakestEnemyUnitStackWeCannotBeat = enemyUnitStackRating;
+						}
+					}
+				}
 		
-		final AIMovementDecision decision = null;
+		// Did we find one?
+		final AIMovementDecision decision;
+		if (weakestEnemyUnitStackWeCannotBeat == null)
+			decision = null;
+		else
+		{
+			// Now total up all friendly unit stacks that we can reach
+			// The list only includes other mobile units, so we don't need to check whether they're in a city, tower, etc - but we do have to check that we can reach them
+			int mergedStackRating = ourCurrentRating;
+			final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+			Integer doubleDestinationDistance = null;
+			
+			for (final AIUnitsAndRatings ourUnitStack : ourUnitsInSameCategory)
+				if (ourUnitStack != units)
+				{
+					final MapCoordinates3DEx unitStackLocation = (MapCoordinates3DEx) ourUnitStack.get (0).getUnit ().getUnitLocation ();
+					final int doubleThisDistance = doubleMovementDistances [unitStackLocation.getZ ()] [unitStackLocation.getY ()] [unitStackLocation.getX ()];
+					if (doubleThisDistance >= 0)
+					{
+						mergedStackRating = mergedStackRating + ourUnitStack.totalCurrentRatings ();
+						
+						final MapCoordinates3DEx location = new MapCoordinates3DEx (unitStackLocation);
+						if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+						{
+							doubleDestinationDistance = doubleThisDistance;
+							destinations.clear ();
+							destinations.add (location);
+						}
+						else if (doubleThisDistance == doubleDestinationDistance)
+							destinations.add (location);
+					}
+				}
+
+			if ((mergedStackRating <= weakestEnemyUnitStackWeCannotBeat) || (destinations.isEmpty ()))
+				decision = null;		// No reachable friendly unit stacks that would be useful for us to merge with
+			else
+			{
+				final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+				log.debug ("Unit movement AI - Decided to go join up with our other unit stack at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+				decision = new AIMovementDecision (chosenLocation);
+			}
+		}		
 		
 		log.trace ("Exiting considerUnitMovement_JoinStack = " + decision);
 		return decision;

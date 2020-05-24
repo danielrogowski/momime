@@ -162,9 +162,9 @@ public final class MomAIImpl implements MomAI
 				// Now move units in the order their categories are listed in the database
 				for (final AiUnitCategorySvr category : mom.getServerDB ().getAiUnitCategories ())
 				{
-					final List<AIUnitsAndRatings> locations = categories.get (category.getAiUnitCategoryID ());
-					if (locations != null)
-						for (final AIUnitsAndRatings unitStack : locations)
+					final List<AIUnitsAndRatings> ourUnitStacksInThisCategory = categories.get (category.getAiUnitCategoryID ());
+					if (ourUnitStacksInThisCategory != null)
+						for (final AIUnitsAndRatings unitStack : ourUnitStacksInThisCategory)
 						{
 							// In one-at-a-time games, we move one cell at a time so we can rethink actions as we see more of the map.
 							// In simultaneous turns games, we move as far as we can in one go since we won't learn anything new about the map until we finish allocating all movement.
@@ -174,7 +174,7 @@ public final class MomAIImpl implements MomAI
 								log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move stack of " + category.getAiUnitCategoryID () + " - " +
 									category.getAiUnitCategoryDescription () + "  from " + unitStack.get (0).getUnit ().getUnitLocation () + ", first Unit URN " + unitStack.get (0).getUnit ().getUnitURN ());
 								
-								if (!getUnitAI ().decideAndExecuteUnitMovement (unitStack, category, underdefendedLocations, enemyUnits,
+								if (!getUnitAI ().decideAndExecuteUnitMovement (unitStack, category, underdefendedLocations, ourUnitStacksInThisCategory, enemyUnits,
 									desiredCityLocations.get (unitStack.get (0).getUnit ().getUnitLocation ().getZ ()), player, mom))
 									
 									stop = true;

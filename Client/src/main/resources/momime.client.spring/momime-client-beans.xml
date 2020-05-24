@@ -1807,6 +1807,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="cityViewPanel" ref="cityViewPanel" />									<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
 	</bean>
 

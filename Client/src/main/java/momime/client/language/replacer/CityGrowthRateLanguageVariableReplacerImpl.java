@@ -111,6 +111,27 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 					text = null;
 				break;
 				
+			// AI players
+			case "AI_POPULATION_GROWTH_RATE_MULTIPLIER":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = Integer.valueOf (growing.getDifficultyLevelMultiplier ()).toString ();
+				}
+				else
+					text = null;
+				break;
+				
+			case "TOTAL_GROWTH_RATE_ADJUSTED_FOR_DIFFICULTY_LEVEL":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = getTextUtils ().intToStrPlusMinus (growing.getTotalGrowthRateAdjustedForDifficultyLevel ());
+				}
+				else
+					text = null;
+				break;
+				
 			// Dying
 			case "BASE_DEATH_RATE":
 				if (getBreakdown () instanceof CityGrowthRateBreakdownDying)

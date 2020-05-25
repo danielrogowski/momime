@@ -156,6 +156,10 @@ public final class TestNewGameUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "Gold")).thenReturn ("Gold:");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanGold")).thenReturn ("Human");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIGold")).thenReturn ("AI");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplier")).thenReturn ("AI population growth rate multiplier:");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplier")).thenReturn ("AI production rate multiplier:");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellResearchMultiplier")).thenReturn ("AI spell research multiplier:");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIUpkeepMultiplier")).thenReturn ("AI upkeep multiplier:");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "CustomWizards")).thenReturn ("Allow custom wizards?");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "EachWizardOnlyOnce")).thenReturn ("Each wizard can be chosen only once?");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "WizardCitySize")).thenReturn ("Wizards' cities start at size");

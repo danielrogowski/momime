@@ -376,7 +376,8 @@ public final class CityProcessingImpl implements CityProcessing
 						final int maxCitySize = (productionAmount == null) ? 0 : productionAmount.getCappedProductionAmount ();
 
 						final int cityGrowthRate = getCityCalculations ().calculateCityGrowthRate
-							(gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, maxCitySize, db).getFinalTotal ();
+							(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, maxCitySize,
+								sd.getDifficultyLevel ().getAiPopulationGrowthRateMultiplier (), db).getFinalTotal ();
 
 						if (cityGrowthRate != 0)
 						{

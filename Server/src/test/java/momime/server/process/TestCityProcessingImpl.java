@@ -13,6 +13,17 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.random.RandomUtils;
+
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.CommonDatabaseConstants;
@@ -63,17 +74,6 @@ import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.areas.storage.MapArea3D;
-import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the CityProcessingImpl class
@@ -438,6 +438,10 @@ public final class TestCityProcessingImpl extends ServerTestData
 		sd.setOverlandMapSize (sys);
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiPopulationGrowthRateMultiplier (300);
+		sd.setDifficultyLevel (difficultyLevel);
+		
 		// General server knowledge
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
 		
@@ -571,15 +575,15 @@ public final class TestCityProcessingImpl extends ServerTestData
 		// City growth rate
 		final CityGrowthRateBreakdown humanGrowthRate = new CityGrowthRateBreakdown ();
 		humanGrowthRate.setFinalTotal (650);
-		when (cityCalc.calculateCityGrowthRate (trueTerrain, trueMap.getBuilding (), humanLocation, humanCityMaxSize, db)).thenReturn (humanGrowthRate);
+		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), humanLocation, humanCityMaxSize, 300, db)).thenReturn (humanGrowthRate);
 
 		final CityGrowthRateBreakdown aiGrowthRate = new CityGrowthRateBreakdown ();
 		aiGrowthRate.setFinalTotal (250);
-		when (cityCalc.calculateCityGrowthRate (trueTerrain, trueMap.getBuilding (), aiLocation, aiCityMaxSize, db)).thenReturn (aiGrowthRate);
+		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), aiLocation, aiCityMaxSize, 300, db)).thenReturn (aiGrowthRate);
 		
 		final CityGrowthRateBreakdown raidersGrowthRate = new CityGrowthRateBreakdown ();
 		raidersGrowthRate.setFinalTotal (400);
-		when (cityCalc.calculateCityGrowthRate (trueTerrain, trueMap.getBuilding (), raidersLocation, raidersCityMaxSize, db)).thenReturn (raidersGrowthRate);
+		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), raidersLocation, raidersCityMaxSize, 300, db)).thenReturn (raidersGrowthRate);
 
 		// Rebels in each city
 		final CityUnrestBreakdown humanRebels = new CityUnrestBreakdown ();

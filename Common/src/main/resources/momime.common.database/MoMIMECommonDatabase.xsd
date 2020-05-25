@@ -130,27 +130,38 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
         	<xsd:documentation>Defines difficulty levels choosable on the new game form, i.e. intro/easy/normal/hard/impossible.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="humanSpellPicks" type="momimecommon:pickCount" nxe:label="Human spell picks" nxe:gridwidth="100" />
+			<!-- Strategy Guide p397 -->
+			<xsd:element minOccurs="1" maxOccurs="1" name="humanSpellPicks" type="momimecommon:pickCount" nxe:label="Human spell picks" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellPicks" type="momimecommon:pickCount" nxe:label="AI spell picks" nxe:gridwidth="90" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="humanStartingGold" type="momimecommon:undoubledProductionValue" nxe:label="Human starting gold" nxe:gridwidth="110" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="humanStartingGold" type="momimecommon:undoubledProductionValue" nxe:label="Human starting gold" nxe:gridwidth="130" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiStartingGold" type="momimecommon:undoubledProductionValue" nxe:label="AI starting gold" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="customWizards" type="xsd:boolean" nxe:label="Custom wizards?" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="130" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairCount" type="momimecommon:lairCount" nxe:label="Nbr. normal lairs" nxe:gridwidth="100" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="customWizards" type="xsd:boolean" nxe:label="Custom wizards?" nxe:gridwidth="120" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiPopulationGrowthRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI population growth rate multipler" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiProductionRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI production rate multipler" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellResearchMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI spell research multipler" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiUpkeepMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI upkeep multipler" nxe:gridwidth="140" />
+	
+			<!-- New MoM IME setting -->
+			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="150" />
+			
+			<!-- Strategy Guide p417 -->
+			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairCount" type="momimecommon:lairCount" nxe:label="Nbr. normal lairs" nxe:gridwidth="120" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="weakLairCount" type="momimecommon:lairCount" nxe:label="Nbr. weak lairs" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMinimum" type="momimecommon:monsterStrength" nxe:label="Tower Min. monster strength" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMaximum" type="momimecommon:monsterStrength" nxe:label="Tower Max. monster strength" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMinimum" type="momimecommon:treasureValue" nxe:label="Tower Min. treasure value" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMaximum" type="momimecommon:treasureValue" nxe:label="Tower Max. treasure value" nxe:gridwidth="170" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMin" type="momimecommon:cityPopulationDiv1000" nxe:label="Min. starting size of raider cities" nxe:gridwidth="170" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMax" type="momimecommon:cityPopulationDiv1000" nxe:label="Max. starting size of raider cities" nxe:gridwidth="170" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityGrowthCap" type="momimecommon:cityPopulationDiv1000" nxe:label="Amount raider cities are allowed to grow" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="wizardCityStartSize" type="momimecommon:cityPopulationDiv1000" nxe:label="Starting size of wizard cities" nxe:gridwidth="150" />
+			
+			<!-- Strategy Guide p426 -->
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMin" type="momimecommon:cityPopulationDiv1000" nxe:label="Min. starting size of raider cities" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityStartSizeMax" type="momimecommon:cityPopulationDiv1000" nxe:label="Max. starting size of raider cities" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="raiderCityGrowthCap" type="momimecommon:cityPopulationDiv1000" nxe:label="Amount raider cities are allowed to grow" nxe:gridwidth="240" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="wizardCityStartSize" type="momimecommon:cityPopulationDiv1000" nxe:label="Starting size of wizard cities" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="cityMaxSize" type="momimecommon:cityPopulationDiv1000" nxe:label="Max. city size" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelPlane" type="momimecommon:difficultyLevelPlane" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelNodeStrength" type="momimecommon:difficultyLevelNodeStrength" />
 		</xsd:sequence>
-		<xsd:attribute name="difficultyLevelID" type="momimecommon:difficultyLevelID" use="optional" nxe:label="Difficulty Level ID" nxe:gridwidth="100" />
+		<xsd:attribute name="difficultyLevelID" type="momimecommon:difficultyLevelID" use="optional" nxe:label="Difficulty Level ID" nxe:gridwidth="140" />
 	</xsd:complexType>
 
 	<xsd:complexType name="difficultyLevelPlane" nxe:singular="Difficulty Level - Plane" nxe:plural="Difficulty Level - Planes">
@@ -1617,9 +1628,19 @@ Implication is that for spells and attacks whose damage resolution is based on r
 <!-- Moved from new game database XSD -->
 	
 	<xsd:simpleType name="percentage">
+        <xsd:annotation>
+        	<xsd:documentation>Percentage values that are limited from 0..100.</xsd:documentation>
+        </xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort">
 			<xsd:maxInclusive value="100"></xsd:maxInclusive>
 		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="uncappedPercentage">
+        <xsd:annotation>
+        	<xsd:documentation>Percentage values that can take any value.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="doubledProductionValue">

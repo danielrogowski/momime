@@ -4709,6 +4709,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 	<difficultyLevel difficultyLevelID="DL05">
 		<difficultyLevelDescription>Impossible</difficultyLevelDescription>
 	</difficultyLevel>
+	<difficultyLevel difficultyLevelID="DL06">
+		<difficultyLevelDescription>Recommended</difficultyLevelDescription>
+	</difficultyLevel>
 	<fogOfWarSetting fogOfWarSettingID="FOW01">
 		<fogOfWarSettingDescription>Original</fogOfWarSettingDescription>
 	</fogOfWarSetting>
@@ -5192,6 +5195,18 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		</languageEntry>
 		<languageEntry languageEntryID="Gold">
 			<languageEntryText>Gold:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AIPopulationGrowthRateMultiplier">
+			<languageEntryText>AI population growth rate multiplier:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AIProductionRateMultiplier">
+			<languageEntryText>AI production rate multiplier:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AISpellResearchMultiplier">
+			<languageEntryText>AI spell research multiplier:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AIUpkeepMultiplier">
+			<languageEntryText>AI upkeep multiplier:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="WizardCitySize">
 			<languageEntryText>Wizards' cities start at size</languageEntryText>
@@ -6450,6 +6465,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="Housing">
 			<languageEntryText>Housing setting adds HOUSING_PERCENTAGE% * TOTAL_GROWTH_RATE = HOUSING_MODIFIER, for overall total of TOTAL_GROWTH_RATE_INCLUDING_HOUSING people per turn</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="DifficultyLevelMultiplier">
+			<languageEntryText>AI player gets difficulty level multiplier TOTAL_GROWTH_RATE_INCLUDING_HOUSING * AI_POPULATION_GROWTH_RATE_MULTIPLIER% = TOTAL_GROWTH_RATE_ADJUSTED_FOR_DIFFICULTY_LEVEL</languageEntryText>
+		</languageEntry>		
 		<languageEntry languageEntryID="CityGrowthRateCapped">
 			<languageEntryText>But this would go over maximum population, so reduced to CAPPED_GROWTH_RATE people per turn</languageEntryText>
 		</languageEntry>

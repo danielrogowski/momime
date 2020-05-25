@@ -184,6 +184,9 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			
 			if (growing.getHousingPercentageBonus () > 0)
 				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "Housing"));
+			
+			if (growing.getDifficultyLevelMultiplier () != 100)
+				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DifficultyLevelMultiplier"));
 				
 			if (growing.getCappedGrowthRate () < growing.getTotalGrowthRate ())
 				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateCapped"));

@@ -422,8 +422,9 @@ public final class CityViewUI extends MomClientFrameUI
 				CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
 		
 			final CityGrowthRateBreakdown breakdown = getCityCalculations ().calculateCityGrowthRate
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
+				(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize,
+				getClient ().getSessionDescription ().getDifficultyLevel ().getAiPopulationGrowthRateMultiplier (), getClient ().getClientDB ());
 
 			final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();
 			calc.setTitle (getLanguage ().findCategoryEntry ("CityGrowthRate", "Title").replaceAll ("CITY_SIZE_AND_NAME", getFrame ().getTitle ()));
@@ -1212,8 +1213,9 @@ public final class CityViewUI extends MomClientFrameUI
 			
 				// Growth rate
 				final CityGrowthRateBreakdown cityGrowthBreakdown = getCityCalculations ().calculateCityGrowthRate
-					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize, getClient ().getClientDB ());
+					(getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize,
+					getClient ().getSessionDescription ().getDifficultyLevel ().getAiPopulationGrowthRateMultiplier (), getClient ().getClientDB ());
 			
 				final int cityGrowth = cityGrowthBreakdown.getFinalTotal ();
 				final String cityPopulation = getTextUtils ().intToStrCommas (cityData.getCityPopulation ());

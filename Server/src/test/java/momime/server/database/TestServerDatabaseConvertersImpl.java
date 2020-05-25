@@ -99,7 +99,7 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 		assertEquals ("Failed to load correct number of overland map sizes",	5, db.getOverlandMapSize ().size ());
 		assertEquals ("Failed to load correct number of land proportions",		3, db.getLandProportion ().size ());
 		assertEquals ("Failed to load correct number of node strengths",		3, db.getNodeStrength ().size ());
-		assertEquals ("Failed to load correct number of difficulty levels",			5, db.getDifficultyLevel ().size ());
+		assertEquals ("Failed to load correct number of difficulty levels",			6, db.getDifficultyLevel ().size ());
 		assertEquals ("Failed to load correct number of fog of war settings",	2, db.getFogOfWarSetting ().size ());
 		assertEquals ("Failed to load correct number of unit settings",			2, db.getUnitSetting ().size ());
 		assertEquals ("Failed to load correct number of spell settings",			2, db.getSpellSetting ().size ());

@@ -410,18 +410,21 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * Strategy guide p196, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1
 	 * Death rate is on strategy guide p197
 	 *
+	 * @param players Players list
 	 * @param map Known terrain
 	 * @param buildings Known buildings
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
+	 * @param aiPopulationGrowthRateMultiplier Difficulty level value from session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Breakdown of all the values used in calculating the growth rate of this city; if the caller doesn't care about the breakdown and just wants the value, just call .getFinalTotal () on the breakdown
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	@Override
-	public final CityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final CommonDatabase db)
-		throws RecordNotFoundException
+	public final CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final MapVolumeOfMemoryGridCells map,
+		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final int aiPopulationGrowthRateMultiplier, final CommonDatabase db)
+		throws PlayerNotFoundException, RecordNotFoundException
 	{
 		log.trace ("Entering calculateCityGrowthRate: " + cityLocation);
 
@@ -491,12 +494,18 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 			else
 				growing.setTotalGrowthRateIncludingHousingModifier (growing.getTotalGrowthRate ());
+			
+			// AI players get a special bonus
+			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
+			growing.setDifficultyLevelMultiplier (cityOwner.getPlayerDescription ().isHuman () ? 100 : aiPopulationGrowthRateMultiplier);
+
+			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingHousingModifier () * growing.getDifficultyLevelMultiplier ()) / 100); 
 
 			// Don't allow maximum to go over maximum population
-			if (growing.getTotalGrowthRateIncludingHousingModifier () > spaceLeft)
+			if (growing.getTotalGrowthRateAdjustedForDifficultyLevel () > spaceLeft)
 				growing.setCappedGrowthRate (spaceLeft);
 			else
-				growing.setCappedGrowthRate (growing.getTotalGrowthRateIncludingHousingModifier ());
+				growing.setCappedGrowthRate (growing.getTotalGrowthRateAdjustedForDifficultyLevel ());
 
 			growing.setFinalTotal (growing.getCappedGrowthRate ());
 			breakdown = growing;

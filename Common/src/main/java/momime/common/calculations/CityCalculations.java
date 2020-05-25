@@ -85,17 +85,20 @@ public interface CityCalculations
 	 * Strategy guide p196, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1
 	 * Death rate is on strategy guide p197
 	 *
+	 * @param players Players list
 	 * @param map Known terrain
 	 * @param buildings Known buildings
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
+	 * @param aiPopulationGrowthRateMultiplier Difficulty level value from session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Breakdown of all the values used in calculating the growth rate of this city; if the caller doesn't care about the breakdown and just wants the value, just call .getFinalTotal () on the breakdown
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
-	public CityGrowthRateBreakdown calculateCityGrowthRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final CommonDatabase db)
-		throws RecordNotFoundException;
+	public CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final MapVolumeOfMemoryGridCells map,
+		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int aiPopulationGrowthRateMultiplier, final int maxCitySize, final CommonDatabase db)
+		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**
 	 * Strategy guide p191

@@ -61,9 +61,19 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 							<xsd:documentation>Total growth rate + Housing Modifier</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplier" type="momimecommon:uncappedPercentage">
+						<xsd:annotation>
+							<xsd:documentation>Percentage that final total is modified by to give AI players a bonus</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRateAdjustedForDifficultyLevel" type="momimecommon:cityPopulationGrowthRate">
+						<xsd:annotation>
+							<xsd:documentation>Total growth rate including housing modifier, multiplied up according to difficulty level for AI players</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="cappedGrowthRate" type="momimecommon:cityPopulationGrowthRate">
 						<xsd:annotation>
-							<xsd:documentation>Total growth rate including housing modifier, possibly reduced to prevent city going over maximum size.</xsd:documentation>
+							<xsd:documentation>Total growth rate including housing modifier and AI difficulty level bonus, possibly reduced to prevent city going over maximum size.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

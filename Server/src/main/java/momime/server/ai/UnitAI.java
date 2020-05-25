@@ -185,7 +185,7 @@ public interface UnitAI
 	 * @param desiredCityLocation Location where we want to put a city
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether we moved or not; if we did something else (like turn a settler into a city, or make an engineer build a road) then returns false
+	 * @return Whether some action was taken (a move, turning a settler into a city, or make an engineer build a road); only return false if we had no movement left or couldn't figure out anything to do
 	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws PlayerNotFoundException If a player cannot be found
 	 * @throws MomException If there is a significant problem in the game logic

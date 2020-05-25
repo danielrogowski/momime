@@ -880,7 +880,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param desiredCityLocation Location where we want to put a city
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether we moved or not; if we did something else (like turn a settler into a city, or make an engineer build a road) then returns false
+	 * @return Whether some action was taken (a move, turning a settler into a city, or make an engineer build a road); only return false if we had no movement left or couldn't figure out anything to do
 	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws PlayerNotFoundException If a player cannot be found
 	 * @throws MomException If there is a significant problem in the game logic
@@ -920,84 +920,94 @@ public final class UnitAIImpl implements UnitAI
 		for (final ExpandedUnitDetails thisUnit : movingUnits)
 			if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 				doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
-		
-		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
-			player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (),
-			unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-			mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
-		
-		// Use list of movement codes from the unit stack's category
-		final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
 
-		final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
-		final AIMovementDecision destination = decideUnitMovement (units, movementCodes, doubleMovementDistances, underdefendedLocations,
-			ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredCityLocation, isRaiders, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
-		
-		// Move, if we found somewhere to go
-		final boolean moved;
-		if (destination == null)
-			moved = false;
-		
-		else if (destination.getDestination () != null)
+		// Its possible unit stack may have no movement left, and we don't really know that until we sorted out what's a transport and what's in a transport above
+		final boolean tookAction;
+		if (doubleMovementRemaining <= 0)
+			tookAction = false;
+		else
 		{
-			// If its a simultaneous turns game, then move as far as we can in one turn.
-			// If its a one-player-at-a-time game, then move only 1 cell.
-			// This is basically a copy of FogOfWarMidTurnChangesImpl.determineMovementDirection.
-			MapCoordinates3DEx coords = new MapCoordinates3DEx (destination.getDestination ());
-			MapCoordinates3DEx lastCoords = null;
-			while (((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (!canMoveToInOneTurn [coords.getZ ()] [coords.getY ()] [coords.getX ()])) ||
-						((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) && ((coords.getX () != moveFrom.getX ()) || (coords.getY () != moveFrom.getY ()))))
+			getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
+				player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (),
+				unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
+				mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			
+			// Use list of movement codes from the unit stack's category
+			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
+	
+			final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
+			final AIMovementDecision destination = decideUnitMovement (units, movementCodes, doubleMovementDistances, underdefendedLocations,
+				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredCityLocation, isRaiders, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+			
+			// Move, if we found somewhere to go
+			if (destination == null)
+				tookAction = false;
+			
+			else if (destination.getDestination () != null)
 			{
-				lastCoords = new MapCoordinates3DEx (coords);
-				final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
-					movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
-				
-				if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
-					throw new MomException ("decideAndExecuteUnitMovement: Server map tracing moved to a cell off the map");
-			}
-			
-			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)
-				coords = lastCoords;
-			
-			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " decided to move from " + moveFrom + " to " + coords +
-				", eventually aiming for " + destination);
-			
-			if (coords == null)
-				moved = false;		// Until I understand when and how this happens sometimes
-			else
-			{
-				moved = true;
-				
-				// We need the true unit versions to execute the move
-				final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
-				for (final AIUnitAndRatings mu : units)
+				// If its a simultaneous turns game, then move as far as we can in one turn.
+				// If its a one-player-at-a-time game, then move only 1 cell.
+				// This is basically a copy of FogOfWarMidTurnChangesImpl.determineMovementDirection.
+				MapCoordinates3DEx coords = new MapCoordinates3DEx (destination.getDestination ());
+				MapCoordinates3DEx lastCoords = null;
+				while (((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) && (!canMoveToInOneTurn [coords.getZ ()] [coords.getY ()] [coords.getX ()])) ||
+							((mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME) && ((coords.getX () != moveFrom.getX ()) || (coords.getY () != moveFrom.getY ()))))
 				{
-					final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideAndExecuteUnitMovement");
-					trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+					lastCoords = new MapCoordinates3DEx (coords);
+					final int d = getCoordinateSystemUtils ().normalizeDirection (mom.getSessionDescription ().getOverlandMapSize ().getCoordinateSystemType (),
+						movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
+					
+					if (!getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), coords, d))
+						throw new MomException ("decideAndExecuteUnitMovement: Server map tracing moved to a cell off the map");
 				}
 				
-				// Execute move
-				getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
-					(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
+				if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME)
+					coords = lastCoords;
+				
+				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " decided to move from " + moveFrom + " to " + coords +
+					", eventually aiming for " + destination);
+				
+				if (coords == null)
+					tookAction = false;
+				else
+				{
+					tookAction = true;		// Found valid move
+					
+					// We need the true unit versions to execute the move
+					final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
+					for (final AIUnitAndRatings mu : units)
+					{
+						final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideAndExecuteUnitMovement");
+						trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+					}
+					
+					// Execute move
+					getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
+						(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
+				}
 			}
-		}
-		
-		else if (destination.getSpecialOrder () != null)
-		{
-			// This seems backwards, but the return value being true means the unit tries to move again; false means stop trying to move
-			moved = false;
-			final List<Integer> unitURNs = units.stream ().map (u -> u.getUnit ().getUnitURN ()).collect (Collectors.toList ());
-			final String error = getUnitServerUtils ().processSpecialOrder (unitURNs, destination.getSpecialOrder (), (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (), player, mom);
 			
-			if (error != null)
-				log.warn ("AI wanted to process special order " + destination.getSpecialOrder () + " but was rejected for reason: " + error);
+			else if (destination.getSpecialOrder () != null)
+			{
+				// This seems backwards, but the return value being true means the unit tries to move again; false means stop trying to move
+				final List<Integer> unitURNs = units.stream ().map (u -> u.getUnit ().getUnitURN ()).collect (Collectors.toList ());
+				final String error = getUnitServerUtils ().processSpecialOrder (unitURNs, destination.getSpecialOrder (), (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (), player, mom);
+				
+				if (error == null)
+					tookAction = false;
+				else
+				{
+					log.warn ("AI wanted to process special order " + destination.getSpecialOrder () + " but was rejected for reason: " + error);
+					tookAction = true;
+				}
+			}
+			
+			else
+				tookAction = false;
 		}
 		
-		else
-			moved = false;
-		
-		log.trace ("Exiting decideAndExecuteUnitMovement = " + moved);
-		return moved;
+		log.trace ("Exiting decideAndExecuteUnitMovement = " + tookAction);
+		return tookAction;
 	}
 	/**
 	 * @return Unit utils

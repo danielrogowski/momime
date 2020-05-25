@@ -2,6 +2,7 @@ package momime.server.ai;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
@@ -157,32 +158,46 @@ public final class MomAIImpl implements MomAI
 			// In "simultaneous turns" games, we will move anywhere that we can reach in one turn.
 			if (((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) || (isRaiders)) && (!mobileUnits.isEmpty ()))
 			{
-				final Map<String, List<AIUnitsAndRatings>> categories = getUnitAI ().categoriseAndStackUnits (mobileUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());				
-				
-				// Now move units in the order their categories are listed in the database
-				for (final AiUnitCategorySvr category : mom.getServerDB ().getAiUnitCategories ())
+				boolean restart = true;
+				int pass = 0;
+				while (restart)
 				{
-					final List<AIUnitsAndRatings> ourUnitStacksInThisCategory = categories.get (category.getAiUnitCategoryID ());
-					if (ourUnitStacksInThisCategory != null)
-						for (final AIUnitsAndRatings unitStack : ourUnitStacksInThisCategory)
+					pass++;
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " movement pass " + pass);					
+					
+					restart = false;
+					final Map<String, List<AIUnitsAndRatings>> categories = getUnitAI ().categoriseAndStackUnits (mobileUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());				
+					
+					// Now move units in the order their categories are listed in the database
+					final Iterator<AiUnitCategorySvr> categoriesIter = mom.getServerDB ().getAiUnitCategories ().iterator ();
+					while ((!restart) && (categoriesIter.hasNext ()))
+					{
+						final AiUnitCategorySvr category = categoriesIter.next ();
+							
+						final List<AIUnitsAndRatings> ourUnitStacksInThisCategory = categories.get (category.getAiUnitCategoryID ());
+						if (ourUnitStacksInThisCategory != null)
 						{
-							// In one-at-a-time games, we move one cell at a time so we can rethink actions as we see more of the map.
-							// In simultaneous turns games, we move as far as we can in one go since we won't learn anything new about the map until we finish allocating all movement.
-							boolean stop = false;
-							while ((!stop) && (unitStack.stream ().mapToInt (u -> u.getUnit ().getDoubleOverlandMovesLeft ()).min ().getAsInt () > 0))
+							final Iterator<AIUnitsAndRatings> unitStacksIter = ourUnitStacksInThisCategory.iterator ();
+							while ((!restart) && (unitStacksIter.hasNext ()))
 							{
+								final AIUnitsAndRatings unitStack = unitStacksIter.next ();
+									
+								// In one-at-a-time games, we move one cell at a time so we can rethink actions as we see more of the map.								
+								// In simultaneous turns games, we move as far as we can in one go since we won't learn anything new about the map until we finish allocating all movement.
 								log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " checking where it can move stack of " + category.getAiUnitCategoryID () + " - " +
 									category.getAiUnitCategoryDescription () + "  from " + unitStack.get (0).getUnit ().getUnitLocation () + ", first Unit URN " + unitStack.get (0).getUnit ().getUnitURN ());
 								
-								if (!getUnitAI ().decideAndExecuteUnitMovement (unitStack, category, underdefendedLocations, ourUnitStacksInThisCategory, enemyUnits,
-									desiredCityLocations.get (unitStack.get (0).getUnit ().getUnitLocation ().getZ ()), player, mom))
-									
-									stop = true;
-								
-								if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
-									stop = true;
+								final boolean tookAction = getUnitAI ().decideAndExecuteUnitMovement (unitStack, category, underdefendedLocations, ourUnitStacksInThisCategory, enemyUnits,
+									desiredCityLocations.get (unitStack.get (0).getUnit ().getUnitLocation ().getZ ()), player, mom);
+
+								// In a one-player-at-a-time game, units are moved instantly and so may have joined onto other unit stacks, have movement left,
+								// and that remaining movement now be affected by something in the stack they've joined such as a hero with Pathfinding.
+								// That's too complicated to try to work out the effect of, so just restart over every time we make a move.
+								if ((tookAction) && (mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME))
+									restart = true;
 							}
 						}
+					}
 				}
 			}
 

@@ -28,6 +28,7 @@ import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DifficultyLevel;
 import momime.common.database.NodeStrength;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.ProductionTypeAndUndoubledValue;
@@ -719,13 +720,23 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	
 	/**
 	 * Tests the progressResearch method
+	 * 
+	 * @param isHuman Whether to test with human or AI player
 	 * @throws Exception If there is a problem
 	 */
-	@Test
-	public final void testProgressResearch () throws Exception
+	private final void testProgressResearch (final boolean isHuman) throws Exception
 	{
 		final ServerDatabaseEx db = loadServerDatabase ();
-		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
+		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		
+		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here		
+		sd.setSpellSetting (spellSettings);
+		
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiSpellResearchMultiplier (110);
+		sd.setDifficultyLevel (difficultyLevel);
 
 		// Player
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
@@ -734,7 +745,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (2);
-		pd.setHuman (true);
+		pd.setHuman (isHuman);
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
 
@@ -764,12 +775,12 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 			when (spellUtils.findSpellResearchStatus (priv.getSpellResearchStatus (), status.getSpellID ())).thenReturn (status);
 		}
 		
-		// Generate 40 research each turn
+		// Generate 40 research each turn; AI players get +10% so they get 44 
 		when (resourceValueUtils.calculateAmountPerTurnForProductionType
 			(priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (40);
 		
 		// No spell being researched
-		calc.progressResearch (player, spellSettings, db);
+		calc.progressResearch (player, sd, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -790,7 +801,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Spend 40 research - 60 left
 		priv.setSpellIDBeingResearched ("SP002");
 
-		calc.progressResearch (player, spellSettings, db);
+		calc.progressResearch (player, sd, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -798,23 +809,26 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		assertEquals (50, priv.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
 		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (0).getStatus ());
 		assertEquals ("SP002", priv.getSpellResearchStatus ().get (1).getSpellID ());
-		assertEquals (60, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());		// Drops to 60
+		assertEquals (isHuman ? 60 : 56, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());		// Drops to 60
 		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
 		assertEquals ("SP003", priv.getSpellResearchStatus ().get (2).getSpellID ());
 		assertEquals (150, priv.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
 		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (2).getStatus ());
 
-		assertEquals (1, msgs.getMessages ().size ());
+		assertEquals (isHuman ? 1 : 0, msgs.getMessages ().size ());
 		
-		final UpdateRemainingResearchCostMessage msg1 = (UpdateRemainingResearchCostMessage) msgs.getMessages ().get (0);
-		assertEquals ("SP002", msg1.getSpellID ());
-		assertEquals (60, msg1.getRemainingResearchCost ());
+		if (isHuman)
+		{
+			final UpdateRemainingResearchCostMessage msg1 = (UpdateRemainingResearchCostMessage) msgs.getMessages ().get (0);
+			assertEquals ("SP002", msg1.getSpellID ());
+			assertEquals (60, msg1.getRemainingResearchCost ());
+		}
 
 		verify (serverSpellCalculations, times (0)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
 
 		// Spend 40 research - 20 left
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, spellSettings, db);
+		calc.progressResearch (player, sd, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -822,23 +836,26 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		assertEquals (50, priv.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
 		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (0).getStatus ());
 		assertEquals ("SP002", priv.getSpellResearchStatus ().get (1).getSpellID ());
-		assertEquals (20, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());		// Drops to 20
+		assertEquals (isHuman ? 20 : 12, priv.getSpellResearchStatus ().get (1).getRemainingResearchCost ());		// Drops to 20
 		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (1).getStatus ());
 		assertEquals ("SP003", priv.getSpellResearchStatus ().get (2).getSpellID ());
 		assertEquals (150, priv.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
 		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (2).getStatus ());
 
-		assertEquals (1, msgs.getMessages ().size ());
+		assertEquals (isHuman ? 1 : 0, msgs.getMessages ().size ());
 		
-		final UpdateRemainingResearchCostMessage msg2 = (UpdateRemainingResearchCostMessage) msgs.getMessages ().get (0);
-		assertEquals ("SP002", msg2.getSpellID ());
-		assertEquals (20, msg2.getRemainingResearchCost ());
+		if (isHuman)
+		{
+			final UpdateRemainingResearchCostMessage msg2 = (UpdateRemainingResearchCostMessage) msgs.getMessages ().get (0);
+			assertEquals ("SP002", msg2.getSpellID ());
+			assertEquals (20, msg2.getRemainingResearchCost ());
+		}
 		
 		verify (serverSpellCalculations, times (0)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);
 		
 		// Finish research
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, spellSettings, db);
+		calc.progressResearch (player, sd, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -852,21 +869,44 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		assertEquals (150, priv.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
 		assertEquals (SpellResearchStatusID.RESEARCHABLE, priv.getSpellResearchStatus ().get (2).getStatus ());		// same
 
-		assertEquals (1, msgs.getMessages ().size ());
+		assertEquals (isHuman ? 1 : 0, msgs.getMessages ().size ());
 		
-		final FullSpellListMessage msg3 = (FullSpellListMessage) msgs.getMessages ().get (0);
-		assertEquals (3, msg3.getSpellResearchStatus ().size ());
-		assertEquals ("SP001", msg3.getSpellResearchStatus ().get (0).getSpellID ());
-		assertEquals (50, msg3.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
-		assertEquals (SpellResearchStatusID.RESEARCHABLE, msg3.getSpellResearchStatus ().get (0).getStatus ());		// same
-		assertEquals ("SP002", msg3.getSpellResearchStatus ().get (1).getSpellID ());
-		assertEquals (0, msg3.getSpellResearchStatus ().get (1).getRemainingResearchCost ());
-		assertEquals (SpellResearchStatusID.AVAILABLE, msg3.getSpellResearchStatus ().get (1).getStatus ());
-		assertEquals ("SP003", msg3.getSpellResearchStatus ().get (2).getSpellID ());
-		assertEquals (150, msg3.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
-		assertEquals (SpellResearchStatusID.RESEARCHABLE, msg3.getSpellResearchStatus ().get (2).getStatus ());		// same
+		if (isHuman)
+		{
+			final FullSpellListMessage msg3 = (FullSpellListMessage) msgs.getMessages ().get (0);
+			assertEquals (3, msg3.getSpellResearchStatus ().size ());
+			assertEquals ("SP001", msg3.getSpellResearchStatus ().get (0).getSpellID ());
+			assertEquals (50, msg3.getSpellResearchStatus ().get (0).getRemainingResearchCost ());
+			assertEquals (SpellResearchStatusID.RESEARCHABLE, msg3.getSpellResearchStatus ().get (0).getStatus ());		// same
+			assertEquals ("SP002", msg3.getSpellResearchStatus ().get (1).getSpellID ());
+			assertEquals (0, msg3.getSpellResearchStatus ().get (1).getRemainingResearchCost ());
+			assertEquals (SpellResearchStatusID.AVAILABLE, msg3.getSpellResearchStatus ().get (1).getStatus ());
+			assertEquals ("SP003", msg3.getSpellResearchStatus ().get (2).getSpellID ());
+			assertEquals (150, msg3.getSpellResearchStatus ().get (2).getRemainingResearchCost ());
+			assertEquals (SpellResearchStatusID.RESEARCHABLE, msg3.getSpellResearchStatus ().get (2).getStatus ());		// same
+		}
 
 		verify (serverSpellCalculations, times (1)).randomizeSpellsResearchableNow (priv.getSpellResearchStatus (), db);		// <---
+	}
+	
+	/**
+	 * Tests the progressResearch method for a human player
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressResearch_Human () throws Exception
+	{
+		testProgressResearch (true);
+	}
+	
+	/**
+	 * Tests the progressResearch method for an AI player
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testProgressResearch_AI () throws Exception
+	{
+		testProgressResearch (false);
 	}
 	
 	/**

@@ -6563,6 +6563,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
 		<languageEntry languageEntryID="ProductionPercentageBonusTotal">
 			<languageEntryText>PERCENTAGE_BONUS% of ROUNDED_PRODUCTION_AMOUNT = PRODUCTION_AMOUNT_FROM_PERCENTAGE_BONUS for a total of PRODUCTION_TOTAL</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="DifficultyLevelMultiplier">
+			<languageEntryText>AI player gets difficulty level multiplier PRODUCTION_TOTAL * AI_PRODUCTION_RATE_MULTIPLIER% = TOTAL_ADJUSTED_FOR_DIFFICULTY_LEVEL</languageEntryText>
+		</languageEntry>		
 		<languageEntry languageEntryID="ProductionCapped">
 			<languageEntryText>However value is capped at PRODUCTION_CAPPED</languageEntryText>
 		</languageEntry>

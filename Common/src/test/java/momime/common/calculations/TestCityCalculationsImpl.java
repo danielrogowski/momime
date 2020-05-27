@@ -1605,6 +1605,7 @@ public final class TestCityCalculationsImpl
 		// Production types
 		final ProductionType rationProduction = new ProductionType ();
 		rationProduction.setRoundingDirectionID (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		rationProduction.setDifficultyLevelMultiplierApplies (true);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "halveAddPercentageBonusAndCapProduction")).thenReturn (rationProduction);
 
 		final ProductionType foodProduction = new ProductionType ();
@@ -1613,15 +1614,22 @@ public final class TestCityCalculationsImpl
 
 		final ProductionType productionProduction = new ProductionType ();
 		productionProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
+		productionProduction.setDifficultyLevelMultiplierApplies (true);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, "halveAddPercentageBonusAndCapProduction")).thenReturn (productionProduction);
 
 		final ProductionType goldProduction = new ProductionType ();
 		goldProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
+		goldProduction.setDifficultyLevelMultiplierApplies (true);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "halveAddPercentageBonusAndCapProduction")).thenReturn (goldProduction);
 
 		final ProductionType magicPowerProduction = new ProductionType ();
 		magicPowerProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
+		magicPowerProduction.setDifficultyLevelMultiplierApplies (true);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, "halveAddPercentageBonusAndCapProduction")).thenReturn (magicPowerProduction);
+		
+		final ProductionType spellResearchProduction = new ProductionType ();
+		spellResearchProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "halveAddPercentageBonusAndCapProduction")).thenReturn (spellResearchProduction);
 		
 		// Standard race
 		final ProductionTypeAndDoubledValue raceFarmerRations = new ProductionTypeAndDoubledValue ();
@@ -1850,6 +1858,7 @@ public final class TestCityCalculationsImpl
 
 		final DifficultyLevel dl = new DifficultyLevel ();
 		dl.setCityMaxSize (25);
+		dl.setAiProductionRateMultiplier (250);
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
@@ -1871,6 +1880,7 @@ public final class TestCityCalculationsImpl
 		// Players
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
+		pd.setHuman (true);
 
 		final MomPersistentPlayerPublicKnowledge ppk = new MomPersistentPlayerPublicKnowledge ();
 
@@ -2189,38 +2199,107 @@ public final class TestCityCalculationsImpl
 		assertEquals (20, highElves.getProductionType ().get (0).getBaseProductionAmount ());			// (6 min + 2 optional farmers) x2 + (2 x2 from wild game) = 20
 		assertEquals (0, highElves.getProductionType ().get (0).getPercentageBonus ());
 		assertEquals (20, highElves.getProductionType ().get (0).getModifiedProductionAmount ());
+		assertEquals (100, highElves.getProductionType ().get (0).getDifficultyLevelMultiplier ());
+		assertEquals (20, highElves.getProductionType ().get (0).getTotalAdjustedForDifficultyLevel ());
 		assertEquals (17, highElves.getProductionType ().get (0).getConsumptionAmount ());				// 17 population eating
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, highElves.getProductionType ().get (1).getProductionTypeID ());
 		assertEquals (36, highElves.getProductionType ().get (1).getDoubleProductionAmount ());
 		assertEquals (18, highElves.getProductionType ().get (1).getBaseProductionAmount ());			// (8 farmers x ½) + (7 workers x 2) = 18
 		assertEquals (84, highElves.getProductionType ().get (1).getPercentageBonus ());					// 3 hills giving 3% each +25% from sawmill +50% from miners' guild
 		assertEquals (33, highElves.getProductionType ().get (1).getModifiedProductionAmount ());		// 18 * 1.84 = 33.12
+		assertEquals (100, highElves.getProductionType ().get (1).getDifficultyLevelMultiplier ());
+		assertEquals (33, highElves.getProductionType ().get (1).getTotalAdjustedForDifficultyLevel ());
 		assertEquals (0, highElves.getProductionType ().get (1).getConsumptionAmount ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, highElves.getProductionType ().get (2).getProductionTypeID ());
 		assertEquals (75, highElves.getProductionType ().get (2).getDoubleProductionAmount ());
 		assertEquals (37, highElves.getProductionType ().get (2).getBaseProductionAmount ());			// (15 non-rebels x2) +7.5 from gems = 37.5
 		assertEquals (20, highElves.getProductionType ().get (2).getPercentageBonus ());
 		assertEquals (44, highElves.getProductionType ().get (2).getModifiedProductionAmount ());		// 37 * 1.2 = 44.4
+		assertEquals (100, highElves.getProductionType ().get (2).getDifficultyLevelMultiplier ());
+		assertEquals (44, highElves.getProductionType ().get (2).getTotalAdjustedForDifficultyLevel ());
 		assertEquals (7, highElves.getProductionType ().get (2).getConsumptionAmount ());				// 2 + 2 + 3
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, highElves.getProductionType ().get (3).getProductionTypeID ());
 		assertEquals (49, highElves.getProductionType ().get (3).getDoubleProductionAmount ());
 		assertEquals (24, highElves.getProductionType ().get (3).getBaseProductionAmount ());			// 8 books +5 for being on myrror +3 from adamantium = 16 x2 = 32 +17 from pop = 49
 		assertEquals (0, highElves.getProductionType ().get (3).getPercentageBonus ());
 		assertEquals (24, highElves.getProductionType ().get (3).getModifiedProductionAmount ());
+		assertEquals (100, highElves.getProductionType ().get (3).getDifficultyLevelMultiplier ());
+		assertEquals (24, highElves.getProductionType ().get (3).getTotalAdjustedForDifficultyLevel ());
 		assertEquals (0, highElves.getProductionType ().get (3).getConsumptionAmount ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, highElves.getProductionType ().get (4).getProductionTypeID ());
 		assertEquals (6, highElves.getProductionType ().get (4).getDoubleProductionAmount ());
 		assertEquals (3, highElves.getProductionType ().get (4).getBaseProductionAmount ());				// 3 from sages' guild
 		assertEquals (0, highElves.getProductionType ().get (4).getPercentageBonus ());
 		assertEquals (3, highElves.getProductionType ().get (4).getModifiedProductionAmount ());
+		assertEquals (100, highElves.getProductionType ().get (4).getDifficultyLevelMultiplier ());
+		assertEquals (3, highElves.getProductionType ().get (4).getTotalAdjustedForDifficultyLevel ());
 		assertEquals (0, highElves.getProductionType ().get (4).getConsumptionAmount ());
 		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, highElves.getProductionType ().get (5).getProductionTypeID ());
 		assertEquals (35, highElves.getProductionType ().get (5).getDoubleProductionAmount ());		// 27 from terrain + (2 x4 from wild game) = 35
 		assertEquals (18, highElves.getProductionType ().get (5).getBaseProductionAmount ());
 		assertEquals (0, highElves.getProductionType ().get (5).getPercentageBonus ());
 		assertEquals (18, highElves.getProductionType ().get (5).getModifiedProductionAmount ());
+		assertEquals (100, highElves.getProductionType ().get (5).getDifficultyLevelMultiplier ());
+		assertEquals (18, highElves.getProductionType ().get (5).getTotalAdjustedForDifficultyLevel ());
 		assertEquals (0, highElves.getProductionType ().get (5).getConsumptionAmount ());
 
+		// Test bonus given to AI players
+		pd.setHuman (false);
+
+		final CityProductionBreakdownsEx aiHighElves = calc.calculateAllCityProductions
+			(players, map, buildings, cityLocation, "TR01", sd, true, false, db);
+		assertEquals (7, aiHighElves.getProductionType ().size ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, aiHighElves.getProductionType ().get (0).getProductionTypeID ());
+		assertEquals (40, aiHighElves.getProductionType ().get (0).getDoubleProductionAmount ());
+		assertEquals (20, aiHighElves.getProductionType ().get (0).getBaseProductionAmount ());				// (6 min + 2 optional farmers) x2 + (2 x2 from wild game) = 20
+		assertEquals (0, aiHighElves.getProductionType ().get (0).getPercentageBonus ());
+		assertEquals (20, aiHighElves.getProductionType ().get (0).getModifiedProductionAmount ());
+		assertEquals (250, aiHighElves.getProductionType ().get (0).getDifficultyLevelMultiplier ());
+		assertEquals (50, aiHighElves.getProductionType ().get (0).getTotalAdjustedForDifficultyLevel ());
+		assertEquals (17, aiHighElves.getProductionType ().get (0).getConsumptionAmount ());				// 17 population eating
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, aiHighElves.getProductionType ().get (1).getProductionTypeID ());
+		assertEquals (36, aiHighElves.getProductionType ().get (1).getDoubleProductionAmount ());
+		assertEquals (18, aiHighElves.getProductionType ().get (1).getBaseProductionAmount ());				// (8 farmers x ½) + (7 workers x 2) = 18
+		assertEquals (84, aiHighElves.getProductionType ().get (1).getPercentageBonus ());						// 3 hills giving 3% each +25% from sawmill +50% from miners' guild
+		assertEquals (33, aiHighElves.getProductionType ().get (1).getModifiedProductionAmount ());		// 18 * 1.84 = 33.12
+		assertEquals (250, aiHighElves.getProductionType ().get (1).getDifficultyLevelMultiplier ());
+		assertEquals (82, aiHighElves.getProductionType ().get (1).getTotalAdjustedForDifficultyLevel ());
+		assertEquals (0, aiHighElves.getProductionType ().get (1).getConsumptionAmount ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, aiHighElves.getProductionType ().get (2).getProductionTypeID ());
+		assertEquals (75, aiHighElves.getProductionType ().get (2).getDoubleProductionAmount ());
+		assertEquals (37, aiHighElves.getProductionType ().get (2).getBaseProductionAmount ());				// (15 non-rebels x2) +7.5 from gems = 37.5
+		assertEquals (20, aiHighElves.getProductionType ().get (2).getPercentageBonus ());
+		assertEquals (44, aiHighElves.getProductionType ().get (2).getModifiedProductionAmount ());		// 37 * 1.2 = 44.4
+		assertEquals (250, aiHighElves.getProductionType ().get (2).getDifficultyLevelMultiplier ());
+		assertEquals (110, aiHighElves.getProductionType ().get (2).getTotalAdjustedForDifficultyLevel ());
+		assertEquals (7, aiHighElves.getProductionType ().get (2).getConsumptionAmount ());					// 2 + 2 + 3
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, aiHighElves.getProductionType ().get (3).getProductionTypeID ());
+		assertEquals (49, aiHighElves.getProductionType ().get (3).getDoubleProductionAmount ());
+		assertEquals (24, aiHighElves.getProductionType ().get (3).getBaseProductionAmount ());				// 8 books +5 for being on myrror +3 from adamantium = 16 x2 = 32 +17 from pop = 49
+		assertEquals (0, aiHighElves.getProductionType ().get (3).getPercentageBonus ());
+		assertEquals (24, aiHighElves.getProductionType ().get (3).getModifiedProductionAmount ());
+		assertEquals (250, aiHighElves.getProductionType ().get (3).getDifficultyLevelMultiplier ());
+		assertEquals (60, aiHighElves.getProductionType ().get (3).getTotalAdjustedForDifficultyLevel ());
+		assertEquals (0, aiHighElves.getProductionType ().get (3).getConsumptionAmount ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, aiHighElves.getProductionType ().get (4).getProductionTypeID ());
+		assertEquals (6, aiHighElves.getProductionType ().get (4).getDoubleProductionAmount ());
+		assertEquals (3, aiHighElves.getProductionType ().get (4).getBaseProductionAmount ());				// 3 from sages' guild
+		assertEquals (0, aiHighElves.getProductionType ().get (4).getPercentageBonus ());
+		assertEquals (3, aiHighElves.getProductionType ().get (4).getModifiedProductionAmount ());
+		assertEquals (100, aiHighElves.getProductionType ().get (4).getDifficultyLevelMultiplier ());
+		assertEquals (3, aiHighElves.getProductionType ().get (4).getTotalAdjustedForDifficultyLevel ());
+		assertEquals (0, aiHighElves.getProductionType ().get (4).getConsumptionAmount ());
+		assertEquals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, aiHighElves.getProductionType ().get (5).getProductionTypeID ());
+		assertEquals (35, aiHighElves.getProductionType ().get (5).getDoubleProductionAmount ());			// 27 from terrain + (2 x4 from wild game) = 35
+		assertEquals (18, aiHighElves.getProductionType ().get (5).getBaseProductionAmount ());
+		assertEquals (0, aiHighElves.getProductionType ().get (5).getPercentageBonus ());
+		assertEquals (18, aiHighElves.getProductionType ().get (5).getModifiedProductionAmount ());
+		assertEquals (100, aiHighElves.getProductionType ().get (5).getDifficultyLevelMultiplier ());
+		assertEquals (18, aiHighElves.getProductionType ().get (5).getTotalAdjustedForDifficultyLevel ());
+		assertEquals (0, aiHighElves.getProductionType ().get (5).getConsumptionAmount ());
+		
+		pd.setHuman (true);
+		
 		// Shrink city to size 6 - gold % bonus is then capped at 6 x3 = 18%
 		cityData.setCityPopulation (6900);
 		cityData.setMinimumFarmers (1);
@@ -2424,6 +2503,7 @@ public final class TestCityCalculationsImpl
 		
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setCityMaxSize (25);
+		difficultyLevel.setAiProductionRateMultiplier (250);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
@@ -2499,6 +2579,17 @@ public final class TestCityCalculationsImpl
 		food.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "halveAddPercentageBonusAndCapProduction")).thenReturn (food);
 		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setCityMaxSize (25);
+		difficultyLevel.setAiProductionRateMultiplier (250);
+		
+		// City owner
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setHuman (true);
+		
+		final PlayerPublicDetails cityOwner = new PlayerPublicDetails (pd, null, null);
+		
 		// Set up object to test
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		
@@ -2508,7 +2599,7 @@ public final class TestCityCalculationsImpl
 		prod1.setDoubleProductionAmount (18);
 		prod1.setPercentageBonus (25);
 		
-		calc.halveAddPercentageBonusAndCapProduction (prod1, 25, db);
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod1, difficultyLevel, db);
 		
 		assertNull (prod1.getRoundingDirectionID ());
 		assertEquals (9, prod1.getBaseProductionAmount ());
@@ -2521,7 +2612,7 @@ public final class TestCityCalculationsImpl
 		prod2.setDoubleProductionAmount (19);
 		prod2.setPercentageBonus (25);
 
-		calc.halveAddPercentageBonusAndCapProduction (prod2, 25, db);
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod2, difficultyLevel, db);
 		
 		assertEquals (RoundingDirectionID.ROUND_DOWN, prod2.getRoundingDirectionID ());
 		assertEquals (9, prod2.getBaseProductionAmount ());
@@ -2536,7 +2627,7 @@ public final class TestCityCalculationsImpl
 		prod3.setDoubleProductionAmount (19);
 		prod3.setPercentageBonus (25);
 
-		calc.halveAddPercentageBonusAndCapProduction (prod3, 25, db);
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod3, difficultyLevel, db);
 		
 		assertEquals (RoundingDirectionID.ROUND_UP, prod3.getRoundingDirectionID ());
 		assertEquals (10, prod3.getBaseProductionAmount ());
@@ -2549,7 +2640,7 @@ public final class TestCityCalculationsImpl
 		prod4.setDoubleProductionAmount (41);
 		prod4.setPercentageBonus (25);
 
-		calc.halveAddPercentageBonusAndCapProduction (prod4, 25, db);
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod4, difficultyLevel, db);
 		
 		assertEquals (RoundingDirectionID.ROUND_UP, prod4.getRoundingDirectionID ());
 		assertEquals (21, prod4.getBaseProductionAmount ());
@@ -2562,7 +2653,7 @@ public final class TestCityCalculationsImpl
 		prod5.setDoubleProductionAmount (41);
 		prod5.setPercentageBonus (25);
 
-		calc.halveAddPercentageBonusAndCapProduction (prod5, 25, db);
+		calc.halveAddPercentageBonusAndCapProduction (cityOwner, prod5, difficultyLevel, db);
 		
 		assertEquals (RoundingDirectionID.ROUND_UP, prod5.getRoundingDirectionID ());
 		assertEquals (21, prod5.getBaseProductionAmount ());
@@ -2610,6 +2701,11 @@ public final class TestCityCalculationsImpl
 		
 		final TaxRate taxRate = new TaxRate ();
 		when (db.findTaxRate ("TR01", "calculateAllCityProductions")).thenReturn (taxRate);
+
+		// Production types
+		final ProductionType rationProduction = new ProductionType ();
+		rationProduction.setRoundingDirectionID (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "halveAddPercentageBonusAndCapProduction")).thenReturn (rationProduction);
 		
 		// This is the same initial setup as the calculateAllCityProductions test location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 1);
@@ -2651,6 +2747,7 @@ public final class TestCityCalculationsImpl
 
 		final DifficultyLevel dl = new DifficultyLevel ();
 		dl.setCityMaxSize (25);
+		dl.setAiProductionRateMultiplier (250);
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);

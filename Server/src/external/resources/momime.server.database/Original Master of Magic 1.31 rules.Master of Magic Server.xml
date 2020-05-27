@@ -12,7 +12,8 @@
 	</plane>
 	<productionType productionTypeID="RE01">
 		<roundingDirectionID>M</roundingDirectionID>
-		<isPercentage>false</isPercentage>
+		<percentage>false</percentage>
+		<difficultyLevelMultiplierApplies>true</difficultyLevelMultiplierApplies>
 		<enforceProduction>T</enforceProduction>
 		<productionTypeDescription>Rations</productionTypeDescription>
 		<accumulatesInto>RE03</accumulatesInto>
@@ -20,62 +21,73 @@
 	</productionType>
 	<productionType productionTypeID="RE02">
 		<roundingDirectionID>U</roundingDirectionID>
-		<isPercentage>false</isPercentage>
+		<percentage>false</percentage>
+		<difficultyLevelMultiplierApplies>true</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Production</productionTypeDescription>
 	</productionType>
 	<productionType productionTypeID="RE03">
 		<roundingDirectionID>D</roundingDirectionID>
-		<isPercentage>false</isPercentage>
+		<percentage>false</percentage>
+		<difficultyLevelMultiplierApplies>true</difficultyLevelMultiplierApplies>
 		<enforceProduction>S</enforceProduction>
 		<productionTypeDescription>Gold</productionTypeDescription>
 		<accumulatesInto>RE03</accumulatesInto>
 	</productionType>
 	<productionType productionTypeID="RE04">
 		<roundingDirectionID>D</roundingDirectionID>
-		<isPercentage>false</isPercentage>
+		<percentage>false</percentage>
+		<difficultyLevelMultiplierApplies>true</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Magic Power</productionTypeDescription>
 	</productionType>
 	<productionType productionTypeID="RE05">
 		<roundingDirectionID>M</roundingDirectionID>
-		<isPercentage>false</isPercentage>
+		<percentage>false</percentage>
+		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Spell Research</productionTypeDescription>
 	</productionType>
 	<productionType productionTypeID="RE06">
 		<roundingDirectionID>U</roundingDirectionID>
-		<isPercentage>false</isPercentage>
+		<percentage>false</percentage>
+		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Food (max city size)</productionTypeDescription>
 	</productionType>
 	<productionType productionTypeID="RE07">
 		<roundingDirectionID>D</roundingDirectionID>
-		<isPercentage>true</isPercentage>
+		<percentage>true</percentage>
+		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Unit cost reduction</productionTypeDescription>
 	</productionType>
 	<productionType productionTypeID="RE08">
 		<roundingDirectionID>M</roundingDirectionID>
-		<isPercentage>true</isPercentage>
+		<percentage>true</percentage>
+		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Map Feature Modifier</productionTypeDescription>
 	</productionType>
 	<productionType productionTypeID="RE09">
 		<roundingDirectionID>M</roundingDirectionID>
-		<isPercentage>false</isPercentage>
+		<percentage>false</percentage>
+		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<enforceProduction>S</enforceProduction>
 		<productionTypeDescription>Mana</productionTypeDescription>
 		<accumulatesInto>RE09</accumulatesInto>
 	</productionType>
 	<productionType productionTypeID="RE10">
 		<roundingDirectionID>M</roundingDirectionID>
-		<isPercentage>false</isPercentage>
+		<percentage>false</percentage>
+		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Skill Improvement</productionTypeDescription>
 		<accumulatesInto>RE10</accumulatesInto>
 	</productionType>
 	<productionType productionTypeID="RE11">
 		<roundingDirectionID>M</roundingDirectionID>
-		<isPercentage>true</isPercentage>
+		<percentage>true</percentage>
+		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Spell casting cost reduction</productionTypeDescription>
 	</productionType>
 	<productionType productionTypeID="RE12">
 		<roundingDirectionID>M</roundingDirectionID>
-		<isPercentage>true</isPercentage>
+		<percentage>true</percentage>
+		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Unit upkeep cost reduction</productionTypeDescription>
 	</productionType>
 	<mapFeature mapFeatureID="MF01">
@@ -25556,6 +25568,7 @@
 		<languageEntry languageEntryID="GoldTradeBonusUncapped" />
 		<languageEntry languageEntryID="GoldTradeBonusCapped" />
 		<languageEntry languageEntryID="ProductionPercentageBonusTotal" />
+		<languageEntry languageEntryID="DifficultyLevelMultiplier" />
 		<languageEntry languageEntryID="ProductionCapped" />
 		<languageEntry languageEntryID="ConsumptionMainHeading" />
 		<languageEntry languageEntryID="RationsAteByPopulation" />

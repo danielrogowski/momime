@@ -304,7 +304,8 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="roundingDirectionID" type="momimecommon:roundingDirectionID" nxe:label="Rounding Direction for production from Cities" nxe:showmaincolumn="false" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="isPercentage" type="xsd:boolean" nxe:label="Percentage?" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentage" type="xsd:boolean" nxe:label="Percentage?" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplierApplies" type="xsd:boolean" nxe:label="AI Difficulty Level Multiplier applies?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="enforceProduction" type="momimecommon:enforceProductionID" nxe:label="Enforce?" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 		<xsd:attribute name="productionTypeID" type="momimecommon:productionTypeID" use="required" nxe:label="Production Type ID" nxe:gridwidth="110" />

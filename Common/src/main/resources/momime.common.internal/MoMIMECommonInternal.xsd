@@ -454,6 +454,16 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 					<xsd:documentation>baseProductionAmount with % bonus from percentageBonus added in, rounded down.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplier" type="momimecommon:uncappedPercentage">
+				<xsd:annotation>
+					<xsd:documentation>Percentage that final total is modified by to give AI players a bonus</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="totalAdjustedForDifficultyLevel" type="momimecommon:undoubledProductionValue">
+				<xsd:annotation>
+					<xsd:documentation>modifiedProductionAmount multiplied up according to difficulty level for AI players</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="cappedProductionAmount" type="momimecommon:undoubledProductionValue">
 				<xsd:annotation>
 					<xsd:documentation>modifiedProductionAmount reduced to maximum set in session description (used for maxCitySize being 25).</xsd:documentation>

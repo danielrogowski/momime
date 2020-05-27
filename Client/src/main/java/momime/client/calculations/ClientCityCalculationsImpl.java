@@ -185,6 +185,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			if (growing.getHousingPercentageBonus () > 0)
 				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "Housing"));
 			
+			// Special boost for AI players
 			if (growing.getDifficultyLevelMultiplier () != 100)
 				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DifficultyLevelMultiplier"));
 				
@@ -391,8 +392,12 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionPercentageBonusTotal"));
 			}
 			
+			// Special boost for AI players
+			if (calc.getDifficultyLevelMultiplier () != 100)
+				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "DifficultyLevelMultiplier"));
+			
 			// Cap
-			if (calc.getCappedProductionAmount () < calc.getModifiedProductionAmount ())
+			if (calc.getCappedProductionAmount () < calc.getTotalAdjustedForDifficultyLevel ())
 				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionCapped"));
 		}
 		

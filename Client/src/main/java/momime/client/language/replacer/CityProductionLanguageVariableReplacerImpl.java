@@ -128,6 +128,15 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				text = Integer.valueOf (getBreakdown ().getModifiedProductionAmount ()).toString ();
 				break;
 				
+			// AI players
+			case "AI_PRODUCTION_RATE_MULTIPLIER":
+				text = Integer.valueOf (getBreakdown ().getDifficultyLevelMultiplier ()).toString ();
+				break;
+				
+			case "TOTAL_ADJUSTED_FOR_DIFFICULTY_LEVEL":
+				text = Integer.valueOf (getBreakdown ().getTotalAdjustedForDifficultyLevel ()).toString ();
+				break;
+				
 			case "PRODUCTION_CAPPED":
 				text = Integer.valueOf (getBreakdown ().getCappedProductionAmount ()).toString ();
 				break;

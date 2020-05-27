@@ -27,6 +27,7 @@ import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.BuildingRequiresTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DifficultyLevel;
 import momime.common.database.MapFeature;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.PickType;
@@ -1120,7 +1121,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Halve and cap food (max city size) production first, because if calculatePotential=true then we need to know the potential max city size before
 		// we can calculate the gold trade % cap.
 		// Have to do this after map features are added in, since wild game increase max city size.
-		halveAddPercentageBonusAndCapProduction (food, sd.getDifficultyLevel ().getCityMaxSize (), db);
+		halveAddPercentageBonusAndCapProduction (cityOwner, food, sd.getDifficultyLevel (), db);
 		
 		// Gold trade % from rivers and oceans
 		// Have to do this (at least the cap) after map features, since if calculatePotential=true then we need to have included wild game
@@ -1131,7 +1132,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Halve production values, using rounding defined in XML file for each production type (consumption values aren't doubled to begin with)
 		for (final CityProductionBreakdown thisProduction : productionValues.getProductionType ())
 			if (thisProduction != food)
-				halveAddPercentageBonusAndCapProduction (thisProduction, sd.getDifficultyLevel ().getCityMaxSize (), db);
+				halveAddPercentageBonusAndCapProduction (cityOwner, thisProduction, sd.getDifficultyLevel (), db);
 		
 		// Convert production to gold, if set to trade goods
 		final String currentlyConstructingBuildingID = (cityData != null) ? cityData.getCurrentlyConstructingBuildingID () : null;
@@ -1153,13 +1154,14 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * After doubleProductionAmount has been filled in, this deals with halving the value according to the rounding
 	 * rules for the production type, adding on any % bonus, and dealing with any overall cap.
 	 * 
+	 * @param cityOwner Player who owns the city, which may be null if we're just evaluating a potential location for a new city
 	 * @param thisProduction Production value to halve, add % bonus and cap
-	 * @param cityMaxSize Max city size set in the session description
+	 * @param difficultyLevel Difficulty level settings from session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we encounter a production type that can't be found in the DB
 	 * @throws MomException If we encounter a production value that the DB states should always be an exact multiple of 2, but isn't
 	 */
-	final void halveAddPercentageBonusAndCapProduction (final CityProductionBreakdown thisProduction, final int cityMaxSize, final CommonDatabase db)
+	final void halveAddPercentageBonusAndCapProduction (final PlayerPublicDetails cityOwner, final CityProductionBreakdown thisProduction, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering halveAddPercentageBonusAndCapProduction: " + thisProduction.getProductionTypeID () + ", " + thisProduction.getDoubleProductionAmount ());
@@ -1199,10 +1201,18 @@ public final class CityCalculationsImpl implements CityCalculations
 			// Add on % bonus
 			thisProduction.setModifiedProductionAmount (thisProduction.getBaseProductionAmount () +
 				((thisProduction.getBaseProductionAmount () * thisProduction.getPercentageBonus ()) / 100));
+			
+			// AI players get a special bonus
+			if ((cityOwner != null) && (!cityOwner.getPlayerDescription ().isHuman ()) && (productionType.isDifficultyLevelMultiplierApplies ()))
+				thisProduction.setDifficultyLevelMultiplier (difficultyLevel.getAiProductionRateMultiplier ());
+			else
+				thisProduction.setDifficultyLevelMultiplier (100);
+			
+			thisProduction.setTotalAdjustedForDifficultyLevel ((thisProduction.getModifiedProductionAmount () * thisProduction.getDifficultyLevelMultiplier ()) / 100); 
 
 			// Stop max city size going over the game set maximum
-			final int cap = (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)) ? cityMaxSize : Integer.MAX_VALUE;
-			thisProduction.setCappedProductionAmount (Math.min (thisProduction.getModifiedProductionAmount (), cap));
+			final int cap = (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)) ? difficultyLevel.getCityMaxSize () : Integer.MAX_VALUE;
+			thisProduction.setCappedProductionAmount (Math.min (thisProduction.getTotalAdjustedForDifficultyLevel (), cap));
 		}
 
 		log.trace ("Exiting halveAddPercentageBonusAndCapProduction = " + thisProduction.getCappedProductionAmount ());

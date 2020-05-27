@@ -1118,7 +1118,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 						final String productionTypeDescription = (productionTypeLang != null) ? productionTypeLang.getProductionTypeDescription () : null;
 						
 						effects.add (getTextUtils ().halfIntToStrPlusMinus (mapFeatureProduction.getDoubledProductionValue ()) +
-							(productionType.isIsPercentage () ? "% " : " ") +
+							(productionType.isPercentage () ? "% " : " ") +
 							((productionTypeDescription != null) ? productionTypeDescription : mapFeatureProduction.getProductionTypeID ()));
 					}
 				

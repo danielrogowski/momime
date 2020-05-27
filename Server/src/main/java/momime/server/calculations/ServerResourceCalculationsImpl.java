@@ -29,6 +29,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomResourceValue;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSpell;
@@ -147,7 +148,13 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 				for (final ProductionTypeAndUndoubledValue upkeep : spellDetails.getSpellUpkeep ())
 					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeep.getProductionTypeID (), -upkeep.getUndoubledProductionValue ());
 			}
-
+		
+		// AI players get cheaper upkeep
+		if ((!player.getPlayerDescription ().isHuman ()) && (sd.getDifficultyLevel ().getAiUpkeepMultiplier () != 100))
+			for (final MomResourceValue resourceValue : priv.getResourceValue ())
+				if (resourceValue.getAmountPerTurn () < 0)
+					resourceValue.setAmountPerTurn ((resourceValue.getAmountPerTurn () * sd.getDifficultyLevel ().getAiUpkeepMultiplier ()) / 100);
+	
 		// At this point, the only Mana recorded is consumption - so we can halve consumption if the wizard has Channeler
 		// Round up, so 1 still = 1
 		final int manaConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);

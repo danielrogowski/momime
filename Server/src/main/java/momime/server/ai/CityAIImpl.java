@@ -384,24 +384,47 @@ public final class CityAIImpl implements CityAI
 			{
 				final BuildingSvr building = iter.next ();
 				
-				if ((getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, building.getBuildingID ()) == null) &&
+				if ((!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_HOUSING)) && (!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_TRADE_GOODS)) &&
+					(getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, building.getBuildingID ()) == null) &&
 					(getServerCityCalculations ().canEventuallyConstructBuilding (knownTerrain, knownBuildings, cityLocation, building, sd.getOverlandMapSize (), db)))
-
+				{
 					anyBuildingsLeftToBuild = true;
+					log.debug ("AI Player ID " + cityData.getCityOwnerID () + " could eventually construct building " + building.getBuildingID () + " at " + cityLocation);
+				}
 			}			
 			
+			final StringBuilder debugChoices = new StringBuilder ();
+			
 			if (anyBuildingsLeftToBuild)
+			{
 				choices.add (10, AICityConstructionType.BUILDING);
+				debugChoices.append ("10:Building");
+			}
 			
 			if ((isUnitFactory) && (needForNewUnits > 0) && (combatUnitIDs != null) && (combatUnitIDs.size () > 0))		// or we have only 1 city, in which case its our unit factory by definition
+			{
 				choices.add (needForNewUnits, AICityConstructionType.COMBAT_UNIT);
+				
+				if (debugChoices.length () > 0)
+					debugChoices.append (", ");
+				
+				debugChoices.append (needForNewUnits + ":Unit");
+			}
 			
 			if ((wantSettler) && ((numberOfCities == 1) || (!isUnitFactory)))		// Don't waste our good unit factory building settlers if there's somewhere else that can do it
+			{
 				choices.add (4, AICityConstructionType.SETTLER);
+				
+				if (debugChoices.length () > 0)
+					debugChoices.append (", ");
+
+				debugChoices.append ("4:Settler");
+			}
 			
 			// Make random choice
 			// It is possible to get null here (literally nothing to build) if its not a unit factory, nowhere new to build cities, and we have every building already made
 			final AICityConstructionType constructionType = choices.nextWeightedValue ();
+			log.debug ("AI Player ID " + cityData.getCityOwnerID () + " choices for construction types at " + cityLocation + " are " + debugChoices + ": chose " + constructionType);
 			if (constructionType != null)
 				switch (constructionType)
 				{
@@ -414,8 +437,10 @@ public final class CityAIImpl implements CityAI
 							buildingTypes.add (AiBuildingTypeID.PRODUCTION);
 							buildingTypes.add (AiBuildingTypeID.RESEARCH);
 							buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
+							buildingTypes.add (AiBuildingTypeID.NAVAL);
 							buildingTypes.add (AiBuildingTypeID.GOLD);
 							buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
+							buildingTypes.add (AiBuildingTypeID.DEFENCE);
 						}
 						else
 						{
@@ -424,7 +449,9 @@ public final class CityAIImpl implements CityAI
 							buildingTypes.add (AiBuildingTypeID.UNREST_AND_MAGIC_POWER);
 							buildingTypes.add (AiBuildingTypeID.GOLD);
 							buildingTypes.add (AiBuildingTypeID.UNITS);
+							buildingTypes.add (AiBuildingTypeID.NAVAL);
 							buildingTypes.add (AiBuildingTypeID.UNREST_WITHOUT_MAGIC_POWER);
+							buildingTypes.add (AiBuildingTypeID.DEFENCE);
 						}
 				
 						final Iterator<AiBuildingTypeID> buildingTypesIter = buildingTypes.iterator ();

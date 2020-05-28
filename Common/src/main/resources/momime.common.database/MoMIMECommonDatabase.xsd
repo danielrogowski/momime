@@ -2371,6 +2371,14 @@ Units with special orders won't be asked for movement orders and look visibly di
 				<xsd:documentation>Unrest without Magic Power</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="UNREST_WITHOUT_MAGIC_POWER" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="N"><xsd:annotation>
+				<xsd:documentation>Naval units</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="NAVAL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Defence</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFENCE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>
 

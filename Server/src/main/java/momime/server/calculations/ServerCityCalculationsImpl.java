@@ -286,7 +286,11 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 			// Don't check it is we've already got it - its possible, for example, for a sawmill to be built and then us lose the only forest tile, so while
 			// we don't have the prerequisites for it anymore, we still have the building
 			if (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, thisBuilding.getBuildingID ()) == null)
-				if (!canEventuallyConstructBuilding (map, buildings, cityLocation, thisBuilding, overlandMapCoordinateSystem, db))
+				
+				// Summoning circle and Wizard fortress have themselves as pre-requisites to stop them ever being built
+				if ((building.getBuildingID ().equals (thisBuilding.getBuildingID ())) ||
+					(!canEventuallyConstructBuilding (map, buildings, cityLocation, thisBuilding, overlandMapCoordinateSystem, db)))
+					
 					passes = false;
 		}
 

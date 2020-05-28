@@ -194,7 +194,19 @@ public final class MomAIImpl implements MomAI
 								// and that remaining movement now be affected by something in the stack they've joined such as a hero with Pathfinding.
 								// That's too complicated to try to work out the effect of, so just restart over every time we make a move.
 								if ((tookAction) && (mom.getSessionDescription ().getTurnSystem () == TurnSystem.ONE_PLAYER_AT_A_TIME))
+								{
 									restart = true;
+									
+									// As a result of taking some action, like a settler building a city or combat units dying in a fight, some of our mobile units
+									// may not exist anymore so better recheck them before we restart
+									final Iterator<AIUnitAndRatings> mobileUnitsIter = mobileUnits.iterator ();
+									while (mobileUnitsIter.hasNext ())
+									{
+										final AIUnitAndRatings thisUnit = mobileUnitsIter.next ();
+										if (getUnitUtils ().findUnitURN (thisUnit.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == null)
+											mobileUnitsIter.remove ();
+									}
+								}
 							}
 						}
 					}

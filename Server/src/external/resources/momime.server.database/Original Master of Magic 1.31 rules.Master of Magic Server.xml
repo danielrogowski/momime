@@ -5129,6 +5129,7 @@
 		<buildingName>Blacksmith</buildingName>
 		<inWizardsStartingCities>true</inWizardsStartingCities>
 		<inRaidersStartingCitiesWithPopulationAtLeast>3</inRaidersStartingCitiesWithPopulationAtLeast>
+		<aiBuildingTypeID>G</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL09">
 		<productionCost>80</productionCost>
@@ -5138,6 +5139,7 @@
 		<buildingPrerequisite prerequisiteID="BL08" />
 		<buildingName>Stables</buildingName>
 		<inRaidersStartingCitiesWithPopulationAtLeast>8</inRaidersStartingCitiesWithPopulationAtLeast>
+		<aiBuildingTypeID>T</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL10">
 		<buildingUnrestReduction>1</buildingUnrestReduction>
@@ -5179,6 +5181,7 @@
 			<distance>1</distance>
 		</buildingRequiresTileType>
 		<buildingName>Ship Wrights' Guild</buildingName>
+		<aiBuildingTypeID>N</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL13">
 		<productionCost>200</productionCost>
@@ -5188,6 +5191,7 @@
 		<buildingPrerequisite prerequisiteID="BL12" />
 		<buildingPrerequisite prerequisiteID="BL15" />
 		<buildingName>Ship Yard</buildingName>
+		<aiBuildingTypeID>N</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL14">
 		<productionCost>400</productionCost>
@@ -5197,6 +5201,7 @@
 		<buildingPrerequisite prerequisiteID="BL13" />
 		<buildingPrerequisite prerequisiteID="BL04" />
 		<buildingName>Maritime Guild</buildingName>
+		<aiBuildingTypeID>N</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL15">
 		<housingPercentageBonus>10</housingPercentageBonus>
@@ -5439,6 +5444,7 @@
 		<buildingName>Builders' Hall</buildingName>
 		<inWizardsStartingCities>true</inWizardsStartingCities>
 		<inRaidersStartingCitiesWithPopulationAtLeast>4</inRaidersStartingCitiesWithPopulationAtLeast>
+		<aiBuildingTypeID>G</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL33">
 		<productionCost>600</productionCost>
@@ -5486,6 +5492,7 @@
 		<buildingName>City Walls</buildingName>
 		<buildingScoutingRange>3</buildingScoutingRange>
 		<inRaidersStartingCitiesWithPopulationAtLeast>10</inRaidersStartingCitiesWithPopulationAtLeast>
+		<aiBuildingTypeID>D</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL98">
 		<buildingPrerequisite prerequisiteID="BL98" />

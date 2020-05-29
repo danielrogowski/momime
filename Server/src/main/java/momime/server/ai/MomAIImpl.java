@@ -250,7 +250,7 @@ public final class MomAIImpl implements MomAI
 				// This could be a bit more clever, like "are there places we want to attack that we need more/stronger units to consider the attack",
 				// but I don't want the AI churning out armies of swordsmen just to try to beat a great drake.
 				needForNewUnits = 3 + underdefendedLocations.size () +
-					(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 10) - mobileUnits.size ();
+					(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 5) - mobileUnits.size ();
 			}
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnits);
 			

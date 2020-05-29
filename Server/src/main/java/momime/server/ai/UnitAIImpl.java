@@ -415,26 +415,29 @@ public final class UnitAIImpl implements UnitAI
 							priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (), db);
 						
 						for (final Unit unitDef : unitDefs)
-						{
-							// Need real example of the unit so that we property take into account if we have
-							// e.g. retorts that make it cheaper to maintained summoned creatures, or so on 
-							final AvailableUnit unit = new AvailableUnit ();
-							unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
-							unit.setUnitID (unitDef.getUnitID ());
-							unit.setUnitLocation (cityLocation);
-
-							// Need to get experience and weapon grade right so we tend to construct units in cities with e.g. a Fighters' or Alchemists' Guild
-							final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings (priv.getFogOfWarMemory ().getBuilding (), cityLocation, db);
 							
-							unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
-								(priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMap (), cityLocation, pub.getPick (), sd.getOverlandMapSize (), db));
-							
-							getUnitUtils ().initializeUnitSkills (unit, startingExperience, db);
-							
-							results.add (new AIConstructableUnit ((UnitSvr) unitDef, cityLocation, null,
-								calculateUnitAverageRating (unit, players, priv.getFogOfWarMemory (), db),
-								canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
-						}									
+							// Whether we need to build ships is handled differently
+							if ((unitDef.getTransportCapacity () == null) || (unitDef.getTransportCapacity () <= 0))
+							{
+								// Need real example of the unit so that we property take into account if we have
+								// e.g. retorts that make it cheaper to maintained summoned creatures, or so on 
+								final AvailableUnit unit = new AvailableUnit ();
+								unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
+								unit.setUnitID (unitDef.getUnitID ());
+								unit.setUnitLocation (cityLocation);
+	
+								// Need to get experience and weapon grade right so we tend to construct units in cities with e.g. a Fighters' or Alchemists' Guild
+								final int startingExperience = getMemoryBuildingUtils ().experienceFromBuildings (priv.getFogOfWarMemory ().getBuilding (), cityLocation, db);
+								
+								unit.setWeaponGrade (getUnitCalculations ().calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort
+									(priv.getFogOfWarMemory ().getBuilding (), priv.getFogOfWarMemory ().getMap (), cityLocation, pub.getPick (), sd.getOverlandMapSize (), db));
+								
+								getUnitUtils ().initializeUnitSkills (unit, startingExperience, db);
+								
+								results.add (new AIConstructableUnit ((UnitSvr) unitDef, cityLocation, null,
+									calculateUnitAverageRating (unit, players, priv.getFogOfWarMemory (), db),
+									canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
+							}									
 					}
 				}
 		

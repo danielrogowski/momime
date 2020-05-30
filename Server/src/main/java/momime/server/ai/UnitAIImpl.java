@@ -829,7 +829,7 @@ public final class UnitAIImpl implements UnitAI
 					break;
 					
 				case OVERDEFEND:
-					decision = getUnitAIMovement ().considerUnitMovement_Overdefend (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_Overdefend (doubleMovementDistances, enemyUnits, isRaiders, terrain, sys, db);
 					break;
 				
 				case BUILD_CITY:

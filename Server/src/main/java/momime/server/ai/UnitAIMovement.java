@@ -126,9 +126,17 @@ public interface UnitAIMovement
 	 * AI looks for any of our locations (nodes/cities/towers) that we can reach, regardless of if they already have plenty of defence.
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param isRaiders Whether it is the raiders player
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
-	public AIMovementDecision considerUnitMovement_Overdefend (final int [] [] [] doubleMovementDistances);
+	public AIMovementDecision considerUnitMovement_Overdefend (final int [] [] [] doubleMovementDistances,
+		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws RecordNotFoundException;
 
 	/**
 	 * AI looks for a good place for settlers to build a city

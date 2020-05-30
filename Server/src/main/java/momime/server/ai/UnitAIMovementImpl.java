@@ -511,16 +511,67 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for any of our locations (nodes/cities/towers) that we can reach, regardless of if they already have plenty of defence.
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
+	 * @param isRaiders Whether it is the raiders player
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
 	 * @return See AIMovementDecision for explanation of return values
+	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_Overdefend (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_Overdefend (final int [] [] [] doubleMovementDistances,
+		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_Overdefend");
 
-		log.warn ("AI movement code OVERDEFEND is not yet implemented");
+		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+		Integer doubleDestinationDistance = null;
 		
-		final AIMovementDecision decision = null;
+		// This is like "reinforce", except cells that we check work like method evaluateCurrentDefence
+		for (int z = 0; z < sys.getDepth (); z++)
+			for (int y = 0; y < sys.getHeight (); y++)
+				for (int x = 0; x < sys.getWidth (); x++)
+				{
+					// Only process towers on the first plane
+					final MemoryGridCell mc = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+					final OverlandMapTerrainData terrainData = mc.getTerrainData ();
+					if ((z == 0) || (!getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData)))
+					{					
+						final AIUnitsAndRatings theirs = enemyUnits [z] [y] [x];
+						
+						final OverlandMapCityData cityData = mc.getCityData ();
+						if ((theirs == null) &&
+							((cityData != null) ||
+								((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))))
+						{
+							final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
+							if (doubleThisDistance >= 0)
+							{
+								// We can get there, eventually
+								if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+								{
+									doubleDestinationDistance = doubleThisDistance;
+									destinations.clear ();
+									destinations.add (new MapCoordinates3DEx (x, y, z));
+								}
+								else if (doubleThisDistance == doubleDestinationDistance)
+									destinations.add (new MapCoordinates3DEx (x, y, z));
+							}
+						}
+					}
+				}
+		
+		final AIMovementDecision decision;
+		if (destinations.isEmpty ())
+			decision = null;		// No reachable underdefended locations
+		else
+		{
+			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+			log.debug ("Unit movement AI - Decided to go overdefend " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			decision = new AIMovementDecision (chosenLocation);
+		}
 		
 		log.trace ("Exiting considerUnitMovement_Overdefend = " + decision);
 		return decision;

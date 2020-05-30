@@ -769,9 +769,12 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				priv.getPendingMovement ().add (pending);
 
 				// Send the pending movement to the client
-				final PendingMovementMessage pendingMsg = new PendingMovementMessage ();
-				pendingMsg.setPendingMovement (pending);
-				unitStackOwner.getConnection ().sendMessageToClient (pendingMsg);
+				if (unitStackOwner.getPlayerDescription ().isHuman ())
+				{
+					final PendingMovementMessage pendingMsg = new PendingMovementMessage ();
+					pendingMsg.setPendingMovement (pending);
+					unitStackOwner.getConnection ().sendMessageToClient (pendingMsg);
+				}
 			}
 		}
 

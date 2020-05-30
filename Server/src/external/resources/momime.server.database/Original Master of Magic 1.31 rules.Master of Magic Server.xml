@@ -5129,7 +5129,6 @@
 		<buildingName>Blacksmith</buildingName>
 		<inWizardsStartingCities>true</inWizardsStartingCities>
 		<inRaidersStartingCitiesWithPopulationAtLeast>3</inRaidersStartingCitiesWithPopulationAtLeast>
-		<aiBuildingTypeID>G</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL09">
 		<productionCost>80</productionCost>
@@ -5444,7 +5443,6 @@
 		<buildingName>Builders' Hall</buildingName>
 		<inWizardsStartingCities>true</inWizardsStartingCities>
 		<inRaidersStartingCitiesWithPopulationAtLeast>4</inRaidersStartingCitiesWithPopulationAtLeast>
-		<aiBuildingTypeID>G</aiBuildingTypeID>
 	</building>
 	<building buildingID="BL33">
 		<productionCost>600</productionCost>

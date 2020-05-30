@@ -323,7 +323,7 @@ public final class TestCityAIImpl extends ServerTestData
 			}
 		}
 
-		assertEquals (31, trueBuildings.size ());
+		assertEquals (33, trueBuildings.size ());
 		assertEquals ("BL32", trueBuildings.get (0).getBuildingID ());		// Growth - Try to build a Granary but can't, Builders' Hall is a prerequisite of it
 		assertEquals ("BL29", trueBuildings.get (1).getBuildingID ());		// Growth - Granary
 		assertEquals ("BL08", trueBuildings.get (2).getBuildingID ());		// Growth - Try to build a Farmers' Market but can't, Marketplace is a prerequisite of it, and Blacksmith is a prerequisite of that
@@ -354,7 +354,9 @@ public final class TestCityAIImpl extends ServerTestData
 		assertEquals ("BL06", trueBuildings.get (27).getBuildingID ());		// Units - Armourers' Guild
 		assertEquals ("BL07", trueBuildings.get (28).getBuildingID ());		// Units - War College
 		assertEquals ("BL11", trueBuildings.get (29).getBuildingID ());		// Units - Fantastic Stables
-		assertEquals ("BL18", trueBuildings.get (30).getBuildingID ());		// Unrest without Magic Power - Oracle
+		assertEquals ("BL14", trueBuildings.get (30).getBuildingID ());		// Naval Units - Maritime Guild
+		assertEquals ("BL18", trueBuildings.get (31).getBuildingID ());		// Unrest without Magic Power - Oracle
+		assertEquals ("BL35", trueBuildings.get (32).getBuildingID ());		// Defence - City Walls
 
 		// Try again with Barbarians, who can't build Animsts' Guilds, Universities or Cathedrals
 		trueBuildings.clear ();
@@ -376,7 +378,7 @@ public final class TestCityAIImpl extends ServerTestData
 		// The test here isn't so much *what* we now can't build, but rather the order we now choose to build them in and why, e.g.
 		// We now construct a Shrine+Temple later on, based on their own merits as producers of magic power+unrest - Orcs built them just so that they could get an Animists' Guild
 		// Even though we could build a Ship Wrights' Guild, there's no point in doing so, because we can't eventually get a Merchants' Guild from it because of the missing University+Bank
-		assertEquals (18, trueBuildings.size ());
+		assertEquals (23, trueBuildings.size ());
 		assertEquals ("BL32", trueBuildings.get (0).getBuildingID ());		// Growth - Try to build a Granary but can't, Builders' Hall is a prerequisite of it
 		assertEquals ("BL29", trueBuildings.get (1).getBuildingID ());		// Growth - Granary
 		assertEquals ("BL08", trueBuildings.get (2).getBuildingID ());		// Growth - Try to build a Farmers' Market but can't, Marketplace is a prerequisite of it, and Blacksmith is a prerequisite of that
@@ -394,6 +396,11 @@ public final class TestCityAIImpl extends ServerTestData
 		assertEquals ("BL04", trueBuildings.get (14).getBuildingID ());		// Units - Armoury
 		assertEquals ("BL05", trueBuildings.get (15).getBuildingID ());		// Units - Fighters' Guild
 		assertEquals ("BL06", trueBuildings.get (16).getBuildingID ());		// Units - Armourers' Guild
-		assertEquals ("BL19", trueBuildings.get (17).getBuildingID ());		// Units - Alchemists' Guild
+		assertEquals ("BL09", trueBuildings.get (17).getBuildingID ());		// Stables
+		assertEquals ("BL19", trueBuildings.get (18).getBuildingID ());		// Units - Alchemists' Guild
+		assertEquals ("BL12", trueBuildings.get (19).getBuildingID ());		// Naval Units - Ship Wrights' Guild
+		assertEquals ("BL13", trueBuildings.get (20).getBuildingID ());		// Naval Units - Ship Yard
+		assertEquals ("BL14", trueBuildings.get (21).getBuildingID ());		// Naval Units - Maritime Guild
+		assertEquals ("BL35", trueBuildings.get (22).getBuildingID ());		// Defence - City Walls
 	}
 }

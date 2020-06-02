@@ -283,9 +283,8 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 					
 					// Road
 					final String roadTileTypeID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getRoadTileTypeID ();
-					if (roadTileTypeID != null)
+					if ((roadTileTypeID != null) || (gc.getCityData () != null))
 					{
-						final TileTypeGfx roadTileType = getGraphicsDB ().findTileType (roadTileTypeID, "generateOverlandMapBitmaps");
 						boolean drawnRoad = false;
 						
 						// Check every adjacent tile, and draw a road only towards tiles that also contain a road or a city
@@ -298,23 +297,37 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 									(mapViewPlane).getRow ().get (roadCoords.getY ()).getCell ().get (roadCoords.getX ());
 								if (((rc.getTerrainData () != null) && (rc.getTerrainData ().getRoadTileTypeID () != null)) || (rc.getCityData () != null))
 								{
-									drawnRoad = true;
-									final TileTypeRoadGfx road = roadTileType.findRoadDirection (d, "generateOverlandMapBitmaps");
-									if (road.getRoadImageFile () != null)
+									// Actual type of road to draw might come from the source or target cell, if one is a road and one is a city
+									final String thisRoadTileTypeID;
+									if (roadTileTypeID != null)
+										thisRoadTileTypeID = roadTileTypeID;
+									else if (rc.getTerrainData () == null)
+										thisRoadTileTypeID = null;
+									else
+										thisRoadTileTypeID = rc.getTerrainData ().getRoadTileTypeID ();
+									
+									if (thisRoadTileTypeID != null)
 									{
-										// Use same image for all frames
-										final BufferedImage image = getUtils ().loadImage (road.getRoadImageFile ());
-										for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
-											g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
-									}
-									else if (road.getRoadAnimation () != null)
-									{
-										// Copy each animation frame over to each bitmap
-										final AnimationGfx anim = getGraphicsDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
-										for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+										drawnRoad = true;
+										final TileTypeGfx roadTileType = getGraphicsDB ().findTileType (thisRoadTileTypeID, "generateOverlandMapBitmaps");
+	
+										final TileTypeRoadGfx road = roadTileType.findRoadDirection (d, "generateOverlandMapBitmaps");
+										if (road.getRoadImageFile () != null)
 										{
-											final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
-											g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+											// Use same image for all frames
+											final BufferedImage image = getUtils ().loadImage (road.getRoadImageFile ());
+											for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+												g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+										}
+										else if (road.getRoadAnimation () != null)
+										{
+											// Copy each animation frame over to each bitmap
+											final AnimationGfx anim = getGraphicsDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
+											for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+											{
+												final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
+												g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+											}
 										}
 									}
 								}
@@ -322,8 +335,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						}
 						
 						// If there's a road here, but in no adjacent tiles, then just draw a dot
-						if (!drawnRoad)
+						if ((roadTileTypeID != null) && (!drawnRoad))
 						{
+							final TileTypeGfx roadTileType = getGraphicsDB ().findTileType (roadTileTypeID, "generateOverlandMapBitmaps");
 							final TileTypeRoadGfx road = roadTileType.findRoadDirection (0, "generateOverlandMapBitmaps");
 							if (road.getRoadImageFile () != null)
 							{

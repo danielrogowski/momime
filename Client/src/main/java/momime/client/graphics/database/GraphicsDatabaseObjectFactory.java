@@ -28,11 +28,12 @@ import momime.client.graphics.database.v0_9_8.SmoothingSystem;
 import momime.client.graphics.database.v0_9_8.Spell;
 import momime.client.graphics.database.v0_9_8.TileSet;
 import momime.client.graphics.database.v0_9_8.TileType;
+import momime.client.graphics.database.v0_9_8.TileTypeRoad;
 import momime.client.graphics.database.v0_9_8.Unit;
-import momime.client.graphics.database.v0_9_8.UnitSkillComponentImage;
 import momime.client.graphics.database.v0_9_8.UnitCombatAction;
 import momime.client.graphics.database.v0_9_8.UnitCombatImage;
 import momime.client.graphics.database.v0_9_8.UnitSkill;
+import momime.client.graphics.database.v0_9_8.UnitSkillComponentImage;
 import momime.client.graphics.database.v0_9_8.UnitSpecialOrderImage;
 import momime.client.graphics.database.v0_9_8.UnitType;
 import momime.client.graphics.database.v0_9_8.WeaponGrade;
@@ -101,6 +102,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 		return new TileTypeGfx ();
 	}
 
+	/**
+	 * @return Custom extended road
+	 */
+	@Override
+	public final TileTypeRoad createTileTypeRoad ()
+	{
+		return new TileTypeRoadGfx ();
+	}
+	
 	/**
 	 * @return Custom extended MapFeature 
 	 */

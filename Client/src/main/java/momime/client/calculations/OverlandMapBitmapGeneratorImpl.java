@@ -5,6 +5,16 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.SquareMapDirection;
+import com.ndg.map.areas.storage.MapArea3D;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.NdgUIUtils;
+
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.AnimationGfx;
@@ -15,22 +25,14 @@ import momime.client.graphics.database.MapFeatureGfx;
 import momime.client.graphics.database.SmoothedTileGfx;
 import momime.client.graphics.database.SmoothedTileTypeGfx;
 import momime.client.graphics.database.TileSetGfx;
+import momime.client.graphics.database.TileTypeGfx;
+import momime.client.graphics.database.TileTypeRoadGfx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MemoryGridCell;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.SquareMapDirection;
-import com.ndg.map.areas.storage.MapArea3D;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.NdgUIUtils;
 
 /**
  * Generates large bitmap images showing the current state of the entire overland map and fog of war.  This includes terrain (tiles + map features)
@@ -214,6 +216,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		log.trace ("Entering generateOverlandMapBitmaps: " + mapViewPlane);
 
 		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
+		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (overlandMapSize.getCoordinateSystemType ());
 		
 		// We need the tile set so we know how many animation frames there are
 		final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateOverlandMapBitmaps");
@@ -278,6 +281,70 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 					}
 					
+					// Road
+					final String roadTileTypeID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getRoadTileTypeID ();
+					if (roadTileTypeID != null)
+					{
+						final TileTypeGfx roadTileType = getGraphicsDB ().findTileType (roadTileTypeID, "generateOverlandMapBitmaps");
+						boolean drawnRoad = false;
+						
+						// Check every adjacent tile, and draw a road only towards tiles that also contain a road or a city
+						for (int d = 1; d <= maxDirection; d++)
+						{
+							final MapCoordinates2DEx roadCoords = new MapCoordinates2DEx (mapCoords);
+							if (getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, roadCoords, d))
+							{
+								final MemoryGridCell rc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+									(mapViewPlane).getRow ().get (roadCoords.getY ()).getCell ().get (roadCoords.getX ());
+								if (((rc.getTerrainData () != null) && (rc.getTerrainData ().getRoadTileTypeID () != null)) || (rc.getCityData () != null))
+								{
+									drawnRoad = true;
+									final TileTypeRoadGfx road = roadTileType.findRoadDirection (d, "generateOverlandMapBitmaps");
+									if (road.getRoadImageFile () != null)
+									{
+										// Use same image for all frames
+										final BufferedImage image = getUtils ().loadImage (road.getRoadImageFile ());
+										for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+											g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+									}
+									else if (road.getRoadAnimation () != null)
+									{
+										// Copy each animation frame over to each bitmap
+										final AnimationGfx anim = getGraphicsDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
+										for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+										{
+											final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
+											g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+										}
+									}
+								}
+							}
+						}
+						
+						// If there's a road here, but in no adjacent tiles, then just draw a dot
+						if (!drawnRoad)
+						{
+							final TileTypeRoadGfx road = roadTileType.findRoadDirection (0, "generateOverlandMapBitmaps");
+							if (road.getRoadImageFile () != null)
+							{
+								// Use same image for all frames
+								final BufferedImage image = getUtils ().loadImage (road.getRoadImageFile ());
+								for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+									g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+							}
+							else if (road.getRoadAnimation () != null)
+							{
+								// Copy each animation frame over to each bitmap
+								final AnimationGfx anim = getGraphicsDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
+								for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
+								{
+									final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
+									g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
+								}
+							}
+						}
+					}
+					
 					// Corruption
 					if ((gc.getTerrainData () != null) && (gc.getTerrainData ().getCorrupted () != null))
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
@@ -290,7 +357,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
 		}
 		
-		// Cities have to be drawn in a 2nd pass, since they're larger than the terrain tiles
+		// Cities have to be drawn in a separate pass, since they're larger than the terrain tiles
 		mapCoords.setX (startX);
 		for (int x = 0; x < countX; x++)
 		{
@@ -328,7 +395,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			getCoordinateSystemUtils ().move2DCoordinates (overlandMapSize, mapCoords, SquareMapDirection.EAST.getDirectionID ());
 		}
 		
-		// Node auras have to be drawn in a 3rd pass, so they appear over the top of cities
+		// Node auras have to be drawn in a final pass, so they appear over the top of cities
 		mapCoords.setX (startX);
 		for (int x = 0; x < countX; x++)
 		{

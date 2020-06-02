@@ -41028,8 +41028,64 @@
 			<miniMapPixelColour>080404</miniMapPixelColour>
 		</tileTypeMiniMap>
 	</tileType>
-	<tileType tileTypeID="TT98" />
-	<tileType tileTypeID="TT99" />
+	<tileType tileTypeID="TT98">
+		<tileTypeRoad direction="0">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-dot.png</roadImageFile>
+		</tileTypeRoad>
+		<tileTypeRoad direction="1">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-d1.png</roadImageFile>
+		</tileTypeRoad>
+		<tileTypeRoad direction="2">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-d2.png</roadImageFile>
+		</tileTypeRoad>
+		<tileTypeRoad direction="3">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-d3.png</roadImageFile>
+		</tileTypeRoad>
+		<tileTypeRoad direction="4">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-d4.png</roadImageFile>
+		</tileTypeRoad>
+		<tileTypeRoad direction="5">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-d5.png</roadImageFile>
+		</tileTypeRoad>
+		<tileTypeRoad direction="6">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-d6.png</roadImageFile>
+		</tileTypeRoad>
+		<tileTypeRoad direction="7">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-d7.png</roadImageFile>
+		</tileTypeRoad>
+		<tileTypeRoad direction="8">
+			<roadImageFile>/momime.client.graphics/overland/roads/normal/normalRoad-d8.png</roadImageFile>
+		</tileTypeRoad>
+	</tileType>
+	<tileType tileTypeID="TT99">
+		<tileTypeRoad direction="0">
+			<roadAnimation>ENCHANTED_ROAD_DOT</roadAnimation>
+		</tileTypeRoad>
+		<tileTypeRoad direction="1">
+			<roadAnimation>ENCHANTED_ROAD_D1</roadAnimation>
+		</tileTypeRoad>
+		<tileTypeRoad direction="2">
+			<roadAnimation>ENCHANTED_ROAD_D2</roadAnimation>
+		</tileTypeRoad>
+		<tileTypeRoad direction="3">
+			<roadAnimation>ENCHANTED_ROAD_D3</roadAnimation>
+		</tileTypeRoad>
+		<tileTypeRoad direction="4">
+			<roadAnimation>ENCHANTED_ROAD_D4</roadAnimation>
+		</tileTypeRoad>
+		<tileTypeRoad direction="5">
+			<roadAnimation>ENCHANTED_ROAD_D5</roadAnimation>
+		</tileTypeRoad>
+		<tileTypeRoad direction="6">
+			<roadAnimation>ENCHANTED_ROAD_D6</roadAnimation>
+		</tileTypeRoad>
+		<tileTypeRoad direction="7">
+			<roadAnimation>ENCHANTED_ROAD_D7</roadAnimation>
+		</tileTypeRoad>
+		<tileTypeRoad direction="8">
+			<roadAnimation>ENCHANTED_ROAD_D8</roadAnimation>
+		</tileTypeRoad>
+	</tileType>
 	<tileType tileTypeID="FOW" />
 	<tileType tileTypeID="FOWPARTIAL" />
 	<mapFeature mapFeatureID="MF01">
@@ -67723,6 +67779,78 @@
 		<frame>/momime.client.graphics/ui/combat/moveTo-frame6.png</frame>
 		<frame>/momime.client.graphics/ui/combat/moveTo-frame7.png</frame>
 		<frame>/momime.client.graphics/ui/combat/moveTo-frame8.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_DOT">
+		<animationDescription>Enchanted road dot</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-dot-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-dot-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-dot-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-dot-frame4.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_D1">
+		<animationDescription>Enchanted road in direction 1</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d1-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d1-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d1-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d1-frame4.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_D2">
+		<animationDescription>Enchanted road in direction 2</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d2-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d2-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d2-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d2-frame4.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_D3">
+		<animationDescription>Enchanted road in direction 3</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d3-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d3-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d3-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d3-frame4.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_D4">
+		<animationDescription>Enchanted road in direction 4</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d4-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d4-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d4-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d4-frame4.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_D5">
+		<animationDescription>Enchanted road in direction 5</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d5-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d5-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d5-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d5-frame4.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_D6">
+		<animationDescription>Enchanted road in direction 6</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d6-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d6-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d6-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d6-frame4.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_D7">
+		<animationDescription>Enchanted road in direction 7</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d7-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d7-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d7-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d7-frame4.png</frame>
+	</animation>
+	<animation animationID="ENCHANTED_ROAD_D8">
+		<animationDescription>Enchanted road in direction 8</animationDescription>
+		<animationSpeed>2</animationSpeed>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d8-frame1.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d8-frame2.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d8-frame3.png</frame>
+		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d8-frame4.png</frame>
 	</animation>
 	<playList playListID="OVERLAND">
 		<audioFile>/momime.client.music/MUSIC_099 - BGM.mp3</audioFile>

@@ -203,6 +203,17 @@
 		</property>
 	</bean>
 
+	<bean id="tileTypeRoadGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="24" />
+		<property name="filenameElements">
+			<list>
+				<value>roadImageFile</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="mapFeatureGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -304,6 +315,7 @@
 				<entry key="unitSkill" value="unitSkillGrid" />
 				<entry key="smoothedTile" value="smoothedTileGrid" />
 				<entry key="tileType" value="tileTypeGrid" />
+				<entry key="tileTypeRoad" value="tileTypeRoadGrid" />
 				<entry key="mapFeature" value="mapFeatureGrid" />
 				<entry key="cityImage" value="cityImageGrid" />
 				<entry key="combatTileBorderImage" value="combatTileBorderImageGrid" />

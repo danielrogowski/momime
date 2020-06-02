@@ -480,6 +480,7 @@ off the tile downwards = 5; so RiverDirections is blank for tiles without a rive
         <xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="mapFeatureID" type="momimecommon:mapFeatureID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="roadTileTypeID" type="momimecommon:tileTypeID" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="riverDirections" type="momimecommon:directions" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="nodeOwnerID" type="mps:playerID">
 	    		<xsd:annotation>

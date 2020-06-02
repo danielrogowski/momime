@@ -572,6 +572,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->

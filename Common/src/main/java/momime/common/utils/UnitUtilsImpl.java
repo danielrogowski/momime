@@ -885,7 +885,11 @@ public final class UnitUtilsImpl implements UnitUtils
 				if (thisUnit instanceof MemoryUnit)
 					list.append (((MemoryUnit) thisUnit).getUnitURN ());
 				else if (thisUnit instanceof ExpandedUnitDetails)
-					list.append (((ExpandedUnitDetails) thisUnit).getUnitURN ());
+				{
+					final ExpandedUnitDetails xu = (ExpandedUnitDetails) thisUnit;
+					if (xu.isMemoryUnit ())
+						list.append (xu.getUnitURN ());
+				}
 				else
 					throw new MomException ("listUnitURNs got an object of type " + thisUnit.getClass ());
 			}

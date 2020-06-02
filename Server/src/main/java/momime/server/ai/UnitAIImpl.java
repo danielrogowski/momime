@@ -1012,6 +1012,7 @@ public final class UnitAIImpl implements UnitAI
 		log.trace ("Exiting decideAndExecuteUnitMovement = " + tookAction);
 		return tookAction;
 	}
+	
 	/**
 	 * @return Unit utils
 	 */

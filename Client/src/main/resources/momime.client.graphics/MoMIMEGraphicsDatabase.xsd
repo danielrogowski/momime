@@ -77,6 +77,10 @@
 					<xsd:selector xpath="tileTypeMiniMap" />
 					<xsd:field xpath="@planeNumber" />
 				</xsd:key>
+				<xsd:key name="tileTypeRoadPK">
+					<xsd:selector xpath="tileTypeRoad" />
+					<xsd:field xpath="@direction" />
+				</xsd:key>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeature" type="momimegfx:mapFeature" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImage" type="momimegfx:cityImage" />
@@ -372,6 +376,12 @@
 		<xsd:keyref refer="momimesvr:planePK" name="tileTypeMiniMapFKplane">
 			<xsd:selector xpath="tileType/tileTypeMiniMap" />
 			<xsd:field xpath="@planeNumber" />
+		</xsd:keyref>
+		
+		<!-- Roads, new for 0.9.8 -->
+		<xsd:keyref refer="momimegfx:animationPK" name="tileTypeRoadFKanimation">
+			<xsd:selector xpath="tileType/tileTypeRoad" />
+			<xsd:field xpath="roadAnimation" />
 		</xsd:keyref>
 	</xsd:element>
 		
@@ -893,7 +903,8 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 	<xsd:complexType name="tileType" nxe:singular="Tile Type" nxe:plural="Tile Types" nxe:submenu="Overland Map">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimegfx:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="380" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeMiniMap" type="momimegfx:tileTypeMiniMap" nxe:label="Mini map" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeMiniMap" type="momimegfx:tileTypeMiniMap" nxe:label="Mini map" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeRoad" type="momimegfx:tileTypeRoad" nxe:label="Mini map" />
 		</xsd:sequence>
 		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="100">
 			<xsd:annotation>
@@ -915,6 +926,20 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
+	</xsd:complexType>
+
+	<xsd:complexType name="tileTypeRoad" nxe:singular="Road" nxe:plural="Roads" nxe:submenu="Overland Map">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="roadAnimation" type="momimegfx:animationID" nxe:label="Road animation" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="roadImageFile" type="momimegfx:imageFilename" nxe:label="Road image file" nxe:gridwidth="300" />
+		</xsd:sequence>
+		<xsd:attribute name="direction" type="momimegfx:mapDirectionOrNone" use="required" nxe:label="Direction" nxe:gridwidth="50" />
 	</xsd:complexType>
 
 	<xsd:complexType name="mapFeature" nxe:singular="Map Feature" nxe:plural="Map Features" nxe:submenu="Overland Map">
@@ -1119,6 +1144,16 @@ straight down like Doom Bolt, or 1 for spells that come from up-right like Fire 
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:length value="8" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="mapDirectionOrNone">
+	    <xsd:annotation>
+    		<xsd:documentation>Map direction 1..8, 1 being north, 2 being north-east and so on; with addition of 0 for "no direction"</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort">
+			<xsd:minInclusive value="0" />
+			<xsd:maxInclusive value="8" />
 		</xsd:restriction>
 	</xsd:simpleType>
 	

@@ -3021,7 +3021,6 @@ public final class NewGameUI extends MomClientFrameUI
 			for (final PlayerPublicDetails player : getClient ().getPlayers ())
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
-				System.out.println (player.getPlayerDescription ().getPlayerName () + " = " + pub.getWizardID ());
 				if ((PlayerKnowledgeUtils.hasWizardBeenChosen (pub.getWizardID ())) && (PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) &&
 					(!PlayerKnowledgeUtils.isCustomWizard (pub.getWizardID ())))
 					

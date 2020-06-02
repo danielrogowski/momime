@@ -5,6 +5,8 @@ import java.util.Map;
 
 import momime.client.graphics.database.v0_9_8.TileType;
 import momime.client.graphics.database.v0_9_8.TileTypeMiniMap;
+import momime.client.graphics.database.v0_9_8.TileTypeRoad;
+import momime.common.database.RecordNotFoundException;
 
 /**
  * Adds a map over the planes, so we can find the minimap colours quickly
@@ -14,6 +16,9 @@ public final class TileTypeGfx extends TileType
 	/** Map of planes to minimap colours */
 	private Map<Integer, Integer> miniMapColoursMap;
 	
+	/** Map of directions to road graphics, including 0 for the dot when a road leads nowhere */
+	private Map<Integer, TileTypeRoadGfx> roadsMap;
+	
 	/**
 	 * Builds the hash map to enable finding records faster
 	 */
@@ -22,6 +27,10 @@ public final class TileTypeGfx extends TileType
 		miniMapColoursMap = new HashMap<Integer, Integer> ();
 		for (final TileTypeMiniMap miniMap : getTileTypeMiniMap ())
 			miniMapColoursMap.put (miniMap.getPlaneNumber (), Integer.parseInt (miniMap.getMiniMapPixelColour (), 16));
+		
+		roadsMap = new HashMap<Integer, TileTypeRoadGfx> ();
+		for (final TileTypeRoad road : getTileTypeRoad ())
+			roadsMap.put (road.getDirection (), (TileTypeRoadGfx) road);
 	}
 	
 	/**
@@ -34,5 +43,21 @@ public final class TileTypeGfx extends TileType
 	public final Integer findMiniMapColour (final int planeNumber)
 	{
 		return miniMapColoursMap.get (planeNumber);
+	}
+	
+	/**
+	 * @param direction Direction to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Object with either static road image or link to animation
+	 * @throws RecordNotFoundException If the road direction doesn't exist
+	 */
+	public final TileTypeRoadGfx findRoadDirection (final int direction, final String caller) throws RecordNotFoundException
+	{
+		final TileTypeRoadGfx road = roadsMap.get (direction);
+		
+		if (road == null)
+			throw new RecordNotFoundException (TileTypeRoad.class, direction, caller);
+		
+		return road;
 	}
 }

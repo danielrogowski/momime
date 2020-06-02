@@ -861,6 +861,7 @@
 		<xsd:complexContent>
 			<xsd:extension base="momimecommon:plane">
 				<xsd:sequence>
+					<xsd:element minOccurs="0" maxOccurs="1" name="roadsEnchanted" type="xsd:boolean" nxe:label="Roads always enchanted?" nxe:gridwidth="200" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="planeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="100" />
 				</xsd:sequence>
 			</xsd:extension>

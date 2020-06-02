@@ -8,6 +8,7 @@
 		<fortressPlaneProduction productionTypeID="RE04">
 			<doubledProductionValue>10</doubledProductionValue>
 		</fortressPlaneProduction>
+		<roadsEnchanted>true</roadsEnchanted>
 		<planeDescription>Myrror</planeDescription>
 	</plane>
 	<productionType productionTypeID="RE01">

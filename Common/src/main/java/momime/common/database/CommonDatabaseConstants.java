@@ -44,6 +44,9 @@ public final class CommonDatabaseConstants
 	/** Combat map size - hard coded for now */
 	public final static int COMBAT_MAP_HEIGHT = 25;
 	
+	/** Distance cities are apart to get a road connecting them at the start of the game */
+	public final static int CITY_SEPARATION_TO_GET_STARTER_ROADS = 10;
+	
 	/*------------------------------------------------------
 	 * Special values the various XML fields can take
 	 *-------------------------------------------------- */
@@ -121,6 +124,12 @@ public final class CommonDatabaseConstants
 	/** Swamp tiles */
 	public static final String TILE_TYPE_SWAMP = "TT05";
 
+	/** Normal road */
+	public static final String TILE_TYPE_NORMAL_ROAD = "TT98";
+	
+	/** Enchanted road */
+	public static final String TILE_TYPE_ENCHANTED_ROAD = "TT99";
+	
 	/** Areas of the map we've never seen */
 	public static final String TILE_TYPE_FOG_OF_WAR = "FOW";
 
@@ -169,6 +178,11 @@ public final class CommonDatabaseConstants
 
 	/** Units summoned from spells */
 	public static final String UNIT_TYPE_ID_SUMMONED = "S";
+	
+	// units
+	
+	/** Example of simplest unit to use to test roads (High men spearmen) */
+	public static final String UNIT_ID_EXAMPLE = "UN105";
 
 	// unit skills
 

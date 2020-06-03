@@ -799,7 +799,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		
 		// Terrain tile
 		final MemoryGridCellUtils gridCellUtils = mock (MemoryGridCellUtils.class);
-		when (gridCellUtils.convertNullTileTypeToFOW (terrainData)).thenReturn ("TT01");
+		when (gridCellUtils.convertNullTileTypeToFOW (terrainData, false)).thenReturn ("TT01");
 
 		// Players list
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();

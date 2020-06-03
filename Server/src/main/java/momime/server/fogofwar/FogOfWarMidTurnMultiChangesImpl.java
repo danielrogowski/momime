@@ -683,7 +683,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				// Update the movement remaining for each unit
 				if (!combatInitiated)
-					getFogOfWarMidTurnChanges ().reduceMovementRemaining (movingUnits, unitStackSkills, oneStepTrueTile.getTerrainData ().getTileTypeID (), mom.getServerDB ());
+					getFogOfWarMidTurnChanges ().reduceMovementRemaining (movingUnits, unitStackSkills,
+						(oneStepTrueTile.getTerrainData ().getRoadTileTypeID () != null) ? oneStepTrueTile.getTerrainData ().getRoadTileTypeID () : oneStepTrueTile.getTerrainData ().getTileTypeID (),
+						 mom.getServerDB ());
 				else if (processCombats)
 				{
 					// Attacking uses up all movement

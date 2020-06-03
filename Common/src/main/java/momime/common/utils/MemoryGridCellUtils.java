@@ -22,9 +22,10 @@ public interface MemoryGridCellUtils
 	 * The Delphi code has a separate property on a MemoryGridCell called TileTypeID_FOWforBlank for this
 	 *
 	 * @param terrainData Terrain data to check
+	 * @param considerRoad If true and there is road in the tile, then the road will be returned instead of the underlying tile
 	 * @return Tile type ID input, with null converted to FOW
 	 */
-	public String convertNullTileTypeToFOW (final OverlandMapTerrainData terrainData);
+	public String convertNullTileTypeToFOW (final OverlandMapTerrainData terrainData, final boolean considerRoad);
 
 	/**
 	 * @param terrainData Terrain data to check

@@ -48,6 +48,7 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitStatusID;
@@ -108,6 +109,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 		planes.add (myrror);
 
 		when (db.getPlanes ()).thenReturn (planes);
+	
+		when (db.findPlane (0, "createStartingCities")).thenReturn (arcanus);
+		when (db.findPlane (1, "createStartingCities")).thenReturn (myrror);
 		
 		final RaceSvr race1 = new RaceSvr ();
 		final RaceSvr race2 = new RaceSvr ();
@@ -166,6 +170,11 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// General server knowledge
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
+		
+		for (final MapAreaOfMemoryGridCells plane : trueTerrain.getPlane ())
+			for (final MapRowOfMemoryGridCells row : plane.getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+					cell.setTerrainData (new OverlandMapTerrainData ());
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);

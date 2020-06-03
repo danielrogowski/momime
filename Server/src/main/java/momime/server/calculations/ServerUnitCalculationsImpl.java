@@ -407,7 +407,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					
 					// Count space taken up by units already in transports
 					else if (getUnitCalculations ().calculateDoubleMovementToEnterTileType (xu, unitStackSkills, getMemoryGridCellUtils ().convertNullTileTypeToFOW
-						(terrainData), db) == null)
+						(terrainData, false), db) == null)
 						
 						if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 						{
@@ -440,7 +440,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					if (ourUnitCountAtLocation [plane.getPlaneNumber ()] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= sd.getUnitSetting ().getUnitsPerMapCell ())
 					{
 						final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-						Integer movementRate = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData));
+						Integer movementRate = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, true));
 						
 						// If the cell is otherwise impassable to us (i.e. land units trying to walk onto water) but there's enough space in a transport there, then allow it
 						if ((movementRate == null) && (cellTransportCapacity != null) && (cellTransportCapacity [plane.getPlaneNumber ()] [y] [x] > 0))
@@ -452,7 +452,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 							for (final ExpandedUnitDetails thisUnit : unitStack.getUnits ())
 							{															
 								final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (thisUnit, unitStackSkills,
-									getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), db) == null);
+									getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
 								
 								// Count space granted by transports
 								final Integer unitTransportCapacity = db.findUnit (thisUnit.getUnitID (), "calculateOverlandMovementDistances").getTransportCapacity ();
@@ -562,7 +562,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				for (final ExpandedUnitDetails tu : unitStack)
 				{
 					final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
-						getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData), db) == null);
+						getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
 						
 					// Count space granted by transports
 					final Integer unitTransportCapacity = tu.getUnitDefinition ().getTransportCapacity ();

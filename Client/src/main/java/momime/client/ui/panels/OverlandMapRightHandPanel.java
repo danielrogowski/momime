@@ -1003,7 +1003,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 		// Note terrainData can be null here if surveying an area that we've never seen or that is totally off the map
 		final OverlandMapTerrainData terrainData = (mc == null) ? null : mc.getTerrainData ();
-		final String tileTypeID = getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData);
+		final String tileTypeID = getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false);
 		final TileTypeLang tileTypeLang = getLanguage ().findTileType (tileTypeID);
 
 		// Text about building a city can be set in a bunch of places

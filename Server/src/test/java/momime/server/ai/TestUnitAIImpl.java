@@ -561,7 +561,7 @@ public final class TestUnitAIImpl extends ServerTestData
 		terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
-		when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData)).thenReturn ("TT01");
+		when (memoryGridCellUtils.convertNullTileTypeToFOW (terrainData, false)).thenReturn ("TT01");
 
 		// Set up object to test
 		final UnitCalculations calc = mock (UnitCalculations.class);

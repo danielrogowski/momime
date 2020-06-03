@@ -2670,6 +2670,7 @@ public final class TestUnitUtilsImpl
 
 		final ExpandedUnitDetails xuThree = mock (ExpandedUnitDetails.class);
 		when (xuThree.getUnitURN ()).thenReturn (3);
+		when (xuThree.isMemoryUnit ()).thenReturn (true);
 		units.add (xuThree);
 
 		assertEquals ("(1, 5, 3)", utils.listUnitURNs (units));

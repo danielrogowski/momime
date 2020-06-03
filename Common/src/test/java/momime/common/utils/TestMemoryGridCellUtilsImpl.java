@@ -23,18 +23,47 @@ import com.ndg.map.CoordinateSystem;
 public final class TestMemoryGridCellUtilsImpl
 {
 	/**
-	 * Tests the convertNullTileTypeToFOW method with a non-null value
+	 * Tests the convertNullTileTypeToFOW method with a non-null value, ignoring roads
 	 */
 	@Test
-	public final void testConvertNullTileTypeToFOW_NonNull ()
+	public final void testConvertNullTileTypeToFOW_NonNull_IgnoreRoad ()
+	{
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("A");
+		terrainData.setRoadTileTypeID ("B");
+
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertEquals ("A", utils.convertNullTileTypeToFOW (terrainData, false));
+	}
+
+	/**
+	 * Tests the convertNullTileTypeToFOW method with a non-null value, and no road
+	 */
+	@Test
+	public final void testConvertNullTileTypeToFOW_NonNull_NoRoad ()
 	{
 		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 		terrainData.setTileTypeID ("A");
 
 		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
-		assertEquals ("A", utils.convertNullTileTypeToFOW (terrainData));
+		assertEquals ("A", utils.convertNullTileTypeToFOW (terrainData, true));
 	}
 
+	/**
+	 * Tests the convertNullTileTypeToFOW method with a non-null value, with road
+	 */
+	@Test
+	public final void testConvertNullTileTypeToFOW_NonNull_Road ()
+	{
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("A");
+		terrainData.setRoadTileTypeID ("B");
+
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertEquals ("B", utils.convertNullTileTypeToFOW (terrainData, true));
+	}
+
+	
 	/**
 	 * Tests the convertNullTileTypeToFOW method with a null tile type
 	 */
@@ -42,7 +71,7 @@ public final class TestMemoryGridCellUtilsImpl
 	public final void testConvertNullTileTypeToFOW_NullTileTypeID ()
 	{
 		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (new OverlandMapTerrainData ()));
+		assertEquals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (new OverlandMapTerrainData (), false));
 	}
 
 	/**
@@ -52,7 +81,7 @@ public final class TestMemoryGridCellUtilsImpl
 	public final void testConvertNullTileTypeToFOW_NullTerrainData ()
 	{
 		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
-		assertEquals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (null));
+		assertEquals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, utils.convertNullTileTypeToFOW (null, false));
 	}
 
 	/**

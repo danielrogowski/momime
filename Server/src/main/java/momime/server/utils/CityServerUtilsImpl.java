@@ -33,6 +33,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.database.BuildingSvr;
+import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -249,6 +250,13 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		cityData.setCityName (getOverlandMapServerUtils ().generateCityName (gsk, db.findRace (cityData.getCityRaceID (), "buildCityFromSettler")));
 		cityData.setOptionalFarmers (0);
 		tc.setCityData (cityData);
+		
+		// Cities automatically get a road
+		final PlaneSvr plane = (PlaneSvr) db.findPlane (cityLocation.getZ (), "buildCityFromSettler");
+		final String roadTileTypeID = ((plane.isRoadsEnchanted () != null) && (plane.isRoadsEnchanted ())) ?
+			CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
+
+		tc.getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 
 		// Now city is created, can do initial calculations on it
 		getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db);
@@ -260,6 +268,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 
 		// Send city to anyone who can see it
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
 		
 		// Kill off the settler
 		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (settler, KillUnitActionID.PERMANENT_DAMAGE, gsk.getTrueMap (), players, sd.getFogOfWarSetting (), db);

@@ -221,6 +221,13 @@ public final class CityProcessingImpl implements CityProcessing
 				// Pick a name for the city
 				city.setCityName (getOverlandMapServerUtils ().generateCityName (gsk, db.findRace (city.getCityRaceID (), "createStartingCities")));
 
+				// Cities get a free road, even if it isn't connected to anything yet
+				final PlaneSvr roadPlane = (PlaneSvr) db.findPlane (cityLocation.getZ (), "createStartingCities");
+				final String roadTileTypeID = ((roadPlane.isRoadsEnchanted () != null) && (roadPlane.isRoadsEnchanted ())) ?
+					CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
+				
+				cityCell.getTerrainData ().setRoadTileTypeID (roadTileTypeID);
+				
 				// Do initial calculations on the city
 				getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db);
 

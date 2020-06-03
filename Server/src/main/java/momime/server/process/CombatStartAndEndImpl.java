@@ -475,6 +475,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					tc.setCityData (null);
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
 						combatLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+					
+					// Wreck the road
+					tc.getTerrainData ().setRoadTileTypeID (null);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
+						combatLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
 				}
 			}
 			else

@@ -235,6 +235,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		int settlerCount = 0;
 		int spiritCount = 0;
 		int purifyCount = 0;
+		int engineerCount = 0;
+		
 		OverlandMapTerrainData terrainData = null;
 		TileType tileType = null;
 		
@@ -257,6 +259,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 
 					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY))
 						purifyCount++;
+
+					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD))
+						engineerCount++;
 				}
 		}
 		
@@ -288,8 +293,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		// Can we purify a corrupted tile?
 		getOverlandMapRightHandPanel ().setPurifyEnabled ((purifyCount > 0) && (terrainData != null) && (terrainData.getCorrupted () != null));
 		
-		// Special order buttons not yet supported
-		getOverlandMapRightHandPanel ().setBuildRoadEnabled (false);
+		// Can we build a road?
+		getOverlandMapRightHandPanel ().setBuildRoadEnabled ((engineerCount > 0) && (tileType != null) && (tileType.isLand () != null) && (tileType.isLand ()) &&
+			(terrainData != null) && (terrainData.getRoadTileTypeID () == null));
 		
 		log.trace ("Exiting enableOrDisableSpecialOrderButtons");
 	}

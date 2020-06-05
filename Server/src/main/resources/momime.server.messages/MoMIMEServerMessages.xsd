@@ -48,7 +48,8 @@ or offered for sale from merchants.</xsd:documentation>
 
 	<xsd:complexType name="serverGridCell">
 	    <xsd:annotation>
-    		<xsd:documentation>Server needs a handful of extra properties stored at each map cell, used by the map generator.</xsd:documentation>
+    		<xsd:documentation>Server needs a handful of extra properties stored at each map cell, used by the map generator.
+Only the true map on the server is these cells; the players' FOW storage just use regular memoryGridCells.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:memoryGridCell">
@@ -73,6 +74,12 @@ or offered for sale from merchants.</xsd:documentation>
 					<xsd:element minOccurs="0" maxOccurs="1" name="raiderCityAdditionalPopulationCap" type="xsd:int">
 					    <xsd:annotation>
     						<xsd:documentation>Raiders have a special population cap that prevents cities expanding by more than a certain value, see strategy guide p426.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="roadProductionSoFar" type="momimecommon:productionCost">
+					    <xsd:annotation>
+    						<xsd:documentation>+1 for each turn engineers spend building road here (+2 for dwarves); when this is >= productionToBuildRoad for the tileType here, then the
+    														road is finished and the roadProductionSoFar value gets nulled out again .</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="combatMap" type="momimemsgs:mapAreaOfCombatTiles" />

@@ -213,6 +213,9 @@ public final class CommonDatabaseConstants
 	/** Skill for settlers creating new cities */
 	public static final String UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
 
+	/** Skill for engineers building roads */
+	public static final String UNIT_SKILL_ID_BUILD_ROAD = "US036";
+
 	/** Skill for priests purifying corruption */
 	public static final String UNIT_SKILL_ID_PURIFY = "US025";
 	

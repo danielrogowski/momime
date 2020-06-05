@@ -69,7 +69,9 @@ import momime.server.ai.MomAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.database.PickFreeSpellSvr;
+import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSvr;
 import momime.server.database.WizardPickCountSvr;
 import momime.server.database.WizardSvr;
@@ -77,6 +79,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.PlayerServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -996,35 +999,95 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		log.trace ("Entering progressMultiTurnSpecialOrders: Player ID " + onlyOnePlayerID);
 		
 		for (final MemoryUnit tu : trueMap.getUnit ())
-			if ((tu.getStatus () == UnitStatusID.ALIVE) && (tu.getSpecialOrder () == UnitSpecialOrder.PURIFY) &&
+			if ((tu.getStatus () == UnitStatusID.ALIVE) && ((tu.getSpecialOrder () == UnitSpecialOrder.PURIFY) || (tu.getSpecialOrder () == UnitSpecialOrder.BUILD_ROAD)) &&
 				((onlyOnePlayerID == 0) || (tu.getOwningPlayerID () == onlyOnePlayerID)))
 			{
-				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
-					(tu.getUnitLocation ().getZ ()).getRow ().get (tu.getUnitLocation ().getY ()).getCell ().get (tu.getUnitLocation ().getX ()).getTerrainData ();
+				final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+					(tu.getUnitLocation ().getZ ()).getRow ().get (tu.getUnitLocation ().getY ()).getCell ().get (tu.getUnitLocation ().getX ());
 				
-				final Integer oldValue = terrainData.getCorrupted ();
+				final OverlandMapTerrainData terrainData = gc.getTerrainData ();
 				
-				// Purify a little bit more
-				if ((terrainData.getCorrupted () != null) && (terrainData.getCorrupted () > 0))
-					terrainData.setCorrupted (terrainData.getCorrupted () - 1);
-				
-				// Corruption all gone?
-				if ((terrainData.getCorrupted () == null) || (terrainData.getCorrupted () <= 0))
-					terrainData.setCorrupted (null);
-				
-				// Send to anyone who can see it
-				if (!CompareUtils.safeIntegerCompare (oldValue, terrainData.getCorrupted ()))
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
-						(MapCoordinates3DEx) tu.getUnitLocation (), fogOfWarSettings.getTerrainAndNodeAuras ());
-				
-				// If corruption is all gone then cancel purify orders for all units here
-				if (terrainData.getCorrupted () == null)
-					for (final MemoryUnit tu2 : trueMap.getUnit ())
-						if ((tu2.getStatus () == UnitStatusID.ALIVE) && (tu2.getSpecialOrder () == UnitSpecialOrder.PURIFY) && (tu2.getUnitLocation ().equals (tu.getUnitLocation ())))
+				switch (tu.getSpecialOrder ())
+				{
+					case PURIFY:
+					{
+						final Integer oldValue = terrainData.getCorrupted ();
+						
+						// Purify a little bit more
+						if ((terrainData.getCorrupted () != null) && (terrainData.getCorrupted () > 0))
+							terrainData.setCorrupted (terrainData.getCorrupted () - 1);
+						
+						// Corruption all gone?
+						if ((terrainData.getCorrupted () == null) || (terrainData.getCorrupted () <= 0))
+							terrainData.setCorrupted (null);
+						
+						// Send to anyone who can see it
+						if (!CompareUtils.safeIntegerCompare (oldValue, terrainData.getCorrupted ()))
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
+								(MapCoordinates3DEx) tu.getUnitLocation (), fogOfWarSettings.getTerrainAndNodeAuras ());
+						
+						// If corruption is all gone then cancel purify orders for all units here
+						if (terrainData.getCorrupted () == null)
+							for (final MemoryUnit tu2 : trueMap.getUnit ())
+								if ((tu2.getStatus () == UnitStatusID.ALIVE) && (tu2.getSpecialOrder () == UnitSpecialOrder.PURIFY) && (tu2.getUnitLocation ().equals (tu.getUnitLocation ())))
+								{
+									tu2.setSpecialOrder (null);
+									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings);
+								}
+						break;
+					}
+						
+					case BUILD_ROAD:
+					{
+						final int oldValue = (gc.getRoadProductionSoFar () == null) ? 0 : gc.getRoadProductionSoFar ();
+						
+						// Lay a little more pavement - dwarven engineers construct 2 points per turn instead of 1
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, players, trueMap, db);
+						Integer skillValue = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD);
+						if ((skillValue == null) || (skillValue < 1))
+							skillValue = 1;
+						
+						gc.setRoadProductionSoFar (oldValue + skillValue);
+						
+						// Finished?
+						final TileTypeSvr tileType = db.findTileType (terrainData.getTileTypeID (), "progressMultiTurnSpecialOrders");
+						if ((tileType.getProductionToBuildRoad () != null) && (gc.getRoadProductionSoFar () >= tileType.getProductionToBuildRoad ()))
 						{
-							tu2.setSpecialOrder (null);
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings);
-						}					
+							gc.setRoadProductionSoFar (null);
+							
+							// If we're standing on a tower, then we build a road on both planes
+							final Integer singlePlane = getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData) ? null : tu.getUnitLocation ().getZ ();
+							for (final PlaneSvr plane : db.getPlanes ())
+								if ((singlePlane == null) || (singlePlane == plane.getPlaneNumber ()))
+								{
+									final OverlandMapTerrainData roadTerrainData = trueMap.getMap ().getPlane ().get
+										(plane.getPlaneNumber ()).getRow ().get (tu.getUnitLocation ().getY ()).getCell ().get (tu.getUnitLocation ().getX ()).getTerrainData ();
+
+									final String roadTileTypeID = ((plane.isRoadsEnchanted () != null) && (plane.isRoadsEnchanted ())) ?
+											CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
+									roadTerrainData.setRoadTileTypeID (roadTileTypeID);
+
+									// Send to anyone who can see it
+									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
+										new MapCoordinates3DEx (tu.getUnitLocation ().getX (), tu.getUnitLocation ().getY (), plane.getPlaneNumber ()),
+										fogOfWarSettings.getTerrainAndNodeAuras ());
+								}
+							
+							// Cancel road building orders for all units here
+							for (final MemoryUnit tu2 : trueMap.getUnit ())
+								if ((tu2.getStatus () == UnitStatusID.ALIVE) && (tu2.getSpecialOrder () == UnitSpecialOrder.BUILD_ROAD) && (tu2.getUnitLocation ().equals (tu.getUnitLocation ())))
+								{
+									tu2.setSpecialOrder (null);
+									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings);
+								}
+						}
+						
+						break;
+					}
+						
+					default:
+						throw new MomException ("progressMultiTurnSpecialOrders does not know what to do with special order " + tu.getSpecialOrder ());
+				}
 			}
 		
 		log.trace ("Exiting progressMultiTurnSpecialOrders");

@@ -319,6 +319,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				allowMultipleUnits = true;
 				break;
 				
+			case BUILD_ROAD:
+				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD;
+				allowMultipleUnits = true;
+				break;
+				
 			case PATROL:
 				necessarySkillID = null;
 				allowMultipleUnits = true;
@@ -412,7 +417,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			// But we still have to confirm to the client that their unit selection/build location was fine.
 			// Multi-turn orders like purify and build road also just set the order here and tick up progress later.
 			if ((mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) || (specialOrder == UnitSpecialOrder.PATROL) ||
-				(specialOrder == UnitSpecialOrder.PURIFY))
+				(specialOrder == UnitSpecialOrder.PURIFY) || (specialOrder == UnitSpecialOrder.BUILD_ROAD))
 			{
 				for (final ExpandedUnitDetails trueUnit : unitsWithNecessarySkillID)
 					setAndSendSpecialOrder (trueUnit.getMemoryUnit (), specialOrder, player,

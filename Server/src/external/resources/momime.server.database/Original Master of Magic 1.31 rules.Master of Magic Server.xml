@@ -339,6 +339,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Mountain</tileTypeDescription>
 		<canPlaceLair>true</canPlaceLair>
+		<productionToBuildRoad>8</productionToBuildRoad>
 		<combatDarkTiles>40</combatDarkTiles>
 		<combatRidgeTiles>60</combatRidgeTiles>
 		<combatTerrainFeatures>15</combatTerrainFeatures>
@@ -405,6 +406,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Hills</tileTypeDescription>
 		<canPlaceLair>true</canPlaceLair>
+		<productionToBuildRoad>6</productionToBuildRoad>
 		<combatDarkTiles>25</combatDarkTiles>
 		<combatRidgeTiles>60</combatRidgeTiles>
 		<combatTerrainFeatures>30</combatTerrainFeatures>
@@ -471,6 +473,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Forest</tileTypeDescription>
 		<canPlaceLair>true</canPlaceLair>
+		<productionToBuildRoad>6</productionToBuildRoad>
 		<combatDarkTiles>35</combatDarkTiles>
 		<combatRidgeTiles>25</combatRidgeTiles>
 		<combatTerrainFeatures>70</combatTerrainFeatures>
@@ -491,6 +494,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Desert</tileTypeDescription>
 		<canPlaceLair>true</canPlaceLair>
+		<productionToBuildRoad>4</productionToBuildRoad>
 		<combatDarkTiles>40</combatDarkTiles>
 		<combatRidgeTiles>40</combatRidgeTiles>
 		<combatTerrainFeatures>15</combatTerrainFeatures>
@@ -526,6 +530,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Swamp</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
+		<productionToBuildRoad>8</productionToBuildRoad>
 		<combatDarkTiles>250</combatDarkTiles>
 		<combatRidgeTiles>8</combatRidgeTiles>
 		<combatTerrainFeatures>15</combatTerrainFeatures>
@@ -546,6 +551,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Grasslands</tileTypeDescription>
 		<canPlaceLair>true</canPlaceLair>
+		<productionToBuildRoad>3</productionToBuildRoad>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
@@ -555,6 +561,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>Tundra</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
+		<productionToBuildRoad>6</productionToBuildRoad>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>30</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
@@ -580,6 +587,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>River</tileTypeDescription>
 		<canPlaceLair>true</canPlaceLair>
+		<productionToBuildRoad>5</productionToBuildRoad>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
@@ -599,6 +607,7 @@
 		<magicRealmID>MB05</magicRealmID>
 		<tileTypeDescription>Grasslands (Sorcery Node)</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
+		<productionToBuildRoad>4</productionToBuildRoad>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>
@@ -615,6 +624,7 @@
 		<magicRealmID>MB04</magicRealmID>
 		<tileTypeDescription>Forest (Nature Node)</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
+		<productionToBuildRoad>5</productionToBuildRoad>
 		<combatDarkTiles>35</combatDarkTiles>
 		<combatRidgeTiles>25</combatRidgeTiles>
 		<combatTerrainFeatures>70</combatTerrainFeatures>
@@ -630,6 +640,7 @@
 		<magicRealmID>MB03</magicRealmID>
 		<tileTypeDescription>Volcano/Mountain (Chaos Node)</tileTypeDescription>
 		<canPlaceLair>false</canPlaceLair>
+		<productionToBuildRoad>8</productionToBuildRoad>
 		<combatDarkTiles>40</combatDarkTiles>
 		<combatRidgeTiles>60</combatRidgeTiles>
 		<combatTerrainFeatures>15</combatTerrainFeatures>
@@ -646,6 +657,7 @@
 		<canBuildCity>true</canBuildCity>
 		<tileTypeDescription>River Mouth (Landside River Mouth)</tileTypeDescription>
 		<canPlaceLair>true</canPlaceLair>
+		<productionToBuildRoad>5</productionToBuildRoad>
 		<combatDarkTiles>30</combatDarkTiles>
 		<combatRidgeTiles>20</combatRidgeTiles>
 		<combatTerrainFeatures>20</combatTerrainFeatures>

@@ -1289,13 +1289,14 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * Server uses this during game startup to position all starter cities - for this it runs over the true map, because no
 	 * players have any knowledge of the map yet
 	 *
-	 * @param map Our knowledge of the overland terrain map
+	 * @param map1 First set of data about the overland terrain map
+	 * @param map2 Second set of data about the overland terrain map (optional)
 	 * @param plane Which plane we want to place a city on
 	 * @param overlandMapSize Overland map coordinate system and extended details
 	 * @return Map area with areas we know are too close to cities marked
 	 */
 	@Override
-	public final MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
+	public final MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map1, final MapVolumeOfMemoryGridCells map2,
 		final int plane, final OverlandMapSize overlandMapSize)
 	{
 		log.trace ("Entering markWithinExistingCityRadius: " + plane);
@@ -1308,8 +1309,13 @@ public final class CityCalculationsImpl implements CityCalculations
 		for (int x = 0; x < overlandMapSize.getWidth (); x++)
 			for (int y = 0; y < overlandMapSize.getHeight (); y++)
 			{
-				final OverlandMapCityData cityData = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x).getCityData ();
-				if (cityData != null)
+				final MemoryGridCell cell1 = map1.getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
+				final MemoryGridCell cell2 = (map2 == null) ? null : map2.getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
+				
+				final OverlandMapCityData cityData1 = (cell1 == null) ? null : cell1.getCityData ();
+				final OverlandMapCityData cityData2 = (cell2 == null) ? null : cell2.getCityData ();
+				
+				if ((cityData1 != null) || (cityData2 != null))
 					getBooleanMapAreaOperations2D ().selectRadius (result, x, y, overlandMapSize.getCitySeparation ());
 			}
 

@@ -1148,7 +1148,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Check distance to other cities
 		if (cityInfo == null)
 		{
-			if (getCityCalculations ().markWithinExistingCityRadius (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+			if (getCityCalculations ().markWithinExistingCityRadius (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), null,
 				getSurveyorLocation ().getZ (), getClient ().getSessionDescription ().getOverlandMapSize ()).get (getSurveyorLocation ().getX (), getSurveyorLocation ().getY ()))
 			{
 				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity").replaceAll

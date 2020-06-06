@@ -2901,7 +2901,7 @@ public final class TestCityCalculationsImpl
 		overlandMapSize.setCitySeparation (3);
 
 		// No cities
-		final MapArea2D<Boolean> none = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
+		final MapArea2D<Boolean> none = calc.markWithinExistingCityRadius (map, null, 1, overlandMapSize);
 		assertEquals (0, op.countCellsEqualTo (none, true));
 
 		// City on the wrong plane
@@ -2909,7 +2909,7 @@ public final class TestCityCalculationsImpl
 		wrongPlaneCity.setCityPopulation (1);
 		map.getPlane ().get (0).getRow ().get (4).getCell ().get (6).setCityData (wrongPlaneCity);
 
-		final MapArea2D<Boolean> wrongPlane = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
+		final MapArea2D<Boolean> wrongPlane = calc.markWithinExistingCityRadius (map, null, 1, overlandMapSize);
 		assertEquals (0, op.countCellsEqualTo (wrongPlane, true));
 
 		// City in the middle of the map
@@ -2917,7 +2917,7 @@ public final class TestCityCalculationsImpl
 		oneCity.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (4).getCell ().get (6).setCityData (oneCity);
 
-		final MapArea2D<Boolean> one = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
+		final MapArea2D<Boolean> one = calc.markWithinExistingCityRadius (map, null, 1, overlandMapSize);
 		assertEquals (49, op.countCellsEqualTo (one, true));
 
 		for (int x = 3; x <= 9; x++)
@@ -2929,7 +2929,7 @@ public final class TestCityCalculationsImpl
 		twoCities.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (1).getCell ().get (16).setCityData (twoCities);
 
-		final MapArea2D<Boolean> two = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
+		final MapArea2D<Boolean> two = calc.markWithinExistingCityRadius (map, null, 1, overlandMapSize);
 		assertEquals (49 + 35, op.countCellsEqualTo (two, true));
 
 		// 3nd city at left edge of map so some of it gets wrapped
@@ -2937,7 +2937,7 @@ public final class TestCityCalculationsImpl
 		threeCities.setCityPopulation (1);
 		map.getPlane ().get (1).getRow ().get (14).getCell ().get (1).setCityData (threeCities);
 
-		final MapArea2D<Boolean> three = calc.markWithinExistingCityRadius (map, 1, overlandMapSize);
+		final MapArea2D<Boolean> three = calc.markWithinExistingCityRadius (map, null, 1, overlandMapSize);
 		assertEquals (49 + 49 + 35, op.countCellsEqualTo (three, true));
 	}
 

@@ -1039,17 +1039,25 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		gsk.setTrueMap (trueMap);
 		
 		// Players
+		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
+		final FogOfWarMemory mem1 = new FogOfWarMemory ();
+		priv1.setFogOfWarMemory (mem1);
+		
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (1);
 		pd1.setHuman (true);
-		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, null, null, null);
+		final PlayerServerDetails player1 = new PlayerServerDetails (pd1, null, priv1, null, null);
 		final DummyServerToClientConnection conn1 = new DummyServerToClientConnection (); 
 		player1.setConnection (conn1);
+		
+		final MomPersistentPlayerPrivateKnowledge priv2 = new MomPersistentPlayerPrivateKnowledge ();
+		final FogOfWarMemory mem2 = new FogOfWarMemory ();
+		priv2.setFogOfWarMemory (mem2);
 		
 		final PlayerDescription pd2 = new PlayerDescription ();
 		pd2.setPlayerID (2);
 		pd2.setHuman (true);
-		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, null, null, null);
+		final PlayerServerDetails player2 = new PlayerServerDetails (pd2, null, priv2, null, null);
 		final DummyServerToClientConnection conn2 = new DummyServerToClientConnection (); 
 		player2.setConnection (conn2);
 		
@@ -1141,7 +1149,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 			}
 		
 		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.markWithinExistingCityRadius (trueTerrain, 1, overlandMapSize)).thenReturn (falseArea, trueArea);
+		when (cityCalc.markWithinExistingCityRadius (trueTerrain, null, 1, overlandMapSize)).thenReturn (falseArea, trueArea);
 		
 		// Player2 has 2 spirits he's trying to take a node from Player1 with; first fails, second succeeds, so third doesn't need to try
 		final UnitUtils unitUtils = mock (UnitUtils.class);

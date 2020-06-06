@@ -187,12 +187,13 @@ public interface CityCalculations
 	 * Server uses this during game startup to position all starter cities - for this it runs over the true map, because no
 	 * players have any knowledge of the map yet
 	 *
-	 * @param map Our knowledge of the overland terrain map
+	 * @param map1 First set of data about the overland terrain map
+	 * @param map2 Second set of data about the overland terrain map (optional)
 	 * @param plane Which plane we want to place a city on
 	 * @param overlandMapSize Overland map coordinate system and extended details
 	 * @return Map area with areas we know are too close to cities marked
 	 */
-	public MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map,
+	public MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map1, final MapVolumeOfMemoryGridCells map2,
 		final int plane, final OverlandMapSize overlandMapSize);
 
 	/**

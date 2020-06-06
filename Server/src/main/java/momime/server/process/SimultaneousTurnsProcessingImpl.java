@@ -515,6 +515,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				(tc.getTerrainData ().getMapFeatureID (), "processSpecialOrders-f");
 			
 			final PlayerServerDetails settlerOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), settler.getOwningPlayerID (), "processSpecialOrders-s");
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) settlerOwner.getPersistentPlayerPrivateKnowledge ();
 
 			String error = null;
 			if (!tileType.isCanBuildCity ())
@@ -522,7 +523,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			else if ((mapFeature != null) && (!mapFeature.isCanBuildCity ()))
 				error = "The map feature here has changed, you can no longer build a city here";
 			else if (getCityCalculations ().markWithinExistingCityRadius
-				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWarMemory ().getMap (),
 				settler.getUnitLocation ().getZ (), mom.getSessionDescription ().getOverlandMapSize ()).get (settler.getUnitLocation ().getX (), settler.getUnitLocation ().getY ()))
 				
 				error = "Another city was built before yours and is within " + mom.getSessionDescription ().getOverlandMapSize ().getCitySeparation () +

@@ -395,12 +395,14 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// Skill-specific validation
 		if (error == null)
 		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
 			if ((specialOrder == UnitSpecialOrder.BUILD_CITY) && (!tileType.isCanBuildCity ()))
 				error = "You can't build a city on this type of terrain";
 			else if ((specialOrder == UnitSpecialOrder.BUILD_CITY) && (mapFeature != null) && (!mapFeature.isCanBuildCity ()))
 				error = "You can't build a city on top of this type of map feature";
 			else if ((specialOrder == UnitSpecialOrder.BUILD_CITY) && (getCityCalculations ().markWithinExistingCityRadius
-				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWarMemory ().getMap (),
 				mapLocation.getZ (), mom.getSessionDescription ().getOverlandMapSize ()).get (mapLocation.getX (), mapLocation.getY ())))
 				error = "Cities cannot be built within " + mom.getSessionDescription ().getOverlandMapSize ().getCitySeparation () + " squares of another city";
 			else if ((specialOrder == UnitSpecialOrder.MELD_WITH_NODE) && (tileType.getMagicRealmID () == null))

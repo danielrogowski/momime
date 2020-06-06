@@ -274,7 +274,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			
 			if (((Boolean.TRUE.equals (tileType.isCanBuildCity ())) &&
 				((mapFeature == null) || (Boolean.TRUE.equals (mapFeature.isCanBuildCity ())))) &&
-				(!getCityCalculations ().markWithinExistingCityRadius (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+				(!getCityCalculations ().markWithinExistingCityRadius (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), null,
 					unitMoveFrom.getZ (), getClient ().getSessionDescription ().getOverlandMapSize ()).get (unitMoveFrom.getX (), unitMoveFrom.getY ())))
 				
 				createOutpostEnabled = true;

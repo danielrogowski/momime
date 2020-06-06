@@ -243,7 +243,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 			for (int y = 0; y < overlandMapSize.getHeight (); y++)
 				invalidCityLocations.set (x, y, true);
 		
-		when (cityCalc.markWithinExistingCityRadius (map, 1, overlandMapSize)).thenReturn (invalidCityLocations);
+		when (cityCalc.markWithinExistingCityRadius (map, null, 1, overlandMapSize)).thenReturn (invalidCityLocations);
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

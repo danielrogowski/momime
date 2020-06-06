@@ -116,7 +116,7 @@ public final class CityAIImpl implements CityAI
 		log.trace ("Entering chooseCityLocation: " + plane);
 
 		// Mark off all places within 3 squares of an existing city, i.e. those spaces we can't put a new city
-		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (trueMap, plane, sd.getOverlandMapSize ());
+		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (trueMap, knownMap, plane, sd.getOverlandMapSize ());
 
 		// Now consider every map location as a possible location for a new city
 		MapCoordinates3DEx bestLocation = null;

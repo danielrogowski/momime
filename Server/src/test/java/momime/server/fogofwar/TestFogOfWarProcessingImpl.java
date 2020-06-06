@@ -176,7 +176,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		when (db.getPlanes ()).thenReturn (planes);
 		
 		final SpellSvr naturesEyeDef = new SpellSvr ();
-		naturesEyeDef.setSpellScoutingRange (5);
+		naturesEyeDef.setSpellRadius (5);
 		when (db.findSpell ("SP012", "markVisibleArea")).thenReturn (naturesEyeDef);
 
 		final SpellSvr curseDef = new SpellSvr ();

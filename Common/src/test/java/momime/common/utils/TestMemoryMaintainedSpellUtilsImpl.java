@@ -938,7 +938,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Scouting spell
 		terrainData.setTileTypeID (null);
 		fow.getPlane ().get (1).getRow ().get (10).getCell ().set (20, FogOfWarStateID.NEVER_SEEN);
-		spell.setSpellScoutingRange (1);
+		spell.setSpellRadius (1);
 		
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, new MapCoordinates3DEx (20, 10, 1), map, fow, db));
 	}

@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
@@ -98,6 +99,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -315,7 +319,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					}
 				}
 				
-				else if (spell.getSpellScoutingRange () == null)
+				else if (spell.getSpellRadius () == null)
 				{
 					// Corruption
 					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -361,12 +365,38 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					}
 				}
 				
+				else if (spell.getTileTypeID () != null)
+				{
+					// Enchant road - first just get a list of all coordinates we need to process
+					final List<MapCoordinates3DEx> roadCells = new ArrayList<MapCoordinates3DEx> ();
+					getCoordinateSystemUtils ().processCoordinatesWithinRadius (mom.getSessionDescription ().getOverlandMapSize (),
+						getOverlandTargetLocation ().getX (), getOverlandTargetLocation ().getY (), spell.getSpellRadius (), (x, y, r, d, n) ->
+					{
+						roadCells.add (new MapCoordinates3DEx (x, y, getOverlandTargetLocation ().getZ ()));
+						return true;
+					});
+					
+					// Now process them, and check which ones are actually road
+					for (final MapCoordinates3DEx roadCoords : roadCells)
+					{
+						final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(roadCoords.getZ ()).getRow ().get (roadCoords.getY ()).getCell ().get (roadCoords.getX ()).getTerrainData ();
+						if ((terrainData.getRoadTileTypeID () != null) && (!terrainData.getRoadTileTypeID ().equals (spell.getTileTypeID ())))
+						{
+							terrainData.setRoadTileTypeID (spell.getTileTypeID ());
+							
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), roadCoords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+						}
+					}
+				}
+				
 				else
 				{
 					// Earth lore
 					getFogOfWarProcessing ().canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 						mom.getSessionDescription ().getOverlandMapSize (), getOverlandTargetLocation ().getX (), getOverlandTargetLocation ().getY (),
-						getOverlandTargetLocation ().getZ (), spell.getSpellScoutingRange ());
+						getOverlandTargetLocation ().getZ (), spell.getSpellRadius ());
 					
 					getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), sender, mom.getPlayers (),
 						"earthLore", mom.getSessionDescription (), mom.getServerDB ());
@@ -669,5 +699,21 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
 	}
 }

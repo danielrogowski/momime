@@ -484,13 +484,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			else
 			{
-				// Make an area muddy, the range is in the "scouting" range field
+				// Make an area muddy, the size of the area is set in the radius field
 				final CombatMapArea areaBridge = new CombatMapArea ();
 				areaBridge.setArea (gc.getCombatMap ());
 				areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
 				
 				getCombatMapOperations ().processCellsWithinRadius (areaBridge, targetLocation.getX (), targetLocation.getY (),
-					spell.getSpellScoutingRange (), (tile) ->
+					spell.getSpellRadius (), (tile) ->
 				{
 					tile.setMud (true);
 					return true;

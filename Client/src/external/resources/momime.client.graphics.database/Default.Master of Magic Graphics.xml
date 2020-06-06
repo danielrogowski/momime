@@ -1247,7 +1247,10 @@
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
 	</spell>
-	<spell spellID="SP055" />
+	<spell spellID="SP055">
+		<combatCastAnimation>ENCHANT_ROAD</combatCastAnimation>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_086_000 - EnchantRoad.mp3</spellSoundFile>
+	</spell>
 	<spell spellID="SP056">
 		<combatCastAnimation>SORCERY_SPARKLES</combatCastAnimation>
 		<spellSoundFile>/momime.client.sounds/SOUNDFX_029_000 - ResistMagic-FloatingIsland-GuardianWind-WordOfRecall-SpellLock-Flight-SpellBlast-Invisibility-WindWalking-Stasis-MagicImmunity-Haste-SpellWard-FlyingFortress.mp3</spellSoundFile>
@@ -66335,6 +66338,34 @@
 		<frame>/momime.client.graphics/spells/SP010/cast-frame20.png</frame>
 		<frame>/momime.client.graphics/spells/SP010/cast-frame21.png</frame>
 		<frame>/momime.client.graphics/spells/SP010/cast-frame22.png</frame>
+	</animation>
+	<animation animationID="ENCHANT_ROAD">
+		<animationDescription>Enchant road big blue expanding ring</animationDescription>
+		<animationSpeed>8</animationSpeed>
+		<overlandCastOffsetX>-111</overlandCastOffsetX>
+		<overlandCastOffsetY>-100</overlandCastOffsetY>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame1.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame2.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame3.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame4.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame5.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame6.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame7.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame8.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame9.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame10.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame11.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame12.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame13.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame14.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame15.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame16.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame17.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame18.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame19.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame20.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame21.png</frame>
+		<frame>/momime.client.graphics/spells/SP055/cast-frame22.png</frame>
 	</animation>
 	<animation animationID="CORRUPTION">
 		<animationDescription>Corruption expanding then contracting blue/black circle</animationDescription>

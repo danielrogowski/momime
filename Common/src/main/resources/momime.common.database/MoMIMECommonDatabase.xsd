@@ -1130,7 +1130,15 @@ spell upkeep, but cannot switch off the spell that's costing the upkeep)</xsd:do
 expensive bonus we are allowed to put onto the item.  A value of 0 allows all bonuses.  Spell Charges are only allowed if the value is 0.</xsd:documentation>
 		        </xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="spellScoutingRange" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="spellRadius" type="momimecommon:scoutingRange" nxe:label="Scouting Range" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type" nxe:gridwidth="80">
+				<xsd:annotation>
+	        		<xsd:documentation>For spells that affect a certain tile type.  Currently only set to TT99 for Enchant Road spell, to distinguish it from Earth Lore.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+		        </xsd:annotation>
+			</xsd:element>			
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="summonedUnit" type="momimecommon:summonedUnit" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpellEffect" type="momimecommon:unitSpellEffect" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHasCityEffect" type="momimecommon:spellHasCityEffect" />
@@ -1918,8 +1926,8 @@ about what a spell must be targetted on.  e.g. Unit enchantments must be targett
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_UNIT_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC10"><xsd:annotation>
-				<xsd:documentation>Special spells targetted at a location on the overland map, can be any map tile, doesn't have to be targetted on a particular unit/city;
-the exact type of spell is currently dictated by whether or not spellScoutingRange is filled in</xsd:documentation>
+				<xsd:documentation>Special spells targetted at a location on the overland map, can be any map tile, doesn't have to be targetted on a particular unit/city.
+If tileTypeID+spellRadius is filled in, this is Enchant Road.  If only spellRadius is filled in, this is Earth Lore.  If both values are null, this is Corruption.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_OVERLAND_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC11"><xsd:annotation>

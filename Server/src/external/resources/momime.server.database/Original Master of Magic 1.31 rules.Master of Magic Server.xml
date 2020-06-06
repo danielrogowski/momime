@@ -20181,7 +20181,7 @@
 		<researchCost>20</researchCost>
 		<combatCastingCost>15</combatCastingCost>
 		<spellBookSectionID>SC11</spellBookSectionID>
-		<spellScoutingRange>2</spellScoutingRange>
+		<spellRadius>2</spellRadius>
 		<spellName>Earth to Mud</spellName>
 		<aiResearchOrder>6</aiResearchOrder>
 	</spell>
@@ -20286,7 +20286,7 @@
 		<researchCost>250</researchCost>
 		<overlandCastingCost>30</overlandCastingCost>
 		<spellBookSectionID>SC10</spellBookSectionID>
-		<spellScoutingRange>6</spellScoutingRange>
+		<spellRadius>6</spellRadius>
 		<spellName>Earth Lore</spellName>
 		<aiResearchOrder>1</aiResearchOrder>
 	</spell>
@@ -20309,7 +20309,7 @@
 		<researchCost>350</researchCost>
 		<overlandCastingCost>75</overlandCastingCost>
 		<spellBookSectionID>SC03</spellBookSectionID>
-		<spellScoutingRange>5</spellScoutingRange>
+		<spellRadius>5</spellRadius>
 		<spellHasCityEffect citySpellEffectID="SE012" />
 		<spellUpkeep productionTypeID="RE09">
 			<undoubledProductionValue>1</undoubledProductionValue>
@@ -20793,6 +20793,9 @@
 		<spellRank>SR02</spellRank>
 		<researchCost>500</researchCost>
 		<overlandCastingCost>100</overlandCastingCost>
+		<spellBookSectionID>SC10</spellBookSectionID>
+		<spellRadius>2</spellRadius>
+		<tileTypeID>TT99</tileTypeID>
 		<spellName>Enchant Road</spellName>
 		<aiResearchOrder>3</aiResearchOrder>
 	</spell>

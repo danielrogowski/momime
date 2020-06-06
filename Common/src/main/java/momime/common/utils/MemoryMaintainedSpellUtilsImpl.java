@@ -469,8 +469,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 
     	final TargetSpellResult result;
 
-    	// Visibility spells can always be targeted anywhere, even in blackness where we've never seen before
-    	if (spell.getSpellScoutingRange () != null)
+    	// Earth Lore and Enchant Road can always be targeted anywhere, even in blackness where we've never seen before
+    	if (spell.getSpellRadius () != null)
     		result = TargetSpellResult.VALID_TARGET;
     	else
     	{

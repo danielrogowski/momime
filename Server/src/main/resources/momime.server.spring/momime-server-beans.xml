@@ -232,6 +232,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 	
 	<bean id="cancelTargetSpellMessage" class="momime.server.messages.process.CancelTargetSpellMessageImpl" scope="prototype">

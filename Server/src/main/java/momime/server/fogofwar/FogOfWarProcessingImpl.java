@@ -52,6 +52,7 @@ import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.database.SpellSvr;
 
 /**
  * This contains the methods that recheck what areas of the map a specific player can see, and depending which areas
@@ -278,10 +279,10 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if ((thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisSpell.getCityLocation () != null))
 				{
 					// See if this spell has a scouting range
-					final Integer scoutingRange = db.findSpell (thisSpell.getSpellID (), "markVisibleArea").getSpellScoutingRange ();
-					if (scoutingRange != null)
+					final SpellSvr spellDef = db.findSpell (thisSpell.getSpellID (), "markVisibleArea");
+					if ((spellDef.getSpellRadius () != null) && (spellDef.getTileTypeID () == null))
 						canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), thisSpell.getCityLocation ().getX (),
-							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), scoutingRange);
+							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), spellDef.getSpellRadius ());
 				}
 		}
 

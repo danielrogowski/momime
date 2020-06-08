@@ -21,10 +21,10 @@ public final class TestAIConstructableUnit
 	public final void testCompare () throws Exception
 	{
 		// One of each kind of test unit
-		final AIConstructableUnit first = new AIConstructableUnit (null, null, null, 20, false);
-		final AIConstructableUnit second = new AIConstructableUnit (null, null, null, 10, false);
-		final AIConstructableUnit third = new AIConstructableUnit (null, null, null, 8, false);
-		final AIConstructableUnit fourth = new AIConstructableUnit (null, null, null, 4, false);
+		final AIConstructableUnit first = new AIConstructableUnit (null, null, null, 20, null, false);
+		final AIConstructableUnit second = new AIConstructableUnit (null, null, null, 10, null, false);
+		final AIConstructableUnit third = new AIConstructableUnit (null, null, null, 8, null, false);
+		final AIConstructableUnit fourth = new AIConstructableUnit (null, null, null, 4, null, false);
 
 		// Put units into the list in the wrong order
 		final List<AIConstructableUnit> units = new ArrayList<AIConstructableUnit> ();

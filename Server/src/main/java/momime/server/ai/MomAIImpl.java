@@ -32,6 +32,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.AiUnitCategorySvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.utils.CityServerUtils;
 
 /**
  * Overall AI strategy + control
@@ -62,6 +63,9 @@ public final class MomAIImpl implements MomAI
 	/** City calculations */
 	private CityCalculations cityCalculations;
 	
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+	
 	/**
 	 *
 	 * @param player AI player whose turn to take
@@ -81,16 +85,7 @@ public final class MomAIImpl implements MomAI
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-		// Count how many cities we have
-		int numberOfCities = 0;
-		for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-			for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
-				{
-					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getCityData ();
-					if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
-						numberOfCities++;
-				}
+		final int numberOfCities = getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), player.getPlayerDescription ().getPlayerID ());
 		
 		// First find out what the best units we can construct or summon are - this gives us
 		// something to gauge existing units by, to know if they're now obsolete or not
@@ -419,5 +414,21 @@ public final class MomAIImpl implements MomAI
 	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
 	}
 }

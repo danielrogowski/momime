@@ -721,6 +721,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">
@@ -732,19 +733,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="unitAI" class="momime.server.ai.UnitAIImpl">
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
-		<property name="randomUtils" ref="randomUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="unitAIMovement" ref="unitAIMovement" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="aiUnitCalculations" ref="aiUnitCalculations" />
+		<property name="aiUnitRatingCalculations" ref="aiUnitRatingCalculations" />
 	</bean>
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">
@@ -753,6 +753,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="cityAI" ref="cityAI" />
 	</bean>
+
+	<bean id="aiUnitCalculations" class="momime.server.ai.AIUnitCalculationsImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="aiUnitRatingCalculations" ref="aiUnitRatingCalculations" />
+	</bean>
+	
+	<bean id="aiUnitRatingCalculations" class="momime.server.ai.AIUnitRatingCalculationsImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
+		<property name="aiHeroItemRatingCalculations" ref="aiHeroItemRatingCalculations" />
+	</bean>
+
+	<bean id="aiHeroItemRatingCalculations" class="momime.server.ai.AIHeroItemRatingCalculationsImpl" />
 	
 	<!-- Fog of War -->
 

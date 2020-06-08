@@ -22,6 +22,9 @@ final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	/** The average rating calculated for the unit if we construct it */
 	private final int averageRating;
 	
+	/** Type of unit the AI classifies this unit to be */
+	private final AIUnitType aiUnitType;
+	
 	/** Whether we could afford the maintenance cost if we added another one of these units to our army */
 	private final boolean canAffordMaintenance;
 	
@@ -30,14 +33,17 @@ final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	 * @param aCityLocation The city where the unit can be constructed, or null if its a summoning spell
 	 * @param aSpell The spell that summons the unit, or null if its a unit we're constructing in a city
 	 * @param anAverageRating The average rating calculated for the unit if we construct it
+	 * @param anAiUnitType Type of unit the AI classifies this unit to be
 	 * @param aCanAffordMaintenance Whether we could afford the maintenance cost if we added another one of these units to our army
 	 */
-	AIConstructableUnit (final UnitSvr aUnit, final MapCoordinates3DEx aCityLocation, final SpellSvr aSpell, final int anAverageRating, final boolean aCanAffordMaintenance)
+	AIConstructableUnit (final UnitSvr aUnit, final MapCoordinates3DEx aCityLocation, final SpellSvr aSpell, final int anAverageRating,
+		final AIUnitType anAiUnitType, final boolean aCanAffordMaintenance)
 	{
 		unit = aUnit;
 		cityLocation = aCityLocation;
 		spell = aSpell;
 		averageRating = anAverageRating;
+		aiUnitType = anAiUnitType;
 		canAffordMaintenance = aCanAffordMaintenance;
 	}
 
@@ -56,7 +62,7 @@ final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	@Override
 	public final String toString ()
 	{
-		return getUnit ().getUnitName () + " (" + getUnit ().getUnitID () + ") " +
+		return getUnit ().getUnitName () + " (" + getUnit ().getUnitID () + ") type " + getAiUnitType () + " " +
 			((getCityLocation () != null) ? ("constructed at " + getCityLocation ()) : ("summoned by " + getSpell ().getSpellName ())) +
 			" has average rating of " + getAverageRating () + ", can afford = " + isCanAffordMaintenance ();
 	}
@@ -93,6 +99,14 @@ final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 		return averageRating;
 	}
 
+	/**
+	 * @return Type of unit the AI classifies this unit to be
+	 */
+	public final AIUnitType getAiUnitType ()
+	{
+		return aiUnitType;
+	}
+	
 	/**
 	 * @return Whether we could afford the maintenance cost if we added another one of these units to our army
 	 */

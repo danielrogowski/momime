@@ -97,4 +97,11 @@ public interface CityServerUtils
 	 */
 	public MapCoordinates3DEx findCityWithinRadius (final MapCoordinates3DEx searchLocation, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CoordinateSystem overlandMapCoordinateSystem);
+
+	/**
+	 * @param terrain Terrain to search
+	 * @param playerID Player whose cities to look for
+	 * @return Number of cities the player has
+	 */
+	public int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID);
 }

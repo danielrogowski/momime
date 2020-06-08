@@ -23,6 +23,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfMemoryGridCells;
+import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
@@ -315,6 +317,8 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final MapCoordinates3DEx findCityWithinRadius (final MapCoordinates3DEx searchLocation, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CoordinateSystem overlandMapCoordinateSystem)
 	{
+		log.trace ("Entering findCityWithinRadius: " + searchLocation);
+
 		MapCoordinates3DEx found = null;
 		
 		final MapCoordinates3DEx coords = new MapCoordinates3DEx (searchLocation);
@@ -323,7 +327,32 @@ public final class CityServerUtilsImpl implements CityServerUtils
 				if (trueTerrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getCityData () != null)
 					found = coords;
 		
+		log.trace ("Exiting findCityWithinRadius = " + found);
 		return found;
+	}
+
+	/**
+	 * @param terrain Terrain to search
+	 * @param playerID Player whose cities to look for
+	 * @return Number of cities the player has
+	 */
+	@Override
+	public final int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID)
+	{
+		log.trace ("Entering countCities: Player ID " + playerID);
+		
+		int numberOfCities = 0;
+		for (final MapAreaOfMemoryGridCells plane : terrain.getPlane ())
+			for (final MapRowOfMemoryGridCells row : plane.getRow ())
+				for (final MemoryGridCell cell : row.getCell ())
+				{
+					final OverlandMapCityData terrainData = cell.getCityData ();
+					if ((terrainData != null) && (terrainData.getCityOwnerID () == playerID))
+						numberOfCities++;
+				}
+		
+		log.trace ("Exiting countCities = " + numberOfCities);
+		return numberOfCities;
 	}
 	
 	/**

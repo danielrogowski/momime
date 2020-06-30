@@ -125,51 +125,54 @@ public final class MomAIImpl implements MomAI
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);
 			
 			// Get a list of all specialist units split by category and what plane they are on
-			final Map<AIUnitType, Map<Integer, List<AIUnitAndRatings>>> specialistUnits = new HashMap<AIUnitType, Map<Integer, List<AIUnitAndRatings>>> ();
+			final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> specialistUnitsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> ();
 			for (final AIUnitAndRatings mu : mobileUnits)
 				if (mu.getAiUnitType () != AIUnitType.COMBAT_UNIT)
 				{
 					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can move " + mu);
 					
-					// Make sure the unit type is listed
-					Map<Integer, List<AIUnitAndRatings>> specialistUnitMap = specialistUnits.get (mu.getAiUnitType ());
-					if (specialistUnitMap == null)
-					{
-						specialistUnitMap = new HashMap<Integer, List<AIUnitAndRatings>> ();
-						specialistUnits.put (mu.getAiUnitType (), specialistUnitMap);
-					}
-					
 					// Make sure the plane is listed
-					List<AIUnitAndRatings> specialistUnitsOnThisPlane = specialistUnitMap.get (mu.getUnit ().getUnitLocation ().getZ ());
+					Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (mu.getUnit ().getUnitLocation ().getZ ());
 					if (specialistUnitsOnThisPlane == null)
 					{
-						specialistUnitsOnThisPlane = new ArrayList<AIUnitAndRatings> ();
-						specialistUnitMap.put (mu.getUnit ().getUnitLocation ().getZ (), specialistUnitsOnThisPlane);
+						specialistUnitsOnThisPlane = new HashMap<AIUnitType, List<AIUnitAndRatings>> ();
+						specialistUnitsOnEachPlane.put (mu.getUnit ().getUnitLocation ().getZ (), specialistUnitsOnThisPlane);
+					}
+					
+					// Make sure the unit type is listed
+					List<AIUnitAndRatings> specialistUnits = specialistUnitsOnThisPlane.get (mu.getAiUnitType ());
+					if (specialistUnits == null)
+					{
+						specialistUnits = new ArrayList<AIUnitAndRatings> ();
+						specialistUnitsOnThisPlane.put (mu.getAiUnitType (), specialistUnits);
 					}
 					
 					// Now can just add it
-					specialistUnitsOnThisPlane.add (mu);
+					specialistUnits.add (mu);
 					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has a spare " + mu.getAiUnitType () + " Unit URN " + mu.getUnit ().getUnitURN () + " at " + mu.getUnit ().getUnitLocation ());
 				}
 			
 			// What's the best place we can put a new city on each plane?
-			final Map<Integer, MapCoordinates3DEx> desiredCityLocations = new HashMap<Integer, MapCoordinates3DEx> ();
+			final Map<Integer, Map<AIUnitType, MapCoordinates3DEx>> desiredSpecialUnitLocationsOnEachPlane = new HashMap<Integer, Map<AIUnitType, MapCoordinates3DEx>> ();
 			for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 			{
+				final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations = new HashMap<AIUnitType, MapCoordinates3DEx> ();
+				desiredSpecialUnitLocationsOnEachPlane.put (plane, desiredSpecialUnitLocations);
+				
 				final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (priv.getFogOfWarMemory ().getMap (),
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), plane, false, mom.getSessionDescription (), mom.getServerDB (), "considering building/moving settler");
 				if (desiredCityLocation != null)
 				{
 					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can put a city at " + desiredCityLocation);
-					desiredCityLocations.put (plane, desiredCityLocation);
+					desiredSpecialUnitLocations.put (AIUnitType.BUILD_CITY, desiredCityLocation);
 				}
 			}
 			
-			// Try to find somewhere to move each mobile unit to.
-			// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.
-			// In "simultaneous turns" games, we will move anywhere that we can reach in one turn.
 			if (((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) || (isRaiders)) && (!mobileUnits.isEmpty ()))
 			{
+				// Try to find somewhere to move each mobile unit to.
+				// In "one player at a time" games, we can see the results our each movement step, so here we only ever move 1 cell at a time.
+				// In "simultaneous turns" games, we will move anywhere that we can reach in one turn.
 				boolean restart = true;
 				int pass = 0;
 				while (restart)
@@ -200,7 +203,7 @@ public final class MomAIImpl implements MomAI
 									category.getAiUnitCategoryDescription () + "  from " + unitStack.get (0).getUnit ().getUnitLocation () + ", first Unit URN " + unitStack.get (0).getUnit ().getUnitURN ());
 								
 								final boolean tookAction = getUnitAI ().decideAndExecuteUnitMovement (unitStack, category, underdefendedLocations, ourUnitStacksInThisCategory, enemyUnits,
-									desiredCityLocations.get (unitStack.get (0).getUnit ().getUnitLocation ().getZ ()), player, mom);
+									desiredSpecialUnitLocationsOnEachPlane.get (unitStack.get (0).getUnit ().getUnitLocation ().getZ ()), player, mom);
 
 								// In a one-player-at-a-time game, units are moved instantly and so may have joined onto other unit stacks, have movement left,
 								// and that remaining movement now be affected by something in the stack they've joined such as a hero with Pathfinding.
@@ -270,12 +273,15 @@ public final class MomAIImpl implements MomAI
 			// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
 			// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
 			if (numberOfCities > 0)
-			{
-				final Map<Integer, List<AIUnitAndRatings>> settlers = specialistUnits.get (AIUnitType.BUILD_CITY);
-				
 				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 				{
-					final boolean wantSettler = (desiredCityLocations.containsKey (z)) && ((settlers == null) || (!settlers.containsKey (z)));
+					// What unit types do we want to build on this plane?
+					final Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (z);						// May be null					
+					final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations = desiredSpecialUnitLocationsOnEachPlane.get (z);	// Always a valid list, even if empty
+					
+					// We need to NOT have one of that type of unit already, so that we want to build one
+					final List<AIUnitType> wantedUnitTypes = desiredSpecialUnitLocations.keySet ().stream ().filter (ut ->
+						(specialistUnitsOnThisPlane == null) || (!specialistUnitsOnThisPlane.containsKey (ut))).collect (Collectors.toList ());
 					
 					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
@@ -294,7 +300,7 @@ public final class MomAIImpl implements MomAI
 									constructableUnits.stream ().filter (u -> (cityLocation.equals (u.getCityLocation ())) && (u.getAverageRating () > 0)).sorted ().limit (2).filter
 										(u -> u.isCanAffordMaintenance ()).map (u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
 		
-								getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnits, constructableHere, wantSettler,
+								getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnits, constructableHere, wantedUnitTypes,
 									priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
 									mom.getSessionDescription (), mom.getServerDB ());
 								
@@ -304,7 +310,6 @@ public final class MomAIImpl implements MomAI
 						}
 				}
 			}
-		}
 
 		if (numberOfCities > 0)
 		{

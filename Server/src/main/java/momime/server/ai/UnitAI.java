@@ -121,7 +121,7 @@ public interface UnitAI
 	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
-	 * @param desiredCityLocation Location where we want to put a city
+	 * @param desiredSpecialUnitLocations Locations we want to put cities, road, capture nodes, purify corruption
 	 * @param isRaiders Whether it is the raiders player
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
@@ -131,7 +131,8 @@ public interface UnitAI
 	 */
 	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final MapVolumeOfMemoryGridCells terrain, final MapCoordinates3DEx desiredCityLocation, final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations,
+		final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException;
 	
 	/**
@@ -142,7 +143,7 @@ public interface UnitAI
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
 	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
-	 * @param desiredCityLocation Location where we want to put a city
+	 * @param desiredSpecialUnitLocations Locations we want to put cities, road, capture nodes, purify corruption
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether some action was taken (a move, turning a settler into a city, or make an engineer build a road); only return false if we had no movement left or couldn't figure out anything to do
@@ -154,6 +155,6 @@ public interface UnitAI
 	 */
 	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final MapCoordinates3DEx desiredCityLocation, final PlayerServerDetails player, final MomSessionVariables mom)
+		final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

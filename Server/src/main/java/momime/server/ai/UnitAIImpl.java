@@ -507,7 +507,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param terrain Player knowledge of terrain
-	 * @param desiredCityLocation Location where we want to put a city
+	 * @param desiredSpecialUnitLocations Locations we want to put cities, road, capture nodes, purify corruption
 	 * @param isRaiders Whether it is the raiders player
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
@@ -518,7 +518,8 @@ public final class UnitAIImpl implements UnitAI
 	@Override
 	public final AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final MapVolumeOfMemoryGridCells terrain, final MapCoordinates3DEx desiredCityLocation, final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations,
+		final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering decideUnitMovement");
@@ -570,7 +571,8 @@ public final class UnitAIImpl implements UnitAI
 					break;
 				
 				case BUILD_CITY:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (doubleMovementDistances, (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (), desiredCityLocation);
+					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (doubleMovementDistances, (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (),
+						desiredSpecialUnitLocations.get (AIUnitType.BUILD_CITY));
 					break;
 				
 				case BUILD_ROAD:
@@ -617,7 +619,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param underdefendedLocations Locations we should consider a priority to aim for
 	 * @param ourUnitsInSameCategory List of all our mobile unit stacks in the same category as the ones we are moving
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
-	 * @param desiredCityLocation Location where we want to put a city
+	 * @param desiredSpecialUnitLocations Locations we want to put cities, road, capture nodes, purify corruption
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether some action was taken (a move, turning a settler into a city, or make an engineer build a road); only return false if we had no movement left or couldn't figure out anything to do
@@ -630,7 +632,7 @@ public final class UnitAIImpl implements UnitAI
 	@Override
 	public final boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final MapCoordinates3DEx desiredCityLocation, final PlayerServerDetails player, final MomSessionVariables mom)
+		final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering decideAndExecuteUnitMovement: AI Player ID " + player.getPlayerDescription ().getPlayerID () + ", first Unit URN " + units.get (0).getUnit ().getUnitURN ()); 
@@ -677,7 +679,7 @@ public final class UnitAIImpl implements UnitAI
 	
 			final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
 			final AIMovementDecision destination = decideUnitMovement (units, movementCodes, doubleMovementDistances, underdefendedLocations,
-				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredCityLocation, isRaiders, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredSpecialUnitLocations, isRaiders, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 			
 			// Move, if we found somewhere to go
 			if (destination == null)

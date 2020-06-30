@@ -353,7 +353,7 @@ public final class CityAIImpl implements CityAI
 	 * @param isUnitFactory Is this one of our unit factories? (i.e. one of our cities that can construct the best units we can currently make?)
 	 * @param needForNewUnits Estimate of how badly we need to construct new units; 0 or lower = we've got plenty; 10 or higher = desperate for more units
 	 * @param combatUnitIDs If we are going to construct a unit, a list of the unit IDs that we should pick from 
-	 * @param wantSettler True if we can see a good spot to put a city, and don't have a settler to move there, so need to build one 
+	 * @param wantedUnitTypes List of unit types we have a need to build 
 	 * @param knownTerrain Known overland terrain
 	 * @param knownBuildings Known list of buildings
 	 * @param sd Session description
@@ -362,7 +362,7 @@ public final class CityAIImpl implements CityAI
 	 */
 	@Override
 	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
-		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnits, final List<String> combatUnitIDs, final boolean wantSettler,
+		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnits, final List<String> combatUnitIDs, final List<AIUnitType> wantedUnitTypes,
 		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
@@ -401,7 +401,8 @@ public final class CityAIImpl implements CityAI
 				debugChoices.append ("10:Building");
 			}
 			
-			if ((isUnitFactory) && (needForNewUnits > 0) && (combatUnitIDs != null) && (combatUnitIDs.size () > 0))		// or we have only 1 city, in which case its our unit factory by definition
+			// or we have only 1 city, in which case its our unit factory by definition
+			if ((isUnitFactory) && (needForNewUnits > 0) && (combatUnitIDs != null) && (combatUnitIDs.size () > 0))
 			{
 				choices.add (needForNewUnits, AICityConstructionType.COMBAT_UNIT);
 				
@@ -411,7 +412,8 @@ public final class CityAIImpl implements CityAI
 				debugChoices.append (needForNewUnits + ":Unit");
 			}
 			
-			if ((wantSettler) && ((numberOfCities == 1) || (!isUnitFactory)))		// Don't waste our good unit factory building settlers if there's somewhere else that can do it
+			// Don't waste our good unit factory building settlers if there's somewhere else that can do it
+			if ((wantedUnitTypes != null) && (wantedUnitTypes.contains (AIUnitType.BUILD_CITY)) && ((numberOfCities == 1) || (!isUnitFactory)))
 			{
 				choices.add (4, AICityConstructionType.SETTLER);
 				

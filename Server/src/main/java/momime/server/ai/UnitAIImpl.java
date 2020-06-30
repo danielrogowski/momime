@@ -232,6 +232,7 @@ public final class UnitAIImpl implements UnitAI
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, mem, db);
 				
 				unitList.add (new AIUnitAndRatings (mu,
+					getAiUnitCalculations ().determineAIUnitType (xu),
 					getAiUnitRatingCalculations ().calculateUnitCurrentRating (mu, xu, players, mem, db),
 					getAiUnitCalculations ().calculateUnitAverageRating (mu, xu, players, mem, db)));
 			}
@@ -284,7 +285,7 @@ public final class UnitAIImpl implements UnitAI
 						{
 							final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, z);
 							
-							final int defenceRating = (ours == null) ? 0 : ours.totalAverageRatings ();
+							final int defenceRating = (ours == null) ? 0 : ours.totalCombatUnitAverageRatings ();
 							final String description = (cityData != null) ? ("city belonging to " + cityData.getCityOwnerID ()) : (terrainData.getTileTypeID () + "/" + terrainData.getMapFeatureID ());
 							
 							// For any regular locations, on turn 1..50 we want 1 defender, 51..100 want 2, 101..150 want 3, 151..200 want 4 and 201+ want 5
@@ -309,7 +310,7 @@ public final class UnitAIImpl implements UnitAI
 									while (iter.hasNext ())
 									{
 										final AIUnitAndRatings thisUnit = iter.next ();
-										if (thisUnit.getAverageRating () == 0)
+										if (thisUnit.getAiUnitType () != AIUnitType.COMBAT_UNIT)
 										{
 											iter.remove ();
 											mobileUnits.add (thisUnit);
@@ -328,7 +329,7 @@ public final class UnitAIImpl implements UnitAI
 								while (iter.hasNext ())
 								{
 									final AIUnitAndRatings thisUnit = iter.next ();
-									if ((defenceSoFar >= desiredDefenceRating) || (thisUnit.getAverageRating () == 0))
+									if ((defenceSoFar >= desiredDefenceRating) || (thisUnit.getAiUnitType () != AIUnitType.COMBAT_UNIT))
 									{
 										iter.remove ();
 										mobileUnits.add (thisUnit);

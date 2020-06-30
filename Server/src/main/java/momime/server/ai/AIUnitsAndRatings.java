@@ -10,10 +10,10 @@ interface AIUnitsAndRatings extends List<AIUnitAndRatings>
 	/**
 	 * @return Sum of all UCRs in this unit stack added together
 	 */
-	public int totalCurrentRatings ();
+	public int totalCombatUnitCurrentRatings ();
 
 	/**
 	 * @return Sum of all UARs in this unit stack added together
 	 */
-	public int totalAverageRatings ();
+	public int totalCombatUnitAverageRatings ();
 }

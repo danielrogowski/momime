@@ -11,17 +11,17 @@ final class AIUnitsAndRatingsImpl extends ArrayList<AIUnitAndRatings> implements
 	 * @return Sum of all UCRs in this unit stack added together
 	 */
 	@Override
-	public final int totalCurrentRatings ()
+	public final int totalCombatUnitCurrentRatings ()
 	{
-		return stream ().mapToInt (u -> u.getCurrentRating ()).sum ();
+		return stream ().filter (u -> u.getAiUnitType () == AIUnitType.COMBAT_UNIT).mapToInt (u -> u.getCurrentRating ()).sum ();
 	}
 	
 	/**
 	 * @return Sum of all UARs in this unit stack added together
 	 */
 	@Override
-	public final int totalAverageRatings ()
+	public final int totalCombatUnitAverageRatings ()
 	{
-		return stream ().mapToInt (u -> u.getAverageRating ()).sum ();
+		return stream ().filter (u -> u.getAiUnitType () == AIUnitType.COMBAT_UNIT).mapToInt (u -> u.getAverageRating ()).sum ();
 	}
 }

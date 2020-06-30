@@ -114,7 +114,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	{
 		log.trace ("Entering considerUnitMovement_AttackStationary");
 
-		final int ourCurrentRating = units.totalCurrentRatings ();
+		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		Integer doubleDestinationDistance = null;
 
@@ -133,7 +133,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 						final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
 						if (((cityData != null) || ((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))) &&
-							(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCurrentRatings ()) && (doubleThisDistance >= 0))
+							(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (doubleThisDistance >= 0))
 						{
 							// We can get there eventually, and stand a chance of beating them
 							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
@@ -182,7 +182,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	{
 		log.trace ("Entering considerUnitMovement_AttackWandering");
 
-		final int ourCurrentRating = units.totalCurrentRatings ();
+		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
 		Integer doubleDestinationDistance = null;
 
@@ -196,7 +196,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 					final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
 					if ((cityData == null) && (!ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)) &&
-						(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCurrentRatings ()) && (doubleThisDistance >= 0))
+						(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (doubleThisDistance >= 0))
 					{
 						// We can get there eventually, and stand a chance of beating them
 						final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
@@ -397,7 +397,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		log.trace ("Entering considerUnitMovement_JoinStack");
 
 		// First of all we have to find the weakest enemy unit stack that we can reach but that is still too strong for us to fight alone
-		final int ourCurrentRating = units.totalCurrentRatings ();
+		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
 		Integer weakestEnemyUnitStackWeCannotBeat = null;
 
 		for (int z = 0; z < sys.getDepth (); z++)
@@ -411,7 +411,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					{					
 						final OverlandMapCityData cityData = mc.getCityData ();
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
-						final int enemyUnitStackRating = (enemyUnitStack == null) ? 0 : enemyUnitStack.totalCurrentRatings (); 
+						final int enemyUnitStackRating = (enemyUnitStack == null) ? 0 : enemyUnitStack.totalCombatUnitCurrentRatings (); 
 						if (((cityData != null) || ((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))) &&
 							(enemyUnitStack != null) && (enemyUnitStackRating >= ourCurrentRating) && (doubleMovementDistances [z] [y] [x] >= 0))
 						{
@@ -441,7 +441,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final int doubleThisDistance = doubleMovementDistances [unitStackLocation.getZ ()] [unitStackLocation.getY ()] [unitStackLocation.getX ()];
 					if (doubleThisDistance >= 0)
 					{
-						mergedStackRating = mergedStackRating + ourUnitStack.totalCurrentRatings ();
+						mergedStackRating = mergedStackRating + ourUnitStack.totalCombatUnitCurrentRatings ();
 						
 						final MapCoordinates3DEx location = new MapCoordinates3DEx (unitStackLocation);
 						if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))

@@ -93,16 +93,18 @@ public final class MomAIImpl implements MomAI
 		
 		// Ignore summoned units - otherwise at the start the AI realises that Magic Spirits are actually better than the Spearmen + Swordsmen that it has and tries to use them to defend its city.
 		// Similarly later on, the AI shouldn't be trying to fill its cities defensively with all great drakes.
-		final List<AIConstructableUnit> cityConstructableUnits = constructableUnits.stream ().filter (u -> u.getCityLocation () != null).collect (Collectors.toList ());
-		if (cityConstructableUnits.isEmpty ())
-			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't make any units in cities at all");
+		final List<AIConstructableUnit> cityConstructableCombatUnits = constructableUnits.stream ().filter
+			(u -> (u.getAiUnitType () == AIUnitType.COMBAT_UNIT) && (u.getCityLocation () != null)).collect (Collectors.toList ());
+		
+		if (cityConstructableCombatUnits.isEmpty ())
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't make any combat units in cities at all");
 		else
 		{
-			for (final AIConstructableUnit unit : cityConstructableUnits)
-				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " could make unit " + unit);
+			for (final AIConstructableUnit unit : cityConstructableCombatUnits)
+				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " could make combat unit " + unit);
 			
-			final int highestAverageRating = cityConstructableUnits.get (0).getAverageRating ();
-			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s strongest UAR = " + highestAverageRating);
+			final int highestAverageRating = cityConstructableCombatUnits.get (0).getAverageRating ();
+			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s strongest UAR of city constructable combat units = " + highestAverageRating);
 
 			// Raiders have some special handling
 			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
@@ -122,20 +124,35 @@ public final class MomAIImpl implements MomAI
 			for (final AIDefenceLocation location : underdefendedLocations)
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);
 			
-			// To think about building new cities, we need to know if we already have a spare settler, and if we have somewhere we want to try to build - on each plane
-			final Map<Integer, AIUnitAndRatings> settlers = new HashMap<Integer, AIUnitAndRatings> ();
+			// Get a list of all specialist units split by category and what plane they are on
+			final Map<AIUnitType, Map<Integer, List<AIUnitAndRatings>>> specialistUnits = new HashMap<AIUnitType, Map<Integer, List<AIUnitAndRatings>>> ();
 			for (final AIUnitAndRatings mu : mobileUnits)
-			{
-				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can move " + mu);
-				
-				if (getUnitUtils ().expandUnitDetails (mu.getUnit (), null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()).hasBasicSkill
-					(CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST))
+				if (mu.getAiUnitType () != AIUnitType.COMBAT_UNIT)
 				{
-					settlers.put (mu.getUnit ().getUnitLocation ().getZ (), mu);
-					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has a spare settler Unit URN " + mu.getUnit ().getUnitURN () + " at " + mu.getUnit ().getUnitLocation ());
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can move " + mu);
+					
+					// Make sure the unit type is listed
+					Map<Integer, List<AIUnitAndRatings>> specialistUnitMap = specialistUnits.get (mu.getAiUnitType ());
+					if (specialistUnitMap == null)
+					{
+						specialistUnitMap = new HashMap<Integer, List<AIUnitAndRatings>> ();
+						specialistUnits.put (mu.getAiUnitType (), specialistUnitMap);
+					}
+					
+					// Make sure the plane is listed
+					List<AIUnitAndRatings> specialistUnitsOnThisPlane = specialistUnitMap.get (mu.getUnit ().getUnitLocation ().getZ ());
+					if (specialistUnitsOnThisPlane == null)
+					{
+						specialistUnitsOnThisPlane = new ArrayList<AIUnitAndRatings> ();
+						specialistUnitMap.put (mu.getUnit ().getUnitLocation ().getZ (), specialistUnitsOnThisPlane);
+					}
+					
+					// Now can just add it
+					specialistUnitsOnThisPlane.add (mu);
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has a spare " + mu.getAiUnitType () + " Unit URN " + mu.getUnit ().getUnitURN () + " at " + mu.getUnit ().getUnitLocation ());
 				}
-			}
 			
+			// What's the best place we can put a new city on each plane?
 			final Map<Integer, MapCoordinates3DEx> desiredCityLocations = new HashMap<Integer, MapCoordinates3DEx> ();
 			for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 			{
@@ -253,9 +270,12 @@ public final class MomAIImpl implements MomAI
 			// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
 			// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
 			if (numberOfCities > 0)
+			{
+				final Map<Integer, List<AIUnitAndRatings>> settlers = specialistUnits.get (AIUnitType.BUILD_CITY);
+				
 				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 				{
-					final boolean wantSettler = (desiredCityLocations.containsKey (z)) && (!settlers.containsKey (z));
+					final boolean wantSettler = (desiredCityLocations.containsKey (z)) && ((settlers == null) || (!settlers.containsKey (z)));
 					
 					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
@@ -283,6 +303,7 @@ public final class MomAIImpl implements MomAI
 							}
 						}
 				}
+			}
 		}
 
 		if (numberOfCities > 0)

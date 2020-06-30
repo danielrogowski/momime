@@ -10,6 +10,9 @@ final class AIUnitAndRatings implements Comparable<AIUnitAndRatings>
 	/** Unit we are caching ratings for */
 	private final MemoryUnit unit;
 	
+	/** Type of unit the AI classifies this unit to be */
+	private final AIUnitType aiUnitType;
+	
 	/** Current rating */
 	private final int currentRating;
 	
@@ -18,12 +21,14 @@ final class AIUnitAndRatings implements Comparable<AIUnitAndRatings>
 	
 	/**
 	 * @param aUnit Unit we are caching ratings for
+	 * @param anAiUnitType Type of unit the AI classifies this unit to be
 	 * @param aCurrentRating Current rating
 	 * @param anAverageRating Average rating
 	 */
-	AIUnitAndRatings (final MemoryUnit aUnit, final int aCurrentRating, final int anAverageRating)
+	AIUnitAndRatings (final MemoryUnit aUnit, final AIUnitType anAiUnitType, final int aCurrentRating, final int anAverageRating)
 	{
 		unit = aUnit;
+		aiUnitType = anAiUnitType;
 		currentRating = aCurrentRating;
 		averageRating = anAverageRating;
 	}
@@ -43,7 +48,7 @@ final class AIUnitAndRatings implements Comparable<AIUnitAndRatings>
 	@Override
 	public final String toString ()
 	{
-		return "Unit URN " + getUnit ().getUnitURN () + ", which is a " + getUnit ().getUnitID () + " currently at " + getUnit ().getUnitLocation ();
+		return "Unit URN " + getUnit ().getUnitURN () + ", which is a " + getUnit ().getUnitID () + " which is type " + getAiUnitType() + " is currently at " + getUnit ().getUnitLocation ();
 	}
 	
 	/**
@@ -52,6 +57,14 @@ final class AIUnitAndRatings implements Comparable<AIUnitAndRatings>
 	public final MemoryUnit getUnit ()
 	{
 		return unit;
+	}
+	
+	/**
+	 * @return Type of unit the AI classifies this unit to be
+	 */
+	public final AIUnitType getAiUnitType ()
+	{
+		return aiUnitType;
 	}
 	
 	/**

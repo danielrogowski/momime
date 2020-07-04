@@ -582,7 +582,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param currentLocation Current location of settler unit
-	 * @param desiredCityLocations Location where we want to put cities
+	 * @param desiredCityLocations Locations where we want to put cities
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
@@ -644,16 +644,60 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * AI looks for a good place for engineers to build a road
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param currentLocation Current location of engineer unit
+	 * @param desiredRoadLocations Locations where we want to put cities
 	 * @return See AIMovementDecision for explanation of return values
 	 */
-	@Override
-	public final AIMovementDecision considerUnitMovement_BuildRoad (final int [] [] [] doubleMovementDistances)
+	 @Override
+	public final AIMovementDecision considerUnitMovement_BuildRoad (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final List<MapCoordinates3DEx> desiredRoadLocations)
 	{
 		log.trace ("Entering considerUnitMovement_BuildRoad");
 
-		log.warn ("AI movement code BUILD_ROAD is not yet implemented");
+		// If we have nowhere we need to put road, then nothing to do
+		final AIMovementDecision decision;
+		if ((desiredRoadLocations == null) || (desiredRoadLocations.size () == 0))
+			decision = null;
 		
-		final AIMovementDecision decision = null;
+		// If we're already at any of the right spots, then go ahead and build a road
+		else if (desiredRoadLocations.contains (currentLocation))
+		{
+			log.debug ("Unit movement AI - Decided to stay at " + currentLocation + " and build a road here");
+			decision = new AIMovementDecision (UnitSpecialOrder.BUILD_ROAD);
+		}
+		
+		// Find the closest location where we want to put a road and head there
+		else
+		{
+			final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+			Integer doubleDestinationDistance = null;
+			
+			// Check all locations we want to head to and find the closest one (or multiple closest ones)
+			for (final MapCoordinates3DEx location : desiredRoadLocations)
+			{
+				final int doubleThisDistance = doubleMovementDistances [location.getZ ()] [location.getY ()] [location.getX ()];
+				if (doubleThisDistance >= 0)
+				{
+					// We can get there, eventually
+					if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+					{
+						doubleDestinationDistance = doubleThisDistance;
+						destinations.clear ();
+						destinations.add (location);
+					}
+					else if (doubleThisDistance == doubleDestinationDistance)
+						destinations.add (location);
+				}
+			}
+			
+			if (destinations.isEmpty ())
+				decision = null;		// No reachable build locations
+			else
+			{
+				final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+				log.debug ("Unit movement AI - Decided to go head towards " + chosenLocation + " to build a road there which is " + doubleDestinationDistance + " double-moves away");
+				decision = new AIMovementDecision (chosenLocation);
+			}
+		}
 		
 		log.trace ("Exiting considerUnitMovement_BuildRoad = " + decision);
 		return decision;

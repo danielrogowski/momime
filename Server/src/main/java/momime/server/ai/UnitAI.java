@@ -112,6 +112,30 @@ public interface UnitAI
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
+	 * @param playerID AI player whose turn it is
+	 * @param mobileUnits List of units AI decided it can move each turn; note all non-combat units are automatically considered to be mobile
+	 * @return List of non-combat units, broken up by what type they are and which plane they are on
+	 */
+	public Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> determineSpecialistUnitsOnEachPlane
+		(final int playerID, final List<AIUnitAndRatings> mobileUnits);
+	
+	/**
+	 * @param playerID AI player whose turn it is
+	 * @param players List of players in this session
+	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
+	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Map listing all locations on each plane that the AI wants to send specialised units of each type
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
+	 */
+	public Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> determineDesiredSpecialUnitLocationsOnEachPlane (final int playerID, final List<PlayerServerDetails> players,
+		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException;
+	
+	/**
 	 * Uses an ordered list of AI movement codes to try to decide what to do with a particular unit stack
 	 * 
 	 * @param units The units to move

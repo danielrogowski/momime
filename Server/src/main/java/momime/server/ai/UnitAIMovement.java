@@ -143,7 +143,7 @@ public interface UnitAIMovement
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param currentLocation Current location of settler unit
-	 * @param desiredCityLocations Location where we want to put cities
+	 * @param desiredCityLocations Locations where we want to put cities
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	public AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final List<MapCoordinates3DEx> desiredCityLocations);
@@ -152,9 +152,11 @@ public interface UnitAIMovement
 	 * AI looks for a good place for engineers to build a road
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param currentLocation Current location of engineer unit
+	 * @param desiredRoadLocations Locations where we want to put cities
 	 * @return See AIMovementDecision for explanation of return values
 	 */
-	public AIMovementDecision considerUnitMovement_BuildRoad (final int [] [] [] doubleMovementDistances);
+	public AIMovementDecision considerUnitMovement_BuildRoad (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final List<MapCoordinates3DEx> desiredRoadLocations);
 
 	/**
 	 * AI looks for any corrupted land that priests need to purify

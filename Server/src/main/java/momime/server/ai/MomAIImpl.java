@@ -1,7 +1,6 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -126,48 +125,13 @@ public final class MomAIImpl implements MomAI
 				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " is underdefended at " + location);
 			
 			// Get a list of all specialist units split by category and what plane they are on
-			final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> specialistUnitsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> ();
-			for (final AIUnitAndRatings mu : mobileUnits)
-				if (mu.getAiUnitType () != AIUnitType.COMBAT_UNIT)
-				{
-					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can move " + mu);
-					
-					// Make sure the plane is listed
-					Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (mu.getUnit ().getUnitLocation ().getZ ());
-					if (specialistUnitsOnThisPlane == null)
-					{
-						specialistUnitsOnThisPlane = new HashMap<AIUnitType, List<AIUnitAndRatings>> ();
-						specialistUnitsOnEachPlane.put (mu.getUnit ().getUnitLocation ().getZ (), specialistUnitsOnThisPlane);
-					}
-					
-					// Make sure the unit type is listed
-					List<AIUnitAndRatings> specialistUnits = specialistUnitsOnThisPlane.get (mu.getAiUnitType ());
-					if (specialistUnits == null)
-					{
-						specialistUnits = new ArrayList<AIUnitAndRatings> ();
-						specialistUnitsOnThisPlane.put (mu.getAiUnitType (), specialistUnits);
-					}
-					
-					// Now can just add it
-					specialistUnits.add (mu);
-					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has a spare " + mu.getAiUnitType () + " Unit URN " + mu.getUnit ().getUnitURN () + " at " + mu.getUnit ().getUnitLocation ());
-				}
+			final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> specialistUnitsOnEachPlane = getUnitAI ().determineSpecialistUnitsOnEachPlane
+				(player.getPlayerDescription ().getPlayerID (), mobileUnits);
 			
 			// What's the best place we can put a new city on each plane?
-			final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> desiredSpecialUnitLocationsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> ();
-			for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
-			{
-				final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = new HashMap<AIUnitType, List<MapCoordinates3DEx>> ();
-				desiredSpecialUnitLocationsOnEachPlane.put (plane, desiredSpecialUnitLocations);
-				
-				final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (priv.getFogOfWarMemory ().getMap (),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), plane, false, mom.getSessionDescription (), mom.getServerDB (), "considering building/moving settler");
-				if (desiredCityLocation != null)
-				{
-					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can put a city at " + desiredCityLocation);
-					desiredSpecialUnitLocations.put (AIUnitType.BUILD_CITY, Arrays.asList (desiredCityLocation));
-				}
-			}
+			final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> desiredSpecialUnitLocationsOnEachPlane = getUnitAI ().determineDesiredSpecialUnitLocationsOnEachPlane
+				(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getSessionDescription (), mom.getServerDB ());
 			
 			if (((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) || (isRaiders)) && (!mobileUnits.isEmpty ()))
 			{
@@ -295,12 +259,29 @@ public final class MomAIImpl implements MomAI
 								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 								final boolean isUnitFactory = (isRaiders) || ((unitFactories != null) && (unitFactories.contains (cityLocation)));
 	
-								// Only consider constructing the one of the two best units we can make here, and then only if we can afford them
-								// Also explicitly filter out settlers and other non-combat units (which have rating 0)
-								final List<String> constructableHere = !isUnitFactory ? null :
-									constructableUnits.stream ().filter (u -> (cityLocation.equals (u.getCityLocation ())) && (u.getAverageRating () > 0)).sorted ().limit (2).filter
-										(u -> u.isCanAffordMaintenance ()).map (u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
-		
+								// Get a list of combat units we'll consider building here, which is only the best 2 in our list, and even then only if this
+								// city is a unit factory.  For now, don't worry about whether we can actually afford them or not.
+								final List<String> constructableCombatUnits = !isUnitFactory ? new ArrayList<String> () :
+									constructableUnits.stream ().filter (u -> (cityLocation.equals (u.getCityLocation ())) && (u.getAiUnitType () == AIUnitType.COMBAT_UNIT)).sorted ().limit (2).map
+										(u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
+										
+								// Now make a complete map of all units we could construct at this city, broken down by unit type.
+								final Map<AIUnitType, List<AIConstructableUnit>> constructableHere = new HashMap<AIUnitType, List<AIConstructableUnit>> ();
+								for (final AIConstructableUnit thisUnit : constructableUnits)
+									if ((cityLocation.equals (thisUnit.getCityLocation ())) && (thisUnit.isCanAffordMaintenance ()) &&
+										((thisUnit.getAiUnitType () != AIUnitType.COMBAT_UNIT) || (constructableCombatUnits.contains (thisUnit.getUnit ().getUnitID ()))))
+									{
+										List<AIConstructableUnit> unitsOfThisType = constructableHere.get (thisUnit.getAiUnitType ());
+										if (unitsOfThisType == null)
+										{
+											unitsOfThisType = new ArrayList<AIConstructableUnit> ();
+											constructableHere.put (thisUnit.getAiUnitType (), unitsOfThisType);
+										}
+										
+										unitsOfThisType.add (thisUnit);
+									}
+
+								// Now we can decide what to build
 								getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnits, constructableHere, wantedUnitTypes,
 									priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
 									mom.getSessionDescription (), mom.getServerDB ());

@@ -749,6 +749,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="aiUnitCalculations" ref="aiUnitCalculations" />
 		<property name="aiUnitRatingCalculations" ref="aiUnitRatingCalculations" />
+		<property name="cityAI" ref="cityAI" />
+		<property name="cityProcessing" ref="cityProcessing" />
 	</bean>
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">

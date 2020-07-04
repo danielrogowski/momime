@@ -12,5 +12,8 @@ enum AICityConstructionType
 	COMBAT_UNIT,
 	
 	/** Build a settler */ 
-	SETTLER;
+	SETTLER,
+	
+	/** Build an engineer */
+	ENGINEER;
 }

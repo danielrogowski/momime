@@ -3,6 +3,7 @@ package momime.server.ai;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -351,9 +352,9 @@ public final class CityAIImpl implements CityAI
 	 * @param cityData True info on the city, so it can be updated
 	 * @param numberOfCities Number of cities we own
 	 * @param isUnitFactory Is this one of our unit factories? (i.e. one of our cities that can construct the best units we can currently make?)
-	 * @param needForNewUnits Estimate of how badly we need to construct new units; 0 or lower = we've got plenty; 10 or higher = desperate for more units
-	 * @param combatUnitIDs If we are going to construct a unit, a list of the unit IDs that we should pick from 
+	 * @param constructableHere Map of all units we could choose to construct, broken down by unit type
 	 * @param wantedUnitTypes List of unit types we have a need to build 
+	 * @param needForNewUnits Estimate of how badly we need to construct new units; 0 or lower = we've got plenty; 10 or higher = desperate for more units
 	 * @param knownTerrain Known overland terrain
 	 * @param knownBuildings Known list of buildings
 	 * @param sd Session description
@@ -361,9 +362,9 @@ public final class CityAIImpl implements CityAI
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
 	@Override
-	public void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
-		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnits, final List<String> combatUnitIDs, final List<AIUnitType> wantedUnitTypes,
-		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
+	public final void decideWhatToBuild (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
+		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnits, Map<AIUnitType, List<AIConstructableUnit>> constructableHere,
+		final List<AIUnitType> wantedUnitTypes, final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
 	{
 		log.trace ("Entering decideWhatToBuild: " + cityLocation);
@@ -402,7 +403,7 @@ public final class CityAIImpl implements CityAI
 			}
 			
 			// or we have only 1 city, in which case its our unit factory by definition
-			if ((isUnitFactory) && (needForNewUnits > 0) && (combatUnitIDs != null) && (combatUnitIDs.size () > 0))
+			if ((isUnitFactory) && (needForNewUnits > 0) && (constructableHere.containsKey (AIUnitType.COMBAT_UNIT)))
 			{
 				choices.add (needForNewUnits, AICityConstructionType.COMBAT_UNIT);
 				
@@ -413,7 +414,8 @@ public final class CityAIImpl implements CityAI
 			}
 			
 			// Don't waste our good unit factory building settlers if there's somewhere else that can do it
-			if ((wantedUnitTypes != null) && (wantedUnitTypes.contains (AIUnitType.BUILD_CITY)) && ((numberOfCities == 1) || (!isUnitFactory)))
+			if ((wantedUnitTypes != null) && (wantedUnitTypes.contains (AIUnitType.BUILD_CITY)) && (constructableHere.containsKey (AIUnitType.BUILD_CITY)) &&
+				((numberOfCities == 1) || (!isUnitFactory)))
 			{
 				choices.add (4, AICityConstructionType.SETTLER);
 				
@@ -422,6 +424,18 @@ public final class CityAIImpl implements CityAI
 
 				debugChoices.append ("4:Settler");
 			}
+			
+			// Engineers are very similar to settlers
+			if ((wantedUnitTypes != null) && (wantedUnitTypes.contains (AIUnitType.BUILD_ROAD)) && (constructableHere.containsKey (AIUnitType.BUILD_ROAD)) &&
+					((numberOfCities == 1) || (!isUnitFactory)))
+				{
+					choices.add (2, AICityConstructionType.ENGINEER);
+					
+					if (debugChoices.length () > 0)
+						debugChoices.append (", ");
+
+					debugChoices.append ("2:Engineer");
+				}
 			
 			// Make random choice
 			// It is possible to get null here (literally nothing to build) if its not a unit factory, nowhere new to build cities, and we have every building already made
@@ -467,32 +481,33 @@ public final class CityAIImpl implements CityAI
 						break;
 						
 					case COMBAT_UNIT:
+					{
 						// The list has already been filtered to ensure it lists only units we have the necessary pre-requisite buildings to construct
 						// and only units we can afford the maintenance of, so we can literally just pick one without worrying about it
+						final List<AIConstructableUnit> matchingUnits = constructableHere.get (AIUnitType.COMBAT_UNIT);
 						cityData.setCurrentlyConstructingBuildingID (null);
-						cityData.setCurrentlyConstructingUnitID (combatUnitIDs.get (getRandomUtils ().nextInt (combatUnitIDs.size ())));
+						cityData.setCurrentlyConstructingUnitID (matchingUnits.get (getRandomUtils ().nextInt (matchingUnits.size ())).getUnit ().getUnitID ());
 						decided = true;
 						break;
-						
+					}
+
 					case SETTLER:
-						String settlerUnitID = null;
-						final Iterator<UnitSvr> unitDefsIter = db.getUnits ().iterator ();
-						while ((settlerUnitID == null) && (unitDefsIter.hasNext ()))
-						{
-							final UnitSvr unitDef = unitDefsIter.next ();
-							if ((cityData.getCityRaceID ().equals (unitDef.getUnitRaceID ())) &&
-								(unitDef.getUnitHasSkill ().stream ().anyMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST))))
-								settlerUnitID = unitDef.getUnitID ();
-						}
-						
-						if (settlerUnitID != null)
-						{
-							cityData.setCurrentlyConstructingBuildingID (null);
-							cityData.setCurrentlyConstructingUnitID (settlerUnitID);
-							decided = true;
-						}
-						
+					{
+						final List<AIConstructableUnit> matchingUnits = constructableHere.get (AIUnitType.BUILD_CITY);
+						cityData.setCurrentlyConstructingBuildingID (null);
+						cityData.setCurrentlyConstructingUnitID (matchingUnits.get (getRandomUtils ().nextInt (matchingUnits.size ())).getUnit ().getUnitID ());
+						decided = true;
 						break;
+					}
+					
+					case ENGINEER:
+					{
+						final List<AIConstructableUnit> matchingUnits = constructableHere.get (AIUnitType.BUILD_ROAD);
+						cityData.setCurrentlyConstructingBuildingID (null);
+						cityData.setCurrentlyConstructingUnitID (matchingUnits.get (getRandomUtils ().nextInt (matchingUnits.size ())).getUnit ().getUnitID ());
+						decided = true;
+						break;
+					}
 				}
 		}
 		

@@ -36,6 +36,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
@@ -426,8 +427,11 @@ public final class CityServerUtilsImpl implements CityServerUtils
 					throw new MomException ("listMissingRoadCellsBetween: Road tracing moved to a cell off the map");
 				
 				if (!coords.equals (firstCityLocation))
-					if (fogOfWarMemory.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().getRoadTileTypeID () == null)
+				{
+					final OverlandMapTerrainData terrainData = fogOfWarMemory.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+					if ((terrainData != null) && (terrainData.getRoadTileTypeID () == null))
 						missingRoadCells.add (new MapCoordinates3DEx (coords));
+				}
 			}
 		}
 		

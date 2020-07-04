@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -56,6 +57,7 @@ import momime.server.database.SpellSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.messages.ServerMemoryGridCellUtils;
+import momime.server.process.CityProcessing;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -105,6 +107,12 @@ public final class UnitAIImpl implements UnitAI
 	/** Methods that the AI uses to calculate stats about types of units and rating how good units are */
 	private AIUnitCalculations aiUnitCalculations;
 		
+	/** AI decisions about cities */
+	private CityAI cityAI;
+	
+	/** City processing methods */
+	private CityProcessing cityProcessing;
+	
 	/**
 	 * Lists every unit this AI player can build at every city they own, as well as any units they can summon, sorted with the best units first.
 	 * This won't list heroes, since if we cast Summon Hero/Champion, we never know which one we're going to get.
@@ -498,6 +506,94 @@ public final class UnitAIImpl implements UnitAI
 	}
 	
 	/**
+	 * @param playerID AI player whose turn it is
+	 * @param mobileUnits List of units AI decided it can move each turn; note all non-combat units are automatically considered to be mobile
+	 * @return List of non-combat units, broken up by what type they are and which plane they are on
+	 */
+	@Override
+	public final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> determineSpecialistUnitsOnEachPlane
+		(final int playerID, final List<AIUnitAndRatings> mobileUnits)
+	{
+		log.trace ("Entering determineSpecialistUnitsOnEachPlane: AI player ID " + playerID);
+
+		final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> specialistUnitsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> ();
+		for (final AIUnitAndRatings mu : mobileUnits)
+			if (mu.getAiUnitType () != AIUnitType.COMBAT_UNIT)
+			{
+				log.debug ("AI Player ID " + playerID + " can move " + mu);
+				
+				// Make sure the plane is listed
+				Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (mu.getUnit ().getUnitLocation ().getZ ());
+				if (specialistUnitsOnThisPlane == null)
+				{
+					specialistUnitsOnThisPlane = new HashMap<AIUnitType, List<AIUnitAndRatings>> ();
+					specialistUnitsOnEachPlane.put (mu.getUnit ().getUnitLocation ().getZ (), specialistUnitsOnThisPlane);
+				}
+				
+				// Make sure the unit type is listed
+				List<AIUnitAndRatings> specialistUnits = specialistUnitsOnThisPlane.get (mu.getAiUnitType ());
+				if (specialistUnits == null)
+				{
+					specialistUnits = new ArrayList<AIUnitAndRatings> ();
+					specialistUnitsOnThisPlane.put (mu.getAiUnitType (), specialistUnits);
+				}
+				
+				// Now can just add it
+				specialistUnits.add (mu);
+				log.debug ("AI Player ID " + playerID + " has a spare " + mu.getAiUnitType () + " Unit URN " + mu.getUnit ().getUnitURN () + " at " + mu.getUnit ().getUnitLocation ());
+			}
+		
+		log.trace ("Exiting determineSpecialistUnitsOnEachPlane");
+		return specialistUnitsOnEachPlane;
+	}
+
+	/**
+	 * @param playerID AI player whose turn it is
+	 * @param players List of players in this session
+	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
+	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Map listing all locations on each plane that the AI wants to send specialised units of each type
+	 * @throws PlayerNotFoundException If we can't find the player who owns the city
+	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
+	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
+	 */
+	@Override
+	public final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> determineDesiredSpecialUnitLocationsOnEachPlane (final int playerID, final List<PlayerServerDetails> players,
+		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		log.trace ("Entering determineDesiredSpecialUnitLocationsOnEachPlane: AI player ID " + playerID);
+		
+		final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> desiredSpecialUnitLocationsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> ();
+		for (int plane = 0; plane < sd.getOverlandMapSize ().getDepth (); plane++)
+		{
+			final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = new HashMap<AIUnitType, List<MapCoordinates3DEx>> ();
+			desiredSpecialUnitLocationsOnEachPlane.put (plane, desiredSpecialUnitLocations);
+		
+			// Best place on each plane to put a new city
+			final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (fogOfWarMemory.getMap (), trueMap, plane, false, sd, db, "considering building/moving settler");
+			if (desiredCityLocation != null)
+			{
+				log.debug ("AI Player ID " + playerID + " can put a city at " + desiredCityLocation);
+				desiredSpecialUnitLocations.put (AIUnitType.BUILD_CITY, Arrays.asList (desiredCityLocation));
+			}
+			
+			// All places on each plane that we want to put road tiles
+			final List<MapCoordinates3DEx> missingRoadCells = getCityProcessing ().listMissingRoadCells (playerID, plane, null, players, fogOfWarMemory, sd, db);
+			if ((missingRoadCells != null) && (missingRoadCells.size () > 0))
+			{
+				log.debug ("AI Player ID " + playerID + " has " + missingRoadCells.size () + " cells it wants to put road on plane " + plane);
+				desiredSpecialUnitLocations.put (AIUnitType.BUILD_ROAD, missingRoadCells);
+			}
+		}
+		
+		log.trace ("Exiting determineDesiredSpecialUnitLocationsOnEachPlane");
+		return desiredSpecialUnitLocationsOnEachPlane;
+	}
+	
+	/**
 	 * Uses an ordered list of AI movement codes to try to decide what to do with a particular unit stack
 	 * 
 	 * @param units The units to move
@@ -576,7 +672,8 @@ public final class UnitAIImpl implements UnitAI
 					break;
 				
 				case BUILD_ROAD:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (doubleMovementDistances, (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (),
+						desiredSpecialUnitLocations.get (AIUnitType.BUILD_ROAD));
 					break;
 				
 				case PURIFY:
@@ -958,5 +1055,37 @@ public final class UnitAIImpl implements UnitAI
 	public final void setAiUnitCalculations (final AIUnitCalculations calc)
 	{
 		aiUnitCalculations = calc;
+	}
+
+	/**
+	 * @return AI decisions about cities
+	 */
+	public final CityAI getCityAI ()
+	{
+		return cityAI;
+	}
+
+	/**
+	 * @param ai AI decisions about cities
+	 */
+	public final void setCityAI (final CityAI ai)
+	{
+		cityAI = ai;
+	}
+	
+	/**
+	 * @return City processing methods
+	 */
+	public final CityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final CityProcessing obj)
+	{
+		cityProcessing = obj;
 	}
 }

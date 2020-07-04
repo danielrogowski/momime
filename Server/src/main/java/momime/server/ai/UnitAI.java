@@ -131,7 +131,7 @@ public interface UnitAI
 	 */
 	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations,
+		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations,
 		final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException;
 	
@@ -155,6 +155,6 @@ public interface UnitAI
 	 */
 	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
+		final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

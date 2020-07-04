@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -153,10 +154,10 @@ public final class MomAIImpl implements MomAI
 				}
 			
 			// What's the best place we can put a new city on each plane?
-			final Map<Integer, Map<AIUnitType, MapCoordinates3DEx>> desiredSpecialUnitLocationsOnEachPlane = new HashMap<Integer, Map<AIUnitType, MapCoordinates3DEx>> ();
+			final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> desiredSpecialUnitLocationsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> ();
 			for (int plane = 0; plane < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); plane++)
 			{
-				final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations = new HashMap<AIUnitType, MapCoordinates3DEx> ();
+				final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = new HashMap<AIUnitType, List<MapCoordinates3DEx>> ();
 				desiredSpecialUnitLocationsOnEachPlane.put (plane, desiredSpecialUnitLocations);
 				
 				final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (priv.getFogOfWarMemory ().getMap (),
@@ -164,7 +165,7 @@ public final class MomAIImpl implements MomAI
 				if (desiredCityLocation != null)
 				{
 					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can put a city at " + desiredCityLocation);
-					desiredSpecialUnitLocations.put (AIUnitType.BUILD_CITY, desiredCityLocation);
+					desiredSpecialUnitLocations.put (AIUnitType.BUILD_CITY, Arrays.asList (desiredCityLocation));
 				}
 			}
 			
@@ -276,8 +277,8 @@ public final class MomAIImpl implements MomAI
 				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 				{
 					// What unit types do we want to build on this plane?
-					final Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (z);						// May be null					
-					final Map<AIUnitType, MapCoordinates3DEx> desiredSpecialUnitLocations = desiredSpecialUnitLocationsOnEachPlane.get (z);	// Always a valid list, even if empty
+					final Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (z);								// May be null					
+					final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = desiredSpecialUnitLocationsOnEachPlane.get (z);	// Always a valid list, even if empty
 					
 					// We need to NOT have one of that type of unit already, so that we want to build one
 					final List<AIUnitType> wantedUnitTypes = desiredSpecialUnitLocations.keySet ().stream ().filter (ut ->

@@ -143,10 +143,10 @@ public interface UnitAIMovement
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param currentLocation Current location of settler unit
-	 * @param desiredCityLocation Location where we want to put a city
+	 * @param desiredCityLocations Location where we want to put cities
 	 * @return See AIMovementDecision for explanation of return values
 	 */
-	public AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final MapCoordinates3DEx desiredCityLocation);
+	public AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final List<MapCoordinates3DEx> desiredCityLocations);
 
 	/**
 	 * AI looks for a good place for engineers to build a road

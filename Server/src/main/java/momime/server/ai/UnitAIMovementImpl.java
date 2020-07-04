@@ -582,29 +582,59 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * 
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param currentLocation Current location of settler unit
-	 * @param desiredCityLocation Location where we want to put a city
+	 * @param desiredCityLocations Location where we want to put cities
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final MapCoordinates3DEx desiredCityLocation)
+	public final AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final List<MapCoordinates3DEx> desiredCityLocations)
 	{
 		log.trace ("Entering considerUnitMovement_BuildCity");
 
 		// If we have no idea where to put a city, then nothing to do
 		final AIMovementDecision decision;
-		if (desiredCityLocation == null)
+		if ((desiredCityLocations == null) || (desiredCityLocations.size () == 0))
 			decision = null;
 		
-		// If we're already at the right spot, then go ahead and make a city
-		else if (desiredCityLocation.equals (currentLocation))
+		// If we're already at any of the right spots, then go ahead and make a city
+		else if (desiredCityLocations.contains (currentLocation))
+		{
+			log.debug ("Unit movement AI - Decided to stay at " + currentLocation + " and build a city here");
 			decision = new AIMovementDecision (UnitSpecialOrder.BUILD_CITY);
+		}
 		
-		// If we can head towards the location where we want to put a city then do so
-		else if (doubleMovementDistances [desiredCityLocation.getZ ()] [desiredCityLocation.getY ()] [desiredCityLocation.getX ()] >= 0)
-			decision = new AIMovementDecision (desiredCityLocation);
-		
+		// Find the closest location where we want to put a city and head there
 		else
-			decision = null;
+		{
+			final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+			Integer doubleDestinationDistance = null;
+			
+			// Check all locations we want to head to and find the closest one (or multiple closest ones)
+			for (final MapCoordinates3DEx location : desiredCityLocations)
+			{
+				final int doubleThisDistance = doubleMovementDistances [location.getZ ()] [location.getY ()] [location.getX ()];
+				if (doubleThisDistance >= 0)
+				{
+					// We can get there, eventually
+					if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+					{
+						doubleDestinationDistance = doubleThisDistance;
+						destinations.clear ();
+						destinations.add (location);
+					}
+					else if (doubleThisDistance == doubleDestinationDistance)
+						destinations.add (location);
+				}
+			}
+			
+			if (destinations.isEmpty ())
+				decision = null;		// No reachable build locations
+			else
+			{
+				final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+				log.debug ("Unit movement AI - Decided to go head towards " + chosenLocation + " to build a city there which is " + doubleDestinationDistance + " double-moves away");
+				decision = new AIMovementDecision (chosenLocation);
+			}
+		}
 		
 		log.trace ("Exiting considerUnitMovement_BuildCity = " + decision);
 		return decision;

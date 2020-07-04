@@ -430,6 +430,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
 	<bean id="spellServerUtils" class="momime.server.utils.SpellServerUtilsImpl">
@@ -577,6 +580,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->

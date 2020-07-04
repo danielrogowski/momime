@@ -104,4 +104,24 @@ public interface CityServerUtils
 	 * @return Number of cities the player has
 	 */
 	public int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID);
+
+	/**
+	 * Attempts to find all the cells that we need to build a road on in order to join up two cities.  We don't know that its actually possible yet - maybe they're on two different islands.
+	 * If we fail to create a road, that's fine, the method just exits with an empty list, it isn't an error.
+	 * 
+	 * @param firstCityLocation Location of first city
+	 * @param secondCityLocation Location of second city
+	 * @param playerID Player who owns the cities
+	 * @param players List of players in this session
+	 * @param fogOfWarMemory Known terrain, buildings, spells and so on
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return List of map cells where we need to add road
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
+	 */
+	public List<MapCoordinates3DEx> listMissingRoadCellsBetween (final MapCoordinates3DEx firstCityLocation, final MapCoordinates3DEx secondCityLocation, final int playerID,
+		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

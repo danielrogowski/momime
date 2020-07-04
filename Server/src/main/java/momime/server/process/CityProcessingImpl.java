@@ -21,12 +21,10 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.UnitCalculations;
-import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.internal.CityProductionBreakdown;
-import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
@@ -43,7 +41,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -61,6 +58,7 @@ import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
 import momime.server.utils.UnitAddLocation;
@@ -121,6 +119,9 @@ public final class CityProcessingImpl implements CityProcessing
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -272,41 +273,70 @@ public final class CityProcessingImpl implements CityProcessing
 			// Connect roads between starter cities owned by this player
 			if (numberOfCities > 1)
 				for (final PlaneSvr plane : db.getPlanes ())
-				{
-					final List<MapCoordinates3DEx> citiesOnThisPlane = new ArrayList<MapCoordinates3DEx> ();
-					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-						for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-						{
-							final ServerGridCellEx mc = (ServerGridCellEx) gsk.getTrueMap ().getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
-							final OverlandMapCityData cityData = mc.getCityData ();
-							if ((cityData != null) && (cityData.getCityOwnerID () == thisPlayer.getPlayerDescription ().getPlayerID ()))
-								citiesOnThisPlane.add (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()));
-						}
-					
-					// Check every pair of cities to see which are close
-					for (int firstCityNumber = 0; firstCityNumber < citiesOnThisPlane.size () - 1; firstCityNumber++)
-					{
-						final MapCoordinates3DEx firstCityLocation = citiesOnThisPlane.get (firstCityNumber);
-						for (int secondCityNumber = firstCityNumber + 1; secondCityNumber < citiesOnThisPlane.size (); secondCityNumber++)
-						{
-							final MapCoordinates3DEx secondCityLocation = citiesOnThisPlane.get (secondCityNumber);
-							if (getCoordinateSystemUtils ().determineStep2DDistanceBetween (sd.getOverlandMapSize (), firstCityLocation, secondCityLocation) <= CommonDatabaseConstants.CITY_SEPARATION_TO_GET_STARTER_ROADS)
-								createRoadBetween (firstCityLocation, secondCityLocation, thisPlayer.getPlayerDescription ().getPlayerID (), players, gsk.getTrueMap (), sd, db);
-						}
-					}
-				}
+					createStartingRoads (thisPlayer.getPlayerDescription ().getPlayerID (), plane.getPlaneNumber (), players, gsk.getTrueMap (), sd, db);
 		}
 
 		log.trace ("Exiting createStartingCities");
 	}
 
 	/**
-	 * Attempts to create a road between two cities.  We don't know that its actually possible yet - maybe they're on two different islands.
-	 * If we fail to create a road, that's fine, the method just exits, it isn't an error.
+	 * Attempts to find all the cells that we need to build a road on in order to join up all cities owned by a particular player on a particular plane.
 	 * 
-	 * @param firstCityLocation Location of first city
-	 * @param secondCityLocation Location of second city
 	 * @param playerID Player who owns the cities
+	 * @param plane Plane to check cities on
+	 * @param maximumSeparation Connect cities who are at most this distance apart; null = connect all cities regardless of how far apart they are
+	 * @param players List of players in this session
+	 * @param fogOfWarMemory Known terrain, buildings, spells and so on
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return List of map cells where we need to add road
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
+	 */
+	@Override
+	public final List<MapCoordinates3DEx> listMissingRoadCells (final int playerID, final int plane, final Integer maximumSeparation,
+		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		final List<MapCoordinates3DEx> citiesOnThisPlane = new ArrayList<MapCoordinates3DEx> ();
+		for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+			{
+				final MemoryGridCell mc = fogOfWarMemory.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
+				final OverlandMapCityData cityData = mc.getCityData ();
+				if ((cityData != null) && (cityData.getCityOwnerID () == playerID))
+					citiesOnThisPlane.add (new MapCoordinates3DEx (x, y, plane));
+			}
+		
+		// Check every pair of cities to see which are close
+		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();
+		for (int firstCityNumber = 0; firstCityNumber < citiesOnThisPlane.size () - 1; firstCityNumber++)
+		{
+			final MapCoordinates3DEx firstCityLocation = citiesOnThisPlane.get (firstCityNumber);
+			for (int secondCityNumber = firstCityNumber + 1; secondCityNumber < citiesOnThisPlane.size (); secondCityNumber++)
+			{
+				final MapCoordinates3DEx secondCityLocation = citiesOnThisPlane.get (secondCityNumber);
+				if ((maximumSeparation == null) || (getCoordinateSystemUtils ().determineStep2DDistanceBetween
+					(sd.getOverlandMapSize (), firstCityLocation, secondCityLocation) <= maximumSeparation))
+				{
+					final List<MapCoordinates3DEx> newCells = getCityServerUtils ().listMissingRoadCellsBetween (firstCityLocation, secondCityLocation, playerID, players, fogOfWarMemory, sd, db);
+					for (final MapCoordinates3DEx coords : newCells)
+						if (!missingRoadCells.contains (coords))
+							missingRoadCells.add (coords);
+				}
+			}
+		}
+		
+		log.trace ("Exiting listMissingRoadCells = " + missingRoadCells.size ());
+		return missingRoadCells;
+	}
+	
+	/**
+	 * Creates all starter roads between raider cities on one plane.
+	 * 
+	 * @param playerID Player who owns the cities
+	 * @param plane Plane to create roads on
 	 * @param players List of players in this session
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param sd Session description
@@ -315,53 +345,26 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
-	private final void createRoadBetween (final MapCoordinates3DEx firstCityLocation, final MapCoordinates3DEx secondCityLocation, final int playerID,
+	private final void createStartingRoads (final int playerID, final int plane,
 		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering createRoadBetween: " + firstCityLocation + " to " + secondCityLocation);
+		log.trace ("Entering createStartingRoads");
 		
-		// Don't just create a straight line - what's the shortest distance for a basic unit like a spearman to walk from one city to the other, going around mountains for example?
-		final int [] [] [] doubleMovementDistances			= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final int [] [] [] movementDirections					= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] canMoveToInOneTurn			= new boolean [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-
-		final AvailableUnit dummyUnit = new AvailableUnit ();
-		dummyUnit.setUnitID (CommonDatabaseConstants.UNIT_ID_EXAMPLE);
-		getUnitUtils ().initializeUnitSkills (dummyUnit, 0, db);		// otherwise it does not even get the "walking" skill
-		
-		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
-		selectedUnits.add (getUnitUtils ().expandUnitDetails (dummyUnit, null, null, null, players, trueMap, db));
-		
-		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, trueMap, db);
-		
-		getServerUnitCalculations ().calculateOverlandMovementDistances (firstCityLocation.getX (), firstCityLocation.getY (), firstCityLocation.getZ (),
-			playerID, trueMap, unitStack, 0, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, players, sd, db);
-		
-		if (doubleMovementDistances [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] >= 0)
+		final List<MapCoordinates3DEx> missingRoadCells = listMissingRoadCells (playerID, plane, CommonDatabaseConstants.CITY_SEPARATION_TO_GET_STARTER_ROADS,
+			players, trueMap, sd, db);
+		if (missingRoadCells.size () > 0)
 		{
-			// Found a route between the two cities - what kind of road are we making
-			final PlaneSvr plane = (PlaneSvr) db.findPlane (firstCityLocation.getZ (), "createRoadBetween");
-			final String roadTileTypeID = ((plane.isRoadsEnchanted () != null) && (plane.isRoadsEnchanted ())) ?
+			final PlaneSvr planeDef = (PlaneSvr) db.findPlane (plane, "createStartingRoads");
+			final String roadTileTypeID = ((planeDef.isRoadsEnchanted () != null) && (planeDef.isRoadsEnchanted ())) ?
 				CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
-
-			// Trace route between the two cities
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx (secondCityLocation);
-			while (!coords.equals (firstCityLocation))
-			{
-				final int d = getCoordinateSystemUtils ().normalizeDirection (sd.getOverlandMapSize ().getCoordinateSystemType (),
-					movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
-				
-				if (!getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, d))
-					throw new MomException ("createRoadBetween: Road tracing moved to a cell off the map");
-				
-				if (!coords.equals (firstCityLocation))
-					trueMap.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setRoadTileTypeID (roadTileTypeID);
-			}
+			
+			// This is happening prior to anybody's initial FOW being calculated, so we're fine just to update the trueMap directly and not worry about who can see the change
+			for (final MapCoordinates3DEx coords : missingRoadCells)
+				trueMap.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 		}
 		
-		log.trace ("Exiting createRoadBetween");
+		log.trace ("Exiting createStartingRoads");
 	}
 	
 	/**
@@ -973,5 +976,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
 	}
 }

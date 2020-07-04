@@ -43,6 +43,25 @@ public interface CityProcessing
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**
+	 * Attempts to find all the cells that we need to build a road on in order to join up all cities owned by a particular player on a particular plane.
+	 * 
+	 * @param playerID Player who owns the cities
+	 * @param plane Plane to check cities on
+	 * @param maximumSeparation Connect cities who are at most this distance apart; null = connect all cities regardless of how far apart they are
+	 * @param players List of players in this session
+	 * @param fogOfWarMemory Known terrain, buildings, spells and so on
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return List of map cells where we need to add road
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
+	 */
+	public List<MapCoordinates3DEx> listMissingRoadCells (final int playerID, final int plane, final Integer maximumSeparation,
+		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
 	 * All cities owner grow population a little and progress a little towards construction projects
 	 *
 	 * @param onlyOnePlayerID If zero, will process grow cities + progress construction for all players; if specified will do so only for the specified player

@@ -1,5 +1,6 @@
 package momime.server.utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,9 +20,12 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
@@ -32,8 +36,11 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
@@ -73,6 +80,15 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
+	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/**
 	 * @param location Location we we base our search from
@@ -356,6 +372,70 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	}
 	
 	/**
+	 * Attempts to find all the cells that we need to build a road on in order to join up two cities.  We don't know that its actually possible yet - maybe they're on two different islands.
+	 * If we fail to create a road, that's fine, the method just exits with an empty list, it isn't an error.
+	 * 
+	 * @param firstCityLocation Location of first city
+	 * @param secondCityLocation Location of second city
+	 * @param playerID Player who owns the cities
+	 * @param players List of players in this session
+	 * @param fogOfWarMemory Known terrain, buildings, spells and so on
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return List of map cells where we need to add road
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
+	 */
+	@Override
+	public final List<MapCoordinates3DEx> listMissingRoadCellsBetween (final MapCoordinates3DEx firstCityLocation, final MapCoordinates3DEx secondCityLocation, final int playerID,
+		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		log.trace ("Entering listMissingRoadCellsBetween: " + firstCityLocation + " to " + secondCityLocation);
+		
+		// Don't just create a straight line - what's the shortest distance for a basic unit like a spearman to walk from one city to the other, going around mountains for example?
+		final int [] [] [] doubleMovementDistances			= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final int [] [] [] movementDirections					= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] canMoveToInOneTurn			= new boolean [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+		final boolean [] [] [] movingHereResultsInAttack	= new boolean [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
+
+		final AvailableUnit dummyUnit = new AvailableUnit ();
+		dummyUnit.setUnitID (CommonDatabaseConstants.UNIT_ID_EXAMPLE);
+		getUnitUtils ().initializeUnitSkills (dummyUnit, 0, db);		// otherwise it does not even get the "walking" skill
+		
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
+		selectedUnits.add (getUnitUtils ().expandUnitDetails (dummyUnit, null, null, null, players, fogOfWarMemory, db));
+		
+		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
+		
+		getServerUnitCalculations ().calculateOverlandMovementDistances (firstCityLocation.getX (), firstCityLocation.getY (), firstCityLocation.getZ (),
+			playerID, fogOfWarMemory, unitStack, 0, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, players, sd, db);
+		
+		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();
+		if (doubleMovementDistances [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] >= 0)
+		{
+			// Trace route between the two cities
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (secondCityLocation);
+			while (!coords.equals (firstCityLocation))
+			{
+				final int d = getCoordinateSystemUtils ().normalizeDirection (sd.getOverlandMapSize ().getCoordinateSystemType (),
+					movementDirections [coords.getZ ()] [coords.getY ()] [coords.getX ()] + 4);
+				
+				if (!getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, d))
+					throw new MomException ("listMissingRoadCellsBetween: Road tracing moved to a cell off the map");
+				
+				if (!coords.equals (firstCityLocation))
+					if (fogOfWarMemory.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().getRoadTileTypeID () == null)
+						missingRoadCells.add (new MapCoordinates3DEx (coords));
+			}
+		}
+		
+		log.trace ("Exiting listMissingRoadCellsBetween = " + missingRoadCells.size ());
+		return missingRoadCells;
+	}
+	
+	/**
 	 * @return MemoryBuilding utils
 	 */
 	public final MemoryBuildingUtils getMemoryBuildingUtils ()
@@ -465,5 +545,53 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
+	}
+	
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
+	}
+	
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

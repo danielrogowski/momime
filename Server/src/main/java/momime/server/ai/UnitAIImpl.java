@@ -808,6 +808,8 @@ public final class UnitAIImpl implements UnitAI
 				
 				if (coords == null)
 					tookAction = false;
+				else if ((coords.getX () == moveFrom.getX ()) && (coords.getY () == moveFrom.getY ()))
+					tookAction = false;
 				else
 				{
 					tookAction = true;		// Found valid move

@@ -200,13 +200,11 @@ public final class MomAIImpl implements MomAI
 			else
 			{
 				// Which city can build the best units? (even if we can't afford to make another one)
-				final OptionalInt bestAverageRatingFromConstructableUnits = constructableUnits.stream ().filter
-					(u -> u.getCityLocation () != null).mapToInt (u -> u.getAverageRating ()).max ();
-				
+				final OptionalInt bestAverageRatingFromConstructableUnits = cityConstructableCombatUnits.stream ().mapToInt (u -> u.getAverageRating ()).max ();				
 				if (!bestAverageRatingFromConstructableUnits.isPresent ())
 				{
 					unitFactories = null;
-					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't construct any units in any cities");
+					log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't construct any combat units in any cities");
 				}
 				else
 				{
@@ -214,8 +212,8 @@ public final class MomAIImpl implements MomAI
 	
 					// What units can we make that match our best?
 					// This restricts to only units we can afford maintenance of, so if our economy is struggling, we may get an empty list here.
-					final List<AIConstructableUnit> bestConstructableUnits = constructableUnits.stream ().filter
-						(u -> (u.getCityLocation () != null) && (u.isCanAffordMaintenance ()) && (u.getAverageRating () == bestAverageRatingFromConstructableUnits.getAsInt ())).collect (Collectors.toList ());
+					final List<AIConstructableUnit> bestConstructableUnits = cityConstructableCombatUnits.stream ().filter
+						(u -> (u.isCanAffordMaintenance ()) && (u.getAverageRating () == bestAverageRatingFromConstructableUnits.getAsInt ())).collect (Collectors.toList ());
 					
 					unitFactories = bestConstructableUnits.stream ().map (u -> u.getCityLocation ()).distinct ().collect (Collectors.toList ());
 					unitFactories.forEach (c -> log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + "'s city at " + c + " is designated as a unit factory")); 
@@ -229,8 +227,9 @@ public final class MomAIImpl implements MomAI
 				// So base this on, 1) how many locations are underdefended, 2) whether we have sufficient mobile units.
 				// This could be a bit more clever, like "are there places we want to attack that we need more/stronger units to consider the attack",
 				// but I don't want the AI churning out armies of swordsmen just to try to beat a great drake.
+				final int mobileCombatUnits = (int) mobileUnits.stream ().filter (u -> u.getAiUnitType () == AIUnitType.COMBAT_UNIT).count ();
 				needForNewUnits = 3 + underdefendedLocations.size () +
-					(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 5) - mobileUnits.size ();
+					(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 5) - mobileCombatUnits;
 			}
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnits);
 			
@@ -261,15 +260,15 @@ public final class MomAIImpl implements MomAI
 	
 								// Get a list of combat units we'll consider building here, which is only the best 2 in our list, and even then only if this
 								// city is a unit factory.  For now, don't worry about whether we can actually afford them or not.
-								final List<String> constructableCombatUnits = !isUnitFactory ? new ArrayList<String> () :
-									constructableUnits.stream ().filter (u -> (cityLocation.equals (u.getCityLocation ())) && (u.getAiUnitType () == AIUnitType.COMBAT_UNIT)).sorted ().limit (2).map
+								final List<String> bestConstructableCombatUnitsHere = !isUnitFactory ? new ArrayList<String> () :
+									cityConstructableCombatUnits.stream ().filter (u -> cityLocation.equals (u.getCityLocation ())).sorted ().limit (2).map
 										(u -> u.getUnit ().getUnitID ()).collect (Collectors.toList ());
 										
 								// Now make a complete map of all units we could construct at this city, broken down by unit type.
 								final Map<AIUnitType, List<AIConstructableUnit>> constructableHere = new HashMap<AIUnitType, List<AIConstructableUnit>> ();
 								for (final AIConstructableUnit thisUnit : constructableUnits)
 									if ((cityLocation.equals (thisUnit.getCityLocation ())) && (thisUnit.isCanAffordMaintenance ()) &&
-										((thisUnit.getAiUnitType () != AIUnitType.COMBAT_UNIT) || (constructableCombatUnits.contains (thisUnit.getUnit ().getUnitID ()))))
+										((thisUnit.getAiUnitType () != AIUnitType.COMBAT_UNIT) || (bestConstructableCombatUnitsHere.contains (thisUnit.getUnit ().getUnitID ()))))
 									{
 										List<AIConstructableUnit> unitsOfThisType = constructableHere.get (thisUnit.getAiUnitType ());
 										if (unitsOfThisType == null)

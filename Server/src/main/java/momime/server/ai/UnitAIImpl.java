@@ -631,7 +631,7 @@ public final class UnitAIImpl implements UnitAI
 			switch (movementCode)
 			{
 				case REINFORCE:
-					decision = getUnitAIMovement ().considerUnitMovement_Reinforce (doubleMovementDistances, underdefendedLocations);
+					decision = getUnitAIMovement ().considerUnitMovement_Reinforce (units, doubleMovementDistances, underdefendedLocations, sys);
 					break;
 					
 				case ATTACK_STATIONARY:
@@ -643,11 +643,11 @@ public final class UnitAIImpl implements UnitAI
 					break;
 					
 				case SCOUT_LAND:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (doubleMovementDistances, terrain, sys, db, units.get (0).getUnit ().getOwningPlayerID ());
+					decision = getUnitAIMovement ().considerUnitMovement_ScoutLand (units, doubleMovementDistances, terrain, sys, db, units.get (0).getUnit ().getOwningPlayerID ());
 					break;
 					
 				case SCOUT_ALL:
-					decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (doubleMovementDistances, terrain, sys, units.get (0).getUnit ().getOwningPlayerID ());
+					decision = getUnitAIMovement ().considerUnitMovement_ScoutAll (units, doubleMovementDistances, terrain, sys, units.get (0).getUnit ().getOwningPlayerID ());
 					break;
 					
 				case JOIN_STACK:
@@ -655,45 +655,43 @@ public final class UnitAIImpl implements UnitAI
 					break;
 					
 				case PLANE_SHIFT:
-					decision = getUnitAIMovement ().considerUnitMovement_PlaneShift (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_PlaneShift (units, doubleMovementDistances, sys);
 					break;
 					
 				case GET_IN_TRANSPORT:
-					decision = getUnitAIMovement ().considerUnitMovement_GetInTransport (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_GetInTransport (units, doubleMovementDistances, sys);
 					break;
 					
 				case OVERDEFEND:
-					decision = getUnitAIMovement ().considerUnitMovement_Overdefend (doubleMovementDistances, enemyUnits, isRaiders, terrain, sys, db);
+					decision = getUnitAIMovement ().considerUnitMovement_Overdefend (units, doubleMovementDistances, enemyUnits, isRaiders, terrain, sys, db);
 					break;
 				
 				case BUILD_CITY:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (doubleMovementDistances, (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (),
-						desiredSpecialUnitLocations.get (AIUnitType.BUILD_CITY));
+					decision = getUnitAIMovement ().considerUnitMovement_BuildCity (units, doubleMovementDistances, desiredSpecialUnitLocations.get (AIUnitType.BUILD_CITY), sys);
 					break;
 				
 				case BUILD_ROAD:
-					decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (doubleMovementDistances, (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (),
-						desiredSpecialUnitLocations.get (AIUnitType.BUILD_ROAD));
+					decision = getUnitAIMovement ().considerUnitMovement_BuildRoad (units, doubleMovementDistances, desiredSpecialUnitLocations.get (AIUnitType.BUILD_ROAD), sys);
 					break;
 				
 				case PURIFY:
-					decision = getUnitAIMovement ().considerUnitMovement_Purify (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_Purify (units, doubleMovementDistances, sys);
 					break;
 					
 				case MELD_WITH_NODE:
-					decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (units, doubleMovementDistances, sys);
 					break;
 				
 				case CARRY_UNITS:
-					decision = getUnitAIMovement ().considerUnitMovement_CarryUnits (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_CarryUnits (units, doubleMovementDistances, sys);
 					break;
 					
 				case LOAD_UNITS:
-					decision = getUnitAIMovement ().considerUnitMovement_LoadUnits (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_LoadUnits (units, doubleMovementDistances, sys);
 					break;
 					
 				case FORTRESS_ISLAND:
-					decision = getUnitAIMovement ().considerUnitMovement_FortressIsland (doubleMovementDistances);
+					decision = getUnitAIMovement ().considerUnitMovement_FortressIsland (units, doubleMovementDistances, sys);
 					break;
 					
 				default:

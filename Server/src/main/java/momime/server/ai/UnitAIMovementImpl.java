@@ -49,18 +49,22 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI tries to move units to any location that lacks defence or can be captured without a fight.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param underdefendedLocations Locations which are either ours (cities/towers) but lack enough defence, or not ours but can be freely captured (empty lairs/cities/etc)
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_Reinforce (final int [] [] [] doubleMovementDistances,
-		final List<AIDefenceLocation> underdefendedLocations)
+	public final AIMovementDecision considerUnitMovement_Reinforce (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final List<AIDefenceLocation> underdefendedLocations, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_Reinforce");
 		
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-		Integer doubleDestinationDistance = null;
+		AIMovementDistance bestDistanceSoFar = null;
 		
 		// Check all locations we want to head to and find the closest one (or multiple closest ones)
 		for (final AIDefenceLocation location : underdefendedLocations)
@@ -69,13 +73,16 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			if (doubleThisDistance >= 0)
 			{
 				// We can get there, eventually
-				if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+				final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+					getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location.getMapLocation ()));
+				
+				if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 				{
-					doubleDestinationDistance = doubleThisDistance;
+					bestDistanceSoFar = thisDistance;
 					destinations.clear ();
 					destinations.add (location.getMapLocation ());
 				}
-				else if (doubleThisDistance == doubleDestinationDistance)
+				else if (thisDistance.equals (bestDistanceSoFar))
 					destinations.add (location.getMapLocation ());
 			}
 		}
@@ -86,7 +93,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			log.debug ("Unit movement AI - Decided to go help reinforce underdefended location at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			log.debug ("Unit movement AI - Decided to go help reinforce underdefended location at " + chosenLocation + " which is " + bestDistanceSoFar + " away");
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
@@ -114,9 +121,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	{
 		log.trace ("Entering considerUnitMovement_AttackStationary");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-		Integer doubleDestinationDistance = null;
+		AIMovementDistance bestDistanceSoFar = null;
 
 		// The only way that any location on the plane other than where we are will be reachable is if we're stood right on a tower of wizardry,
 		// in which case this will evaluate which plane to exit off from, which is exactly what we want.  Same is true for most of the other movement codes.
@@ -137,13 +146,17 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						{
 							// We can get there eventually, and stand a chance of beating them
 							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
-							if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+							
+							final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+								getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+							
+							if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 							{
-								doubleDestinationDistance = doubleThisDistance;
+								bestDistanceSoFar = thisDistance;
 								destinations.clear ();
 								destinations.add (location);
 							}
-							else if (doubleThisDistance == doubleDestinationDistance)
+							else if (thisDistance.equals (bestDistanceSoFar))
 								destinations.add (location);
 						}
 					}
@@ -155,7 +168,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			log.debug ("Unit movement AI - Decided to attack stationary target at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			log.debug ("Unit movement AI - Decided to attack stationary target at " + chosenLocation + " which is " + bestDistanceSoFar + " away");
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
@@ -182,9 +195,11 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	{
 		log.trace ("Entering considerUnitMovement_AttackWandering");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-		Integer doubleDestinationDistance = null;
+		AIMovementDistance bestDistanceSoFar = null;
 
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
@@ -200,13 +215,17 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					{
 						// We can get there eventually, and stand a chance of beating them
 						final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
-						if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+						
+						final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+							getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+						
+						if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 						{
-							doubleDestinationDistance = doubleThisDistance;
+							bestDistanceSoFar = thisDistance;
 							destinations.clear ();
 							destinations.add (location);
 						}
-						else if (doubleThisDistance == doubleDestinationDistance)
+						else if (thisDistance.equals (bestDistanceSoFar))
 							destinations.add (location);
 					}
 				}
@@ -217,7 +236,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			log.debug ("Unit movement AI - Decided to attack wandering target at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			log.debug ("Unit movement AI - Decided to attack wandering target at " + chosenLocation + " which is " + bestDistanceSoFar + " away");
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
@@ -228,6 +247,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI tries to move units to scout any unknown terrain that is adjacent to at least one tile that we know to be land.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
@@ -237,13 +257,15 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_ScoutLand (final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_ScoutLand (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db, final int playerID) throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_ScoutLand");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-		Integer doubleDestinationDistance = null;
+		AIMovementDistance bestDistanceSoFar = null;
 		
 		for (int z = 0; z < sys.getDepth (); z++)
 		{
@@ -280,16 +302,19 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 
 							if (found)
 							{
-								doubleThisDistance = doubleThisDistance + getCityAI ().findDistanceToClosestCity (x, y, ourCitiesOnPlane, sys);
-
 								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
-								if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+
+								// Add on fudge factor to make us want to scout areas close to cities first
+								final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance + getCityAI ().findDistanceToClosestCity (x, y, ourCitiesOnPlane, sys),
+									getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+								
+								if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 								{
-									doubleDestinationDistance = doubleThisDistance;
+									bestDistanceSoFar = thisDistance;
 									destinations.clear ();
 									destinations.add (location);
 								}
-								else if (doubleThisDistance == doubleDestinationDistance)
+								else if (thisDistance.equals (bestDistanceSoFar))
 									destinations.add (location);
 							}
 						}
@@ -303,7 +328,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			log.debug ("Unit movement AI - Decided to go scout unknown land at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			log.debug ("Unit movement AI - Decided to go scout unknown land at " + chosenLocation + " which is " + bestDistanceSoFar + " away, including fudge factor");
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
@@ -314,6 +339,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI tries to move units to scout any unknown terrain.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param terrain Player knowledge of terrain
 	 * @param sys Overland map coordinate system
@@ -321,13 +347,15 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_ScoutAll (final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_ScoutAll (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final int playerID)
 	{
 		log.trace ("Entering considerUnitMovement_ScoutAll");
 		
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-		Integer doubleDestinationDistance = null;
+		AIMovementDistance bestDistanceSoFar = null;
 		
 		for (int z = 0; z < sys.getDepth (); z++)
 		{
@@ -342,17 +370,19 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						int doubleThisDistance = doubleMovementDistances [z] [y] [x];
 						if (doubleThisDistance >= 0)
 						{
-							doubleThisDistance = doubleThisDistance + getCityAI ().findDistanceToClosestCity (x, y, ourCitiesOnPlane, sys);
-							
-							// We can get there, eventually
 							final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
-							if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+
+							// Add on fudge factor to make us want to scout areas close to cities first
+							final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance + getCityAI ().findDistanceToClosestCity (x, y, ourCitiesOnPlane, sys),
+								getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+							
+							if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 							{
-								doubleDestinationDistance = doubleThisDistance;
+								bestDistanceSoFar = thisDistance;
 								destinations.clear ();
 								destinations.add (location);
 							}
-							else if (doubleThisDistance == doubleDestinationDistance)
+							else if (thisDistance.equals (bestDistanceSoFar))
 								destinations.add (location);
 						}
 					}
@@ -365,7 +395,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			log.debug ("Unit movement AI - Decided to go scout unknown scenery (possibly not land) at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			log.debug ("Unit movement AI - Decided to go scout unknown scenery (possibly not land) at " + chosenLocation + " which is " + bestDistanceSoFar + " away, including fudge factor");
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
@@ -396,6 +426,8 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	{
 		log.trace ("Entering considerUnitMovement_JoinStack");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		// First of all we have to find the weakest enemy unit stack that we can reach but that is still too strong for us to fight alone
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
 		Integer weakestEnemyUnitStackWeCannotBeat = null;
@@ -432,7 +464,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			// The list only includes other mobile units, so we don't need to check whether they're in a city, tower, etc - but we do have to check that we can reach them
 			int mergedStackRating = ourCurrentRating;
 			final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-			Integer doubleDestinationDistance = null;
+			AIMovementDistance bestDistanceSoFar = null;
 			
 			for (final AIUnitsAndRatings ourUnitStack : ourUnitsInSameCategory)
 				if (ourUnitStack != units)
@@ -444,13 +476,17 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						mergedStackRating = mergedStackRating + ourUnitStack.totalCombatUnitCurrentRatings ();
 						
 						final MapCoordinates3DEx location = new MapCoordinates3DEx (unitStackLocation);
-						if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+						
+						final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+							getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+						
+						if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 						{
-							doubleDestinationDistance = doubleThisDistance;
+							bestDistanceSoFar = thisDistance;
 							destinations.clear ();
 							destinations.add (location);
 						}
-						else if (doubleThisDistance == doubleDestinationDistance)
+						else if (thisDistance.equals (bestDistanceSoFar))
 							destinations.add (location);
 					}
 				}
@@ -460,7 +496,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			else
 			{
 				final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-				log.debug ("Unit movement AI - Decided to go join up with our other unit stack at " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+				log.debug ("Unit movement AI - Decided to go join up with our other unit stack at " + chosenLocation + " which is " + bestDistanceSoFar + " away");
 				decision = new AIMovementDecision (chosenLocation);
 			}
 		}		
@@ -472,14 +508,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI looks for a tower garissoned by our units, and imagines that we are stood there and rechecks preceeding movement codes.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_PlaneShift (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_PlaneShift (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_PlaneShift");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		log.warn ("AI movement code PLANE_SHIFT is not yet implemented");
 		
 		final AIMovementDecision decision = null;
@@ -491,14 +531,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI looks for a transport to get in (or stay where we are if we are already in one).
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_GetInTransport (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_GetInTransport (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_GetInTransport");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		log.warn ("AI movement code GET_IN_TRANSPORT is not yet implemented");
 		
 		final AIMovementDecision decision = null;
@@ -510,6 +554,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI looks for any of our locations (nodes/cities/towers) that we can reach, regardless of if they already have plenty of defence.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param enemyUnits Array of enemy unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param isRaiders Whether it is the raiders player
@@ -520,14 +565,16 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_Overdefend (final int [] [] [] doubleMovementDistances,
+	public final AIMovementDecision considerUnitMovement_Overdefend (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_Overdefend");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-		Integer doubleDestinationDistance = null;
+		AIMovementDistance bestDistanceSoFar = null;
 		
 		// This is like "reinforce", except cells that we check work like method evaluateCurrentDefence
 		for (int z = 0; z < sys.getDepth (); z++)
@@ -550,14 +597,19 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 							if (doubleThisDistance >= 0)
 							{
 								// We can get there, eventually
-								if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+								final MapCoordinates3DEx location = new MapCoordinates3DEx (x, y, z);
+								
+								final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+									getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+								
+								if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 								{
-									doubleDestinationDistance = doubleThisDistance;
+									bestDistanceSoFar = thisDistance;
 									destinations.clear ();
-									destinations.add (new MapCoordinates3DEx (x, y, z));
+									destinations.add (location);
 								}
-								else if (doubleThisDistance == doubleDestinationDistance)
-									destinations.add (new MapCoordinates3DEx (x, y, z));
+								else if (thisDistance.equals (bestDistanceSoFar))
+									destinations.add (location);
 							}
 						}
 					}
@@ -569,7 +621,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-			log.debug ("Unit movement AI - Decided to go overdefend " + chosenLocation + " which is " + doubleDestinationDistance + " double-moves away");
+			log.debug ("Unit movement AI - Decided to go overdefend " + chosenLocation + " which is " + bestDistanceSoFar + " away");
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
@@ -580,16 +632,20 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI looks for a good place for settlers to build a city
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
-	 * @param currentLocation Current location of settler unit
 	 * @param desiredCityLocations Locations where we want to put cities
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_BuildCity (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final List<MapCoordinates3DEx> desiredCityLocations)
+	public final AIMovementDecision considerUnitMovement_BuildCity (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final List<MapCoordinates3DEx> desiredCityLocations, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_BuildCity");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		// If we have no idea where to put a city, then nothing to do
 		final AIMovementDecision decision;
 		if ((desiredCityLocations == null) || (desiredCityLocations.size () == 0))
@@ -606,7 +662,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-			Integer doubleDestinationDistance = null;
+			AIMovementDistance bestDistanceSoFar = null;
 			
 			// Check all locations we want to head to and find the closest one (or multiple closest ones)
 			for (final MapCoordinates3DEx location : desiredCityLocations)
@@ -615,13 +671,16 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 				if (doubleThisDistance >= 0)
 				{
 					// We can get there, eventually
-					if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+					final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+						getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+					
+					if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 					{
-						doubleDestinationDistance = doubleThisDistance;
+						bestDistanceSoFar = thisDistance;
 						destinations.clear ();
 						destinations.add (location);
 					}
-					else if (doubleThisDistance == doubleDestinationDistance)
+					else if (thisDistance.equals (bestDistanceSoFar))
 						destinations.add (location);
 				}
 			}
@@ -631,7 +690,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			else
 			{
 				final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-				log.debug ("Unit movement AI - Decided to go head towards " + chosenLocation + " to build a city there which is " + doubleDestinationDistance + " double-moves away");
+				log.debug ("Unit movement AI - Decided to go head towards " + chosenLocation + " to build a city there which is " + bestDistanceSoFar + " away");
 				decision = new AIMovementDecision (chosenLocation);
 			}
 		}
@@ -643,16 +702,20 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI looks for a good place for engineers to build a road
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
-	 * @param currentLocation Current location of engineer unit
 	 * @param desiredRoadLocations Locations where we want to put cities
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	 @Override
-	public final AIMovementDecision considerUnitMovement_BuildRoad (final int [] [] [] doubleMovementDistances, final MapCoordinates3DEx currentLocation, final List<MapCoordinates3DEx> desiredRoadLocations)
+	public final AIMovementDecision considerUnitMovement_BuildRoad (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final List<MapCoordinates3DEx> desiredRoadLocations, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_BuildRoad");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		// If we have nowhere we need to put road, then nothing to do
 		final AIMovementDecision decision;
 		if ((desiredRoadLocations == null) || (desiredRoadLocations.size () == 0))
@@ -669,7 +732,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		else
 		{
 			final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
-			Integer doubleDestinationDistance = null;
+			AIMovementDistance bestDistanceSoFar = null;
 			
 			// Check all locations we want to head to and find the closest one (or multiple closest ones)
 			for (final MapCoordinates3DEx location : desiredRoadLocations)
@@ -678,13 +741,16 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 				if (doubleThisDistance >= 0)
 				{
 					// We can get there, eventually
-					if ((doubleDestinationDistance == null) || (doubleThisDistance < doubleDestinationDistance))
+					final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+						getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+					
+					if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
 					{
-						doubleDestinationDistance = doubleThisDistance;
+						bestDistanceSoFar = thisDistance;
 						destinations.clear ();
 						destinations.add (location);
 					}
-					else if (doubleThisDistance == doubleDestinationDistance)
+					else if (thisDistance.equals (bestDistanceSoFar))
 						destinations.add (location);
 				}
 			}
@@ -694,7 +760,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			else
 			{
 				final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
-				log.debug ("Unit movement AI - Decided to go head towards " + chosenLocation + " to build a road there which is " + doubleDestinationDistance + " double-moves away");
+				log.debug ("Unit movement AI - Decided to go head towards " + chosenLocation + " to build a road there which is " + bestDistanceSoFar + " away");
 				decision = new AIMovementDecision (chosenLocation);
 			}
 		}
@@ -706,14 +772,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI looks for any corrupted land that priests need to purify
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_Purify (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_Purify (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_Purify");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		log.warn ("AI movement code PURIFY is not yet implemented");
 		
 		final AIMovementDecision decision = null;
@@ -725,14 +795,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI looks for a node that a magic/guardian spirit can meld with
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_MeldWithNode (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_MeldWithNode (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_MeldWithNode");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		log.warn ("AI movement code MELD_WITH_NODE is not yet implemented");
 		
 		final AIMovementDecision decision = null;
@@ -744,14 +818,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI transports look for a suitable island to carry units to, if we are holding any.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_CarryUnits (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_CarryUnits (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_CarryUnits");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		log.warn ("AI movement code CARRY_UNITS is not yet implemented");
 		
 		final AIMovementDecision decision = null;
@@ -763,14 +841,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	/**
 	 * AI transports that are empty head for any islands where any unit stacks went on OVERDEFEND.
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_LoadUnits (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_LoadUnits (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_LoadUnits");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		log.warn ("AI movement code LOAD_UNITS is not yet implemented");
 		
 		final AIMovementDecision decision = null;
@@ -783,14 +865,18 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * If we are on the same plane as our Wizards' Fortress, then head the island that it is on.
 	 * (This is intended for transport ships that have nothing better to do, so we're assuming we can't actually get *onto* the island).
 	 * 
+	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_FortressIsland (final int [] [] [] doubleMovementDistances)
+	public final AIMovementDecision considerUnitMovement_FortressIsland (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_FortressIsland");
 
+		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
+		
 		log.warn ("AI movement code FORTRESS_ISLAND is not yet implemented");
 		
 		final AIMovementDecision decision = null;

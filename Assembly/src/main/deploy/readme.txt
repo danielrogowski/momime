@@ -7,7 +7,10 @@ Here's some quick notes on how to get a game up and running in case some parts a
     C:\Program Files, or anywhere else Windows doesn't like files being modified.
     Straight under C:\, in your user home folder, or on another drive letter are fine.
 
- 2) You must have a Java Runtime Environment (JRE) 11 or higher.
+ 2) You must have a Java 11 or higher.  Before trying to run MoM IME, I recommend you just go to
+    a command prompt and type "java -version" and verify this works correctly and shows the
+    correct version that you downloaded and installed.  Problems are likely caused by
+    path statement being incorrect and not pointing at the location where Java was installed.
 
  3) Run the server.  After a few seconds it'll say
     "Listening for client connection requests on port 18250".

@@ -325,16 +325,25 @@ public final class CityViewUI extends MomClientFrameUI
 
 			Integer productionCost = null;
 			if (cityData.getCurrentlyConstructingBuildingID () != null)
-			{
 				productionCost = getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "rushBuyAction").getProductionCost ();
+			else if (cityData.getCurrentlyConstructingUnitID () != null)
+				productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "rushBuyAction").getProductionCost ();
+
+			if (productionCost != null)
+			{
+				final int goldToRushBuy = getCityCalculations ().goldToRushBuy (productionCost, (cityData.getProductionSoFar () == null) ? 0 : cityData.getProductionSoFar ());
+				text = text.replaceAll ("PRODUCTION_VALUE", getTextUtils ().intToStrCommas (goldToRushBuy));
+			}
+			
+			// Work out remainder of description
+			if (cityData.getCurrentlyConstructingBuildingID () != null)
+			{
 				final BuildingLang building = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
 				text = text.replaceAll ("A_UNIT_NAME", (building != null) ? building.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ());
 			}
 
 			else if (cityData.getCurrentlyConstructingUnitID () != null)
 			{
-				productionCost = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "rushBuyAction").getProductionCost ();
-
 				final AvailableUnit unit = new AvailableUnit ();
 				unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
 				

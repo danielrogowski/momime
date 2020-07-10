@@ -666,6 +666,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
+		<property name="momAI" ref="momAI" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">

@@ -804,10 +804,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		else
 		{
 			log.info ("AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-			getMomAI ().aiPlayerTurn (currentPlayer, mom);
+			if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
 			
-			// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
-			nextTurnButton (mom, currentPlayer);
+				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
+				nextTurnButton (mom, currentPlayer);
 		}
 
 		log.trace ("Exiting switchToNextPlayer = Player ID " +

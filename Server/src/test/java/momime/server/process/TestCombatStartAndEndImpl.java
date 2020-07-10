@@ -37,6 +37,7 @@ import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
@@ -689,9 +690,17 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final PlayerServerDetails winningPlayer = defendingPlayer;
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
+		
+		// Current player whose turn it is to resume afterwards
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -721,6 +730,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
@@ -798,8 +808,16 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
+		
+		// Current player whose turn it is to resume afterwards
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
+
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -848,6 +866,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
@@ -942,8 +961,16 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
+		
+		// Current player whose turn it is to resume afterwards
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
+
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -992,6 +1019,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCombatProcessing (combatProcessing);
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
@@ -1081,8 +1109,16 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
+
+		// Current player whose turn it is to resume afterwards
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
+
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -1173,6 +1209,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMemoryBuildingUtils (memoryBuildingUtils);
 		cse.setCityCalculations (cityCalc);
 		cse.setServerCityCalculations (serverCityCalc);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
@@ -1280,8 +1317,16 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
+		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
+		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
+		
+		// Current player whose turn it is to resume afterwards
+		final MomGeneralPublicKnowledge gpk = new MomGeneralPublicKnowledge ();
+		gpk.setCurrentPlayerID (attackingPd.getPlayerID ());
+
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralPublicKnowledge ()).thenReturn (gpk);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -1377,6 +1422,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setCityCalculations (cityCalc);
 		cse.setServerCityCalculations (serverCityCalc);
 		cse.setCityServerUtils (cityServerUtils);
+		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method

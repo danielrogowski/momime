@@ -717,7 +717,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @param desiredSpecialUnitLocations Locations we want to put cities, road, capture nodes, purify corruption
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether some action was taken (a move, turning a settler into a city, or make an engineer build a road); only return false if we had no movement left or couldn't figure out anything to do
+	 * @return Reason indicating some action was taken or not
 	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws PlayerNotFoundException If a player cannot be found
 	 * @throws MomException If there is a significant problem in the game logic
@@ -725,7 +725,7 @@ public final class UnitAIImpl implements UnitAI
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
+	public final AIMovementResult decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
@@ -759,9 +759,9 @@ public final class UnitAIImpl implements UnitAI
 				doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
 
 		// Its possible unit stack may have no movement left, and we don't really know that until we sorted out what's a transport and what's in a transport above
-		final boolean tookAction;
+		final AIMovementResult result;
 		if (doubleMovementRemaining <= 0)
-			tookAction = false;
+			result = AIMovementResult.NO_MOVEMENT_LEFT;
 		else
 		{
 			getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
@@ -778,7 +778,7 @@ public final class UnitAIImpl implements UnitAI
 			
 			// Move, if we found somewhere to go
 			if (destination == null)
-				tookAction = false;
+				result = AIMovementResult.NO_DESTINATION_CHOSEN;
 			
 			else if (destination.getDestination () != null)
 			{
@@ -805,13 +805,11 @@ public final class UnitAIImpl implements UnitAI
 					", eventually aiming for " + destination);
 				
 				if (coords == null)
-					tookAction = false;
+					result = AIMovementResult.NO_ROUTE_TO_DESTINATION;
 				else if ((coords.getX () == moveFrom.getX ()) && (coords.getY () == moveFrom.getY ()))
-					tookAction = false;
+					result = AIMovementResult.ALREADY_AT_DESTINATION;
 				else
 				{
-					tookAction = true;		// Found valid move
-					
 					// We need the true unit versions to execute the move
 					final List<ExpandedUnitDetails> trueUnits = new ArrayList<ExpandedUnitDetails> ();
 					for (final AIUnitAndRatings mu : units)
@@ -821,8 +819,8 @@ public final class UnitAIImpl implements UnitAI
 					}
 					
 					// Execute move
-					getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
-						(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
+					result = getFogOfWarMidTurnMultiChanges ().moveUnitStack (trueUnits, player, true, moveFrom, coords,
+						(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom) ? AIMovementResult.MOVED_AND_STARTED_COMBAT : AIMovementResult.MOVED;
 				}
 			}
 			
@@ -833,20 +831,20 @@ public final class UnitAIImpl implements UnitAI
 				final String error = getUnitServerUtils ().processSpecialOrder (unitURNs, destination.getSpecialOrder (), (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation (), player, mom);
 				
 				if (error == null)
-					tookAction = false;
+					result = AIMovementResult.PROCESSED_SPECIAL_ORDER;
 				else
 				{
 					log.warn ("AI wanted to process special order " + destination.getSpecialOrder () + " but was rejected for reason: " + error);
-					tookAction = true;
+					result = AIMovementResult.PROCESS_SPECIAL_ORDER_FAILED;
 				}
 			}
 			
 			else
-				tookAction = false;
+				result = AIMovementResult.DESTINATION_HAS_NO_VALUE_SET;
 		}
 		
-		log.trace ("Exiting decideAndExecuteUnitMovement = " + tookAction);
-		return tookAction;
+		log.trace ("Exiting decideAndExecuteUnitMovement = " + result);
+		return result;
 	}
 	
 	/**

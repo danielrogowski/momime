@@ -592,6 +592,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 *
 	 * @param forceAsPendingMovement If true, forces all generated moves to be added as pending movements rather than occurring immediately (used for simultaneous turns games)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether the move resulted in a combat being started in a one-player-at-a-time game (and thus the player's turn should halt while the combat is played out)
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -599,7 +600,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void moveUnitStack (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
+	public final boolean moveUnitStack (final List<ExpandedUnitDetails> selectedUnits, final PlayerServerDetails unitStackOwner, final boolean processCombats,
 		final MapCoordinates3DEx originalMoveFrom, final MapCoordinates3DEx moveTo,
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
@@ -781,6 +782,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		}
 
 		// Deal with any combat initiated
+		boolean combatStarted = false;
 		if (!combatInitiated)
 		{
 			// No combat, so tell the client to ask for the next unit to move
@@ -812,10 +814,12 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				throw new MomException ("moveUnitStack found a combat in a simultaneous turns game, which should be handled outside of here");
 			
 			// Start a one-player-at-a-time combat
+			combatStarted = true;
 			getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, attackingUnitURNs, null, null, null, mom);
 		}
 
-		log.trace ("Exiting moveUnitStack");
+		log.trace ("Exiting moveUnitStack = " + combatStarted);
+		return combatStarted;
 	}
 	
 	/**

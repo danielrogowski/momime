@@ -37,6 +37,7 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.MomAI;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
@@ -133,6 +134,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 
 	/** Simultaneous turns processing */
 	private SimultaneousTurnsProcessing simultaneousTurnsProcessing;
+	
+	/** AI player turns */
+	private MomAI momAI;
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -563,14 +570,22 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			}
 			else
 			{
-				// If this is a one-at-a-time turns game, we need to tell the player to make their next move
-				// There's no harm in sending this to a player whose turn it isn't, the client will perform no effect in that case
-				final SelectNextUnitToMoveOverlandMessage nextUnitMsg = new SelectNextUnitToMoveOverlandMessage ();
-				if (attackingPlayer.getPlayerDescription ().isHuman ())
-					attackingPlayer.getConnection ().sendMessageToClient (nextUnitMsg);
-
-				if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
-					defendingPlayer.getConnection ().sendMessageToClient (nextUnitMsg);
+				// Which player is currently taking their one-player-at-a-time turn?  They must have started the combat, and now need to continue their turn
+				final PlayerServerDetails currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
+					(mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "combatEnded (R)");
+				
+				if (currentPlayer.getPlayerDescription ().isHuman ())
+				{
+					// If this is a one-at-a-time turns game, we need to tell the player to make their next move
+					currentPlayer.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());
+				}
+				else
+				{
+					// AI players proceed with moving remaining unit stacks, possibly starting another combat or completing their turn
+					log.info ("Resuming AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
+					if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
+						getPlayerMessageProcessing ().nextTurnButton (mom, currentPlayer);
+				}
 			}
 			
 			// Clear out combat related items
@@ -855,5 +870,37 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setSimultaneousTurnsProcessing (final SimultaneousTurnsProcessing proc)
 	{
 		simultaneousTurnsProcessing = proc;
+	}
+
+	/**
+	 * @return AI player turns
+	 */
+	public final MomAI getMomAI ()
+	{
+		return momAI;
+	}
+
+	/**
+	 * @param ai AI player turns
+	 */
+	public final void setMomAI (final MomAI ai)
+	{
+		momAI = ai;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

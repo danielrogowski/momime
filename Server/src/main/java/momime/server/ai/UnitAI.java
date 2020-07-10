@@ -170,14 +170,14 @@ public interface UnitAI
 	 * @param desiredSpecialUnitLocations Locations we want to put cities, road, capture nodes, purify corruption
 	 * @param player Player who owns the unit
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Whether some action was taken (a move, turning a settler into a city, or make an engineer build a road); only return false if we had no movement left or couldn't figure out anything to do
+	 * @return Reason indicating some action was taken or not
 	 * @throws RecordNotFoundException If an expected record cannot be found
 	 * @throws PlayerNotFoundException If a player cannot be found
 	 * @throws MomException If there is a significant problem in the game logic
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public boolean decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
+	public AIMovementResult decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;

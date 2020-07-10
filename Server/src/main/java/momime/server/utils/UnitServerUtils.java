@@ -23,6 +23,7 @@ import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.UnitTypeSvr;
 
 /**
  * Server side only helper methods for dealing with units
@@ -185,4 +186,14 @@ public interface UnitServerUtils
 	 * @return A special damage type, if the unit was at least half killed by a special damage type; otherwise will just return HEALABLE
 	 */
 	public StoredDamageTypeID whatKilledUnit (final List<UnitDamage> damages);
+
+	/**
+	 * Checks if a hero just gianed a level (experience exactly equals one of the amounts listed in XML) and if so, sends the player a NTM about it
+	 * 
+	 * @param unitURN Unit to check
+	 * @param unitType Which type of unit it is
+	 * @param owningPlayer Who owns the unit
+	 * @param experienceSkillValue The number of experience points the unit now has
+	 */
+	public void checkIfHeroGainedALevel (final int unitURN, final UnitTypeSvr unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue);
 }

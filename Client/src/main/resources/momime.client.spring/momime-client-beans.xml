@@ -694,6 +694,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
+	<bean id="newTurnMessageHeroGainedALevel" class="momime.client.newturnmessages.NewTurnMessageHeroGainedALevelEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="utils" ref="uiUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+	</bean>
+
 	<!-- Create extended versions of damage calculations which include method to work out the text to display -->
 
 	<bean id="damageCalculationHeaderData" class="momime.client.calculations.damage.DamageCalculationHeaderDataEx" scope="prototype">

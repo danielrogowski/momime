@@ -26,7 +26,10 @@ public enum NewTurnMessageSortOrder
 	 SORT_ORDER_SPELLS (5, "SpellsCategory"),
 	
 	/** NTMs about us capturing or losing nodes */
-	 SORT_ORDER_NODES (6, "NodesCategory");
+	 SORT_ORDER_NODES (6, "NodesCategory"),
+	
+	/** NTMs about units */
+	SORT_ORDER_UNITS (7, "UnitsCategory");
 	 
 	 /** Numeric sort order */
 	 private final int sortOrder;

@@ -5730,6 +5730,7 @@
 			</experienceSkillBonus>
 		</experienceLevel>
 		<unitTypeDescription>Normal</unitTypeDescription>
+		<announceWhenLevelGained>false</announceWhenLevelGained>
 	</unitType>
 	<unitType unitTypeID="H">
 		<undeadUpkeepPercentage>0</undeadUpkeepPercentage>
@@ -6037,10 +6038,12 @@
 			</experienceSkillBonus>
 		</experienceLevel>
 		<unitTypeDescription>Hero</unitTypeDescription>
+		<announceWhenLevelGained>true</announceWhenLevelGained>
 	</unitType>
 	<unitType unitTypeID="S">
 		<undeadUpkeepPercentage>150</undeadUpkeepPercentage>
 		<unitTypeDescription>Summoned</unitTypeDescription>
+		<announceWhenLevelGained>false</announceWhenLevelGained>
 	</unitType>
 	<heroItemType heroItemTypeID="IT01">
 		<baseCraftingCost>100</baseCraftingCost>
@@ -25663,6 +25666,9 @@
 		<languageEntry languageEntryID="OwnedNodeCapturedLastTurn" />
 		<languageEntry languageEntryID="NodeLost" />
 		<languageEntry languageEntryID="NodeLostLastTurn" />
+		<languageEntry languageEntryID="UnitsCategory" />
+		<languageEntry languageEntryID="HeroGainedALevel" />
+		<languageEntry languageEntryID="HeroGainedALevelLastTurn" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSelectAdvisor">
 		<languageEntry languageEntryID="Title" />

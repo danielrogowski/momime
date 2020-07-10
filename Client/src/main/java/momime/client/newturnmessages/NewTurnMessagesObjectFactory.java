@@ -4,6 +4,7 @@ import momime.common.messages.NewTurnMessageBuildingSoldFromLackOfProduction;
 import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageConstructUnit;
 import momime.common.messages.NewTurnMessageCreateArtifact;
+import momime.common.messages.NewTurnMessageHeroGainedALevel;
 import momime.common.messages.NewTurnMessageNode;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageSpell;
@@ -108,6 +109,15 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 	public final NewTurnMessageNode createNewTurnMessageNode ()
 	{
 		return getNewTurnMessagesFactory ().createNewTurnMessageNode ();
+	}
+
+	/**
+	 * @return Custom extended NTM
+	 */
+	@Override
+	public final NewTurnMessageHeroGainedALevel createNewTurnMessageHeroGainedALevel ()
+	{
+		return getNewTurnMessagesFactory ().createNewTurnMessageHeroGainedALevel ();
 	}
 
 	/**

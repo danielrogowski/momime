@@ -6771,6 +6771,15 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<languageEntry languageEntryID="NodeLostLastTurn">
 			<languageEntryText>Your UNIT_NAME lost a node to OTHER_PLAYER_NAME's OTHER_UNIT_NAME</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="UnitsCategory">
+			<languageEntryText>Units</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="HeroGainedALevel">
+			<languageEntryText>SIMPLE_UNIT_NAME attained the level of EXPERIENCE_LEVEL_NAME</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="HeroGainedALevelLastTurn">
+			<languageEntryText>Last turn, SIMPLE_UNIT_NAME attained the level of EXPERIENCE_LEVEL_NAME</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmSelectAdvisor">
 		<languageEntry languageEntryID="Title">

@@ -59,4 +59,9 @@ public interface NewTurnMessagesFactory
 	 * @return NTM with injected dependencies
 	 */
 	public NewTurnMessageNodeEx createNewTurnMessageNode ();
+
+	/**
+	 * @return NTM with injected dependencies
+	 */
+	public NewTurnMessageHeroGainedALevelEx createNewTurnMessageHeroGainedALevel ();
 }

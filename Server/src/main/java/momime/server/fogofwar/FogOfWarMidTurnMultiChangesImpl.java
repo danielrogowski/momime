@@ -51,10 +51,12 @@ import momime.server.database.CitySpellEffectSvr;
 import momime.server.database.PickSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.UnitTypeSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.OneCellPendingMovement;
+import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.TreasureUtils;
 import momime.server.utils.UnitServerUtils;
 import momime.server.utils.UnitSkillDirectAccess;
@@ -116,6 +118,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	
 	/** Unit skill values direct access */
 	private UnitSkillDirectAccess unitSkillDirectAccess;
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
@@ -329,10 +334,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				}
 
 				// Experience?
-				final int exp = getUnitSkillDirectAccess ().getDirectSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+				int exp = getUnitSkillDirectAccess ().getDirectSkillValue (thisUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				if ((magicRealm.isGainExperienceEachTurn ()) && (exp >= 0))
 				{
-					getUnitSkillDirectAccess ().setDirectSkillValue (thisUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp + 1);
+					exp++;
+					getUnitSkillDirectAccess ().setDirectSkillValue (thisUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp);
+					
+					// Note we don't do this directly on xu as that will not reflect the updated experience, and don't want to make a whole new ExpandedUnitDetails just to do a simple check
+					getUnitServerUtils ().checkIfHeroGainedALevel (xu.getUnitURN (), (UnitTypeSvr) xu.getUnitType (), (PlayerServerDetails) xu.getOwningPlayer (), exp);
 					sendMsg = true;
 				}
 
@@ -374,15 +383,21 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
 				final PickSvr magicRealm = (PickSvr) xu.getModifiedUnitMagicRealmLifeformType ();
 
-				final int exp = getUnitSkillDirectAccess ().getDirectSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
+				int exp = getUnitSkillDirectAccess ().getDirectSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				if ((magicRealm.isGainExperienceEachTurn ()) && (exp >= 0))
 				{
-					getUnitSkillDirectAccess ().setDirectSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp+1);
+					exp++;
+					getUnitSkillDirectAccess ().setDirectSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp);
+					
+					// Note we don't do this directly on xu as that will not reflect the updated experience, and don't want to make a whole new ExpandedUnitDetails just to do a simple check
+					getUnitServerUtils ().checkIfHeroGainedALevel (xu.getUnitURN (), (UnitTypeSvr) xu.getUnitType (), (PlayerServerDetails) xu.getOwningPlayer (), exp);
 					
 					// This updates both the player memories on the server, and sends messages out to the clients, as needed
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings);
 				}				
 			}
+		
+		getPlayerMessageProcessing ().sendNewTurnMessages (null, players, null);
 
 		log.trace ("Exiting grantExperienceToUnitsInCombat");
 	}
@@ -1245,5 +1260,21 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	public final void setUnitSkillDirectAccess (final UnitSkillDirectAccess direct)
 	{
 		unitSkillDirectAccess = direct;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

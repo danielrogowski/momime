@@ -35,6 +35,9 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageHeroGainedALevel;
+import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitAddBumpTypeID;
 import momime.common.messages.UnitDamage;
@@ -50,6 +53,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
+import momime.server.database.UnitTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.process.SpecialOrderButtonMessageImpl;
 import momime.server.process.PlayerMessageProcessing;
@@ -812,6 +816,34 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		
 		log.trace ("Exiting whatKilledUnit = " + result);
 		return result;
+	}
+	
+	/**
+	 * Checks if a hero just gianed a level (experience exactly equals one of the amounts listed in XML) and if so, sends the player a NTM about it
+	 * 
+	 * @param unitURN Unit to check
+	 * @param unitType Which type of unit it is
+	 * @param owningPlayer Who owns the unit
+	 * @param experienceSkillValue The number of experience points the unit now has
+	 */
+	@Override
+	public final void checkIfHeroGainedALevel (final int unitURN, final UnitTypeSvr unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue)
+	{
+		log.trace ("Entering checkIfHeroGainedALevel: Unit URN " + unitURN);
+		
+		if ((unitType.isAnnounceWhenLevelGained ()) && (owningPlayer.getPlayerDescription ().isHuman ()))
+		{
+			if ((unitType.getExperienceLevel ().stream ().anyMatch (lvl -> experienceSkillValue == lvl.getExperienceRequired ())))
+			{
+				final NewTurnMessageHeroGainedALevel ntm = new NewTurnMessageHeroGainedALevel ();
+				ntm.setMsgType (NewTurnMessageTypeID.HERO_GAINED_A_LEVEL);
+				ntm.setUnitURN (unitURN);
+				
+				((MomTransientPlayerPrivateKnowledge) owningPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (ntm);
+			}
+		}
+		
+		log.trace ("Exiting checkIfHeroGainedALevel");
 	}
 	
 	/**

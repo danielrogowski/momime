@@ -1,0 +1,296 @@
+package momime.client.newturnmessages;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.swing.NdgUIUtils;
+
+import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.database.LanguageDatabaseEx;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.ui.MomUIConstants;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.NewTurnMessageHeroGainedALevel;
+import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.UnitUtils;
+
+/**
+ * NTM we receive when one of our heroes gains a level
+ */
+public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGainedALevel
+	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageMusic, NewTurnMessagePreProcess
+{
+	/** Class logger */
+	private static final Log log = LogFactory.getLog (NewTurnMessageHeroGainedALevelEx.class);
+
+	/** Current status of this NTM */
+	private NewTurnMessageStatus status;
+	
+	/** Small font */
+	private Font smallFont;
+	
+	/** Language database holder */
+	private LanguageDatabaseHolder languageHolder;
+
+	/** Variable replacer for outputting skill descriptions */
+	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
+	
+	/** Multiplayer client */
+	private MomClient client;
+	
+	/** Graphics database */
+	private GraphicsDatabaseEx graphicsDB;
+
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Helper methods and constants for creating and laying out Swing components */
+	private NdgUIUtils utils;
+	
+	/** The hero who gained a level */
+	private ExpandedUnitDetails xu;
+	
+	/**
+	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
+	 */
+	@Override
+	public final NewTurnMessageSortOrder getSortOrder ()
+	{
+		return NewTurnMessageSortOrder.SORT_ORDER_UNITS;
+	}
+	
+	/**
+	 * @return Image to draw for this NTM, or null to display only text
+	 */
+	@Override
+	public final Image getImage ()
+	{
+		Image image = null;
+		if (xu != null)
+			try
+			{
+				final String imageName = getGraphicsDB ().findUnit (xu.getUnitID (), "NewTurnMessageHeroGainedALevelEx").getHeroPortraitImageFile ();
+				if (imageName != null)
+				{
+					final BufferedImage fullSizeImage = getUtils ().loadImage (imageName);
+					
+					// Original graphics don't use square pixel, so resize it to match the size on the armies and unit info screens
+					// see frmHeroItemsHeroPortrait
+					image = fullSizeImage.getScaledInstance (48, 58, Image.SCALE_FAST);
+				}
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+		
+		return image;
+	}
+	
+	/**
+	 * Just so that we do the unit lookup and detail expanding only once
+	 * @throws IOException If there is a problem
+	 */
+	@Override
+	public final void preProcess () throws IOException
+	{
+		log.trace ("Entering preProcess: Unit URN " + getUnitURN ());
+		
+		final MemoryUnit unit = getUnitUtils ().findUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+		if (unit != null)
+			xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+
+		log.trace ("Exiting preProcess");
+	}
+	
+	/**
+	 * @return Text to display for this NTM
+	 */
+	@Override
+	public final String getText ()
+	{
+		// Get prefix
+		String text = getLanguage ().findCategoryEntry ("NewTurnMessages",
+			(getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? "HeroGainedALevelLastTurn" : "HeroGainedALevel");
+		
+		getUnitStatsReplacer ().setUnit (xu);
+		text = getUnitStatsReplacer ().replaceVariables (text);
+
+		return text;
+	}
+	
+	/**
+	 * @return Name of music file on the classpath to play when this NTM is displayed; null if this message has no music associated
+	 */
+	@Override
+	public final String getMusicResourceName ()
+	{
+		return "/momime.client.music/MUSIC_115 - Hero gained a level.mp3";
+	}
+	
+	/**
+	 * @return Font to display the text in
+	 */
+	@Override
+	public final Font getFont ()
+	{
+		return getSmallFont ();
+	}
+	
+	/**
+	 * @return Colour to display the text in
+	 */
+	@Override
+	public final Color getColour ()
+	{
+		return MomUIConstants.SILVER;
+	}
+	
+	/**
+	 * @return Current status of this NTM
+	 */
+	@Override
+	public final NewTurnMessageStatus getStatus ()
+	{
+		return status;
+	}
+	
+	/**
+	 * @param newStatus New status for this NTM
+	 */
+	@Override
+	public final void setStatus (final NewTurnMessageStatus newStatus)
+	{
+		status = newStatus;
+	}
+
+	/**
+	 * @return Small font
+	 */
+	public final Font getSmallFont ()
+	{
+		return smallFont;
+	}
+
+	/**
+	 * @param font Small font
+	 */
+	public final void setSmallFont (final Font font)
+	{
+		smallFont = font;
+	}
+
+	/**
+	 * @return Language database holder
+	 */
+	public final LanguageDatabaseHolder getLanguageHolder ()
+	{
+		return languageHolder;
+	}
+	
+	/**
+	 * @param holder Language database holder
+	 */
+	public final void setLanguageHolder (final LanguageDatabaseHolder holder)
+	{
+		languageHolder = holder;
+	}
+
+	/**
+	 * Convenience shortcut for accessing the Language XML database
+	 * @return Language database
+	 */
+	public final LanguageDatabaseEx getLanguage ()
+	{
+		return languageHolder.getLanguage ();
+	}
+
+	/**
+	 * @return Variable replacer for outputting skill descriptions
+	 */
+	public final UnitStatsLanguageVariableReplacer getUnitStatsReplacer ()
+	{
+		return unitStatsReplacer;
+	}
+
+	/**
+	 * @param replacer Variable replacer for outputting skill descriptions
+	 */
+	public final void setUnitStatsReplacer (final UnitStatsLanguageVariableReplacer replacer)
+	{
+		unitStatsReplacer = replacer;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+
+	/**
+	 * @return Graphics database
+	 */
+	public final GraphicsDatabaseEx getGraphicsDB ()
+	{
+		return graphicsDB;
+	}
+
+	/**
+	 * @param db Graphics database
+	 */
+	public final void setGraphicsDB (final GraphicsDatabaseEx db)
+	{
+		graphicsDB = db;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param util Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils util)
+	{
+		unitUtils = util;
+	}
+
+	/**
+	 * @return Helper methods and constants for creating and laying out Swing components
+	 */
+	public final NdgUIUtils getUtils ()
+	{
+		return utils;
+	}
+
+	/**
+	 * @param util Helper methods and constants for creating and laying out Swing components
+	 */
+	public final void setUtils (final NdgUIUtils util)
+	{
+		utils = util;
+	}
+}

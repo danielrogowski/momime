@@ -332,6 +332,19 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 		</xsd:complexContent>
 	</xsd:complexType>		       
 
+	<xsd:complexType name="newTurnMessageHeroGainedALevel">
+	    <xsd:annotation>
+    		<xsd:documentation>A hero gained a level.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
 	<xsd:complexType name="momTransientPlayerPrivateKnowledge">
 	    <xsd:annotation>
     		<xsd:documentation>Holds all private knowledge that a player only knows about themselves, they can't see the values for other players,
@@ -1050,6 +1063,10 @@ through lack of production, we can still look up their name to show it on the ne
 			<xsd:enumeration value="Z"><xsd:annotation>
 				<xsd:documentation>Spell lack of production</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_LACK_OF_PRODUCTION" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="H"><xsd:annotation>
+				<xsd:documentation>Hero gained a level</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="HERO_GAINED_A_LEVEL" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

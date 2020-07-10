@@ -1274,6 +1274,7 @@ The value of multiplicative skills is ignored, so don't use this for any skill t
 			<xsd:extension base="momimecommon:unitType">
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="unitTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="announceWhenLevelGained" type="xsd:boolean" nxe:label="Announce when level gained?" nxe:gridwidth="200" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

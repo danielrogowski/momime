@@ -321,9 +321,16 @@ public final class MomAIImpl implements MomAI
 				getCityAI ().checkForRushBuying (player, mom);
 			}
 			
-			// Do we need to choose a spell to research?
-			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (priv.getSpellIDBeingResearched () == null))
-				getSpellAI ().decideWhatToResearch (player, mom.getServerDB ());
+			// Only wizards can do anything with spells
+			if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+			{
+				// Do we need to choose a spell to research?
+				if (priv.getSpellIDBeingResearched () == null)
+					getSpellAI ().decideWhatToResearch (player, mom.getServerDB ());
+				
+				// Pick spells to cast overland
+				getSpellAI ().decideWhatToCastOverland (player, mom);
+			}
 		}
 
 		final boolean aiTurnCompleted = !combatStarted;

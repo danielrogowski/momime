@@ -3,20 +3,29 @@ package momime.server.ai;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.SpellResearchStatus;
-import momime.common.messages.SpellResearchStatusID;
-import momime.common.utils.SpellUtils;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
+
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.SpellBookSectionID;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.SpellCastType;
+import momime.common.utils.SpellUtils;
+import momime.server.MomSessionVariables;
+import momime.server.database.ServerDatabaseEx;
+import momime.server.database.SpellSvr;
+import momime.server.process.SpellQueueing;
 
 /**
  * Methods for AI players making decisions about spells
@@ -29,6 +38,15 @@ public final class SpellAIImpl implements SpellAI
 	/** Spell utils */
 	private SpellUtils spellUtils;
 
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** AI spell calculations */
+	private AISpellCalculations aiSpellCalculations;
+
+	/** Spell queueing methods */
+	private SpellQueueing spellQueueing;
+	
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
@@ -145,6 +163,57 @@ public final class SpellAIImpl implements SpellAI
 		log.trace ("Exiting chooseFreeSpellAI: " + chosenSpellStatus.getSpellID ());
 		return chosenSpellStatus;
 	}
+	
+	/**
+	 * If AI player is not currently casting any spells overland, then look through all of them and consider if we should cast any.
+	 * 
+	 * @param player AI player who needs to choose what to cast
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
+	 * @throws MomException If there are any issues with data or calculation logic
+	 */
+	@Override
+	public final void decideWhatToCastOverland (final PlayerServerDetails player, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering decideWhatToCastOverland: Player ID " + player.getPlayerDescription ().getPlayerID ());
+
+		// Exit if we're already in the middle of casting something
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		if (priv.getQueuedSpell ().size () == 0)
+		{
+			// Consider every possible spell we could cast overland and can afford maintainence of
+			final List<SpellSvr> considerSpells = new ArrayList<SpellSvr> ();
+			for (final SpellSvr spell : mom.getServerDB ().getSpells ())
+				if ((getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
+					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE) &&
+					(getAiSpellCalculations ().canAffordSpellMaintenance (player, spell)))
+				{
+					// For now, only consider overland enchantments - and we must not already have in the enchantment in effect
+					if ((spell.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
+						(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null))
+					{
+						log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting overland spell " + spell.getSpellID ());
+						considerSpells.add (spell);
+					}
+				}
+			
+			// If we found any, then pick one randomly
+			if (considerSpells.size () > 0)
+			{
+				final SpellSvr spell = considerSpells.get (getRandomUtils ().nextInt (considerSpells.size ()));
+
+				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " casting overland spell " + spell.getSpellID ());
+				getSpellQueueing ().requestCastSpell (player, null, null, null, spell.getSpellID (), null, null, null, null, null, mom);
+			}
+		}
+		
+		log.trace ("Exiting decideWhatToCastOverland");
+	}
 
 	/**
 	 * @return Spell utils
@@ -162,6 +231,54 @@ public final class SpellAIImpl implements SpellAI
 		spellUtils = utils;
 	}
 
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtil MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtil)
+	{
+		memoryMaintainedSpellUtils = spellUtil;
+	}
+	
+	/**
+	 * @return AI spell calculations
+	 */
+	public final AISpellCalculations getAiSpellCalculations ()
+	{
+		return aiSpellCalculations;
+	}
+
+	/**
+	 * @param calc AI spell calculations
+	 */
+	public final void setAiSpellCalculations (final AISpellCalculations calc)
+	{
+		aiSpellCalculations = calc;
+	}
+
+	/**
+	 * @return Spell queueing methods
+	 */
+	public final SpellQueueing getSpellQueueing ()
+	{
+		return spellQueueing;
+	}
+
+	/**
+	 * @param obj Spell queueing methods
+	 */
+	public final void setSpellQueueing (final SpellQueueing obj)
+	{
+		spellQueueing = obj;
+	}
+	
 	/**
 	 * @return Random number generator
 	 */

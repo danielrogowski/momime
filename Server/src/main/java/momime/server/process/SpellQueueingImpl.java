@@ -530,11 +530,14 @@ public final class SpellQueueingImpl implements SpellQueueing
 				priv.getQueuedSpell ().add (queued);
 				
 				// Queue it on client
-				final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
-				reply.setSpellID (spellID);
-				reply.setHeroItem (heroItem);
-				
-				player.getConnection ().sendMessageToClient (reply);
+				if (player.getPlayerDescription ().isHuman ())
+				{
+					final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
+					reply.setSpellID (spellID);
+					reply.setHeroItem (heroItem);
+					
+					player.getConnection ().sendMessageToClient (reply);
+				}
 			}
 		}
 		
@@ -593,9 +596,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 				priv.setManaSpentOnCastingCurrentSpell (0);
 
 				// Remove queued spell on client
-				final RemoveQueuedSpellMessage msg = new RemoveQueuedSpellMessage ();
-				msg.setQueuedSpellIndex (0);
-				player.getConnection ().sendMessageToClient (msg);
+				if (player.getPlayerDescription ().isHuman ())
+				{
+					final RemoveQueuedSpellMessage msg = new RemoveQueuedSpellMessage ();
+					msg.setQueuedSpellIndex (0);
+					player.getConnection ().sendMessageToClient (msg);
+				}
 
 				// Cast it
 				getSpellProcessing ().castOverlandNow (gsk, player, spell, queued.getHeroItem (), players, db, sd);
@@ -605,9 +611,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Update mana spent so far on client (or set to 0 if finished)
 			// Maybe this should be moved out?  If we cast multiple queued spells, do we really have to keep sending 0's?
 			// Surely the client only cares on the mana spent on casting ones that we don't remove from its queue
-			final UpdateManaSpentOnCastingCurrentSpellMessage msg = new UpdateManaSpentOnCastingCurrentSpellMessage ();
-			msg.setManaSpentOnCastingCurrentSpell (priv.getManaSpentOnCastingCurrentSpell ());
-			player.getConnection ().sendMessageToClient (msg);
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				final UpdateManaSpentOnCastingCurrentSpellMessage msg = new UpdateManaSpentOnCastingCurrentSpellMessage ();
+				msg.setManaSpentOnCastingCurrentSpell (priv.getManaSpentOnCastingCurrentSpell ());
+				player.getConnection ().sendMessageToClient (msg);
+			}
 
 			// No need to tell client how much skill they've got left or mana stored since this is the end of the turn and both will be sent next start phase
 		}

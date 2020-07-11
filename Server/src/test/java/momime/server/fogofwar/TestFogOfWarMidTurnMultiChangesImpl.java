@@ -53,6 +53,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.UnitServerUtils;
 import momime.server.utils.UnitSkillDirectAccess;
 
@@ -612,11 +613,15 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		
 		// Set up object to test
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		final PlayerMessageProcessing playerMessageProcessing = mock (PlayerMessageProcessing.class);
 		
 		final FogOfWarMidTurnMultiChangesImpl multi = new FogOfWarMidTurnMultiChangesImpl ();
 		multi.setUnitUtils (unitUtils);
 		multi.setFogOfWarMidTurnChanges (midTurn);
 		multi.setUnitSkillDirectAccess (direct);
+		multi.setUnitServerUtils (unitServerUtils);
+		multi.setPlayerMessageProcessing (playerMessageProcessing);
 		
 		// Run method
 		multi.grantExperienceToUnitsInCombat (new MapCoordinates3DEx (20, 10, 1), UnitCombatSideID.ATTACKER, trueMap, players, db, fogOfWarSettings);

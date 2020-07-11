@@ -703,6 +703,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="spellAI" class="momime.server.ai.SpellAIImpl">
 		<property name="spellUtils" ref="spellUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="aiSpellCalculations" ref="aiSpellCalculations" />
+		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
@@ -775,6 +778,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="aiHeroItemRatingCalculations" class="momime.server.ai.AIHeroItemRatingCalculationsImpl" />
+
+	<bean id="aiSpellCalculations" class="momime.server.ai.AISpellCalculationsImpl">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+	</bean>
 	
 	<!-- Fog of War -->
 

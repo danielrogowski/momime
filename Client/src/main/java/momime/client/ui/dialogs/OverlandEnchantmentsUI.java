@@ -35,6 +35,7 @@ import momime.client.language.database.SpellLang;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.MagicSlidersUI;
+import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -80,6 +81,9 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
 	
 	/** The spell being drawn */
 	private AddMaintainedSpellMessageImpl addSpellMessage;
@@ -322,7 +326,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		else
 		{
 			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
-			final String playerName = (player != null) ? player.getPlayerDescription ().getPlayerName () : null;
+			final String playerName = (player != null) ? getWizardClientUtils ().getPlayerName (player) : null;
 			spellText.setText (getLanguage ().findCategoryEntry ("SpellCasting", "EnemyOverlandEnchantment").replaceAll
 				("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
 		}
@@ -472,5 +476,21 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	public final void setMagicSlidersUI (final MagicSlidersUI ui)
 	{
 		magicSlidersUI = ui;
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
 	}
 }

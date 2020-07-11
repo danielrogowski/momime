@@ -10,6 +10,15 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.AnimationGfx;
@@ -24,20 +33,12 @@ import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.frames.MagicSlidersUI;
+import momime.client.utils.WizardClientUtils;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
-
-import org.junit.Test;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the OverlandEnchantmentsUI class
@@ -46,11 +47,10 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 {
 	/**
 	 * Tests the OverlandEnchantmentsUI form
-	 * @param photo standardPhotoID, or filename to a custom wizard photo
-	 * @param isCustomPhoto True if photo represents a custom image file, False if its a wizardID 
+	 * @param anotherWizard True if spell is being cast by another wizard, False if its ours 
 	 * @throws Exception If there is a problem
 	 */
-	private final void testOverlandEnchantmentsUI (final String photo, final boolean isCustomPhoto) throws Exception
+	private final void testOverlandEnchantmentsUI (final boolean anotherWizard) throws Exception
 	{
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
@@ -76,6 +76,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
 		when (lang.findCategoryEntry ("SpellCasting", "OurOverlandEnchantment")).thenReturn ("You have completed casting...");
+		when (lang.findCategoryEntry ("SpellCasting", "EnemyOverlandEnchantment")).thenReturn ("PLAYER_NAME has completed casting...");
 		
 		final SpellLang spellLang = new SpellLang ();
 		spellLang.setSpellName ("Just Cause");
@@ -88,30 +89,45 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Player
-		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerID (1);
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		
+		final PlayerDescription pd1 = new PlayerDescription ();
+		pd1.setPlayerID (1);
 
-		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPublicKnowledge pub1 = new MomPersistentPlayerPublicKnowledge ();
+		pub1.setStandardPhotoID ("WZ01");
 		
-		if (isCustomPhoto)
-			pub.setCustomPhoto (Files.readAllBytes (Paths.get (getClass ().getResource (photo).toURI ())));
-		else
-			pub.setStandardPhotoID (photo);
+		final MomTransientPlayerPublicKnowledge trans1 = new MomTransientPlayerPublicKnowledge ();
+		trans1.setFlagColour ("FF0000");
 		
-		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
-		trans.setFlagColour ("FF0000");
+		final PlayerPublicDetails player1 = new PlayerPublicDetails (pd1, pub1, trans1);
+		when (wizardClientUtils.getPlayerName (player1)).thenReturn ("Us");
+
+		final PlayerDescription pd2 = new PlayerDescription ();
+		pd2.setPlayerID (2);
+
+		final MomPersistentPlayerPublicKnowledge pub2 = new MomPersistentPlayerPublicKnowledge ();
+		pub2.setCustomPhoto (Files.readAllBytes (Paths.get (getClass ().getResource ("/CustomWizardPhoto.png").toURI ())));
 		
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
+		final MomTransientPlayerPublicKnowledge trans2 = new MomTransientPlayerPublicKnowledge ();
+		trans2.setFlagColour ("FF0000");
+		
+		final PlayerPublicDetails player2 = new PlayerPublicDetails (pd2, pub2, trans2);
+		when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Someone");
 		
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		players.add (player);
+		players.add (player1);
+		players.add (player2);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
-		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
+		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd1.getPlayerID ()), anyString ())).thenReturn (player1);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd1.getPlayerID ()))).thenReturn (player1);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd2.getPlayerID ()), anyString ())).thenReturn (player2);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd2.getPlayerID ()))).thenReturn (player2);
 		
 		// FOW (just to add the spell into)
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -123,7 +139,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		
 		// Spell being shown
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
-		spell.setCastingPlayerID (1);
+		spell.setCastingPlayerID (anotherWizard ? 2 : 1);
 		spell.setSpellID ("SP001");
 		
 		final AddMaintainedSpellMessageImpl spellMessage = new AddMaintainedSpellMessageImpl ();
@@ -151,32 +167,33 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		ench.setLargeFont (CreateFontsForTests.getLargeFont ());
 		ench.setOverlandEnchantmentsLayout (layout);
 		ench.setAddSpellMessage (spellMessage);
+		ench.setWizardClientUtils (wizardClientUtils);
 		ench.setMagicSlidersUI (new MagicSlidersUI ());
 		
 		// Display form
 		ench.setModal (false);
 		ench.setVisible (true);
-		Thread.sleep (10000);
+		Thread.sleep (5000);
 		ench.setVisible (false);
 	}
 
 	/**
-	 * Tests the OverlandEnchantmentsUI form using a wizard with a standard photo
+	 * Tests the OverlandEnchantmentsUI form when we cast an overland enchantment and we're using a standard photo
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testOverlandEnchantmentsUI_StandardPhoto () throws Exception
+	public final void testOverlandEnchantmentsUI_StandardPhoto_OurSpell () throws Exception
 	{
-		testOverlandEnchantmentsUI ("WZ01", false);
+		testOverlandEnchantmentsUI (false);
 	}
 
 	/**
-	 * Tests the OverlandEnchantmentsUI form using a wizard with a custom photo
+	 * Tests the OverlandEnchantmentsUI form when somebody else cast an overland enchantment and they're using a wizard with a custom photo
 	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testOverlandEnchantmentsUI_CustomPhoto () throws Exception
+	public final void testOverlandEnchantmentsUI_CustomPhoto_OtherWizardSpell () throws Exception
 	{
-		testOverlandEnchantmentsUI ("/CustomWizardPhoto.png", true);
+		testOverlandEnchantmentsUI (true);
 	}
 }

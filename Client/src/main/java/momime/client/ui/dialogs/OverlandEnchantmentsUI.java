@@ -130,7 +130,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		if (pub.getCustomPhoto () != null)
 			unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
 		else if (pub.getStandardPhotoID () != null)
-			unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "OverlandEnchantmentsUI").getPortraitFile ());
+			unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "OverlandEnchantmentsUI").getPortraitImageFile ());
 		else
 			throw new MomException ("Player ID " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () + " has neither a custom or standard photo");
 		

@@ -25742,6 +25742,12 @@
 		<languageEntry languageEntryID="PrisonerB" />
 		<languageEntry languageEntryID="PrisonerN" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmWizardBanished">
+		<languageEntry languageEntryID="BanishedByWizard" />
+		<languageEntry languageEntryID="BanishedByRaiders" />
+		<languageEntry languageEntryID="DefeatedByWizard" />
+		<languageEntry languageEntryID="DefeatedByRaiders" />
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="RequestingUsToPlayCategory" />

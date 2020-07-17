@@ -6953,6 +6953,20 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>A_UNIT_NAME, who would not fit anywhere so escaped</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmWizardBanished">
+		<languageEntry languageEntryID="BanishedByWizard">
+			<languageEntryText>BANISHING_WIZARD banishes BANISHED_WIZARD</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="BanishedByRaiders">
+			<languageEntryText>BANISHING_WIZARD banish BANISHED_WIZARD</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefeatedByWizard">
+			<languageEntryText>BANISHING_WIZARD defeats BANISHED_WIZARD</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="DefeatedByRaiders">
+			<languageEntryText>BANISHING_WIZARD defeat BANISHED_WIZARD</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Combats</languageEntryText>

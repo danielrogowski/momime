@@ -61,7 +61,7 @@ public final class TestWizardsUI extends ClientTestData
 		{
 			final WizardGfx wizard = new WizardGfx ();
 			wizard.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
-			wizard.setPortraitFile ("/momime.client.graphics/wizards/" + wizard.getWizardID () + ".png");
+			wizard.setPortraitImageFile ("/momime.client.graphics/wizards/" + wizard.getWizardID () + ".png");
 			
 			when (gfx.findWizard (wizard.getWizardID (), "WizardsUI")).thenReturn (wizard);
 		}

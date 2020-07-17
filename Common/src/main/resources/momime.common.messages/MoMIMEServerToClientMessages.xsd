@@ -1246,6 +1246,28 @@ where the animation and game world updates are sent in separate messages.</xsd:d
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="wizardBanishedMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Server announces to everybody when a wizard gets banished, so the clients can show the animation for it.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="banishedPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="banishingPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="defeated" type="xsd:boolean">
+						    <xsd:annotation>
+    							<xsd:documentation>If false, the wizard still has at least 1 more city so they can try to cast Spell of Return.
+If true, the wizard has no cities left and they are out of the game.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
 <!-- Map areas -->
 
 	<!-- Equivalent of TMomOverlandMoveTypeArea -->

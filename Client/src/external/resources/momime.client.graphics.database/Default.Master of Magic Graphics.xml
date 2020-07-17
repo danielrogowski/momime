@@ -12,85 +12,155 @@
 	</wizard>
 	<wizard wizardID="WZ01">
 		<flagColour>B2AAA6</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ01.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ01.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ01-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ01-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ01-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_01</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ01_102" />
 		<combatPlayList playListID="COMBAT_WZ01_103" />
 	</wizard>
 	<wizard wizardID="WZ02">
 		<flagColour>545D10</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ02.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ02.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ02-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ02-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ02-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_02</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ02_102" />
 		<combatPlayList playListID="COMBAT_WZ02_103" />
 	</wizard>
 	<wizard wizardID="WZ03">
 		<flagColour>A86E4E</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ03.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ03.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ03-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ03-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ03-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_03</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_034_000 - Scream F.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ03_102" />
 		<combatPlayList playListID="COMBAT_WZ03_103" />
 	</wizard>
 	<wizard wizardID="WZ04">
 		<flagColour>3C398C</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ04.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ04.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ04-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ04-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ04-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_04</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ04_102" />
 		<combatPlayList playListID="COMBAT_WZ04_103" />
 	</wizard>
 	<wizard wizardID="WZ05">
 		<flagColour>65483D</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ05.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ05.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ05-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ05-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ05-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_05</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ05_102" />
 		<combatPlayList playListID="COMBAT_WZ05_103" />
 	</wizard>
 	<wizard wizardID="WZ06">
 		<flagColour>D0CA7D</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ06.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ06.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ06-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ06-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ06-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_06</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ06_102" />
 		<combatPlayList playListID="COMBAT_WZ06_103" />
 	</wizard>
 	<wizard wizardID="WZ07">
 		<flagColour>571D56</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ07.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ07.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ07-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ07-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ07-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_07</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ07_102" />
 		<combatPlayList playListID="COMBAT_WZ07_103" />
 	</wizard>
 	<wizard wizardID="WZ08">
 		<flagColour>436243</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ08.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ08.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ08-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ08-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ08-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_08</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ08_102" />
 		<combatPlayList playListID="COMBAT_WZ08_103" />
 	</wizard>
 	<wizard wizardID="WZ09">
 		<flagColour>520101</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ09.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ09.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ09-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ09-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ09-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_09</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ09_102" />
 		<combatPlayList playListID="COMBAT_WZ09_103" />
 	</wizard>
 	<wizard wizardID="WZ10">
 		<flagColour>FBE270</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ10.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ10.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ10-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ10-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ10-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_10</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_034_000 - Scream F.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ10_102" />
 		<combatPlayList playListID="COMBAT_WZ10_103" />
 	</wizard>
 	<wizard wizardID="WZ11">
 		<flagColour>D48F1C</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ11.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ11.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ11-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ11-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ11-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_11</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ11_102" />
 		<combatPlayList playListID="COMBAT_WZ11_103" />
 	</wizard>
 	<wizard wizardID="WZ12">
 		<flagColour>E9BEA2</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ12.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ12.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ12-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ12-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ12-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_12</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_034_000 - Scream F.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ12_102" />
 		<combatPlayList playListID="COMBAT_WZ12_103" />
 	</wizard>
 	<wizard wizardID="WZ13">
 		<flagColour>900000</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ13.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ13.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ13-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ13-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ13-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_13</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ13_102" />
 		<combatPlayList playListID="COMBAT_WZ13_103" />
 	</wizard>
 	<wizard wizardID="WZ14">
 		<flagColour>042444</flagColour>
-		<portraitFile>/momime.client.graphics/wizards/WZ14.png</portraitFile>
+		<portraitImageFile>/momime.client.graphics/wizards/WZ14.png</portraitImageFile>
+		<standingImageFile>/momime.client.graphics/wizards/WZ14-standing.png</standingImageFile>
+		<banishingImageFile>/momime.client.graphics/wizards/WZ14-banishing.png</banishingImageFile>
+		<banishingHandImageFile>/momime.client.graphics/wizards/WZ14-banishing-hand.png</banishingHandImageFile>
+		<evaporatingAnimation>WIZARD_EVAPORATING_14</evaporatingAnimation>
+		<screamSoundFile>/momime.client.sounds/SOUNDFX_034_000 - Scream F.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ14_102" />
 		<combatPlayList playListID="COMBAT_WZ14_103" />
 	</wizard>
@@ -67882,6 +67952,138 @@
 		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d8-frame2.png</frame>
 		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d8-frame3.png</frame>
 		<frame>/momime.client.graphics/overland/roads/enchanted/enchantedRoad-d8-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_01">
+		<animationDescription>Wizard 01 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ01-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_02">
+		<animationDescription>Wizard 02 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ02-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_03">
+		<animationDescription>Wizard 03 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ03-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_04">
+		<animationDescription>Wizard 04 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ04-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_05">
+		<animationDescription>Wizard 05 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ05-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_06">
+		<animationDescription>Wizard 06 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ06-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_07">
+		<animationDescription>Wizard 07 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ07-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_08">
+		<animationDescription>Wizard 08 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ08-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_09">
+		<animationDescription>Wizard 09 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ09-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_10">
+		<animationDescription>Wizard 10 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ10-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_11">
+		<animationDescription>Wizard 11 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ11-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_12">
+		<animationDescription>Wizard 12 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ12-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_13">
+		<animationDescription>Wizard 13 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ13-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="WIZARD_EVAPORATING_14">
+		<animationDescription>Wizard 14 evaporating</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ14-evaporating-frame1.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-evaporating-frame2.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-evaporating-frame3.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-evaporating-frame4.png</frame>
+	</animation>
+	<animation animationID="BANISHING_BLAST_SINGLE">
+		<animationDescription>Banishing blast, first part with single blast shown</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/animations/wizardsLab/singleBlast-frame1.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/singleBlast-frame2.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/singleBlast-frame3.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/singleBlast-frame4.png</frame>
+	</animation>
+	<animation animationID="BANISHING_BLAST_DOUBLE">
+		<animationDescription>Banishing blast, second part with double blasts shown</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame1.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame2.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame3.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame4.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame5.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame6.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame7.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame8.png</frame>
 	</animation>
 	<playList playListID="OVERLAND">
 		<audioFile>/momime.client.music/MUSIC_099 - BGM.mp3</audioFile>

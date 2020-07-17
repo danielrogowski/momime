@@ -2685,7 +2685,7 @@ public final class NewGameUI extends MomClientFrameUI
 						else
 						{
 							final WizardGfx portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.wizardButtonAction"); 
-							wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
+							wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitImageFile ()).getScaledInstance
 								(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 							
 							updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));
@@ -2742,7 +2742,7 @@ public final class NewGameUI extends MomClientFrameUI
 						else
 						{
 							final WizardGfx portrait = getGraphicsDB ().findWizard (wizard.getWizardID (), "NewGameUI.portraitButtonAction"); 
-							wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitFile ()).getScaledInstance
+							wizardPortrait.setIcon (new ImageIcon (getUtils ().loadImage (portrait.getPortraitImageFile ()).getScaledInstance
 								(GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.width, GraphicsDatabaseConstants.WIZARD_PORTRAIT_SIZE.height, Image.SCALE_SMOOTH)));
 
 							updateFlagColour (Integer.parseInt (portrait.getFlagColour (), 16));

@@ -605,6 +605,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 	</bean>
 
+	<bean id="wizardBanishedMessage" class="momime.client.messages.process.WizardBanishedMessageImpl" scope="prototype">
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="client" ref="client" />
+		<property name="wizardBanishedUI" ref="wizardBanishedUI" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">
@@ -1971,6 +1978,20 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="client" ref="client" />
+	</bean>
+
+	<bean id="wizardBanishedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/WizardBanishedUI.xml" />
+	</bean>
+
+	<bean id="wizardBanishedUI" class="momime.client.ui.dialogs.WizardBanishedUI" scope="prototype">
+		<property name="wizardBanishedLayout" ref="wizardBanishedLayout" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="client" ref="client" />
 	</bean>
 	

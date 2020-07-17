@@ -56,6 +56,12 @@ public final class GraphicsDatabaseConstants
 	/** Which wizard's combat music to play if an opponent wizard has no music defined, or is a custom wizard with no standardPhotoID */
 	public static final String WIZARD_ID_GENERAL_COMBAT_MUSIC = "RAIDERS";
 	
+	/** Banishing animation single blast */
+	public static final String ANIM_WIZARD_BANISHED_SINGLE_BLAST = "BANISHING_BLAST_SINGLE";
+
+	/** Banishing animation double blast */
+	public static final String ANIM_WIZARD_BANISHED_DOUBLE_BLAST = "BANISHING_BLAST_DOUBLE";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

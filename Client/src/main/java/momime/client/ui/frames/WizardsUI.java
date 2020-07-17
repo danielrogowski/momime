@@ -255,7 +255,7 @@ public final class WizardsUI extends MomClientFrameUI
 					if (pub.getCustomPhoto () != null)
 						unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
 					else if (pub.getStandardPhotoID () != null)
-						unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitFile ());
+						unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
 					else
 						throw new MomException ("Player ID " + player.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
 

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>640</formWidth>		<!-- 320 x 2 -->
+	<formHeight>480</formHeight>		<!-- 200 x 2.4 -->
+	<component name="frmWizardBanishedTitle">
+		<left>320</left>
+		<top>8</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardBanishedStanding">
+		<left>138</left>			<!-- 69 x 2 -->
+		<top>180</top>			<!-- 75 x 2.4 -->
+		<width>168</width>		<!-- 84 x 2 -->
+		<height>256</height>	<!-- 107 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardBanishedEvaporating">
+		<left>132</left>			<!-- 66 x 2 -->
+		<top>38</top>			<!-- 16 x 2.4 -->
+		<width>158</width>		<!-- 79 x 2 -->
+		<height>405</height>	<!-- 169 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardBanishedRaiderFront">
+		<left>0</left>				<!-- These positions all set by animation frames -->
+		<top>0</top>
+		<width>202</width>		<!-- 101 x 2 -->
+		<height>295</height>	<!-- 123 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardBanishedRaiderHeads">
+		<left>0</left>
+		<top>0</top>
+		<width>440</width>		<!-- 220 x 2 -->
+		<height>192</height>	<!-- 80 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardBanishedBanisher">
+		<left>0</left>
+		<top>0</top>
+		<width>230</width>		<!-- 115 x 2 -->
+		<height>345</height>	<!-- 144 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardBanishedBanishersHand">
+		<left>0</left>
+		<top>0</top>
+		<width>86</width>		<!-- 43 x 2 -->
+		<height>151</height>	<!-- 63 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardBanishedSingleBlast">
+		<left>354</left>			<!-- 177 x 2 -->
+		<top>148</top>			<!-- 62 x 2.4 -->
+		<width>148</width>		<!-- 74 x 2 -->
+		<height>170</height>	<!-- 71 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardBanishedDoubleBlast">
+		<left>0</left>				<!-- Not set by animation frame - it really does start at 0, 0 -->
+		<top>0</top>
+		<width>502</width>		<!-- 251 x 2 -->
+		<height>367</height>	<!-- 153 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

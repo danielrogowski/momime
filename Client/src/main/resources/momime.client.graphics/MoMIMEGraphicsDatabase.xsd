@@ -197,6 +197,10 @@
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="@wizardID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimegfx:animationPK" name="wizardFKanimation">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="evaporatingAnimation" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimegfx:playListPK" name="wizardCombatPlayListFKplayList">
 			<xsd:selector xpath="wizard/combatPlayList" />
 			<xsd:field xpath="@playListID" />
@@ -390,7 +394,18 @@
 	<xsd:complexType name="wizard" nxe:singular="Wizard" nxe:plural="Wizards">
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="flagColour" type="momimecommon:colour" nxe:label="Flag colour" nxe:gridwidth="80" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="portraitFile" type="momimegfx:imageFilename" nxe:label="Portrait image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="portraitImageFile" type="momimegfx:imageFilename" nxe:label="Portrait image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="standingImageFile" type="momimegfx:imageFilename" nxe:label="Standing image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="banishingImageFile" type="momimegfx:imageFilename" nxe:label="Banishing image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="banishingHandImageFile" type="momimegfx:imageFilename" nxe:label="Banishing hand image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="evaporatingAnimation" type="momimegfx:animationID" nxe:label="Evaporating anim" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="screamSoundFile" type="momimegfx:imageFilename" nxe:label="Scream sound file" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatPlayList" type="momimegfx:wizardCombatPlayList" nxe:label="Combat play list" nxe:gridwidth="250" />
 		</xsd:sequence>
 		<xsd:attribute name="wizardID" type="momimecommon:wizardID" use="required" nxe:label="Wizard ID" nxe:gridwidth="80" />

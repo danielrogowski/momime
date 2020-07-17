@@ -63,7 +63,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 			fade.getFrame ().add ("/momime.client.graphics/ui/mirror/mirror-fade-frame" + ((n < 10) ? "0" : "") + n + ".png");
 		
 		final WizardGfx wizard = new WizardGfx ();
-		wizard.setPortraitFile ("/momime.client.graphics/wizards/WZ12.png");
+		wizard.setPortraitImageFile ("/momime.client.graphics/wizards/WZ12.png");
 		
 		final SpellGfx spellGfx = new SpellGfx ();
 		spellGfx.setOverlandEnchantmentImageFile ("/momime.client.graphics/spells/SP127/overlandEnchantment.png");

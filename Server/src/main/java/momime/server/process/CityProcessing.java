@@ -12,6 +12,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
@@ -163,4 +164,17 @@ public interface CityProcessing
 	public void razeCity (final MapCoordinates3DEx cityLocation,
 		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
+
+	/**
+	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
+	 * 
+	 * @param attackingPlayerID Player who won the combat, who is doing the banishing
+	 * @param defendingPlayerID Player who lost the combat, who is the one being banished
+	 * @param trueTerrain True overland map terrain
+	 * @param players List of players in this session
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void banishWizard (final int attackingPlayerID, final int defendingPlayerID, final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players)
+		throws JAXBException, XMLStreamException;
 }

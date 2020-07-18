@@ -278,7 +278,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	{
 		log.trace ("Entering languageChanged");
 
-		final String languageEntryID = (isDefeated () ? "Defeated" : "Banished") + "By" + ((banishingWizardGfx != null) ? "BanishedByWizard" : "BanishedByRaiders"); 
+		final String languageEntryID = (isDefeated () ? "Defeated" : "Banished") + "By" + ((banishingWizardGfx != null) ? "Wizard" : "Raiders"); 
 		
 		final String title = getLanguage ().findCategoryEntry ("frmWizardBanished", languageEntryID).replaceAll
 			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll

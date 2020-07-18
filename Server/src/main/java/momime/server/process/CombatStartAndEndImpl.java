@@ -30,6 +30,7 @@ import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -125,6 +126,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** City processing methods */
 	private CityProcessing cityProcessing;
+	
+	/** MemoryBuilding utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -408,6 +412,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
 						moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 				
+				// Before we remove buildings, check if this was the wizard's fortress
+				boolean wasWizardsFortress = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null);
+				
 				// Deal with cities
 				if (useCaptureCityDecision == CaptureCityDecisionID.CAPTURE)
 					getCityProcessing ().captureCity (combatLocation, attackingPlayer, defendingPlayer,
@@ -416,6 +424,17 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				else if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
 					getCityProcessing ().razeCity (combatLocation,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+
+				// If they're already banished and this was their last city being taken, then treat it just like their wizard's fortress being taken
+				if ((!wasWizardsFortress) && (useCaptureCityDecision != null) &&
+					(getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0))
+					
+					wasWizardsFortress = true;
+				
+				// Deal with wizard being banished
+				if (wasWizardsFortress)
+					getCityProcessing ().banishWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers ());
 			}
 			else
 			{
@@ -782,5 +801,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setCityProcessing (final CityProcessing obj)
 	{
 		cityProcessing = obj;
+	}
+
+	/**
+	 * @return MemoryBuilding utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils MemoryBuilding utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
 	}
 }

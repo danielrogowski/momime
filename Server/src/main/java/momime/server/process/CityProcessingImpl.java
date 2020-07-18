@@ -26,6 +26,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -41,6 +42,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.messages.servertoclient.WizardBanishedMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -747,7 +749,8 @@ public final class CityProcessingImpl implements CityProcessing
 		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering captureCity");
+		log.trace ("Entering captureCity: " + cityLocation + " was owned by player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () +
+			", being captured by " + attackingPlayer.getPlayerDescription ().getPlayerID ());				
 
 		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -818,7 +821,7 @@ public final class CityProcessingImpl implements CityProcessing
 		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering razeCity");
+		log.trace ("Entering razeCity: " + cityLocation);				
 	
 		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
 				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -842,6 +845,35 @@ public final class CityProcessingImpl implements CityProcessing
 			cityLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
 		
 		log.trace ("Exiting razeCity");
+	}
+	
+	/**
+	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
+	 * 
+	 * @param attackingPlayerID Player who won the combat, who is doing the banishing
+	 * @param defendingPlayerID Player who lost the combat, who is the one being banished
+	 * @param trueTerrain True overland map terrain
+	 * @param players List of players in this session
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void banishWizard (final int attackingPlayerID, final int defendingPlayerID, final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players)
+		throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering banishWizard: Player ID " + defendingPlayerID + " being banished by " + attackingPlayerID);
+		
+		// Do they have another city to try to return to?
+		final boolean isDefeated = (getCityServerUtils ().countCities (trueTerrain, defendingPlayerID) == 0);
+		
+		// This just makes the clients display the animation of the wizard being banished, it doesn't do anything functional
+		final WizardBanishedMessage msg = new WizardBanishedMessage ();
+		msg.setBanishedPlayerID (defendingPlayerID);
+		msg.setBanishingPlayerID (attackingPlayerID);
+		msg.setDefeated (isDefeated);
+		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
+
+		log.trace ("Exiting banishWizard");
 	}
 	
 	/**

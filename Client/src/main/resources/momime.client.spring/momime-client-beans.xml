@@ -609,7 +609,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="client" ref="client" />
-		<property name="wizardBanishedUI" ref="wizardBanishedUI" />
 	</bean>
 
 	<!-- Create extended versions of NTMs which include drawing implementations -->
@@ -1986,6 +1985,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="wizardBanishedUI" class="momime.client.ui.dialogs.WizardBanishedUI" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
 		<property name="wizardBanishedLayout" ref="wizardBanishedLayout" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="graphicsDB" ref="graphicsDatabase" />

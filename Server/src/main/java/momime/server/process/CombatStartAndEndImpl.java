@@ -434,7 +434,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Deal with wizard being banished
 				if (wasWizardsFortress)
 					getCityProcessing ().banishWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer.getPlayerDescription ().getPlayerID (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers ());
+						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}
 			else
 			{

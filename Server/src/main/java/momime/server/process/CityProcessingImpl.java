@@ -2,6 +2,7 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -26,9 +27,10 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -38,6 +40,7 @@ import momime.common.messages.NewTurnMessageConstructUnit;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
@@ -59,6 +62,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
+import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.CityServerUtils;
@@ -852,19 +856,25 @@ public final class CityProcessingImpl implements CityProcessing
 	 * 
 	 * @param attackingPlayerID Player who won the combat, who is doing the banishing
 	 * @param defendingPlayerID Player who lost the combat, who is the one being banished
-	 * @param trueTerrain True overland map terrain
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param players List of players in this session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void banishWizard (final int attackingPlayerID, final int defendingPlayerID, final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players)
-		throws JAXBException, XMLStreamException
+	public final void banishWizard (final int attackingPlayerID, final int defendingPlayerID, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		log.trace ("Entering banishWizard: Player ID " + defendingPlayerID + " being banished by " + attackingPlayerID);
 		
 		// Do they have another city to try to return to?
-		final boolean isDefeated = (getCityServerUtils ().countCities (trueTerrain, defendingPlayerID) == 0);
+		final boolean isDefeated = (getCityServerUtils ().countCities (trueMap.getMap (), defendingPlayerID) == 0);
 		
 		// This just makes the clients display the animation of the wizard being banished, it doesn't do anything functional
 		final WizardBanishedMessage msg = new WizardBanishedMessage ();
@@ -872,6 +882,34 @@ public final class CityProcessingImpl implements CityProcessing
 		msg.setBanishingPlayerID (attackingPlayerID);
 		msg.setDefeated (isDefeated);
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
+		
+		// Clean up defeated wizards
+		if (isDefeated)
+		{
+			// Remove any spells the wizard still had cast
+			final List<MemoryMaintainedSpell> defeatedSpells = trueMap.getMaintainedSpell ().stream ().filter (s -> s.getCastingPlayerID () == defendingPlayerID).collect (Collectors.toList ());
+			for (final MemoryMaintainedSpell defeatedSpell : defeatedSpells)
+				getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, defeatedSpell.getSpellURN (), players, db, sd);
+
+			// Remove any units the wizard still had
+			final List<MemoryUnit> defeatedUnits = trueMap.getUnit ().stream ().filter (u -> u.getOwningPlayerID () == defendingPlayerID).collect (Collectors.toList ());
+			for (final MemoryUnit defeatedUnit : defeatedUnits)
+				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defeatedUnit, KillUnitActionID.LACK_OF_PRODUCTION, trueMap, players, sd.getFogOfWarSetting (), db);
+			
+			// Unown any nodes the wizard had captured
+			for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)
+				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+					{
+						final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						if ((terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == defendingPlayerID))
+						{
+							terrainData.setNodeOwnerID (null);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players, new MapCoordinates3DEx (x, y, z),
+								sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+						}
+					}
+		}
 
 		log.trace ("Exiting banishWizard");
 	}

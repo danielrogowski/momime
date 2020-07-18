@@ -12,7 +12,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
@@ -170,11 +169,17 @@ public interface CityProcessing
 	 * 
 	 * @param attackingPlayerID Player who won the combat, who is doing the banishing
 	 * @param defendingPlayerID Player who lost the combat, who is the one being banished
-	 * @param trueTerrain True overland map terrain
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param players List of players in this session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void banishWizard (final int attackingPlayerID, final int defendingPlayerID, final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players)
-		throws JAXBException, XMLStreamException;
+	public void banishWizard (final int attackingPlayerID, final int defendingPlayerID, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 }

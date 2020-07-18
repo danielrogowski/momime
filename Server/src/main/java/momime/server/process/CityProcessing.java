@@ -5,6 +5,10 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
@@ -12,10 +16,6 @@ import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Methods for any significant message processing to do with cities that isn't done in the message implementations
@@ -125,4 +125,42 @@ public interface CityProcessing
 	 */
 	public void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * Changes ownership of a city after it is captured in combat
+	 * 
+	 * @param cityLocation Location of the city
+	 * @param attackingPlayer Player who won the combat, who is taking ownership of the city
+	 * @param defendingPlayer Player who lost the combat, and who is losing the city
+	 * @param players List of players in this session
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void captureCity (final MapCoordinates3DEx cityLocation, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
+	
+	/**
+	 * Destroys a city after it is taken in combat
+	 * 
+	 * @param cityLocation Location of the city
+	 * @param players List of players in this session
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void razeCity (final MapCoordinates3DEx cityLocation,
+		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 }

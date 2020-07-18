@@ -15,12 +15,10 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
-import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
-import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.NumberedHeroItem;
@@ -32,17 +30,13 @@ import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
-import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.MomAI;
-import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.ServerDatabaseValues;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
@@ -90,26 +84,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
 
-	/** Memory building utils */
-	private MemoryBuildingUtils memoryBuildingUtils;
-
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** City calculations */
-	private CityCalculations cityCalculations;
-	
-	/** Server-only city calculations */
-	private ServerCityCalculations serverCityCalculations;
 	
 	/** Server-only overland map utils */
 	private OverlandMapServerUtils overlandMapServerUtils;
 	
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;
-	
-	/** Methods for updating true map + players' memory */
-	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
@@ -140,6 +122,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/** City processing methods */
+	private CityProcessing cityProcessing;
 	
 	/**
 	 * Sets up a combat on the server and any client(s) who are involved
@@ -425,69 +410,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Deal with cities
 				if (useCaptureCityDecision == CaptureCityDecisionID.CAPTURE)
-				{
-					// Destroy enemy wizards' fortress and/or summoning circle
-					final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS);
-					final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findBuilding (mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
-					
-					if (wizardsFortress != null)
-						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-							wizardsFortress.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
-
-					if (summoningCircle != null)
-						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-							summoningCircle.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
-					
-					// Deal with spells cast on the city:
-					// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these
-					// 2) Any spells the attacker had cast on the city must be curses - we don't want to curse our own city - so cancel them
-					// 3) Any spells a 3rd player (neither the defender nor attacker) had cast on the city must be curses - and I'm sure they'd like to continue cursing the new city owner :D
-					getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
-						attackingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
+					getCityProcessing ().captureCity (combatLocation, attackingPlayer, defendingPlayer,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 				
-					if (defendingPlayer != null)
-						getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-							(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation,
-							defendingPlayer.getPlayerDescription ().getPlayerID (), mom.getServerDB (), mom.getSessionDescription ());
-
-					// Take ownership of the city
-					tc.getCityData ().setCityOwnerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
-					tc.getCityData ().setProductionSoFar (null);
-					tc.getCityData ().setCurrentlyConstructingUnitID (null);
-					tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
-					
-					// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
-					tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels
-						(mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
-						combatLocation, atkPriv.getTaxRateID (), mom.getServerDB ()).getFinalTotal ());
-					
-					getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
-					
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getPlayers (), combatLocation, mom.getSessionDescription ().getFogOfWarSetting ());
-				}
 				else if (useCaptureCityDecision == CaptureCityDecisionID.RAZE)
-				{
-					// Cancel all spells cast on the city regardless of owner
-					getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
-						(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, 0, mom.getServerDB (), mom.getSessionDescription ());
-					
-					// Wreck all the buildings
-					getFogOfWarMidTurnMultiChanges ().destroyAllBuildingsInLocationOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
-						combatLocation, mom.getSessionDescription (), mom.getServerDB ());
-					
-					// Wreck the city
-					tc.setCityData (null);
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
-						combatLocation, mom.getSessionDescription ().getFogOfWarSetting ());
-					
-					// Wreck the road
-					tc.getTerrainData ().setRoadTileTypeID (null);
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (),
-						combatLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
-				}
+					getCityProcessing ().razeCity (combatLocation,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 			}
 			else
 			{
@@ -633,22 +561,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	}
 
 	/**
-	 * @return Memory building utils
-	 */
-	public final MemoryBuildingUtils getMemoryBuildingUtils ()
-	{
-		return memoryBuildingUtils;
-	}
-
-	/**
-	 * @param utils Memory building utils
-	 */
-	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
-	{
-		memoryBuildingUtils = utils;
-	}
-
-	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()
@@ -662,38 +574,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
-	}
-	
-	/**
-	 * @return City calculations
-	 */
-	public final CityCalculations getCityCalculations ()
-	{
-		return cityCalculations;
-	}
-
-	/**
-	 * @param calc City calculations
-	 */
-	public final void setCityCalculations (final CityCalculations calc)
-	{
-		cityCalculations = calc;
-	}
-
-	/**
-	 * @return Server-only city calculations
-	 */
-	public final ServerCityCalculations getServerCityCalculations ()
-	{
-		return serverCityCalculations;
-	}
-
-	/**
-	 * @param calc Server-only city calculations
-	 */
-	public final void setServerCityCalculations (final ServerCityCalculations calc)
-	{
-		serverCityCalculations = calc;
 	}
 	
 	/**
@@ -726,22 +606,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setCityServerUtils (final CityServerUtils utils)
 	{
 		cityServerUtils = utils;
-	}
-
-	/**
-	 * @return Methods for updating true map + players' memory
-	 */
-	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
-	{
-		return fogOfWarMidTurnChanges;
-	}
-
-	/**
-	 * @param obj Methods for updating true map + players' memory
-	 */
-	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
-	{
-		fogOfWarMidTurnChanges = obj;
 	}
 
 	/**
@@ -902,5 +766,21 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return City processing methods
+	 */
+	public final CityProcessing getCityProcessing ()
+	{
+		return cityProcessing;
+	}
+
+	/**
+	 * @param obj City processing methods
+	 */
+	public final void setCityProcessing (final CityProcessing obj)
+	{
+		cityProcessing = obj;
 	}
 }

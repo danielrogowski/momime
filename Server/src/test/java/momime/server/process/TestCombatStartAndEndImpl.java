@@ -24,7 +24,6 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
-import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
@@ -49,19 +48,16 @@ import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
-import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.PlaneSvr;
 import momime.server.database.ServerDatabaseEx;
-import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
@@ -1159,16 +1155,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MemoryBuilding summoningCircle = new MemoryBuilding ();
 		summoningCircle.setBuildingURN (4);
 		
-		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)).thenReturn (summoningCircle);
-		
 		// How many rebels the city will have after the attacker captures it
 		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
 		attackerRebels.setFinalTotal (2);
-		
-		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), combatLocation, "TR01", db)).thenReturn (attackerRebels);
 		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
 		final List<MemoryUnit> advancingUnits = new ArrayList<MemoryUnit> ();
@@ -1190,15 +1179,13 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		}
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
-		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
+		final CityProcessing cityProcessing = mock (CityProcessing.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurnSingle);
 		cse.setFogOfWarMidTurnMultiChanges (midTurnMulti);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
@@ -1206,11 +1193,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
-		cse.setMemoryBuildingUtils (memoryBuildingUtils);
-		cse.setCityCalculations (cityCalc);
-		cse.setServerCityCalculations (serverCityCalc);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
+		cse.setCityProcessing (cityProcessing);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
@@ -1243,10 +1228,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city owner was updated
-		assertEquals (attackingPd.getPlayerID ().intValue (), cityData.getCityOwnerID ());
-		assertEquals (2, cityData.getNumberOfRebels ());
-		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings);
-		verify (serverCityCalc, times (1)).ensureNotTooManyOptionalFarmers (cityData);
+		verify (cityProcessing, times (1)).captureCity (combatLocation, attackingPlayer, defendingPlayer, players, trueMap, sd, db);
 		
 		// Check the attacker's units advanced forward into the city
 		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1255,14 +1237,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check the attacker swiped gold from the defender
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped);
 		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
-		
-		// Check the summoning circle was removed (but not their fortress)
-		verify (midTurnSingle, times (0)).destroyBuildingOnServerAndClients (trueMap, players, fortress.getBuildingURN (), false, sd, db);
-		verify (midTurnSingle, times (1)).destroyBuildingOnServerAndClients (trueMap, players, summoningCircle.getBuildingURN (), false, sd, db);
-		
-		// Check any old enchantments/curses cast by the old/new owner get switched off
-		verify (midTurnMulti, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, attackingPd.getPlayerID (), db, sd);
-		verify (midTurnMulti, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, defendingPd.getPlayerID (), db, sd);
 	}
 	
 	/**
@@ -1371,16 +1345,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final MemoryBuilding summoningCircle = new MemoryBuilding ();
 		summoningCircle.setBuildingURN (4);
 		
-		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (null);
-		when (memoryBuildingUtils.findBuilding (trueMap.getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)).thenReturn (summoningCircle);
-		
 		// How many rebels the city will have after the attacker captures it
 		final CityUnrestBreakdown attackerRebels = new CityUnrestBreakdown ();
 		attackerRebels.setFinalTotal (2);
-		
-		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), combatLocation, "TR01", db)).thenReturn (attackerRebels);
 		
 		// Attacker has 3 units in the cell they're attacking from, but only 2 of them are attacking
 		final List<MemoryUnit> advancingUnits = new ArrayList<MemoryUnit> ();
@@ -1402,15 +1369,13 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		}
 		
 		// Set up object to test
-		final FogOfWarMidTurnChanges midTurnSingle = mock (FogOfWarMidTurnChanges.class);
 		final FogOfWarMidTurnMultiChanges midTurnMulti = mock (FogOfWarMidTurnMultiChanges.class);
 		final FogOfWarProcessing fowProcessing = mock (FogOfWarProcessing.class);
 		final CombatProcessing combatProcessing = mock (CombatProcessing.class);
 		final ServerResourceCalculations serverResourceCalculations = mock (ServerResourceCalculations.class);
-		final ServerCityCalculations serverCityCalc = mock (ServerCityCalculations.class);
+		final CityProcessing cityProcessing = mock (CityProcessing.class);
 		
 		final CombatStartAndEndImpl cse = new CombatStartAndEndImpl ();
-		cse.setFogOfWarMidTurnChanges (midTurnSingle);
 		cse.setFogOfWarMidTurnMultiChanges (midTurnMulti);
 		cse.setFogOfWarProcessing (fowProcessing);
 		cse.setCombatProcessing (combatProcessing);
@@ -1418,12 +1383,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
-		cse.setMemoryBuildingUtils (memoryBuildingUtils);
-		cse.setCityCalculations (cityCalc);
-		cse.setServerCityCalculations (serverCityCalc);
 		cse.setCityServerUtils (cityServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
+		cse.setCityProcessing (cityProcessing);
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);
@@ -1456,8 +1419,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		verify (serverResourceCalculations, times (1)).recalculateGlobalProductionValues (attackingPd.getPlayerID (), false, mom);
 		
 		// Check the city was trashed
-		assertNull (gc.getCityData ());
-		verify (midTurnSingle, times (1)).updatePlayerMemoryOfCity (trueTerrain, players, combatLocation, fowSettings);
+		verify (cityProcessing, times (1)).razeCity (combatLocation, players, trueMap, sd, db);
 		
 		// Check the attacker's units advanced forward into where the city used to be
 		verify (midTurnMulti, times (1)).moveUnitStackOneCellOnServerAndClients (advancingUnits, attackingPlayer,
@@ -1466,12 +1428,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Check the attacker swiped gold from the defender
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, goldSwiped + 567);
 		verify (resourceValueUtils, times (1)).addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldSwiped);
-		
-		// Check all buildings were destroyed
-		verify (midTurnMulti, times (1)).destroyAllBuildingsInLocationOnServerAndClients (trueMap, players, combatLocation, sd, db);
-		
-		// Check all enchantments/curses were switched off
-		verify (midTurnMulti, times (1)).switchOffMaintainedSpellsInLocationOnServerAndClients (trueMap, players, combatLocation, 0, db, sd);
 	}
 
 	/**

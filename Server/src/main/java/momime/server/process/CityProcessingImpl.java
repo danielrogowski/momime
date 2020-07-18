@@ -56,6 +56,7 @@ import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.CityServerUtils;
@@ -122,6 +123,9 @@ public final class CityProcessingImpl implements CityProcessing
 	
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -723,6 +727,124 @@ public final class CityProcessingImpl implements CityProcessing
 	}
 	
 	/**
+	 * Changes ownership of a city after it is captured in combat
+	 * 
+	 * @param cityLocation Location of the city
+	 * @param attackingPlayer Player who won the combat, who is taking ownership of the city
+	 * @param defendingPlayer Player who lost the combat, and who is losing the city
+	 * @param players List of players in this session
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void captureCity (final MapCoordinates3DEx cityLocation, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		log.trace ("Entering captureCity");
+
+		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		
+		final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		// Destroy enemy wizards' fortress and/or summoning circle
+		final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, CommonDatabaseConstants.BUILDING_FORTRESS);
+		final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findBuilding (trueMap.getBuilding (), cityLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
+		
+		if (wizardsFortress != null)
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players,
+				wizardsFortress.getBuildingURN (), false, sd, db);
+
+		if (summoningCircle != null)
+			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players,
+				summoningCircle.getBuildingURN (), false, sd, db);
+		
+		// Deal with spells cast on the city:
+		// 1) Any spells the defender had cast on the city must be enchantments - which unfortunately we don't get - so cancel these
+		// 2) Any spells the attacker had cast on the city must be curses - we don't want to curse our own city - so cancel them
+		// 3) Any spells a 3rd player (neither the defender nor attacker) had cast on the city must be curses - and I'm sure they'd like to continue cursing the new city owner :D
+		getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
+			(trueMap, players, cityLocation,
+			attackingPlayer.getPlayerDescription ().getPlayerID (), db, sd);
+	
+		if (defendingPlayer != null)
+			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
+				(trueMap, players, cityLocation,
+				defendingPlayer.getPlayerDescription ().getPlayerID (), db, sd);
+
+		// Take ownership of the city
+		tc.getCityData ().setCityOwnerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
+		tc.getCityData ().setProductionSoFar (null);
+		tc.getCityData ().setCurrentlyConstructingUnitID (null);
+		tc.getCityData ().setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+		
+		// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
+		tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels
+			(players, trueMap.getMap (),
+			trueMap.getUnit (), trueMap.getBuilding (),
+			cityLocation, atkPriv.getTaxRateID (), db).getFinalTotal ());
+		
+		getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
+		
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (),
+			players, cityLocation, sd.getFogOfWarSetting ());
+		
+		log.trace ("Exiting captureCity");
+	}
+	
+	/**
+	 * Destroys a city after it is taken in combat
+	 * 
+	 * @param cityLocation Location of the city
+	 * @param players List of players in this session
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void razeCity (final MapCoordinates3DEx cityLocation,
+		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+	{
+		log.trace ("Entering razeCity");
+	
+		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		
+		// Cancel all spells cast on the city regardless of owner
+		getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsInLocationOnServerAndClients
+			(trueMap, players, cityLocation, 0, db, sd);
+		
+		// Wreck all the buildings
+		getFogOfWarMidTurnMultiChanges ().destroyAllBuildingsInLocationOnServerAndClients (trueMap, players,
+			cityLocation, sd, db);
+		
+		// Wreck the city
+		tc.setCityData (null);
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players,
+			cityLocation, sd.getFogOfWarSetting ());
+		
+		// Wreck the road
+		tc.getTerrainData ().setRoadTileTypeID (null);
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
+			cityLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
+		
+		log.trace ("Exiting razeCity");
+	}
+	
+	/**
 	 * @return Resource value utils
 	 */
 	public final ResourceValueUtils getResourceValueUtils ()
@@ -992,5 +1114,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setCityServerUtils (final CityServerUtils utils)
 	{
 		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
 	}
 }

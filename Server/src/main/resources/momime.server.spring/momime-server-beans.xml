@@ -581,6 +581,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->
@@ -651,13 +652,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatStartAndEnd" class="momime.server.process.CombatStartAndEndImpl">
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
-		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="serverCityCalculations" ref="serverCityCalculations" />
 		<property name="overlandMapServerUtils" ref="overlandMapServerUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
-		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
@@ -668,6 +665,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
 		<property name="momAI" ref="momAI" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="cityProcessing" ref="cityProcessing" />
 	</bean>
 
 	<bean id="combatProcessing" class="momime.server.process.CombatProcessingImpl">

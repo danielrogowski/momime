@@ -12,7 +12,7 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 
 import momime.client.MomClient;
-import momime.client.ui.dialogs.WizardBanishedUI;
+import momime.client.ui.frames.WizardBanishedUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.WizardBanishedMessage;
 
@@ -50,7 +50,6 @@ public final class WizardBanishedMessageImpl extends WizardBanishedMessage imple
 		wizardBanishedUI.setBanishedWizard (getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)"));
 		wizardBanishedUI.setBanishingWizard (getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)"));
 		wizardBanishedUI.setDefeated (isDefeated ());
-		wizardBanishedUI.setWizardBanishedMessage (this);
 		wizardBanishedUI.setVisible (true);
 		
 		log.trace ("Exiting start");
@@ -93,15 +92,16 @@ public final class WizardBanishedMessageImpl extends WizardBanishedMessage imple
 	@Override
 	public final boolean isFinishAfterDuration ()
 	{
-		return false;
+		return true;
 	}
 	
 	/**
-	 * Message finishes when the dialog is closed, so nothing to do here
+	 * Close out the UI when the animation finishes
 	 */
 	@Override
 	public final void finish ()
 	{
+		wizardBanishedUI.finish ();
 	}
 	
 	/**

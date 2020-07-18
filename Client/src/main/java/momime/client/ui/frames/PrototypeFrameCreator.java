@@ -6,7 +6,6 @@ import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.dialogs.TreasureUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
-import momime.client.ui.dialogs.WizardBanishedUI;
 
 /**
  * Allows spring to create instances of frames that we allow multiple copies of, like message boxes and the city screen, and perform all necessary injections

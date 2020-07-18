@@ -1984,7 +1984,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/WizardBanishedUI.xml" />
 	</bean>
 
-	<bean id="wizardBanishedUI" class="momime.client.ui.dialogs.WizardBanishedUI" scope="prototype">
+	<bean id="wizardBanishedUI" class="momime.client.ui.frames.WizardBanishedUI" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
@@ -1994,7 +1994,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="musicPlayer" ref="musicPlayer" />
 		<property name="soundPlayer" ref="soundPlayer" />
-		<property name="client" ref="client" />
 	</bean>
 	
 </beans>

@@ -1,4 +1,4 @@
-package momime.client.ui.dialogs;
+package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -126,7 +126,6 @@ public final class TestWizardBanishedUI extends ClientTestData
 		wizardBanished.setSoundPlayer (mock (AudioPlayer.class));
 		
 		// Display form		
-		wizardBanished.setModal (false);
 		wizardBanished.setVisible (true);
 		
 		// Mock the animation

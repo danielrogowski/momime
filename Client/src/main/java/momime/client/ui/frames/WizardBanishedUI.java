@@ -1,4 +1,4 @@
-package momime.client.ui.dialogs;
+package momime.client.ui.frames;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -20,13 +20,11 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
-import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.WizardGfx;
-import momime.client.messages.process.WizardBanishedMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -34,7 +32,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 /**
  * Animation when a wizard loses a battle at their fortress, showing the enemy wizard blasting them.
  */
-public final class WizardBanishedUI extends MomClientDialogUI
+public final class WizardBanishedUI extends MomClientFrameUI
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (WizardBanishedUI.class);
@@ -56,9 +54,6 @@ public final class WizardBanishedUI extends MomClientDialogUI
 
 	/** Sound effects player */
 	private AudioPlayer soundPlayer;
-	
-	/** Multiplayer client */
-	private MomClient client;
 	
 	/** The wizard who was banished */
 	private PlayerPublicDetails banishedWizard;
@@ -83,12 +78,6 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	
 	/** Frame of animation currently drawn */
 	private int tickNumber;
-	
-	/** The message that caused us to display this dialog */
-	private WizardBanishedMessageImpl wizardBanishedMessage;
-
-	/** Whether we've unblocked the message queue */
-	private boolean unblocked;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -145,28 +134,13 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		
 		// Initialize the frame
 		final WizardBanishedUI ui = this;
-		getDialog ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
-		getDialog ().addWindowListener (new WindowAdapter ()
+		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		getFrame ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
 			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
 			{
-				try
-				{
-					getLanguageChangeMaster ().removeLanguageChangeListener (ui);
-				
-					// Unblock the message that caused this
-					// This somehow seems to get called twice so protect against that
-					if (!unblocked)
-					{
-						getClient ().finishCustomDurationMessage (getWizardBanishedMessage ());
-						unblocked = true;
-					}
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
+				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
 			}
 		});
 		
@@ -253,9 +227,8 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		contentPane.add (titleLabel, "frmWizardBanishedTitle");
 		
 		// Lock frame size
-		getDialog ().setContentPane (contentPane);
-		getDialog ().setResizable (false);
-		setCloseOnClick (true);
+		getFrame ().setContentPane (contentPane);
+		getFrame ().setResizable (false);
 		
 		// Start music
 		try
@@ -284,7 +257,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
 			("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
 		
-		getDialog ().setTitle (title);
+		getFrame ().setTitle (title);
 		titleLabel.setText (title);
 		
 		log.trace ("Exiting languageChanged");
@@ -295,7 +268,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	 */
 	public final double getDuration ()
 	{
-		return 7;
+		return 11;
 	}
 	
 	/**
@@ -303,7 +276,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	 */
 	public final int getTickCount ()
 	{
-		return 27;
+		return 42;
 	}
 	
 	/**
@@ -323,6 +296,14 @@ public final class WizardBanishedUI extends MomClientDialogUI
 			{
 				log.error (e, e);
 			}
+	}
+	
+	/**
+	 * Close out the UI when the animation finishes
+	 */
+	public final void finish ()
+	{
+		getFrame ().dispose ();
 	}
 	
 	/**
@@ -422,22 +403,6 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @return Multiplayer client
-	 */
-	public final MomClient getClient ()
-	{
-		return client;
-	}
-	
-	/**
-	 * @param obj Multiplayer client
-	 */
-	public final void setClient (final MomClient obj)
-	{
-		client = obj;
-	}
-	
-	/**
 	 * @return The wizard who was banished
 	 */
 	public final PlayerPublicDetails getBanishedWizard ()
@@ -483,21 +448,5 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	public final void setDefeated (final boolean d)
 	{
 		defeated = d;
-	}
-
-	/**
-	 * @return The message that caused us to display this dialog
-	 */
-	public final WizardBanishedMessageImpl getWizardBanishedMessage ()
-	{
-		return wizardBanishedMessage;
-	}
-
-	/**
-	 * @param msg The message that caused us to display this dialog
-	 */
-	public final void setWizardBanishedMessage (final WizardBanishedMessageImpl msg)
-	{
-		wizardBanishedMessage = msg;
 	}
 }

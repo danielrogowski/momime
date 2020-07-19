@@ -119,6 +119,10 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		banishingWizardGfx = (banishingWizardPub.getStandardPhotoID () == null) ? null :
 			getGraphicsDB ().findWizard (banishingWizardPub.getStandardPhotoID (), "WizardBanishedUI (B)");
 		
+		// Raiders do have a standardPhotoID, but no images
+		if ((banishingWizardGfx != null) && (banishingWizardGfx.getBanishingImageFile () == null))
+			banishingWizardGfx = null;
+		
 		final XmlLayoutComponent banishedWizardLayout = getWizardBanishedLayout ().findComponent ("frmWizardBanishedStanding");
 		final Image banishedWizardImage = getUtils ().loadImage (banishedWizardGfx.getStandingImageFile ()).getScaledInstance
 			(banishedWizardLayout.getWidth (), banishedWizardLayout.getHeight (), Image.SCALE_SMOOTH);

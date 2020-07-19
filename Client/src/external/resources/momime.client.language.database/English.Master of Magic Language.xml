@@ -6307,7 +6307,7 @@ Gold Bonus +GOLD_BONUS%</languageEntryText>
 			<languageEntryText>This city already has SPELL_NAME cast on it.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AlreadyHasBuilding">
-			<languageEntryText>This city already a BUILDING_NAME.</languageEntryText>
+			<languageEntryText>This city already has a BUILDING_NAME.</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="TooHighResistance">
 			<languageEntryText>This unit has too high resistance to suffer any effect from this spell.

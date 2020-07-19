@@ -39,6 +39,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 
 	/** Colour multiplied gems for each player */
 	private final Map<Integer, BufferedImage> wizardGemImages = new HashMap<Integer, BufferedImage> ();
+
+	/** Colour multiplied cracked gems for each player */
+	private final Map<Integer, BufferedImage> wizardGemCrackedImages = new HashMap<Integer, BufferedImage> ();
 	
 	/**
 	 * Images (typically of unit figures) shaded by one or more unit skills that change a unit's appearance, e.g. Black Sleep or Invisibility
@@ -61,6 +64,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 
 	/** Uncoloured wizard gem image */
 	private BufferedImage wizardGemImage;
+
+	/** Uncoloured wizard gem cracked image */
+	private BufferedImage wizardGemCrackedImage;
 	
 	/** Uncoloured friendly zone borders */
 	private Map<Integer, BufferedImage> friendlyZoneBorderImages = new HashMap<Integer, BufferedImage> ();
@@ -184,6 +190,20 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 		return getImage (playerID, wizardGemImage, wizardGemImages);
 	}
 
+	/**
+	 * @param playerID Unit owner player ID
+	 * @return Cracked wizard gem background image in their correct colour
+	 * @throws IOException If there is a problem loading the background image
+	 */
+	@Override
+	public final BufferedImage getWizardGemCrackedImage (final int playerID) throws IOException
+	{
+		if (wizardGemCrackedImage == null)
+			wizardGemCrackedImage = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/gemCracked.png");
+
+		return getImage (playerID, wizardGemCrackedImage, wizardGemCrackedImages);
+	}
+	
 	/**
 	 * @param d Direction of border edge to draw
 	 * @param playerID ID of player whose border we are drawing

@@ -42,10 +42,11 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.messages.servertoclient.WizardBanishedMessage;
+import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -874,17 +875,17 @@ public final class CityProcessingImpl implements CityProcessing
 		log.trace ("Entering banishWizard: Player ID " + defendingPlayerID + " being banished by " + attackingPlayerID);
 		
 		// Do they have another city to try to return to?
-		final boolean isDefeated = (getCityServerUtils ().countCities (trueMap.getMap (), defendingPlayerID) == 0);
+		final WizardState wizardState = (getCityServerUtils ().countCities (trueMap.getMap (), defendingPlayerID) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
 		
 		// This just makes the clients display the animation of the wizard being banished, it doesn't do anything functional
-		final WizardBanishedMessage msg = new WizardBanishedMessage ();
+		final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
 		msg.setBanishedPlayerID (defendingPlayerID);
 		msg.setBanishingPlayerID (attackingPlayerID);
-		msg.setDefeated (isDefeated);
+		msg.setWizardState (wizardState);
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 		
 		// Clean up defeated wizards
-		if (isDefeated)
+		if (wizardState == WizardState.DEFEATED)
 		{
 			// Remove any spells the wizard still had cast
 			final List<MemoryMaintainedSpell> defeatedSpells = trueMap.getMaintainedSpell ().stream ().filter (s -> s.getCastingPlayerID () == defendingPlayerID).collect (Collectors.toList ());

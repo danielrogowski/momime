@@ -1,9 +1,7 @@
-package momime.client.ui.frames;
+package momime.client.ui.dialogs;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-import javax.swing.Timer;
 
 import org.junit.Test;
 
@@ -30,12 +28,6 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
  */
 public final class TestWizardBanishedUI extends ClientTestData
 {
-	/** Used to mock the animation */
-	private int tickNumber;
-
-	/** Swing timer to display the animation */
-	private Timer swingTimer;
-	
 	/**
 	 * Tests the WizardBanishedUI form
 	 * 
@@ -126,27 +118,9 @@ public final class TestWizardBanishedUI extends ClientTestData
 		wizardBanished.setSoundPlayer (mock (AudioPlayer.class));
 		
 		// Display form		
+		wizardBanished.setModal (false);
 		wizardBanished.setVisible (true);
-		
-		// Mock the animation
-		tickNumber = 0;
-		
-		// I think should create a javax.swing.Timer if processMessagesOnSwingEventDispatcherThread is true and
-		// a java.util.Timer if processMessagesOnSwingEventDispatcherThread is false, but since every app I'm
-		// using this for at the moment is a Swing app, am not bothering to implement that yet
-		swingTimer = new Timer ((int) (1000.0 * wizardBanished.getDuration () / wizardBanished.getTickCount ()), (ev) ->
-		{
-			tickNumber++;
-			wizardBanished.tick (tickNumber);
-			if (tickNumber >= wizardBanished.getTickCount ())
-				swingTimer.stop ();
-		});
-		swingTimer.start ();
-		
-		// Wait for the anim to finish before allowing the test to finish
-		while (swingTimer.isRunning ())
-			Thread.sleep (1000);
-		
+		Thread.sleep (8000);
 		wizardBanished.setVisible (false);
 	}
 

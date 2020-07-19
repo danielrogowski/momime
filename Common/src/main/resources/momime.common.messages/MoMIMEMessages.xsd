@@ -424,6 +424,7 @@ identify them to each other at runtime, e.g. client requests to move hero item n
     														standardPhotoIDs over and over again</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
 		        </xsd:sequence>
 			</xsd:extension>
@@ -1088,6 +1089,28 @@ constructed/summoned, bump it to the outlying squares, or we could fail to place
 			<xsd:enumeration value="N"><xsd:annotation>
 				<xsd:documentation>No room, unit lost</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="NO_ROOM" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="wizardState">
+	    <xsd:annotation>
+    		<xsd:documentation>Its public knowledge whether each wizard is banished or not, but we might not
+know this directly from checking the buildings list as we may not be able to see where his wizard's fortress is (or was).
+So need a separate data item for this.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Active with a Wizard's Fortress</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ACTIVE" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="B"><xsd:annotation>
+				<xsd:documentation>Banished, and casting Spell of Return</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="BANISHED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Defeated, no cities or units remaining</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFEATED" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

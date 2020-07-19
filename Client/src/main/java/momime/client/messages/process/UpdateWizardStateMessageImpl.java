@@ -8,21 +8,25 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
+import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
-import momime.client.ui.frames.WizardBanishedUI;
+import momime.client.ui.dialogs.WizardBanishedUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.common.messages.servertoclient.WizardBanishedMessage;
+import momime.client.ui.frames.WizardsUI;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 
 /**
  * Server announces to everybody when a wizard gets banished, so the clients can show the animation for it
  */
-public final class WizardBanishedMessageImpl extends WizardBanishedMessage implements AnimatedServerToClientMessage 
+public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage implements CustomDurationServerToClientMessage 
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (WizardBanishedMessageImpl.class);
+	private static final Log log = LogFactory.getLog (UpdateWizardStateMessageImpl.class);
 
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -36,6 +40,9 @@ public final class WizardBanishedMessageImpl extends WizardBanishedMessage imple
 	/** UI dialog created to show this message */
 	private WizardBanishedUI wizardBanishedUI;
 
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -46,62 +53,31 @@ public final class WizardBanishedMessageImpl extends WizardBanishedMessage imple
 	{
 		log.trace ("Entering start");
 		
+		// Update player details
+		final PlayerPublicDetails banishedWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) banishedWizard.getPersistentPlayerPublicKnowledge ();
+		pub.setWizardState (getWizardState ());
+		
+		// Show cracked gem on wizards screen
+		getWizardsUI ().updateWizards ();
+		
+		// Show animation
 		wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
-		wizardBanishedUI.setBanishedWizard (getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)"));
+		wizardBanishedUI.setBanishedWizard (banishedWizard);
 		wizardBanishedUI.setBanishingWizard (getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)"));
-		wizardBanishedUI.setDefeated (isDefeated ());
+		wizardBanishedUI.setDefeated (getWizardState () == WizardState.DEFEATED);
+		wizardBanishedUI.setUpdateWizardStateMessage (this);
 		wizardBanishedUI.setVisible (true);
 		
 		log.trace ("Exiting start");
 	}
 	
 	/**
-	 * @return Number of seconds that the animation takes to display
-	 */
-	@Override
-	public final double getDuration ()
-	{
-		return wizardBanishedUI.getDuration ();
-	}
-	
-	/**
-	 * @return Number of ticks that the duration is divided into
-	 */
-	@Override
-	public final int getTickCount ()
-	{
-		return wizardBanishedUI.getTickCount ();
-	}
-	
-	/**
-	 * @param tickNumber How many ticks have occurred, from 1..tickCount
-	 */
-	@Override
-	public final void tick (final int tickNumber)
-	{
-		wizardBanishedUI.tick (tickNumber);
-	}
-	
-	/**
-	 * Controls whether the animation finishes automatically after duration (tickCount calls to the tick method) have executed, or has
-	 * custom finishing conditions, in which case the application must take care of finishing the animation in the
-	 * manner described on CustomDurationServerToClientMessage.
-	 * 
-	 * @return True if the multiplayer layer finishes the animation automatically after duration has elaped; False if the application takes care of finishing the animation
-	 */
-	@Override
-	public final boolean isFinishAfterDuration ()
-	{
-		return true;
-	}
-	
-	/**
-	 * Close out the UI when the animation finishes
+	 * Nothing to do here when the message completes, because its all handled in either WizardBanishedUI or MiniCityViewUI
 	 */
 	@Override
 	public final void finish ()
 	{
-		wizardBanishedUI.finish ();
 	}
 	
 	/**
@@ -150,5 +126,21 @@ public final class WizardBanishedMessageImpl extends WizardBanishedMessage imple
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
 	}
 }

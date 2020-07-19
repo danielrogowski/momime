@@ -60,7 +60,7 @@ import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
-import momime.common.messages.servertoclient.WizardBanishedMessage;
+import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.messages.servertoclient.YourPhotoIsOkMessage;
 import momime.common.messages.servertoclient.YourRaceIsOkMessage;
 
@@ -610,9 +610,9 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final WizardBanishedMessage createWizardBanishedMessage ()
+	public final UpdateWizardStateMessage createUpdateWizardStateMessage ()
 	{
-		return getFactory ().createWizardBanishedMessage ();
+		return getFactory ().createUpdateWizardStateMessage ();
 	}
 
 	/**

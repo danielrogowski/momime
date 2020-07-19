@@ -1246,20 +1246,54 @@ where the animation and game world updates are sent in separate messages.</xsd:d
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="wizardBanishedMessage">
+	<xsd:complexType name="renderCityData">
 	    <xsd:annotation>
-    		<xsd:documentation>Server announces to everybody when a wizard gets banished, so the clients can show the animation for it.</xsd:documentation>
+    		<xsd:documentation>Stores enough details for CityViewPanel to be able to draw a city.  Usually this info is derived from the player's FOW knowledge
+about what buildings etc they can see (or have seen), but the Spell of Return is a special case where we get to see an animation for a city that we
+potentially know nothing about.  So making a single data structure that's used for both means CityViewPanel doesn't need to operate on 2 different data sets.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="planeNumber" type="momimecommon:planeNumber" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="citySizeID" type="momimecommon:citySizeID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityName" type="momimecommon:description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="adjacentTileTypeID" type="momimecommon:tileTypeID">
+			    <xsd:annotation>
+		    		<xsd:documentation>List of all unique tileTypeIDs from the city cell itself as well as the 8 cells around it.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingID" type="momimecommon:buildingID">
+			    <xsd:annotation>
+		    		<xsd:documentation>List of buildings in the city, not including the Wizard's Fortress and Summoning Circle which are about to be added.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectID" type="momimecommon:citySpellEffectID" />
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:element name="updateWizardStateMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Server announces to everybody when a wizard gets banished or casts Spell of Return.  Clients record the update (updates
+wizardState against the player's public data) and show the animation for it, either of wizard getting banished from their fortress, or of casting spell of return.
+So this is what drives the Spell of Return animation on the client, not the AddBuildingMessage that normally would for casting Summoning Circle or similar.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="banishedPlayerID" type="mps:playerID" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="banishingPlayerID" type="mps:playerID" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="defeated" type="xsd:boolean">
+						<xsd:element minOccurs="1" maxOccurs="1" name="banishedPlayerID" type="mps:playerID">
 						    <xsd:annotation>
-    							<xsd:documentation>If false, the wizard still has at least 1 more city so they can try to cast Spell of Return.
-If true, the wizard has no cities left and they are out of the game.</xsd:documentation>
+	  							<xsd:documentation>The wizard who is being banished, or who is returning.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="banishingPlayerID" type="mps:playerID">
+						    <xsd:annotation>
+	  							<xsd:documentation>The wizard who is doing the banishing.  May be raiders.  Omitted for spell of return.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="renderCityData" type="momimestoc:renderCityData">
+						    <xsd:annotation>
+	  							<xsd:documentation>Only filled in when message is to notify about someone casting Spell of Return.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 					</xsd:sequence>

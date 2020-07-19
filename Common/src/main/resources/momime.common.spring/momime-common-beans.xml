@@ -144,7 +144,7 @@
     			<value>momime.common.messages.servertoclient.TreasureRewardMessage</value>
     			<value>momime.common.messages.servertoclient.DispelMagicResultsMessage</value>
     			<value>momime.common.messages.servertoclient.ShowSpellAnimationMessage</value>
-    			<value>momime.common.messages.servertoclient.WizardBanishedMessage</value>
+    			<value>momime.common.messages.servertoclient.UpdateWizardStateMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.UpdateTerrainMessage</value>

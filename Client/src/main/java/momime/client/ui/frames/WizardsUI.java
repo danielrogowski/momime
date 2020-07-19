@@ -42,6 +42,7 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
+import momime.common.messages.WizardState;
 import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
@@ -244,23 +245,29 @@ public final class WizardsUI extends MomClientFrameUI
 				final boolean isWizard = (pub == null) ? false : PlayerKnowledgeUtils.isWizard (pub.getWizardID ());
 				
 				gemLabel.setVisible (isWizard);
-				portraitLabel.setVisible (isWizard);
+				portraitLabel.setVisible ((isWizard) && (pub.getWizardState () == WizardState.ACTIVE));
 				
 				if (isWizard)
 				{
-					gemLabel.setIcon (new ImageIcon (getPlayerColourImageGenerator ().getWizardGemImage (player.getPlayerDescription ().getPlayerID ())));
+					final BufferedImage gemImage = (pub.getWizardState () == WizardState.ACTIVE) ?
+						getPlayerColourImageGenerator ().getWizardGemImage (player.getPlayerDescription ().getPlayerID ()) :
+						getPlayerColourImageGenerator ().getWizardGemCrackedImage (player.getPlayerDescription ().getPlayerID ());
+					gemLabel.setIcon (new ImageIcon (gemImage));
 
 					// Find the wizard's photo
-					final BufferedImage unscaledPortrait;
-					if (pub.getCustomPhoto () != null)
-						unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
-					else if (pub.getStandardPhotoID () != null)
-						unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
-					else
-						throw new MomException ("Player ID " + player.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
-
-					final Image scaledPortrait = unscaledPortrait.getScaledInstance (54, 63, Image.SCALE_SMOOTH);
-					portraitLabel.setIcon (new ImageIcon (scaledPortrait));
+					if (pub.getWizardState () == WizardState.ACTIVE)
+					{
+						final BufferedImage unscaledPortrait;
+						if (pub.getCustomPhoto () != null)
+							unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
+						else if (pub.getStandardPhotoID () != null)
+							unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
+						else
+							throw new MomException ("Player ID " + player.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
+	
+						final Image scaledPortrait = unscaledPortrait.getScaledInstance (54, 63, Image.SCALE_SMOOTH);
+						portraitLabel.setIcon (new ImageIcon (scaledPortrait));
+					}
 				}
 			}
 		

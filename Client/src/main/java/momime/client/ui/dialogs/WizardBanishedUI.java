@@ -1,4 +1,4 @@
-package momime.client.ui.frames;
+package momime.client.ui.dialogs;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -10,6 +10,7 @@ import java.io.IOException;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.logging.Log;
@@ -20,11 +21,13 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.WizardGfx;
+import momime.client.messages.process.UpdateWizardStateMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -32,10 +35,16 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 /**
  * Animation when a wizard loses a battle at their fortress, showing the enemy wizard blasting them.
  */
-public final class WizardBanishedUI extends MomClientFrameUI
+public final class WizardBanishedUI extends MomClientDialogUI
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (WizardBanishedUI.class);
+	
+	/** Number of animation frames */
+	private static final int TICK_COUNT = 27;
+	
+	/** Number of seconds to display the animation over */
+	private static final double DURATION = 7;
 
 	/** XML layout */
 	private XmlLayoutContainerEx wizardBanishedLayout;
@@ -63,6 +72,12 @@ public final class WizardBanishedUI extends MomClientFrameUI
 	
 	/** If false, the wizard still has at least 1 more city so they can try to cast Spell of Return.  If true, the wizard has no cities left and they are out of the game. */
 	private boolean defeated;
+
+	/** Update wizard state message */
+	private UpdateWizardStateMessageImpl updateWizardStateMessage;
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** Graphics data stored about banished wizard */
 	private WizardGfx banishedWizardGfx;
@@ -78,6 +93,12 @@ public final class WizardBanishedUI extends MomClientFrameUI
 	
 	/** Frame of animation currently drawn */
 	private int tickNumber;
+	
+	/** Whether we've unblocked the message queue */
+	private boolean unblocked;
+	
+	/** Animation timer */
+	private Timer timer;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -134,13 +155,28 @@ public final class WizardBanishedUI extends MomClientFrameUI
 		
 		// Initialize the frame
 		final WizardBanishedUI ui = this;
-		getFrame ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
-		getFrame ().addWindowListener (new WindowAdapter ()
+		getDialog ().setDefaultCloseOperation (WindowConstants.DISPOSE_ON_CLOSE);
+		getDialog ().addWindowListener (new WindowAdapter ()
 		{
 			@Override
 			public final void windowClosed (@SuppressWarnings ("unused") final WindowEvent ev)
 			{
-				getLanguageChangeMaster ().removeLanguageChangeListener (ui);
+				try
+				{
+					getLanguageChangeMaster ().removeLanguageChangeListener (ui);
+				
+					// Unblock the message that caused this
+					// This somehow seems to get called twice in MiniCityViewUI, so protect against that
+					if (!unblocked)
+					{
+						getClient ().finishCustomDurationMessage (getUpdateWizardStateMessage ());
+						unblocked = true;
+					}
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
 			}
 		});
 		
@@ -227,8 +263,9 @@ public final class WizardBanishedUI extends MomClientFrameUI
 		contentPane.add (titleLabel, "frmWizardBanishedTitle");
 		
 		// Lock frame size
-		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);
+		getDialog ().setContentPane (contentPane);
+		getDialog ().setResizable (false);
+		setCloseOnClick (true);
 		
 		// Start music
 		try
@@ -239,6 +276,27 @@ public final class WizardBanishedUI extends MomClientFrameUI
 		{
 			log.error (e, e);
 		}
+		
+		// Start the animation
+		timer = new Timer ((int) (1000.0 * DURATION / TICK_COUNT), (ev) ->
+		{
+			tickNumber++;
+			contentPane.repaint ();
+			
+			if ((tickNumber == 15) && (banishedWizardGfx != null) && (banishedWizardGfx.getScreamSoundFile () != null))
+				try
+				{
+					getSoundPlayer ().playAudioFile (banishedWizardGfx.getScreamSoundFile ());
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+			
+			if (tickNumber >= TICK_COUNT)
+				timer.stop ();
+		});
+		timer.start ();
 		
 		log.trace ("Exiting init");
 	}
@@ -257,53 +315,18 @@ public final class WizardBanishedUI extends MomClientFrameUI
 			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
 			("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
 		
-		getFrame ().setTitle (title);
+		getDialog ().setTitle (title);
 		titleLabel.setText (title);
 		
 		log.trace ("Exiting languageChanged");
 	}
 
 	/**
-	 * @return Number of seconds that the animation takes to display
-	 */
-	public final double getDuration ()
-	{
-		return 11;
-	}
-	
-	/**
-	 * @return Number of ticks that the duration is divided into
-	 */
-	public final int getTickCount ()
-	{
-		return 42;
-	}
-	
-	/**
-	 * @param t How many ticks have occurred, from 1..tickCount
-	 */
-	public final void tick (final int t)
-	{
-		tickNumber = t;
-		contentPane.repaint ();
-		
-		if ((tickNumber == 15) && (banishedWizardGfx != null) && (banishedWizardGfx.getScreamSoundFile () != null))
-			try
-			{
-				getSoundPlayer ().playAudioFile (banishedWizardGfx.getScreamSoundFile ());
-			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-			}
-	}
-	
-	/**
 	 * Close out the UI when the animation finishes
 	 */
 	public final void finish ()
 	{
-		getFrame ().dispose ();
+		getDialog ().dispose ();
 	}
 	
 	/**
@@ -448,5 +471,37 @@ public final class WizardBanishedUI extends MomClientFrameUI
 	public final void setDefeated (final boolean d)
 	{
 		defeated = d;
+	}
+
+	/**
+	 * @return Update wizard state message
+	 */
+	public final UpdateWizardStateMessageImpl getUpdateWizardStateMessage ()
+	{
+		return updateWizardStateMessage;
+	}
+
+	/**
+	 * @param msg Update wizard state message
+	 */
+	public final void setUpdateWizardStateMessage (final UpdateWizardStateMessageImpl msg)
+	{
+		updateWizardStateMessage = msg;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

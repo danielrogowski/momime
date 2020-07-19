@@ -307,5 +307,5 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public WizardBanishedMessageImpl createWizardBanishedMessage ();
+	public UpdateWizardStateMessageImpl createUpdateWizardStateMessage ();
 }

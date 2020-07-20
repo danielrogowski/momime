@@ -48,6 +48,7 @@ import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.messages.servertoclient.StartCombatMessage;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
@@ -1196,6 +1197,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		cse.setCityProcessing (cityProcessing);
+		cse.setMemoryBuildingUtils (mock (MemoryBuildingUtils.class));
+		cse.setCityServerUtils (mock (CityServerUtils.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.CAPTURE, mom);
@@ -1387,6 +1390,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		cse.setCityProcessing (cityProcessing);
+		cse.setMemoryBuildingUtils (mock (MemoryBuildingUtils.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, CaptureCityDecisionID.RAZE, mom);

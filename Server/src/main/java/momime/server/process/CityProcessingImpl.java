@@ -44,6 +44,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.PendingSaleMessage;
+import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
@@ -856,7 +857,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
 	 * 
 	 * @param attackingPlayerID Player who won the combat, who is doing the banishing
-	 * @param defendingPlayerID Player who lost the combat, who is the one being banished
+	 * @param defendingPlayer Player who lost the combat, who is the one being banished
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param players List of players in this session
 	 * @param sd Session description
@@ -868,18 +869,19 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void banishWizard (final int attackingPlayerID, final int defendingPlayerID, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+	public final void banishWizard (final int attackingPlayerID, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.trace ("Entering banishWizard: Player ID " + defendingPlayerID + " being banished by " + attackingPlayerID);
+		log.trace ("Entering banishWizard: Player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () + " being banished by " + attackingPlayerID);
 		
 		// Do they have another city to try to return to?
-		final WizardState wizardState = (getCityServerUtils ().countCities (trueMap.getMap (), defendingPlayerID) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
+		final WizardState wizardState = (getCityServerUtils ().countCities (trueMap.getMap (), defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0) ?
+			WizardState.DEFEATED : WizardState.BANISHED;
 		
 		// This just makes the clients display the animation of the wizard being banished, it doesn't do anything functional
 		final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
-		msg.setBanishedPlayerID (defendingPlayerID);
+		msg.setBanishedPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
 		msg.setBanishingPlayerID (attackingPlayerID);
 		msg.setWizardState (wizardState);
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
@@ -888,8 +890,8 @@ public final class CityProcessingImpl implements CityProcessing
 		// but if its somewhere else then we need to remove it too.  When they cast Spell of Return then they get both back.
 		if (wizardState == WizardState.BANISHED)
 		{
-			final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findCityWithBuilding (defendingPlayerID, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
-				trueMap.getMap (), trueMap.getBuilding ());
+			final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findCityWithBuilding (defendingPlayer.getPlayerDescription ().getPlayerID (),
+				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, trueMap.getMap (), trueMap.getBuilding ());
 			
 			if (summoningCircle != null)
 				getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players,
@@ -900,12 +902,16 @@ public final class CityProcessingImpl implements CityProcessing
 		if (wizardState == WizardState.DEFEATED)
 		{
 			// Remove any spells the wizard still had cast
-			final List<MemoryMaintainedSpell> defeatedSpells = trueMap.getMaintainedSpell ().stream ().filter (s -> s.getCastingPlayerID () == defendingPlayerID).collect (Collectors.toList ());
+			final List<MemoryMaintainedSpell> defeatedSpells = trueMap.getMaintainedSpell ().stream ().filter
+				(s -> s.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()).collect (Collectors.toList ());
+			
 			for (final MemoryMaintainedSpell defeatedSpell : defeatedSpells)
 				getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, defeatedSpell.getSpellURN (), players, db, sd);
 
 			// Remove any units the wizard still had
-			final List<MemoryUnit> defeatedUnits = trueMap.getUnit ().stream ().filter (u -> u.getOwningPlayerID () == defendingPlayerID).collect (Collectors.toList ());
+			final List<MemoryUnit> defeatedUnits = trueMap.getUnit ().stream ().filter
+				(u -> u.getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()).collect (Collectors.toList ());
+			
 			for (final MemoryUnit defeatedUnit : defeatedUnits)
 				getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defeatedUnit, KillUnitActionID.LACK_OF_PRODUCTION, trueMap, players, sd.getFogOfWarSetting (), db);
 			
@@ -915,13 +921,30 @@ public final class CityProcessingImpl implements CityProcessing
 					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					{
 						final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
-						if ((terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == defendingPlayerID))
+						if ((terrainData.getNodeOwnerID () != null) && (terrainData.getNodeOwnerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
 						{
 							terrainData.setNodeOwnerID (null);
 							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players, new MapCoordinates3DEx (x, y, z),
 								sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
 						}
 					}
+		}
+		
+		// If wizard was in middle of casting any overland spells then remove them all
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+		while (priv.getQueuedSpell ().size () > 0)
+		{
+			// Remove queued spell on server
+			priv.getQueuedSpell ().remove (0);
+			priv.setManaSpentOnCastingCurrentSpell (0);
+
+			// Remove queued spell on client
+			if (defendingPlayer.getPlayerDescription ().isHuman ())
+			{
+				final RemoveQueuedSpellMessage removeSpellMessage = new RemoveQueuedSpellMessage ();
+				removeSpellMessage.setQueuedSpellIndex (0);
+				defendingPlayer.getConnection ().sendMessageToClient (removeSpellMessage);
+			}
 		}
 
 		log.trace ("Exiting banishWizard");

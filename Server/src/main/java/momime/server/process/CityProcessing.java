@@ -168,7 +168,7 @@ public interface CityProcessing
 	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
 	 * 
 	 * @param attackingPlayerID Player who won the combat, who is doing the banishing
-	 * @param defendingPlayerID Player who lost the combat, who is the one being banished
+	 * @param defendingPlayer Player who lost the combat, who is the one being banished
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param players List of players in this session
 	 * @param sd Session description
@@ -179,7 +179,7 @@ public interface CityProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void banishWizard (final int attackingPlayerID, final int defendingPlayerID, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
+	public void banishWizard (final int attackingPlayerID, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 }

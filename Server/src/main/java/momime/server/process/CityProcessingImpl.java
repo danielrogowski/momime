@@ -884,6 +884,18 @@ public final class CityProcessingImpl implements CityProcessing
 		msg.setWizardState (wizardState);
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 		
+		// If a wizard is banished and their summoning circle was with their Fortress then it will have already been removed,
+		// but if its somewhere else then we need to remove it too.  When they cast Spell of Return then they get both back.
+		if (wizardState == WizardState.BANISHED)
+		{
+			final MemoryBuilding summoningCircle = getMemoryBuildingUtils ().findCityWithBuilding (defendingPlayerID, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
+				trueMap.getMap (), trueMap.getBuilding ());
+			
+			if (summoningCircle != null)
+				getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players,
+					summoningCircle.getBuildingURN (), false, sd, db);
+		}
+		
 		// Clean up defeated wizards
 		if (wizardState == WizardState.DEFEATED)
 		{

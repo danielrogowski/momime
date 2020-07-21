@@ -539,6 +539,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 			unitsToPosition.add (new MemoryUnitAndCombatClass (tu, calculateUnitCombatClass (tu)));
 		}
 		
+		log.debug (unitsToPosition.size () + " units were placed into combat at " + combatLocation + " for side " + combatSide);
+		
 		// Sort the units by their "combat class"; this sorts in the order: Melee heroes, melee units, ranged heroes, ranged units, settlers
 		Collections.sort (unitsToPosition);
 		

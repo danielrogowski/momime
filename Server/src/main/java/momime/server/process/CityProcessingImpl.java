@@ -951,6 +951,38 @@ public final class CityProcessingImpl implements CityProcessing
 	}
 	
 	/**
+	 * If a wizard loses the city where their summoning circle is, but they still have their Wizard's Fortress at a different location,
+	 * then this method auto adds their summoning circle back at the same location as their fortress.
+	 * 
+	 * @param playerID Player who lost their summoning circle 
+	 * @param gsk Server knowledge structure to add the building(s) to
+	 * @param players List of players in this session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledgeEx gsk, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
+	{
+		log.trace ("Entering moveSummoningCircleToWizardsFortress: Player ID " + playerID);
+		
+		final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findCityWithBuilding (playerID,
+			CommonDatabaseConstants.BUILDING_FORTRESS, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding ());
+		
+		if (wizardsFortress != null)
+			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, (MapCoordinates3DEx) wizardsFortress.getCityLocation (),
+				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, null, null, null, sd, db);
+
+		log.trace ("Exiting moveSummoningCircleToWizardsFortress");
+	}
+	
+	/**
 	 * @return Resource value utils
 	 */
 	public final ResourceValueUtils getResourceValueUtils ()

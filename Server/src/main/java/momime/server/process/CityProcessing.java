@@ -182,4 +182,23 @@ public interface CityProcessing
 	public void banishWizard (final int attackingPlayerID, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
+
+	/**
+	 * If a wizard loses the city where their summoning circle is, but they still have their Wizard's Fortress at a different location,
+	 * then this method auto adds their summoning circle back at the same location as their fortress.
+	 * 
+	 * @param playerID Player who lost their summoning circle 
+	 * @param gsk Server knowledge structure to add the building(s) to
+	 * @param players List of players in this session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledgeEx gsk, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

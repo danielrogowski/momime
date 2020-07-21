@@ -412,9 +412,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (unitStack, attackingPlayer,
 						moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 				
-				// Before we remove buildings, check if this was the wizard's fortress
+				// Before we remove buildings, check if this was the wizard's fortress and/or summoning circle
 				boolean wasWizardsFortress = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null);
+
+				final boolean wasSummoningCircle = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE) != null);
 				
 				// Deal with cities
 				if (useCaptureCityDecision == CaptureCityDecisionID.CAPTURE)
@@ -435,6 +438,11 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (wasWizardsFortress)
 					getCityProcessing ().banishWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				
+				// If their summoning circle was taken, but they still have their fortress elsewhere, then move summoning circle to there
+				if (wasSummoningCircle)
+					getCityProcessing ().moveSummoningCircleToWizardsFortress (defendingPlayer.getPlayerDescription ().getPlayerID (),
+						mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}
 			else
 			{

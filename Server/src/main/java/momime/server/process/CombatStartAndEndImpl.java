@@ -436,8 +436,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				// Deal with wizard being banished
 				if (wasWizardsFortress)
-					getCityProcessing ().banishWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer,
-						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					getCityProcessing ().banishWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer, mom);
 				
 				// If their summoning circle was taken, but they still have their fortress elsewhere, then move summoning circle to there
 				if (wasSummoningCircle)

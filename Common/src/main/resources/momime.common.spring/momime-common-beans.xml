@@ -89,6 +89,7 @@
     			<value>com.ndg.multiplayer.sessionbase.LoadGameFailed</value>
     			<value>com.ndg.multiplayer.sessionbase.DeleteSavedGameSuccessful</value>
     			<value>com.ndg.multiplayer.sessionbase.DeleteSavedGameFailed</value>
+    			<value>com.ndg.multiplayer.sessionbase.UpdateHumanPlayerToAI</value>
     			
     			<!-- MoM multiplayer structures -->
     			<value>momime.common.messages.MomSessionDescription</value>

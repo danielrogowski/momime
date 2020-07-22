@@ -169,18 +169,14 @@ public interface CityProcessing
 	 * 
 	 * @param attackingPlayerID Player who won the combat, who is doing the banishing
 	 * @param defendingPlayer Player who lost the combat, who is the one being banished
-	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void banishWizard (final int attackingPlayerID, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+	public void banishWizard (final int attackingPlayerID, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**

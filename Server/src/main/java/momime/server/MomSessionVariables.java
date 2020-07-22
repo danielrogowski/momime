@@ -8,6 +8,7 @@ import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.server.ServerToClientSessionConnection;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -88,4 +89,13 @@ public interface MomSessionVariables
 	 * @param keepCount Number of save points to keep
 	 */
 	public void deleteOldestSavePoints (final int keepCount);
+	
+	/**
+	 * @param playerID Human player to convert to AI player
+	 * @throws PlayerNotFoundException If the requested playerID cannot be found
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 */
+	public void updateHumanPlayerToAI (final int playerID)
+		throws PlayerNotFoundException, JAXBException, XMLStreamException;
 }

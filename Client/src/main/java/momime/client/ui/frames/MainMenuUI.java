@@ -280,8 +280,21 @@ public final class MainMenuUI extends MomClientFrameUI
 		
 		contentPane.addComponentListener (onResize);
 		getFrame ().addComponentListener (onResize);
-		
+
 		// Start title screen music
+		playMusic ();
+		
+		// Resizing the window is a bit pointless since there's no more info to display
+		getFrame ().setContentPane (contentPane);
+		getFrame ().setResizable (false);
+		enableActions ();
+	}
+
+	/**
+	 * Plays the title screen music
+	 */
+	public final void playMusic ()
+	{
 		try
 		{
 			getMusicPlayer ().playAudioFile ("/momime.client.music/MUSIC_104 - Title screen.mp3");
@@ -290,11 +303,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		{
 			log.error (e, e);
 		}
-		
-		// Resizing the window is a bit pointless since there's no more info to display
-		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);
-		enableActions ();
 	}
 
 	/**

@@ -286,7 +286,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 
 			/**
 			 * Event triggered when somebody leaves the session we're in, note it could be us leaving.
-			 * Event is triggered just prior to player being removed from the list, and if us leaving, before session variables being nulled out.
+			 * Event is triggered after player is removed from the list, and if us leaving, session description and others are already blanked out.
 			 * 
 			 * @param playerID Player who left
 			 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -296,8 +296,17 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			@Override
 			public final void playerLeft (@SuppressWarnings ("unused") final int playerID) throws JAXBException, XMLStreamException, IOException
 			{
-				// This isn't really right, because as per comments above, the list hasn't been updated yet
-				getNewGameUI ().updateWaitPanelPlayersList ();
+				// Was it us who left?
+				if ((getOurPlayerID () != null) && (playerID == getOurPlayerID ()))
+				{
+					if (!getMainMenuUI ().isVisible ())
+					{
+						getMainMenuUI ().playMusic ();
+						getMainMenuUI ().setVisible (true);
+					}
+				}
+				else
+					getNewGameUI ().updateWaitPanelPlayersList ();
 			}
 
 			/**

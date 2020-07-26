@@ -137,22 +137,23 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 			
 			// Create new actions and buttons
 			int index = 0;
-			for (final CastCombatSpellFrom castingSource : castingSources)
-			{
-				// Create new action
-				final Action castingSourceAction = new LoggingAction ((ev) ->
+			if (castingSources != null)
+				for (final CastCombatSpellFrom castingSource : castingSources)
 				{
-					getDialog ().setVisible (false);
-					getCombatUI ().setCastingSource (castingSource, true);
-				});				
-				castingSourceActions.put (castingSource, castingSourceAction);
-				
-				// Create new button
-				index++;
-				final JButton castingSourceButton = getUtils ().createImageButton (castingSourceAction, MomUIConstants.DULL_GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal);
-				contentPane.add (castingSourceButton, "frmSelectAdvisor" + index);
-				castingSourceButtons.add (castingSourceButton);
-			}
+					// Create new action
+					final Action castingSourceAction = new LoggingAction ((ev) ->
+					{
+						getDialog ().setVisible (false);
+						getCombatUI ().setCastingSource (castingSource, true);
+					});				
+					castingSourceActions.put (castingSource, castingSourceAction);
+					
+					// Create new button
+					index++;
+					final JButton castingSourceButton = getUtils ().createImageButton (castingSourceAction, MomUIConstants.DULL_GOLD, Color.BLACK, getSmallFont (), buttonNormal, buttonPressed, buttonNormal);
+					contentPane.add (castingSourceButton, "frmSelectAdvisor" + index);
+					castingSourceButtons.add (castingSourceButton);
+				}
 				
 			// Set the action labels
 			languageChanged ();

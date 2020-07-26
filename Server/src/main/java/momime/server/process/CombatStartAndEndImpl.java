@@ -438,8 +438,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				if (wasWizardsFortress)
 					getCityProcessing ().banishWizard (attackingPlayer.getPlayerDescription ().getPlayerID (), defendingPlayer, mom);
 				
+				// From here on have to be really careful, as banishWizard may have completely tore down the session, which we can tell because the players list will be empty
+				
 				// If their summoning circle was taken, but they still have their fortress elsewhere, then move summoning circle to there
-				if (wasSummoningCircle)
+				if ((wasSummoningCircle) && (mom.getPlayers ().size () > 0))
 					getCityProcessing ().moveSummoningCircleToWizardsFortress (defendingPlayer.getPlayerDescription ().getPlayerID (),
 						mom.getGeneralServerKnowledge (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}
@@ -448,107 +450,110 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				log.debug ("Defender won");
 			}
 			
-			// Give any hero items to the winner
-			if (tc.getItemsFromHeroesWhoDiedInCombat ().size () > 0)
+			if (mom.getPlayers ().size () > 0)
 			{
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) winningPlayer.getPersistentPlayerPrivateKnowledge ();
-				priv.getUnassignedHeroItem ().addAll (tc.getItemsFromHeroesWhoDiedInCombat ());
-				
-				if (winningPlayer.getPlayerDescription ().isHuman ())
+				// Give any hero items to the winner
+				if (tc.getItemsFromHeroesWhoDiedInCombat ().size () > 0)
 				{
-					final AddUnassignedHeroItemMessage heroItemMsg = new AddUnassignedHeroItemMessage ();
-					for (final NumberedHeroItem item : tc.getItemsFromHeroesWhoDiedInCombat ())
-					{
-						heroItemMsg.setHeroItem (item);
-						winningPlayer.getConnection ().sendMessageToClient (heroItemMsg);
-					}
-				}
-				
-				tc.getItemsFromHeroesWhoDiedInCombat ().clear ();
-			}
-
-			// Recheck that transports have enough capacity to hold all units that require them (both for attacker and defender, and regardless who won)
-			getServerUnitCalculations ().recheckTransportCapacity (combatLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
-				mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
-			
-			// Set all units CombatX, CombatY back to -1, -1 so we don't think they're in combat anymore.
-			// Have to do this after we advance the attackers, otherwise the attackers' CombatX, CombatY will already
-			// be -1, -1 and we'll no longer be able to tell who was part of the attacking force and who wasn't.
-			// Have to do this before we recalc FOW, since if one side was wiped out, the FOW update may delete their memory of the opponent... which
-			// then crashes the client if we then try to send msgs to take those opposing units out of combat.
-			log.debug ("Removing units out of combat");
-			getCombatProcessing ().removeUnitsFromCombat (attackingPlayer, defendingPlayer, mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ());
-			
-			// Even if one side won the combat, they might have lost their unit with the longest scouting range
-			// So easiest to just recalculate FOW for both players
-			if (defendingPlayer != null)
-				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
-					defendingPlayer, mom.getPlayers (), "combatEnded-D", mom.getSessionDescription (), mom.getServerDB ());
-			
-			// If attacker won, we'll have already recalc'd their FOW when their units advanced 1 square
-			// But lets do it anyway - maybe they captured a city with an Oracle
-			getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
-				attackingPlayer, mom.getPlayers (), "combatEnded-A", mom.getSessionDescription (), mom.getServerDB ());
-			
-			// Remove all combat area effects from spells like Prayer, Mass Invisibility, etc.
-			log.debug ("Removing all spell CAEs");
-			getFogOfWarMidTurnMultiChanges ().removeCombatAreaEffectsFromLocalisedSpells
-				(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-			
-			// Assuming both sides may have taken losses, could have gained/lost a city, etc. etc., best to just recalculate production for both
-			// DefendingPlayer may still be nil
-			getServerResourceCalculations ().recalculateGlobalProductionValues (attackingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
-			
-			if (defendingPlayer != null)
-				getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
-		
-			if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
-			{
-				// Clean up the PendingMovement(s) that caused this combat
-				if (tc.getCombatAttackerPendingMovement () == null)
-					throw new MomException ("Simultaneous turns combat ended, but CombatAttackerPendingMovement is null");
-				
-				// If its a border conflict, do not clean up the PendingMovement - the unit stack didn't advance yet and still needs to do so
-				// so only clear the ref to the pending movements from the grid cell
-				if (tc.getCombatDefenderPendingMovement () == null)
+					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) winningPlayer.getPersistentPlayerPrivateKnowledge ();
+					priv.getUnassignedHeroItem ().addAll (tc.getItemsFromHeroesWhoDiedInCombat ());
 					
-					// NB. PendingMovements of the side who was wiped out will already have been removed from the list as the last unit died
-					// (see killUnitOnServerAndClients) so we may actually have nothing to remove here
-					atkPriv.getPendingMovement ().remove (tc.getCombatAttackerPendingMovement ());
-
-				tc.setCombatAttackerPendingMovement (null);
-				tc.setCombatDefenderPendingMovement (null);
+					if (winningPlayer.getPlayerDescription ().isHuman ())
+					{
+						final AddUnassignedHeroItemMessage heroItemMsg = new AddUnassignedHeroItemMessage ();
+						for (final NumberedHeroItem item : tc.getItemsFromHeroesWhoDiedInCombat ())
+						{
+							heroItemMsg.setHeroItem (item);
+							winningPlayer.getConnection ().sendMessageToClient (heroItemMsg);
+						}
+					}
+					
+					tc.getItemsFromHeroesWhoDiedInCombat ().clear ();
+				}
+	
+				// Recheck that transports have enough capacity to hold all units that require them (both for attacker and defender, and regardless who won)
+				getServerUnitCalculations ().recheckTransportCapacity (combatLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 				
-				// This routine is reponsible for figuring out if there are more combats to play, or if we can start the next turn
-				getSimultaneousTurnsProcessing ().processSimultaneousTurnsMovement (mom);
-			}
-			else
-			{
-				// Which player is currently taking their one-player-at-a-time turn?  They must have started the combat, and now need to continue their turn
-				final PlayerServerDetails currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
-					(mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "combatEnded (R)");
+				// Set all units CombatX, CombatY back to -1, -1 so we don't think they're in combat anymore.
+				// Have to do this after we advance the attackers, otherwise the attackers' CombatX, CombatY will already
+				// be -1, -1 and we'll no longer be able to tell who was part of the attacking force and who wasn't.
+				// Have to do this before we recalc FOW, since if one side was wiped out, the FOW update may delete their memory of the opponent... which
+				// then crashes the client if we then try to send msgs to take those opposing units out of combat.
+				log.debug ("Removing units out of combat");
+				getCombatProcessing ().removeUnitsFromCombat (attackingPlayer, defendingPlayer, mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ());
 				
-				if (currentPlayer.getPlayerDescription ().isHuman ())
+				// Even if one side won the combat, they might have lost their unit with the longest scouting range
+				// So easiest to just recalculate FOW for both players
+				if (defendingPlayer != null)
+					getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
+						defendingPlayer, mom.getPlayers (), "combatEnded-D", mom.getSessionDescription (), mom.getServerDB ());
+				
+				// If attacker won, we'll have already recalc'd their FOW when their units advanced 1 square
+				// But lets do it anyway - maybe they captured a city with an Oracle
+				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (),
+					attackingPlayer, mom.getPlayers (), "combatEnded-A", mom.getSessionDescription (), mom.getServerDB ());
+				
+				// Remove all combat area effects from spells like Prayer, Mass Invisibility, etc.
+				log.debug ("Removing all spell CAEs");
+				getFogOfWarMidTurnMultiChanges ().removeCombatAreaEffectsFromLocalisedSpells
+					(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				
+				// Assuming both sides may have taken losses, could have gained/lost a city, etc. etc., best to just recalculate production for both
+				// DefendingPlayer may still be nil
+				getServerResourceCalculations ().recalculateGlobalProductionValues (attackingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
+				
+				if (defendingPlayer != null)
+					getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
+			
+				if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
 				{
-					// If this is a one-at-a-time turns game, we need to tell the player to make their next move
-					currentPlayer.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());
+					// Clean up the PendingMovement(s) that caused this combat
+					if (tc.getCombatAttackerPendingMovement () == null)
+						throw new MomException ("Simultaneous turns combat ended, but CombatAttackerPendingMovement is null");
+					
+					// If its a border conflict, do not clean up the PendingMovement - the unit stack didn't advance yet and still needs to do so
+					// so only clear the ref to the pending movements from the grid cell
+					if (tc.getCombatDefenderPendingMovement () == null)
+						
+						// NB. PendingMovements of the side who was wiped out will already have been removed from the list as the last unit died
+						// (see killUnitOnServerAndClients) so we may actually have nothing to remove here
+						atkPriv.getPendingMovement ().remove (tc.getCombatAttackerPendingMovement ());
+	
+					tc.setCombatAttackerPendingMovement (null);
+					tc.setCombatDefenderPendingMovement (null);
+					
+					// This routine is reponsible for figuring out if there are more combats to play, or if we can start the next turn
+					getSimultaneousTurnsProcessing ().processSimultaneousTurnsMovement (mom);
 				}
 				else
 				{
-					// AI players proceed with moving remaining unit stacks, possibly starting another combat or completing their turn
-					log.info ("Resuming AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
-					if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
-						getPlayerMessageProcessing ().nextTurnButton (mom, currentPlayer);
+					// Which player is currently taking their one-player-at-a-time turn?  They must have started the combat, and now need to continue their turn
+					final PlayerServerDetails currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID
+						(mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "combatEnded (R)");
+					
+					if (currentPlayer.getPlayerDescription ().isHuman ())
+					{
+						// If this is a one-at-a-time turns game, we need to tell the player to make their next move
+						currentPlayer.getConnection ().sendMessageToClient (new SelectNextUnitToMoveOverlandMessage ());
+					}
+					else
+					{
+						// AI players proceed with moving remaining unit stacks, possibly starting another combat or completing their turn
+						log.info ("Resuming AI turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + " - " + currentPlayer.getPlayerDescription ().getPlayerName () + "...");
+						if (getMomAI ().aiPlayerTurn (currentPlayer, mom))
+							getPlayerMessageProcessing ().nextTurnButton (mom, currentPlayer);
+					}
 				}
+				
+				// Clear out combat related items
+				tc.setAttackingPlayerID (null);
+				tc.setDefendingPlayerID (null);
+				tc.setCombatCurrentPlayerID (null);
+				tc.setSpellCastThisCombatTurn (null);
+				tc.setCombatDefenderCastingSkillRemaining (null);
+				tc.setCombatAttackerCastingSkillRemaining (null);
 			}
-			
-			// Clear out combat related items
-			tc.setAttackingPlayerID (null);
-			tc.setDefendingPlayerID (null);
-			tc.setCombatCurrentPlayerID (null);
-			tc.setSpellCastThisCombatTurn (null);
-			tc.setCombatDefenderCastingSkillRemaining (null);
-			tc.setCombatAttackerCastingSkillRemaining (null);
 		}
 		
 		log.trace ("Exiting combatEnded");

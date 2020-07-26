@@ -594,7 +594,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		boolean aiPlayerTurn = true;
 		CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
-		while ((aiPlayerTurn) && (combatPlayers.bothFound ()))
+		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()))
 		{
 			// Who should take their turn next?
 			// If human player hits Auto, then we want to play their turn for them through their AI, without switching players
@@ -660,8 +660,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 			}
 			
 			// Was either side wiped out yet?
-			combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
-				(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+			// Careful as the entire session may have been wiped out too
+			if (mom.getPlayers ().size () > 0)
+				combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+					(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
 		}
 		
 		log.trace ("Exiting progressCombat");

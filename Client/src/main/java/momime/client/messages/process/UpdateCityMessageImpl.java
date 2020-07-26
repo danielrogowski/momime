@@ -13,6 +13,7 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.ArmyListUI;
+import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
@@ -101,6 +102,11 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 				cityView.close ();
 			}
 		}
+		
+		// Also see if any change construction screens are open
+		final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getData ().getMapLocation ().toString ());
+		if ((changeConstruction != null) && (getData ().getCityData () == null))
+			changeConstruction.close ();;
 		
 		// If any new turn message(s) are showing what this city may have just constructed, then we need to update those as well
 		getNewTurnMessagesUI ().cityDataChanged ((MapCoordinates3DEx) getData ().getMapLocation ());

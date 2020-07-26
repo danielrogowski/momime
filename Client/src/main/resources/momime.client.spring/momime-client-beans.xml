@@ -779,6 +779,22 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="joinGameUI" ref="joinGameUI" />
 		<property name="loadGameUI" ref="loadGameUI" />
 		<property name="taxRateUI" ref="taxRateUI" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
+		<property name="alchemyUI" ref="alchemyUI" />
+		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
+		<property name="armyListUI" ref="armyListUI" />
+		<property name="citiesListUI" ref="citiesListUI" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="selectAdvisorUI" ref="selectAdvisorUI" />
+		<property name="combatUI" ref="combatUI" />
+		<property name="castCombatSpellFromUI" ref="castCombatSpellFromUI" />
+		<property name="damageCalculationsUI" ref="damageCalculationsUI" />
+		<property name="variableManaUI" ref="variableManaUI" />	
+		<property name="razeCityUI" ref="razeCityUI" />
+		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="createArtifactUI" ref="createArtifactUI" />
+		<property name="heroItemsUI" ref="heroItemsUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />

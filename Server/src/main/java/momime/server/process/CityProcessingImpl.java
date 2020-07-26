@@ -933,20 +933,24 @@ public final class CityProcessingImpl implements CityProcessing
 				mom.updateHumanPlayerToAI (defendingPlayer.getPlayerDescription ().getPlayerID ());			
 		}
 		
-		// If wizard was in middle of casting any overland spells then remove them all
-		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-		while (priv.getQueuedSpell ().size () > 0)
+		// Its possible by this point that the session doesn't exist, which wipes out the player list
+		if (mom.getPlayers ().size () > 0)
 		{
-			// Remove queued spell on server
-			priv.getQueuedSpell ().remove (0);
-			priv.setManaSpentOnCastingCurrentSpell (0);
-
-			// Remove queued spell on client
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
+			// If wizard was in middle of casting any overland spells then remove them all
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+			while (priv.getQueuedSpell ().size () > 0)
 			{
-				final RemoveQueuedSpellMessage removeSpellMessage = new RemoveQueuedSpellMessage ();
-				removeSpellMessage.setQueuedSpellIndex (0);
-				defendingPlayer.getConnection ().sendMessageToClient (removeSpellMessage);
+				// Remove queued spell on server
+				priv.getQueuedSpell ().remove (0);
+				priv.setManaSpentOnCastingCurrentSpell (0);
+	
+				// Remove queued spell on client
+				if (defendingPlayer.getPlayerDescription ().isHuman ())
+				{
+					final RemoveQueuedSpellMessage removeSpellMessage = new RemoveQueuedSpellMessage ();
+					removeSpellMessage.setQueuedSpellIndex (0);
+					defendingPlayer.getConnection ().sendMessageToClient (removeSpellMessage);
+				}
 			}
 		}
 

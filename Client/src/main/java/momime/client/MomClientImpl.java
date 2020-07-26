@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
@@ -39,19 +40,35 @@ import momime.client.database.ClientDatabaseEx;
 import momime.client.database.ClientDatabaseExImpl;
 import momime.client.database.NewGameDatabase;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.ui.dialogs.CastCombatSpellFromUI;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.client.ui.dialogs.RazeCityUI;
+import momime.client.ui.dialogs.VariableManaUI;
+import momime.client.ui.frames.AlchemyUI;
+import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.ChangeConstructionUI;
+import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
+import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.ConnectToServerUI;
+import momime.client.ui.frames.CreateArtifactUI;
+import momime.client.ui.frames.DamageCalculationsUI;
 import momime.client.ui.frames.HeroItemInfoUI;
+import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.JoinGameUI;
 import momime.client.ui.frames.LoadGameUI;
+import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
+import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.frames.QueuedSpellsUI;
+import momime.client.ui.frames.SelectAdvisorUI;
+import momime.client.ui.frames.SpellBookUI;
 import momime.client.ui.frames.TaxRateUI;
 import momime.client.ui.frames.UnitInfoUI;
+import momime.client.ui.frames.WizardsUI;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -93,6 +110,54 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
+	
+	/** Magic sliders screen */
+	private MagicSlidersUI magicSlidersUI;
+
+	/** Alchemy UI */
+	private AlchemyUI alchemyUI;
+	
+	/** Spell book */
+	private SpellBookUI spellBookUI;
+
+	/** Queued spells UI */
+	private QueuedSpellsUI queuedSpellsUI;
+	
+	/** Army list */
+	private ArmyListUI armyListUI;
+	
+	/** Cities list */
+	private CitiesListUI citiesListUI;
+
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
+	
+	/** Advisors UI */
+	private SelectAdvisorUI selectAdvisorUI;
+	
+	/** Combat UI */
+	private CombatUI combatUI;
+
+	/** Select casting source popup */
+	private CastCombatSpellFromUI castCombatSpellFromUI;
+	
+	/** UI for displaying damage calculations */
+	private DamageCalculationsUI damageCalculationsUI;
+
+	/** Variable MP popup */
+	private VariableManaUI variableManaUI;	
+	
+	/** Raze city UI */
+	private RazeCityUI razeCityUI;
+
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
+	
+	/** Crafting popup */
+	private CreateArtifactUI createArtifactUI;
+	
+	/** Hero items UI */
+	private HeroItemsUI heroItemsUI;
 	
 	/** Music player */
 	private AudioPlayer musicPlayer;
@@ -283,6 +348,56 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			{
 				getNewGameUI ().updateWaitPanelPlayersList ();
 			}
+			
+			/**
+			 * Event triggered when somebody leaves the session we're in, note it could be us leaving.
+			 * Event is triggered before player is removed from the list, so if it is us leaving we have time to tidy up the session while we can still access it.
+			 * 
+			 * @param playerID Player who left
+			 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
+			 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
+			 * @throws IOException Can be used for more general types of processing failure
+			 */
+			@Override
+			public final void beforePlayerLeft (final int playerID) throws JAXBException, XMLStreamException, IOException
+			{
+				// Was it us who left?  If so then close down any game windows that may be open
+				if ((getOurPlayerID () != null) && (playerID == getOurPlayerID ()))
+				{
+					final List<String> cityViewsToClose = getCityViews ().keySet ().stream ().collect (Collectors.toList ());
+					cityViewsToClose.forEach (c -> getCityViews ().get (c).close ());
+
+					final List<String> changeConstructionsToClose = getChangeConstructions ().keySet ().stream ().collect (Collectors.toList ());
+					changeConstructionsToClose.forEach (c -> getChangeConstructions ().get (c).close ());
+					
+					final List<Integer> unitInfosToClose = getUnitInfos ().keySet ().stream ().collect (Collectors.toList ());
+					unitInfosToClose.forEach (u -> getUnitInfos ().get (u).close ());
+					
+					final List<Integer> heroItemsToClose = getHeroItemInfos ().keySet ().stream ().collect (Collectors.toList ());
+					heroItemsToClose.forEach (i -> getHeroItemInfos ().get (i).close ());
+					
+					getOverlandMapUI ().setVisible (false);
+					getTaxRateUI ().setVisible (false);
+					getMagicSlidersUI ().setVisible (false);
+					getAlchemyUI ().setVisible (false);
+					getSpellBookUI ().setVisible (false);
+					getQueuedSpellsUI ().setVisible (false);
+					getArmyListUI ().setVisible (false);
+					getCitiesListUI ().setVisible (false);
+					getNewTurnMessagesUI ().setVisible (false);
+					getSelectAdvisorUI ().setVisible (false);
+					
+					getCombatUI ().setVisible (false);
+					getCastCombatSpellFromUI ().setVisible (false);
+					getRazeCityUI ().setVisible (false);
+					getDamageCalculationsUI ().setVisible (false);
+					getVariableManaUI ().setVisible (false);
+					
+					getWizardsUI ().setVisible (false);
+					getCreateArtifactUI ().setVisible (false);
+					getHeroItemsUI ().setVisible (false);
+				}
+			}
 
 			/**
 			 * Event triggered when somebody leaves the session we're in, note it could be us leaving.
@@ -294,9 +409,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			 * @throws IOException Can be used for more general types of processing failure
 			 */
 			@Override
-			public final void playerLeft (@SuppressWarnings ("unused") final int playerID) throws JAXBException, XMLStreamException, IOException
+			public final void afterPlayerLeft (final int playerID) throws JAXBException, XMLStreamException, IOException
 			{
-				// Was it us who left?
+				// Was it us who left?  If so then open up the main menu again
 				if ((getOurPlayerID () != null) && (playerID == getOurPlayerID ()))
 				{
 					if (!getMainMenuUI ().isVisible ())
@@ -687,6 +802,262 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 		overlandMapUI = ui;
 	}
 
+	/**
+	 * @return Magic sliders screen
+	 */
+	public final MagicSlidersUI getMagicSlidersUI ()
+	{
+		return magicSlidersUI;
+	}
+
+	/**
+	 * @param ui Magic sliders screen
+	 */
+	public final void setMagicSlidersUI (final MagicSlidersUI ui)
+	{
+		magicSlidersUI = ui;
+	}
+
+	/**
+	 * @return Alchemy UI
+	 */
+	public final AlchemyUI getAlchemyUI ()
+	{
+		return alchemyUI;
+	}
+
+	/**
+	 * @param ui Alchemy UI
+	 */
+	public final void setAlchemyUI (final AlchemyUI ui)
+	{
+		alchemyUI = ui;
+	}
+	
+	/**
+	 * @return Spell book
+	 */
+	public final SpellBookUI getSpellBookUI ()
+	{
+		return spellBookUI;
+	}
+
+	/**
+	 * @param ui Spell book
+	 */
+	public final void setSpellBookUI (final SpellBookUI ui)
+	{
+		spellBookUI = ui;
+	}
+
+	/**
+	 * @return Queued spells UI
+	 */
+	public final QueuedSpellsUI getQueuedSpellsUI ()
+	{
+		return queuedSpellsUI;
+	}
+
+	/**
+	 * @param ui Queued spells UI
+	 */
+	public final void setQueuedSpellsUI (final QueuedSpellsUI ui)
+	{
+		queuedSpellsUI = ui;
+	}
+	
+	/**
+	 * @return Army list
+	 */
+	public final ArmyListUI getArmyListUI ()
+	{
+		return armyListUI;
+	}
+
+	/**
+	 * @param ui Army list
+	 */
+	public final void setArmyListUI (final ArmyListUI ui)
+	{
+		armyListUI = ui;
+	}
+	
+	/**
+	 * @return Cities list
+	 */
+	public final CitiesListUI getCitiesListUI ()
+	{
+		return citiesListUI;
+	}
+
+	/**
+	 * @param ui Cities list
+	 */
+	public final void setCitiesListUI (final CitiesListUI ui)
+	{
+		citiesListUI = ui;
+	}
+	
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Advisors UI
+	 */
+	public final SelectAdvisorUI getSelectAdvisorUI ()
+	{
+		return selectAdvisorUI;
+	}
+
+	/**
+	 * @param ui Advisors UI
+	 */
+	public final void setSelectAdvisorUI (final SelectAdvisorUI ui)
+	{
+		selectAdvisorUI = ui;
+	}
+	
+	/**
+	 * @return Combat UI
+	 */
+	public final CombatUI getCombatUI ()
+	{
+		return combatUI;
+	}
+
+	/**
+	 * @param ui Combat UI
+	 */
+	public final void setCombatUI (final CombatUI ui)
+	{
+		combatUI = ui;
+	}
+
+	/**
+	 * @return Select casting source popup
+	 */
+	public final CastCombatSpellFromUI getCastCombatSpellFromUI ()
+	{
+		return castCombatSpellFromUI;
+	}
+
+	/**
+	 * @param ui Select casting source popup
+	 */
+	public final void setCastCombatSpellFromUI (final CastCombatSpellFromUI ui)
+	{
+		castCombatSpellFromUI = ui;
+	}
+
+	/**
+	 * @return UI for displaying damage calculations
+	 */
+	public final DamageCalculationsUI getDamageCalculationsUI ()
+	{
+		return damageCalculationsUI;
+	}
+
+	/**
+	 * @param ui UI for displaying damage calculations
+	 */
+	public final void setDamageCalculationsUI (final DamageCalculationsUI ui)
+	{
+		damageCalculationsUI = ui;
+	}
+
+	/**
+	 * @return Variable MP popup
+	 */
+	public VariableManaUI getVariableManaUI ()
+	{
+		return variableManaUI;
+	}
+
+	/**
+	 * @param ui Variable MP popup
+	 */
+	public final void setVariableManaUI (final VariableManaUI ui)
+	{
+		variableManaUI = ui;
+	}
+	
+	/**
+	 * @return Raze city UI
+	 */
+	public final RazeCityUI getRazeCityUI ()
+	{
+		return razeCityUI;
+	}		
+
+	/**
+	 * @param ui Raze city UI
+	 */
+	public final void setRazeCityUI (final RazeCityUI ui)
+	{
+		razeCityUI = ui;
+	}	
+
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
+	}
+	
+	/**
+	 * @return Crafting popup
+	 */
+	public final CreateArtifactUI getCreateArtifactUI ()
+	{
+		return createArtifactUI;
+	}
+
+	/**
+	 * @param ui Crafting popup
+	 */
+	public final void setCreateArtifactUI (final CreateArtifactUI ui)
+	{
+		createArtifactUI = ui;
+	}
+	
+	/**
+	 * @return Hero items UI
+	 */
+	public final HeroItemsUI getHeroItemsUI ()
+	{
+		return heroItemsUI;
+	}
+
+	/**
+	 * @param ui Hero items UI
+	 */
+	public final void setHeroItemsUI (final HeroItemsUI ui)
+	{
+		heroItemsUI = ui;
+	}
+	
 	/**
 	 * @return Music player
 	 */

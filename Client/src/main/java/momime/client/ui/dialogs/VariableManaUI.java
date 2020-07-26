@@ -206,7 +206,7 @@ public final class VariableManaUI extends MomClientDialogUI
 	{
 		log.trace ("Entering sliderPositionChanged");
 		
-		if (slider != null)
+		if ((slider != null) && (getSpellBeingTargetted () != null))
 			try
 			{
 				// The slider value is the resulting damage of the spell

@@ -424,6 +424,18 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * Close the change construction screen when a city is destroyed 
+	 */
+	public final void close ()
+	{
+		log.trace ("Entering close: " + getCityLocation ());
+		
+		getFrame ().dispose ();
+
+		log.trace ("Exiting close: " + getCityLocation ());
+	}
+	
+	/**
 	 * @return Medium font
 	 */
 	public final Font getMediumFont ()

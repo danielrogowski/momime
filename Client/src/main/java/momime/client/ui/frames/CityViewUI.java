@@ -1338,7 +1338,7 @@ public final class CityViewUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * Close the unit info screen when a city is destroyed 
+	 * Close the city screen when a city is destroyed 
 	 */
 	public final void close ()
 	{

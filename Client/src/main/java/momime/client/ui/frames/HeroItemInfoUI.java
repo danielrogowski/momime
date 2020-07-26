@@ -170,6 +170,18 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 	}
 
 	/**
+	 * Close the hero item screen 
+	 */
+	public final void close ()
+	{
+		log.trace ("Entering close: " + getItem ().getHeroItemURN ());
+		
+		getFrame ().dispose ();
+
+		log.trace ("Exiting close: " + getItem ().getHeroItemURN ());
+	}
+	
+	/**
 	 * @return XML layout
 	 */
 	public final XmlLayoutContainerEx getHeroItemInfoLayout ()

@@ -92,6 +92,7 @@ import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.CombatAutoControlMessage;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
@@ -1370,10 +1371,13 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	private final List<CastCombatSpellFrom> listCastingSources () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "listCastingSources");
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+
 		final List<CastCombatSpellFrom> sources = new ArrayList<CastCombatSpellFrom> ();
 		
 		// Wizard casting
-		if (!spellCastThisCombatTurn)
+		if ((!spellCastThisCombatTurn) && (pub.getWizardState () == WizardState.ACTIVE))
 			sources.add (new CastCombatSpellFrom (null, null, null));
 		
 		if ((getSelectedUnitInCombat () != null) && (getSelectedUnitInCombat ().getDoubleCombatMovesLeft () != null) &&

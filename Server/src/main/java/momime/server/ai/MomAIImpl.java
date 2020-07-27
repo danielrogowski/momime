@@ -27,6 +27,7 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.TurnSystem;
+import momime.common.messages.WizardState;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -322,7 +323,7 @@ public final class MomAIImpl implements MomAI
 			}
 			
 			// Only wizards can do anything with spells
-			if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 			{
 				// Do we need to choose a spell to research?
 				if (priv.getSpellIDBeingResearched () == null)

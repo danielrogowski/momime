@@ -6,7 +6,9 @@ import javax.xml.stream.XMLStreamException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SwitchResearch;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
@@ -51,10 +53,16 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getSpellID ());
 
 		final MomSessionVariables mom = (MomSessionVariables) thread;
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 
 		// Validate the requested picks
-		final String error = getSpellServerUtils ().validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDB ());
+		final String error;
+		if (pub.getWizardState () != WizardState.ACTIVE)
+			error = "You cannot research spells while you are banished.";
+		else
+			error = getSpellServerUtils ().validateResearch (sender, spellID, mom.getSessionDescription ().getSpellSetting ().getSwitchResearch (), mom.getServerDB ());
+		
 		if (error != null)
 		{
 			// Return error

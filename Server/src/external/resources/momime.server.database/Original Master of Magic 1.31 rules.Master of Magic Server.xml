@@ -22680,6 +22680,8 @@
 	<spell spellID="SP214">
 		<spellRank>SR01</spellRank>
 		<overlandCastingCost>1000</overlandCastingCost>
+		<spellBookSectionID>SC03</spellBookSectionID>
+		<buildingID>BL99</buildingID>
 		<spellName>Spell of Return</spellName>
 	</spell>
 	<movementRateRule>

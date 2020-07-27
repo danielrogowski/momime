@@ -871,9 +871,11 @@ public final class CityProcessingImpl implements CityProcessing
 	{
 		log.trace ("Entering banishWizard: Player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () + " being banished by " + attackingPlayerID);
 		
-		// Do they have another city to try to return to?
+		// Do they have another city to try to return to?  Record it on server
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		final WizardState wizardState = (getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 			defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
+		pub.setWizardState (wizardState);
 		
 		// Update wizardState on client, and this triggers showing the banish animation as well
 		final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();

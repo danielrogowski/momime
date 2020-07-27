@@ -70,6 +70,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.utils.ExpandedUnitDetails;
@@ -479,66 +480,71 @@ public final class SpellBookUI extends MomClientFrameUI
 									}
 									else if (sectionID == SpellBookSectionID.RESEARCHABLE_NOW)
 									{
-										// Clicking on a spell to research it
-										// Whether we're allowed to depends on what spell settings are, and what's currently selected to research
-										final boolean sendMessage;
-										
-										// Picking research when we've got no current research is always fine
-										if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null)
-											sendMessage = true;
-										
-										// Picking the same research that we're already researching is just ignored
-										else if (spell.getSpellID ().equals (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ()))
-											sendMessage = false;
-										
-										// If there's no penalty, then don't bother with a warning message
-										else if (getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.FREE)
-											sendMessage = true;
-										
-										else
+										final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
+										final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+										if (pub.getWizardState () == WizardState.ACTIVE)
 										{
-											// Now we need to know details about the spell that was previously being researched
-											final Spell oldSpell = getClient ().getClientDB ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched (), "switchResearch");
-											final SpellResearchStatus oldResearchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
-												getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
+											// Clicking on a spell to research it
+											// Whether we're allowed to depends on what spell settings are, and what's currently selected to research
+											final boolean sendMessage;
 											
-											// If we've made no progress researching the old spell, then we can switch with no penalty
-											if ((oldResearchStatus.getRemainingResearchCost () == oldSpell.getResearchCost ()) &&
-												(getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () != SwitchResearch.DISALLOWED))
+											// Picking research when we've got no current research is always fine
+											if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null)
+												sendMessage = true;
+											
+											// Picking the same research that we're already researching is just ignored
+											else if (spell.getSpellID ().equals (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ()))
+												sendMessage = false;
+											
+											// If there's no penalty, then don't bother with a warning message
+											else if (getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.FREE)
 												sendMessage = true;
 											
 											else
 											{
-												// We've either just not allowed to switch at all, or can switch but will lose research towards the old spell, so either way
-												// we've got to display a message about it, and won't be sending any message now
-												final SpellLang oldSpellLang = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
-												final String oldSpellName = (oldSpellLang != null) ? oldSpellLang.getSpellName () : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ();
-												final boolean lose = getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH;
-
-												final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-												msg.setTitleLanguageCategoryID ("frmSpellBook");
-												msg.setTitleLanguageEntryID ("SwitchResearchTitle");
-												msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", lose ? "SwitchResearchLose" : "SwitchResearchDisallowed").replaceAll
-													("OLD_SPELL_NAME", oldSpellName).replaceAll
-													("NEW_SPELL_NAME", spellNames [spellX] [spellY].getText ()).replaceAll
-													("RESEARCH_SO_FAR", getTextUtils ().intToStrCommas (oldSpell.getResearchCost () - oldResearchStatus.getRemainingResearchCost ())).replaceAll
-													("RESEARCH_TOTAL", getTextUtils ().intToStrCommas (oldSpell.getResearchCost ())));
+												// Now we need to know details about the spell that was previously being researched
+												final Spell oldSpell = getClient ().getClientDB ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched (), "switchResearch");
+												final SpellResearchStatus oldResearchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
+													getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
 												
-												if (lose)
-													msg.setResearchSpellID (spell.getSpellID ());
+												// If we've made no progress researching the old spell, then we can switch with no penalty
+												if ((oldResearchStatus.getRemainingResearchCost () == oldSpell.getResearchCost ()) &&
+													(getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () != SwitchResearch.DISALLOWED))
+													sendMessage = true;
 												
-												msg.setVisible (true);
-												
-												sendMessage = false;
+												else
+												{
+													// We've either just not allowed to switch at all, or can switch but will lose research towards the old spell, so either way
+													// we've got to display a message about it, and won't be sending any message now
+													final SpellLang oldSpellLang = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
+													final String oldSpellName = (oldSpellLang != null) ? oldSpellLang.getSpellName () : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ();
+													final boolean lose = getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH;
+	
+													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+													msg.setTitleLanguageCategoryID ("frmSpellBook");
+													msg.setTitleLanguageEntryID ("SwitchResearchTitle");
+													msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", lose ? "SwitchResearchLose" : "SwitchResearchDisallowed").replaceAll
+														("OLD_SPELL_NAME", oldSpellName).replaceAll
+														("NEW_SPELL_NAME", spellNames [spellX] [spellY].getText ()).replaceAll
+														("RESEARCH_SO_FAR", getTextUtils ().intToStrCommas (oldSpell.getResearchCost () - oldResearchStatus.getRemainingResearchCost ())).replaceAll
+														("RESEARCH_TOTAL", getTextUtils ().intToStrCommas (oldSpell.getResearchCost ())));
+													
+													if (lose)
+														msg.setResearchSpellID (spell.getSpellID ());
+													
+													msg.setVisible (true);
+													
+													sendMessage = false;
+												}
 											}
-										}
-										
-										// Send message?
-										if (sendMessage)
-										{
-											final RequestResearchSpellMessage msg = new RequestResearchSpellMessage ();
-											msg.setSpellID (spell.getSpellID ());
-											getClient ().getServerConnection ().sendMessageToServer (msg);
+											
+											// Send message?
+											if (sendMessage)
+											{
+												final RequestResearchSpellMessage msg = new RequestResearchSpellMessage ();
+												msg.setSpellID (spell.getSpellID ());
+												getClient ().getServerConnection ().sendMessageToServer (msg);
+											}
 										}
 									}
 									else if (sectionID != SpellBookSectionID.RESEARCHABLE)
@@ -630,6 +636,9 @@ public final class SpellBookUI extends MomClientFrameUI
 
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
+
+		final boolean unitCasting = (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
+			(getCombatUI ().getCastingSource ().getCastingUnit () != null);
 		
 		// Look up name
 		final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
@@ -640,7 +649,9 @@ public final class SpellBookUI extends MomClientFrameUI
 		// Ignore trying to cast spells in combat when it isn't our turn
 		final boolean proceed;
 		final List<MemoryUnit> deadUnits = new ArrayList<MemoryUnit> ();
-		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
+		if ((pub.getWizardState () != WizardState.ACTIVE) && (!unitCasting))
+			proceed = false;
+		else if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
 			proceed = false;
 		else
 		{										
@@ -1043,6 +1054,9 @@ public final class SpellBookUI extends MomClientFrameUI
 				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageOrPageChanged");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 				
+				final boolean unitCasting = (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
+					(getCombatUI ().getCastingSource ().getCastingUnit () != null);
+
 				// Do the left+right pages in turn
 				for (int x = 0; x < 2; x++)
 				{
@@ -1073,28 +1087,39 @@ public final class SpellBookUI extends MomClientFrameUI
 								
 								spellNames [x] [y].setBackground (shadowColor);
 								spellOverlandCosts [x] [y].setBackground (shadowColor);
-	
-								// Let unknown spells be magic realm coloured too, as a hint
-								spellNames [x] [y].setForeground (ARCANE_SPELL_COLOUR);
-								spellCombatCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
-								spellOverlandCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
-								spellDescriptions [x] [y].setForeground (MomUIConstants.DARK_BROWN);
-								if (spell.getSpellRealm () != null)
-									try
-									{
-										final PickGfx magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
-										if (magicRealm.getPickBookshelfTitleColour () != null)
+								
+								// If we're banished, then grey out (light brown out) the entire spell book, as long as its the wizard casting spells
+								if ((pub.getWizardState () != WizardState.ACTIVE) && (!unitCasting))
+								{
+									spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+									spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+									spellOverlandCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+									spellDescriptions [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
+								}
+								else
+								{
+									// Let unknown spells be magic realm coloured too, as a hint
+									spellNames [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+									spellCombatCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+									spellOverlandCosts [x] [y].setForeground (ARCANE_SPELL_COLOUR);
+									spellDescriptions [x] [y].setForeground (MomUIConstants.DARK_BROWN);
+									if (spell.getSpellRealm () != null)
+										try
 										{
-											final Color spellColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
-											spellNames [x] [y].setForeground (spellColour);
-											spellCombatCosts [x] [y].setForeground (spellColour);
-											spellOverlandCosts [x] [y].setForeground (spellColour);
+											final PickGfx magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
+											if (magicRealm.getPickBookshelfTitleColour () != null)
+											{
+												final Color spellColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
+												spellNames [x] [y].setForeground (spellColour);
+												spellCombatCosts [x] [y].setForeground (spellColour);
+												spellOverlandCosts [x] [y].setForeground (spellColour);
+											}
 										}
-									}
-									catch (final Exception e)
-									{
-										log.error (e, e);
-									}
+										catch (final Exception e)
+										{
+											log.error (e, e);
+										}
+								}
 								
 								// Set text for this spell
 								if (page.getSectionID () == SpellBookSectionID.RESEARCHABLE)

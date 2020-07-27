@@ -31,6 +31,7 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
@@ -178,7 +179,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 			if (combatCastingUnitURN == null)
 			{
 				// Wizard casting
-				if (researchStatus != SpellResearchStatusID.AVAILABLE)
+				if (pub.getWizardState () != WizardState.ACTIVE)
+					msg = "You cannot cast spells while you are banished.";
+				
+				else if (researchStatus != SpellResearchStatusID.AVAILABLE)
 					msg = "You don't have that spell researched and/or available so can't cast it.";
 			}
 			

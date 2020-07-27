@@ -145,7 +145,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 		
 		// Validation checks on the type of spell and whether it needs a target
 		String msg;
-		if ((combatLocation == null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
+		if (spellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
+			msg = "You cannot cast the Spell of Return";
+		
+		else if ((combatLocation == null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
 			msg = "That spell cannot be cast overland.";
 		
 		else if ((combatLocation != null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))

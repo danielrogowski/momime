@@ -649,7 +649,9 @@ public final class SpellBookUI extends MomClientFrameUI
 		// Ignore trying to cast spells in combat when it isn't our turn
 		final boolean proceed;
 		final List<MemoryUnit> deadUnits = new ArrayList<MemoryUnit> ();
-		if ((pub.getWizardState () != WizardState.ACTIVE) && (!unitCasting))
+		if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN)) ||
+			((pub.getWizardState () != WizardState.ACTIVE) && (!unitCasting)))
+			
 			proceed = false;
 		else if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
 			proceed = false;
@@ -1089,7 +1091,8 @@ public final class SpellBookUI extends MomClientFrameUI
 								spellOverlandCosts [x] [y].setBackground (shadowColor);
 								
 								// If we're banished, then grey out (light brown out) the entire spell book, as long as its the wizard casting spells
-								if ((pub.getWizardState () != WizardState.ACTIVE) && (!unitCasting))
+								if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN)) ||
+									((pub.getWizardState () != WizardState.ACTIVE) && (!unitCasting)))
 								{
 									spellNames [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);
 									spellCombatCosts [x] [y].setForeground (MomUIConstants.LIGHT_BROWN);

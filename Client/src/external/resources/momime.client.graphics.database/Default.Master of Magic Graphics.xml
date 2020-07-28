@@ -1837,7 +1837,11 @@
 	</spell>
 	<spell spellID="SP212" />
 	<spell spellID="SP213" />
-	<spell spellID="SP214" />
+	<spell spellID="SP214">
+		<spellMusicFile>/momime.client.music/MUSIC_000 - SummoningCircle-SpellOfReturn.mp3</spellMusicFile>
+		<soundAndImageDelay>2</soundAndImageDelay>
+		<spellSoundFile>/momime.client.sounds/SOUNDFX_010_000 - Giant.mp3</spellSoundFile>
+	</spell>
 	<combatAction combatActionID="STAND">
 		<combatActionDescription>Image of unit standing still</combatActionDescription>
 	</combatAction>

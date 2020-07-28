@@ -480,12 +480,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
 				
-				// First create the building(s) on the server
-				getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
-					mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
-					mom.getSessionDescription (), mom.getServerDB ());
-				
-				// If it is Spell of Return then update wizard state back to active
+				// If it is Spell of Return then update wizard state back to active.
+				// Note we have to do this before actually adding the building, so the animation shows the fortress initially NOT there.
 				if (getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
 				{
 					// Update on server
@@ -498,6 +494,11 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					msg.setWizardState (WizardState.ACTIVE);
 					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 				}
+
+				// First create the building(s) on the server
+				getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
+					mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
+					mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Remove the maintained spell on the server (clients would never have gotten it to begin with)
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);

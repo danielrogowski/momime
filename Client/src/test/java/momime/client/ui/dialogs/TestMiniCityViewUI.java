@@ -6,6 +6,16 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.CityViewElementGfx;
@@ -23,22 +33,10 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.OverlandMapCityData;
-import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
-
-import org.junit.Test;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+import momime.common.messages.servertoclient.RenderCityData;
 
 /**
  * Tests the MiniCityViewUI class
@@ -79,10 +77,10 @@ public final class TestMiniCityViewUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// City data
-		final OverlandMapCityData cityData = new OverlandMapCityData ();
-		cityData.setCitySizeID ("CS01");
-		cityData.setCityName ("Blahdy Blah");
-		cityData.setCityOwnerID (2);
+		final RenderCityData renderCityData = new RenderCityData ();
+		renderCityData.setCitySizeID ("CS01");
+		renderCityData.setCityName ("Blahdy Blah");
+		renderCityData.setCityOwnerID (2);
 		
 		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
@@ -90,8 +88,6 @@ public final class TestMiniCityViewUI extends ClientTestData
 		sd.setOverlandMapSize (overlandMapSize);
 		
 		final MapVolumeOfMemoryGridCells terrain = createOverlandMap (overlandMapSize);
-		final MemoryGridCell mc = terrain.getPlane ().get (0).getRow ().get (10).getCell ().get (20);
-		mc.setCityData (cityData);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
@@ -117,7 +113,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		final PlayerPublicDetails player2 = new PlayerPublicDetails (null, null, null);
 		when (multiplayerSessionUtils.findPlayerWithID (players, 2)).thenReturn (player2);
 		when (wizardClientUtils.getPlayerName (player2)).thenReturn ("Jafar");
-		
+
 		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
 		
 		// Display at least some landscape, plus the spell itself
@@ -148,7 +144,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		
 		final AddMaintainedSpellMessageImpl msg = new AddMaintainedSpellMessageImpl (); 
 		msg.setMaintainedSpell (spell);
-
+		
 		// Set up animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
 		anim.setGraphicsDB (gfx);
@@ -160,7 +156,6 @@ public final class TestMiniCityViewUI extends ClientTestData
 		panel.setUtils (utils);
 		panel.setGraphicsDB (gfx);
 		panel.setAnim (anim);
-		panel.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());		// Since we need it to really look for the spell
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/MiniCityViewUI.xml"));
@@ -180,6 +175,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		cityView.setLargeFont (CreateFontsForTests.getLargeFont ());
 		cityView.setMiniCityViewLayout (layout);
 		cityView.setAddSpellMessage (msg);
+		cityView.setRenderCityData (renderCityData);
 	
 		// Display form
 		cityView.setModal (false);

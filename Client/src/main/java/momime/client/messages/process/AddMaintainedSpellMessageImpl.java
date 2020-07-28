@@ -30,6 +30,7 @@ import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
@@ -77,6 +78,9 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
 	
 	/** True for city enchantments/curses and overland enchantments */
 	private boolean animatedByOtherFrame;
@@ -134,6 +138,8 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 					
 					final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
 					miniCityView.setCityLocation ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+					miniCityView.setRenderCityData (getCityCalculations ().buildRenderCityData ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation (),
+						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ()));						
 					miniCityView.setAddSpellMessage (this);
 					miniCityView.setVisible (true);
 				}
@@ -565,5 +571,21 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
 	}
 }

@@ -9,28 +9,24 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 
-import momime.client.ClientTestData;
-import momime.client.MomClient;
-import momime.client.graphics.database.CityViewElementGfx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.utils.AnimationControllerImpl;
-import momime.client.utils.OverlandMapClientUtils;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.OverlandMapSize;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryBuilding;
-import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomSessionDescription;
-import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
-
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.graphics.database.CityViewElementGfx;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.utils.AnimationControllerImpl;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.OverlandMapSize;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.servertoclient.RenderCityData;
 
 /**
  * Tests the CityViewPanel class
@@ -145,16 +141,13 @@ public final class TestCityViewPanel extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
-		final MemoryBuildingUtils buildings = mock (MemoryBuildingUtils.class);
-		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)).thenReturn (null);
-		when (buildings.findBuilding (fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), CommonDatabaseConstants.BUILDING_FORTRESS)).thenReturn (new MemoryBuilding ());
-
-		final MemoryMaintainedSpellUtils spells = mock (MemoryMaintainedSpellUtils.class);
-		when (spells.findMaintainedSpell (fow.getMaintainedSpell (), null, null, null, null, new MapCoordinates3DEx (20, 10, 0), "SE146")).thenReturn (null);
-		when (spells.findMaintainedSpell (fow.getMaintainedSpell (), null, null, null, null, new MapCoordinates3DEx (20, 10, 0), "SE183")).thenReturn (new MemoryMaintainedSpell ());
-		
-		final OverlandMapClientUtils mapUtils = mock (OverlandMapClientUtils.class);
-		when (mapUtils.findAdjacentTileType (terrain, new MapCoordinates3DEx (20, 10, 0), overlandMapSize, "TT02")).thenReturn (true);
+		// City data
+		final RenderCityData renderCityData = new RenderCityData ();
+		renderCityData.getAdjacentTileTypeID ().add ("TT02");
+		renderCityData.getBuildingID ().add (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
+		renderCityData.getBuildingID ().add (CommonDatabaseConstants.BUILDING_FORTRESS);
+		renderCityData.getCitySpellEffectID ().add ("SE146");
+		renderCityData.getCitySpellEffectID ().add ("SE183");
 		
 		// Animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
@@ -165,11 +158,9 @@ public final class TestCityViewPanel extends ClientTestData
 		final CityViewPanel panel = new CityViewPanel ();
 		panel.setUtils (utils);
 		panel.setGraphicsDB (gfx);
-		panel.setMemoryBuildingUtils (buildings);
-		panel.setMemoryMaintainedSpellUtils (spells);
-		panel.setOverlandMapClientUtils (mapUtils);
 		panel.setClient (client);
 		panel.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
+		panel.setRenderCityData (renderCityData);
 		panel.setAnim (anim);
 		panel.init ();
 		

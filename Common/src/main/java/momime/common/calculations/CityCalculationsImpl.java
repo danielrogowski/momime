@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,6 +54,7 @@ import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -65,6 +67,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.RenderCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 
@@ -1376,6 +1379,56 @@ public final class CityCalculationsImpl implements CityCalculations
 		
 		log.trace ("Exiting listUnitsCityCanConstruct = " + buildList.size ());
 		return buildList;
+	}
+
+	/**
+	 * Collects together all the data necessary to render CityViewPanel, so we must have sufficient into to be able to look at all the
+	 * CityViewElement records in the graphics XML and determine whether to draw each one.
+	 *  
+	 * @param cityLocation City location
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param mem Player's knowledge about the city and surrounding terrain
+	 * @return Data necessary to render CityViewPanel
+	 */
+	@Override
+	public final RenderCityData buildRenderCityData (final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem)
+	{
+		log.trace ("Entering buildRenderCityData: " + cityLocation);
+		
+		final RenderCityData renderCityData = new RenderCityData ();
+		renderCityData.setPlaneNumber (cityLocation.getZ ());
+
+		final MemoryGridCell mc = mem.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
+		renderCityData.setCityOwnerID (mc.getCityData ().getCityOwnerID ());
+		renderCityData.setCitySizeID (mc.getCityData ().getCitySizeID ());
+		renderCityData.setCityName (mc.getCityData ().getCityName ());
+		
+		// Get list of buildings
+		renderCityData.getBuildingID ().addAll
+			(mem.getBuilding ().stream ().filter (b -> cityLocation.equals (b.getCityLocation ())).map (b -> b.getBuildingID ()).collect (Collectors.toList ()));
+		
+		// Get list of all spell effects cast on the city (Heavenly Light, Famine, etc)
+		renderCityData.getCitySpellEffectID ().addAll
+			(mem.getMaintainedSpell ().stream ().filter (s -> (cityLocation.equals (s.getCityLocation ())) && (s.getCitySpellEffectID () != null)).map
+				(s -> s.getCitySpellEffectID ()).distinct ().collect (Collectors.toList ()));
+		
+		// Build list of all unique tile types from 9 squares surrounding city location
+		if (mc.getTerrainData ().getTileTypeID () != null)
+			renderCityData.getAdjacentTileTypeID ().add (mc.getTerrainData ().getTileTypeID ());
+		
+		for (int d = 1; d <= getCoordinateSystemUtils ().getMaxDirection (overlandMapCoordinateSystem.getCoordinateSystemType ()); d++)
+		{
+			final MapCoordinates3DEx newCoords = new MapCoordinates3DEx (cityLocation);
+			if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapCoordinateSystem, newCoords, d))
+			{
+				final OverlandMapTerrainData ringTerrain = mem.getMap ().getPlane ().get (newCoords.getZ ()).getRow ().get (newCoords.getY ()).getCell ().get (newCoords.getX ()).getTerrainData ();
+				if ((ringTerrain != null) && (ringTerrain.getTileTypeID () != null) && (!renderCityData.getAdjacentTileTypeID ().contains (ringTerrain.getTileTypeID ())))
+					renderCityData.getAdjacentTileTypeID ().add (ringTerrain.getTileTypeID ());		
+			}
+		}
+		
+		log.trace ("Exiting buildRenderCityData");
+		return renderCityData;
 	}
 	
 	/**

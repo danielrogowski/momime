@@ -11,10 +11,12 @@ import momime.common.database.Unit;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.servertoclient.RenderCityData;
 
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.areas.storage.MapArea2D;
@@ -212,4 +214,15 @@ public interface CityCalculations
 	 */
 	public List<Unit> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CommonDatabase db);
+	
+	/**
+	 * Collects together all the data necessary to render CityViewPanel, so we must have sufficient into to be able to look at all the
+	 * CityViewElement records in the graphics XML and determine whether to draw each one.
+	 *  
+	 * @param cityLocation City location
+	 * @param overlandMapCoordinateSystem Coordinate system for traversing overland map
+	 * @param mem Player's knowledge about the city and surrounding terrain
+	 * @return Data necessary to render CityViewPanel
+	 */
+	public RenderCityData buildRenderCityData (final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem);
 }

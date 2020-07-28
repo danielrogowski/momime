@@ -1253,6 +1253,7 @@ about what buildings etc they can see (or have seen), but the Spell of Return is
 potentially know nothing about.  So making a single data structure that's used for both means CityViewPanel doesn't need to operate on 2 different data sets.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityOwnerID" type="mps:playerID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="planeNumber" type="momimecommon:planeNumber" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="citySizeID" type="momimecommon:citySizeID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="cityName" type="momimecommon:description" />

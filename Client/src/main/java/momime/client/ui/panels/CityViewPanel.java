@@ -13,20 +13,18 @@ import java.util.List;
 
 import javax.swing.JPanel;
 
-import momime.client.MomClient;
-import momime.client.graphics.database.CityViewElementGfx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.utils.AnimationController;
-import momime.client.utils.OverlandMapClientUtils;
-import momime.common.MomException;
-import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.MemoryMaintainedSpellUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
+
+import momime.client.MomClient;
+import momime.client.graphics.database.CityViewElementGfx;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.utils.AnimationController;
+import momime.common.MomException;
+import momime.common.messages.servertoclient.RenderCityData;
 
 /**
  * Panel that draws all city view elemenets (backgrounds, buildings, spell effects and so on) for a particular city 
@@ -42,20 +40,14 @@ public final class CityViewPanel extends JPanel
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 	
-	/** The city being viewed */
+	/** The city being viewed, note this is optional and will be null when displaying Spell of Return animation */
 	private MapCoordinates3DEx cityLocation;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
-	/** Memory building utils */
-	private MemoryBuildingUtils memoryBuildingUtils;
-	
-	/** MemoryMaintainedSpell utils */
-	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
-	
-	/** Overland map client utils */
-	private OverlandMapClientUtils overlandMapClientUtils;
+	/** Details about the city to draw */
+	private RenderCityData renderCityData;
 	
 	/** Animation controller */
 	private AnimationController anim;
@@ -115,7 +107,7 @@ public final class CityViewPanel extends JPanel
 				public final void mouseClicked (final MouseEvent ev)
 				{
 					// If we've got no listener(s) to send the clicks to, then don't even bother
-					if (buildingListeners.size () > 0)
+					if ((buildingListeners.size () > 0) && (getCityLocation () != null))
 						try
 						{
 							// Was the pending sale gold coin clicked on?
@@ -247,18 +239,21 @@ public final class CityViewPanel extends JPanel
 			}
 		
 		// Need to show a pending sale?
-		final String buildingID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
-		if (buildingID != null)
-			try
-			{
-				final CityViewElementGfx element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-drawPendingSale");
-				g.drawImage (pendingSaleImage, element.getLocationX (), element.getLocationY (), null);
-			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-			}
+		if (getCityLocation () != null)
+		{
+			final String buildingID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
+			if (buildingID != null)
+				try
+				{
+					final CityViewElementGfx element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-drawPendingSale");
+					g.drawImage (pendingSaleImage, element.getLocationX (), element.getLocationY (), null);
+				}
+				catch (final Exception e)
+				{
+					log.error (e, e);
+				}
+		}
 	}
 	
 	/**
@@ -277,21 +272,16 @@ public final class CityViewPanel extends JPanel
 			((element.getCityViewElementSetID () == null) || (!elementSetsDone.contains (element.getCityViewElementSetID ()))) &&
 			
 			// Plane matches?
-			((element.getPlaneNumber () == null) || (element.getPlaneNumber () == getCityLocation ().getZ ())) &&
+			((element.getPlaneNumber () == null) || (element.getPlaneNumber () == getRenderCityData ().getPlaneNumber ())) &&
 			
 			// Terrain matches?
-			((element.getTileTypeID () == null) || (getOverlandMapClientUtils ().findAdjacentTileType
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getCityLocation (),
-				getClient ().getSessionDescription ().getOverlandMapSize (), element.getTileTypeID ()))) &&
+			((element.getTileTypeID () == null) || (getRenderCityData ().getAdjacentTileTypeID ().contains (element.getTileTypeID ()))) &&
 			
 			// Building matches?
-			((element.getBuildingID () == null) || (getMemoryBuildingUtils ().findBuilding
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), element.getBuildingID ()) != null)) &&
+			((element.getBuildingID () == null) || (getRenderCityData ().getBuildingID ().contains (element.getBuildingID ()))) &&
 				
 			// Spell matches?
-			((element.getCitySpellEffectID () == null) || (getMemoryMaintainedSpellUtils ().findMaintainedSpell
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
-				null, null, null, null, getCityLocation (), element.getCitySpellEffectID ()) != null)));
+			((element.getCitySpellEffectID () == null) || (getRenderCityData ().getCitySpellEffectID ().contains (element.getCitySpellEffectID ()))));
 	}
 	
 	/**
@@ -335,7 +325,7 @@ public final class CityViewPanel extends JPanel
 	}
 
 	/**
-	 * @return The city being viewed
+	 * @return The city being viewed, note this is optional and will be null when displaying Spell of Return animation
 	 */
 	public final MapCoordinates3DEx getCityLocation ()
 	{
@@ -343,7 +333,7 @@ public final class CityViewPanel extends JPanel
 	}
 
 	/**
-	 * @param loc The city being viewed
+	 * @param loc The city being viewed, note this is optional and will be null when displaying Spell of Return animation
 	 */
 	public final void setCityLocation (final MapCoordinates3DEx loc)
 	{
@@ -367,51 +357,19 @@ public final class CityViewPanel extends JPanel
 	}
 
 	/**
-	 * @return Memory building utils
+	 * @return Details about the city to draw
 	 */
-	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	public final RenderCityData getRenderCityData ()
 	{
-		return memoryBuildingUtils;
+		return renderCityData;
 	}
 
 	/**
-	 * @param mbu Memory building utils
+	 * @param r Details about the city to draw
 	 */
-	public final void setMemoryBuildingUtils (final MemoryBuildingUtils mbu)
+	public final void setRenderCityData (final RenderCityData r)
 	{
-		memoryBuildingUtils = mbu;
-	}
-
-	/**
-	 * @return MemoryMaintainedSpell utils
-	 */
-	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
-	{
-		return memoryMaintainedSpellUtils;
-	}
-
-	/**
-	 * @param spellUtils MemoryMaintainedSpell utils
-	 */
-	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
-	{
-		memoryMaintainedSpellUtils = spellUtils;
-	}
-
-	/**
-	 * @return Overland map client utils
-	 */
-	public final OverlandMapClientUtils getOverlandMapClientUtils ()
-	{
-		return overlandMapClientUtils;
-	}
-
-	/**
-	 * @param mapUtils Overland map client utils
-	 */
-	public final void setOverlandMapClientUtils (final OverlandMapClientUtils mapUtils)
-	{
-		overlandMapClientUtils = mapUtils;
+		renderCityData = r;
 	}
 
 	/**

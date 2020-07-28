@@ -496,6 +496,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="cityCalculations" ref="cityCalculations" />
 	</bean>
 
 	<bean id="destroyBuildingMessage" class="momime.client.messages.process.DestroyBuildingMessageImpl" scope="prototype">
@@ -531,6 +532,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="cityCalculations" ref="cityCalculations" />
 	</bean>
 
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">
@@ -837,10 +839,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 	
-	<bean id="overlandMapClientUtils" class="momime.client.utils.OverlandMapClientUtilsImpl">
-		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
-	</bean>
-
 	<bean id="textUtils" class="momime.client.utils.TextUtilsImpl">
 		<property name="languageHolder" ref="languageHolder" />
 	</bean>
@@ -1783,9 +1781,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
-		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
-		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="overlandMapClientUtils" ref="overlandMapClientUtils" />
 		<property name="anim" ref="anim" />
 	</bean>
 

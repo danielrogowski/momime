@@ -30,12 +30,14 @@ import momime.client.language.database.CitySpellEffectLang;
 import momime.client.language.database.SpellLang;
 import momime.client.messages.process.AddBuildingMessageImpl;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
+import momime.client.messages.process.UpdateWizardStateMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.WizardClientUtils;
-import momime.common.messages.OverlandMapCityData;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.messages.servertoclient.RenderCityData;
 
 /**
  * Mini city screen, used to show spells and random effects.
@@ -73,9 +75,12 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 	
-	/** The city being viewed */
+	/** The city being viewed, note this is optional and will be null when displaying Spell of Return animation */
 	private MapCoordinates3DEx cityLocation;
 
+	/** Details about the city to draw; the caller has to build this and pass it in */
+	private RenderCityData renderCityData;
+	
 	/** City size+name label */
 	private JLabel cityNameLabel;
 	
@@ -88,6 +93,9 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/** Building that we're displaying this popup for; null if we're not displaying a building */
 	private AddBuildingMessageImpl buildingMessage;
 
+	/** Update wizard state message */
+	private UpdateWizardStateMessageImpl updateWizardStateMessage;
+	
 	/** Whether the spell or building has been added yet */
 	private boolean added;
 	
@@ -163,6 +171,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		contentPane.add (cityNameLabel, "frmMiniCityName");
 
 		getCityViewPanel ().setCityLocation (getCityLocation ());
+		getCityViewPanel ().setRenderCityData (getRenderCityData ());
 		contentPane.add (getCityViewPanel (), "frmMiniCityView");
 		
 		textLabel = getUtils ().createShadowedLabel (Color.BLACK, MomUIConstants.GOLD, getLargeFont ());
@@ -242,29 +251,58 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		
 		// Spells are easy, can just add the data directly
 		if (getAddSpellMessage () != null)
+		{
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getAddSpellMessage ().getMaintainedSpell ());
+			
+			if ((getAddSpellMessage ().getMaintainedSpell ().getCitySpellEffectID () != null) &&
+				(!getRenderCityData ().getCitySpellEffectID ().contains (getAddSpellMessage ().getMaintainedSpell ().getCitySpellEffectID ())))
+				
+				getRenderCityData ().getCitySpellEffectID ().add (getAddSpellMessage ().getMaintainedSpell ().getCitySpellEffectID ());
+		}
 		
 		// May be up to two buildings to add
 		if (getBuildingMessage () != null)
 		{
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (getBuildingMessage ().getFirstBuilding ());
+			
+			if (!getRenderCityData ().getBuildingID ().contains (getBuildingMessage ().getFirstBuilding ().getBuildingID ()))
+				getRenderCityData ().getBuildingID ().add (getBuildingMessage ().getFirstBuilding ().getBuildingID ());
+			
 			if (getBuildingMessage ().getSecondBuilding () != null)
+			{
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (getBuildingMessage ().getSecondBuilding ());
+				
+				if (!getRenderCityData ().getBuildingID ().contains (getBuildingMessage ().getSecondBuilding ().getBuildingID ()))
+					getRenderCityData ().getBuildingID ().add (getBuildingMessage ().getSecondBuilding ().getBuildingID ());
+			}
 		}
-
-		// If we've got a city screen open showing where the spell or building was added, may need to set up animation to display it
-		final CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
-		if (cityView != null)
+		
+		// Don't really add the buildings, just show them in the display
+		if (getUpdateWizardStateMessage () != null)
 		{
-			cityView.cityDataChanged ();
-			cityView.spellsChanged ();
-		}
+			if (!getRenderCityData ().getBuildingID ().contains (CommonDatabaseConstants.BUILDING_FORTRESS))
+				getRenderCityData ().getBuildingID ().add (CommonDatabaseConstants.BUILDING_FORTRESS);
 
-		// Addition of a building will alter what we can construct in that city, if we've got the change construction screen open.
-		// Potentially that's true for spells too - casting Wall of Stone means we have to take City Walls off the list of what can be built.
-		final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getCityLocation ().toString ());
-		if (changeConstruction != null)
-			changeConstruction.updateWhatCanBeConstructed ();
+			if (!getRenderCityData ().getBuildingID ().contains (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE))
+				getRenderCityData ().getBuildingID ().add (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
+		}
+		
+		if (getCityLocation () != null)
+		{
+			// If we've got a city screen open showing where the spell or building was added, may need to set up animation to display it
+			final CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
+			if (cityView != null)
+			{
+				cityView.cityDataChanged ();
+				cityView.spellsChanged ();
+			}
+	
+			// Addition of a building will alter what we can construct in that city, if we've got the change construction screen open.
+			// Potentially that's true for spells too - casting Wall of Stone means we have to take City Walls off the list of what can be built.
+			final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (getCityLocation ().toString ());
+			if (changeConstruction != null)
+				changeConstruction.updateWhatCanBeConstructed ();
+		}
 		
 		added = true;
 		log.trace ("Exiting addSpellOrBuilding");
@@ -279,14 +317,11 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		log.trace ("Entering languageChanged: " + getCityLocation ());
 		
 		// Get details about the city
-		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
-
-		if (cityData != null)
+		if (getRenderCityData () != null)
 		{
-			String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID (), true).replaceAll ("CITY_NAME", cityData.getCityName ());
+			String cityName = getLanguage ().findCitySizeName (getRenderCityData ().getCitySizeID (), true).replaceAll ("CITY_NAME", getRenderCityData ().getCityName ());
 			
-			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), cityData.getCityOwnerID ());
+			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getRenderCityData ().getCityOwnerID ());
 			if (cityOwner != null)
 				cityName = cityName.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (cityOwner));
 			
@@ -308,6 +343,11 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		{
 			spellID = getBuildingMessage ().getBuildingCreatedFromSpellID ();
 			castingPlayerID = getBuildingMessage ().getBuildingCreationSpellCastByPlayerID ();
+		}
+		else if (getUpdateWizardStateMessage () != null)
+		{
+			spellID = CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN;
+			castingPlayerID = getRenderCityData ().getCityOwnerID ();
 		}
 
 		String text = null;
@@ -483,7 +523,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	}
 	
 	/**
-	 * @return The city being viewed
+	 * @return The city being viewed, note this is optional and will be null when displaying Spell of Return animation
 	 */
 	public final MapCoordinates3DEx getCityLocation ()
 	{
@@ -491,13 +531,29 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	}
 
 	/**
-	 * @param loc The city being viewed
+	 * @param loc The city being viewed, note this is optional and will be null when displaying Spell of Return animation
 	 */
 	public final void setCityLocation (final MapCoordinates3DEx loc)
 	{
 		cityLocation = loc;
 	}
 	
+	/**
+	 * @return Details about the city to draw; the caller has to build this and pass it in
+	 */
+	public final RenderCityData getRenderCityData ()
+	{
+		return renderCityData;
+	}
+
+	/**
+	 * @param r Details about the city to draw; the caller has to build this and pass it in
+	 */
+	public final void setRenderCityData (final RenderCityData r)
+	{
+		renderCityData = r;
+	}
+
 	/**
 	 * @return Spell that we're displaying this popup for; null if we're not displaying a spell
 	 */
@@ -528,5 +584,21 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	public final void setBuildingMessage (final AddBuildingMessageImpl msg)
 	{
 		buildingMessage = msg;
+	}
+
+	/**
+	 * @return Update wizard state message
+	 */
+	public final UpdateWizardStateMessageImpl getUpdateWizardStateMessage ()
+	{
+		return updateWizardStateMessage;
+	}
+
+	/**
+	 * @param msg Update wizard state message
+	 */
+	public final void setUpdateWizardStateMessage (final UpdateWizardStateMessageImpl msg)
+	{
+		updateWizardStateMessage = msg;
 	}
 }

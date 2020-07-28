@@ -13,6 +13,7 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddBuildingMessage;
@@ -45,6 +46,9 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
 	
 	/**
 	 * Method called when this message is sent in isolation
@@ -89,6 +93,8 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 					
 					final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
 					miniCityView.setCityLocation ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation ());
+					miniCityView.setRenderCityData (getCityCalculations ().buildRenderCityData ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation (),
+						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ()));						
 					miniCityView.setBuildingMessage (this);
 					miniCityView.setVisible (true);
 				}
@@ -237,5 +243,21 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
 	{
 		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
 	}
 }

@@ -1175,7 +1175,9 @@ public final class CityViewUI extends MomClientFrameUI
 		// Must do this after setting the "not ours" panel visibility, since it uses it
 		recheckRushBuyEnabled ();
 		
-		// The buildings are drawn dynamically, but if one is an animation then calling init () again will ensure it gets registered properly
+		// Rebuild render data from scratch, plus if one is an animation then calling init () again will ensure it gets registered properly
+		getCityViewPanel ().setRenderCityData (getCityCalculations ().buildRenderCityData (getCityLocation (),
+			getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ()));
 		getCityViewPanel ().init ();
 		
 		log.trace ("Exiting cityDataChanged");

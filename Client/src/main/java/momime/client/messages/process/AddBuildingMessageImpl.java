@@ -13,6 +13,7 @@ import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddBuildingMessage;
 
@@ -72,19 +73,25 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 				getNewTurnMessagesUI ().languageChanged ();
 			}
 			
-			// If we cast it OR its our city, then display a popup window for it
-			final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-				(getFirstBuilding ().getCityLocation ().getZ ()).getRow ().get (getFirstBuilding ().getCityLocation ().getY ()).getCell ().get (getFirstBuilding ().getCityLocation ().getX ()).getCityData ();
-			
-			if (((getBuildingCreationSpellCastByPlayerID () != null) && (getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
-				((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ())))
+			// If we cast it OR its our city, then display a popup window for it.
+			// Exception is Spell of Return - this adds buildings, and has a animation to display, but we need to display that even if we cannot
+			// see the city where the wizard is returning to (in which case we won't get the AddBuildingMessage).
+			// So that's handled from the UpdateWizardState message and not here.
+			if (!getBuildingCreatedFromSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
 			{
-				animated = true;
+				final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(getFirstBuilding ().getCityLocation ().getZ ()).getRow ().get (getFirstBuilding ().getCityLocation ().getY ()).getCell ().get (getFirstBuilding ().getCityLocation ().getX ()).getCityData ();
 				
-				final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
-				miniCityView.setCityLocation ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation ());
-				miniCityView.setBuildingMessage (this);
-				miniCityView.setVisible (true);
+				if (((getBuildingCreationSpellCastByPlayerID () != null) && (getBuildingCreationSpellCastByPlayerID ().equals (getClient ().getOurPlayerID ()))) ||
+					((cityData != null) && (cityData.getCityOwnerID () == getClient ().getOurPlayerID ())))
+				{
+					animated = true;
+					
+					final MiniCityViewUI miniCityView = getPrototypeFrameCreator ().createMiniCityView ();
+					miniCityView.setCityLocation ((MapCoordinates3DEx) getFirstBuilding ().getCityLocation ());
+					miniCityView.setBuildingMessage (this);
+					miniCityView.setVisible (true);
+				}
 			}
 		}
 		

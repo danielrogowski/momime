@@ -27,14 +27,17 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -481,6 +484,20 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
 					mom.getPlayers (), (MapCoordinates3DEx) getOverlandTargetLocation (), spell.getBuildingID (), secondBuildingID, getSpellID (), sender.getPlayerDescription ().getPlayerID (),
 					mom.getSessionDescription (), mom.getServerDB ());
+				
+				// If it is Spell of Return then update wizard state back to active
+				if (getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
+				{
+					// Update on server
+					final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
+					pub.setWizardState (WizardState.ACTIVE);
+					
+					// Update wizardState on client, and this triggers showing the returning animation as well
+					final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
+					msg.setBanishedPlayerID (sender.getPlayerDescription ().getPlayerID ());
+					msg.setWizardState (WizardState.ACTIVE);
+					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+				}
 				
 				// Remove the maintained spell on the server (clients would never have gotten it to begin with)
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);

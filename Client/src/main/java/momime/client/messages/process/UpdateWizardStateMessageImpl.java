@@ -69,29 +69,10 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 		// Show cracked gem on wizards screen
 		getWizardsUI ().updateWizards ();
 
-		// Look up other details
-		final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);
-		final PlayerPublicDetails banishingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
-		final MomPersistentPlayerPublicKnowledge banishingPub = (MomPersistentPlayerPublicKnowledge) banishingWizard.getPersistentPlayerPublicKnowledge ();
-		
-		// Show animation
-		if (pub.getStandardPhotoID () != null)
+		if (getWizardState () == WizardState.ACTIVE)
 		{
-			final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
-			wizardBanishedUI.setBanishedWizard (banishedWizard);
-			wizardBanishedUI.setBanishingWizard (banishingWizard);
-			wizardBanishedUI.setDefeated (isDefeated);
-			wizardBanishedUI.setUpdateWizardStateMessage (this);
-			wizardBanishedUI.setVisible (true);
-		}
-		else
-		{
-			// Custom portrait, so cannot show animation, just a message box
-			final String languageEntryID = (isDefeated ? "Defeated" : "Banished") + "By" + (PlayerKnowledgeUtils.isWizard (banishingPub.getWizardID ()) ? "Wizard" : "Raiders");
-			
-			final String title = getLanguage ().findCategoryEntry ("frmWizardBanished", languageEntryID).replaceAll
-				("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
-				("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
+			// Animation of Wizard's Fortress reappearing at a new city
+			final String title = getWizardClientUtils ().getPlayerName (banishedWizard) + " casts Spell of Return";
 			
 			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 			msg.setTitle (title);
@@ -99,6 +80,40 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 			msg.setVisible (true);
 			
 			getClient ().finishCustomDurationMessage (this);
+		}
+		else
+		{
+			// Animation of wizard getting zapped
+			final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);
+			final PlayerPublicDetails banishingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+			final MomPersistentPlayerPublicKnowledge banishingPub = (MomPersistentPlayerPublicKnowledge) banishingWizard.getPersistentPlayerPublicKnowledge ();
+			
+			// Show animation
+			if (pub.getStandardPhotoID () != null)
+			{
+				final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
+				wizardBanishedUI.setBanishedWizard (banishedWizard);
+				wizardBanishedUI.setBanishingWizard (banishingWizard);
+				wizardBanishedUI.setDefeated (isDefeated);
+				wizardBanishedUI.setUpdateWizardStateMessage (this);
+				wizardBanishedUI.setVisible (true);
+			}
+			else
+			{
+				// Custom portrait, so cannot show animation, just a message box
+				final String languageEntryID = (isDefeated ? "Defeated" : "Banished") + "By" + (PlayerKnowledgeUtils.isWizard (banishingPub.getWizardID ()) ? "Wizard" : "Raiders");
+				
+				final String title = getLanguage ().findCategoryEntry ("frmWizardBanished", languageEntryID).replaceAll
+					("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
+					("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
+				
+				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+				msg.setTitle (title);
+				msg.setText (title);
+				msg.setVisible (true);
+				
+				getClient ().finishCustomDurationMessage (this);
+			}
 		}
 		
 		log.trace ("Exiting start");

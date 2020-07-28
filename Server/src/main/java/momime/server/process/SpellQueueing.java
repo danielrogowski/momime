@@ -54,6 +54,19 @@ public interface SpellQueueing
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**
+	 * Adds a spell to a player's overland casting queue.  This assumes we've already been through all the validation to make sure they're allowed to cast it,
+	 * and to make sure they can't cast it instantly.
+	 * 
+	 * @param player Player casting the spell
+	 * @param spellID Which spell they want to cast
+	 * @param heroItem If create item/artifact, the details of the item to create
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem)
+		throws JAXBException, XMLStreamException;
+	
+	/**
 	 * Spends any skill/mana the player has left towards casting queued spells
 	 *
 	 * @param gsk Server knowledge structure

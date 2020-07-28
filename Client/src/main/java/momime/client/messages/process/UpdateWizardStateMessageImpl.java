@@ -13,12 +13,17 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseEx;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.WizardBanishedUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.WizardsUI;
+import momime.client.utils.WizardClientUtils;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Server announces to everybody when a wizard gets banished, so the clients can show the animation for it
@@ -37,11 +42,14 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** UI dialog created to show this message */
-	private WizardBanishedUI wizardBanishedUI;
-
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
+	
+	/** Language database holder */
+	private LanguageDatabaseHolder languageHolder;
+	
+	/** Wizard client utils */
+	private WizardClientUtils wizardClientUtils;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -60,14 +68,38 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 		
 		// Show cracked gem on wizards screen
 		getWizardsUI ().updateWizards ();
+
+		// Look up other details
+		final boolean isDefeated = (getWizardState () == WizardState.DEFEATED);
+		final PlayerPublicDetails banishingWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)");
+		final MomPersistentPlayerPublicKnowledge banishingPub = (MomPersistentPlayerPublicKnowledge) banishingWizard.getPersistentPlayerPublicKnowledge ();
 		
 		// Show animation
-		wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
-		wizardBanishedUI.setBanishedWizard (banishedWizard);
-		wizardBanishedUI.setBanishingWizard (getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishingPlayerID (), "WizardBanishedMessageImpl (B)"));
-		wizardBanishedUI.setDefeated (getWizardState () == WizardState.DEFEATED);
-		wizardBanishedUI.setUpdateWizardStateMessage (this);
-		wizardBanishedUI.setVisible (true);
+		if (pub.getStandardPhotoID () != null)
+		{
+			final WizardBanishedUI wizardBanishedUI = getPrototypeFrameCreator ().createWizardBanished ();
+			wizardBanishedUI.setBanishedWizard (banishedWizard);
+			wizardBanishedUI.setBanishingWizard (banishingWizard);
+			wizardBanishedUI.setDefeated (isDefeated);
+			wizardBanishedUI.setUpdateWizardStateMessage (this);
+			wizardBanishedUI.setVisible (true);
+		}
+		else
+		{
+			// Custom portrait, so cannot show animation, just a message box
+			final String languageEntryID = (isDefeated ? "Defeated" : "Banished") + "By" + (PlayerKnowledgeUtils.isWizard (banishingPub.getWizardID ()) ? "Wizard" : "Raiders");
+			
+			final String title = getLanguage ().findCategoryEntry ("frmWizardBanished", languageEntryID).replaceAll
+				("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
+				("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
+			
+			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+			msg.setTitle (title);
+			msg.setText (title);
+			msg.setVisible (true);
+			
+			getClient ().finishCustomDurationMessage (this);
+		}
 		
 		log.trace ("Exiting start");
 	}
@@ -142,5 +174,46 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	public final void setWizardsUI (final WizardsUI ui)
 	{
 		wizardsUI = ui;
+	}
+
+	/**
+	 * @return Language database holder
+	 */
+	public final LanguageDatabaseHolder getLanguageHolder ()
+	{
+		return languageHolder;
+	}
+	
+	/**
+	 * @param holder Language database holder
+	 */
+	public final void setLanguageHolder (final LanguageDatabaseHolder holder)
+	{
+		languageHolder = holder;
+	}
+
+	/**
+	 * Convenience shortcut for accessing the Language XML database
+	 * @return Language database
+	 */
+	public final LanguageDatabaseEx getLanguage ()
+	{
+		return languageHolder.getLanguage ();
+	}
+
+	/**
+	 * @return Wizard client utils
+	 */
+	public final WizardClientUtils getWizardClientUtils ()
+	{
+		return wizardClientUtils;
+	}
+
+	/**
+	 * @param util Wizard client utils
+	 */
+	public final void setWizardClientUtils (final WizardClientUtils util)
+	{
+		wizardClientUtils = util;
 	}
 }

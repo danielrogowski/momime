@@ -134,6 +134,9 @@ public final class CityProcessingImpl implements CityProcessing
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
+
+	/** Spell queueing methods */
+	private SpellQueueing spellQueueing;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -954,6 +957,10 @@ public final class CityProcessingImpl implements CityProcessing
 					defendingPlayer.getConnection ().sendMessageToClient (removeSpellMessage);
 				}
 			}
+			
+			// If they are only banished, then begin casting spell of return
+			if (wizardState == WizardState.BANISHED)
+				getSpellQueueing ().queueSpell (defendingPlayer, CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN, null);
 		}
 
 		log.trace ("Exiting banishWizard");
@@ -1277,5 +1284,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
 	{
 		fogOfWarMidTurnMultiChanges = obj;
+	}
+
+	/**
+	 * @return Spell queueing methods
+	 */
+	public final SpellQueueing getSpellQueueing ()
+	{
+		return spellQueueing;
+	}
+
+	/**
+	 * @param obj Spell queueing methods
+	 */
+	public final void setSpellQueueing (final SpellQueueing obj)
+	{
+		spellQueueing = obj;
 	}
 }

@@ -582,6 +582,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
+		<property name="spellQueueing" ref="spellQueueing" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->

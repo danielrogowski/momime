@@ -610,6 +610,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="client" ref="client" />
 		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 	</bean>
 
 	<!-- Create extended versions of NTMs which include drawing implementations -->

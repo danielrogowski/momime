@@ -31,6 +31,7 @@ import momime.client.messages.process.UpdateWizardStateMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.PlayerKnowledgeUtils;
 
 /**
  * Animation when a wizard loses a battle at their fortress, showing the enemy wizard blasting them.
@@ -313,7 +314,9 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	{
 		log.trace ("Entering languageChanged");
 
-		final String languageEntryID = (isDefeated () ? "Defeated" : "Banished") + "By" + ((banishingWizardGfx != null) ? "Wizard" : "Raiders"); 
+		final MomPersistentPlayerPublicKnowledge banishingWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishingWizard ().getPersistentPlayerPublicKnowledge ();
+		
+		final String languageEntryID = (isDefeated () ? "Defeated" : "Banished") + "By" + (PlayerKnowledgeUtils.isWizard (banishingWizardPub.getWizardID ()) ? "Wizard" : "Raiders"); 
 		
 		final String title = getLanguage ().findCategoryEntry ("frmWizardBanished", languageEntryID).replaceAll
 			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll

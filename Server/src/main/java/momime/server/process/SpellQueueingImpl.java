@@ -528,27 +528,48 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(player.getPlayerDescription ().getPlayerID (), false, mom);
 			}
 			else
-			{
-				// Queue it on server
-				final QueuedSpell queued = new QueuedSpell ();
-				queued.setQueuedSpellID (spellID);
-				queued.setHeroItem (heroItem);
-				
-				priv.getQueuedSpell ().add (queued);
-				
-				// Queue it on client
-				if (player.getPlayerDescription ().isHuman ())
-				{
-					final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
-					reply.setSpellID (spellID);
-					reply.setHeroItem (heroItem);
-					
-					player.getConnection ().sendMessageToClient (reply);
-				}
-			}
+				queueSpell (player, spellID, heroItem);
 		}
 		
 		log.trace ("Exiting requestCastSpell");
+	}
+	
+	/**
+	 * Adds a spell to a player's overland casting queue.  This assumes we've already been through all the validation to make sure they're allowed to cast it,
+	 * and to make sure they can't cast it instantly.
+	 * 
+	 * @param player Player casting the spell
+	 * @param spellID Which spell they want to cast
+	 * @param heroItem If create item/artifact, the details of the item to create
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem)
+		throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering queueSpell: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spellID);
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		// Queue it on server
+		final QueuedSpell queued = new QueuedSpell ();
+		queued.setQueuedSpellID (spellID);
+		queued.setHeroItem (heroItem);
+		
+		priv.getQueuedSpell ().add (queued);
+		
+		// Queue it on client
+		if (player.getPlayerDescription ().isHuman ())
+		{
+			final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
+			reply.setSpellID (spellID);
+			reply.setHeroItem (heroItem);
+			
+			player.getConnection ().sendMessageToClient (reply);
+		}
+		
+		log.trace ("Exiting queueSpell");
 	}
 
 	/**

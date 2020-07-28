@@ -687,6 +687,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final PlayerServerDetails winningPlayer = defendingPlayer;
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
 		
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
@@ -804,6 +806,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final PlayerServerDetails winningPlayer = attackingPlayer;
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
 
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
@@ -957,6 +961,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final PlayerServerDetails winningPlayer = attackingPlayer;
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
 
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
@@ -1105,6 +1111,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final PlayerServerDetails winningPlayer = attackingPlayer;
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
 
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
@@ -1293,6 +1301,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final PlayerServerDetails winningPlayer = attackingPlayer;
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
 
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "combatEnded (R)")).thenReturn (attackingPlayer);
@@ -1478,6 +1488,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final PlayerServerDetails winningPlayer = attackingPlayer;
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -1621,6 +1633,8 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final PlayerServerDetails winningPlayer = attackingPlayer;
 		
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
+		players.add (attackingPlayer);
+		players.add (defendingPlayer);
 
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);

@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.areas.operations.MapAreaOperations2D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -23,6 +24,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
@@ -36,6 +38,7 @@ import momime.common.database.StoredDamageTypeID;
 import momime.common.database.SummonedUnit;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -46,19 +49,24 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageCreateArtifact;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
+import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -70,15 +78,19 @@ import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.database.BuildingSvr;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.ServerDatabaseValues;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
+import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapArea;
 import momime.server.mapgenerator.CombatMapGenerator;
+import momime.server.utils.CityServerUtils;
 import momime.server.utils.HeroItemServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitAddLocation;
@@ -154,6 +166,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Operations for processing combat maps */
 	private MapAreaOperations2D<MomCombatTile> combatMapOperations;
+
+	/** Server-only city utils */
+	private CityServerUtils cityServerUtils;
+	
+	/** City calculations */
+	private CityCalculations cityCalculations;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+
+	/** Main FOW update routine */
+	private FogOfWarProcessing fogOfWarProcessing;
+	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -872,7 +899,296 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		log.trace ("Exiting switchOffSpell");
 	}
+	
+	/**
+	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
+	 * So this actually processes the actions from the spell once its target is chosen.
+	 * This assumes all necessary validation has been done to verify that the action is allowed.
+	 * 
+	 * @param spell Definition of spell being targetted
+	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists
+	 * 	as we can only determine which clients can "see" it once a target location has been chosen.  Even the player who cast it doesn't have a
+	 *		record of it, just a special entry on their new turn messages scroll telling them to pick a target for it.
+	 * @param targetLocation If the spell is targetted at a city or a map location, then sets that location; null for spells targetted on other things
+	 * @param targetUnit If the spell is targetted at a unit, then the true unit to aim at; null for spells targetted on other things
+	 * @param citySpellEffectID If spell creates a city spell effect, then which one - currently chosen at random, but supposed to be player choosable for Spell Ward
+	 * @param unitSkillID If spell creates a unit skill, then which one - chosen at random for Chaos Channels
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void targetOverlandSpell (final SpellSvr spell, final MemoryMaintainedSpell maintainedSpell,
+		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit,
+		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
+	{
+		log.trace ("Entering targetOverlandSpell: Spell URN " + maintainedSpell.getSpellURN () + ", " + spell.getSpellID ());
+		
+		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), maintainedSpell.getCastingPlayerID (), "targetOverlandSpell");
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+		
+		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS))
+		{
+			// Transient spell that performs some immediate action, then the temporary untargetted spell on the server gets removed
+			// So the spell never does get added to any clients
+			// Set values on server - it'll be removed below, but we need to set these to make the visibility checks in sendTransientSpellToClients () work correctly 
+			maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
+			maintainedSpell.setCityLocation (targetLocation);
+			maintainedSpell.setUnitSkillID (unitSkillID);
+			maintainedSpell.setCitySpellEffectID (citySpellEffectID);
+			
+			// Just remove it - don't even bother to check if any clients can see it
+			getMemoryMaintainedSpellUtils ().removeSpellURN (maintainedSpell.getSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+			
+			// Tell the client to stop asking about targetting the spell, and show an animation for it - need to send this to all players that can see it!
+			getFogOfWarMidTurnChanges ().sendTransientSpellToClients (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), maintainedSpell, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 
+			if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
+			{
+				// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
+				final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (castingPlayer.getPlayerDescription ().getPlayerID (),
+					CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+				
+				if (summoningCircleLocation != null)
+				{
+					final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+					targetUnits.add (targetUnit);
+					
+					getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, (MapCoordinates3DEx) targetUnit.getUnitLocation (),
+						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
+						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+				}
+			}
+			
+			else if (spell.getSpellRadius () == null)
+			{
+				// Corruption
+				final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+				terrainData.setCorrupted (5);
+				
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+				
+				// Is the corrupted tile within range of a city?
+				final MapCoordinates3DEx cityLocation = getCityServerUtils ().findCityWithinRadius (targetLocation,
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
+				if (cityLocation != null)
+				{
+					// City probably isn't owned by the person who cast the spell
+					final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
+					if (cityData.getCurrentlyConstructingBuildingID () != null)
+					{
+						final BuildingSvr buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "targetCorruption");
+						if (!getCityCalculations ().buildingPassesTileTypeRequirements (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), cityLocation,
+							buildingDef, mom.getSessionDescription ().getOverlandMapSize ()))
+						{
+							// City can no longer proceed with their current construction project
+							cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+								mom.getPlayers (), cityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+
+							// If it is a human player then we need to let them know that this has happened
+							final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cityData.getCityOwnerID (), "targetCorruption");
+							if (cityOwner.getPlayerDescription ().isHuman ())
+							{
+								final NewTurnMessageConstructBuilding abortConstruction = new NewTurnMessageConstructBuilding ();
+								abortConstruction.setMsgType (NewTurnMessageTypeID.ABORT_BUILDING);
+								abortConstruction.setBuildingID (buildingDef.getBuildingID ());
+								abortConstruction.setCityLocation (cityLocation);
+								((MomTransientPlayerPrivateKnowledge) cityOwner.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (abortConstruction);
+								
+								getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);
+							}
+						}
+					}
+				}
+			}
+			
+			else if (spell.getTileTypeID () != null)
+			{
+				// Enchant road - first just get a list of all coordinates we need to process
+				final List<MapCoordinates3DEx> roadCells = new ArrayList<MapCoordinates3DEx> ();
+				getCoordinateSystemUtils ().processCoordinatesWithinRadius (mom.getSessionDescription ().getOverlandMapSize (),
+					targetLocation.getX (), targetLocation.getY (), spell.getSpellRadius (), (x, y, r, d, n) ->
+				{
+					roadCells.add (new MapCoordinates3DEx (x, y, targetLocation.getZ ()));
+					return true;
+				});
+				
+				// Now process them, and check which ones are actually road
+				for (final MapCoordinates3DEx roadCoords : roadCells)
+				{
+					final OverlandMapTerrainData terrainData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+						(roadCoords.getZ ()).getRow ().get (roadCoords.getY ()).getCell ().get (roadCoords.getX ()).getTerrainData ();
+					if ((terrainData.getRoadTileTypeID () != null) && (!terrainData.getRoadTileTypeID ().equals (spell.getTileTypeID ())))
+					{
+						terrainData.setRoadTileTypeID (spell.getTileTypeID ());
+						
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getPlayers (), roadCoords, mom.getSessionDescription ().getFogOfWarSetting ().getTerrainAndNodeAuras ());
+					}
+				}
+			}
+			
+			else
+			{
+				// Earth lore
+				getFogOfWarProcessing ().canSeeRadius (priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getSessionDescription ().getOverlandMapSize (), targetLocation.getX (), targetLocation.getY (),
+					targetLocation.getZ (), spell.getSpellRadius ());
+				
+				getFogOfWarProcessing ().updateAndSendFogOfWar (mom.getGeneralServerKnowledge ().getTrueMap (), castingPlayer, mom.getPlayers (),
+					"earthLore", mom.getSessionDescription (), mom.getServerDB ());
+			}
+		}
+		else if (spell.getBuildingID () == null)
+		{
+			// Enchantment or curse spell that generates some city or unit effect
+			// Set values on server
+			maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
+			maintainedSpell.setCityLocation (targetLocation);
+			maintainedSpell.setUnitSkillID (unitSkillID);
+			maintainedSpell.setCitySpellEffectID (citySpellEffectID);
+			
+			// Add spell on clients (they don't have a blank version of it before now)
+			getFogOfWarMidTurnChanges ().addExistingTrueMaintainedSpellToClients (mom.getGeneralServerKnowledge (), maintainedSpell,
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			
+			// If its a unit enchantment, does it grant any secondary permanent effects? (Black Channels making units Undead)
+			if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())
+					if ((effect.isPermanent () != null) && (effect.isPermanent ()) && (!xu.hasBasicSkill (effect.getUnitSkillID ())))
+					{
+						final UnitSkillAndValue permanentEffect = new UnitSkillAndValue ();
+						permanentEffect.setUnitSkillID (effect.getUnitSkillID ());
+						targetUnit.getUnitHasSkill ().add (permanentEffect);
+						
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (targetUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+					}
+			}
+		}
+		else
+		{
+			// Spell that creates a building instead of an effect, like "Wall of Stone" or "Move Fortress"
+			// Is it a type of building where we only ever have one of them, and need to remove the existing one?
+			String secondBuildingID = null;
+			if ((spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)) ||
+				(spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)))
+			{
+				// Find & remove the main building for this spell
+				final MemoryBuilding destroyBuildingLocation = getMemoryBuildingUtils ().findCityWithBuilding
+					(castingPlayer.getPlayerDescription ().getPlayerID (), spell.getBuildingID (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+				
+				if (destroyBuildingLocation != null)
+					getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+						mom.getPlayers (), destroyBuildingLocation.getBuildingURN (), false, mom.getSessionDescription (), mom.getServerDB ());
+					
+				// Move summoning circle as well if its in the same place as the wizard's fortress
+				if (spell.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))
+				{
+					final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding
+						(castingPlayer.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
+							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+						
+					if ((summoningCircleLocation != null) && (summoningCircleLocation.equals (destroyBuildingLocation)))
+						getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getPlayers (), summoningCircleLocation.getBuildingURN (),
+							false, mom.getSessionDescription (), mom.getServerDB ());
+
+					// Place a summoning circle as well if we just destroyed it OR if we never had one in the first place (Spell of Return)
+					if ((summoningCircleLocation == null) ||
+						((summoningCircleLocation != null) && (summoningCircleLocation.equals (destroyBuildingLocation))))
+						
+						secondBuildingID = CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE;
+				}
+			}
+
+			// Is the building that the spell is adding the same as what was being constructed?  If so then reset construction.
+			// (Casting Wall of Stone in a city that's building City Walls).
+			final OverlandMapCityData cityData = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getCityData ();
+						
+			if ((cityData != null) && (spell.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ())))
+			{
+				cityData.setCurrentlyConstructingBuildingID (ServerDatabaseValues.CITY_CONSTRUCTION_DEFAULT);
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), targetLocation, mom.getSessionDescription ().getFogOfWarSetting ());
+			}
+			
+			// If it is Spell of Return then update wizard state back to active.
+			// Note we have to do this before actually adding the building, so the animation shows the fortress initially NOT there.
+			if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
+			{
+				// Update on server
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
+				pub.setWizardState (WizardState.ACTIVE);
+				
+				// Update wizardState on client, and this triggers showing the returning animation as well
+				final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
+				msg.setBanishedPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+				msg.setWizardState (WizardState.ACTIVE);
+				msg.setRenderCityData (getCityCalculations ().buildRenderCityData (targetLocation,
+					mom.getSessionDescription ().getOverlandMapSize (), mom.getGeneralServerKnowledge ().getTrueMap ()));
+				getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+			}
+
+			// First create the building(s) on the server
+			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (mom.getGeneralServerKnowledge (),
+				mom.getPlayers (), targetLocation, spell.getBuildingID (), secondBuildingID, spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
+				mom.getSessionDescription (), mom.getServerDB ());
+			
+			// Remove the maintained spell on the server (clients would never have gotten it to begin with)
+			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
+		}
+		
+		// New spell will probably use up some mana maintenance
+		getServerResourceCalculations ().recalculateGlobalProductionValues (castingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
+		
+		log.trace ("Exiting targetOverlandSpell");
+	}
+
+	/**
+	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.
+	 * But perhaps by the time we finish casting it, we no longer have a valid target or changed our minds, so this just cancels and loses the spell.
+	 * 
+	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists,
+	 * 	so its the only thing we need to clean up
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void cancelTargetOverlandSpell (final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering cancelTargetOverlandSpell: Spell URN " + maintainedSpell.getSpellURN ());
+		
+		// Remove it
+		mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
+		
+		// Cancelled spell will probably use up some mana maintenance
+		getServerResourceCalculations ().recalculateGlobalProductionValues (maintainedSpell.getCastingPlayerID (), false, mom);
+		
+		log.trace ("Exiting cancelTargetOverlandSpell");
+	}
+	
 	/**
 	 * @return Spell utils
 	 */
@@ -1207,5 +1523,85 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setCombatMapOperations (final MapAreaOperations2D<MomCombatTile> op)
 	{
 		combatMapOperations = op;
+	}
+
+	/**
+	 * @return Server-only city utils
+	 */
+	public final CityServerUtils getCityServerUtils ()
+	{
+		return cityServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only city utils
+	 */
+	public final void setCityServerUtils (final CityServerUtils utils)
+	{
+		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return City calculations
+	 */
+	public final CityCalculations getCityCalculations ()
+	{
+		return cityCalculations;
+	}
+
+	/**
+	 * @param calc City calculations
+	 */
+	public final void setCityCalculations (final CityCalculations calc)
+	{
+		cityCalculations = calc;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param utils Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
+	{
+		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return Main FOW update routine
+	 */
+	public final FogOfWarProcessing getFogOfWarProcessing ()
+	{
+		return fogOfWarProcessing;
+	}
+
+	/**
+	 * @param obj Main FOW update routine
+	 */
+	public final void setFogOfWarProcessing (final FogOfWarProcessing obj)
+	{
+		fogOfWarProcessing = obj;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

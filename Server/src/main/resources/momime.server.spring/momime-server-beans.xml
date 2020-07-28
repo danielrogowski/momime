@@ -219,25 +219,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="targetSpellMessage" class="momime.server.messages.process.TargetSpellMessageImpl" scope="prototype">
-		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
-		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
-		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
-		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="randomUtils" ref="randomUtils" />
-		<property name="cityServerUtils" ref="cityServerUtils" />
-		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
-		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
-		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 	
 	<bean id="cancelTargetSpellMessage" class="momime.server.messages.process.CancelTargetSpellMessageImpl" scope="prototype">
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
-		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 
 	<bean id="requestSwitchOffMaintainedSpellMessage" class="momime.server.messages.process.RequestSwitchOffMaintainedSpellMessageImpl" scope="prototype">
@@ -613,6 +604,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="combatMapOperations" ref="combatMapOperations" />
+		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
+		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

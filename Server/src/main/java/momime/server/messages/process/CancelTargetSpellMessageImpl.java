@@ -5,19 +5,19 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
-import momime.common.messages.servertoclient.TextPopupMessage;
-import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.server.MomSessionVariables;
-import momime.server.calculations.ServerResourceCalculations;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
+import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.server.MomSessionVariables;
+import momime.server.process.SpellProcessing;
 
 /**
  * Client sends this to specify that, after bothering to finish casting an overland spell, they don't want to pick a target for it after all
@@ -30,8 +30,8 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
-	/** Resource calculations */
-	private ServerResourceCalculations serverResourceCalculations;
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -71,13 +71,7 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 			sender.getConnection ().sendMessageToClient (reply);
 		}
 		else
-		{
-			// Remove it
-			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
-			
-			// Cancelled spell will probably use up some mana maintenance
-			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
-		}
+			getSpellProcessing ().cancelTargetOverlandSpell (maintainedSpell, mom);
 		
 		log.trace ("Exiting process");
 	}
@@ -97,20 +91,20 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 	{
 		memoryMaintainedSpellUtils = utils;
 	}
-
+	
 	/**
-	 * @return Resource calculations
+	 * @return Spell processing methods
 	 */
-	public final ServerResourceCalculations getServerResourceCalculations ()
+	public final SpellProcessing getSpellProcessing ()
 	{
-		return serverResourceCalculations;
+		return spellProcessing;
 	}
 
 	/**
-	 * @param calc Resource calculations
+	 * @param obj Spell processing methods
 	 */
-	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
+	public final void setSpellProcessing (final SpellProcessing obj)
 	{
-		serverResourceCalculations = calc;
+		spellProcessing = obj;
 	}
 }

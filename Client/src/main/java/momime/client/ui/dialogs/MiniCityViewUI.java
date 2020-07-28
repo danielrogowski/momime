@@ -144,6 +144,9 @@ public final class MiniCityViewUI extends MomClientDialogUI
 						if (getBuildingMessage () != null)
 							getClient ().finishCustomDurationMessage (getBuildingMessage ());
 						
+						if (getUpdateWizardStateMessage () != null)
+							getClient ().finishCustomDurationMessage (getUpdateWizardStateMessage ());
+						
 						unblocked = true;
 					}
 				}
@@ -183,6 +186,8 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			spellID = getAddSpellMessage ().getMaintainedSpell ().getSpellID ();
 		else if (getBuildingMessage () != null)
 			spellID = getBuildingMessage ().getBuildingCreatedFromSpellID ();
+		else if (getUpdateWizardStateMessage () != null)
+			spellID = CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN; 
 		
 		if (spellID != null)
 			try

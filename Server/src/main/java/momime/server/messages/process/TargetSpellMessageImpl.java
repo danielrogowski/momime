@@ -492,6 +492,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
 					msg.setBanishedPlayerID (sender.getPlayerDescription ().getPlayerID ());
 					msg.setWizardState (WizardState.ACTIVE);
+					msg.setRenderCityData (getCityCalculations ().buildRenderCityData ((MapCoordinates3DEx) getOverlandTargetLocation (),
+						mom.getSessionDescription ().getOverlandMapSize (), mom.getGeneralServerKnowledge ().getTrueMap ()));
 					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
 				}
 

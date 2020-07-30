@@ -9,6 +9,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -16,15 +17,19 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
+import momime.common.utils.TargetSpellResult;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.process.SpellProcessing;
 import momime.server.process.SpellQueueing;
 
 /**
@@ -49,6 +54,12 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+	
+	/** AI decisions about cities */
+	private CityAI cityAI;
+	
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -214,6 +225,75 @@ public final class SpellAIImpl implements SpellAI
 		
 		log.trace ("Exiting decideWhatToCastOverland");
 	}
+	
+	/**
+	 * Overland spells are cast first (probably taking several turns) and a target is only chosen after casting is completed.  So after the AI finishes
+	 * casting an overland spell that requires a target, this method tries to pick a good target for the spell.  This won't even get called for
+	 * types of spell that don't require targets (e.g. overland enchantments or summoning spells), see method castOverlandNow.
+	 * 
+	 * @param player AI player who needs to choose a spell target
+	 * @param spell Definition for the spell to target
+	 * @param maintainedSpell Spell being targetted in server's true memory - at the time this is called, this is the only copy of the spell that exists,
+	 * 	so its the only thing we need to clean up
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void decideSpellTarget (final PlayerServerDetails player, final SpellSvr spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering decideSpellTarget: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spell + ", Spell URN " + maintainedSpell.getSpellURN ());
+		
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		MapCoordinates3DEx targetLocation = null;
+		MemoryUnit targetUnit = null;
+		String citySpellEffectID = null;
+		String unitSkillID = null;
+		
+		switch (spell.getSpellBookSectionID ())
+		{
+			// City enchantments - currently this is only here for Spell of Return but tried to make it generic enough to work for others
+			case CITY_ENCHANTMENTS:
+			case CITY_CURSES:
+				int bestCityQuality = -1;
+				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+						{
+							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+							
+							// Routine checks everything, even down to whether there is even a city there or not, so just let it handle it
+							if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
+								player.getPlayerDescription ().getPlayerID (), cityLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
+								mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+							{
+								final int thisCityQuality = getCityAI ().evaluateCityQuality (cityLocation, false, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription (), mom.getServerDB ());
+								if ((targetLocation == null) || (thisCityQuality > bestCityQuality))
+								{
+									targetLocation = cityLocation;
+									bestCityQuality = thisCityQuality;
+								}
+							}
+						}
+				break;
+				
+			default:
+				throw new MomException ("AI decideSpellTarget does not know how to decide a target for spell " + spell.getSpellID () + " in section " + spell.getSpellBookSectionID ());
+		}
+		
+		// If we got a location then target the spell; if we didn't then cancel the spell
+		if ((targetLocation == null) && (targetUnit == null))
+			getSpellProcessing ().cancelTargetOverlandSpell (maintainedSpell, mom);
+		else
+			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, targetLocation, targetUnit, citySpellEffectID, unitSkillID, mom);
+		
+		log.trace ("Exiting decideSpellTarget");
+	}
 
 	/**
 	 * @return Spell utils
@@ -293,5 +373,37 @@ public final class SpellAIImpl implements SpellAI
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return AI decisions about cities
+	 */
+	public final CityAI getCityAI ()
+	{
+		return cityAI;
+	}
+
+	/**
+	 * @param ai AI decisions about cities
+	 */
+	public final void setCityAI (final CityAI ai)
+	{
+		cityAI = ai;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

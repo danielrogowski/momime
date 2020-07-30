@@ -26,7 +26,6 @@ import momime.common.database.UnitCanCast;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatusID;
@@ -49,9 +48,7 @@ import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.HeroItemServerUtils;
 
@@ -514,8 +511,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) >= reducedCastingCost))
 			{
 				// Cast instantly, and show the casting message instantly too
-				getSpellProcessing ().castOverlandNow (mom.getGeneralServerKnowledge (), player, spell, heroItem,
-					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				getSpellProcessing ().castOverlandNow (player, spell, heroItem, mom);
 				getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
 				
 				// Charge player the skill/mana
@@ -575,11 +571,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 	/**
 	 * Spends any skill/mana the player has left towards casting queued spells
 	 *
-	 * @param gsk Server knowledge structure
 	 * @param player Player whose casting to progress
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if we cast at least one spell
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -588,8 +581,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final boolean progressOverlandCasting (final MomGeneralServerKnowledgeEx gsk, final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+	public final boolean progressOverlandCasting (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering progressOverlandCasting: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -605,8 +597,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 		{
 			// How much to put towards this spell?
 			final QueuedSpell queued = priv.getQueuedSpell ().get (0);
-			final SpellSvr spell = db.findSpell (queued.getQueuedSpellID (), "progressOverlandCasting");
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), pub.getPick (), sd.getSpellSetting (), db);
+			final SpellSvr spell = mom.getServerDB ().findSpell (queued.getQueuedSpellID (), "progressOverlandCasting");
+			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), pub.getPick (),
+				mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			final int leftToCast = Math.max (0, reducedCastingCost - priv.getManaSpentOnCastingCurrentSpell ());
 			final int manaAmount = Math.min (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (), manaRemaining), leftToCast);
 
@@ -632,7 +625,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				}
 
 				// Cast it
-				getSpellProcessing ().castOverlandNow (gsk, player, spell, queued.getHeroItem (), players, db, sd);
+				getSpellProcessing ().castOverlandNow (player, spell, queued.getHeroItem (), mom);
 				anySpellsCast = true;
 			}
 

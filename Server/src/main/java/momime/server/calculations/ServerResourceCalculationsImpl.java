@@ -613,8 +613,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 						// Continue casting spells
 						// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used
-						if (getSpellQueueing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
-
+						if (getSpellQueueing ().progressOverlandCasting (player, mom))
 							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 					}
 					else if (player.getPlayerDescription ().isHuman ())

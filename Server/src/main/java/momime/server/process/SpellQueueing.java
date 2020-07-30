@@ -1,7 +1,5 @@
 package momime.server.process;
 
-import java.util.List;
-
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -13,10 +11,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
  * Methods for validating spell requests and deciding whether to queue them up or cast immediately.
@@ -69,11 +64,8 @@ public interface SpellQueueing
 	/**
 	 * Spends any skill/mana the player has left towards casting queued spells
 	 *
-	 * @param gsk Server knowledge structure
 	 * @param player Player whose casting to progress
-	 * @param players List of players in the session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return True if we cast at least one spell
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
@@ -81,7 +73,6 @@ public interface SpellQueueing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public boolean progressOverlandCasting (final MomGeneralServerKnowledgeEx gsk, final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+	public boolean progressOverlandCasting (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

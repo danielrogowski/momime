@@ -953,7 +953,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// Put mana into casting spells
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
-				getSpellQueueing ().progressOverlandCasting (mom.getGeneralServerKnowledge (), player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				getSpellQueueing ().progressOverlandCasting (player, mom);
 		
 		// Progress multi-turn special orders
 		progressMultiTurnSpecialOrders (mom.getGeneralServerKnowledge ().getTrueMap (), onlyOnePlayerID,

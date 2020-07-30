@@ -99,7 +99,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setSpellUtils (utils);
 
 		// Run test
-		proc.castOverlandNow (null, player3, spell, null, null, null, null);
+		proc.castOverlandNow (player3, spell, null, null);
 	}
 
 	/**
@@ -151,6 +151,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, trans3);
 		players.add (player3);
+		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 
 		// Spell to cast
 		final SpellSvr spell = new SpellSvr ();
@@ -187,7 +194,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setRandomUtils (randomUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
+		proc.castOverlandNow (player3, spell, null, mom);
 		
 		// Mocked method handles adding the spell to the true map, player's memories and sending the network msgs, so don't need to worry about any of that
 		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, players, db, sd);
@@ -251,6 +258,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, trans3);
 		players.add (player3);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Spell to cast
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
@@ -276,7 +290,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
+		proc.castOverlandNow (player3, spell, null, mom);
 		
 		// So this shouldn't happen
 		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
@@ -334,6 +348,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircle);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Spell to cast
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
@@ -379,7 +400,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
+		proc.castOverlandNow (player3, spell, null, mom);
 		
 		// Prove that unit got added
 		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, null, null, player3,
@@ -436,6 +457,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (summoningCircle);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Spell to cast
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
@@ -482,7 +510,6 @@ public final class TestSpellProcessingImpl extends ServerTestData
 			
 			when (unitServerUtils.findUnitWithPlayerAndID (trueMap.getUnit (), 7, "UN00" + n)).thenReturn (hero);				
 		}
-
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -504,7 +531,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
+		proc.castOverlandNow (player3, spell, null, mom);
 		
 		// Prove that unit got updated, not added
 		verify (midTurn, times (0)).addUnitOnServerAndClients (gsk, "UN008", summoningCircleLocation, summoningCircleLocation, null, player3,
@@ -562,6 +589,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (memoryBuildingUtils.findCityWithBuilding (7, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE,
 			trueMap.getMap (), trueMap.getBuilding ())).thenReturn (null);		// <---
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Spell to cast
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
@@ -585,7 +619,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setMemoryBuildingUtils (memoryBuildingUtils);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
+		proc.castOverlandNow (player3, spell, null, mom);
 		
 		// Casting player gets no message
 		assertEquals (0, trans3.getNewTurnMessage ().size ());
@@ -624,6 +658,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, trans3);
 		players.add (player3);
 
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Spell to cast
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
@@ -644,7 +685,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setFogOfWarMidTurnChanges (midTurn);
 
 		// Run test
-		proc.castOverlandNow (gsk, player3, spell, null, players, db, sd);
+		proc.castOverlandNow (player3, spell, null, mom);
 		
 		// Check we told human player to pick a target
 		assertEquals (1, trans3.getNewTurnMessage ().size ());

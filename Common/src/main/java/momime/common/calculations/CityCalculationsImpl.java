@@ -1023,7 +1023,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		final Race cityRace = (raceID != null) ? db.findRace (raceID, "calculateAllCityProductions") : null;
 
 		final Integer cityOwnerID = (cityData != null) ? cityData.getCityOwnerID () : null;
-		final PlayerPublicDetails cityOwner = (cityOwnerID != null) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
+		final PlayerPublicDetails cityOwner = ((players != null) && (cityOwnerID != null)) ? getMultiplayerSessionUtils ().findPlayerWithID (players, cityOwnerID, "calculateAllCityProductions") : null;
 		final List<PlayerPick> cityOwnerPicks = (cityOwner != null) ? ((MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ()).getPick () : null;
 
 		// Set up results object

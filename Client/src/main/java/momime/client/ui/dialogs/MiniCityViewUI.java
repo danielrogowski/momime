@@ -376,7 +376,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			
 			text = getLanguage ().findCategoryEntry ("SpellCasting", (castingPlayerID.equals (getClient ().getOurPlayerID ())) ? "YouHaveCast" : "SomeoneElseHasCast").replaceAll
 				("SPELL_NAME", useSpellName).replaceAll
-				("PLAYER_NAME", (castingPlayer != null) ? castingPlayer.getPlayerDescription ().getPlayerName () : "Player " + castingPlayerID);
+				("PLAYER_NAME", (castingPlayer != null) ? getWizardClientUtils ().getPlayerName (castingPlayer) : "Player " + castingPlayerID);
 		}
 		textLabel.setText (text);
 

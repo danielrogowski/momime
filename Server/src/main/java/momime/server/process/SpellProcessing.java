@@ -20,7 +20,6 @@ import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
  * Methods for processing the effects of spells that have completed casting
@@ -30,21 +29,17 @@ public interface SpellProcessing
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
-	 * @param gsk Server knowledge structure
 	 * @param player Player who is casting the spell
 	 * @param spell Which spell is being cast
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void castOverlandNow (final MomGeneralServerKnowledgeEx gsk, final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+	public void castOverlandNow (final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**

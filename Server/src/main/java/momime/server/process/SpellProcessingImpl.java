@@ -77,6 +77,7 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.ai.SpellAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.ServerDatabaseEx;
@@ -86,7 +87,6 @@ import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapArea;
 import momime.server.mapgenerator.CombatMapGenerator;
@@ -182,16 +182,16 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
 	
+	/** AI decisions about spells */
+	private SpellAI spellAI;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
-	 * @param gsk Server knowledge structure
 	 * @param player Player who is casting the spell
 	 * @param spell Which spell is being cast
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
-	 * @param players List of players in this session
-	 * @param sd Session description
-	 * @param db Lookup lists built over the XML database
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -199,8 +199,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castOverlandNow (final MomGeneralServerKnowledgeEx gsk, final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+	public final void castOverlandNow (final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering castOverlandNow: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID ());
@@ -208,6 +207,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
 		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
 
@@ -216,19 +216,19 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Check if the player already has this overland enchantment cast
 			// If they do, they can't have it twice so nothing to do, they just lose the cast
-			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (gsk.getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
+			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 			{
 				// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
-				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-					null, null, false, null, null, players, db, sd);
+				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
+					null, null, false, null, null, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
 				// Does this overland enchantment give a global combat area effect? (Not all do)
 				if (spell.getSpellHasCombatEffect ().size () > 0)
 				{
 					// Pick one at random
 					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
-					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (gsk, combatAreaEffectID, spell.getSpellID (),
-						player.getPlayerDescription ().getPlayerID (), null, players, sd);
+					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID, spell.getSpellID (),
+						player.getPlayerDescription ().getPlayerID (), null, mom.getPlayers (), mom.getSessionDescription ());
 				}
 			}
 		}
@@ -236,11 +236,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Enchant item / Create artifact
 		else if ((sectionID == SpellBookSectionID.SUMMONING) && (heroItem != null))
 		{
-			// Put new item in players' bank on the server
-			final NumberedHeroItem numberedHeroItem = getHeroItemServerUtils ().createNumberedHeroItem (heroItem, gsk);
+			// Put new item in mom.getPlayers ()' bank on the server
+			final NumberedHeroItem numberedHeroItem = getHeroItemServerUtils ().createNumberedHeroItem (heroItem, mom.getGeneralServerKnowledge ());
 			priv.getUnassignedHeroItem ().add (numberedHeroItem);
 
-			// Put new item in players' bank on the client
+			// Put new item in mom.getPlayers ()' bank on the client
 			if (player.getPlayerDescription ().isHuman ())
 			{
 				final AddUnassignedHeroItemMessage addItemMsg = new AddUnassignedHeroItemMessage ();
@@ -253,7 +253,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				createArtifactSpell.setSpellID (spell.getSpellID ());
 				createArtifactSpell.setHeroItemName (heroItem.getHeroItemName ());
 
-				((MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (createArtifactSpell);
+				trans.getNewTurnMessage ().add (createArtifactSpell);
 			}
 		}
 
@@ -262,7 +262,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Find the location of the wizards' summoning circle 'building'
 			final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
-				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding ());
+				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 
 			if (summoningCircleLocation != null)
 			{
@@ -271,11 +271,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 				for (final SummonedUnit possibleSummonedUnit : spell.getSummonedUnit ())
 				{
 					// Check whether we can summon this unit If its a hero, this depends on whether we've summoned the hero before, or if he's dead
-					final UnitSvr possibleUnit = db.findUnit (possibleSummonedUnit.getSummonedUnitID (), "castOverlandNow");
+					final UnitSvr possibleUnit = mom.getServerDB ().findUnit (possibleSummonedUnit.getSummonedUnitID (), "castOverlandNow");
 					boolean addToList;
 					if (possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 					{
-						final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (gsk.getTrueMap ().getUnit (),
+						final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 							player.getPlayerDescription ().getPlayerID (), possibleSummonedUnit.getSummonedUnitID ());
 
 						if (hero == null)
@@ -310,7 +310,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					// Check if the city with the summoning circle has space for the unit
 					final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) summoningCircleLocation.getCityLocation ();
 					final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						(cityLocation, summonedUnitID, player.getPlayerDescription ().getPlayerID (), gsk.getTrueMap (), players, sd, db);
+						(cityLocation, summonedUnitID, player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 					final MemoryUnit newUnit;
 					if (addLocation.getUnitLocation () == null)
@@ -318,24 +318,24 @@ public final class SpellProcessingImpl implements SpellProcessing
 					else
 					{
 						// Add the unit
-						if (db.findUnit (summonedUnitID, "castOverlandNow").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+						if (mom.getServerDB ().findUnit (summonedUnitID, "castOverlandNow").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 						{
 							// The unit object already exists for heroes
-							newUnit = getUnitServerUtils ().findUnitWithPlayerAndID (gsk.getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summonedUnitID);
+							newUnit = getUnitServerUtils ().findUnitWithPlayerAndID (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summonedUnitID);
 
 							if (newUnit.getStatus () == UnitStatusID.NOT_GENERATED)
-								getUnitServerUtils ().generateHeroNameAndRandomSkills (newUnit, db);
+								getUnitServerUtils ().generateHeroNameAndRandomSkills (newUnit, mom.getServerDB ());
 
-							getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, players, gsk.getTrueMap (), sd, db);
+							getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (newUnit, addLocation.getUnitLocation (), player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 						}
 						else
 							// For non-heroes, create a new unit
-							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, summonedUnitID, addLocation.getUnitLocation (), null,
-								null, player, UnitStatusID.ALIVE, players, sd, db);
+							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (), summonedUnitID, addLocation.getUnitLocation (), null,
+								null, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						
 						// Let it move this turn
 						newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
-							players, gsk.getTrueMap (), db).getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 					}
 
 					// Show on new turn messages for the player who summoned it
@@ -351,7 +351,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						if (newUnit != null)
 							summoningSpell.setUnitURN (newUnit.getUnitURN ());
 
-						((MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (summoningSpell);
+						trans.getNewTurnMessage ().add (summoningSpell);
 					}
 				}
 			}
@@ -364,14 +364,20 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Add it on server - note we add it without a target chosen and without adding it on any
 			// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
-			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (gsk, player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-				null, null, false, null, null, null, db, sd);
+			final MemoryMaintainedSpell maintainedSpell = getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
+				(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
+				null, null, false, null, null, null, mom.getServerDB (), mom.getSessionDescription ());
 
-			// Tell client to pick a target for this spell
-			final NewTurnMessageSpell targetSpell = new NewTurnMessageSpell ();
-			targetSpell.setMsgType (NewTurnMessageTypeID.TARGET_SPELL);
-			targetSpell.setSpellID (spell.getSpellID ());
-			((MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (targetSpell);
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				// Tell client to pick a target for this spell
+				final NewTurnMessageSpell targetSpell = new NewTurnMessageSpell ();
+				targetSpell.setMsgType (NewTurnMessageTypeID.TARGET_SPELL);
+				targetSpell.setSpellID (spell.getSpellID ());
+				trans.getNewTurnMessage ().add (targetSpell);
+			}
+			else
+				getSpellAI ().decideSpellTarget (player, spell, maintainedSpell, mom);
 		}
 
 		else
@@ -935,8 +941,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Transient spell that performs some immediate action, then the temporary untargetted spell on the server gets removed
 			// So the spell never does get added to any clients
-			// Set values on server - it'll be removed below, but we need to set these to make the visibility checks in sendTransientSpellToClients () work correctly 
-			maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
+			// Set values on server - it'll be removed below, but we need to set these to make the visibility checks in sendTransientSpellToClients () work correctly
+			
+			if (targetUnit != null)
+				maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
+			
 			maintainedSpell.setCityLocation (targetLocation);
 			maintainedSpell.setUnitSkillID (unitSkillID);
 			maintainedSpell.setCitySpellEffectID (citySpellEffectID);
@@ -1053,7 +1062,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Enchantment or curse spell that generates some city or unit effect
 			// Set values on server
-			maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
+			if (targetUnit != null)
+				maintainedSpell.setUnitURN (targetUnit.getUnitURN ());
+			
 			maintainedSpell.setCityLocation (targetLocation);
 			maintainedSpell.setUnitSkillID (unitSkillID);
 			maintainedSpell.setCitySpellEffectID (citySpellEffectID);
@@ -1603,5 +1614,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return AI decisions about spells
+	 */
+	public final SpellAI getSpellAI ()
+	{
+		return spellAI;
+	}
+
+	/**
+	 * @param ai AI decisions about spells
+	 */
+	public final void setSpellAI (final SpellAI ai)
+	{
+		spellAI = ai;
 	}
 }

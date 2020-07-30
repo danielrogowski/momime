@@ -609,6 +609,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="spellAI" ref="spellAI" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -703,6 +704,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="aiSpellCalculations" ref="aiSpellCalculations" />
 		<property name="spellQueueing" ref="spellQueueing" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="cityAI" ref="cityAI" />
+		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">

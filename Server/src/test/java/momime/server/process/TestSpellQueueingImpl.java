@@ -552,7 +552,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.requestCastSpell (player, null, null, null, "SP001", null, null, null, null, null, mom);
 		
 		// Check it was cast
-		verify (spellProcessing, times (1)).castOverlandNow (gsk, player, spell, null, players, db, sd);
+		verify (spellProcessing, times (1)).castOverlandNow (player, spell, null, mom);
 		verify (msgProc, times (1)).sendNewTurnMessages (null, players, null);
 		
 		// Check we were charged skill and mana
@@ -2262,12 +2262,19 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (30);
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setResourceValueUtils (resourceValueUtils);
 		
 		// Run method
-		assertFalse (proc.progressOverlandCasting (gsk, player, players, sd, db));
+		assertFalse (proc.progressOverlandCasting (player, mom));
 		
 		// Check results
 		assertEquals (0, msgs.getMessages ().size ());
@@ -2326,13 +2333,20 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), settings, db)).thenReturn (100);
 		priv.setManaSpentOnCastingCurrentSpell (15);		
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setSpellUtils (spellUtils);
 		
 		// Run method
-		assertFalse (proc.progressOverlandCasting (gsk, player, players, sd, db));
+		assertFalse (proc.progressOverlandCasting (player, mom));
 
 		// Check results
 		assertEquals (0, trans.getOverlandCastingSkillRemainingThisTurn ());
@@ -2401,6 +2415,13 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), settings, db)).thenReturn (25);		// <---
 		priv.setManaSpentOnCastingCurrentSpell (15);		
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);
 		
@@ -2410,7 +2431,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setSpellProcessing (spellProcessing);
 		
 		// Run method
-		assertTrue (proc.progressOverlandCasting (gsk, player, players, sd, db));
+		assertTrue (proc.progressOverlandCasting (player, mom));
 
 		// Check results
 		assertEquals (2, trans.getOverlandCastingSkillRemainingThisTurn ());
@@ -2418,7 +2439,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		assertEquals (0, priv.getQueuedSpell ().size ());
 		
 		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -10);
-		verify (spellProcessing, times (1)).castOverlandNow (gsk, player, spell, null, players, db, sd);
+		verify (spellProcessing, times (1)).castOverlandNow (player, spell, null, mom);
 		
 		// Messages sent to client
 		assertEquals (2, msgs.getMessages ().size ());
@@ -2487,6 +2508,13 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), settings, db)).thenReturn (5);		// <---
 		priv.setManaSpentOnCastingCurrentSpell (2);		// So we should finish this one, fully cast 2 more, and spend 1 point toward casting the 4th
 		
+		// Session variables
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up test object
 		final SpellProcessing spellProcessing = mock (SpellProcessing.class);
 		
@@ -2496,7 +2524,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.setSpellProcessing (spellProcessing);
 		
 		// Run method
-		assertTrue (proc.progressOverlandCasting (gsk, player, players, sd, db));
+		assertTrue (proc.progressOverlandCasting (player, mom));
 
 		// Check results
 		assertEquals (0, trans.getOverlandCastingSkillRemainingThisTurn ());
@@ -2506,7 +2534,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -3);
 		verify (resourceValueUtils, times (2)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -5);
 		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -1);
-		verify (spellProcessing, times (3)).castOverlandNow (gsk, player, spell, null, players, db, sd);
+		verify (spellProcessing, times (3)).castOverlandNow (player, spell, null, mom);
 		
 		// Messages sent to client
 		// #0, #2, #4 will be removing queued spells

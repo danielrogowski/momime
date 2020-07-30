@@ -655,6 +655,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param players List of players in the session, this can be passed in null for when spells that require a target are added initially only on the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
+	 * @return Newly created spell in server's true memory
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -662,7 +663,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
+	public final MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
 		final ServerDatabaseEx db, final MomSessionDescription sd)
@@ -695,6 +696,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			addExistingTrueMaintainedSpellToClients (gsk, trueSpell, players, db, sd);
 
 		log.trace ("Exiting addMaintainedSpellOnServerAndClients");
+		return trueSpell;
 	}
 
 	/**

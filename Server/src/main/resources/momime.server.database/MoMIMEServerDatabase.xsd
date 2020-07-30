@@ -889,6 +889,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 						</xsd:annotation>
 					</xsd:element>
 					<xsd:element minOccurs="0" maxOccurs="1" name="accumulationHalved" type="momimecommon:roundingDirectionID" nxe:label="Accumulation Halved?" nxe:showmaincolumn="false" />
+					<xsd:element minOccurs="0" maxOccurs="1" name="zeroWhenBanished" type="xsd:boolean" nxe:label="Is zero when banished?" />
 				</xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

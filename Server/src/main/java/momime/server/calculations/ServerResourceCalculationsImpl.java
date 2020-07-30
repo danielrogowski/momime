@@ -39,6 +39,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
@@ -125,6 +126,13 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
+		// If wizard is banished then they do not get several production types
+		final List<String> zeroedProductionTypes = new ArrayList<String> ();
+		if (pub.getWizardState () != WizardState.ACTIVE)
+			for (final ProductionTypeSvr productionType : db.getProductionTypes ())
+				if ((productionType.isZeroWhenBanished () != null) && (productionType.isZeroWhenBanished ()))
+					zeroedProductionTypes.add (productionType.getProductionTypeID ());
+		
 		// Start from zero
 		getResourceValueUtils ().zeroAmountsPerTurn (priv.getResourceValue ());
 
@@ -177,27 +185,34 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 						for (final CityProductionBreakdown cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
 							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, false, db).getProductionType ())
-
-							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (),
-								cityProduction.getCappedProductionAmount () - cityProduction.getConsumptionAmount () + cityProduction.getConvertToProductionAmount ());
+						{
+							int cityProductionValue = -cityProduction.getConsumptionAmount ();
+							if (!zeroedProductionTypes.contains (cityProduction.getProductionTypeID ()))
+								cityProductionValue = cityProductionValue + cityProduction.getCappedProductionAmount () + cityProduction.getConvertToProductionAmount ();
+							
+							getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), cityProduction.getProductionTypeID (), cityProductionValue);
+						}
 					}
 				}
 
-		// Counts up how many node aura squares each player gets
-		int nodeAuraSquares = 0;
-		for (final PlaneSvr plane : db.getPlanes ())
-			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
-				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-				{
-					final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
-						nodeAuraSquares++;
-				}
-
-		// How much magic power does each square generate?
-		final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
-		if (nodeAuraMagicPower > 0)
-			getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, nodeAuraMagicPower);
+		if (!zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER))
+		{
+			// Counts up how many node aura squares each player gets
+			int nodeAuraSquares = 0;
+			for (final PlaneSvr plane : db.getPlanes ())
+				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+					{
+						final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
+							nodeAuraSquares++;
+					}
+	
+			// How much magic power does each square generate?
+			final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
+			if (nodeAuraMagicPower > 0)
+				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, nodeAuraMagicPower);
+		}
 
 		// We never explicitly add Mana from Magic Power, this is calculated on the fly by getResourceValueUtils ().calculateAmountPerTurnForProductionType
 

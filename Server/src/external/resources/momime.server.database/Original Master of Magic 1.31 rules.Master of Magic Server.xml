@@ -39,12 +39,14 @@
 		<percentage>false</percentage>
 		<difficultyLevelMultiplierApplies>true</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Magic Power</productionTypeDescription>
+		<zeroWhenBanished>true</zeroWhenBanished>
 	</productionType>
 	<productionType productionTypeID="RE05">
 		<roundingDirectionID>M</roundingDirectionID>
 		<percentage>false</percentage>
 		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Spell Research</productionTypeDescription>
+		<zeroWhenBanished>true</zeroWhenBanished>
 	</productionType>
 	<productionType productionTypeID="RE06">
 		<roundingDirectionID>U</roundingDirectionID>
@@ -71,6 +73,7 @@
 		<enforceProduction>S</enforceProduction>
 		<productionTypeDescription>Mana</productionTypeDescription>
 		<accumulatesInto>RE09</accumulatesInto>
+		<zeroWhenBanished>true</zeroWhenBanished>
 	</productionType>
 	<productionType productionTypeID="RE10">
 		<roundingDirectionID>M</roundingDirectionID>
@@ -78,6 +81,7 @@
 		<difficultyLevelMultiplierApplies>false</difficultyLevelMultiplierApplies>
 		<productionTypeDescription>Skill Improvement</productionTypeDescription>
 		<accumulatesInto>RE10</accumulatesInto>
+		<zeroWhenBanished>true</zeroWhenBanished>
 	</productionType>
 	<productionType productionTypeID="RE11">
 		<roundingDirectionID>M</roundingDirectionID>

@@ -21,6 +21,9 @@
 		<momime.client.version>0.9.8.2-SNAPSHOT</momime.client.version>
 		<momime.server.version>0.9.8.2-SNAPSHOT</momime.server.version>
 		<momime.editors.version>0.9.8.2-SNAPSHOT</momime.editors.version>
+		
+		<jre.version>11.0.8</jre.version>
+		<jre.build>10</jre.build>
 	</properties>
 
 	<build>
@@ -134,6 +137,19 @@
 							<includes>com.ndg.multiplayer.userregistry/MultiplayerSessionUserRegistry_Empty.xml</includes>
 						</configuration>
 					</execution>
+
+					<!-- Unpack JRE -->
+					<execution>
+						<id>unpack-jre</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/jre</outputDirectory>
+							<includeArtifactIds>jre</includeArtifactIds>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 	  
@@ -148,6 +164,7 @@
 						<configuration>
 							<descriptors>
 								<descriptor>assembly.xml</descriptor>
+								<descriptor>assembly-jre.xml</descriptor>
 							</descriptors>
 							<archiverConfig>
 								<encoding>CP850</encoding>		<!-- This is needed so the ç in the Français filename gets set correctly in the .zip -->
@@ -260,6 +277,12 @@
 			<artifactId>momime-editors</artifactId>
 			<version>${momime.editors.version}</version>
 			<classifier>config</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.adoptopenjdk</groupId>
+			<artifactId>jre</artifactId>
+			<version>${jre.version}</version>
+			<type>zip</type>
 		</dependency>
 
 		<dependency>

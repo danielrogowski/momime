@@ -730,6 +730,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
 	<bean id="combatAI" class="momime.server.ai.CombatAIImpl">

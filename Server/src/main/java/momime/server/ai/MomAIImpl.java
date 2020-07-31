@@ -29,6 +29,8 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.WizardState;
 import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.AiUnitCategorySvr;
@@ -67,8 +69,13 @@ public final class MomAIImpl implements MomAI
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;
 	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
+	
 	/**
-	 *
 	 * @param player AI player whose turn to take
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @return Whether AI turn was fully completed or not; false if we the AI initated a combat in a one-player-at-a-time game and must resume their turn after the combat ends 
@@ -310,6 +317,11 @@ public final class MomAIImpl implements MomAI
 
 		if (!combatStarted)
 		{
+			// Only wizards can use alchemy (raiders don't need mana)
+			// Make sure we do this before rush buying projects in cities, as generating mana for Spell of Return is more important
+			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 25))
+				considerAlchemy (player);
+			
 			if (numberOfCities > 0)
 			{
 				// Decide optimal tax rate
@@ -338,6 +350,54 @@ public final class MomAIImpl implements MomAI
 		
 		log.trace ("Exiting aiPlayerTurn = " + aiTurnCompleted);
 		return aiTurnCompleted;
+	}
+	
+	/**
+	 * @param player AI player to consider converting gold into mana for
+	 */
+	final void considerAlchemy (final PlayerServerDetails player)
+	{
+		log.trace ("Entering considerAlchemy: Player ID " + player.getPlayerDescription ().getPlayerID ());
+	
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		// Want 10x casting skill in MP
+		final int desiredMana = getResourceValueUtils ().calculateCastingSkillOfPlayer (priv.getResourceValue ()) * 10;
+		final int currentMana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has " + currentMana + " MP and wants minimum " + desiredMana + " MP");
+		
+		if (desiredMana > currentMana)
+		{
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			final boolean alchemyRetort = (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_ALCHEMY) > 0);
+			
+			int manaToConvert = desiredMana - currentMana;
+			int goldToConvert = alchemyRetort ? manaToConvert : (manaToConvert * 2);
+			
+			// Have we got enough gold?
+			final int currentGold = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+			if (currentGold < goldToConvert)
+			{
+				goldToConvert = currentGold;
+				
+				// Make sure its an even number
+				if ((!alchemyRetort) && (goldToConvert % 2 != 0))
+					goldToConvert--;
+				
+				manaToConvert = alchemyRetort ? goldToConvert : (goldToConvert / 2);
+				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " only has enough gold to convert " + manaToConvert + " MP");
+			}
+			
+			if (manaToConvert > 0)
+			{
+				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " converting " + goldToConvert + " GP into " + manaToConvert + " MP");
+				
+				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -goldToConvert);
+				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, manaToConvert);
+			}
+		}
+		
+		log.trace ("Exiting considerAlchemy");
 	}
 
 	/**
@@ -466,5 +526,37 @@ public final class MomAIImpl implements MomAI
 	public final void setCityServerUtils (final CityServerUtils utils)
 	{
 		cityServerUtils = utils;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param utils Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
+	{
+		resourceValueUtils = utils;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

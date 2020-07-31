@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-assembly</artifactId>
-	<version>0.9.8.2</version>
+	<version>0.9.8.3-SNAPSHOT</version>
 	<name>momimeAssembly</name>
 	<description>MoM IME zip assembly</description>
 
 	<scm>
-		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEAssembly/tags/momime-assembly-0.9.8.2</connection>
+		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEAssembly/trunk</connection>
 	</scm>
 
 	<parent>

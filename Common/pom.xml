@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-common</artifactId>
-	<version>0.9.8.2</version>
+	<version>0.9.8.3-SNAPSHOT</version>
 	<name>momimeCommon</name>
 	<description>MoM IME common database definitions and classes needed both by client and server</description>
 
 	<scm>
-		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMECommon/tags/momime-common-0.9.8.2</connection>
+		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMECommon/trunk</connection>
 	</scm>
 
 	<parent>

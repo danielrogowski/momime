@@ -37,8 +37,47 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.8.1</b></td>
-			<td align=left><b>6 Jul 2020</b></td>
+			<td align=left><b>Current version: 0.9.8.2</b></td>
+			<td align=left><b>31 Jul 2020</b></td>
+			<td align=left>
+				<b>Handling of wizard's fortress being taken:</b>
+				<ul>
+					<li>Shows animation when wizards are banished or defeated, and when they successfully cast Spell of Return
+					<li>When wizards are defeated (last city is captured), all remaining spells and units owned by the wizard disappear and any nodes they had captured return to an unowned state
+					<li>When wizards are banished (have another city), if summoning circle is in a different city then they lose that too
+					<li>When wizards are banished (have another city), power base and research are all zeroed out
+					<li>When wizards are banished or defeated, all queued spells are removed and Spell of Return is automatically queued
+					<li>When a wizard loses a combat where their summoning circle is, if their Wizard's Fortress is in a different city then their summoning circle automatically moves there
+					<li>When human players are defeated (last city is captured), they're converted to AI players and kicked out of the game back to the title screen
+					<li>When the last human player is defeated, the game ends
+					<li>Wizards cannot pick spells to cast or research while banished (but heroes or units like Archangels with their own MP pool can still cast in combat)
+				</ul>
+				
+				<b>Other new features:</b>
+				<ul>
+					<li>AI will cast overland enchantments
+					<li>AI will use alchemy to turn gold into mana if their mana is low (principally added this so banished AI wizards can raise enough mana to cast Spell of Return)
+					<li>When heroes gain a level, now shows on messages scroll and plays music
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>In one-player-at-a-time games, when AI players initiate a combat it will now correctly pause their turn until the combat completes and resume afterwards
+					<li>If an AI player tries to execute a special order on a unit (like build a city or road) and fails, now just skips that unit rather than getting stuck in a loop
+					<li>When rush buying units, now shows how much it will cost
+					<li>Fixed exception that occurred in UI sometimes when units are killed or removed (e.g. settler making a city, or magic spirit melding with a node) but the UI was still trying to draw selection buttons for them
+					<li>Move Fortress will only move the Summoning Circle as well if it was previously in the same place as the Wizard's Fortress
+				</ul>
+
+				<b>Technical changes:</b>
+				<ul>
+					<li>Now will supply a choice of 2 downloads, one with a pre-packages JRE for 64 bit Windows so there's no need for people to know how to download and set up Java
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.8.1</td>
+			<td align=left>6 Jul 2020</td>
 			<td align=left>
 				<b>Major new features:</b>
 				<ul>
@@ -61,7 +100,6 @@
 			</td>
 		</tr>
 		<tr>
-			<a name="currentversion"></a>
 			<td align=left>0.9.8.0</td>
 			<td align=left>31 May 2020</td>
 			<td align=left>

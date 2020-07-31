@@ -25,10 +25,13 @@
 	<bean id="wizardGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="110" />
+		<property name="rowHeight" value="150" />
 		<property name="filenameElements">
 			<list>
-				<value>portraitFile</value>
+				<value>portraitImageFile</value>
+				<value>standingImageFile</value>
+				<value>banishingImageFile</value>
+				<value>banishingHandImageFile</value>
 			</list>
 		</property>
 	</bean>
@@ -264,7 +267,7 @@
 	<bean id="frameGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="40" />
+		<property name="rowHeight" value="100" />
 		<property name="filenameElements">
 			<list>
 				<value>frame</value>

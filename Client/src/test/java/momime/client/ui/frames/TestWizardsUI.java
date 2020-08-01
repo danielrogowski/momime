@@ -18,6 +18,7 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.WizardState;
 
 import org.junit.Test;
 
@@ -77,6 +78,8 @@ public final class TestWizardsUI extends ClientTestData
 			pd.setPlayerID ((n <= 14) ? n : -n);
 			
 			final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+			pub.setWizardState ((n == 14) ? WizardState.BANISHED : WizardState.ACTIVE);
+			
 			MomTransientPlayerPublicKnowledge trans = null;
 			if (n == 16)
 				pub.setWizardID (CommonDatabaseConstants.WIZARD_ID_RAIDERS);

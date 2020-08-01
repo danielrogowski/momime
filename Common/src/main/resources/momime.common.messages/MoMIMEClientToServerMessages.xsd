@@ -521,6 +521,21 @@ this indicates the damage chosen when casting the spell, beteween baseDamage and
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:element name="requestRemoveQueuedSpellMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client sends this if player clicks a queued overland spell that they no longer want to cast.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="queuedSpellIndex" type="momimemsgs:listIndex" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
 	<xsd:element name="requestSwitchOffMaintainedSpellMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Client sends this when they want to switch off a maintained spell (overland, unit or city).</xsd:documentation>

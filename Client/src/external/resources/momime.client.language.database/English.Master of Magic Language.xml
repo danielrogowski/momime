@@ -6839,6 +6839,15 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 		<languageEntry languageEntryID="Close">
 			<languageEntryText>Close</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="CantCancelSpellOfReturn">
+			<languageEntryText>You cannot cancel casting the Spell of Return.</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ConfirmCancelSpell">
+			<languageEntryText>Are you sure you want to cancel casting your SPELL_NAME spell?</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="ConfirmCancelUnknownSpell">
+			<languageEntryText>Are you sure you want to cancel casting this spell?</languageEntryText>
+		</languageEntry>
 	</languageCategory>
 	<languageCategory languageCategoryID="frmWizards">
 		<languageEntry languageEntryID="Title">

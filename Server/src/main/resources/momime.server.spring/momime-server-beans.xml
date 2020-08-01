@@ -259,6 +259,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 	</bean>
+
+	<bean id="requestRemoveQueuedSpellMessage" class="momime.server.messages.process.RequestRemoveQueuedSpellMessageImpl" scope="prototype" />
 	
 	<!-- User registry -->
 

@@ -1163,4 +1163,11 @@ So need a separate data item for this.</xsd:documentation>
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	
+	<xsd:simpleType name="listIndex">
+		<xsd:annotation>
+			<xsd:documentation>An index into an unbounded list.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
 </xsd:schema>

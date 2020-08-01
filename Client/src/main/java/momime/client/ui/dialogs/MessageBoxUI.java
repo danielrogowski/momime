@@ -36,6 +36,7 @@ import momime.common.messages.clienttoserver.DismissUnitMessage;
 import momime.common.messages.clienttoserver.HeroItemLocationID;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
+import momime.common.messages.clienttoserver.RequestRemoveQueuedSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.RushBuyMessage;
@@ -120,6 +121,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 	
 	/** Saved game we're thinking of deleting; null if the message box isn't about deleting a saved game */
 	private Integer savedGameID;
+	
+	/** Queued overland spell we're thinking of cancelling; null if the message box isn't about cancelling a queued overland spell */
+	private Integer removeQueuedSpellIndex;
 	
 	/** Content pane */
 	private JPanel contentPane;
@@ -237,6 +241,14 @@ public final class MessageBoxUI extends MomClientDialogUI
 			    getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			
+			// Cancel queued overland spell
+			else if (getRemoveQueuedSpellIndex () != null)
+			{
+				final RequestRemoveQueuedSpellMessage msg = new RequestRemoveQueuedSpellMessage ();
+				msg.setQueuedSpellIndex (getRemoveQueuedSpellIndex ());
+			    getClient ().getServerConnection ().sendMessageToServer (msg);
+			}
+			
 			else
 				log.warn ("MessageBoxUI had yes button clicked for text \"" + messageText.getText () + " but took no action");
 				
@@ -264,7 +276,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 		
 		final int buttonCount = ((getUnitToDismiss () == null) && (getCityLocation () == null) && (getResearchSpellID () == null) &&
 			(getCastSpellID () == null) && (getCancelTargettingSpell () == null) && (getSwitchOffSpell () == null) && (getDestroyHeroItemMessage () == null) &&
-			(getSavedGameID () == null)) ? 1 : 2;
+			(getSavedGameID () == null) && (getRemoveQueuedSpellIndex () == null)) ? 1 : 2;
 		
 		messageText = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (getUtils ().createTransparentScrollPane (messageText), "frmMessageBoxText");
@@ -660,5 +672,21 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setSavedGameID (final Integer id)
 	{
 		savedGameID = id;
+	}
+
+	/**
+	 * @return Queued overland spell we're thinking of cancelling; null if the message box isn't about cancelling a queued overland spell
+	 */
+	public final Integer getRemoveQueuedSpellIndex ()
+	{
+		return removeQueuedSpellIndex;
+	}
+
+	/**
+	 * @param index Queued overland spell we're thinking of cancelling; null if the message box isn't about cancelling a queued overland spell
+	 */
+	public final void setRemoveQueuedSpellIndex (final Integer index)
+	{
+		removeQueuedSpellIndex = index;
 	}
 }

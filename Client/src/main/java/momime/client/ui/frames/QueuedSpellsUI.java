@@ -21,8 +21,11 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.renderer.QueuedSpellListCellRenderer;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.QueuedSpell;
 
 /**
@@ -109,6 +112,46 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 		contentPane.add (spellsScroll, "frmSpellQueueList");
 		
 		updateQueuedSpells ();
+		
+		// Allow clicking on queued spells to cancel them
+		spellsList.addListSelectionListener ((ev) ->
+		{
+			if ((spellsList.getSelectedIndex () >= 0) && (spellsList.getSelectedIndex () < getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().size ()))
+				try
+				{
+					final MessageBoxUI messageBox = getPrototypeFrameCreator ().createMessageBox ();
+					messageBox.setTitleLanguageCategoryID ("frmSpellQueue");
+					messageBox.setTitleLanguageEntryID ("Title");
+
+					final String spellID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().get (spellsList.getSelectedIndex ()).getQueuedSpellID ();
+					if (spellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
+					{
+						messageBox.setTextLanguageCategoryID ("frmSpellQueue");
+						messageBox.setTextLanguageEntryID ("CantCancelSpellOfReturn");
+					}
+					else
+					{
+						final SpellLang spellLang = getLanguage ().findSpell (spellID);
+						
+						if ((spellLang != null) && (spellLang.getSpellName () != null))
+							messageBox.setText (getLanguage ().findCategoryEntry ("frmSpellQueue", "ConfirmCancelSpell").replaceAll ("SPELL_NAME", spellLang.getSpellName ()));
+						else
+						{
+							messageBox.setTextLanguageCategoryID ("frmSpellQueue");
+							messageBox.setTextLanguageEntryID ("ConfirmCancelUnknownSpell");
+						}
+						
+						// Don't actually tell the server to cancel the spell until the player clicks Yes
+						messageBox.setRemoveQueuedSpellIndex (spellsList.getSelectedIndex ());
+					}
+
+					messageBox.setVisible (true);
+				}
+				catch (final IOException e)
+				{
+					log.error (e, e);
+				}
+		});
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);

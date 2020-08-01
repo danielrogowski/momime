@@ -27,6 +27,7 @@ import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage;
+import momime.common.messages.clienttoserver.RequestRemoveQueuedSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage;
@@ -345,6 +346,15 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 		return getFactory ().createRequestMoveHeroItemMessage ();
 	}
 
+	/**
+	 * @return Newly created RequestMoveHeroItemMessage
+	 */
+	@Override
+	public final RequestRemoveQueuedSpellMessage createRequestRemoveQueuedSpellMessage ()
+	{
+		return getFactory ().createRequestRemoveQueuedSpellMessage ();
+	}
+	
 	/**
 	 * @return Factory for creating prototype message beans from spring
 	 */

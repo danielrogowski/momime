@@ -58,6 +58,7 @@
     			<value>momime.common.messages.clienttoserver.UpdateMagicPowerDistributionMessage</value>
     			<value>momime.common.messages.clienttoserver.UploadCustomPhotoMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestMoveHeroItemMessage</value>
+    			<value>momime.common.messages.clienttoserver.RequestRemoveQueuedSpellMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>

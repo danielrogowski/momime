@@ -25700,6 +25700,9 @@
 	<languageCategory languageCategoryID="frmSpellQueue">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="Close" />
+		<languageEntry languageEntryID="CantCancelSpellOfReturn" />
+		<languageEntry languageEntryID="ConfirmCancelSpell" />
+		<languageEntry languageEntryID="ConfirmCancelUnknownSpell" />
 	</languageCategory>
 	<languageCategory languageCategoryID="frmWizards">
 		<languageEntry languageEntryID="Title" />

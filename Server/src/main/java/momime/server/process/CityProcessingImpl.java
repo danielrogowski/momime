@@ -47,6 +47,7 @@ import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -947,7 +948,6 @@ public final class CityProcessingImpl implements CityProcessing
 			{
 				// Remove queued spell on server
 				priv.getQueuedSpell ().remove (0);
-				priv.setManaSpentOnCastingCurrentSpell (0);
 	
 				// Remove queued spell on client
 				if (defendingPlayer.getPlayerDescription ().isHuman ())
@@ -956,6 +956,14 @@ public final class CityProcessingImpl implements CityProcessing
 					removeSpellMessage.setQueuedSpellIndex (0);
 					defendingPlayer.getConnection ().sendMessageToClient (removeSpellMessage);
 				}
+			}
+
+			// Make sure any mana spent on removed spells is zeroed out
+			if (priv.getManaSpentOnCastingCurrentSpell () > 0)
+			{
+				priv.setManaSpentOnCastingCurrentSpell (0);
+				if (defendingPlayer.getPlayerDescription ().isHuman ())
+					defendingPlayer.getConnection ().sendMessageToClient (new UpdateManaSpentOnCastingCurrentSpellMessage ());
 			}
 			
 			// If they are only banished, then begin casting spell of return

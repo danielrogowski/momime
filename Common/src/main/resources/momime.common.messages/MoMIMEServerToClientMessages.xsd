@@ -768,7 +768,7 @@ This isn't used to set research to 'nothing', so safe to assume that SpellID is 
 			<xsd:complexContent>
 				<xsd:extension base="mp:serverToClientMessage">
 					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="queuedSpellIndex" type="momimestoc:listIndex" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="queuedSpellIndex" type="momimemsgs:listIndex" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>
@@ -1364,13 +1364,4 @@ So this is what drives the Spell of Return animation on the client, not the AddB
 		</xsd:restriction>
 	</xsd:simpleType>
 
-<!-- Simple types -->
-	
-	<xsd:simpleType name="listIndex">
-		<xsd:annotation>
-			<xsd:documentation>An index into an unbounded list.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-	
 </xsd:schema>

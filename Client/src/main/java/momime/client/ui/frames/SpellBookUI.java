@@ -157,6 +157,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	/** Animation for the page turning */
 	final static String ANIM_PAGE_TURN = "SPELL_BOOK_PAGE_TURN";
 	
+	/** Animation for the blue swirl */
+	private final static String ANIM_SWIRL = "SPELL_BOOK_SWIRL";
+	
 	/** Typical inset used by layouts */
 	private final static int INSET = 0;
 	
@@ -180,6 +183,21 @@ public final class SpellBookUI extends MomClientFrameUI
 	
 	/** Timer for ticking up pageTurnFrame */
 	private Timer pageTurnTimer;
+
+	/** Blue swirl animation for when we click on a spell to cast */
+	private AnimationGfx castingAnim;
+	
+	/** This ticks up 0..13 and then goes back to null when we don't need to display the anim anymore */
+	private Integer castingAnimFrame;
+	
+	/** Timer for ticking up castingAnimFrame */
+	private Timer castingAnimTimer;
+	
+	/** X position in spell book of the spell we're displaying the casting anim for (0..1) */
+	private int castingAnimSpellX;
+
+	/** Y position in spell book of the spell we're displaying the casting anim for (0..3) */
+	private int castingAnimSpellY;
 	
 	/** Spell book pages */
 	private List<SpellBookPage> pages = new ArrayList<SpellBookPage> ();
@@ -232,8 +250,9 @@ public final class SpellBookUI extends MomClientFrameUI
 		
 		final Dimension fixedSize = new Dimension (background.getWidth () * 2, (background.getHeight () * 2) + ANIM_VERTICAL_OFFSET);
 
-		// Set up animation of the page flipping left and right
+		// Find animations we need
 		final AnimationGfx pageTurnAnim = getGraphicsDB ().findAnimation (ANIM_PAGE_TURN, "SpellBookUI");
+		castingAnim = getGraphicsDB ().findAnimation (ANIM_SWIRL, "SpellBookUI");
 		
 		// Actions
 		final Action closeAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
@@ -247,6 +266,12 @@ public final class SpellBookUI extends MomClientFrameUI
 			turnPageLeftButton.setHidden ((leftPageNumber - 2) <= 0);
 			
 			// Show page turn animation
+			if (castingAnimTimer != null)
+				castingAnimTimer.stop ();
+			
+			castingAnimTimer = null;
+			castingAnimFrame = null;
+
 			if (pageTurnTimer != null)
 				pageTurnTimer.stop ();				
 			
@@ -299,6 +324,12 @@ public final class SpellBookUI extends MomClientFrameUI
 			turnPageRightButton.setHidden ((rightPageNumber + 2) + 1 >= pages.size ());
 
 			// Show page turn animation
+			if (castingAnimTimer != null)
+				castingAnimTimer.stop ();
+			
+			castingAnimTimer = null;
+			castingAnimFrame = null;
+			
 			if (pageTurnTimer != null)
 				pageTurnTimer.stop ();				
 			
@@ -398,6 +429,8 @@ public final class SpellBookUI extends MomClientFrameUI
 
 		for (int x = 0; x < 2; x++)
 		{
+			final int spellX = x;
+
 			final GridBagConstraints headingConstraints = getUtils ().createConstraintsNoFill (x + 1, 0, 1, 1,
 				new Insets (0, 12 * x, GAP_BETWEEN_SPELLS, 12 * (1-x)),
 				(x == 0) ? GridBagConstraintsNoFill.SOUTH : GridBagConstraintsNoFill.SOUTH);
@@ -410,7 +443,31 @@ public final class SpellBookUI extends MomClientFrameUI
 			
 			for (int y = 0; y < SPELLS_PER_PAGE; y++)
 			{
-				final JPanel spellPanel = new JPanel ();
+				final int spellY = y;
+				
+				final JPanel spellPanel = new JPanel ()
+				{
+					/**
+					 * The animation of the swirl has to be drawn in front of the controls, so have to do it here rather than in paintComponent
+					 */
+					@Override
+					protected final void paintChildren (final Graphics g)
+					{
+						super.paintChildren (g);
+						
+						// Need to draw casting anim?
+						if ((castingAnimFrame != null) && (castingAnimSpellX == spellX) && (castingAnimSpellY == spellY))
+							try
+							{
+								final BufferedImage swirl = getUtils ().loadImage (castingAnim.getFrame ().get (castingAnimFrame));
+								g.drawImage (swirl, 0, 0, getWidth (), getHeight (), null);
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
+							}
+					}
+				};
 				spellPanel.setLayout (new GridBagLayout ());
 				
 				spellPanel.setOpaque (false);
@@ -451,8 +508,6 @@ public final class SpellBookUI extends MomClientFrameUI
 				spellPanel.add (Box.createRigidArea (new Dimension (50, 0)), getUtils ().createConstraintsNoFill (2, 2, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 				
 				// Handle clicking on spells
-				final int spellX = x;
-				final int spellY = y;
 				final MouseListener spellClickListener = new MouseAdapter ()
 				{
 					@Override
@@ -548,7 +603,7 @@ public final class SpellBookUI extends MomClientFrameUI
 										}
 									}
 									else if (sectionID != SpellBookSectionID.RESEARCHABLE)
-										castSpell (spell);
+										castSpell (spell, spellX, spellY);
 								}
 								catch (final Exception e)
 								{
@@ -624,11 +679,13 @@ public final class SpellBookUI extends MomClientFrameUI
 	 * comes here directly without showing the spell book UI at all.
 	 * 
 	 * @param spell Spell to calculate the combat casting cost for
+	 * @param spellX X position in spell book of spell that was clicked on (0..1); null in cases where we don't want to display the animation
+	 * @param spellY Y position in spell book of spell that was clicked on (0..3); null in cases where we don't want to display the animation
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws IOException If there are any other problems
 	 */
-	public final void castSpell (final Spell spell) throws IOException, JAXBException, XMLStreamException
+	public final void castSpell (final Spell spell, final Integer spellX, final Integer spellY) throws IOException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering castSpell");
 
@@ -811,21 +868,23 @@ public final class SpellBookUI extends MomClientFrameUI
 				proceed = true;
 		}
 		
+		// Prevent casting more than one combat spell each turn
+		if ((proceed) && (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
+		{
+			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+			msg.setTitleLanguageCategoryID ("frmSpellBook");
+			msg.setTitleLanguageEntryID ("CastSpellTitle");
+			msg.setTextLanguageCategoryID ("frmCombat");
+			msg.setTextLanguageEntryID ("OneSpellPerTurn");
+			msg.setVisible (true);
+		}
+		
+		// Everything beyond here, we succeed in casting the spell (or requesting to), just various other pops may be necessary depending on which spell it is,
+		// so show the swirly animation that shows that we cast something.
 		if (proceed)
 		{
-			// Prevent casting more than one combat spell each turn
-			if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
-			{
-				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setTitleLanguageCategoryID ("frmSpellBook");
-				msg.setTitleLanguageEntryID ("CastSpellTitle");
-				msg.setTextLanguageCategoryID ("frmCombat");
-				msg.setTextLanguageEntryID ("OneSpellPerTurn");
-				msg.setVisible (true);
-			}
-			
 			// Is it a spell with variable MP cost so we need to pop up a window with a slider to choose how much to put into it?
-			else if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null) &&
+			if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null) &&
 				(getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
 				(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))				// or casting fixed spells like Magicians' Fireball spell
 			{
@@ -866,7 +925,12 @@ public final class SpellBookUI extends MomClientFrameUI
 			
 			// Go back to the create artifact UI
 			else if (getCastType () == SpellCastType.SPELL_CHARGES)
+			{
 				getCreateArtifactUI ().setSpellCharges (spell);
+				
+				// Go back to showing normal spell book
+				setCastType (SpellCastType.OVERLAND);
+			}
 				
 			// Tell server to cast it
 			else
@@ -888,8 +952,36 @@ public final class SpellBookUI extends MomClientFrameUI
 				getClient ().getServerConnection ().sendMessageToServer (msg);
 			}
 			
-			// Close the spell book
-			setVisible (false);
+			// Show swirly animation on spell book
+			if ((spellX != null) && (spellY != null))
+			{
+				castingAnimSpellX = spellX;
+				castingAnimSpellY = spellY;
+				
+				// Show casting animation
+				if (castingAnimTimer != null)
+					castingAnimTimer.stop ();				
+				
+				castingAnimFrame = 0;
+				contentPane.repaint ();
+				
+				castingAnimTimer = new Timer ((int) (1000 / castingAnim.getAnimationSpeed ()), (ev2) ->
+				{
+					if ((castingAnimFrame == null) || (castingAnimFrame+1 >= castingAnim.getFrame ().size ()))
+					{
+						if (castingAnimTimer != null)
+							castingAnimTimer.stop ();
+						
+						castingAnimTimer = null;
+						castingAnimFrame = null;
+					}
+					else
+						castingAnimFrame = castingAnimFrame + 1;
+					
+					contentPane.repaint ();
+				});
+				castingAnimTimer.start ();
+			}
 		}
 		
 		log.trace ("Exiting castSpell");

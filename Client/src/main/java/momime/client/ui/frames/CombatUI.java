@@ -1450,14 +1450,14 @@ public final class CombatUI extends MomClientFrameUI
 			{
 				final Unit unitDef = getClient ().getClientDB ().findUnit (castingSource.getCastingUnit ().getUnitID (), "setCastingSource");
 				final String spellID = unitDef.getUnitCanCast ().get (castingSource.getFixedSpellNumber ()).getUnitSpellID ();
-				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource-F"));
+				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource-F"), null, null);
 			}
 			
 			// Casting spell imbued into hero item - don't need to show spell book to ask which spell to pick, so just cast it directly
 			else if (castingSource.getHeroItemSlotNumber () != null)
 			{
 				final String spellID = castingSource.getCastingUnit ().getHeroItemSlot ().get (castingSource.getHeroItemSlotNumber ()).getHeroItem ().getSpellID ();
-				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource-I"));
+				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource-I"), null, null);
 			}
 			
 			// Unit or hero casting from their own MP pool

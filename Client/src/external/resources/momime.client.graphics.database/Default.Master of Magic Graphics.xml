@@ -68089,6 +68089,24 @@
 		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame7.png</frame>
 		<frame>/momime.client.graphics/animations/wizardsLab/doubleBlast-frame8.png</frame>
 	</animation>
+	<animation animationID="SPELL_BOOK_SWIRL">
+		<animationDescription>Blue expanding swirl to show on spells in spell book</animationDescription>
+		<animationSpeed>20</animationSpeed>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-01.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-02.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-03.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-04.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-05.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-06.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-07.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-08.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-09.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-10.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-11.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-12.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-13.png</frame>
+		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-14.png</frame>
+	</animation>
 	<playList playListID="OVERLAND">
 		<audioFile>/momime.client.music/MUSIC_099 - BGM.mp3</audioFile>
 		<audioFile>/momime.client.music/MUSIC_100 - BGM.mp3</audioFile>

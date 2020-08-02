@@ -34,6 +34,7 @@ import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculationsImpl;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.database.WizardSvr;
 
 /**
  * Tests the CityAI class
@@ -289,6 +290,10 @@ public final class TestCityAIImpl extends ServerTestData
 
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
+		
+		// Set up wizard
+		final WizardSvr wizard = new WizardSvr ();
+		wizard.setBuildingChance (1);
 
 		// Set up test object
 		final MemoryBuildingUtilsImpl memoryBuildingUtils = new MemoryBuildingUtilsImpl ();
@@ -310,7 +315,7 @@ public final class TestCityAIImpl extends ServerTestData
 		cityData.setCityRaceID ("RC09");
 		while (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
-			ai.decideWhatToBuild (cityLocation, cityData, 2, false, 0, null, null, trueTerrain, trueBuildings, sd, db);
+			ai.decideWhatToBuild (wizard, cityLocation, cityData, 2, false, 0, null, null, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MapCoordinates3DEx buildingLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -364,7 +369,7 @@ public final class TestCityAIImpl extends ServerTestData
 		cityData.setCurrentlyConstructingBuildingID (null);
 		while (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 		{
-			ai.decideWhatToBuild (cityLocation, cityData, 2, false, 0, null, null, trueTerrain, trueBuildings, sd, db);
+			ai.decideWhatToBuild (wizard, cityLocation, cityData, 2, false, 0, null, null, trueTerrain, trueBuildings, sd, db);
 			if (!CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (cityData.getCurrentlyConstructingBuildingID ()))
 			{
 				final MemoryBuilding building = new MemoryBuilding ();

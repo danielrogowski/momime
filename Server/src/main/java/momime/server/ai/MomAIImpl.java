@@ -34,6 +34,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.AiUnitCategorySvr;
+import momime.server.database.WizardSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 
@@ -259,6 +260,9 @@ public final class MomAIImpl implements MomAI
 				// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
 				// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
 				if (numberOfCities > 0)
+				{
+					final WizardSvr wizard = mom.getServerDB ().findWizard (pub.getWizardID (), "aiPlayerTurn");
+					
 					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 					{
 						// What unit types do we want to build on this plane?
@@ -303,7 +307,7 @@ public final class MomAIImpl implements MomAI
 										}
 	
 									// Now we can decide what to build
-									getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnitsMod, constructableHere, wantedUnitTypes,
+									getCityAI ().decideWhatToBuild (wizard, cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnitsMod, constructableHere, wantedUnitTypes,
 										priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
 										mom.getSessionDescription (), mom.getServerDB ());
 									
@@ -312,6 +316,7 @@ public final class MomAIImpl implements MomAI
 								}
 							}
 					}
+				}
 			}  // end of "if not combat started"
 		}  // end of "if can build any combat units in any cities"
 

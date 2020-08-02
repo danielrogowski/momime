@@ -2,9 +2,16 @@ package momime.common.calculations;
 
 import java.util.List;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.areas.storage.MapArea2D;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
+import momime.common.database.DifficultyLevel;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
@@ -17,12 +24,6 @@ import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.RenderCityData;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.areas.storage.MapArea2D;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Common calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
@@ -92,14 +93,14 @@ public interface CityCalculations
 	 * @param buildings Known buildings
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
-	 * @param aiPopulationGrowthRateMultiplier Difficulty level value from session description
+	 * @param difficultyLevel Chosen difficulty level, from session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Breakdown of all the values used in calculating the growth rate of this city; if the caller doesn't care about the breakdown and just wants the value, just call .getFinalTotal () on the breakdown
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a race or building that can't be found in the cache
 	 */
 	public CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int aiPopulationGrowthRateMultiplier, final int maxCitySize, final CommonDatabase db)
+		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 
 	/**

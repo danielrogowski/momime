@@ -464,8 +464,11 @@ public final class TestCityCalculationsImpl
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (1);
 		pd.setHuman (true);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
 
-		final PlayerPublicDetails player = new PlayerPublicDetails (pd, null, null);
+		final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, null);
 		
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "calculateCityGrowthRate")).thenReturn (player);
 		
@@ -488,10 +491,14 @@ public final class TestCityCalculationsImpl
 		
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
+		
+		// Difficulty level
+		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
 
 		// At max size
 		cityData.setCityPopulation (10000);
-		final CityGrowthRateBreakdown maximum = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 10, 300, db);
+		final CityGrowthRateBreakdown maximum = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 10, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdown.class.getName (), maximum.getClass ().getName ());
 		assertEquals (10000, maximum.getCurrentPopulation ());
 		assertEquals (10000, maximum.getMaximumPopulation ());
@@ -499,7 +506,7 @@ public final class TestCityCalculationsImpl
 
 		// Growing (this is the example quoted in the strategy guide, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1)
 		cityData.setCityPopulation (12000);
-		final CityGrowthRateBreakdown growingEvenBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, 300, db);
+		final CityGrowthRateBreakdown growingEvenBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingEvenBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing growingEven = (CityGrowthRateBreakdownGrowing) growingEvenBreakdown;
 		assertEquals (12000, growingEven.getCurrentPopulation ());
@@ -513,7 +520,7 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, growingEven.getCappedGrowthRate ());
 		assertEquals (50, growingEven.getFinalTotal ());
 
-		final CityGrowthRateBreakdown growingOddBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 23, 300, db);
+		final CityGrowthRateBreakdown growingOddBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 23, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingOddBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing growingOdd = (CityGrowthRateBreakdownGrowing) growingOddBreakdown;
 		assertEquals (12000, growingOdd.getCurrentPopulation ());
@@ -529,7 +536,7 @@ public final class TestCityCalculationsImpl
 
 		// Bonus from race - positive
 		cityData.setCityRaceID ("RC02");
-		final CityGrowthRateBreakdown barbarianBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, 300, db);
+		final CityGrowthRateBreakdown barbarianBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), barbarianBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing barbarian = (CityGrowthRateBreakdownGrowing) barbarianBreakdown;
 		assertEquals (12000, barbarian.getCurrentPopulation ());
@@ -545,7 +552,7 @@ public final class TestCityCalculationsImpl
 
 		// Bonus from race - negative
 		cityData.setCityRaceID ("RC03");
-		final CityGrowthRateBreakdown highElfBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, 300, db);
+		final CityGrowthRateBreakdown highElfBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), highElfBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing highElf = (CityGrowthRateBreakdownGrowing) highElfBreakdown;
 		assertEquals (12000, highElf.getCurrentPopulation ());
@@ -575,7 +582,7 @@ public final class TestCityCalculationsImpl
 		sagesGuild.setCityLocation (new MapCoordinates3DEx (2, 2, 0));
 		buildings.add (sagesGuild);
 
-		final CityGrowthRateBreakdown withBuildingsBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, 300, db);
+		final CityGrowthRateBreakdown withBuildingsBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), withBuildingsBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing withBuildings = (CityGrowthRateBreakdownGrowing) withBuildingsBreakdown;
 		assertEquals (12000, withBuildings.getCurrentPopulation ());
@@ -596,7 +603,7 @@ public final class TestCityCalculationsImpl
 		// Bonus for AI players
 		pd.setHuman (false);
 
-		final CityGrowthRateBreakdown aiWithBuildingsBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, 300, db);
+		final CityGrowthRateBreakdown aiWithBuildingsBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), aiWithBuildingsBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing aiWithBuildings = (CityGrowthRateBreakdownGrowing) aiWithBuildingsBreakdown;
 		assertEquals (12000, aiWithBuildings.getCurrentPopulation ());
@@ -618,7 +625,7 @@ public final class TestCityCalculationsImpl
 		
 		// With all those buildings, at almost max size we still get a reasonable increase
 		cityData.setCityPopulation (21960);
-		final CityGrowthRateBreakdown almostCappedBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, 300, db);
+		final CityGrowthRateBreakdown almostCappedBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), almostCappedBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing almostCapped = (CityGrowthRateBreakdownGrowing) almostCappedBreakdown;
 		assertEquals (21960, almostCapped.getCurrentPopulation ());
@@ -638,7 +645,7 @@ public final class TestCityCalculationsImpl
 
 		// +30 with only 20 to spare would push us over max size
 		cityData.setCityPopulation (21980);
-		final CityGrowthRateBreakdown overCapBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, 300, db);
+		final CityGrowthRateBreakdown overCapBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 22, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), overCapBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownGrowing overCap = (CityGrowthRateBreakdownGrowing) overCapBreakdown;
 		assertEquals (21980, overCap.getCurrentPopulation ());
@@ -657,7 +664,7 @@ public final class TestCityCalculationsImpl
 		assertEquals (20, overCap.getFinalTotal ());
 
 		// Dying - note the race and building modifiers don't apply, because we can't by virtue of bonuses force a city to go over max size
-		final CityGrowthRateBreakdown dyingBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 18, 300, db);
+		final CityGrowthRateBreakdown dyingBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 18, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownDying.class.getName (), dyingBreakdown.getClass ().getName ());
 		final CityGrowthRateBreakdownDying dying = (CityGrowthRateBreakdownDying) dyingBreakdown;
 		assertEquals (21980, dying.getCurrentPopulation ());
@@ -1858,7 +1865,7 @@ public final class TestCityCalculationsImpl
 
 		final DifficultyLevel dl = new DifficultyLevel ();
 		dl.setCityMaxSize (25);
-		dl.setAiProductionRateMultiplier (250);
+		dl.setAiWizardsProductionRateMultiplier (250);
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
@@ -2503,7 +2510,7 @@ public final class TestCityCalculationsImpl
 		
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setCityMaxSize (25);
-		difficultyLevel.setAiProductionRateMultiplier (250);
+		difficultyLevel.setAiWizardsProductionRateMultiplier (250);
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);
@@ -2582,7 +2589,7 @@ public final class TestCityCalculationsImpl
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
 		difficultyLevel.setCityMaxSize (25);
-		difficultyLevel.setAiProductionRateMultiplier (250);
+		difficultyLevel.setAiWizardsProductionRateMultiplier (250);
 		
 		// City owner
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2747,7 +2754,7 @@ public final class TestCityCalculationsImpl
 
 		final DifficultyLevel dl = new DifficultyLevel ();
 		dl.setCityMaxSize (25);
-		dl.setAiProductionRateMultiplier (250);
+		dl.setAiWizardsProductionRateMultiplier (250);
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (overlandMapSize);

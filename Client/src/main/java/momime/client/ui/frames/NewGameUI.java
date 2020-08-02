@@ -673,15 +673,33 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** AI population growth rate multiplier label */
 	private JLabel aiPopulationGrowthRateMultiplierLabel;
+
+	/** AI wizards population growth rate multiplier label */
+	private JLabel aiWizardsPopulationGrowthRateMultiplierLabel;
 	
-	/** AI population growth rate multiplier */
-	private JTextField aiPopulationGrowthRateMultiplier;
+	/** AI raiders population growth rate multiplier label */
+	private JLabel aiRaidersPopulationGrowthRateMultiplierLabel;
+	
+	/** AI wizards population growth rate multiplier */
+	private JTextField aiWizardsPopulationGrowthRateMultiplier;
+
+	/** AI raiders population growth rate multiplier */
+	private JTextField aiRaidersPopulationGrowthRateMultiplier;
 	
 	/** AI production rate multiplier label */
 	private JLabel aiProductionRateMultiplierLabel;
+
+	/** AI wizards production rate multiplier label */
+	private JLabel aiWizardsProductionRateMultiplierLabel;
 	
-	/** AI production rate multiplier*/
-	private JTextField aiProductionRateMultiplier;
+	/** AI raiders production rate multiplier label */
+	private JLabel aiRaidersProductionRateMultiplierLabel;
+	
+	/** AI wizards production rate multiplier*/
+	private JTextField aiWizardsProductionRateMultiplier;
+
+	/** AI raiders production rate multiplier*/
+	private JTextField aiRaidersProductionRateMultiplier;
 	
 	/** AI spell research multiplier label */
 	private JLabel aiSpellResearchMultiplierLabel;
@@ -1865,14 +1883,32 @@ public final class NewGameUI extends MomClientFrameUI
 		aiPopulationGrowthRateMultiplierLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		difficulty1Panel.add (aiPopulationGrowthRateMultiplierLabel, "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplier");
 		
-		aiPopulationGrowthRateMultiplier = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty1Panel.add (aiPopulationGrowthRateMultiplier, "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierEdit");
+		aiWizardsPopulationGrowthRateMultiplierLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (aiWizardsPopulationGrowthRateMultiplierLabel, "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierWizards");
+		
+		aiWizardsPopulationGrowthRateMultiplier = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (aiWizardsPopulationGrowthRateMultiplier, "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierWizardsEdit");
+		
+		aiRaidersPopulationGrowthRateMultiplierLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (aiRaidersPopulationGrowthRateMultiplierLabel, "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierRaiders");
+		
+		aiRaidersPopulationGrowthRateMultiplier = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (aiRaidersPopulationGrowthRateMultiplier, "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierRaidersEdit");
 		
 		aiProductionRateMultiplierLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		difficulty1Panel.add (aiProductionRateMultiplierLabel, "frmNewGameCustomDifficulty1ProductionRateMultiplier");
+
+		aiWizardsProductionRateMultiplierLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (aiWizardsProductionRateMultiplierLabel, "frmNewGameCustomDifficulty1ProductionRateMultiplierWizards");
 		
-		aiProductionRateMultiplier = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty1Panel.add (aiProductionRateMultiplier, "frmNewGameCustomDifficulty1ProductionRateMultiplierEdit");
+		aiWizardsProductionRateMultiplier = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (aiWizardsProductionRateMultiplier, "frmNewGameCustomDifficulty1ProductionRateMultiplierWizardsEdit");
+
+		aiRaidersProductionRateMultiplierLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty1Panel.add (aiRaidersProductionRateMultiplierLabel, "frmNewGameCustomDifficulty1ProductionRateMultiplierRaiders");
+		
+		aiRaidersProductionRateMultiplier = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		difficulty1Panel.add (aiRaidersProductionRateMultiplier, "frmNewGameCustomDifficulty1ProductionRateMultiplierRaidersEdit");
 		
 		aiSpellResearchMultiplierLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		difficulty1Panel.add (aiSpellResearchMultiplierLabel, "frmNewGameCustomDifficulty1SpellResearchMultiplier");
@@ -1886,8 +1922,10 @@ public final class NewGameUI extends MomClientFrameUI
 		aiUpkeepMultiplier = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		difficulty1Panel.add (aiUpkeepMultiplier, "frmNewGameCustomDifficulty1UpkeepMultiplierEdit");
 		
-		difficulty1Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierPercentage");
-		difficulty1Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomDifficulty1ProductionRateMultiplierPercentage");
+		difficulty1Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierWizardsPercentage");
+		difficulty1Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierRaidersPercentage");
+		difficulty1Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomDifficulty1ProductionRateMultiplierWizardsPercentage");
+		difficulty1Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomDifficulty1ProductionRateMultiplierRaidersPercentage");
 		difficulty1Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomDifficulty1SpellResearchMultiplierPercentage");
 		difficulty1Panel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomDifficulty1UpkeepMultiplierPercentage");
 		
@@ -3441,24 +3479,28 @@ public final class NewGameUI extends MomClientFrameUI
 		myrrorNodeSizeSuffix.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomNodes", "MyrrorNodeAuraSuffix"));
 		
 		// CUSTOM DIFFICULTY PANEL (1 of 3)
-		spellPicksLabel.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "SpellPicks"));
-		humanSpellPicksLabel.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanSpellPicks"));
-		aiSpellPicksLabel.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellPicks"));
-		startingGoldLabel.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "Gold"));
-		humanStartingGoldLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanGold"));
-		aiStartingGoldLabel.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIGold"));
-		aiPopulationGrowthRateMultiplierLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplier"));
-		aiProductionRateMultiplierLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplier"));
-		aiSpellResearchMultiplierLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellResearchMultiplier"));
-		aiUpkeepMultiplierLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIUpkeepMultiplier"));
-		allowCustomWizards.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "CustomWizards"));
-		eachWizardOnlyOnce.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "EachWizardOnlyOnce"));
-		wizardCityStartSizeLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "WizardCitySize"));
-		maxCitySizeLabel.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "MaxCitySize"));
-		raiderCityStartSizeLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizePrefix"));
-		raiderCityStartSizeAnd.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizeAnd"));
-		raiderCitySizeCapPrefix.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthPrefix"));
-		raiderCitySizeCapSuffix.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthSuffix"));
+		spellPicksLabel.setText												(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "SpellPicks"));
+		humanSpellPicksLabel.setText										(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanSpellPicks"));
+		aiSpellPicksLabel.setText												(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellPicks"));
+		startingGoldLabel.setText											(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "Gold"));
+		humanStartingGoldLabel.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanGold"));
+		aiStartingGoldLabel.setText											(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIGold"));
+		aiPopulationGrowthRateMultiplierLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplier"));
+		aiWizardsPopulationGrowthRateMultiplierLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplierWizards"));
+		aiRaidersPopulationGrowthRateMultiplierLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplierRaiders"));
+		aiProductionRateMultiplierLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplier"));
+		aiWizardsProductionRateMultiplierLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplierWizards"));
+		aiRaidersProductionRateMultiplierLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplierRaiders"));
+		aiSpellResearchMultiplierLabel.setText							(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellResearchMultiplier"));
+		aiUpkeepMultiplierLabel.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "AIUpkeepMultiplier"));
+		allowCustomWizards.setText										(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "CustomWizards"));
+		eachWizardOnlyOnce.setText										(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "EachWizardOnlyOnce"));
+		wizardCityStartSizeLabel.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "WizardCitySize"));
+		maxCitySizeLabel.setText											(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "MaxCitySize"));
+		raiderCityStartSizeLabel.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizePrefix"));
+		raiderCityStartSizeAnd.setText										(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizeAnd"));
+		raiderCitySizeCapPrefix.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthPrefix"));
+		raiderCitySizeCapSuffix.setText									(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthSuffix"));
 		
 		// CUSTOM DIFFICULTY PANEL (2 of 3)
 		towersMonsters.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerMonsters"));
@@ -4101,27 +4143,29 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Difficulty level
 		final DifficultyLevel difficultyLevel = changeDifficultyLevelAction.getSelectedItem ();
-		humanSpellPicks.setText							(Integer.valueOf (difficultyLevel.getHumanSpellPicks ()).toString ());
-		aiSpellPicks.setText								(Integer.valueOf (difficultyLevel.getAiSpellPicks ()).toString ());
-		humanStartingGold.setText						(Integer.valueOf (difficultyLevel.getHumanStartingGold ()).toString ());
-		aiStartingGold.setText								(Integer.valueOf (difficultyLevel.getAiStartingGold ()).toString ());
-		aiPopulationGrowthRateMultiplier.setText	(Integer.valueOf (difficultyLevel.getAiPopulationGrowthRateMultiplier ()).toString ());
-		aiProductionRateMultiplier.setText			(Integer.valueOf (difficultyLevel.getAiProductionRateMultiplier ()).toString ());
-		aiSpellResearchMultiplier.setText				(Integer.valueOf (difficultyLevel.getAiSpellResearchMultiplier ()).toString ());
-		aiUpkeepMultiplier.setText						(Integer.valueOf (difficultyLevel.getAiUpkeepMultiplier ()).toString ());
-		allowCustomWizards.setSelected				(difficultyLevel.isCustomWizards ());
-		eachWizardOnlyOnce.setSelected				(difficultyLevel.isEachWizardOnlyOnce ());
-		wizardCityStartSize.setText						(Integer.valueOf (difficultyLevel.getWizardCityStartSize ()).toString ());
-		maxCitySize.setText								(Integer.valueOf (difficultyLevel.getCityMaxSize ()).toString ());
-		raiderCityStartSizeMin.setText					(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
-		raiderCityStartSizeMax.setText				(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMax ()).toString ());
-		raiderCitySizeCap.setText						(Integer.valueOf (difficultyLevel.getRaiderCityGrowthCap ()).toString ());
-		towersMonstersMin.setText						(Integer.valueOf (difficultyLevel.getTowerMonstersMinimum ()).toString ());
-		towersMonstersMax.setText					(Integer.valueOf (difficultyLevel.getTowerMonstersMaximum ()).toString ());
-		towersTreasureMin.setText						(Integer.valueOf (difficultyLevel.getTowerTreasureMinimum ()).toString ());
-		towersTreasureMax.setText					(Integer.valueOf (difficultyLevel.getTowerTreasureMaximum ()).toString ());
-		normalLairCount.setText							(Integer.valueOf (difficultyLevel.getNormalLairCount ()).toString ());
-		weakLairCount.setText							(Integer.valueOf (difficultyLevel.getWeakLairCount ()).toString ());
+		humanSpellPicks.setText										(Integer.valueOf (difficultyLevel.getHumanSpellPicks ()).toString ());
+		aiSpellPicks.setText											(Integer.valueOf (difficultyLevel.getAiSpellPicks ()).toString ());
+		humanStartingGold.setText									(Integer.valueOf (difficultyLevel.getHumanStartingGold ()).toString ());
+		aiStartingGold.setText											(Integer.valueOf (difficultyLevel.getAiStartingGold ()).toString ());
+		aiWizardsPopulationGrowthRateMultiplier.setText	(Integer.valueOf (difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier ()).toString ());
+		aiWizardsProductionRateMultiplier.setText			(Integer.valueOf (difficultyLevel.getAiWizardsProductionRateMultiplier ()).toString ());
+		aiRaidersPopulationGrowthRateMultiplier.setText	(Integer.valueOf (difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ()).toString ());
+		aiRaidersProductionRateMultiplier.setText				(Integer.valueOf (difficultyLevel.getAiRaidersProductionRateMultiplier ()).toString ());
+		aiSpellResearchMultiplier.setText							(Integer.valueOf (difficultyLevel.getAiSpellResearchMultiplier ()).toString ());
+		aiUpkeepMultiplier.setText									(Integer.valueOf (difficultyLevel.getAiUpkeepMultiplier ()).toString ());
+		allowCustomWizards.setSelected							(difficultyLevel.isCustomWizards ());
+		eachWizardOnlyOnce.setSelected							(difficultyLevel.isEachWizardOnlyOnce ());
+		wizardCityStartSize.setText									(Integer.valueOf (difficultyLevel.getWizardCityStartSize ()).toString ());
+		maxCitySize.setText											(Integer.valueOf (difficultyLevel.getCityMaxSize ()).toString ());
+		raiderCityStartSizeMin.setText								(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
+		raiderCityStartSizeMax.setText							(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMax ()).toString ());
+		raiderCitySizeCap.setText									(Integer.valueOf (difficultyLevel.getRaiderCityGrowthCap ()).toString ());
+		towersMonstersMin.setText									(Integer.valueOf (difficultyLevel.getTowerMonstersMinimum ()).toString ());
+		towersMonstersMax.setText								(Integer.valueOf (difficultyLevel.getTowerMonstersMaximum ()).toString ());
+		towersTreasureMin.setText									(Integer.valueOf (difficultyLevel.getTowerTreasureMinimum ()).toString ());
+		towersTreasureMax.setText								(Integer.valueOf (difficultyLevel.getTowerTreasureMaximum ()).toString ());
+		normalLairCount.setText										(Integer.valueOf (difficultyLevel.getNormalLairCount ()).toString ());
+		weakLairCount.setText										(Integer.valueOf (difficultyLevel.getWeakLairCount ()).toString ());
 		
 		for (final DifficultyLevelPlane plane : difficultyLevel.getDifficultyLevelPlane ())
 			if (plane.getPlaneNumber () == 0)
@@ -4361,27 +4405,29 @@ public final class NewGameUI extends MomClientFrameUI
 		myrrorDifficultyLevel.setWeakLairTreasureMaximum	(Integer.parseInt (myrrorWeakLairTreasureMax.getText ()));
 		
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
-	    difficultyLevel.setHumanSpellPicks						(Integer.parseInt (humanSpellPicks.getText ()));
-	    difficultyLevel.setAiSpellPicks								(Integer.parseInt (aiSpellPicks.getText ()));
-	    difficultyLevel.setHumanStartingGold						(Integer.parseInt (humanStartingGold.getText ()));
-	    difficultyLevel.setAiStartingGold							(Integer.parseInt (aiStartingGold.getText ()));
-	    difficultyLevel.setAiPopulationGrowthRateMultiplier	(Integer.parseInt (aiPopulationGrowthRateMultiplier.getText ()));
-	    difficultyLevel.setAiProductionRateMultiplier			(Integer.parseInt (aiProductionRateMultiplier.getText ()));
-	    difficultyLevel.setAiSpellResearchMultiplier			(Integer.parseInt (aiSpellResearchMultiplier.getText ()));
-	    difficultyLevel.setAiUpkeepMultiplier						(Integer.parseInt (aiUpkeepMultiplier.getText ()));
-	    difficultyLevel.setCustomWizards							(allowCustomWizards.isSelected ());
-	    difficultyLevel.setEachWizardOnlyOnce					(eachWizardOnlyOnce.isSelected ());
-	    difficultyLevel.setNormalLairCount						(Integer.parseInt (normalLairCount.getText ()));
-	    difficultyLevel.setWeakLairCount							(Integer.parseInt (weakLairCount.getText ()));
-	    difficultyLevel.setTowerMonstersMinimum				(Integer.parseInt (towersMonstersMin.getText ()));
-	    difficultyLevel.setTowerMonstersMaximum			(Integer.parseInt (towersMonstersMax.getText ()));
-	    difficultyLevel.setTowerTreasureMinimum				(Integer.parseInt (towersTreasureMin.getText ()));
-	    difficultyLevel.setTowerTreasureMaximum			(Integer.parseInt (towersTreasureMax.getText ()));
-	    difficultyLevel.setRaiderCityStartSizeMin				(Integer.parseInt (raiderCityStartSizeMin.getText ()));
-	    difficultyLevel.setRaiderCityStartSizeMax				(Integer.parseInt (raiderCityStartSizeMax.getText ()));
-	    difficultyLevel.setRaiderCityGrowthCap					(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
-	    difficultyLevel.setWizardCityStartSize					(Integer.parseInt (wizardCityStartSize.getText ()));
-	    difficultyLevel.setCityMaxSize								(Integer.parseInt (maxCitySize.getText ()));
+	    difficultyLevel.setHumanSpellPicks									(Integer.parseInt (humanSpellPicks.getText ()));
+	    difficultyLevel.setAiSpellPicks											(Integer.parseInt (aiSpellPicks.getText ()));
+	    difficultyLevel.setHumanStartingGold									(Integer.parseInt (humanStartingGold.getText ()));
+	    difficultyLevel.setAiStartingGold										(Integer.parseInt (aiStartingGold.getText ()));
+	    difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier	(Integer.parseInt (aiWizardsPopulationGrowthRateMultiplier.getText ()));
+	    difficultyLevel.setAiWizardsProductionRateMultiplier			(Integer.parseInt (aiWizardsProductionRateMultiplier.getText ()));
+	    difficultyLevel.setAiRaidersPopulationGrowthRateMultiplier	(Integer.parseInt (aiRaidersPopulationGrowthRateMultiplier.getText ()));
+	    difficultyLevel.setAiRaidersProductionRateMultiplier			(Integer.parseInt (aiRaidersProductionRateMultiplier.getText ()));
+	    difficultyLevel.setAiSpellResearchMultiplier						(Integer.parseInt (aiSpellResearchMultiplier.getText ()));
+	    difficultyLevel.setAiUpkeepMultiplier									(Integer.parseInt (aiUpkeepMultiplier.getText ()));
+	    difficultyLevel.setCustomWizards										(allowCustomWizards.isSelected ());
+	    difficultyLevel.setEachWizardOnlyOnce								(eachWizardOnlyOnce.isSelected ());
+	    difficultyLevel.setNormalLairCount									(Integer.parseInt (normalLairCount.getText ()));
+	    difficultyLevel.setWeakLairCount										(Integer.parseInt (weakLairCount.getText ()));
+	    difficultyLevel.setTowerMonstersMinimum							(Integer.parseInt (towersMonstersMin.getText ()));
+	    difficultyLevel.setTowerMonstersMaximum						(Integer.parseInt (towersMonstersMax.getText ()));
+	    difficultyLevel.setTowerTreasureMinimum							(Integer.parseInt (towersTreasureMin.getText ()));
+	    difficultyLevel.setTowerTreasureMaximum						(Integer.parseInt (towersTreasureMax.getText ()));
+	    difficultyLevel.setRaiderCityStartSizeMin							(Integer.parseInt (raiderCityStartSizeMin.getText ()));
+	    difficultyLevel.setRaiderCityStartSizeMax							(Integer.parseInt (raiderCityStartSizeMax.getText ()));
+	    difficultyLevel.setRaiderCityGrowthCap								(Integer.parseInt (doubleNodeAuraMagicPower.getText ()));
+	    difficultyLevel.setWizardCityStartSize								(Integer.parseInt (wizardCityStartSize.getText ()));
+	    difficultyLevel.setCityMaxSize											(Integer.parseInt (maxCitySize.getText ()));
 	    difficultyLevel.getDifficultyLevelPlane ().add (arcanusDifficultyLevel);
 	    difficultyLevel.getDifficultyLevelPlane ().add (myrrorDifficultyLevel);
 	    

@@ -23643,8 +23643,10 @@
 		<humanStartingGold>125</humanStartingGold>
 		<aiStartingGold>100</aiStartingGold>
 		<customWizards>false</customWizards>
-		<aiPopulationGrowthRateMultiplier>100</aiPopulationGrowthRateMultiplier>
-		<aiProductionRateMultiplier>50</aiProductionRateMultiplier>
+		<aiWizardsPopulationGrowthRateMultiplier>100</aiWizardsPopulationGrowthRateMultiplier>
+		<aiRaidersPopulationGrowthRateMultiplier>100</aiRaidersPopulationGrowthRateMultiplier>
+		<aiWizardsProductionRateMultiplier>50</aiWizardsProductionRateMultiplier>
+		<aiRaidersProductionRateMultiplier>50</aiRaidersProductionRateMultiplier>
 		<aiSpellResearchMultiplier>100</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>100</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
@@ -23723,8 +23725,10 @@
 		<humanStartingGold>100</humanStartingGold>
 		<aiStartingGold>100</aiStartingGold>
 		<customWizards>true</customWizards>
-		<aiPopulationGrowthRateMultiplier>100</aiPopulationGrowthRateMultiplier>
-		<aiProductionRateMultiplier>100</aiProductionRateMultiplier>
+		<aiWizardsPopulationGrowthRateMultiplier>100</aiWizardsPopulationGrowthRateMultiplier>
+		<aiRaidersPopulationGrowthRateMultiplier>100</aiRaidersPopulationGrowthRateMultiplier>
+		<aiWizardsProductionRateMultiplier>100</aiWizardsProductionRateMultiplier>
+		<aiRaidersProductionRateMultiplier>100</aiRaidersProductionRateMultiplier>
 		<aiSpellResearchMultiplier>100</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>90</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
@@ -23803,8 +23807,10 @@
 		<humanStartingGold>75</humanStartingGold>
 		<aiStartingGold>100</aiStartingGold>
 		<customWizards>true</customWizards>
-		<aiPopulationGrowthRateMultiplier>150</aiPopulationGrowthRateMultiplier>
-		<aiProductionRateMultiplier>150</aiProductionRateMultiplier>
+		<aiWizardsPopulationGrowthRateMultiplier>150</aiWizardsPopulationGrowthRateMultiplier>
+		<aiRaidersPopulationGrowthRateMultiplier>115</aiRaidersPopulationGrowthRateMultiplier>
+		<aiWizardsProductionRateMultiplier>150</aiWizardsProductionRateMultiplier>
+		<aiRaidersProductionRateMultiplier>125</aiRaidersProductionRateMultiplier>
 		<aiSpellResearchMultiplier>100</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>75</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
@@ -23883,8 +23889,10 @@
 		<humanStartingGold>50</humanStartingGold>
 		<aiStartingGold>100</aiStartingGold>
 		<customWizards>true</customWizards>
-		<aiPopulationGrowthRateMultiplier>200</aiPopulationGrowthRateMultiplier>
-		<aiProductionRateMultiplier>200</aiProductionRateMultiplier>
+		<aiWizardsPopulationGrowthRateMultiplier>200</aiWizardsPopulationGrowthRateMultiplier>
+		<aiRaidersPopulationGrowthRateMultiplier>130</aiRaidersPopulationGrowthRateMultiplier>
+		<aiWizardsProductionRateMultiplier>200</aiWizardsProductionRateMultiplier>
+		<aiRaidersProductionRateMultiplier>150</aiRaidersProductionRateMultiplier>
 		<aiSpellResearchMultiplier>110</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>60</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
@@ -23963,8 +23971,10 @@
 		<humanStartingGold>25</humanStartingGold>
 		<aiStartingGold>100</aiStartingGold>
 		<customWizards>true</customWizards>
-		<aiPopulationGrowthRateMultiplier>300</aiPopulationGrowthRateMultiplier>
-		<aiProductionRateMultiplier>250</aiProductionRateMultiplier>
+		<aiWizardsPopulationGrowthRateMultiplier>300</aiWizardsPopulationGrowthRateMultiplier>
+		<aiRaidersPopulationGrowthRateMultiplier>145</aiRaidersPopulationGrowthRateMultiplier>
+		<aiWizardsProductionRateMultiplier>250</aiWizardsProductionRateMultiplier>
+		<aiRaidersProductionRateMultiplier>175</aiRaidersProductionRateMultiplier>
 		<aiSpellResearchMultiplier>125</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>50</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
@@ -24043,8 +24053,10 @@
 		<humanStartingGold>25</humanStartingGold>
 		<aiStartingGold>100</aiStartingGold>
 		<customWizards>true</customWizards>
-		<aiPopulationGrowthRateMultiplier>300</aiPopulationGrowthRateMultiplier>
-		<aiProductionRateMultiplier>250</aiProductionRateMultiplier>
+		<aiWizardsPopulationGrowthRateMultiplier>300</aiWizardsPopulationGrowthRateMultiplier>
+		<aiRaidersPopulationGrowthRateMultiplier>145</aiRaidersPopulationGrowthRateMultiplier>
+		<aiWizardsProductionRateMultiplier>250</aiWizardsProductionRateMultiplier>
+		<aiRaidersProductionRateMultiplier>175</aiRaidersProductionRateMultiplier>
 		<aiSpellResearchMultiplier>125</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>50</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
@@ -25158,7 +25170,11 @@
 		<languageEntry languageEntryID="SpellPicks" />
 		<languageEntry languageEntryID="Gold" />
 		<languageEntry languageEntryID="AIPopulationGrowthRateMultiplier" />
+		<languageEntry languageEntryID="AIPopulationGrowthRateMultiplierWizards" />
+		<languageEntry languageEntryID="AIPopulationGrowthRateMultiplierRaiders" />
 		<languageEntry languageEntryID="AIProductionRateMultiplier" />
+		<languageEntry languageEntryID="AIProductionRateMultiplierWizards" />
+		<languageEntry languageEntryID="AIProductionRateMultiplierRaiders" />
 		<languageEntry languageEntryID="AISpellResearchMultiplier" />
 		<languageEntry languageEntryID="AIUpkeepMultiplier" />
 		<languageEntry languageEntryID="WizardCitySize" />

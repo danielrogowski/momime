@@ -202,7 +202,7 @@ public final class TestCityViewUI extends ClientTestData
 		sd.setFogOfWarSetting (fowSettings);
 		
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
-		difficultyLevel.setAiPopulationGrowthRateMultiplier (300);
+		difficultyLevel.setAiWizardsPopulationGrowthRateMultiplier (300);
 		sd.setDifficultyLevel (difficultyLevel);
 		
 		final MomClient client = mock (MomClient.class);
@@ -240,7 +240,7 @@ public final class TestCityViewUI extends ClientTestData
 		
 		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
 		cityGrowthBreakdown.setFinalTotal (70);
-		when (calc.calculateCityGrowthRate (players, terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), maxCitySize, 300, db)).thenReturn (cityGrowthBreakdown);
+		when (calc.calculateCityGrowthRate (players, terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
 		
 		// Display at least some landscape
 		final CityViewElementGfx landscape = new CityViewElementGfx ();

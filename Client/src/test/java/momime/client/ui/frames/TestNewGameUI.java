@@ -157,7 +157,11 @@ public final class TestNewGameUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanGold")).thenReturn ("Human");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIGold")).thenReturn ("AI");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplier")).thenReturn ("AI population growth rate multiplier:");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplierWizards")).thenReturn ("Wizards");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplierRaiders")).thenReturn ("Raiders");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplier")).thenReturn ("AI production rate multiplier:");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplierWizards")).thenReturn ("Wizards");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplierRaiders")).thenReturn ("Raiders");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellResearchMultiplier")).thenReturn ("AI spell research multiplier:");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIUpkeepMultiplier")).thenReturn ("AI upkeep multiplier:");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "CustomWizards")).thenReturn ("Allow custom wizards?");

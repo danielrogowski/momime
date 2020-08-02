@@ -69,6 +69,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.RenderCityData;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 
 /**
@@ -419,7 +420,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @param buildings Known buildings
 	 * @param cityLocation Location of the city to calculate for
 	 * @param maxCitySize Maximum city size with all buildings taken into account - i.e. the RE06 output from calculateAllCityProductions () or calculateSingleCityProduction ()
-	 * @param aiPopulationGrowthRateMultiplier Difficulty level value from session description
+	 * @param difficultyLevel Chosen difficulty level, from session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Breakdown of all the values used in calculating the growth rate of this city; if the caller doesn't care about the breakdown and just wants the value, just call .getFinalTotal () on the breakdown
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
@@ -427,7 +428,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	@Override
 	public final CityGrowthRateBreakdown calculateCityGrowthRate (final List<? extends PlayerPublicDetails> players, final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final int aiPopulationGrowthRateMultiplier, final CommonDatabase db)
+		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
 		log.trace ("Entering calculateCityGrowthRate: " + cityLocation);
@@ -501,7 +502,12 @@ public final class CityCalculationsImpl implements CityCalculations
 			
 			// AI players get a special bonus
 			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
-			growing.setDifficultyLevelMultiplier (cityOwner.getPlayerDescription ().isHuman () ? 100 : aiPopulationGrowthRateMultiplier);
+			final MomPersistentPlayerPublicKnowledge cityOwnerPub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
+			if (cityOwner.getPlayerDescription ().isHuman ())
+				growing.setDifficultyLevelMultiplier (100);
+			else
+				growing.setDifficultyLevelMultiplier (PlayerKnowledgeUtils.isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
+					difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ());
 
 			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingHousingModifier () * growing.getDifficultyLevelMultiplier ()) / 100); 
 
@@ -1207,7 +1213,11 @@ public final class CityCalculationsImpl implements CityCalculations
 			
 			// AI players get a special bonus
 			if ((cityOwner != null) && (!cityOwner.getPlayerDescription ().isHuman ()) && (productionType.isDifficultyLevelMultiplierApplies ()))
-				thisProduction.setDifficultyLevelMultiplier (difficultyLevel.getAiProductionRateMultiplier ());
+			{
+				final MomPersistentPlayerPublicKnowledge cityOwnerPub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
+				thisProduction.setDifficultyLevelMultiplier (PlayerKnowledgeUtils.isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsProductionRateMultiplier () :
+					difficultyLevel.getAiRaidersProductionRateMultiplier ());
+			}
 			else
 				thisProduction.setDifficultyLevelMultiplier (100);
 			

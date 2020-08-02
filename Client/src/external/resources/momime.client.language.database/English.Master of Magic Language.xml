@@ -5199,8 +5199,20 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="AIPopulationGrowthRateMultiplier">
 			<languageEntryText>AI population growth rate multiplier:</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="AIPopulationGrowthRateMultiplierWizards">
+			<languageEntryText>Wizards</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AIPopulationGrowthRateMultiplierRaiders">
+			<languageEntryText>Raiders</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="AIProductionRateMultiplier">
 			<languageEntryText>AI production rate multiplier:</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AIProductionRateMultiplierWizards">
+			<languageEntryText>Wizards</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="AIProductionRateMultiplierRaiders">
+			<languageEntryText>Raiders</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="AISpellResearchMultiplier">
 			<languageEntryText>AI spell research multiplier:</languageEntryText>

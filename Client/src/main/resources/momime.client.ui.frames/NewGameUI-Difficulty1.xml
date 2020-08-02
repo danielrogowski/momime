@@ -61,154 +61,202 @@
 		<top>23</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
-	</component>
+	</component>	
 	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplier">
 		<left>20</left>
 		<top>50</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierEdit">
-		<left>300</left>
-		<top>43</top>
-		<horizontalAlignment>1.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierPercentage">
-		<left>300</left>
-		<top>50</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplier">
-		<left>20</left>
+	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierWizards">
+		<left>50</left>
 		<top>70</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplierEdit">
+	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierWizardsEdit">
+		<left>160</left>
+		<top>63</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierWizardsPercentage">
+		<left>160</left>
+		<top>70</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierRaiders">
+		<left>190</left>
+		<top>70</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierRaidersEdit">
 		<left>300</left>
 		<top>63</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplierPercentage">
+	<component name="frmNewGameCustomDifficulty1PopulationGrowthRateMultiplierRaidersPercentage">
 		<left>300</left>
 		<top>70</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty1SpellResearchMultiplier">
+	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplier">
 		<left>20</left>
 		<top>90</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty1SpellResearchMultiplierEdit">
-		<left>300</left>
-		<top>83</top>
-		<horizontalAlignment>1.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty1SpellResearchMultiplierPercentage">
-		<left>300</left>
-		<top>90</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty1UpkeepMultiplier">
-		<left>20</left>
+	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplierWizards">
+		<left>50</left>
 		<top>110</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty1UpkeepMultiplierEdit">
+	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplierWizardsEdit">
+		<left>160</left>
+		<top>103</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplierWizardsPercentage">
+		<left>160</left>
+		<top>110</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplierRaiders">
+		<left>190</left>
+		<top>110</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplierRaidersEdit">
 		<left>300</left>
 		<top>103</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty1UpkeepMultiplierPercentage">
+	<component name="frmNewGameCustomDifficulty1ProductionRateMultiplierRaidersPercentage">
 		<left>300</left>
 		<top>110</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>	
+	<component name="frmNewGameCustomDifficulty1SpellResearchMultiplier">
+		<left>20</left>
+		<top>130</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1SpellResearchMultiplierEdit">
+		<left>300</left>
+		<top>123</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1SpellResearchMultiplierPercentage">
+		<left>300</left>
+		<top>130</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1UpkeepMultiplier">
+		<left>20</left>
+		<top>150</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1UpkeepMultiplierEdit">
+		<left>300</left>
+		<top>143</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomDifficulty1UpkeepMultiplierPercentage">
+		<left>300</left>
+		<top>150</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1CustomWizards">
 		<left>20</left>
-		<top>140</top>
+		<top>180</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1EachWizardOnlyOnce">
 		<left>20</left>
-		<top>155</top>
+		<top>195</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1WizardCitySize">
 		<left>20</left>
-		<top>190</top>
+		<top>230</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1WizardCitySizeEdit">
 		<left>220</left>
-		<top>183</top>
+		<top>223</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1MaxCitySize">
 		<left>20</left>
-		<top>210</top>
+		<top>250</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1MaxCitySizeEdit">
 		<left>220</left>
-		<top>203</top>
+		<top>243</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCitySizePrefix">
 		<left>20</left>
-		<top>250</top>
+		<top>290</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCitySizeMin">
 		<left>20</left>
-		<top>263</top>
+		<top>303</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCitySizeAnd">
 		<left>90</left>
-		<top>270</top>
+		<top>310</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCitySizeMax">
 		<left>115</left>
-		<top>263</top>
+		<top>303</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthPrefix">
 		<left>185</left>
-		<top>270</top>
+		<top>310</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthEdit">
 		<left>20</left>
-		<top>283</top>
+		<top>323</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthSuffix">
 		<left>90</left>
-		<top>290</top>
+		<top>330</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

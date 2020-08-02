@@ -136,8 +136,10 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 			<xsd:element minOccurs="1" maxOccurs="1" name="humanStartingGold" type="momimecommon:undoubledProductionValue" nxe:label="Human starting gold" nxe:gridwidth="130" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiStartingGold" type="momimecommon:undoubledProductionValue" nxe:label="AI starting gold" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="customWizards" type="xsd:boolean" nxe:label="Custom wizards?" nxe:gridwidth="120" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="aiPopulationGrowthRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI population growth rate multipler" nxe:gridwidth="200" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="aiProductionRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI production rate multipler" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiWizardsPopulationGrowthRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI wizards population growth rate multipler" nxe:gridwidth="230" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiRaidersPopulationGrowthRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI raiders population growth rate multipler" nxe:gridwidth="230" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiWizardsProductionRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI wizards production rate multipler" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="aiRaidersProductionRateMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI raiders production rate multipler" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellResearchMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI spell research multipler" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiUpkeepMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI upkeep multipler" nxe:gridwidth="140" />
 	

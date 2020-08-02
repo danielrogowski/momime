@@ -1320,12 +1320,24 @@
 	</pick>
 	<wizard wizardID="RAIDERS">
 		<wizardName>Raiders (Neutral cities)</wizardName>
+		<baseNeedForNewUnits>10</baseNeedForNewUnits>
+		<buildingChance>4</buildingChance>
+		<settlersChance>2</settlersChance>
+		<engineersChance>1</engineersChance>
 	</wizard>
 	<wizard wizardID="MONSTERS">
 		<wizardName>Rampaging monsters (incl. monsters in nodes/lairs/towers)</wizardName>
+		<baseNeedForNewUnits>0</baseNeedForNewUnits>
+		<buildingChance>0</buildingChance>
+		<settlersChance>0</settlersChance>
+		<engineersChance>0</engineersChance>
 	</wizard>
 	<wizard wizardID="WZ01">
 		<wizardName>Merlin</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB01">
@@ -1523,6 +1535,10 @@
 	</wizard>
 	<wizard wizardID="WZ02">
 		<wizardName>Raven</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB05">
@@ -1729,6 +1745,10 @@
 	</wizard>
 	<wizard wizardID="WZ03">
 		<wizardName>Sharee</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB02">
@@ -1926,6 +1946,10 @@
 	</wizard>
 	<wizard wizardID="WZ04">
 		<wizardName>Lo Pan</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB05">
@@ -2120,6 +2144,10 @@
 	</wizard>
 	<wizard wizardID="WZ05">
 		<wizardName>Jafar</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB05">
@@ -2296,6 +2324,10 @@
 	</wizard>
 	<wizard wizardID="WZ06">
 		<wizardName>Oberic</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB04">
@@ -2493,6 +2525,10 @@
 	</wizard>
 	<wizard wizardID="WZ07">
 		<wizardName>Rjak</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB02">
@@ -2657,6 +2693,10 @@
 	</wizard>
 	<wizard wizardID="WZ08">
 		<wizardName>Sss'ra</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB01">
@@ -2863,6 +2903,10 @@
 	</wizard>
 	<wizard wizardID="WZ09">
 		<wizardName>Tauron</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB03">
@@ -3036,6 +3080,10 @@
 	</wizard>
 	<wizard wizardID="WZ10">
 		<wizardName>Freya</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB04">
@@ -3218,6 +3266,10 @@
 	</wizard>
 	<wizard wizardID="WZ11">
 		<wizardName>Horus</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB01">
@@ -3415,6 +3467,10 @@
 	</wizard>
 	<wizard wizardID="WZ12">
 		<wizardName>Ariel</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB01">
@@ -3597,6 +3653,10 @@
 	</wizard>
 	<wizard wizardID="WZ13">
 		<wizardName>Tlaloc</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB02">
@@ -3791,6 +3851,10 @@
 	</wizard>
 	<wizard wizardID="WZ14">
 		<wizardName>Kali</wizardName>
+		<baseNeedForNewUnits>3</baseNeedForNewUnits>
+		<buildingChance>10</buildingChance>
+		<settlersChance>4</settlersChance>
+		<engineersChance>2</engineersChance>
 		<wizardPickCount pickCount="0" />
 		<wizardPickCount pickCount="1">
 			<wizardPick pickID="MB05">

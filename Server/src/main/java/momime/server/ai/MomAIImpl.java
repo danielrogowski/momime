@@ -242,7 +242,7 @@ public final class MomAIImpl implements MomAI
 					}
 				}
 				
-				int needForNewUnits = 0;
+				int needForNewUnitsMod = 0;
 				if ((isRaiders) || ((unitFactories != null) && (!unitFactories.isEmpty ())))
 				{
 					// We need some kind of rating for how badly we think we need to construct more combat units.
@@ -250,10 +250,10 @@ public final class MomAIImpl implements MomAI
 					// This could be a bit more clever, like "are there places we want to attack that we need more/stronger units to consider the attack",
 					// but I don't want the AI churning out armies of swordsmen just to try to beat a great drake.
 					final int mobileCombatUnits = (int) mobileUnits.stream ().filter (u -> u.getAiUnitType () == AIUnitType.COMBAT_UNIT).count ();
-					needForNewUnits = 3 + underdefendedLocations.size () +
+					needForNewUnitsMod = 3 + underdefendedLocations.size () +
 						(Math.min (mom.getGeneralPublicKnowledge ().getTurnNumber (), 200) / 5) - mobileCombatUnits;
 				}
-				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnits);
+				log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " need for new units = " + needForNewUnitsMod);
 				
 				// Decide what to build in all of this players' cities, in any that don't currently have construction projects.
 				// We always complete the previous construction project, so that if we are deciding between making units in our unit factory
@@ -303,7 +303,7 @@ public final class MomAIImpl implements MomAI
 										}
 	
 									// Now we can decide what to build
-									getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnits, constructableHere, wantedUnitTypes,
+									getCityAI ().decideWhatToBuild (cityLocation, cityData, numberOfCities, isUnitFactory, needForNewUnitsMod, constructableHere, wantedUnitTypes,
 										priv.getFogOfWarMemory ().getMap (), priv.getFogOfWarMemory ().getBuilding (),
 										mom.getSessionDescription (), mom.getServerDB ());
 									

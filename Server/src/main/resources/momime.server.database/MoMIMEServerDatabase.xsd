@@ -1096,7 +1096,11 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:complexContent>
 			<xsd:extension base="momimecommon:wizard">
 				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="wizardName" type="momimecommon:description" nxe:label="Wizard Name" nxe:gridwidth="300" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="wizardName" type="momimecommon:description" nxe:label="Wizard Name" nxe:gridwidth="250" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="baseNeedForNewUnits" type="momimesvr:weighting" nxe:label="Base need for new units" nxe:gridwidth="250" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="buildingChance" type="momimesvr:weighting" nxe:label="Building chance" nxe:gridwidth="250" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="settlersChance" type="momimesvr:weighting" nxe:label="Settlers chance" nxe:gridwidth="250" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="engineersChance" type="momimesvr:weighting" nxe:label="Engineers chance" nxe:gridwidth="250" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPickCount" type="momimesvr:wizardPickCount" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -1841,6 +1845,10 @@ Ordering of this list is very significant.
 
 	<xsd:simpleType name="aiUnitCategoryID">
 		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="weighting">
+		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	
 </xsd:schema>

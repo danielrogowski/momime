@@ -551,10 +551,18 @@ public final class CombatUI extends MomClientFrameUI
 									{
 										final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (),
 											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+
+										final Integer variableDamage;
+										if ((getSpellBeingTargetted ().getCombatMaxDamage () != null) &&
+											(getCastingSource ().getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
+											(getCastingSource ().getFixedSpellNumber () == null))				// or casting fixed spells like Magicians' Fireball spell
+											
+											variableDamage = getVariableManaUI ().getVariableDamage ();
+										else
+											variableDamage = null;
 										
 										validTarget = (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-											(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
-												(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
+											(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), variableDamage,
 												xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 												getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 									}
@@ -1051,9 +1059,17 @@ public final class CombatUI extends MomClientFrameUI
 									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (),
 										getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
+									final Integer variableDamage;
+									if ((getSpellBeingTargetted ().getCombatMaxDamage () != null) &&
+										(getCastingSource ().getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
+										(getCastingSource ().getFixedSpellNumber () == null))				// or casting fixed spells like Magicians' Fireball spell
+										
+										variableDamage = getVariableManaUI ().getVariableDamage ();
+									else
+										variableDamage = null;
+									
 									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (),
-										(getSpellBeingTargetted ().getCombatMaxDamage () == null) ? null : getVariableManaUI ().getVariableDamage (),
+										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), variableDamage,
 										xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)

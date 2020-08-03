@@ -680,6 +680,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 	</bean>
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">

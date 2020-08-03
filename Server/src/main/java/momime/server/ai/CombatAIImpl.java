@@ -210,13 +210,14 @@ public final class CombatAIImpl implements CombatAI
 	 * @param combatLocation Where the combat is taking place 
 	 * @param combatMap Combat map
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we did something with the unit or not
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final void moveOneUnit (final ExpandedUnitDetails tu, final MapCoordinates3DEx combatLocation,
+	final boolean moveOneUnit (final ExpandedUnitDetails tu, final MapCoordinates3DEx combatLocation,
 		final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -233,10 +234,12 @@ public final class CombatAIImpl implements CombatAI
 			movementTypes, tu, mom.getGeneralServerKnowledge ().getTrueMap (),
 			combatMap, combatMapSize, mom.getServerDB ());
 		
-		// Work out which enemy we want to attack
-		final MemoryUnit bestUnit = selectBestTarget (tu, combatLocation, movementDirections, movementTypes,
-			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+		// Work out which enemy we want to attack, if we can even make some kind of attack that is
+		final MemoryUnit bestUnit = (getUnitCalculations ().canMakeRangedAttack (tu) || getUnitCalculations ().canMakeMeleeAttack (tu)) ? 
+			selectBestTarget (tu, combatLocation, movementDirections, movementTypes, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) : null;
 		
+		boolean moved = false;
 		if (bestUnit != null)
 		{
 			// If we can attack at range then shoot it - if not then start walking towards it, or if adjacent to it already then attack it
@@ -263,9 +266,11 @@ public final class CombatAIImpl implements CombatAI
 			
 			// Move there
 			getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
+			moved = true;
 		}
 		
-		log.trace ("Exiting moveOneUnit");
+		log.trace ("Exiting moveOneUnit = " + moved);
+		return moved;
 	}
 	
 	/**
@@ -277,6 +282,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @param combatLocation Where the combat is taking place 
 	 * @param currentPlayer The player whose turn is being taken
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether we had at least one unit take some useful action or not
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
@@ -284,7 +290,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
+	public final boolean aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering aiCombatTurn: Player ID + " + currentPlayer.getPlayerDescription ().getPlayerID ());
@@ -312,14 +318,17 @@ public final class CombatAIImpl implements CombatAI
 		Collections.sort (sortedUnitsToMove);
 		
 		// Move each unit in turn
+		boolean moved = false;
 		for (final ExpandedUnitDetailsAndCombatAIOrder tu : sortedUnitsToMove)
 			
 			// A previous unit might have already fired the shot that wiped out the enemy and ended the
 			// combat, in which case all units would have had their CombatX, CombatY values set to -1, -1
 			if (tu.getUnit ().getCombatPosition () != null)
-				moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom);
+				if (moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom))
+					moved = true;
 		
-		log.trace ("Exiting aiCombatTurn");
+		log.trace ("Exiting aiCombatTurn = " + moved);
+		return moved;
 	}
 
 	/**

@@ -98,6 +98,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
+	/** Starting and ending combats */
+	private CombatStartAndEnd combatStartAndEnd;
+	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
 	 * city wall corners and the main feature (node, temple, tower of wizardry, etc. on the defender side).
@@ -592,9 +595,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// We cannot safely determine the players involved until we've proved there are actually some units on each side.
 		// Keep going until one side is wiped out or a human player needs to take their turn.
 		boolean aiPlayerTurn = true;
+		int consecutiveTurnsWithoutDoingAnything = 0;
 		CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
-		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()))
+		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()) && (consecutiveTurnsWithoutDoingAnything < 2))
 		{
 			// Who should take their turn next?
 			// If human player hits Auto, then we want to play their turn for them through their AI, without switching players
@@ -649,11 +653,16 @@ public final class CombatProcessingImpl implements CombatProcessing
 					// Nothing to do here - we already notified them to take their turn so the loop & this method will just
 					// exit and combat will proceed when we receive messages from the player.
 					aiPlayerTurn = false;
+					consecutiveTurnsWithoutDoingAnything = 0;
 				}
 				else
 				{
 					// Take AI players' turn
-					getCombatAI ().aiCombatTurn (combatLocation, combatCurrentPlayer, mom);
+					if (getCombatAI ().aiCombatTurn (combatLocation, combatCurrentPlayer, mom))
+						consecutiveTurnsWithoutDoingAnything = 0;
+					else
+						consecutiveTurnsWithoutDoingAnything++;
+					
 					aiPlayerTurn = true;
 					autoControlHumanPlayer = false;
 				}
@@ -664,6 +673,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (mom.getPlayers ().size () > 0)
 				combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 					(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+		}
+		
+		// If the combat is a stalemate, then just declare the defender as the winner
+		if ((combatPlayers.bothFound ()) && (consecutiveTurnsWithoutDoingAnything >= 2))
+		{
+			log.debug ("Combat at " + combatLocation + " ended in stalemate so ending immediately with defender as the winner");
+			getCombatStartAndEnd ().combatEnded (combatLocation, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
+				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), null, mom);
 		}
 		
 		log.trace ("Exiting progressCombat");
@@ -1285,5 +1302,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Starting and ending combats
+	 */
+	public final CombatStartAndEnd getCombatStartAndEnd ()
+	{
+		return combatStartAndEnd;
+	}
+
+	/**
+	 * @param cse Starting and ending combats
+	 */
+	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
+	{
+		combatStartAndEnd = cse;
 	}
 }

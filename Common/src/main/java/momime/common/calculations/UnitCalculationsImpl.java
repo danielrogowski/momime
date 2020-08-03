@@ -311,7 +311,34 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		log.trace ("Entering canMakeRangedAttack = " + result);
 		return result;
 	}
-	
+
+	/**
+	 * This is much simpler than canMakeRangedAttack, as we don't need ammo to fire with.
+	 * This is really here to stop settlers with 0 attack trying to attack other units.
+	 * 
+	 * @param unit Unit to calculate for
+	 * @return Whether the unit can make a melee attack in combat
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 */
+	@Override
+	public final boolean canMakeMeleeAttack (final ExpandedUnitDetails unit) throws MomException
+	{
+		log.trace ("Entering canMakeMeleeAttack: Unit URN " + unit.getUnitURN ());
+		
+		final boolean result;
+		
+		// First we have to actually have a ranged attack
+		if ((!unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) ||
+			(unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK) <= 0))
+			result = false;
+		
+		else
+			result = true;
+
+		log.trace ("Entering canMakeMeleeAttack = " + result);
+		return result;
+	}
+		
 	/**
 	 * @param unitStack Unit stack to check
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
@@ -618,7 +645,16 @@ public final class UnitCalculationsImpl implements UnitCalculations
 							{
 								// Is there an enemy in this square to attack?
 								if (enemyUnits [moveTo.getY ()] [moveTo.getX ()])
-									movementTypes [moveTo.getY ()] [moveTo.getX ()] = CombatMoveType.MELEE;
+								{
+									// Can we attack the unit here?
+									if (canMakeMeleeAttack (unitBeingMoved))
+										movementTypes [moveTo.getY ()] [moveTo.getX ()] = CombatMoveType.MELEE;
+									else
+									{
+										movementTypes [moveTo.getY ()] [moveTo.getX ()] = CombatMoveType.CANNOT_MOVE;
+										doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_IMPASSABLE;
+									}
+								}
 								else
 									movementTypes [moveTo.getY ()] [moveTo.getX ()] = CombatMoveType.MOVE;
 							}

@@ -92,6 +92,16 @@ public interface UnitCalculations
 	public boolean canMakeRangedAttack (final ExpandedUnitDetails unit) throws MomException;
 
 	/**
+	 * This is much simpler than canMakeRangedAttack, as we don't need ammo to fire with.
+	 * This is really here to stop settlers with 0 attack trying to attack other units.
+	 * 
+	 * @param unit Unit to calculate for
+	 * @return Whether the unit can make a melee attack in combat
+	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 */
+	public boolean canMakeMeleeAttack (final ExpandedUnitDetails unit) throws MomException;
+	
+	/**
 	 * @param unitStack Unit stack to check
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails

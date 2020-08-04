@@ -300,7 +300,10 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 				// Generate new image
 				image = getUtils ().loadImage (imageName);
 				for (final String colour : sortedColours)
-					image = getUtils ().multiplyImageByColour (image, Integer.parseInt (colour, 16));
+					if (colour.length () == 8)
+						image = getUtils ().multiplyImageByColourAndAlpha (image, Integer.parseInt (colour, 16));
+					else
+						image = getUtils ().multiplyImageByColour (image, Integer.parseInt (colour, 16));
 				
 				// Store it in the map
 				skillShadedImages.put (key.toString (), image);

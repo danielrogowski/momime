@@ -2036,13 +2036,29 @@ However we still need to record negative skill modification values, e.g. True Li
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	
-	<xsd:simpleType name="colour">
+	<xsd:simpleType name="colourNoAlpha">
         <xsd:annotation>
         	<xsd:documentation>Colour value, stored as 6 hex characters RRGGBB.</xsd:documentation>
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:length value="6" />
 		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="colourWithAlpha">
+        <xsd:annotation>
+        	<xsd:documentation>Colour value, stored as 8 hex characters AARRGGBB.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:length value="8" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="colour">
+        <xsd:annotation>
+        	<xsd:documentation>Colour value, stored as 6 hex characters RRGGBB or 8 hex characters AARRGGBB.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:union memberTypes="momimecommon:colourNoAlpha momimecommon:colourWithAlpha" />
 	</xsd:simpleType>
 	
 	<xsd:simpleType name="experienceLevelRingCount">

@@ -39929,6 +39929,7 @@
 		<sampleTileImageFile>/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png</sampleTileImageFile>
 		<standActionID>STAND</standActionID>
 		<moveActionID>WALK</moveActionID>
+		<unitSkillCombatColour>70FFFFFF</unitSkillCombatColour>		
 	</unitSkill>
 	<unitSkill unitSkillID="US023">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -40354,6 +40355,7 @@
 		<sampleTileImageFile>/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png</sampleTileImageFile>
 		<standActionID>STAND</standActionID>
 		<moveActionID>WALK</moveActionID>
+		<unitSkillCombatColour>70FFFFFF</unitSkillCombatColour>		
 	</unitSkill>
 	<unitSkill unitSkillID="SC005">
 		<unitSkillTypeID>N</unitSkillTypeID>

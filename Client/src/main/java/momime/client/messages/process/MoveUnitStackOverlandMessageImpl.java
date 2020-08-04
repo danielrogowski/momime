@@ -13,6 +13,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
+import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.TileSetGfx;
@@ -58,6 +59,9 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	/** Army list */
 	private ArmyListUI armyListUI;
 	
+	/** Client config, containing the scale setting */
+	private MomImeClientConfigEx clientConfig;
+	
 	/** Overland map tile set */
 	private TileSetGfx overlandMapTileSet;
 	
@@ -93,7 +97,8 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		log.trace ("Entering start");
 		
 		// If the move is only 1 cell, show as an animation; if its a further move (like Recall Hero) then just do it instantly
-		anim = (getCoordinateSystemUtils ().findDistanceBetweenXCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), getMoveFrom ().getX (), getMoveTo ().getX ()) <= 1) &&
+		anim = (getClientConfig ().isOverlandAnimateUnitsMoving ()) &&
+			(getCoordinateSystemUtils ().findDistanceBetweenXCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), getMoveFrom ().getX (), getMoveTo ().getX ()) <= 1) &&
 			(getCoordinateSystemUtils ().findDistanceBetweenYCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), getMoveFrom ().getY (), getMoveTo ().getY ()) <= 1);
 
 		if (anim)
@@ -398,6 +403,22 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	public final void setArmyListUI (final ArmyListUI ui)
 	{
 		armyListUI = ui;
+	}
+
+	/**
+	 * @return Client config, containing the scale setting
+	 */
+	public final MomImeClientConfigEx getClientConfig ()
+	{
+		return clientConfig;
+	}
+
+	/**
+	 * @param config Client config, containing the scale setting
+	 */
+	public final void setClientConfig (final MomImeClientConfigEx config)
+	{
+		clientConfig = config;
 	}
 	
 	/**

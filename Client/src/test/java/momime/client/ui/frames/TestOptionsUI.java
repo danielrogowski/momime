@@ -70,6 +70,7 @@ public final class TestOptionsUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmOptions", "SmoothFogOfWar")).thenReturn ("Smooth edges of visible area");
 		when (lang.findCategoryEntry ("frmOptions", "ShowOurBorder")).thenReturn ("Show border of territory that we control");
 		when (lang.findCategoryEntry ("frmOptions", "ShowEnemyBorders")).thenReturn ("Show borders of territory that others wizards control");
+		when (lang.findCategoryEntry ("frmOptions", "AnimateUnitsMoving")).thenReturn ("Animate units moving");
 		
 		when (lang.findCategoryEntry ("frmOptions", "ShowUnitURNs")).thenReturn ("Show Unit, Building and Spell URNs");
 		when (lang.findCategoryEntry ("frmOptions", "ShowEdgesOfMap")).thenReturn ("Show edges of map");

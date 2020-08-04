@@ -25430,6 +25430,7 @@
 		<languageEntry languageEntryID="SmoothFogOfWar" />
 		<languageEntry languageEntryID="ShowOurBorder" />
 		<languageEntry languageEntryID="ShowEnemyBorders" />
+		<languageEntry languageEntryID="AnimateUnitsMoving" />
 		<languageEntry languageEntryID="CombatMapSection" />
 		<languageEntry languageEntryID="CombatUnitScale" />
 		<languageEntry languageEntryID="DebugSection" />

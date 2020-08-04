@@ -9,6 +9,7 @@
 	<overlandSmoothFogOfWar>true</overlandSmoothFogOfWar>
 	<overlandShowOurBorder>false</overlandShowOurBorder>
 	<overlandShowEnemyBorders>false</overlandShowEnemyBorders>
+	<overlandAnimateUnitsMoving>true</overlandAnimateUnitsMoving>
 	<combatSmoothTerrain>true</combatSmoothTerrain>
 	<unitCombatScale>D</unitCombatScale>
 	<showHeroPortraits>true</showHeroPortraits>

@@ -5887,6 +5887,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="ShowEnemyBorders">
 			<languageEntryText>Show borders of territory that others wizards control</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="AnimateUnitsMoving">
+			<languageEntryText>Animate units moving</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="CombatMapSection">
 			<languageEntryText>Combat Map</languageEntryText>
 		</languageEntry>

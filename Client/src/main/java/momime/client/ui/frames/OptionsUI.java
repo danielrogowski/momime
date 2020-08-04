@@ -157,6 +157,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** Whether to draw borders around the area other wizards control */
 	private JCheckBox overlandShowEnemyBorders;
 	
+	/** Whether to animate units moving on the overland map (turning it off speeds up the game a lot, especially once you have Awareness cast) */
+	private JCheckBox overlandAnimateUnitsMoving;
+	
 	/** True to use the full FOW tileset so the FOW border slightly enchroaches into tiles we can see and so looks smooth; false to use hard square edges */
 	private JCheckBox overlandSmoothFogOfWar;	
 	
@@ -286,6 +289,9 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandShowEnemyBorders = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (overlandShowEnemyBorders, "frmOptionsOverlandShowEnemyBorders");
 		
+		overlandAnimateUnitsMoving = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
+		contentPane.add (overlandAnimateUnitsMoving, "frmOptionsOverlandAnimateUnitsMoving");
+		
 		combatSmoothTerrain = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (combatSmoothTerrain, "frmOptionsSmoothCombatTerrain");
 
@@ -370,6 +376,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandSmoothFogOfWar.setSelected			(getClientConfig ().isOverlandSmoothFogOfWar ());
 		overlandShowOurBorder.setSelected			(getClientConfig ().isOverlandShowOurBorder ());
 		overlandShowEnemyBorders.setSelected		(getClientConfig ().isOverlandShowEnemyBorders ());
+		overlandAnimateUnitsMoving.setSelected		(getClientConfig ().isOverlandAnimateUnitsMoving ());
 		combatSmoothTerrain.setSelected				(getClientConfig ().isCombatSmoothTerrain ());
 		showHeroPortraits.setSelected						(getClientConfig ().isShowHeroPortraits ());
 		debugShowURNs.setSelected						(getClientConfig ().isDebugShowURNs ());
@@ -492,6 +499,16 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 			{
 				getClientConfig ().setOverlandShowEnemyBorders (overlandShowEnemyBorders.isSelected ());
+				saveConfigFile ();
+			}
+		});
+		
+		overlandAnimateUnitsMoving.addItemListener (new ItemListener ()
+		{
+			@Override
+			public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
+			{
+				getClientConfig ().setOverlandAnimateUnitsMoving (overlandAnimateUnitsMoving.isSelected ());
 				saveConfigFile ();
 			}
 		});
@@ -620,6 +637,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		overlandSmoothFogOfWar.setText		(getLanguage ().findCategoryEntry ("frmOptions", "SmoothFogOfWar"));
 		overlandShowOurBorder.setText			(getLanguage ().findCategoryEntry ("frmOptions", "ShowOurBorder"));
 		overlandShowEnemyBorders.setText	(getLanguage ().findCategoryEntry ("frmOptions", "ShowEnemyBorders"));
+		overlandAnimateUnitsMoving.setText	(getLanguage ().findCategoryEntry ("frmOptions", "AnimateUnitsMoving"));
 		combatSmoothTerrain.setText				(getLanguage ().findCategoryEntry ("frmOptions", "SmoothTerrain"));
 		debugShowURNs.setText						(getLanguage ().findCategoryEntry ("frmOptions", "ShowUnitURNs"));
 		debugShowEdgesOfMap.setText			(getLanguage ().findCategoryEntry ("frmOptions", "ShowEdgesOfMap"));

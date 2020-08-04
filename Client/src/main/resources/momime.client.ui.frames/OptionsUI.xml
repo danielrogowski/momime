@@ -62,27 +62,33 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmOptionsOverlandAnimateUnitsMoving">
+		<left>20</left>
+		<top>280</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmOptionsCombatMapSection">
 		<left>20</left>
-		<top>290</top>
+		<top>305</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsSmoothCombatTerrain">
 		<left>20</left>
-		<top>320</top>
+		<top>335</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsCombatUnitScale">
 		<left>20</left>
-		<top>350</top>
+		<top>365</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmOptionsCombatSampleUnits">
 		<left>15</left>
-		<top>380</top>
+		<top>395</top>
 		<width>130</width>
 		<height>80</height>
 		<horizontalAlignment>0.0</horizontalAlignment>

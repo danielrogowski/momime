@@ -357,6 +357,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="armyListUI" ref="armyListUI" />
+		<property name="clientConfig" ref="clientConfig" />
 	</bean>
 
 	<bean id="spellResearchChangedMessage" class="momime.client.messages.process.SpellResearchChangedMessageImpl" scope="prototype">

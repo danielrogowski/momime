@@ -35,6 +35,7 @@
 				</xsd:element>
 				<xsd:element minOccurs="1" maxOccurs="1" name="overlandShowOurBorder" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="overlandShowEnemyBorders" type="xsd:boolean" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="overlandAnimateUnitsMoving" type="xsd:boolean" />
 				
 				<!-- Combat map options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="combatSmoothTerrain" type="xsd:boolean">

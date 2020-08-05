@@ -50,15 +50,9 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty2NormalLairCount">
+	<component name="frmNewGameCustomDifficulty2NormalLairs">
 		<left>20</left>
 		<top>70</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty2NormalLairCountEdit">
-		<left>245</left>
-		<top>63</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -158,15 +152,9 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomDifficulty2WeakLairCount">
+	<component name="frmNewGameCustomDifficulty2WeakLairs">
 		<left>20</left>
 		<top>200</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomDifficulty2WeakLairCountEdit">
-		<left>245</left>
-		<top>193</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

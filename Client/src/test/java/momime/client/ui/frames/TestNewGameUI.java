@@ -110,6 +110,8 @@ public final class TestNewGameUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "WrapsLeftRight")).thenReturn ("Map wraps Left-Right?");
 		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "WrapsTopBottom")).thenReturn ("Map wraps Top-Bottom?");
 		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "Zones")).thenReturn ("Terrain generator splits map into zones with size approximately");
+		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "NormalLairCount")).thenReturn ("Number of normal strength lairs");
+		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "WeakLairCount")).thenReturn ("Number of weak strength lairs");
 		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "Towers")).thenReturn ("Number of Towers of Wizardry");
 		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "TowersSeparation")).thenReturn ("Minimum separation between Towers");
 		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "Continental")).thenReturn ("Chance that raider cities are the race chosen for the continent");
@@ -178,12 +180,12 @@ public final class TestNewGameUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "Title")).thenReturn ("New Game: Custom Difficulty (2 of 2)");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerMonsters")).thenReturn ("Towers: Monsters");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerTreasure")).thenReturn ("Towers: Treasure");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalLairCount")).thenReturn ("Number of normal strength lairs");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalLairs")).thenReturn ("Normal strength lairs:");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalArcanusLairMonsters")).thenReturn ("On Arcanus: Monsters");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalArcanusLairTreasure")).thenReturn ("On Arcanus: Treasure");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalMyrrorLairMonsters")).thenReturn ("On Myrror: Monsters");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalMyrrorLairTreasure")).thenReturn ("On Myrror: Treasure");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakLairCount")).thenReturn ("Number of weak strength lairs");
+		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakLairs")).thenReturn ("Weak strength lairs:");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakArcanusLairMonsters")).thenReturn ("On Arcanus: Monsters");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakArcanusLairTreasure")).thenReturn ("On Arcanus: Treasure");
 		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakMyrrorLairMonsters")).thenReturn ("On Myrror: Monsters");

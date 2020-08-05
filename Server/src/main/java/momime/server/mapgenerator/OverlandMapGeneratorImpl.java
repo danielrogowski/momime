@@ -508,8 +508,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		// Place remaining items
 		placeTerrainFeatures ();
 		placeNodes ();
-		placeLairs (sd.getDifficultyLevel ().getNormalLairCount (), false);
-		placeLairs (sd.getDifficultyLevel ().getWeakLairCount (), true);
+		placeLairs (sd.getOverlandMapSize ().getNormalLairCount (), false);
+		placeLairs (sd.getOverlandMapSize ().getWeakLairCount (), true);
 
 		log.trace ("Exiting generateOverlandTerrain");
 	}

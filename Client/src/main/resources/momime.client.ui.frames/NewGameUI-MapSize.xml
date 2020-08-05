@@ -40,7 +40,7 @@
 	</component>
 	<component name="frmNewGameCustomMapSizeZones">
 		<left>20</left>
-		<top>90</top>
+		<top>75</top>
 		<width>280</width>
 		<height>30</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
@@ -48,79 +48,103 @@
 	</component>
 	<component name="frmNewGameCustomMapSizeZoneWidth">
 		<left>80</left>
-		<top>118</top>
+		<top>103</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeX2">
 		<left>150</left>
-		<top>125</top>
+		<top>110</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeZoneHeight">
 		<left>160</left>
-		<top>118</top>
+		<top>103</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeRivers">
 		<left>20</left>
-		<top>160</top>
+		<top>140</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeRiversEdit">
 		<left>300</left>
+		<top>133</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomMapSizeNormalLairCount">
+		<left>20</left>
+		<top>160</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomMapSizeNormalLairCountEdit">
+		<left>300</left>
 		<top>153</top>
+		<horizontalAlignment>1.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomMapSizeWeakLairCount">
+		<left>20</left>
+		<top>180</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmNewGameCustomMapSizeWeakLairCountEdit">
+		<left>300</left>
+		<top>173</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeTowers">
 		<left>20</left>
-		<top>190</top>
+		<top>200</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeTowerCount">
 		<left>300</left>
-		<top>183</top>
+		<top>193</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeTowerSeparation">
 		<left>20</left>
-		<top>210</top>
+		<top>220</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeTowerSeparationEdit">
 		<left>300</left>
-		<top>203</top>
+		<top>213</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeArcanusNodeCount">
 		<left>20</left>
-		<top>230</top>
+		<top>240</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeArcanusNodeCountEdit">
 		<left>300</left>
-		<top>223</top>
+		<top>233</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeMyrrorNodeCount">
 		<left>20</left>
-		<top>250</top>
+		<top>260</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomMapSizeMyrrorNodeCountEdit">
 		<left>300</left>
-		<top>243</top>
+		<top>253</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

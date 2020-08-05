@@ -20,6 +20,8 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 				<xsd:sequence>
 					<xsd:element minOccurs="1" maxOccurs="1" name="zoneWidth" type="map:mapDimension" nxe:label="Zone Width" nxe:gridwidth="100" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="zoneHeight" type="map:mapDimension" nxe:label="Zone Height" nxe:gridwidth="100" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="normalLairCount" type="momimecommon:lairCount" nxe:label="Nbr. normal lairs" nxe:gridwidth="120" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="weakLairCount" type="momimecommon:lairCount" nxe:label="Nbr. weak lairs" nxe:gridwidth="100" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="towersOfWizardryCount" type="momimecommon:mapTileCount" nxe:label="Nbr. Towers of Wizardry" nxe:gridwidth="150" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="towersOfWizardrySeparation" type="momimecommon:integerMapDistance" nxe:label="Towers of Wizardry separation" nxe:gridwidth="180" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="continentalRaceChance" type="momimecommon:percentage" nxe:label="% chance that raider cities are the race chosen for the continent" nxe:gridwidth="300" />
@@ -147,8 +149,6 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="150" />
 			
 			<!-- Strategy Guide p417 -->
-			<xsd:element minOccurs="1" maxOccurs="1" name="normalLairCount" type="momimecommon:lairCount" nxe:label="Nbr. normal lairs" nxe:gridwidth="120" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="weakLairCount" type="momimecommon:lairCount" nxe:label="Nbr. weak lairs" nxe:gridwidth="100" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMinimum" type="momimecommon:monsterStrength" nxe:label="Tower Min. monster strength" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMaximum" type="momimecommon:monsterStrength" nxe:label="Tower Max. monster strength" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerTreasureMinimum" type="momimecommon:treasureValue" nxe:label="Tower Min. treasure value" nxe:gridwidth="170" />

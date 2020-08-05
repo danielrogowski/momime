@@ -23418,19 +23418,21 @@
 		<depth>2</depth>
 		<wrapsLeftToRight>true</wrapsLeftToRight>
 		<wrapsTopToBottom>false</wrapsTopToBottom>
-		<zoneWidth>6</zoneWidth>
-		<zoneHeight>6</zoneHeight>
-		<towersOfWizardryCount>4</towersOfWizardryCount>
-		<towersOfWizardrySeparation>6</towersOfWizardrySeparation>
+		<zoneWidth>4</zoneWidth>
+		<zoneHeight>4</zoneHeight>
+		<normalLairCount>6</normalLairCount>
+		<weakLairCount>8</weakLairCount>
+		<towersOfWizardryCount>2</towersOfWizardryCount>
+		<towersOfWizardrySeparation>10</towersOfWizardrySeparation>
 		<continentalRaceChance>75</continentalRaceChance>
 		<citySeparation>3</citySeparation>
-		<raiderCityCount>10</raiderCityCount>
+		<raiderCityCount>5</raiderCityCount>
 		<riverCount>8</riverCount>
 		<mapSizePlane planeNumber="0">
-			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+			<numberOfNodesOnPlane>4</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<mapSizePlane planeNumber="1">
-			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+			<numberOfNodesOnPlane>3</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<overlandMapSizeDescription>Tiny 30x20 map</overlandMapSizeDescription>
 	</overlandMapSize>
@@ -23441,19 +23443,21 @@
 		<depth>2</depth>
 		<wrapsLeftToRight>true</wrapsLeftToRight>
 		<wrapsTopToBottom>false</wrapsTopToBottom>
-		<zoneWidth>8</zoneWidth>
-		<zoneHeight>8</zoneHeight>
-		<towersOfWizardryCount>5</towersOfWizardryCount>
-		<towersOfWizardrySeparation>8</towersOfWizardrySeparation>
+		<zoneWidth>7</zoneWidth>
+		<zoneHeight>7</zoneHeight>
+		<normalLairCount>14</normalLairCount>
+		<weakLairCount>18</weakLairCount>
+		<towersOfWizardryCount>4</towersOfWizardryCount>
+		<towersOfWizardrySeparation>10</towersOfWizardrySeparation>
 		<continentalRaceChance>75</continentalRaceChance>
 		<citySeparation>3</citySeparation>
-		<raiderCityCount>12</raiderCityCount>
+		<raiderCityCount>10</raiderCityCount>
 		<riverCount>12</riverCount>
 		<mapSizePlane planeNumber="0">
-			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+			<numberOfNodesOnPlane>9</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<mapSizePlane planeNumber="1">
-			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+			<numberOfNodesOnPlane>8</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<overlandMapSizeDescription>Small 45x30 map</overlandMapSizeDescription>
 	</overlandMapSize>
@@ -23466,6 +23470,8 @@
 		<wrapsTopToBottom>false</wrapsTopToBottom>
 		<zoneWidth>10</zoneWidth>
 		<zoneHeight>10</zoneHeight>
+		<normalLairCount>25</normalLairCount>
+		<weakLairCount>32</weakLairCount>
 		<towersOfWizardryCount>6</towersOfWizardryCount>
 		<towersOfWizardrySeparation>10</towersOfWizardrySeparation>
 		<continentalRaceChance>75</continentalRaceChance>
@@ -23487,19 +23493,21 @@
 		<depth>2</depth>
 		<wrapsLeftToRight>true</wrapsLeftToRight>
 		<wrapsTopToBottom>false</wrapsTopToBottom>
-		<zoneWidth>12</zoneWidth>
-		<zoneHeight>12</zoneHeight>
-		<towersOfWizardryCount>8</towersOfWizardryCount>
-		<towersOfWizardrySeparation>12</towersOfWizardrySeparation>
+		<zoneWidth>14</zoneWidth>
+		<zoneHeight>14</zoneHeight>
+		<normalLairCount>40</normalLairCount>
+		<weakLairCount>50</weakLairCount>
+		<towersOfWizardryCount>9</towersOfWizardryCount>
+		<towersOfWizardrySeparation>10</towersOfWizardrySeparation>
 		<continentalRaceChance>75</continentalRaceChance>
 		<citySeparation>3</citySeparation>
-		<raiderCityCount>20</raiderCityCount>
+		<raiderCityCount>25</raiderCityCount>
 		<riverCount>30</riverCount>
 		<mapSizePlane planeNumber="0">
-			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+			<numberOfNodesOnPlane>25</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<mapSizePlane planeNumber="1">
-			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+			<numberOfNodesOnPlane>22</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<overlandMapSizeDescription>Large 75x50 map</overlandMapSizeDescription>
 	</overlandMapSize>
@@ -23510,21 +23518,48 @@
 		<depth>2</depth>
 		<wrapsLeftToRight>true</wrapsLeftToRight>
 		<wrapsTopToBottom>false</wrapsTopToBottom>
-		<zoneWidth>15</zoneWidth>
-		<zoneHeight>15</zoneHeight>
-		<towersOfWizardryCount>10</towersOfWizardryCount>
-		<towersOfWizardrySeparation>15</towersOfWizardrySeparation>
+		<zoneWidth>18</zoneWidth>
+		<zoneHeight>18</zoneHeight>
+		<normalLairCount>55</normalLairCount>
+		<weakLairCount>70</weakLairCount>
+		<towersOfWizardryCount>12</towersOfWizardryCount>
+		<towersOfWizardrySeparation>10</towersOfWizardrySeparation>
 		<continentalRaceChance>75</continentalRaceChance>
 		<citySeparation>3</citySeparation>
-		<raiderCityCount>25</raiderCityCount>
+		<raiderCityCount>35</raiderCityCount>
 		<riverCount>40</riverCount>
 		<mapSizePlane planeNumber="0">
-			<numberOfNodesOnPlane>16</numberOfNodesOnPlane>
+			<numberOfNodesOnPlane>36</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<mapSizePlane planeNumber="1">
-			<numberOfNodesOnPlane>14</numberOfNodesOnPlane>
+			<numberOfNodesOnPlane>32</numberOfNodesOnPlane>
 		</mapSizePlane>
 		<overlandMapSizeDescription>Huge 90x60 map</overlandMapSizeDescription>
+	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS06">
+		<coordinateSystemType>S</coordinateSystemType>
+		<width>105</width>
+		<height>70</height>
+		<depth>2</depth>
+		<wrapsLeftToRight>true</wrapsLeftToRight>
+		<wrapsTopToBottom>false</wrapsTopToBottom>
+		<zoneWidth>24</zoneWidth>
+		<zoneHeight>24</zoneHeight>
+		<normalLairCount>75</normalLairCount>
+		<weakLairCount>100</weakLairCount>
+		<towersOfWizardryCount>16</towersOfWizardryCount>
+		<towersOfWizardrySeparation>10</towersOfWizardrySeparation>
+		<continentalRaceChance>75</continentalRaceChance>
+		<citySeparation>3</citySeparation>
+		<raiderCityCount>45</raiderCityCount>
+		<riverCount>40</riverCount>
+		<mapSizePlane planeNumber="0">
+			<numberOfNodesOnPlane>50</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<mapSizePlane planeNumber="1">
+			<numberOfNodesOnPlane>42</numberOfNodesOnPlane>
+		</mapSizePlane>
+		<overlandMapSizeDescription>Gigantic 90x60 map</overlandMapSizeDescription>
 	</overlandMapSize>
 	<landProportion landProportionID="LP01">
 		<percentageOfMapIsLand>15</percentageOfMapIsLand>
@@ -23650,8 +23685,6 @@
 		<aiSpellResearchMultiplier>100</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>100</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
-		<normalLairCount>25</normalLairCount>
-		<weakLairCount>32</weakLairCount>
 		<towerMonstersMinimum>175</towerMonstersMinimum>
 		<towerMonstersMaximum>300</towerMonstersMaximum>
 		<towerTreasureMinimum>350</towerTreasureMinimum>
@@ -23732,8 +23765,6 @@
 		<aiSpellResearchMultiplier>100</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>90</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
-		<normalLairCount>25</normalLairCount>
-		<weakLairCount>32</weakLairCount>
 		<towerMonstersMinimum>350</towerMonstersMinimum>
 		<towerMonstersMaximum>600</towerMonstersMaximum>
 		<towerTreasureMinimum>350</towerTreasureMinimum>
@@ -23814,8 +23845,6 @@
 		<aiSpellResearchMultiplier>100</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>75</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
-		<normalLairCount>25</normalLairCount>
-		<weakLairCount>32</weakLairCount>
 		<towerMonstersMinimum>525</towerMonstersMinimum>
 		<towerMonstersMaximum>900</towerMonstersMaximum>
 		<towerTreasureMinimum>350</towerTreasureMinimum>
@@ -23896,8 +23925,6 @@
 		<aiSpellResearchMultiplier>110</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>60</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
-		<normalLairCount>25</normalLairCount>
-		<weakLairCount>32</weakLairCount>
 		<towerMonstersMinimum>700</towerMonstersMinimum>
 		<towerMonstersMaximum>1200</towerMonstersMaximum>
 		<towerTreasureMinimum>350</towerTreasureMinimum>
@@ -23978,8 +24005,6 @@
 		<aiSpellResearchMultiplier>125</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>50</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
-		<normalLairCount>25</normalLairCount>
-		<weakLairCount>32</weakLairCount>
 		<towerMonstersMinimum>875</towerMonstersMinimum>
 		<towerMonstersMaximum>1500</towerMonstersMaximum>
 		<towerTreasureMinimum>437</towerTreasureMinimum>
@@ -24060,8 +24085,6 @@
 		<aiSpellResearchMultiplier>125</aiSpellResearchMultiplier>
 		<aiUpkeepMultiplier>50</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
-		<normalLairCount>25</normalLairCount>
-		<weakLairCount>32</weakLairCount>
 		<towerMonstersMinimum>875</towerMonstersMinimum>
 		<towerMonstersMaximum>1500</towerMonstersMaximum>
 		<towerTreasureMinimum>437</towerTreasureMinimum>
@@ -25115,6 +25138,8 @@
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="MapSize" />
 		<languageEntry languageEntryID="Zones" />
+		<languageEntry languageEntryID="NormalLairCount" />
+		<languageEntry languageEntryID="WeakLairCount" />
 		<languageEntry languageEntryID="Towers" />
 		<languageEntry languageEntryID="TowersSeparation" />
 		<languageEntry languageEntryID="Continental" />
@@ -25193,12 +25218,12 @@
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="TowerMonsters" />
 		<languageEntry languageEntryID="TowerTreasure" />
-		<languageEntry languageEntryID="NormalLairCount" />
+		<languageEntry languageEntryID="NormalLairs" />
 		<languageEntry languageEntryID="NormalArcanusLairMonsters" />
 		<languageEntry languageEntryID="NormalArcanusLairTreasure" />
 		<languageEntry languageEntryID="NormalMyrrorLairMonsters" />
 		<languageEntry languageEntryID="NormalMyrrorLairTreasure" />
-		<languageEntry languageEntryID="WeakLairCount" />
+		<languageEntry languageEntryID="WeakLairs" />
 		<languageEntry languageEntryID="WeakArcanusLairMonsters" />
 		<languageEntry languageEntryID="WeakArcanusLairTreasure" />
 		<languageEntry languageEntryID="WeakMyrrorLairMonsters" />

@@ -168,8 +168,6 @@ public class ServerTestData
 			    dest.setAiStartingGold					(src.getAiStartingGold ());
 			    dest.setCustomWizards				(src.isCustomWizards ());
 			    dest.setEachWizardOnlyOnce		(src.isEachWizardOnlyOnce ());
-			    dest.setNormalLairCount				(src.getNormalLairCount ());
-			    dest.setWeakLairCount				(src.getWeakLairCount ());
 			    dest.setTowerMonstersMinimum	(src.getTowerMonstersMinimum ());
 			    dest.setTowerMonstersMaximum	(src.getTowerMonstersMaximum ());
 			    dest.setTowerTreasureMinimum	(src.getTowerTreasureMinimum ());

@@ -4676,6 +4676,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 	<overlandMapSize overlandMapSizeID="MS05">
 		<overlandMapSizeDescription>Huge</overlandMapSizeDescription>
 	</overlandMapSize>
+	<overlandMapSize overlandMapSizeID="MS06">
+		<overlandMapSizeDescription>Gigantic</overlandMapSizeDescription>
+	</overlandMapSize>
 	<landProportion landProportionID="LP01">
 		<landProportionDescription>Small</landProportionDescription>
 	</landProportion>
@@ -5046,6 +5049,12 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="Zones">
 			<languageEntryText>Terrain generator splits map into zones with size approximately</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="NormalLairCount">
+			<languageEntryText>Number of normal strength lairs</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="WeakLairCount">
+			<languageEntryText>Number of weak strength lairs</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="Towers">
 			<languageEntryText>Number of Towers of Wizardry</languageEntryText>
 		</languageEntry>
@@ -5264,8 +5273,8 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="TowerTreasure">
 			<languageEntryText>Towers: Treasure</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="NormalLairCount">
-			<languageEntryText>Number of normal strength lairs</languageEntryText>
+		<languageEntry languageEntryID="NormalLairs">
+			<languageEntryText>Normal strength lairs:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="NormalArcanusLairMonsters">
 			<languageEntryText>On Arcanus: Monsters</languageEntryText>
@@ -5279,8 +5288,8 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="NormalMyrrorLairTreasure">
 			<languageEntryText>On Myrror: Treasure</languageEntryText>
 		</languageEntry>
-		<languageEntry languageEntryID="WeakLairCount">
-			<languageEntryText>Number of weak strength lairs</languageEntryText>
+		<languageEntry languageEntryID="WeakLairs">
+			<languageEntryText>Weak strength lairs:</languageEntryText>
 		</languageEntry>
 		<languageEntry languageEntryID="WeakArcanusLairMonsters">
 			<languageEntryText>On Arcanus: Monsters</languageEntryText>

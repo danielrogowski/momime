@@ -777,6 +777,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Maximum value of treasure in towers */
 	private JTextField towersTreasureMax;
+
+	/** Normal lairs label */
+	private JLabel normalLairsLabel;
 	
 	/** Number of normal lairs label */
 	private JLabel normalLairCountLabel;
@@ -820,6 +823,9 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Maximum value of treasure in normal lairs on Myrror */
 	private JTextField myrrorNormalLairTreasureMax;
 
+	/** Weak lairs label */
+	private JLabel weakLairsLabel;
+	
 	/** Number of weak lairs label */
 	private JLabel weakLairCountLabel;
 
@@ -1654,6 +1660,18 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		mapZoneHeight = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		mapSizePanel.add (mapZoneHeight, "frmNewGameCustomMapSizeZoneHeight");
+
+		normalLairCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (normalLairCountLabel, "frmNewGameCustomMapSizeNormalLairCount");
+
+		normalLairCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (normalLairCount, "frmNewGameCustomMapSizeNormalLairCountEdit");
+		
+		weakLairCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		mapSizePanel.add (weakLairCountLabel, "frmNewGameCustomMapSizeWeakLairCount");
+
+		weakLairCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		mapSizePanel.add (weakLairCount, "frmNewGameCustomMapSizeWeakLairCountEdit");
 		
 		towersOfWizardryLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		mapSizePanel.add (towersOfWizardryLabel, "frmNewGameCustomMapSizeTowers");
@@ -1996,11 +2014,8 @@ public final class NewGameUI extends MomClientFrameUI
 		towersTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		difficulty2Panel.add (towersTreasureMax, "frmNewGameCustomDifficulty2TowerTreasureMax");
 		
-		normalLairCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty2Panel.add (normalLairCountLabel, "frmNewGameCustomDifficulty2NormalLairCount");
-
-		normalLairCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty2Panel.add (normalLairCount, "frmNewGameCustomDifficulty2NormalLairCountEdit");
+		normalLairsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (normalLairsLabel, "frmNewGameCustomDifficulty2NormalLairs");
 
 		arcanusNormalLairMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		difficulty2Panel.add (arcanusNormalLairMonsters, "frmNewGameCustomDifficulty2NormalArcanusLairMonsters");
@@ -2046,11 +2061,8 @@ public final class NewGameUI extends MomClientFrameUI
 		myrrorNormalLairTreasureMax = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
 		difficulty2Panel.add (myrrorNormalLairTreasureMax, "frmNewGameCustomDifficulty2NormalMyrrorLairTreasureMax");
 
-		weakLairCountLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		difficulty2Panel.add (weakLairCountLabel, "frmNewGameCustomDifficulty2WeakLairCount");
-
-		weakLairCount = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		difficulty2Panel.add (weakLairCount, "frmNewGameCustomDifficulty2WeakLairCountEdit");
+		weakLairsLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		difficulty2Panel.add (weakLairsLabel, "frmNewGameCustomDifficulty2WeakLairs");
 
 		arcanusWeakLairMonsters = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		difficulty2Panel.add (arcanusWeakLairMonsters, "frmNewGameCustomDifficulty2WeakArcanusLairMonsters");
@@ -3441,6 +3453,8 @@ public final class NewGameUI extends MomClientFrameUI
 		mapWrapsLeftToRight.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "WrapsLeftRight"));
 		mapWrapsTopToBottom.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "WrapsTopBottom"));
 		mapZonesLabel.setText								(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Zones"));
+		normalLairCountLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "NormalLairCount"));
+		weakLairCountLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "WeakLairCount"));
 		towersOfWizardryLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Towers"));
 		towersOfWizardrySeparationLabel.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "TowersSeparation"));
 		continentalRaceChanceLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomMapSize", "Continental"));
@@ -3505,12 +3519,12 @@ public final class NewGameUI extends MomClientFrameUI
 		// CUSTOM DIFFICULTY PANEL (2 of 3)
 		towersMonsters.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerMonsters"));
 		towersTreasure.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerTreasure"));
-		normalLairCountLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalLairCount"));
+		normalLairsLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalLairs"));
 		arcanusNormalLairMonsters.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalArcanusLairMonsters"));
 		arcanusNormalLairTreasure.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalArcanusLairTreasure"));
 		myrrorNormalLairMonsters.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalMyrrorLairMonsters"));
 		myrrorNormalLairTreasure.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalMyrrorLairTreasure"));
-		weakLairCountLabel.setText			(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakLairCount"));
+		weakLairsLabel.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakLairs"));
 		arcanusWeakLairMonsters.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakArcanusLairMonsters"));
 		arcanusWeakLairTreasure.setText	(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakArcanusLairTreasure"));
 		myrrorWeakLairMonsters.setText		(getLanguage ().findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakMyrrorLairMonsters"));
@@ -4088,6 +4102,8 @@ public final class NewGameUI extends MomClientFrameUI
 		citySeparation.setText							(Integer.valueOf (overlandMapSize.getCitySeparation ()).toString ());
 		riverCount.setText								(Integer.valueOf (overlandMapSize.getRiverCount ()).toString ());
 		raiderCityCount.setText						(Integer.valueOf (overlandMapSize.getRaiderCityCount ()).toString ());
+		normalLairCount.setText						(Integer.valueOf (overlandMapSize.getNormalLairCount ()).toString ());
+		weakLairCount.setText						(Integer.valueOf (overlandMapSize.getWeakLairCount ()).toString ());
 		
 		for (final MapSizePlane plane : overlandMapSize.getMapSizePlane ())
 			if (plane.getPlaneNumber () == 0)
@@ -4164,8 +4180,6 @@ public final class NewGameUI extends MomClientFrameUI
 		towersMonstersMax.setText								(Integer.valueOf (difficultyLevel.getTowerMonstersMaximum ()).toString ());
 		towersTreasureMin.setText									(Integer.valueOf (difficultyLevel.getTowerTreasureMinimum ()).toString ());
 		towersTreasureMax.setText								(Integer.valueOf (difficultyLevel.getTowerTreasureMaximum ()).toString ());
-		normalLairCount.setText										(Integer.valueOf (difficultyLevel.getNormalLairCount ()).toString ());
-		weakLairCount.setText										(Integer.valueOf (difficultyLevel.getWeakLairCount ()).toString ());
 		
 		for (final DifficultyLevelPlane plane : difficultyLevel.getDifficultyLevelPlane ())
 			if (plane.getPlaneNumber () == 0)
@@ -4300,6 +4314,8 @@ public final class NewGameUI extends MomClientFrameUI
 	    overlandMapSize.setCitySeparation						(Integer.parseInt (citySeparation.getText ()));
 	    overlandMapSize.setRiverCount							(Integer.parseInt (riverCount.getText ()));
 	    overlandMapSize.setRaiderCityCount					(Integer.parseInt (raiderCityCount.getText ()));
+	    overlandMapSize.setNormalLairCount					(Integer.parseInt (normalLairCount.getText ()));
+	    overlandMapSize.setWeakLairCount						(Integer.parseInt (weakLairCount.getText ()));
 	    overlandMapSize.getMapSizePlane ().add (arcanusMapSize);
 	    overlandMapSize.getMapSizePlane ().add (myrrorMapSize);
 	    
@@ -4417,8 +4433,6 @@ public final class NewGameUI extends MomClientFrameUI
 	    difficultyLevel.setAiUpkeepMultiplier									(Integer.parseInt (aiUpkeepMultiplier.getText ()));
 	    difficultyLevel.setCustomWizards										(allowCustomWizards.isSelected ());
 	    difficultyLevel.setEachWizardOnlyOnce								(eachWizardOnlyOnce.isSelected ());
-	    difficultyLevel.setNormalLairCount									(Integer.parseInt (normalLairCount.getText ()));
-	    difficultyLevel.setWeakLairCount										(Integer.parseInt (weakLairCount.getText ()));
 	    difficultyLevel.setTowerMonstersMinimum							(Integer.parseInt (towersMonstersMin.getText ()));
 	    difficultyLevel.setTowerMonstersMaximum						(Integer.parseInt (towersMonstersMax.getText ()));
 	    difficultyLevel.setTowerTreasureMinimum							(Integer.parseInt (towersTreasureMin.getText ()));

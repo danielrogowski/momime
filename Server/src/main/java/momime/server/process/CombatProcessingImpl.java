@@ -19,6 +19,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
@@ -36,6 +37,7 @@ import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
@@ -100,6 +102,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -698,7 +703,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @param players List of players in the session
 	 * @param fogOfWarSettings Fog of war settings from session description
 	 * @param db Lookup lists built over the XML database
-	 * @return Number of units that were converted into undead
+	 * @return The true units that were converted into undead
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
@@ -706,14 +711,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final int createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
+	public final List<MemoryUnit> createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
 		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering createUndead: " + combatLocation);
 		
-		int undeadCount = 0;
+		final List<MemoryUnit> undeadCreated = new ArrayList<MemoryUnit> ();
 		if ((losingPlayer != null) && (winningPlayer != null))
 			for (final MemoryUnit trueUnit : trueMap.getUnit ())
 	
@@ -723,7 +728,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					(!db.findUnit (trueUnit.getUnitID (), "createUndead").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)) &&
 					(getUnitServerUtils ().whatKilledUnit (trueUnit.getUnitDamage ()) == StoredDamageTypeID.LIFE_STEALING))
 				{
-					undeadCount++;
+					undeadCreated.add (trueUnit);
 					
 					trueUnit.setOwningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
 					trueUnit.setStatus (UnitStatusID.ALIVE);
@@ -738,10 +743,50 @@ public final class CombatProcessingImpl implements CombatProcessing
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings);
 				}
 		
-		log.debug ("createUndead created undead from " + undeadCount + " losing units");
-		log.trace ("Exiting createUndead = " + undeadCount);
-		return undeadCount;
-	}	
+		log.debug ("createUndead created undead from " + undeadCreated.size () + " losing units");
+		log.trace ("Exiting createUndead = " + undeadCreated.size ());
+		return undeadCreated;
+	}
+	
+	/**
+	 * Because of createUndead above creating units from life stealing attacks, its possible that after combat we can end up with more than 9 units
+	 * in a map cell and need to go back and kill off some of the undead to get us back within the maximum.  Its too complicated to work out up front
+	 * that there will end up being too many units in a cell, its easier to just allow them to be converted to undead and kill them off later like this.
+	 * 
+	 * @param unitLocation Location where the units are; if attackers won a combat then they will already have been advanced to the combat location after winning
+	 * @param unitsToRemove The units we can potentially kill off (this is the list returned from createUndead above)
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public void killUnitsIfTooManyInMapCell (final MapCoordinates3DEx unitLocation, final List<MemoryUnit> unitsToRemove,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+	{
+		log.trace ("Entering killUnitsIfTooManyInMapCell: " + unitLocation);
+		
+		int unitCountAtLocation = (int) trueMap.getUnit ().stream ().filter (u -> unitLocation.equals (u.getUnitLocation ())).count ();
+
+		while ((unitCountAtLocation > sd.getUnitSetting ().getUnitsPerMapCell ()) && (unitsToRemove.size () > 0))
+		{
+			// Pick a random undead to kill off
+			final MemoryUnit trueUnit = unitsToRemove.get (getRandomUtils ().nextInt (unitsToRemove.size ()));
+			unitCountAtLocation--;
+			unitsToRemove.remove (trueUnit);
+			
+			log.debug ("Killing off undead Unit URN " + trueUnit.getUnitURN () + " because there are more than " + sd.getUnitSetting ().getUnitsPerMapCell () + " units at " + unitLocation);
+			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.DISMISS, trueMap, players, sd.getFogOfWarSetting (), db);
+		}
+		
+		log.trace ("Exiting killUnitsIfTooManyInMapCell");
+	}
 	
 	/**
 	 * Regular units who die in combat are only set to status=DEAD - they are not actually freed immediately in case someone wants to cast Animate Dead on them.
@@ -1318,5 +1363,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
 	{
 		combatStartAndEnd = cse;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

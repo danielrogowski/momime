@@ -363,8 +363,9 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Note these are always moved to the "moveTo" i.e. defending location - if the attacker won, their main force will advance
 			// there in the code below; if the defender won, the undead need to be moved to be stacked with the rest of the defenders.
 			final PlayerServerDetails losingPlayer = (winningPlayer == attackingPlayer) ? defendingPlayer : attackingPlayer;
-			msg.setUndeadCreated (getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer,
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ()));
+			final List<MemoryUnit> undead = getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer,
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+			msg.setUndeadCreated (undead.size ());
 
 			// Send the CombatEnded message
 			// Remember defending player may still be nil if we attacked an empty lair
@@ -470,6 +471,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					
 					tc.getItemsFromHeroesWhoDiedInCombat ().clear ();
 				}
+				
+				// If life stealing attacks created some undead, its possible we've now got over 9 units in the map cell so have to kill some off again.
+				// Its a bit backwards letting them get created, then killing them off, but there's too much else going on like removing dead units and combat
+				// summons and advancing attackers into the target square, that its difficult to know up front whether is space to create the undead or not.
+				getCombatProcessing ().killUnitsIfTooManyInMapCell (moveTo, undead, mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 	
 				// Recheck that transports have enough capacity to hold all units that require them (both for attacker and defender, and regardless who won)
 				getServerUnitCalculations ().recheckTransportCapacity (combatLocation, mom.getGeneralServerKnowledge ().getTrueMap (),

@@ -20,6 +20,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
@@ -91,17 +92,38 @@ public interface CombatProcessing
 	 * @param players List of players in the session
 	 * @param fogOfWarSettings Fog of war settings from session description
 	 * @param db Lookup lists built over the XML database
-	 * @return Number of units that were converted into undead
+	 * @return The true units that were converted into undead
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public int createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
+	public List<MemoryUnit> createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
 		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+
+	/**
+	 * Because of createUndead above creating units from life stealing attacks, its possible that after combat we can end up with more than 9 units
+	 * in a map cell and need to go back and kill off some of the undead to get us back within the maximum.  Its too complicated to work out up front
+	 * that there will end up being too many units in a cell, its easier to just allow them to be converted to undead and kill them off later like this.
+	 * 
+	 * @param unitLocation Location where the units are; if attackers won a combat then they will already have been advanced to the combat location after winning
+	 * @param unitsToRemove The units we can potentially kill off (this is the list returned from createUndead above)
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void killUnitsIfTooManyInMapCell (final MapCoordinates3DEx unitLocation, final List<MemoryUnit> unitsToRemove,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 	
 	/**
 	 * Regular units who die in combat are only set to status=DEAD - they are not actually freed immediately in case someone wants to cast Animate Dead on them.

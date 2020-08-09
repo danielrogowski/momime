@@ -58,12 +58,14 @@ import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
+import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
@@ -79,6 +81,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.calculations.ServerSpellCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -184,6 +187,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** AI decisions about spells */
 	private SpellAI spellAI;
+	
+	/** Server-only spell calculations */
+	private ServerSpellCalculations serverSpellCalculations;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -1201,6 +1207,71 @@ public final class SpellProcessingImpl implements SpellProcessing
 	}
 	
 	/**
+	 * When a wizard is banished or defeated, can steal up to 2 spells from them as long as we have enough books to allow it.
+	 * 
+	 * @param stealFrom Wizard who was banished, who spells are being stolen from
+	 * @param giveTo Wizard who banished them, who spells are being given to
+	 * @param spellsStolenFromFortress Maximum number of spells to steal
+	 * @param db Lookup lists built over the XML database
+	 * @return List of spells that were stolen
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
+	 */
+	@Override
+	public final List<String> stealSpells (final PlayerServerDetails stealFrom, final PlayerServerDetails giveTo, final int spellsStolenFromFortress, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException
+	{
+		log.trace ("Entering stealSpells: Player ID " + giveTo.getPlayerDescription ().getPlayerID () + " stealing from " + stealFrom.getPlayerDescription ().getPlayerID ());
+
+		final MomPersistentPlayerPrivateKnowledge stealFromPriv = (MomPersistentPlayerPrivateKnowledge) stealFrom.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge giveToPriv = (MomPersistentPlayerPrivateKnowledge) giveTo.getPersistentPlayerPrivateKnowledge ();
+		
+		final List<String> knownSpellIDs = stealFromPriv.getSpellResearchStatus ().stream ().filter
+			(rs -> rs.getStatus () == SpellResearchStatusID.AVAILABLE).map (rs -> rs.getSpellID ()).collect (Collectors.toList ());
+		
+		// Check every spell the stealer does not have, to see if they can gain it
+		final List<SpellResearchStatus> possibleSpellsToSteal = new ArrayList<SpellResearchStatus> ();
+		for (final SpellResearchStatus spell : giveToPriv.getSpellResearchStatus ())
+			if ((spell.getStatus () != SpellResearchStatusID.AVAILABLE) && (spell.getStatus () != SpellResearchStatusID.UNAVAILABLE) && (knownSpellIDs.contains (spell.getSpellID ())))
+				possibleSpellsToSteal.add (spell);
+
+		final List<String> stolenSpellIDs = new ArrayList<String> ();
+		boolean anySpellsWereResearchableNow = false;
+		while ((stolenSpellIDs.size () < spellsStolenFromFortress) && (possibleSpellsToSteal.size () > 0))
+		{
+			// Randomly pick one
+			final SpellResearchStatus spell = possibleSpellsToSteal.get (getRandomUtils ().nextInt (possibleSpellsToSteal.size ()));
+			stolenSpellIDs.add (spell.getSpellID ());
+			possibleSpellsToSteal.remove (spell);
+
+			if (spell.getStatus () == SpellResearchStatusID.RESEARCHABLE_NOW)
+				anySpellsWereResearchableNow = true;
+			
+			// If the spell happened to be the one we were researching, then blank research out (client does this based on FullSpellListMessage)
+			if (spell.getSpellID ().equals (giveToPriv.getSpellIDBeingResearched ()))
+				giveToPriv.setSpellIDBeingResearched (null);
+			
+			spell.setStatus (SpellResearchStatusID.AVAILABLE);
+		}
+		
+		// If any spells were in the 8 that could be researched now, then need to pull in some more
+		if (anySpellsWereResearchableNow)		
+			getServerSpellCalculations ().randomizeSpellsResearchableNow (giveToPriv.getSpellResearchStatus (), db);
+		
+		// Any update to send to client?
+		if ((stolenSpellIDs.size () > 0) && (giveTo.getPlayerDescription ().isHuman ()))
+		{
+			final FullSpellListMessage spellsMsg = new FullSpellListMessage ();
+			spellsMsg.getSpellResearchStatus ().addAll (giveToPriv.getSpellResearchStatus ());
+			giveTo.getConnection ().sendMessageToClient (spellsMsg);
+		}
+		
+		log.trace ("Exiting stealSpells = " + stolenSpellIDs.size ());
+		return stolenSpellIDs;		
+	}
+	
+	/**
 	 * @return Spell utils
 	 */
 	public final SpellUtils getSpellUtils ()
@@ -1630,5 +1701,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSpellAI (final SpellAI ai)
 	{
 		spellAI = ai;
+	}
+
+	/**
+	 * @return Server-only spell calculations
+	 */
+	public final ServerSpellCalculations getServerSpellCalculations ()
+	{
+		return serverSpellCalculations;
+	}
+
+	/**
+	 * @param calc Server-only spell calculations
+	 */
+	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
+	{
+		serverSpellCalculations = calc;
 	}
 }

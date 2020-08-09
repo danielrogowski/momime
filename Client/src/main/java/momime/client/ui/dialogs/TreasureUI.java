@@ -22,6 +22,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.database.BuildingLang;
 import momime.client.language.database.MapFeatureLang;
 import momime.client.language.database.PickLang;
 import momime.client.language.database.ProductionTypeLang;
@@ -129,8 +130,10 @@ public final class TreasureUI extends MomClientDialogUI
 		final String filename;
 		if (getTreasureReward ().getMapFeatureID () != null)
 			filename = getGraphicsDB ().findMapFeature (getTreasureReward ().getMapFeatureID (), "TreasureUI").getMonsterFoundImageFile ();
-		else
+		else if (getTreasureReward ().getTileTypeID () != null)
 			filename = getGraphicsDB ().findTileType (getTreasureReward ().getTileTypeID (), "TreasureUI").getMonsterFoundImageFile ();
+		else
+			filename = getGraphicsDB ().findBuilding (getTreasureReward ().getBuildingID (), "TreasureUI").getMonsterFoundImageFile ();
 		
 		final BufferedImage lairImage = getUtils ().loadImage (filename);
 		contentPane.add (getUtils ().createImage (lairImage.getScaledInstance (imageSize.getWidth (), imageSize.getHeight (), Image.SCALE_SMOOTH)), "frmTreasureLair");
@@ -164,11 +167,17 @@ public final class TreasureUI extends MomClientDialogUI
 			final String mapFeatureDescription = (mapFeature == null) ? null : mapFeature.getMapFeatureDescription ();
 			locationDescription = (mapFeatureDescription != null) ? mapFeatureDescription : getTreasureReward ().getMapFeatureID ();
 		}
-		else
+		else if (getTreasureReward ().getTileTypeID () != null)
 		{
 			final TileTypeLang tileType = getLanguage ().findTileType (getTreasureReward ().getTileTypeID ());
 			final String tileTypeDescription = (tileType == null) ? null : tileType.getTileTypeDescription ();
 			locationDescription = (tileTypeDescription != null) ? tileTypeDescription : getTreasureReward ().getTileTypeID ();
+		}
+		else
+		{
+			final BuildingLang building = getLanguage ().findBuilding (getTreasureReward ().getBuildingID ());
+			final String buildingName = (building == null) ? null : building.getBuildingName ();
+			locationDescription = (buildingName != null) ? buildingName : getTreasureReward ().getBuildingID ();
 		}
 		
 		final StringBuilder text = new StringBuilder (getLanguage ().findCategoryEntry ("frmTreasure", "Text").replaceAll ("LOCATION_DESCRIPTION", locationDescription));

@@ -229,6 +229,17 @@
 		</property>
 	</bean>
 
+	<bean id="buildingGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="70" />
+		<property name="filenameElements">
+			<list>
+				<value>monsterFoundImageFile</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="cityImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -320,6 +331,7 @@
 				<entry key="tileType" value="tileTypeGrid" />
 				<entry key="tileTypeRoad" value="tileTypeRoadGrid" />
 				<entry key="mapFeature" value="mapFeatureGrid" />
+				<entry key="building" value="buildingGrid" />
 				<entry key="cityImage" value="cityImageGrid" />
 				<entry key="combatTileBorderImage" value="combatTileBorderImageGrid" />
 				<entry key="cityViewElement" value="cityViewElementGrid" />

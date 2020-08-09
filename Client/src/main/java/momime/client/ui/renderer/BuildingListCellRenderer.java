@@ -83,7 +83,7 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 		imageLabel.setIcon (null);
 		try
 		{
-			final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (building.getBuildingID (), "BuildingListCellRenderer");
+			final CityViewElementGfx buildingImage = getGraphicsDB ().findCityViewElementBuilding (building.getBuildingID (), "BuildingListCellRenderer");
 			final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 				((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 				buildingImage.getCityViewAnimation (), true);

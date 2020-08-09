@@ -297,7 +297,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 					
 					// Spells that create buildings, like Wall of Stone
 					if (spell.getBuildingID () != null)
-						cityViewElements.add (getGraphicsDB ().findBuilding (spell.getBuildingID (), "findImageForSpell"));
+						cityViewElements.add (getGraphicsDB ().findCityViewElementBuilding (spell.getBuildingID (), "findImageForSpell"));
 					
 					// Find the image for each
 					for (final CityViewElementGfx cityViewElement : cityViewElements)

@@ -116,7 +116,7 @@ public final class CityViewPanel extends JPanel
 								(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getBuildingIdSoldThisTurn ();
 							if (buildingID != null)
 							{
-								final CityViewElementGfx element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-clickPendingSale");
+								final CityViewElementGfx element = getGraphicsDB ().findCityViewElementBuilding (buildingID, "CityViewPanel-clickPendingSale");
 								
 								// Is the click within the gold coin?
 								if ((ev.getPoint ().x >= element.getLocationX ()) && (ev.getPoint ().y >= element.getLocationY ()) &&
@@ -246,7 +246,7 @@ public final class CityViewPanel extends JPanel
 			if (buildingID != null)
 				try
 				{
-					final CityViewElementGfx element = getGraphicsDB ().findBuilding (buildingID, "CityViewPanel-drawPendingSale");
+					final CityViewElementGfx element = getGraphicsDB ().findCityViewElementBuilding (buildingID, "CityViewPanel-drawPendingSale");
 					g.drawImage (pendingSaleImage, element.getLocationX (), element.getLocationY (), null);
 				}
 				catch (final Exception e)

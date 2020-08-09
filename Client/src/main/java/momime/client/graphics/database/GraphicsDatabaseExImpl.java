@@ -15,6 +15,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.graphics.database.v0_9_8.Animation;
+import momime.client.graphics.database.v0_9_8.Building;
 import momime.client.graphics.database.v0_9_8.CityImage;
 import momime.client.graphics.database.v0_9_8.CityImagePrerequisite;
 import momime.client.graphics.database.v0_9_8.CityViewElement;
@@ -70,7 +71,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	private Map<String, RaceGfx> racesMap;
 
 	/** Map of building IDs to city view elements */
-	private Map<String, CityViewElementGfx> buildingsMap;
+	private Map<String, CityViewElementGfx> cityViewElementBuildingsMap;
 
 	/** Map of city spell effect IDs to city view elements */
 	private Map<String, CityViewElementGfx> citySpellEffectsMap;
@@ -125,6 +126,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 
 	/** Map of hero item slot type IDs to hero item slot type objects */
 	private Map<String, HeroItemSlotTypeGfx> heroItemSlotTypesMap;
+
+	/** Map of building IDs to building objects */
+	private Map<String, BuildingGfx> buildingsMap;
 	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationGfx> animationsMap;
@@ -177,7 +181,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		}
 
 		// Create buildings and city spell effects maps
-		buildingsMap = new HashMap<String, CityViewElementGfx> ();
+		cityViewElementBuildingsMap = new HashMap<String, CityViewElementGfx> ();
 		citySpellEffectsMap = new HashMap<String, CityViewElementGfx> ();
 		for (final CityViewElement thisElement : getCityViewElement ())
 		{
@@ -185,7 +189,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			
 			// CityViewElements may be buildings, spell effects or neither (e.g. landscape)
 			if (elem.getBuildingID () != null)
-				buildingsMap.put (elem.getBuildingID (), elem);
+				cityViewElementBuildingsMap.put (elem.getBuildingID (), elem);
 			
 			if (elem.getCitySpellEffectID () != null)
 				citySpellEffectsMap.put (elem.getCitySpellEffectID (), elem);
@@ -304,6 +308,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		heroItemSlotTypesMap = new HashMap<String, HeroItemSlotTypeGfx> ();
 		for (final HeroItemSlotType itemSlotType : getHeroItemSlotType ())
 			heroItemSlotTypesMap.put (itemSlotType.getHeroItemSlotTypeID (), (HeroItemSlotTypeGfx) itemSlotType);
+		
+		// Create buildings map
+		buildingsMap = new HashMap<String, BuildingGfx> ();
+		for (final Building thisBuilding : getBuilding ())
+			buildingsMap.put (thisBuilding.getBuildingID (), (BuildingGfx) thisBuilding);
 		
 		// Create play lists map
 		playListsMap = new HashMap<String, PlayListGfx> ();
@@ -470,9 +479,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
 	@Override
-	public final CityViewElementGfx findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
+	public final CityViewElementGfx findCityViewElementBuilding (final String buildingID, final String caller) throws RecordNotFoundException
 	{
-		final CityViewElementGfx found = buildingsMap.get (buildingID);
+		final CityViewElementGfx found = cityViewElementBuildingsMap.get (buildingID);
 		if (found == null)
 			throw new RecordNotFoundException (CityViewElementGfx.class, buildingID, caller);
 
@@ -826,6 +835,22 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		return found;
     }
 	
+	/**
+	 * @param buildingID Building ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Building object
+	 * @throws RecordNotFoundException If the buildingID doesn't exist
+	 */
+    @Override
+    public final BuildingGfx findBuilding (final String buildingID, final String caller) throws RecordNotFoundException
+    {
+    	final BuildingGfx found = buildingsMap.get (buildingID);
+		if (found == null)
+			throw new RecordNotFoundException (Building.class, buildingID, caller);
+		
+		return found;
+    }
+    
 	/**
 	 * @param animationID Animation ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem

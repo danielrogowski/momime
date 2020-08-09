@@ -731,7 +731,7 @@ public final class CityViewUI extends MomClientFrameUI
 					// Draw building
 					if (cityData.getCurrentlyConstructingBuildingID () != null)
 					{
-						final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionPanel");
+						final CityViewElementGfx buildingImage = getGraphicsDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "constructionPanel");
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 							((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 							buildingImage.getCityViewAnimation (), true);
@@ -1131,7 +1131,7 @@ public final class CityViewUI extends MomClientFrameUI
 		getAnim ().unregisterRepaintTrigger (null, constructionPanel);
 		
 		if (cityData.getCurrentlyConstructingBuildingID () != null)
-			getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding
+			getAnim ().registerRepaintTrigger (getGraphicsDB ().findCityViewElementBuilding
 				(cityData.getCurrentlyConstructingBuildingID (), "cityDataChanged").getCityViewAnimation (), constructionPanel);
 		
 		if (cityData.getCurrentlyConstructingUnitID () == null)

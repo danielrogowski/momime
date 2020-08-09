@@ -257,6 +257,7 @@ Note this excludes runtime knowledge data structures - these are in MoMIMEMessag
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonus" type="momimecommon:percentage" nxe:label="% research bonus from each book" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonusCap" type="momimecommon:castingReductionCap" nxe:label="% research bonus cap" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksResearchBonusCombination" type="momimecommon:castingReductionCombination" nxe:label="Research bonus combination rule" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellsStolenFromFortress" type="momimecommon:spellCount" nxe:label="Nbr. spells stolen when banishing" nxe:showmaincolumn="false" />
 		</xsd:sequence>
 		<xsd:attribute name="spellSettingID" type="momimecommon:spellSettingID" use="optional" nxe:label="Spell Setting ID" nxe:gridwidth="120" />
 	</xsd:complexType>

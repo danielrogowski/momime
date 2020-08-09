@@ -118,8 +118,8 @@ public final class TestChangeConstructionUI extends ClientTestData
 		productionTypeImages.buildMap ();
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findBuilding (eq ("BL04"), anyString ())).thenReturn (granary);
-		when (gfx.findBuilding (eq ("BL05"), anyString ())).thenReturn (fightersGuild);
+		when (gfx.findCityViewElementBuilding (eq ("BL04"), anyString ())).thenReturn (granary);
+		when (gfx.findCityViewElementBuilding (eq ("BL05"), anyString ())).thenReturn (fightersGuild);
 		when (gfx.findAnimation ("FIGHTERS_GUILD", "registerRepaintTrigger")).thenReturn (fightersGuildAnim);
 		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (productionTypeImages);
 		

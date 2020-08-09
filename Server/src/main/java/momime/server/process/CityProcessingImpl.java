@@ -23,6 +23,7 @@ import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.internal.CityProductionBreakdown;
@@ -47,6 +48,7 @@ import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.messages.servertoclient.TreasureRewardMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.utils.MemoryBuildingUtils;
@@ -138,6 +140,9 @@ public final class CityProcessingImpl implements CityProcessing
 
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;
+	
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
 	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
@@ -860,7 +865,7 @@ public final class CityProcessingImpl implements CityProcessing
 	/**
 	 * Handles when the city housing a wizard's fortress is captured in combat and the wizard gets banished
 	 * 
-	 * @param attackingPlayerID Player who won the combat, who is doing the banishing
+	 * @param attackingPlayer Player who won the combat, who is doing the banishing
 	 * @param defendingPlayer Player who lost the combat, who is the one being banished
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
@@ -870,23 +875,62 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void banishWizard (final int attackingPlayerID, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
+	public final void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.trace ("Entering banishWizard: Player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () + " being banished by " + attackingPlayerID);
+		log.trace ("Entering banishWizard: Player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () + " being banished by " + attackingPlayer.getPlayerDescription ().getPlayerID ());
+
+		final MomPersistentPlayerPublicKnowledge defenderPub = (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+		final MomPersistentPlayerPublicKnowledge attackerPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
 		// Do they have another city to try to return to?  Record it on server
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		final WizardState wizardState = (getCityServerUtils ().countCities (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 			defendingPlayer.getPlayerDescription ().getPlayerID ()) == 0) ? WizardState.DEFEATED : WizardState.BANISHED;
-		pub.setWizardState (wizardState);
+		defenderPub.setWizardState (wizardState);
 		
 		// Update wizardState on client, and this triggers showing the banish animation as well
 		final UpdateWizardStateMessage msg = new UpdateWizardStateMessage ();
 		msg.setBanishedPlayerID (defendingPlayer.getPlayerDescription ().getPlayerID ());
-		msg.setBanishingPlayerID (attackingPlayerID);
+		msg.setBanishingPlayerID (attackingPlayer.getPlayerDescription ().getPlayerID ());
 		msg.setWizardState (wizardState);
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+
+		// Things that only apply if two wizards
+		if ((PlayerKnowledgeUtils.isWizard (defenderPub.getWizardID ())) && (PlayerKnowledgeUtils.isWizard (attackerPub.getWizardID ())))
+		{
+			// Does the attacker get to steal any spells?
+			final List<String> stolenSpellIDs = getSpellProcessing ().stealSpells (defendingPlayer, attackingPlayer,
+				mom.getSessionDescription ().getSpellSetting ().getSpellsStolenFromFortress (), mom.getServerDB ());
+		
+			// Attacker steals half of MP from Wiazard's Fortress
+			final int manaSwiped = getResourceValueUtils ().findAmountStoredForProductionType (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA) / 2;
+			if (manaSwiped > 0)
+			{
+				getResourceValueUtils ().addToAmountStored (defendingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -manaSwiped);
+				getResourceValueUtils ().addToAmountStored (attackerPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, manaSwiped);
+			}
+			
+			// Need to inform client about stuff they captured?
+			if ((attackingPlayer.getPlayerDescription ().isHuman ()) && ((stolenSpellIDs.size () > 0) || (manaSwiped > 0)))
+			{
+				final TreasureRewardMessage treasureMsg = new TreasureRewardMessage ();
+				treasureMsg.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
+				treasureMsg.getSpellID ().addAll (stolenSpellIDs);
+				
+				if (manaSwiped > 0)
+				{
+					final ProductionTypeAndUndoubledValue treasureManaSwiped = new ProductionTypeAndUndoubledValue ();
+					treasureManaSwiped.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
+					treasureManaSwiped.setUndoubledProductionValue (manaSwiped);
+					
+					treasureMsg.getResource ().add (treasureManaSwiped);
+				}
+				
+				attackingPlayer.getConnection ().sendMessageToClient (treasureMsg);
+			}
+		}
 		
 		// If a wizard is banished and their summoning circle was with their Fortress then it will have already been removed,
 		// but if its somewhere else then we need to remove it too.  When they cast Spell of Return then they get both back.
@@ -943,11 +987,10 @@ public final class CityProcessingImpl implements CityProcessing
 		if (mom.getPlayers ().size () > 0)
 		{
 			// If wizard was in middle of casting any overland spells then remove them all
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-			while (priv.getQueuedSpell ().size () > 0)
+			while (defendingPriv.getQueuedSpell ().size () > 0)
 			{
 				// Remove queued spell on server
-				priv.getQueuedSpell ().remove (0);
+				defendingPriv.getQueuedSpell ().remove (0);
 	
 				// Remove queued spell on client
 				if (defendingPlayer.getPlayerDescription ().isHuman ())
@@ -959,9 +1002,9 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 
 			// Make sure any mana spent on removed spells is zeroed out
-			if (priv.getManaSpentOnCastingCurrentSpell () > 0)
+			if (defendingPriv.getManaSpentOnCastingCurrentSpell () > 0)
 			{
-				priv.setManaSpentOnCastingCurrentSpell (0);
+				defendingPriv.setManaSpentOnCastingCurrentSpell (0);
 				if (defendingPlayer.getPlayerDescription ().isHuman ())
 					defendingPlayer.getConnection ().sendMessageToClient (new UpdateManaSpentOnCastingCurrentSpellMessage ());
 			}
@@ -1308,5 +1351,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setSpellQueueing (final SpellQueueing obj)
 	{
 		spellQueueing = obj;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

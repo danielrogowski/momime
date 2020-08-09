@@ -354,7 +354,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		for (final Building thisBuilding : getClientCityCalculations ().listBuildingsCityCanConstruct (getCityLocation ()))
 		{
 			buildingsItems.addElement (thisBuilding);
-			getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (thisBuilding.getBuildingID (), "updateWhatCanBeConstructed").getCityViewAnimation (), buildingsList);
+			getAnim ().registerRepaintTrigger (getGraphicsDB ().findCityViewElementBuilding (thisBuilding.getBuildingID (), "updateWhatCanBeConstructed").getCityViewAnimation (), buildingsList);
 			
 			// Pre-select whatever was previously being built when the form first opens up
 			if (thisBuilding.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()))

@@ -275,7 +275,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					// Draw building
 					if (building != null)
 					{
-						final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (building.getBuildingID (), "currentlyConstructingBuilding");
+						final CityViewElementGfx buildingImage = getGraphicsDB ().findCityViewElementBuilding (building.getBuildingID (), "currentlyConstructingBuilding");
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 							((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 							buildingImage.getCityViewAnimation (), true);
@@ -584,7 +584,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 		// Show the image of the selected building
 		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
-		getAnim ().registerRepaintTrigger (getGraphicsDB ().findBuilding (building.getBuildingID (), "showBuilding").getCityViewAnimation (), currentlyConstructingImage);
+		getAnim ().registerRepaintTrigger (getGraphicsDB ().findCityViewElementBuilding (building.getBuildingID (), "showBuilding").getCityViewAnimation (), currentlyConstructingImage);
 		
 		// Show URN?
 		if ((showBuilding.getBuildingURN () > 0) && (getClientConfig ().isDebugShowURNs ()))

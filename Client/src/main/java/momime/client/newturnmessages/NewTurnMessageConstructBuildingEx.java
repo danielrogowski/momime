@@ -181,7 +181,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 		constructionCompletedImage.setIcon (null);
 		try
 		{
-			final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (getBuildingID (), "getComponent-Old");
+			final CityViewElementGfx buildingImage = getGraphicsDB ().findCityViewElementBuilding (getBuildingID (), "getComponent-Old");
 			final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 				((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 				buildingImage.getCityViewAnimation (), true);
@@ -200,7 +200,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 			// Building image
 			if (cityData.getCurrentlyConstructingBuildingID () != null)
 			{
-				final CityViewElementGfx buildingImage = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
+				final CityViewElementGfx buildingImage = getGraphicsDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
 				final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 					((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
 					buildingImage.getCityViewAnimation (), true);
@@ -237,13 +237,13 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
 		// Look up the image for the old building
-		final CityViewElementGfx oldBuilding = getGraphicsDB ().findBuilding (getBuildingID (), "registerRepaintTriggers-Old");
+		final CityViewElementGfx oldBuilding = getGraphicsDB ().findCityViewElementBuilding (getBuildingID (), "registerRepaintTriggers-Old");
 		getAnim ().registerRepaintTrigger (oldBuilding.getCityViewAnimation (), newTurnMessagesList);
 
 		// Look up the image for the new construction, if it is a building
 		if (cityData.getCurrentlyConstructingBuildingID () != null)
 		{
-			final CityViewElementGfx newBuilding = getGraphicsDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
+			final CityViewElementGfx newBuilding = getGraphicsDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
 			getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList);
 		}
 		

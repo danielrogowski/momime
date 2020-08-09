@@ -24193,6 +24193,7 @@
 		<spellBooksResearchBonus>10</spellBooksResearchBonus>
 		<spellBooksResearchBonusCap>1000</spellBooksResearchBonusCap>
 		<spellBooksResearchBonusCombination>A</spellBooksResearchBonusCombination>
+		<spellsStolenFromFortress>2</spellsStolenFromFortress>
 		<spellSettingDescription>Original</spellSettingDescription>
 	</spellSetting>
 	<spellSetting spellSettingID="SS02">
@@ -24204,6 +24205,7 @@
 		<spellBooksResearchBonus>10</spellBooksResearchBonus>
 		<spellBooksResearchBonusCap>1000</spellBooksResearchBonusCap>
 		<spellBooksResearchBonusCombination>A</spellBooksResearchBonusCombination>
+		<spellsStolenFromFortress>2</spellsStolenFromFortress>
 		<spellSettingDescription>Recommended</spellSettingDescription>
 	</spellSetting>
 	<newGameDefaults>

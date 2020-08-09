@@ -3,6 +3,7 @@ package momime.client.graphics.database;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.client.graphics.database.v0_9_8.Animation;
+import momime.client.graphics.database.v0_9_8.Building;
 import momime.client.graphics.database.v0_9_8.CityImage;
 import momime.client.graphics.database.v0_9_8.CityViewElement;
 import momime.client.graphics.database.v0_9_8.CombatAction;
@@ -361,6 +362,15 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	public final HeroItemSlotType createHeroItemSlotType ()
 	{
 		return new HeroItemSlotTypeGfx ();
+	}
+
+	/**
+	 * @return Custom extended Hero item slot type
+	 */
+	@Override
+	public final Building createBuilding ()
+	{
+		return new BuildingGfx ();
 	}
 
 	/**

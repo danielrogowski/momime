@@ -119,7 +119,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		goldImages.buildMap ();
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findBuilding (eq ("BL01"), anyString ())).thenReturn (granaryImage);
+		when (gfx.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryImage);
 		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (goldImages);
 		
 		// Mock entries from client DB

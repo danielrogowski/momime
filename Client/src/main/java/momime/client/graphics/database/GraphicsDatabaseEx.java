@@ -54,7 +54,7 @@ public interface GraphicsDatabaseEx
 	 * @return Building object; note buildings in the graphics XML are just a special case of city view elements
 	 * @throws RecordNotFoundException If the buildingID doesn't exist
 	 */
-	public CityViewElementGfx findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
+	public CityViewElementGfx findCityViewElementBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @param citySpellEffectID City spell effect ID to search for
@@ -221,6 +221,14 @@ public interface GraphicsDatabaseEx
 	 * @throws RecordNotFoundException If the heroItemSlotTypeID doesn't exist
 	 */
     public HeroItemSlotTypeGfx findHeroItemSlotType (final String heroItemSlotTypeID, final String caller) throws RecordNotFoundException;
+    
+	/**
+	 * @param buildingID Building ID to search for
+	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
+	 * @return Building object
+	 * @throws RecordNotFoundException If the buildingID doesn't exist
+	 */
+    public BuildingGfx findBuilding (final String buildingID, final String caller) throws RecordNotFoundException;
     
 	/**
 	 * @param animationID Animation ID to search for

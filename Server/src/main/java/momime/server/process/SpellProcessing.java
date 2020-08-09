@@ -138,4 +138,19 @@ public interface SpellProcessing
 	 */
 	public void cancelTargetOverlandSpell (final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * When a wizard is banished or defeated, can steal up to 2 spells from them as long as we have enough books to allow it.
+	 * 
+	 * @param stealFrom Wizard who was banished, who spells are being stolen from
+	 * @param giveTo Wizard who banished them, who spells are being given to
+	 * @param spellsStolenFromFortress Maximum number of spells to steal
+	 * @param db Lookup lists built over the XML database
+	 * @return List of spells that were stolen
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
+	 */
+	public List<String> stealSpells (final PlayerServerDetails stealFrom, final PlayerServerDetails giveTo, final int spellsStolenFromFortress, final ServerDatabaseEx db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException;
 }

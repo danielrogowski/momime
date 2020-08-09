@@ -259,6 +259,9 @@ public final class CommonDatabaseConstants
 	/** Summon hero spell - used as a means to get a list of the heroes we can rescue from lairs/nodes/towers */
 	public static final String SPELL_ID_SUMMON_HERO = "SP208";
 
+	/** Spell of Mastery has a lot of special rules */
+	public static final String SPELL_ID_SPELL_OF_MASTERY = "SP213";
+	
 	/** Spell of Return has a lot of special rules - we are always blocked from casting it even when banished (server auto casts it for us), and can never cancel casting it */
 	public static final String SPELL_ID_SPELL_OF_RETURN = "SP214";
 	

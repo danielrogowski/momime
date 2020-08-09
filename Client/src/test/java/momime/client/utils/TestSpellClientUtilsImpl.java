@@ -1032,7 +1032,7 @@ public final class TestSpellClientUtilsImpl
 
 		final CityViewElementGfx element = new CityViewElementGfx ();
 		element.setCityViewAnimation ("BL15-anim");
-		when (gfx.findBuilding ("BL15", "findImageForSpell")).thenReturn (element);
+		when (gfx.findCityViewElementBuilding ("BL15", "findImageForSpell")).thenReturn (element);
 		
 		// Mock entries from client DB
 		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);

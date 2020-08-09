@@ -114,7 +114,7 @@ public final class TestCityViewUI extends ClientTestData
 		
 		final CityViewElementGfx granaryGfx = new CityViewElementGfx ();
 		granaryGfx.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
-		when (gfx.findBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
+		when (gfx.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
 		
 		// Mock entries from the language XML
 		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);

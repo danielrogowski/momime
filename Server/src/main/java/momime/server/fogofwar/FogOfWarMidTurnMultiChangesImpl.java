@@ -497,7 +497,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// Move units in player's memory on server; N/A if we can't see them after the move - they'd have been freed above already
 				if (canSeeAfterMove)
 					for (final MemoryUnit thisUnit : unitStack)
-						getUnitUtils ().findUnitURN (thisUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit (), "moveUnitStackOneCellOnServerAndClients").setUnitLocation (new MapCoordinates3DEx (moveTo));
+					{
+						final MemoryUnit fowUnit = getUnitUtils ().findUnitURN (thisUnit.getUnitURN (), priv.getFogOfWarMemory ().getUnit ());
+						if (fowUnit != null)
+							fowUnit.setUnitLocation (new MapCoordinates3DEx (moveTo));
+					}
 				
 				// Move units on client
 				if (thisPlayer.getPlayerDescription ().isHuman ())

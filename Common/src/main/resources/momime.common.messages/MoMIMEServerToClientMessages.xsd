@@ -1159,12 +1159,17 @@ This is purely informational, like NTMs.  Other messages (e.g. add hero item, fu
 					<xsd:sequence>
 						<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID">
 						    <xsd:annotation>
-		  							<xsd:documentation>Either tileTypeID or mapFeatureID will be filled in, but not both, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
+		  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="mapFeatureID" type="momimecommon:mapFeatureID">
 						    <xsd:annotation>
-		  							<xsd:documentation>Either tileTypeID or mapFeatureID will be filled in, but not both, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
+		  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID">
+						    <xsd:annotation>
+		  							<xsd:documentation>Exactly one of tileTypeID, mapFeatureID and buildingID will be filled in, indicating what type of node/lair/tower the reward was from.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItem" type="momimemsgs:numberedHeroItem" />

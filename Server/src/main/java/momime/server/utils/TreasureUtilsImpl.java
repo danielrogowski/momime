@@ -364,7 +364,11 @@ public final class TreasureUtilsImpl implements TreasureUtils
 
 					spell.setStatus (SpellResearchStatusID.AVAILABLE);
 					reward.getSpellID ().add (spell.getSpellID ());
-					remainingTreasureValue = remainingTreasureValue - spellRank.getTreasureRewardCost ();					
+					remainingTreasureValue = remainingTreasureValue - spellRank.getTreasureRewardCost ();
+					
+					// If the spell happened to be the one we were researching, then blank research out (client does this based on FullSpellListMessage)
+					if (spell.getSpellID ().equals (priv.getSpellIDBeingResearched ()))
+						priv.setSpellIDBeingResearched (null);
 					break;
 					
 				// Choose the amount of resource actually given

@@ -576,6 +576,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityServerUtils" ref="cityServerUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="spellQueueing" ref="spellQueueing" />
+		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 
 	<!-- Can't declare generics on this but generics don't really affect runtime so it works just like this -->
@@ -612,6 +613,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="spellAI" ref="spellAI" />
+		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">

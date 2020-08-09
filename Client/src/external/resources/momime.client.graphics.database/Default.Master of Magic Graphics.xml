@@ -39929,7 +39929,7 @@
 		<sampleTileImageFile>/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png</sampleTileImageFile>
 		<standActionID>STAND</standActionID>
 		<moveActionID>WALK</moveActionID>
-		<unitSkillCombatColour>70FFFFFF</unitSkillCombatColour>		
+		<unitSkillCombatColour>70FFFFFF</unitSkillCombatColour>
 	</unitSkill>
 	<unitSkill unitSkillID="US023">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -40355,7 +40355,7 @@
 		<sampleTileImageFile>/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png</sampleTileImageFile>
 		<standActionID>STAND</standActionID>
 		<moveActionID>WALK</moveActionID>
-		<unitSkillCombatColour>70FFFFFF</unitSkillCombatColour>		
+		<unitSkillCombatColour>70FFFFFF</unitSkillCombatColour>
 	</unitSkill>
 	<unitSkill unitSkillID="SC005">
 		<unitSkillTypeID>N</unitSkillTypeID>
@@ -41236,6 +41236,9 @@
 		<monsterFoundImageFile>/momime.client.graphics/overland/mapFeatures/fallenTemple-scouting.png</monsterFoundImageFile>
 		<overlandMapImageFile>/momime.client.graphics/overland/mapFeatures/fallenTemple-map.png</overlandMapImageFile>
 	</mapFeature>
+	<building buildingID="BL99">
+		<monsterFoundImageFile>/momime.client.graphics/cityView/buildings/BL99-scouting.png</monsterFoundImageFile>
+	</building>
 	<cityImage>
 		<citySizeID>CS01</citySizeID>
 		<cityImageFile>/momime.client.graphics/overland/cities/CS02-noWalls.png</cityImageFile>

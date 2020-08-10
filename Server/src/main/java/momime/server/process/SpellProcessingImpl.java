@@ -795,22 +795,29 @@ public final class SpellProcessingImpl implements SpellProcessing
 			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
 			
 			// Charge skill
-			final int sendSkillValue;
+			Integer sendSkillValue = null;
 			if (castingPlayer == defendingPlayer)
 			{
-				gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
-				sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
+				if (gc.getCombatDefenderCastingSkillRemaining () != null)
+				{
+					gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
+					sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
+				}
 			}
 			else if (castingPlayer == attackingPlayer)
 			{
-				gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
-				sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
+				if (gc.getCombatAttackerCastingSkillRemaining () != null)
+				{
+					gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
+					sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
+				}
 			}
 			else
 				throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
 			
 			// Send both values to client
-			getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
+			if (sendSkillValue != null)
+				getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
 			
 			// Only allow casting one spell each combat turn
 			gc.setSpellCastThisCombatTurn (true);

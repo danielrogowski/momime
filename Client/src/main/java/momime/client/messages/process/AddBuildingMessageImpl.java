@@ -130,7 +130,7 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 		if (getSecondBuilding () != null)
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (secondBuilding);
 		
-		// If we've got a city screen open showing this location, may need to set up animation to display the new building(s)
+		// If we've got a city screen open showing this location, need to rebuild RenderCityData
 		final CityViewUI cityView = getClient ().getCityViews ().get (getFirstBuilding ().getCityLocation ().toString ());
 		if (cityView != null)
 			try

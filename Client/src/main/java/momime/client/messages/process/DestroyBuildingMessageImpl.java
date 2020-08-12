@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.ChangeConstructionUI;
+import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
@@ -73,6 +74,18 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(building.getCityLocation ().getZ ()).getRow ().get (building.getCityLocation ().getY ()).getCell ().get
 				(building.getCityLocation ().getX ()).setBuildingIdSoldThisTurn (building.getBuildingID ());
+		
+		// If we've got a city screen open showing this location, need to rebuild RenderCityData
+		final CityViewUI cityView = getClient ().getCityViews ().get (building.getCityLocation ().toString ());
+		if (cityView != null)
+			try
+			{
+				cityView.cityDataChanged ();
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}		
 		
 		// Removal of a building will alter what we can construct in that city, if we've got the change construction screen open
 		final ChangeConstructionUI changeConstruction = getClient ().getChangeConstructions ().get (building.getCityLocation ().toString ());

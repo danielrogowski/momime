@@ -340,6 +340,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 
 					// Add the combat to the list
 					combats.add (oneCell);
+					log.debug ("findAndProcessOneCombat found a combat that needs doing: #" + combats.size () + " " + oneCell);
 				}
 			}
 		}
@@ -359,7 +360,10 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					if ((firstMove.getUnitStackOwner () != secondMove.getUnitStackOwner ()) &&
 						(firstMove.getPendingMovement ().getMoveFrom ().equals (secondMove.getOneStep ())) && 
 						(secondMove.getPendingMovement ().getMoveFrom ().equals (firstMove.getOneStep ())))
+					{
 						borderConflicts.add (new BorderConflict (firstMove, secondMove));
+						log.debug ("findAndProcessOneCombat found a border conflict that needs doing: #" + borderConflicts.size () + " " + firstMove + " / " + secondMove);
+					}
 				}
 			}
 			
@@ -367,10 +371,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			{
 				// Pick a random border conflict to do
 				final BorderConflict borderConflict = borderConflicts.get (getRandomUtils ().nextInt (borderConflicts.size ()));
-				log.debug ("Randomly chose border conflict to do between player ID " + borderConflict.getFirstMove ().getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
-					" at location " + borderConflict.getFirstMove ().getPendingMovement ().getMoveFrom () +
-					" and player ID " + borderConflict.getSecondMove ().getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
-					" at location " + borderConflict.getSecondMove ().getPendingMovement ().getMoveFrom ());
+				log.debug ("Randomly chose border conflict: " + borderConflict.getFirstMove () + " / " + borderConflict.getSecondMove ());
 
 				// Get the two map cells
 				final OverlandMapCityData firstMoveFromCity = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -419,9 +420,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			{
 				// Pick a random regular combat to do
 				final OneCellPendingMovement oneCell = combats.get (getRandomUtils ().nextInt (combats.size ()));
-				log.debug ("Randomly chose combat to do for player ID " + oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID () +
-					" from " + oneCell.getPendingMovement ().getMoveFrom () + " to " + oneCell.getPendingMovement ().getMoveTo () +
-					", stepping to " + oneCell.getOneStep ());
+				log.debug ("Randomly chose combat: " + oneCell);
 				
 				// The defenders are all units in the destination cell who are not ours, and not part of their own combat which hasn't taken place yet
 				// (in that case we assume those units already left the destination cell and are midway between it and wherever they are attacking)

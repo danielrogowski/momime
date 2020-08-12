@@ -244,6 +244,7 @@ public final class TestNewGameUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCombinationMultiply")).thenReturn ("Research bonuses are multiplied together");
 		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionCap")).thenReturn ("Casting cost reduction is capped at");
 		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCap")).thenReturn ("Research bonus is capped at");
+		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "StolenFromFortress")).thenReturn ("Spells stolen when banishing wizard");
 		
 		// DEBUG OPTIONS PANEL
 		when (lang.findCategoryEntry ("frmNewGameCustomDebug", "Title")).thenReturn ("New Game: Debug Options");

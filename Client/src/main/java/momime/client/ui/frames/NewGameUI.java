@@ -1092,6 +1092,12 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Research bonus cap */
 	private JTextField researchBonusCap;
 	
+	/** Spells stolen from fortress when a wizard is banished label */
+	private JLabel stolenFromFortressLabel;
+
+	/** Spells stolen from fortress when a wizard is banished */
+	private JTextField stolenFromFortress;
+	
 	// DEBUG OPTIONS PANEL
 	
 	/** Panel key */
@@ -2350,6 +2356,12 @@ public final class NewGameUI extends MomClientFrameUI
 		spellsPanel.add (researchBonusCap, "frmNewGameCustomSpellsResearchBonusCapEdit");
 
 		spellsPanel.add (getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont (), "%"), "frmNewGameCustomSpellsP2");
+
+		stolenFromFortressLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
+		spellsPanel.add (stolenFromFortressLabel, "frmNewGameCustomSpellsStolenFromFortress");
+
+		stolenFromFortress = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
+		spellsPanel.add (stolenFromFortress, "frmNewGameCustomSpellsStolenFromFortressEdit");
 		
 		final ButtonGroup switchResearchChoices = new ButtonGroup ();
 		switchResearchChoices.add (switchResearchNo);
@@ -3581,6 +3593,7 @@ public final class NewGameUI extends MomClientFrameUI
 		researchBonusMultiplicative.setText					(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCombinationMultiply"));
 		castingCostReductionCapLabel.setText				(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionCap"));
 		researchBonusCapLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCap"));
+		stolenFromFortressLabel.setText						(getLanguage ().findCategoryEntry ("frmNewGameCustomSpells", "StolenFromFortress"));
 		
 		// DEBUG OPTIONS PANEL
 		disableFogOfWarLabel.setText (getLanguage ().findCategoryEntry ("frmNewGameCustomDebug", "DisableFogOfWar"));
@@ -4265,6 +4278,7 @@ public final class NewGameUI extends MomClientFrameUI
 		researchBonus.setText									(Integer.valueOf (spellSettings.getSpellBooksResearchBonus ()).toString ());
 		castingCostReductionCap.setText						(Integer.valueOf (spellSettings.getSpellBooksCastingReductionCap ()).toString ());
 		researchBonusCap.setText								(Integer.valueOf (spellSettings.getSpellBooksResearchBonusCap ()).toString ());
+		stolenFromFortress.setText								(Integer.valueOf (spellSettings.getSpellsStolenFromFortress ()).toString ());
 		
 		// Debug options
 		disableFogOfWar.setSelected (false);
@@ -4539,6 +4553,7 @@ public final class NewGameUI extends MomClientFrameUI
 		spellSettings.setSpellBooksCastingReductionCap	(Integer.parseInt (castingCostReductionCap.getText ()));
 		spellSettings.setSpellBooksResearchBonus			(Integer.parseInt (researchBonus.getText ()));
 		spellSettings.setSpellBooksResearchBonusCap		(Integer.parseInt (researchBonusCap.getText ()));
+		spellSettings.setSpellsStolenFromFortress			(Integer.parseInt (stolenFromFortress.getText ()));
 
 		if (!customizeSpells.isSelected ())
 			spellSettings.setSpellSettingID (changeSpellSettingsAction.getSelectedItem ().getSpellSettingID ());

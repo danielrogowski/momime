@@ -5438,6 +5438,9 @@ If the city has an insufficient food supply, the citizens will begin to starve.<
 		<languageEntry languageEntryID="ResearchBonusCap">
 			<languageEntryText>Research bonus is capped at</languageEntryText>
 		</languageEntry>
+		<languageEntry languageEntryID="StolenFromFortress">
+			<languageEntryText>Spells stolen when banishing wizard</languageEntryText>
+		</languageEntry>
 		<languageEntry languageEntryID="OK">
 			<languageEntryText>OK</languageEntryText>
 		</languageEntry>

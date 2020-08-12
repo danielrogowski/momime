@@ -25279,6 +25279,7 @@
 		<languageEntry languageEntryID="ResearchBonusCombinationMultiply" />
 		<languageEntry languageEntryID="CastingReductionCap" />
 		<languageEntry languageEntryID="ResearchBonusCap" />
+		<languageEntry languageEntryID="StolenFromFortress" />
 		<languageEntry languageEntryID="OK" />
 		<languageEntry languageEntryID="Cancel" />
 	</languageCategory>

@@ -37,8 +37,46 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.8.2</b></td>
-			<td align=left><b>31 Jul 2020</b></td>
+			<td align=left><b>Current version: 0.9.8.3</b></td>
+			<td align=left><b>13 Aug 2020</b></td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>When clicking a spell to cast it in the spell book, now shows an animation rather than closing the spell book
+					<li>Can now click spells on the Queued Overland Spells screen to cancel them
+					<li>Non-corporeal units (like Magic Spirits) and units with Wraithform cast on them now look semi-transparent in combat
+					<li>New client option allows turning off animating unit movements on the overland map to speed up the game - you need this after you have Awareness cast
+					<li>Number of lairs now varies according to map size
+					<li>Recalculated the number of nodes, towers, raider cities on maps that are smaller/larger size than standard to make maps scale more consistently
+					<li>Added Gigantic map size option (but warning, the AI turns are very slow so this is probably not really viable and just there for testing)
+					<li>When wizards are banished or defeated, can steal up to 2 spells from them
+					<li>When wizards are banished or defeated by another wizard, half their stored Mana is taken
+				</ul>
+
+				<b>AI improvements:</b>
+				<ul>
+					<li>Raiders now have different weightings to decide what to build than AI wizards do, so they put put greater emphasis on churning out lots of units, and less on constructing buildings
+					<li>Raiders get lower city growth and resource production bonuses than AI wizards
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>After using Create Artifact and picking Spell Charges, and using the spell book to choose the spell to imbue into the item, spell book now returns to normal overland casting mode
+					<li>If banished while in the middle of casting an overland spell, queued spell screen might show that mana as contributing towards casting Spell of Return (though it was right on the server, so just a visual error)
+					<li>Units with 0 attack strength (like Settlers) are now not allowed to make melee attacks in combat
+					<li>If both sides in an AI-vs-AI combat are doing nothing (for example 2 settlers who cannot attack each other) then just end it immediately and declare the defender as the winner
+					<li>Fixed error when trying to use spells natural to a unit (e.g. Magicians' Fireballs) or spells imbued into hero items if that spell can normally have extra MP channeled into it for more damage
+					<li>Fixed problems if a spell awarded from capturing a node/lair/tower happened to be the spell you were currently researching
+					<li>Don't allow life stealing attacks (e.g. ghouls) creating undead after a combat to result in going over the maximum number of units allowed per map cell
+					<li>Fixed crash when the last unit in combat is killed by casting a spell
+					<li>Fix when selling a building, sometimes the city view screen would not update to show it removed
+					<li>In simultaneous turns games, at the end of each turn AI players now clear pending movements of anywhere they couldn't reach in 1 turn; I think this was causing most of the issues/crashes with simultaneous turns games
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.8.2</td>
+			<td align=left>31 Jul 2020</td>
 			<td align=left>
 				<b>Handling of wizard's fortress being taken:</b>
 				<ul>

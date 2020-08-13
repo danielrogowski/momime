@@ -129,9 +129,10 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			// reached their destination - so we resend these pending moves to the client so the arrows display correctly
 			// and it won't ask the player for where to move those units.
 			for (final PlayerServerDetails player : mom.getPlayers ())
+			{
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 				if (player.getPlayerDescription ().isHuman ())
 				{
-					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 					final Iterator<PendingMovement> iter = priv.getPendingMovement ().iterator ();
 					while (iter.hasNext ())
 					{
@@ -165,6 +166,10 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 						}
 					}
 				}
+				else
+					// AI players always scrub all pending moves after movement + combats are resolved, and recalculate where to go next turn
+					priv.getPendingMovement ().clear ();
+			}
 	
 			// Special orders - e.g. settlers building cities.
 			// This can generate messages about spirits capturing nodes.
@@ -242,8 +247,13 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					
 					// Does it initiate a combat?  If so then leave the pending movement (don't remove it) and we'll deal with it later
 					else if (!oneCell.isCombatInitiated ())
+					{
+						// Careful, this generates a crazy amount of logs
+						// log.debug ("findAndProcessOneCellPendingMovement found a move that needs doing: " + oneCell);
+						
 						for (int n = 0; n < movementTotal; n++)
 							moves.add (oneCell);
+					}
 				}
 			}
 		}

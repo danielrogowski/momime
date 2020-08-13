@@ -478,7 +478,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			if (unitLocation == null)
 				unitLocation = thisUnit.getUnitLocation ();
 			else if (!unitLocation.equals (thisUnit.getUnitLocation ()))
-				throw new MomException ("createUnitStack: All selected units are not in the same starting location");
+				throw new MomException ("createUnitStack: All selected units are not in the same starting location, expected " + unitLocation + " but Unit URN " +
+					thisUnit.getUnitURN () + " is at " + thisUnit.getUnitLocation ());
 			
 			// Record or check player
 			if (owningPlayerID == 0)

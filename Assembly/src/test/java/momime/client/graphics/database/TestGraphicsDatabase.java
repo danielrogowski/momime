@@ -182,7 +182,8 @@ public final class TestGraphicsDatabase
 				final String graphicsField = graphicsFieldList.get (0).getAttribute ("xpath");
 
 				// Assume only attributes are identifying fields for which we must ensure all records are present
-				if (graphicsField.startsWith ("@"))
+				// Buildings are the only exception - the Wizards' Fortress exists in the graphics XML and that's it.  I'm not adding 30+ blank entries just to satisfy this check, so filter it out.
+				if ((graphicsField.startsWith ("@")) && (!graphicsEntity.equals ("building")))
 				{
 					// Pull all the necessary details out of the server XSD PK
 					Element thisPK = null;

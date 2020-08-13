@@ -109,7 +109,7 @@
 		<dependency>
 			<groupId>com.ndg.common</groupId>
 			<artifactId>xmleditor</artifactId>
-			<version>0.4.0</version>
+			<version>0.4.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
@@ -130,7 +130,7 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-utils</artifactId>
-			<version>0.4.0</version>
+			<version>0.4.1</version>
 		</dependency>
 	</dependencies>
 </project>

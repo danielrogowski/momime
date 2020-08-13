@@ -266,11 +266,11 @@ public final class TestGraphicsDatabaseExImpl
 	}
 
 	/**
-	 * Tests the findBuilding method to find a building ID that does exist
+	 * Tests the findCityViewElementBuilding method to find a building ID that does exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindBuilding_Exists () throws RecordNotFoundException
+	public final void testFindCityViewElementBuilding_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -282,15 +282,15 @@ public final class TestGraphicsDatabaseExImpl
 
 		db.buildMaps ();
 
-		assertEquals ("BL02", db.findBuilding ("BL02", "testFindBuilding_Exists").getBuildingID ());
+		assertEquals ("BL02", db.findCityViewElementBuilding ("BL02", "testFindCityViewElementBuilding_Exists").getBuildingID ());
 	}
 
 	/**
-	 * Tests the findBuilding method to find a building ID that doesn't exist
+	 * Tests the findCityViewElementBuilding method to find a building ID that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindBuilding_NotExists () throws RecordNotFoundException
+	public final void testFindCityViewElementBuilding_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
@@ -302,7 +302,7 @@ public final class TestGraphicsDatabaseExImpl
 
 		db.buildMaps ();
 
-		db.findBuilding ("BL04", "testFindBuilding_NotExists");
+		db.findCityViewElementBuilding ("BL04", "testFindCityViewElementBuilding_NotExists");
 	}
 
 	/**

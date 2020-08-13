@@ -777,9 +777,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Its the Defender/human player's turn
 		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
 		
+		// Both players have something useful to do
+		final CombatAI ai = mock (CombatAI.class);
+		when (ai.aiCombatTurn (combatLocation, defendingPlayer, mom)).thenReturn (true);
+		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (true);
+		
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		final CombatAI ai = mock (CombatAI.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
@@ -882,10 +886,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Defender/human player just finished turn
 		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
+		
+		// Both players have something useful to do
+		final CombatAI ai = mock (CombatAI.class);
+		when (ai.aiCombatTurn (combatLocation, defendingPlayer, mom)).thenReturn (true);
+		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (true);
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		final CombatAI ai = mock (CombatAI.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);

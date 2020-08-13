@@ -795,21 +795,25 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			mu1.setUnitURN (n);
 			mu1.setUnitLocation (new MapCoordinates3DEx (moveFrom));
 			when (unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu1);
+			when (unitUtils.findUnitURN (n, fow1.getUnit ())).thenReturn (mu1);
 
 			final MemoryUnit mu2 = new MemoryUnit ();
 			mu2.setUnitURN (n);
 			mu2.setUnitLocation (new MapCoordinates3DEx (moveFrom));
 			when (unitUtils.findUnitURN (n, fow2.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu2);
+			when (unitUtils.findUnitURN (n, fow2.getUnit ())).thenReturn (mu2);
 
 			final MemoryUnit mu3 = new MemoryUnit ();
 			mu3.setUnitURN (n);
 			mu3.setUnitLocation (new MapCoordinates3DEx (moveFrom));
 			when (unitUtils.findUnitURN (n, fow3.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu3);
+			when (unitUtils.findUnitURN (n, fow3.getUnit ())).thenReturn (mu3);
 			
 			final MemoryUnit mu4 = new MemoryUnit ();
 			mu4.setUnitURN (n);
 			mu4.setUnitLocation (new MapCoordinates3DEx (moveFrom));
 			when (unitUtils.findUnitURN (n, fow4.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu4);
+			when (unitUtils.findUnitURN (n, fow4.getUnit ())).thenReturn (mu4);
 		}
 		
 		// Set up object to test
@@ -966,6 +970,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			mu1.setUnitURN (n);
 			mu1.setUnitLocation (new MapCoordinates3DEx (moveFrom));
 			when (unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu1);
+			when (unitUtils.findUnitURN (n, fow1.getUnit ())).thenReturn (mu1);
 		}
 
 		// Its a lair, not a tower
@@ -1112,6 +1117,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 			mu1.setUnitURN (n);
 			mu1.setUnitLocation (new MapCoordinates3DEx (moveFrom));
 			when (unitUtils.findUnitURN (n, fow1.getUnit (), "moveUnitStackOneCellOnServerAndClients")).thenReturn (mu1);
+			when (unitUtils.findUnitURN (n, fow1.getUnit ())).thenReturn (mu1);
 		}
 
 		// Its a tower

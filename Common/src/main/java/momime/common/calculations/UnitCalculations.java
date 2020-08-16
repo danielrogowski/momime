@@ -102,6 +102,18 @@ public interface UnitCalculations
 	public boolean canMakeMeleeAttack (final ExpandedUnitDetails unit) throws MomException;
 	
 	/**
+	 * @param x X coordinate of the location we want to check
+	 * @param y Y coordinate of the location we want to check
+	 * @param plane Plane we want to check
+	 * @param movingPlayerID The player who is trying to move here
+	 * @param map The player who is trying to move here's knowledge of the terrain
+	 * @param units The player who is trying to move here's knowledge of units
+	 * @return Whether moving here will result in an attack or not
+	 */
+	public boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units);
+	
+	/**
 	 * @param unitStack Unit stack to check
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
@@ -141,6 +153,7 @@ public interface UnitCalculations
 	public UnitStack createUnitStack (final List<ExpandedUnitDetails> selectedUnits,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
+	
 	
 	/**
 	 * Calculates how many (doubled) movement points it will take to move from x, y to ever other location in the combat map whether we can move there or not.

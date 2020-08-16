@@ -13,9 +13,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import com.ndg.map.CoordinateSystem;
@@ -41,7 +38,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfStrings;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomSessionDescription;
-import momime.common.messages.OverlandMapTerrainData;
 import momime.server.database.DifficultyLevelSvr;
 import momime.server.database.FogOfWarSettingSvr;
 import momime.server.database.LandProportionSvr;
@@ -336,56 +332,6 @@ public class ServerTestData
 				final MapRowOfMemoryGridCells row = new MapRowOfMemoryGridCells ();
 				for (int x = 0; x < sys.getWidth (); x++)
 					row.getCell ().add (new ServerGridCellEx ());
-
-				area.getRow ().add (row);
-			}
-
-			map.getPlane ().add (area);
-		}
-
-		return map;
-	}
-
-	/**
-	 * @param sys Overland map coordinate system
-	 * @param workbook Excel workbook to read tile types from
-	 * @return Map area prepopulated with terrain populated from an Excel spreadsheet
-	 * @throws IOException If the file cannot be read
-	 * @throws InvalidFormatException If the file is not a valid Excel file
-	 */
-	public final MapVolumeOfMemoryGridCells createOverlandMapFromExcel (final CoordinateSystem sys, final Workbook workbook)
-		throws IOException, InvalidFormatException
-	{
-		final MapVolumeOfMemoryGridCells map = new MapVolumeOfMemoryGridCells ();
-		for (int plane = 0; plane < sys.getDepth (); plane++)
-		{
-			final MapAreaOfMemoryGridCells area = new MapAreaOfMemoryGridCells ();
-			for (int y = 0; y < sys.getHeight (); y++)
-			{
-				final MapRowOfMemoryGridCells row = new MapRowOfMemoryGridCells ();
-				for (int x = 0; x < sys.getWidth (); x++)
-				{
-					final ServerGridCellEx mc = new ServerGridCellEx ();
-
-					// Look for data in Excel sheet
-					final Cell cell = workbook.getSheetAt (plane).getRow (y + 1).getCell (x + 1);
-					if (cell != null)
-					{
-						final int tileTypeNumber = (int) cell.getNumericCellValue ();
-						if (tileTypeNumber > 0)
-						{
-							String tileTypeID = Integer.valueOf (tileTypeNumber).toString ();
-							while (tileTypeID.length () < 2)
-								tileTypeID = "0" + tileTypeID;
-
-							final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
-							terrainData.setTileTypeID ("TT" + tileTypeID);
-							mc.setTerrainData (terrainData);
-						}
-					}
-
-					row.getCell ().add (mc);
-				}
 
 				area.getRow ().add (row);
 			}

@@ -22,6 +22,9 @@ import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitMovement;
+import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeature;
 import momime.common.database.RecordNotFoundException;
@@ -33,7 +36,6 @@ import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
-import momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PendingMovementUtils;
@@ -72,9 +74,12 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	/** Whether we're in the middle of the server processing and sending us pending moves */
 	private boolean processingContinuedMovement;
 	
-	/** The map location we're currently selecting/deselecting units at ready to choose an order for them or tell them where to move/attack */
-	private MapCoordinates3DEx unitMoveFrom;
-		
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
+	
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
+	
 	/**
 	 * At the start of a turn, once all our movement has been reset and the server has sent any continuation moves to us, this gets called.
 	 * It builds a list of units we need to give movement orders to i.e. all those units which have movement left and are not patrolling.
@@ -208,7 +213,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			// manually to move it, in which case we need to know where its moving from
 	
 	        // This is the single only place unitMoveFrom is ever set
-			unitMoveFrom = unitLocation;
+			getOverlandMapUI ().setUnitMoveFrom (unitLocation);
 	
 			// Enable or disable the special order buttons like build city, purify, etc.
 			enableOrDisableSpecialOrderButtons ();
@@ -240,10 +245,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		OverlandMapTerrainData terrainData = null;
 		TileType tileType = null;
 		
-		if (unitMoveFrom != null)
+		if (getOverlandMapUI ().getUnitMoveFrom () != null)
 		{
 			terrainData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-				(unitMoveFrom.getZ ()).getRow ().get (unitMoveFrom.getY ()).getCell ().get (unitMoveFrom.getX ()).getTerrainData ();
+				(getOverlandMapUI ().getUnitMoveFrom ().getZ ()).getRow ().get (getOverlandMapUI ().getUnitMoveFrom ().getY ()).getCell ().get (getOverlandMapUI ().getUnitMoveFrom ().getX ()).getTerrainData ();
 			
 			if (terrainData != null)
 				tileType = getClient ().getClientDB ().findTileType (terrainData.getTileTypeID (), "enableOrDisableSpecialOrderButtons");
@@ -275,7 +280,8 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			if (((Boolean.TRUE.equals (tileType.isCanBuildCity ())) &&
 				((mapFeature == null) || (Boolean.TRUE.equals (mapFeature.isCanBuildCity ())))) &&
 				(!getCityCalculations ().markWithinExistingCityRadius (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), null,
-					unitMoveFrom.getZ (), getClient ().getSessionDescription ().getOverlandMapSize ()).get (unitMoveFrom.getX (), unitMoveFrom.getY ())))
+					getOverlandMapUI ().getUnitMoveFrom ().getZ (), getClient ().getSessionDescription ().getOverlandMapSize ()).get
+						(getOverlandMapUI ().getUnitMoveFrom ().getX (), getOverlandMapUI ().getUnitMoveFrom ().getY ())))
 				
 				createOutpostEnabled = true;
 		}
@@ -304,10 +310,13 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * Updates the indicator for how much movement the current unit stack has left
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	@Override
-	public final void updateMovementRemaining () throws JAXBException, XMLStreamException, MomException
+	public final void updateMovementRemaining ()
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering updateMovementRemaining");
 		
@@ -318,27 +327,34 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		// even if they've already moved, have no movement left, or don't even belong to us
 		int buttonCount = 0;
 		
-		// This finds the least doubleOverlandMovesLeft of any selected units
-		// Force to zero if it isn't our turn, otherwise we're able to move our units in someone else's turn!
-		int leastDoubleOverlandMovesLeft = ourTurn ? Integer.MAX_VALUE : 0;
-		
 		// Check all unit buttons
-		final List<Integer> selectedUnitURNs = new ArrayList<Integer> ();
+		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if (!button.isHidden ())
 			{
 				buttonCount++;
 				
-				if ((leastDoubleOverlandMovesLeft > 0) && (button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
-				{
-					leastDoubleOverlandMovesLeft = Math.min (leastDoubleOverlandMovesLeft, button.getComponent ().getUnit ().getDoubleOverlandMovesLeft ());
-					selectedUnitURNs.add (button.getComponent ().getUnit ().getUnitURN ());
-				}
+				if ((ourTurn) && (button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
+					selectedUnits.add (button.getComponent ().getUnit ());
 			}
+
+		int doubleMovementRemaining = Integer.MAX_VALUE;
+		UnitStack unitStack = null;
+		if (selectedUnits.size () > 0)
+		{
+			unitStack = getUnitCalculations ().createUnitStack (selectedUnits, getClient ().getPlayers (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			
+			// Get the list of units who are actually moving
+			final List<ExpandedUnitDetails> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
+			for (final ExpandedUnitDetails thisUnit : movingUnits)
+				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
+					doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
+		}
 		
 		// If we didn't find any units at all then we have no movement
-		if (leastDoubleOverlandMovesLeft == Integer.MAX_VALUE)
-			leastDoubleOverlandMovesLeft = 0;
+		if (doubleMovementRemaining == Integer.MAX_VALUE)
+			doubleMovementRemaining = 0;
 		
 		// Put the right hand panel into the correct mode
 		if (buttonCount > 0)
@@ -356,22 +372,32 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 				getOverlandMapRightHandPanel ().setBottom (OverlandMapRightHandPanelBottom.PLAYER);
 		}
 		
-		getOverlandMapRightHandPanel ().setPatrolEnabled (leastDoubleOverlandMovesLeft > 0);
-		getOverlandMapRightHandPanel ().setDoneEnabled (leastDoubleOverlandMovesLeft > 0);
+		getOverlandMapRightHandPanel ().setPatrolEnabled (doubleMovementRemaining > 0);
+		getOverlandMapRightHandPanel ().setDoneEnabled (doubleMovementRemaining > 0);
 		
-		if (leastDoubleOverlandMovesLeft == 0)
+		if (doubleMovementRemaining == 0)
 		{
 			// No units picked to move - remove all shading from the map
-			getOverlandMapUI ().setMovementTypes (null);
+			getOverlandMapUI ().setDoubleMovementDistances (null);
+			getOverlandMapUI ().setCanMoveToInOneTurn (null);
 		}
 		else
 		{
-			// Ask server to calculate distances to every point on the map
-			final RequestOverlandMovementDistancesMessage msg = new RequestOverlandMovementDistancesMessage ();
-			msg.setMoveFrom (unitMoveFrom);
-			msg.getUnitURN ().addAll (selectedUnitURNs);
-			getClient ().getServerConnection ().sendMessageToServer (msg);
+			// Calculate distances to every point on the map
+			final int [] [] [] doubleMovementDistances			= new int [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
+			final int [] [] [] movementDirections					= new int [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
+			final boolean [] [] [] canMoveToInOneTurn			= new boolean [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
+			final boolean [] [] [] movingHereResultsInAttack	= new boolean [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
+
+			getUnitMovement ().calculateOverlandMovementDistances (getOverlandMapUI ().getUnitMoveFrom ().getX (), getOverlandMapUI ().getUnitMoveFrom ().getY (), getOverlandMapUI ().getUnitMoveFrom ().getZ (),
+				getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unitStack,
+				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
+				getClient ().getPlayers (), getClient ().getSessionDescription (), getClient ().getClientDB ());
+
+			getOverlandMapUI ().setDoubleMovementDistances (doubleMovementDistances);
+			getOverlandMapUI ().setCanMoveToInOneTurn (canMoveToInOneTurn);
 		}			
+		getOverlandMapUI ().regenerateMovementTypesBitmap ();
 		
 		log.trace ("Exiting updateMovementRemaining");
 	}
@@ -509,7 +535,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		if (movingUnitURNs.size () > 0)
 		{
 			final RequestMoveOverlandUnitStackMessage msg = new RequestMoveOverlandUnitStackMessage ();
-			msg.setMoveFrom (unitMoveFrom);
+			msg.setMoveFrom (getOverlandMapUI ().getUnitMoveFrom ());
 			msg.setMoveTo (moveTo);
 			msg.getUnitURN ().addAll (movingUnitURNs);
 			
@@ -541,7 +567,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		if (movingUnitURNs.size () > 0)
 		{
 			final SpecialOrderButtonMessage msg = new SpecialOrderButtonMessage ();
-			msg.setMapLocation (unitMoveFrom);
+			msg.setMapLocation (getOverlandMapUI ().getUnitMoveFrom ());
 			msg.setSpecialOrder (specialOrder);
 			msg.getUnitURN ().addAll (movingUnitURNs);
 			
@@ -564,10 +590,13 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	 * Tell the server we clicked the Next Turn button
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
 	@Override
-	public final void nextTurnButton () throws JAXBException, XMLStreamException, MomException
+	public final void nextTurnButton ()
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering nextTurn");
 
@@ -606,16 +635,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void setProcessingContinuedMovement (final boolean cont)
 	{
 		processingContinuedMovement = cont;
-	}
-
-	/**
-	 * Note this being non-null doesn't necessarily mean we have any units actually selected to move - can select/deselect units via the buttons in the right hand panel
-	 * @return The map location we're currently selecting/deselecting units at ready to choose an order for them or tell them where to move/attack
-	 */
-	@Override
-	public final MapCoordinates3DEx getUnitMoveFrom ()
-	{
-		return unitMoveFrom;
 	}
 	
 	/**
@@ -712,5 +731,37 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
+	}
+
+	/**
+	 * @return Methods dealing with unit movement
+	 */
+	public final UnitMovement getUnitMovement ()
+	{
+		return unitMovement;
+	}
+
+	/**
+	 * @param u Methods dealing with unit movement
+	 */
+	public final void setUnitMovement (final UnitMovement u)
+	{
+		unitMovement = u;
+	}
+
+	/**
+	 * @return Unit calculations
+	 */
+	public final UnitCalculations getUnitCalculations ()
+	{
+		return unitCalculations;
+	}
+
+	/**
+	 * @param calc Unit calculations
+	 */
+	public final void setUnitCalculations (final UnitCalculations calc)
+	{
+		unitCalculations = calc;
 	}
 }

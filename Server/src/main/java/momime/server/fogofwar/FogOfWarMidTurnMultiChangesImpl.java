@@ -19,6 +19,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitMovement;
 import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -46,7 +47,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.calculations.ServerCityCalculations;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.CitySpellEffectSvr;
 import momime.server.database.PickSvr;
 import momime.server.database.PlaneSvr;
@@ -101,8 +101,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	/** Server-only city calculations */
 	private ServerCityCalculations serverCityCalculations;
 	
-	/** Server-only unit calculations */
-	private ServerUnitCalculations serverUnitCalculations;
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
 	
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
@@ -666,7 +666,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 			final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
-			getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+			getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 				priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
 				doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
@@ -758,7 +758,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 				final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
-				getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+				getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 					priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
 					doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
@@ -876,7 +876,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
-		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+		getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
 			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
@@ -948,7 +948,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlanes ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
-		getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+		getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
 			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
@@ -1171,19 +1171,19 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	}
 
 	/**
-	 * @return Server-only unit calculations
+	 * @return Methods dealing with unit movement
 	 */
-	public final ServerUnitCalculations getServerUnitCalculations ()
+	public final UnitMovement getUnitMovement ()
 	{
-		return serverUnitCalculations;
+		return unitMovement;
 	}
 
 	/**
-	 * @param calc Server-only unit calculations
+	 * @param u Methods dealing with unit movement
 	 */
-	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	public final void setUnitMovement (final UnitMovement u)
 	{
-		serverUnitCalculations = calc;
+		unitMovement = u;
 	}
 
 	/**

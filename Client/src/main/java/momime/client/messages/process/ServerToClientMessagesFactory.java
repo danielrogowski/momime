@@ -252,11 +252,6 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public OverlandMovementTypesMessageImpl createOverlandMovementTypesMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public CancelCombatAreaEffectMessageImpl createCancelCombatAreaEffectMessage ();
 
 	/**

@@ -78,8 +78,6 @@ import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
-import momime.common.messages.servertoclient.MapVolumeOfOverlandMoveType;
-import momime.common.messages.servertoclient.OverlandMoveTypeID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
@@ -178,8 +176,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 	private BufferedImage fogOfWarBitmap;
 
 	/** Area detailing which map cells we can/can't move to */
-	private MapVolumeOfOverlandMoveType movementTypes;
+	private int [] [] [] doubleMovementDistances;
 
+	/** Area detailing which map cells we can/can't move to in one turn */
+	private boolean [] [] [] canMoveToInOneTurn;
+	
+	/** The map location we're currently selecting/deselecting units at ready to choose an order for them or tell them where to move/attack */
+	private MapCoordinates3DEx unitMoveFrom;
+	
 	/** Shading area generated from movementTypes */
 	private BufferedImage movementTypesBitmap;
 
@@ -292,7 +296,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		
 		final Action centreOnSelectedUnitAction = new LoggingAction ((ev) ->
 		{
-			final MapCoordinates3DEx coords = getOverlandMapProcessing ().getUnitMoveFrom ();
+			final MapCoordinates3DEx coords = getUnitMoveFrom ();
 			if (coords != null)
 				scrollTo (coords.getX (), coords.getY (), coords.getZ (), true);
 		});
@@ -436,11 +440,11 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 								// Make the unit that's selected to move blink
 								final boolean drawUnit;
-								if ((getOverlandMapProcessing ().isAnyUnitSelectedToMove ()) && (getOverlandMapProcessing ().getUnitMoveFrom () != null) &&
-									(getOverlandMapProcessing ().getUnitMoveFrom ().getX () == x) && (getOverlandMapProcessing ().getUnitMoveFrom ().getY () == y))
+								if ((getOverlandMapProcessing ().isAnyUnitSelectedToMove ()) && (getUnitMoveFrom () != null) &&
+									(getUnitMoveFrom ().getX () == x) && (getUnitMoveFrom ().getY () == y))
 								{
 									// The moving stack might be on the other plane
-									if ((mapViewPlane == getOverlandMapProcessing ().getUnitMoveFrom ().getZ ()) ||
+									if ((mapViewPlane == getUnitMoveFrom ().getZ ()) ||
 										(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ())))
 										
 										// We are looking at the unit stack that's moving - so blink it on and off, even if its inside a city
@@ -949,8 +953,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 						else if ((getOverlandMapRightHandPanel ().getTop () != OverlandMapRightHandPanelTop.SURVEYOR) &&
 							((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 							(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
-							(getMovementTypes () != null) &&
-							(getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (mapCellY).getCell ().get (mapCellX) != OverlandMoveTypeID.CANNOT_MOVE_HERE))
+							(getDoubleMovementDistances () != null) &&
+							(getDoubleMovementDistances () [mapViewPlane] [mapCellY] [mapCellX] >= 0))
 							
 							// NB. We don't check here that we actually have a unit selected - MoveUnitStackTo does this for us
 							getOverlandMapProcessing ().moveUnitStackTo (new MapCoordinates3DEx (mapCellX, mapCellY, mapViewPlane));
@@ -1129,12 +1133,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 		if ((getOverlandMapRightHandPanel ().getTop () != OverlandMapRightHandPanelTop.SURVEYOR) &&
 			((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 			(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
-			(getMovementTypes () != null) && (getOverlandMapProcessing ().getUnitMoveFrom () != null))
+			(getDoubleMovementDistances () != null) && (getUnitMoveFrom () != null))
 		{
 			// So its our turn, and have a current position, now have to check the direction pressed is a valid move
-			final MapCoordinates3DEx coords = new MapCoordinates3DEx (getOverlandMapProcessing ().getUnitMoveFrom ());
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (getUnitMoveFrom ());
 			if (getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), coords, d.getDirectionID ()))
-				if (getMovementTypes ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()) != OverlandMoveTypeID.CANNOT_MOVE_HERE)
+				if (getDoubleMovementDistances () [coords.getZ ()] [coords.getY ()] [coords.getX ()] >= 0)
 					getOverlandMapProcessing ().moveUnitStackTo (coords);
 		}
 
@@ -1263,8 +1267,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 			{
 				// If this is a map cell where we've got units selected to move, make sure we show one of the units that's moving
 				final boolean drawUnit;
-				if ((getOverlandMapProcessing ().getUnitMoveFrom () != null) && (getOverlandMapProcessing ().isAnyUnitSelectedToMove ()) &&
-					(getOverlandMapProcessing ().getUnitMoveFrom ().equals (unit.getUnitLocation ())))
+				if ((getUnitMoveFrom () != null) && (getOverlandMapProcessing ().isAnyUnitSelectedToMove ()) &&
+					(getUnitMoveFrom ().equals (unit.getUnitLocation ())))
 					
 					drawUnit = getOverlandMapProcessing ().isUnitSelected (unit);
 				else
@@ -1313,24 +1317,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Area detailing which map cells we can/can't move to
+	 * Creates highlighting bitmap showing map cells we can/can't move to
 	 */
-	public final MapVolumeOfOverlandMoveType getMovementTypes ()
-	{
-		return movementTypes;
-	}
-
-	/**
-	 * @param moves Area detailing which map cells we can/can't move to
-	 */
-	public final void setMovementTypes (final MapVolumeOfOverlandMoveType moves)
+	public final void regenerateMovementTypesBitmap ()
 	{
 		log.trace ("Entering setMovementTypes");
 
-		movementTypes = moves;
-
 		// Regenerate shading bitmap
-		if (getMovementTypes () == null)
+		if ((getDoubleMovementDistances () == null) || (getCanMoveToInOneTurn () == null))
 			movementTypesBitmap = null;
 		else
 		{
@@ -1338,27 +1332,37 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 			for (int x = 0; x < getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-					switch (getMovementTypes ().getPlane ().get (mapViewPlane).getRow ().get (y).getCell ().get (x))
-					{
-						// Brighten areas we can move to in 1 turn
-						case MOVE_IN_ONE_TURN:
-							movementTypesBitmap.setRGB (x, y, MOVE_IN_ONE_TURN_COLOUR);
-							break;
+					
+					// Darken areas we cannot move to at all
+					if (getDoubleMovementDistances () [mapViewPlane] [y] [x] < 0)
+						movementTypesBitmap.setRGB (x, y, CANNOT_MOVE_HERE_COLOUR);
+			
+					// Brighten areas we can move to in 1 turn
+					else if (getCanMoveToInOneTurn () [mapViewPlane] [y] [x])
+						movementTypesBitmap.setRGB (x, y, MOVE_IN_ONE_TURN_COLOUR);
 
-						// Darken areas we cannot move to at all
-						case CANNOT_MOVE_HERE:
-							movementTypesBitmap.setRGB (x, y, CANNOT_MOVE_HERE_COLOUR);
-							break;
-
-						// Leave areas we can move to in multiple turns looking like normal
-						case MOVE_IN_MULTIPLE_TURNS:
-							break;
-					}
+					// Leave areas we can move to in multiple turns looking like normal
 		}
 
 		sceneryPanel.repaint ();
 
 		log.trace ("Exiting setMovementTypes");
+	}
+	
+	/**
+	 * @return The map location we're currently selecting/deselecting units at ready to choose an order for them or tell them where to move/attack
+	 */
+	public final MapCoordinates3DEx getUnitMoveFrom ()
+	{
+		return unitMoveFrom;
+	}
+
+	/**
+	 * @param u The map location we're currently selecting/deselecting units at ready to choose an order for them or tell them where to move/attack
+	 */
+	public final void setUnitMoveFrom (final MapCoordinates3DEx u)
+	{
+		unitMoveFrom = u;
 	}
 	
 	/**
@@ -1376,7 +1380,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 
 		// Keep the same movement types array, but regenerate the bitmap from it to show movement available on the new plane
-		setMovementTypes (movementTypes);
+		regenerateMovementTypesBitmap ();
 
 		log.trace ("Exiting switchMapViewPlane");
 	}
@@ -1890,5 +1894,37 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setOverlandCastAnimationFrame (final int frame)
 	{
 		overlandCastAnimationFrame = frame;
+	}
+
+	/**
+	 * @return Area detailing which map cells we can/can't move to
+	 */
+	public final int [] [] [] getDoubleMovementDistances ()
+	{
+		return doubleMovementDistances;
+	}
+
+	/**
+	 * @param a Area detailing which map cells we can/can't move to
+	 */
+	public final void setDoubleMovementDistances (final int [] [] [] a)
+	{
+		doubleMovementDistances = a;
+	}
+
+	/**
+	 * @return Area detailing which map cells we can/can't move to in one turn
+	 */
+	public final boolean [] [] [] getCanMoveToInOneTurn ()
+	{
+		return canMoveToInOneTurn;
+	}
+
+	/**
+	 * @param a Area detailing which map cells we can/can't move to in one turn
+	 */
+	public final void setCanMoveToInOneTurn (final boolean [] [] [] a)
+	{
+		canMoveToInOneTurn = a;
 	}
 }

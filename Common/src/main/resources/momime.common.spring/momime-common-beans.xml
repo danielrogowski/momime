@@ -47,7 +47,6 @@
     			<value>momime.common.messages.clienttoserver.RequestCastSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage</value>
-    			<value>momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestResearchSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage</value>
@@ -120,7 +119,6 @@
     			<value>momime.common.messages.servertoclient.NewGameDatabaseMessage</value>
     			<value>momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage</value>
     			<value>momime.common.messages.servertoclient.OverlandCastQueuedMessage</value>
-    			<value>momime.common.messages.servertoclient.OverlandMovementTypesMessage</value>
     			<value>momime.common.messages.servertoclient.PendingMovementMessage</value>
     			<value>momime.common.messages.servertoclient.PendingSaleMessage</value>
     			<value>momime.common.messages.servertoclient.RemoveQueuedSpellMessage</value>
@@ -193,6 +191,7 @@
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 
 	<bean id="memoryBuildingUtils" class="momime.common.utils.MemoryBuildingUtilsImpl" />
@@ -253,6 +252,13 @@
 
 	<bean id="heroItemCalculations" class="momime.common.calculations.HeroItemCalculationsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
+	</bean>
+
+	<bean id="unitMovement" class="momime.common.calculations.UnitMovementImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 
 </beans>

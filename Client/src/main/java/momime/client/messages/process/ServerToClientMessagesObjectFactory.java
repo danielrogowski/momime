@@ -35,7 +35,6 @@ import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.common.messages.servertoclient.ObjectFactory;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
-import momime.common.messages.servertoclient.OverlandMovementTypesMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
@@ -505,15 +504,6 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final SetCurrentPlayerMessage createSetCurrentPlayerMessage ()
 	{
 		return getFactory ().createSetCurrentPlayerMessage ();
-	}
-
-	/**
-	 * @return Newly created message
-	 */
-	@Override
-	public final OverlandMovementTypesMessage createOverlandMovementTypesMessage ()
-	{
-		return getFactory ().createOverlandMovementTypesMessage ();
 	}
 
 	/**

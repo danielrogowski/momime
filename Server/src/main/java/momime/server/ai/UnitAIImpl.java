@@ -25,6 +25,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitMovement;
 import momime.common.calculations.UnitStack;
 import momime.common.database.AiMovementCode;
 import momime.common.database.CommonDatabaseConstants;
@@ -50,7 +51,6 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.AiUnitCategorySvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
@@ -83,8 +83,8 @@ public final class UnitAIImpl implements UnitAI
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
-	/** Server-only unit calculations */
-	private ServerUnitCalculations serverUnitCalculations;
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
@@ -764,7 +764,7 @@ public final class UnitAIImpl implements UnitAI
 			result = AIMovementResult.NO_MOVEMENT_LEFT;
 		else
 		{
-			getServerUnitCalculations ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
+			getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (),
 				player.getPlayerDescription ().getPlayerID (), priv.getFogOfWarMemory (),
 				unitStack, doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 				mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
@@ -928,21 +928,21 @@ public final class UnitAIImpl implements UnitAI
 	}
 
 	/**
-	 * @return Server-only unit calculations
+	 * @return Methods dealing with unit movement
 	 */
-	public final ServerUnitCalculations getServerUnitCalculations ()
+	public final UnitMovement getUnitMovement ()
 	{
-		return serverUnitCalculations;
+		return unitMovement;
 	}
 
 	/**
-	 * @param calc Server-only unit calculations
+	 * @param u Methods dealing with unit movement
 	 */
-	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	public final void setUnitMovement (final UnitMovement u)
 	{
-		serverUnitCalculations = calc;
+		unitMovement = u;
 	}
-
+	
 	/**
 	 * @return Coordinate system utils
 	 */

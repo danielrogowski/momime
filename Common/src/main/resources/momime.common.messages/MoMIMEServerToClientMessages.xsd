@@ -373,21 +373,6 @@ It is also only sent to the player whose turn it now is.</xsd:documentation>
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="overlandMovementTypesMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Server sends this back to clients who clicked on a unit stack to tell them where the unit stack can and cannot move to</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:serverToClientMessage">
-					<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="movementTypes" type="momimestoc:mapVolumeOfOverlandMoveType" />
-					</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-
 	<xsd:element name="pendingMovementMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to clients who request that units move further than they can reach in one turn, or in "simultaneous turns" mode.
@@ -1308,50 +1293,8 @@ So this is what drives the Spell of Return animation on the client, not the AddB
 		</xsd:complexType>
 	</xsd:element>
 
-<!-- Map areas -->
-
-	<!-- Equivalent of TMomOverlandMoveTypeArea -->
-
-	<xsd:complexType name="mapRowOfOverlandMoveType">
-        <xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="unbounded" name="cell" type="momimestoc:overlandMoveTypeID" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="mapAreaOfOverlandMoveType">
-        <xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="unbounded" name="row" type="momimestoc:mapRowOfOverlandMoveType" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="mapVolumeOfOverlandMoveType">
-        <xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="unbounded" name="plane" type="momimestoc:mapAreaOfOverlandMoveType" />
-		</xsd:sequence>
-	</xsd:complexType>
-	
 <!--  Enums -->
 
-	<xsd:simpleType name="overlandMoveTypeID">
-	    <xsd:annotation>
-    		<xsd:documentation>The possible states of each map cell when we select a unit stack to move overland</xsd:documentation>
-		</xsd:annotation>
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="C"><xsd:annotation>
-				<xsd:documentation>Cannot move here</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="CANNOT_MOVE_HERE" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="O"><xsd:annotation>
-				<xsd:documentation>Can move here in one turn</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="MOVE_IN_ONE_TURN" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="M"><xsd:annotation>
-				<xsd:documentation>Can move here in more than one turn</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="MOVE_IN_MULTIPLE_TURNS" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
-	
 	<xsd:simpleType name="damageCalculationMessageTypeID">
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="H"><xsd:annotation>

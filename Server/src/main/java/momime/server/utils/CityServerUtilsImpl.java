@@ -21,6 +21,7 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.UnitCalculations;
+import momime.common.calculations.UnitMovement;
 import momime.common.calculations.UnitStack;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceCannotBuild;
@@ -41,7 +42,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.PlaneSvr;
 import momime.server.database.RaceSvr;
@@ -85,8 +85,8 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 	
-	/** Server-only unit calculations */
-	private ServerUnitCalculations serverUnitCalculations;
+	/** Methods dealing with unit movement */
+	private UnitMovement unitMovement;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -410,7 +410,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
-		getServerUnitCalculations ().calculateOverlandMovementDistances (firstCityLocation.getX (), firstCityLocation.getY (), firstCityLocation.getZ (),
+		getUnitMovement ().calculateOverlandMovementDistances (firstCityLocation.getX (), firstCityLocation.getY (), firstCityLocation.getZ (),
 			playerID, fogOfWarMemory, unitStack, 0, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, players, sd, db);
 		
 		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();
@@ -568,19 +568,19 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	}
 	
 	/**
-	 * @return Server-only unit calculations
+	 * @return Methods dealing with unit movement
 	 */
-	public final ServerUnitCalculations getServerUnitCalculations ()
+	public final UnitMovement getUnitMovement ()
 	{
-		return serverUnitCalculations;
+		return unitMovement;
 	}
 
 	/**
-	 * @param calc Server-only unit calculations
+	 * @param u Methods dealing with unit movement
 	 */
-	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	public final void setUnitMovement (final UnitMovement u)
 	{
-		serverUnitCalculations = calc;
+		unitMovement = u;
 	}
 	
 	/**

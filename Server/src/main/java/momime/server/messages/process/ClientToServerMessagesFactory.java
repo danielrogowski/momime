@@ -23,11 +23,6 @@ public interface ClientToServerMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public RequestOverlandMovementDistancesMessageImpl createRequestOverlandMovementDistancesMessage ();
-
-	/**
-	 * @return Newly created message
-	 */
 	public RequestMoveOverlandUnitStackMessageImpl createRequestMoveOverlandUnitStackMessage ();
 
 	/**

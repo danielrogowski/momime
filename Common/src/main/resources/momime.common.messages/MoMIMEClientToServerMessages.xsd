@@ -288,22 +288,6 @@ Server uses standard updateCity to reply.</xsd:documentation>
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="requestOverlandMovementDistancesMessage">
-	    <xsd:annotation>
-    		<xsd:documentation>Client sends this to server to request coordinates where this unit stack can move to</xsd:documentation>
-		</xsd:annotation>
-		<xsd:complexType>
-			<xsd:complexContent>
-				<xsd:extension base="mp:clientToServerMessage">
-		        	<xsd:sequence>
-						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates3D" />
-						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN" />
-		        	</xsd:sequence>
-				</xsd:extension>
-			</xsd:complexContent>
-		</xsd:complexType>
-	</xsd:element>
-	
 	<xsd:element name="requestMoveOverlandUnitStackMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Client sends this to server to request a unit stack be moved on the overland map</xsd:documentation>

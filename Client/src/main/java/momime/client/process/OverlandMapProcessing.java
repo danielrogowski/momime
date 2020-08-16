@@ -68,9 +68,12 @@ public interface OverlandMapProcessing
 	 * Updates the indicator for how much movement the current unit stack has left
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public void updateMovementRemaining () throws JAXBException, XMLStreamException, MomException;
+	public void updateMovementRemaining ()
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**
 	 * @return Whether we're in the middle of the server processing and sending us pending moves
@@ -81,12 +84,6 @@ public interface OverlandMapProcessing
 	 * @param cont Whether we're in the middle of the server processing and sending us pending moves
 	 */
 	public void setProcessingContinuedMovement (final boolean cont);
-	
-	/**
-	 * Note this being non-null doesn't necessarily mean we have any units actually selected to move - can select/deselect units via the buttons in the right hand panel
-	 * @return The map location we're currently selecting/deselecting units at ready to choose an order for them or tell them where to move/attack
-	 */
-	public MapCoordinates3DEx getUnitMoveFrom ();
 	
 	/**
 	 * @return Whether at least one of the select unit boxes is selected
@@ -162,7 +159,10 @@ public interface OverlandMapProcessing
 	 * Tell the server we clicked the Next Turn button
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
 	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public void nextTurnButton () throws JAXBException, XMLStreamException, MomException;
+	public void nextTurnButton ()
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 }

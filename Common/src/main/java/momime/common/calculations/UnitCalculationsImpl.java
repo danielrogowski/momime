@@ -32,6 +32,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomCombatTile;
@@ -40,6 +41,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 
@@ -51,11 +53,11 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (UnitCalculationsImpl.class);
 	
-	/** Initial state where each combat map tile hasn't been checked yet */ 
-	private final static int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
-	
-	/** Proved that we cannot move here */
-	private final static int MOVEMENT_DISTANCE_IMPASSABLE = -2;
+	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
+	private static final int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
+
+	/** Marks locations in the doubleMovementDistances array that we've proved that we cannot move to */
+	private static final int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -69,6 +71,9 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+	
 	/**
 	 * Gives all units full movement back again for their combat turn
 	 *
@@ -339,6 +344,45 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		return result;
 	}
 		
+	/**
+	 * @param x X coordinate of the location we want to check
+	 * @param y Y coordinate of the location we want to check
+	 * @param plane Plane we want to check
+	 * @param movingPlayerID The player who is trying to move here
+	 * @param map The player who is trying to move here's knowledge of the terrain
+	 * @param units The player who is trying to move here's knowledge of units
+	 * @return Whether moving here will result in an attack or not
+	 */
+	@Override
+	public final boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units)
+	{
+		log.trace ("Entering willMovingHereResultInAnAttack: Player ID " + movingPlayerID +
+			", (" + x + ", " + y + ", " + plane + ")");
+
+		// Work out what plane to look for units on
+		final MemoryGridCell mc = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
+		final int towerPlane;
+		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
+			towerPlane = 0;
+		else
+			towerPlane = plane;
+
+		// The easiest one to check for is an enemy city - even if there's no units there, it still counts as an attack so we can decide whether to raze or capture it
+		final boolean resultsInAttack;
+		if ((mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () != movingPlayerID))
+			resultsInAttack = true;
+
+		// Lastly check for enemy units
+		else if (getUnitUtils ().findFirstAliveEnemyAtLocation (units, x, y, towerPlane, movingPlayerID) != null)
+			resultsInAttack = true;
+		else
+			resultsInAttack = false;
+
+		log.trace ("Exiting willMovingHereResultInAnAttack = " + resultsInAttack);
+		return resultsInAttack;
+	}
+	
 	/**
 	 * @param unitStack Unit stack to check
 	 * @return Merged list of every skill that at least one unit in the stack has, including skills granted from spells
@@ -619,7 +663,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 					if ((doubleMovementToEnterThisTile < 0) || (ourUnits [moveTo.getY ()] [moveTo.getX ()]))
 					{
 						// Can't move here
-						doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_IMPASSABLE;
+						doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_CANNOT_MOVE_HERE;
 					}
 
 					// Can we cross the border between the two tiles?
@@ -653,7 +697,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 									else
 									{
 										movementTypes [moveTo.getY ()] [moveTo.getX ()] = CombatMoveType.CANNOT_MOVE;
-										doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_IMPASSABLE;
+										doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_CANNOT_MOVE_HERE;
 									}
 								}
 								else
@@ -831,5 +875,21 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

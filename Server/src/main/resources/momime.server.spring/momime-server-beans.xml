@@ -162,12 +162,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 	</bean>
 	
-	<bean id="requestOverlandMovementDistancesMessage" class="momime.server.messages.process.RequestOverlandMovementDistancesMessageImpl" scope="prototype">
-		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
-		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
-	</bean>
-	
 	<bean id="requestMoveOverlandUnitStackMessage" class="momime.server.messages.process.RequestMoveOverlandUnitStackMessageImpl" scope="prototype">
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
@@ -424,7 +418,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarProcessing" ref="fogOfWarProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
-		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="unitMovement" ref="unitMovement" />
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
@@ -753,7 +747,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="spellUtils" ref="spellUtils" />
-		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="unitMovement" ref="unitMovement" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
@@ -838,7 +832,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="serverCityCalculations" ref="serverCityCalculations" />
-		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="unitMovement" ref="unitMovement" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />

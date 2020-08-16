@@ -48,13 +48,16 @@ import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
+import momime.common.utils.UnitUtilsImpl;
 
 /**
  * Tests the UnitCalculationsImpl object
@@ -1201,5 +1204,99 @@ public final class TestUnitCalculationsImpl
 
 		tile.setBorderDirections ("2");
 		assertFalse (calc.okToCrossCombatTileBorder (combatMap, combatMapCoordinateSystem.getCoordinateSystemType (), 10, 5, 1, db));
+	}
+
+	/**
+	 * Tests the willMovingHereResultInAnAttack method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testWillMovingHereResultInAnAttack () throws Exception
+	{
+		// Remember this is all operating over a player's memory - so it has to also work where we may know nothing about the location at all, i.e. everything is nulls
+		// This is a really key method so there's a ton of test conditions
+		final CoordinateSystem sys = GenerateTestData.createOverlandMapCoordinateSystem ();
+		final MapVolumeOfMemoryGridCells map = GenerateTestData.createOverlandMap (sys);
+
+		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		calc.setMemoryGridCellUtils (new MemoryGridCellUtilsImpl ());
+		calc.setUnitUtils (new UnitUtilsImpl ());
+		
+		// Null terrain and city data
+		assertFalse (calc.willMovingHereResultInAnAttack
+			(20, 10, 0, 2, map, units));
+
+		// Terrain data present but tile type and map feature still null
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		map.getPlane ().get (0).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
+
+		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 0, 2, map, units));
+
+		// Regular tile type
+		terrainData.setTileTypeID ("TT01");
+
+		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 0, 2, map, units));
+
+		// Tower that we've previously cleared but now occupied by our units
+		terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		
+		final MapCoordinates3DEx unitLocation = new MapCoordinates3DEx (20, 10, 0);
+
+		final MemoryUnit unit = new MemoryUnit ();
+		unit.setOwningPlayerID (2);
+		unit.setUnitLocation (unitLocation);
+		unit.setStatus (UnitStatusID.ALIVE);
+
+		units.add (unit);
+
+		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 0, 2, map, units));
+
+		// Tower that we've previously cleared but now occupied by enemy units
+		unit.setOwningPlayerID (1);
+
+		assertTrue (calc.willMovingHereResultInAnAttack (20, 10, 0, 2, map, units));
+
+		// Tower that we've previously cleared but now occupied by our units and we're on Myrror
+		final OverlandMapTerrainData myrrorData = new OverlandMapTerrainData ();
+		myrrorData.setMapFeatureID (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY);
+		map.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (myrrorData);
+		
+		unit.setOwningPlayerID (2);
+		unit.setUnitLocation (unitLocation);
+
+		assertFalse (calc.willMovingHereResultInAnAttack (20, 10, 1, 2, map, units));
+
+		// Tower that we've previously cleared but now occupied by enemy units and we're on Myrror
+		unit.setOwningPlayerID (1);
+
+		assertTrue (calc.willMovingHereResultInAnAttack (20, 10, 1, 2, map, units));
+
+		// Our city
+		final OverlandMapCityData cityData = new OverlandMapCityData ();
+		cityData.setCityOwnerID (2);
+
+		map.getPlane ().get (0).getRow ().get (10).getCell ().get (30).setCityData (cityData);
+
+		assertFalse (calc.willMovingHereResultInAnAttack (30, 10, 0, 2, map, units));
+
+		// Enemy city
+		cityData.setCityOwnerID (1);
+		cityData.setCityPopulation (1);
+
+		assertTrue (calc.willMovingHereResultInAnAttack (30, 10, 0, 2, map, units));
+
+		// Our units in open area
+		unit.setOwningPlayerID (2);
+		unitLocation.setX (40);
+
+		assertFalse (calc.willMovingHereResultInAnAttack (40, 10, 0, 2, map, units));
+
+		// Enemy units in open area
+		unit.setOwningPlayerID (1);
+
+		assertTrue (calc.willMovingHereResultInAnAttack (40, 10, 0, 2, map, units));
 	}
 }

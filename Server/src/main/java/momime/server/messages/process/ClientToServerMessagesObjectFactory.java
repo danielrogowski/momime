@@ -26,7 +26,6 @@ import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
-import momime.common.messages.clienttoserver.RequestOverlandMovementDistancesMessage;
 import momime.common.messages.clienttoserver.RequestRemoveQueuedSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
@@ -155,15 +154,6 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 	public final AlchemyMessage createAlchemyMessage ()
 	{
 		return getFactory ().createAlchemyMessage ();
-	}
-
-	/**
-	 * @return Newly created RequestOverlandMovementDistancesMessage
-	 */
-	@Override
-	public final RequestOverlandMovementDistancesMessage createRequestOverlandMovementDistancesMessage ()
-	{
-		return getFactory ().createRequestOverlandMovementDistancesMessage ();
 	}
 
 	/**

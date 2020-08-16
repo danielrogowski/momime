@@ -336,10 +336,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
 
-	<bean id="overlandMovementTypesMessage" class="momime.client.messages.process.OverlandMovementTypesMessageImpl" scope="prototype">
-		<property name="overlandMapUI" ref="overlandMapUI" />
-	</bean>
-
 	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype">
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
@@ -916,6 +912,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+		<property name="unitMovement" ref="unitMovement" />
+		<property name="unitCalculations" ref="unitCalculations" />
 	</bean>
 
 	<bean id="combatMapProcessing" class="momime.client.process.CombatMapProcessingImpl">

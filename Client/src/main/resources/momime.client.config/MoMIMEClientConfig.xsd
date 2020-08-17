@@ -8,6 +8,8 @@
 	<xsd:element name="momImeClientConfig">
 		<xsd:complexType>
 			<xsd:sequence>
+				<xsd:element minOccurs="1" maxOccurs="1" name="compressDataSentToServer" type="xsd:boolean" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="decompressDataReceivedFromServer" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="graphicsXmlFilename" type="momimecltconfig:filename" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="pathToLanguageXmlFiles" type="momimecltconfig:path" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="chosenLanguage" type="xsd:normalizedString" />

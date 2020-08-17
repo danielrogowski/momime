@@ -325,6 +325,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newGameDatabaseMessage" ref="newGameDatabaseMessage" />
 		<property name="port" value="#{serverConfig.portNumber}" />
 		<property name="conversationTag" value="#{'MoMIME-' + '${momime.server.version}'}" />
+		<property name="compress" value="#{serverConfig.compressDataSentToClient}" />
+		<property name="decompress" value="#{serverConfig.decompressDataReceivedFromClient}" />
 		<property name="sessionThreadFactory" ref="sessionThreadFactory" />
 	</bean>
 	

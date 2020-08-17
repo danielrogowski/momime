@@ -774,6 +774,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			</array>
 		</property>
 		<property name="conversationTag" value="#{'MoMIME-' + '${momime.client.version}'}" />
+		<property name="compress" value="#{clientConfig.compressDataSentToServer}" />
+		<property name="decompress" value="#{clientConfig.decompressDataReceivedFromServer}" />
 		<property name="mainMenuUI" ref="mainMenuUI" />
 		<property name="connectToServerUI" ref="connectToServerUI" />
 		<property name="newGameUI" ref="newGameUI" />

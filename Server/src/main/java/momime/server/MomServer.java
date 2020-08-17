@@ -62,6 +62,8 @@ public final class MomServer extends MultiplayerSessionServer
 		conn.setReceiveObjectFactoryArray (getClientToServerContextFactoryArray ());
 		conn.setReadyForMessagesMonitor (readyForMessagesMonitor);
 		conn.setConversationTag (getConversationTag ());
+		conn.setCompress (isCompress ());
+		conn.setDecompress (isDecompress ());
 		conn.start ();
 		
 		// Wait until thread has started up properly, then send new game database to the client

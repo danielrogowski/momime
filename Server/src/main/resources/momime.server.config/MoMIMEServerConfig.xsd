@@ -5,6 +5,8 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element minOccurs="1" maxOccurs="1" name="portNumber" type="momimesvrconfig:portNumber" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="compressDataSentToClient" type="xsd:boolean" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="decompressDataReceivedFromClient" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="userRegistryFilename" type="momimesvrconfig:filename" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="pathToServerXmlDatabases" type="momimesvrconfig:path" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="pathToSavedGames" type="momimesvrconfig:path" />

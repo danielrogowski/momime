@@ -7003,6 +7003,11 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>BANISHING_WIZARD defeat BANISHED_WIZARD</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmHistory">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>History of Wizards' Power</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>Combats</languageEntryText>

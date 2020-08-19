@@ -303,4 +303,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public UpdateWizardStateMessageImpl createUpdateWizardStateMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public AddPowerBaseHistoryMessageImpl createAddPowerBaseHistoryMessage ();
 }

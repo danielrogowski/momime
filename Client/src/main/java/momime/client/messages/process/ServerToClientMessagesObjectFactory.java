@@ -7,6 +7,7 @@ import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
+import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.AskForCaptureCityDecisionMessage;
@@ -603,6 +604,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final UpdateWizardStateMessage createUpdateWizardStateMessage ()
 	{
 		return getFactory ().createUpdateWizardStateMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final AddPowerBaseHistoryMessage createAddPowerBaseHistoryMessage ()
+	{
+		return getFactory ().createAddPowerBaseHistoryMessage ();
 	}
 
 	/**

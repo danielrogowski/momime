@@ -310,6 +310,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="historyUI" ref="historyUI" />
 	</bean>
 
 	<bean id="startSimultaneousTurnMessage" class="momime.client.messages.process.StartSimultaneousTurnMessageImpl" scope="prototype">
@@ -319,6 +320,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="historyUI" ref="historyUI" />
 	</bean>
 
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype">
@@ -611,6 +613,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
+	</bean>
+
+	<bean id="addPowerBaseHistoryMessage" class="momime.client.messages.process.AddPowerBaseHistoryMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="historyUI" ref="historyUI" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
 	<!-- Create extended versions of NTMs which include drawing implementations -->
@@ -1406,6 +1414,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="queuedSpellsUI" ref="queuedSpellsUI" />
 		<property name="taxRateUI" ref="taxRateUI" />
 		<property name="wizardsUI" ref="wizardsUI" />
+		<property name="historyUI" ref="historyUI" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
@@ -1621,6 +1630,21 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="helpUI" ref="helpUI" />
+	</bean>
+
+	<bean id="historyLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/HistoryUI.xml" />
+	</bean>
+
+	<bean id="historyUI" class="momime.client.ui.frames.HistoryUI">
+		<property name="historyLayout" ref="historyLayout" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="client" ref="client" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
 	</bean>
 
 	<!-- Prototype UI components -->

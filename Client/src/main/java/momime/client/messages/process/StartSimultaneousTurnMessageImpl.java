@@ -14,6 +14,7 @@ import momime.client.MomClient;
 import momime.client.newturnmessages.NewTurnMessageProcessing;
 import momime.client.newturnmessages.NewTurnMessageStatus;
 import momime.client.process.OverlandMapProcessing;
+import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.calculations.CityCalculations;
@@ -45,6 +46,9 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
+	/** UI for screen showing power base history for each wizard */
+	private HistoryUI historyUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -58,6 +62,7 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 		// Update turn number
 		getClient ().getGeneralPublicKnowledge ().setTurnNumber (getTurnNumber ());
 		getOverlandMapUI ().updateTurnLabelText ();
+		getHistoryUI ().updateTurnLabelText ();
 		
 		// Allow selling buildings
 		getCityCalculations ().blankBuildingsSoldThisTurn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), 0);
@@ -175,5 +180,21 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+
+	/**
+	 * @return UI for screen showing power base history for each wizard
+	 */
+	public final HistoryUI getHistoryUI ()
+	{
+		return historyUI;
+	}
+
+	/**
+	 * @param h UI for screen showing power base history for each wizard
+	 */
+	public final void setHistoryUI (final HistoryUI h)
+	{
+		historyUI = h;
 	}
 }

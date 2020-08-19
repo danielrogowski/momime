@@ -426,6 +426,7 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 					</xsd:element>
 					<xsd:element minOccurs="1" maxOccurs="1" name="wizardState" type="momimemsgs:wizardState" />
 					<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimemsgs:playerPick" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="powerBaseHistory" type="momimecommon:undoubledProductionValue" />
 		        </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>

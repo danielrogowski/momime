@@ -145,6 +145,7 @@
     			<value>momime.common.messages.servertoclient.DispelMagicResultsMessage</value>
     			<value>momime.common.messages.servertoclient.ShowSpellAnimationMessage</value>
     			<value>momime.common.messages.servertoclient.UpdateWizardStateMessage</value>
+    			<value>momime.common.messages.servertoclient.AddPowerBaseHistoryMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.UpdateTerrainMessage</value>

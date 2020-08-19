@@ -43,6 +43,7 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
+import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
 import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
@@ -52,6 +53,7 @@ import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
+import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
@@ -696,6 +698,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// 2) Cities eating more food due to increased population
 		// 3) Completed buildings (both bonuses and increased maintenance)
 		getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, false, mom);
+		storePowerBaseHistory (onlyOnePlayerID, mom.getPlayers ());
 
 		log.trace ("Exiting startPhase");
 	}
@@ -1213,6 +1216,48 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			}
 
 		log.trace ("Exiting continueMovement");				
+	}
+
+	/**
+	 * During the start phase, when resources are recalculated, this stores the power base of each wizard, which is public info to every player via the Historian screen.
+	 * 
+	 * @param onlyOnePlayerID If zero, will record power base for all players; if specified will record power base only for the specified player
+	 * @param players List of players in the session
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	final void storePowerBaseHistory (final int onlyOnePlayerID, final List<PlayerServerDetails> players) throws JAXBException, XMLStreamException
+	{
+		log.trace ("Entering onlyOnePlayerID: Player ID " + onlyOnePlayerID);
+		
+		final AddPowerBaseHistoryMessage msg = new AddPowerBaseHistoryMessage ();
+		
+		for (final PlayerServerDetails player : players)
+			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
+			{
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				
+				// Ignore raiders and rampaging monsters
+				if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+				{
+					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();					
+					final int powerBase = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
+					
+					// Store on server
+					pub.getPowerBaseHistory ().add (powerBase);
+					
+					// Send to clients
+					final PowerBaseHistoryPlayer item = new PowerBaseHistoryPlayer ();
+					item.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+					item.setPowerBase (powerBase);
+					msg.getPlayer ().add (item);
+				}
+			}		
+		
+		if (msg.getPlayer ().size () > 0)
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
+		
+		log.trace ("Exiting onlyOnePlayerID");
 	}
 
 	/**

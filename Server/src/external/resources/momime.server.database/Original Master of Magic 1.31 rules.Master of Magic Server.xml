@@ -25866,6 +25866,9 @@
 		<languageEntry languageEntryID="DefeatedByWizard" />
 		<languageEntry languageEntryID="DefeatedByRaiders" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmHistory">
+		<languageEntry languageEntryID="Title" />
+	</languageCategory>
 	<languageCategory languageCategoryID="ScheduledCombats">
 		<languageEntry languageEntryID="Title" />
 		<languageEntry languageEntryID="RequestingUsToPlayCategory" />

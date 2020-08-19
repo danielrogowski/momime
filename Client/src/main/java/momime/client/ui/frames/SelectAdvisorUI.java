@@ -59,6 +59,9 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	/** Wizards UI */
 	private WizardsUI wizardsUI;
 	
+	/** UI for screen showing power base history for each wizard */
+	private HistoryUI historyUI;
+	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
@@ -127,7 +130,12 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 			setVisible (false);
 		});
 		
-		historianAction = new LoggingAction ((ev) -> {});
+		historianAction = new LoggingAction ((ev) ->
+		{
+			getHistoryUI ().setVisible (true);
+			setVisible (false);
+		});
+		
 		astrologerAction = new LoggingAction ((ev) -> {});
 		chancellorAction = new LoggingAction ((ev) -> {});
 		
@@ -314,6 +322,22 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	public final void setWizardsUI (final WizardsUI ui)
 	{
 		wizardsUI = ui;
+	}
+
+	/**
+	 * @return UI for screen showing power base history for each wizard
+	 */
+	public final HistoryUI getHistoryUI ()
+	{
+		return historyUI;
+	}
+
+	/**
+	 * @param h UI for screen showing power base history for each wizard
+	 */
+	public final void setHistoryUI (final HistoryUI h)
+	{
+		historyUI = h;
 	}
 	
 	/**

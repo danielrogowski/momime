@@ -103,6 +103,29 @@ public final class HistoryUI extends MomClientFrameUI
 				final XmlLayoutComponent chart = getHistoryLayout ().findComponent ("frmHistoryChart");
 				if (chart != null)
 				{
+					// Find the highest values
+					int maxScore = 0;
+					int maxTurns = 0;
+					for (final PlayerPublicDetails player : getClient ().getPlayers ())
+					{
+						final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+						if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+						{
+							maxScore = Math.max (maxScore, pub.getPowerBaseHistory ().stream ().mapToInt (v -> v).max ().orElse (0));
+							maxTurns = Math.max (maxTurns, pub.getPowerBaseHistory ().size ());
+						}
+					}
+					
+					// Work out scaling
+					int xScaling = 1;
+					while (maxTurns > (chart.getWidth () / 2) * xScaling)
+						xScaling++;
+					
+					int yScaling = 1;
+					while (maxScore > chart.getHeight () * yScaling)
+						yScaling++;
+					
+					// Antialias all the lines
 					g.setRenderingHint (RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 					g.setFont (getSmallFont ());
 
@@ -124,12 +147,12 @@ public final class HistoryUI extends MomClientFrameUI
 							// Draw line
 							final int x [] = new int [pub.getPowerBaseHistory ().size ()];
 							final int y [] = new int [pub.getPowerBaseHistory ().size ()];
-							for (int n = 0; n < pub.getPowerBaseHistory ().size (); n++)
+							for (int n = 0; n < pub.getPowerBaseHistory ().size () / xScaling; n++)
 							{
 								x [n] = getChartX (chart, n);
-								y [n] = getChartY (chart, pub.getPowerBaseHistory ().get (n));
+								y [n] = getChartY (chart, pub.getPowerBaseHistory ().get (n * xScaling) / yScaling);
 							}
-							g.drawPolyline (x, y, pub.getPowerBaseHistory ().size ());
+							g.drawPolyline (x, y, pub.getPowerBaseHistory ().size () / xScaling);
 							
 							wizardNo++;
 						}
@@ -151,7 +174,7 @@ public final class HistoryUI extends MomClientFrameUI
 						final int y = getChartY (chart, score);
 						g.drawLine (chart.getLeft (), y, chart.getLeft () - TICK_SIZE, y);
 						
-						final String scoreText = Integer.valueOf (score).toString ();
+						final String scoreText = Integer.valueOf (score * yScaling).toString ();
 						final int scoreWidth = g.getFontMetrics ().stringWidth (scoreText);
 						g.drawString (scoreText, 40 - scoreWidth, y + 4);
 					}
@@ -163,7 +186,7 @@ public final class HistoryUI extends MomClientFrameUI
 						final int x = getChartX (chart, turnNumber);
 						g.drawLine (x, chart.getTop () + chart.getHeight (), x, chart.getTop () + chart.getHeight () + TICK_SIZE);
 						if (turnNumber % 60 == 0)
-							g.drawString (Integer.valueOf ((turnNumber / 12) + 1400).toString (), x - 13, 380);
+							g.drawString (Integer.valueOf (((turnNumber / 12) * xScaling) + 1400).toString (), x - 13, 380);
 					}
 				}
 			}

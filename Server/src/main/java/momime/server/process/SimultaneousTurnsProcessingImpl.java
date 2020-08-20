@@ -27,7 +27,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
-import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.ExpandedUnitDetails;
@@ -432,24 +431,9 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				final OneCellPendingMovement oneCell = combats.get (getRandomUtils ().nextInt (combats.size ()));
 				log.debug ("Randomly chose combat: " + oneCell);
 				
-				// The defenders are all units in the destination cell who are not ours, and not part of their own combat which hasn't taken place yet
-				// (in that case we assume those units already left the destination cell and are midway between it and wherever they are attacking)
-				final List<Integer> defendingUnitURNs = new ArrayList<Integer> ();
-				for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-					if ((oneCell.getOneStep ().equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
-						(tu.getOwningPlayerID () != oneCell.getUnitStackOwner ().getPlayerDescription ().getPlayerID ().intValue ()))
-						defendingUnitURNs.add (tu.getUnitURN ());
-	
-				for (final PlayerServerDetails player : mom.getPlayers ())
-				{
-					final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-					for (final PendingMovement pendingMove : priv.getPendingMovement ())
-						defendingUnitURNs.removeAll (pendingMove.getUnitURN ());
-				}
-				
 				// Execute the combat
 				getCombatStartAndEnd ().startCombat (oneCell.getOneStep (),
-					(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getPendingMovement ().getUnitURN (), defendingUnitURNs,
+					(MapCoordinates3DEx) oneCell.getPendingMovement ().getMoveFrom (), oneCell.getPendingMovement ().getUnitURN (), null,
 					oneCell.getPendingMovement (), null, mom);
 			}
 		}

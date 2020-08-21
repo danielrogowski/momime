@@ -512,7 +512,16 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				
 				if (defendingPlayer != null)
 					getServerResourceCalculations ().recalculateGlobalProductionValues (defendingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
-			
+
+				// Clear out combat related items
+				tc.setAttackingPlayerID (null);
+				tc.setDefendingPlayerID (null);
+				tc.setCombatCurrentPlayerID (null);
+				tc.setSpellCastThisCombatTurn (null);
+				tc.setCombatDefenderCastingSkillRemaining (null);
+				tc.setCombatAttackerCastingSkillRemaining (null);
+				
+				// Figure out what to do next now the combat is over
 				if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
 				{
 					// Clean up the PendingMovement(s) that caused this combat
@@ -552,14 +561,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 							getPlayerMessageProcessing ().nextTurnButton (mom, currentPlayer);
 					}
 				}
-				
-				// Clear out combat related items
-				tc.setAttackingPlayerID (null);
-				tc.setDefendingPlayerID (null);
-				tc.setCombatCurrentPlayerID (null);
-				tc.setSpellCastThisCombatTurn (null);
-				tc.setCombatDefenderCastingSkillRemaining (null);
-				tc.setCombatAttackerCastingSkillRemaining (null);
 			}
 		}
 		

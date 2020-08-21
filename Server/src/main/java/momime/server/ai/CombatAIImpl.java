@@ -10,6 +10,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -152,11 +153,13 @@ public final class CombatAIImpl implements CombatAI
 	 * 
 	 * @param attacker Unit that we are attacking with
 	 * @param combatLocation Where the combat is taking place 
-	 * @param movementDirections Movement distances as calculated by calculateCombatMovementDistances
+	 * @param movementDirections Movement directions as calculated by calculateCombatMovementDistances
+	 * @param doubleMovementDistances Movement distances as calculated by calculateCombatMovementDistances
 	 * @param movementTypes Movement types as calculated by calculateCombatMovementDistances
 	 * @param units Units list
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param sys Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return Best unit to attack, or null if enemy is wiped out already
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -164,8 +167,8 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
 	 */
 	final MemoryUnit selectBestTarget (final ExpandedUnitDetails attacker, final MapCoordinates3DEx combatLocation,
-		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes,
-		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		final int [] [] movementDirections, final int [] [] doubleMovementDistances, final CombatMoveType [] [] movementTypes,
+		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CoordinateSystem sys, final ServerDatabaseEx db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering selectBestTarget: Unit URN " + attacker.getUnitURN ());
@@ -189,8 +192,16 @@ public final class CombatAIImpl implements CombatAI
 				((attacks.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()])) ||
 				(movementDirections [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] > 0)))
 			{
-				// Is this the first possible target we've found, or better than our current target
-				final int thisScore = evaluateTarget (attacker, getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db));
+				// Is this the first possible target we've found, or better than our current target.
+				// EvaluateTarget just returns 1, 2 or 3 - bump that up a lot.
+				int thisScore = evaluateTarget (attacker, getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db)) * 1000;
+				
+				// Subtract more the further away the unit is, so closer units get a higher score.
+				// Can't use doubleMovementDistances for this as it gets set to the same high 999 value for all ranged attacks.
+				if (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] == CombatMoveType.RANGED)
+					thisScore = thisScore - (int) (10 * getCoordinateSystemUtils ().determineReal2DDistanceBetween (sys, attacker.getCombatPosition (), (MapCoordinates2DEx) thisUnit.getCombatPosition ()));
+				else
+					thisScore = thisScore - doubleMovementDistances [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()];
 				
 				if ((bestScore == null) || (thisScore > bestScore))
 				{
@@ -236,8 +247,8 @@ public final class CombatAIImpl implements CombatAI
 		
 		// Work out which enemy we want to attack, if we can even make some kind of attack that is
 		final MemoryUnit bestUnit = (getUnitCalculations ().canMakeRangedAttack (tu) || getUnitCalculations ().canMakeMeleeAttack (tu)) ? 
-			selectBestTarget (tu, combatLocation, movementDirections, movementTypes, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) : null;
+			selectBestTarget (tu, combatLocation, movementDirections, doubleMovementDistances, movementTypes, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ()) : null;
 		
 		boolean moved = false;
 		if (bestUnit != null)

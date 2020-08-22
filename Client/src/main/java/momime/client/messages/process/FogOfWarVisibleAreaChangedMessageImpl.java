@@ -1,6 +1,8 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -10,7 +12,9 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.utils.Holder;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.ArmyListUI;
@@ -118,12 +122,17 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		// Units added, changed or come into view
 		if (getAddOrUpdateUnit ().size () > 0)
 		{
+			final List<MapCoordinates3DEx> unitLocations = new ArrayList<MapCoordinates3DEx> ();
+			final Holder<MapCoordinates3DEx> ourUnitLocation = new Holder<MapCoordinates3DEx> ();
+			final Holder<Boolean> anyOfOurHeroes = new Holder<Boolean> (false);
+			
 			final AddOrUpdateUnitMessageImpl proc = getFactory ().createAddOrUpdateUnitMessage ();
 			for (final MemoryUnit thisUnit : getAddOrUpdateUnit ())
 			{
 				proc.setMemoryUnit (thisUnit);
-				proc.start ();
+				proc.processOneUpdate (unitLocations, ourUnitLocation, anyOfOurHeroes);
 			}
+			proc.endUpdates (unitLocations, ourUnitLocation, anyOfOurHeroes);
 		}
 		
 		// Units killed or gone out of view
@@ -184,17 +193,30 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		}
 		
 		// Changes in Fog of War area
-		for (final FogOfWarStateMessageData data : getFogOfWarUpdate ())
-			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
-				(data.getMapLocation ().getZ ()).getRow ().get (data.getMapLocation ().getY ()).getCell ().set (data.getMapLocation ().getX (), data.getState ());
+		if (getFogOfWarUpdate ().size () > 0)
+		{
+			for (final FogOfWarStateMessageData data : getFogOfWarUpdate ())
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar ().getPlane ().get
+					(data.getMapLocation ().getZ ()).getRow ().get (data.getMapLocation ().getY ()).getCell ().set (data.getMapLocation ().getX (), data.getState ());
+
+			getOverlandMapUI ().regenerateFogOfWarBitmap ();
+		}
+			
+		// Many items need regenerating, depending on the updates we got
+		if ((getTerrainUpdate ().size () > 0) || (getCityUpdate ().size () > 0) || (getAddBuilding ().size () > 0) || (getDestroyBuilding ().size () > 0)) 
+			getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		
-		// So much will have changed (terrain, cities, node auras, fog of war area, units) that best to just regenerate the lot
-		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
-		getOverlandMapUI ().regenerateFogOfWarBitmap ();
-		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
-		getArmyListUI ().regenerateMiniMapBitmaps ();
-		getCitiesListUI ().refreshCitiesList ();
-		getCitiesListUI ().regenerateMiniMapBitmaps ();
+		if ((getTerrainUpdate ().size () > 0) || (getCityUpdate ().size () > 0))
+		{
+			getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
+			getArmyListUI ().regenerateMiniMapBitmaps ();
+		}
+		
+		if (getCityUpdate ().size () > 0)
+		{
+			getCitiesListUI ().refreshCitiesList ();
+			getCitiesListUI ().regenerateMiniMapBitmaps ();
+		}
 
 		log.trace ("Exiting start");
 	}

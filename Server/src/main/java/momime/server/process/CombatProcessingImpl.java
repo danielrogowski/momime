@@ -740,7 +740,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					undeadSkill.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD);
 					trueUnit.getUnitHasSkill ().add (undeadSkill);
 					
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings, null);
 				}
 		
 		log.debug ("createUndead created undead from " + undeadCreated.size () + " losing units");

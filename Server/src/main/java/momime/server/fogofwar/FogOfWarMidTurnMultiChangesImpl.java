@@ -1,7 +1,10 @@
 package momime.server.fogofwar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -37,6 +40,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
@@ -318,6 +322,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	{
 		log.trace ("Entering healUnitsAndGainExperience: Player ID " + onlyOnePlayerID);
 
+		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see (except summoned ones) - so collate the client messages
+		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
+		
+		// Now process all units
 		for (final MemoryUnit thisUnit : trueUnits)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
@@ -347,8 +355,15 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 
 				// Inform any clients who know about this unit
 				if (sendMsg)
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);
 			}
+		
+		// Send out client updates
+		for (final Entry<Integer, FogOfWarVisibleAreaChangedMessage> entry : fowMessages.entrySet ())
+		{
+			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "healUnitsAndGainExperience");
+			player.getConnection ().sendMessageToClient (entry.getValue ());
+		}
 
 		log.trace ("Exiting healUnitsAndGainExperience");
 	}
@@ -375,7 +390,11 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering grantExperienceToUnitsInCombat: " + combatLocation + ", " + combatSide);
+
+		// If 9 units gain experience, don't send out 9 separate messages
+		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
 		
+		// Find the units who are in combat on the side that earned the kill
 		for (final MemoryUnit trueUnit : trueMap.getUnit ())
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
 				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null))
@@ -393,9 +412,16 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					getUnitServerUtils ().checkIfHeroGainedALevel (xu.getUnitURN (), (UnitTypeSvr) xu.getUnitType (), (PlayerServerDetails) xu.getOwningPlayer (), exp);
 					
 					// This updates both the player memories on the server, and sends messages out to the clients, as needed
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings);
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);
 				}				
 			}
+		
+		// Send out client updates
+		for (final Entry<Integer, FogOfWarVisibleAreaChangedMessage> entry : fowMessages.entrySet ())
+		{
+			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "grantExperienceToUnitsInCombat");
+			player.getConnection ().sendMessageToClient (entry.getValue ());
+		}
 		
 		getPlayerMessageProcessing ().sendNewTurnMessages (null, players, null);
 
@@ -722,7 +748,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					for (final ExpandedUnitDetails thisUnit : (combatInitiated ? allUnits : movingUnits))
 					{
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 	
 						if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
 							doubleMovementRemaining = thisUnit.getDoubleOverlandMovesLeft ();
@@ -998,14 +1024,25 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	{
 		log.trace ("Entering resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
 
+		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see - so collate the client messages
+		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
+
+		// Check every unit
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 			{
 				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db).getModifiedSkillValue
 					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings);
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);
 			}
+		
+		// Send out client updates
+		for (final Entry<Integer, FogOfWarVisibleAreaChangedMessage> entry : fowMessages.entrySet ())
+		{
+			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "healUnitsAndGainExperience");
+			player.getConnection ().sendMessageToClient (entry.getValue ());
+		}
 		
 		log.trace ("Exiting resetUnitOverlandMovement");
 	}

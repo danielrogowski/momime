@@ -1,6 +1,8 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -10,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.utils.Holder;
 
 import momime.client.MomClient;
 import momime.client.process.CombatMapProcessing;
@@ -67,6 +70,31 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	{
 		log.trace ("Entering start: Unit URN " + getMemoryUnit ().getUnitURN ());
 		
+		final List<MapCoordinates3DEx> unitLocations = new ArrayList<MapCoordinates3DEx> ();
+		final Holder<MapCoordinates3DEx> ourUnitLocation = new Holder<MapCoordinates3DEx> ();
+		final Holder<Boolean> anyOfOurHeroes = new Holder<Boolean> (false);
+		
+		processOneUpdate (unitLocations, ourUnitLocation, anyOfOurHeroes);
+		endUpdates (unitLocations, ourUnitLocation, anyOfOurHeroes);
+		
+		log.trace ("Exiting start");
+	}
+	
+	/**
+	 * Method called for each individual update; so called once if message was sent in isolation, or multiple times if part of FogOfWarVisibleAreaChangedMessage
+	 * 
+	 * @param unitLocations Keeps track of the locations where all units were updated (even ones that are not ours)
+	 * @param ourUnitLocation Keeps track the location of any updated unit that belongs to us
+	 * @param anyOfOurHeroes Keeps track of whether any of the updated units belong to us and are heroes
+	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
+	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
+	 * @throws IOException Can be used for more general types of processing failure
+	 */
+	public final void processOneUpdate (final List<MapCoordinates3DEx> unitLocations, final Holder<MapCoordinates3DEx> ourUnitLocation, final Holder<Boolean> anyOfOurHeroes)
+		throws JAXBException, XMLStreamException, IOException
+	{
+		log.trace ("Entering processOneUpdate: Unit URN " + getMemoryUnit ().getUnitURN ());
+
 		// Since Java server now supports units set to 'remember as last seen', its possible to get an 'add unit' message just to
 		// update a unit that we remember in a different state - so if we already have the unit, update the existing one, otherwise add it.
 		// This stops us screwing up references to the existing MemoryUnit obj, especially in the unitsLeftToMoveOverland list and the selectUnitButtons.
@@ -108,27 +136,54 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 		else
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ().add (getMemoryUnit ());
 		
-		// Select unit buttons on the City screen
-		if ((getMemoryUnit ().getStatus () == UnitStatusID.ALIVE) && (getMemoryUnit ().getUnitLocation () != null))
-		{
-			final CityViewUI cityView = getClient ().getCityViews ().get (getMemoryUnit ().getUnitLocation ().toString ());
-			if (cityView != null)
-				cityView.unitsChanged ();
-		}
+		// Record where any of our units were updated
+		if ((getMemoryUnit ().getStatus () == UnitStatusID.ALIVE) && (getMemoryUnit ().getUnitLocation () != null) && (!unitLocations.contains (getMemoryUnit ().getUnitLocation ())))
+			unitLocations.add ((MapCoordinates3DEx) getMemoryUnit ().getUnitLocation ());
 		
+		// Keep track of things that only need updating once, if we have a lot of unit updates to process
 		if (getMemoryUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
 		{
-			getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) getMemoryUnit ().getUnitLocation ());
+			ourUnitLocation.setValue ((MapCoordinates3DEx) getMemoryUnit ().getUnitLocation ());
 			
 			if (getClient ().getClientDB ().findUnit (getMemoryUnit ().getUnitID (), "AddOrUpdateUnitMessageImpl").getUnitMagicRealm ().equals
 				(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 				
-				getHeroItemsUI ().refreshHeroes ();
+				anyOfOurHeroes.setValue (true);
 		}
 		
-		log.trace ("Exiting start");
+		log.trace ("Exiting processOneUpdate");
 	}
 
+	/**
+	 * Called after processOneUpdate has been called n times
+	 * 
+	 * @param unitLocations Keeps track of the locations where all units were updated (even ones that are not ours)
+	 * @param ourUnitLocation Keeps track the location of any updated unit that belongs to us
+	 * @param anyOfOurHeroes Keeps track of whether any of the updated units belong to us and are heroes
+	 * @throws IOException If there is a problem
+	 */
+	public final void endUpdates (final List<MapCoordinates3DEx> unitLocations, final Holder<MapCoordinates3DEx> ourUnitLocation, final Holder<Boolean> anyOfOurHeroes)
+		throws IOException
+	{
+		log.trace ("Entering endUpdates");
+		
+		// Select unit buttons on the City screen
+		for (final MapCoordinates3DEx unitLocation : unitLocations)
+		{
+			final CityViewUI cityView = getClient ().getCityViews ().get (unitLocation.toString ());
+			if (cityView != null)
+				cityView.unitsChanged ();
+		}
+		
+		if (ourUnitLocation.getValue () != null)
+			getArmyListUI ().refreshArmyList (ourUnitLocation.getValue ());
+		
+		if (anyOfOurHeroes.getValue ())
+			getHeroItemsUI ().refreshHeroes ();
+		
+		log.trace ("Exiting endUpdates");
+	}
+	
 	/**
 	 * @return Unit utils
 	 */

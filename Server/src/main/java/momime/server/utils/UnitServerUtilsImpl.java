@@ -275,7 +275,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		trueUnit.setSpecialOrder (specialOrder);
 
 		// Update in player's memory and on clients
-		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings);
+		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings, null);
 
 		log.trace ("Exiting setAndSendSpecialOrder");
 	}

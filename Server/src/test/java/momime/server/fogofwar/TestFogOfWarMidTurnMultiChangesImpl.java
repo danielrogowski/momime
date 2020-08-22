@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -484,23 +485,23 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		// Check results
 		verify (unitServerUtils, times (1)).healDamage (unit1.getUnitDamage (), 1, true);
 		verify (direct, times (1)).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit1, trueTerrain, players, db, fogOfWarSettings);
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit1), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
 		verify (unitServerUtils, times (1)).healDamage (unit2.getUnitDamage (), 1, true);
 		verify (direct, times (0)).setDirectSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit2, trueTerrain, players, db, fogOfWarSettings);
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit2), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
 		verify (unitServerUtils, times (0)).healDamage (unit3.getUnitDamage (), 1, true);
 		verify (direct, times (1)).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit3, trueTerrain, players, db, fogOfWarSettings);
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit3), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
 		verify (unitServerUtils, times (0)).healDamage (unit4.getUnitDamage (), 1, true);
 		verify (direct, times (0)).setDirectSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit4, trueTerrain, players, db, fogOfWarSettings);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit4), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 		
 		verify (unitServerUtils, times (0)).healDamage (unit5.getUnitDamage (), 1, true);
 		verify (direct, times (0)).setDirectSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit5, trueTerrain, players, db, fogOfWarSettings);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit5), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 	}
 	
 	/**
@@ -628,22 +629,22 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		
 		// Check results
 		verify (direct, times (1)).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit1, trueMap.getMap (), players, db, fogOfWarSettings);
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit1), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
 		verify (direct, times (0)).setDirectSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit2, trueMap.getMap (), players, db, fogOfWarSettings);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit2), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
 		verify (direct, times (0)).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit3, trueMap.getMap (), players, db, fogOfWarSettings);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit3), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
 		verify (direct, times (0)).setDirectSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit4, trueMap.getMap (), players, db, fogOfWarSettings);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit4), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
 		verify (direct, times (0)).setDirectSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (unit5, trueMap.getMap (), players, db, fogOfWarSettings);
+		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit5), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
 		verify (direct, times (1)).setDirectSkillValue (unit6, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 12);
-		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (unit6, trueMap.getMap (), players, db, fogOfWarSettings);
+		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit6), eq (trueMap.getMap ()), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 	}
 	
 	/**

@@ -3,6 +3,7 @@ package momime.server.fogofwar;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -47,6 +48,7 @@ import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
 import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
+import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
@@ -346,7 +348,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Tell clients?
 		// Player list can be null, we use this for pre-adding units to the map before the fog of war has even been set up
 		if (players != null)
-			this.updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, sd.getFogOfWarSetting ());
+			this.updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, sd.getFogOfWarSetting (), null);
 
 		log.trace ("Exiting updateUnitStatusToAliveOnServerAndClients");
 	}
@@ -1029,6 +1031,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param fowMessages If null then any necessary client messgaes will be sent individually; if map is passed in then any necessary client messages are collated here ready to be sent in bulk
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
@@ -1037,14 +1040,21 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void updatePlayerMemoryOfUnit (final MemoryUnit tu, final MapVolumeOfMemoryGridCells trueTerrain,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings,
+		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering updatePlayerMemoryOfUnit: Unit URN " + tu.getUnitURN ());
 
 		// First build the message
-		final AddOrUpdateUnitMessage msg = new AddOrUpdateUnitMessage ();
-		msg.setMemoryUnit (tu);
+		final AddOrUpdateUnitMessage msg;
+		if (fowMessages == null)
+		{
+			msg = new AddOrUpdateUnitMessage ();
+			msg.setMemoryUnit (tu);
+		}
+		else
+			msg = null;
 
 		// Check which players can see the unit
 		// Note it isn't enough to say "Is the Unit URN in the player's memory" - maybe they've seen the unit before and are remembering
@@ -1059,7 +1069,22 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					
 					// Update player's memory on client
 					if (thisPlayer.getPlayerDescription ().isHuman ())
-						thisPlayer.getConnection ().sendMessageToClient (msg);
+					{
+						if (msg != null)
+							thisPlayer.getConnection ().sendMessageToClient (msg);
+						else
+						{
+							// Does a FOW message already exist for this player?
+							FogOfWarVisibleAreaChangedMessage fowMessage = fowMessages.get (thisPlayer.getPlayerDescription ().getPlayerID ());
+							if (fowMessage == null)
+							{
+								fowMessage = new FogOfWarVisibleAreaChangedMessage ();
+								fowMessages.put (thisPlayer.getPlayerDescription ().getPlayerID (), fowMessage);
+								fowMessage.setTriggeredFrom ("Bulk unit update");
+							}
+							fowMessage.getAddOrUpdateUnit ().add (tu);
+						}
+					}
 		}
 
 		log.trace ("Exiting updatePlayerMemoryOfUnit");

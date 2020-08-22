@@ -1035,7 +1035,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 								if ((tu2.getStatus () == UnitStatusID.ALIVE) && (tu2.getSpecialOrder () == UnitSpecialOrder.PURIFY) && (tu2.getUnitLocation ().equals (tu.getUnitLocation ())))
 								{
 									tu2.setSpecialOrder (null);
-									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings);
+									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings, null);
 								}
 						break;
 					}
@@ -1081,7 +1081,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 								if ((tu2.getStatus () == UnitStatusID.ALIVE) && (tu2.getSpecialOrder () == UnitSpecialOrder.BUILD_ROAD) && (tu2.getUnitLocation ().equals (tu.getUnitLocation ())))
 								{
 									tu2.setSpecialOrder (null);
-									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings);
+									getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (tu2, trueMap.getMap (), players, db, fogOfWarSettings, null);
 								}
 						}
 						

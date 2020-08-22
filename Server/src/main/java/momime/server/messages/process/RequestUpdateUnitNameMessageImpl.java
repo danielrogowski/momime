@@ -81,7 +81,7 @@ public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNam
 			
 			// Rename it in players' memories and on clients
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit,
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 		}
 
 		log.trace ("Exiting process");

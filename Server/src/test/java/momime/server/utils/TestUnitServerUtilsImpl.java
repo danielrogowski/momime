@@ -644,7 +644,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		assertEquals (UnitSpecialOrder.BUILD_ROAD, trueUnit.getSpecialOrder ());
 		
 		verify (pendingMovementUtils).removeUnitFromAnyPendingMoves (priv.getPendingMovement (), 5);
-		verify (midTurn).updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings);
+		verify (midTurn).updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings, null);
 	}
 
 	/**

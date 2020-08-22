@@ -831,11 +831,8 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		final List<Integer> attackingUnitURNs = new ArrayList<Integer> ();
 		attackingUnitURNs.add (move2Unit.getUnitURN ());
 		
-		final List<Integer> defendingUnitURNs = new ArrayList<Integer> ();
-		defendingUnitURNs.add (attackedUnit.getUnitURN ());
-		
 		verify (combatStartAndEnd, times (1)).startCombat (new MapCoordinates3DEx (20, 10, 1), new MapCoordinates3DEx (20, 11, 1),
-			attackingUnitURNs, defendingUnitURNs, move2, null, mom);
+			attackingUnitURNs, null, move2, null, mom);
 	}
 
 	/**

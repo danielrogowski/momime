@@ -561,7 +561,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			
 			// Since nodes can't be changed to any other kind of terrain, only thing which can go wrong here is if we already own the node
 			String error = null;
-			if ((tc.getTerrainData () != null) && (spirit.getOwningPlayerID () == tc.getTerrainData ().getNodeOwnerID ()))
+			if ((tc.getTerrainData () != null) && (tc.getTerrainData ().getNodeOwnerID () != null) && (spirit.getOwningPlayerID () == tc.getTerrainData ().getNodeOwnerID ()))
 				error = "You've already captured this node";
 
 			if (error != null)

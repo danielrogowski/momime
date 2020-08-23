@@ -916,20 +916,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			final int movementDirection = getFogOfWarMidTurnChanges ().determineMovementDirection (moveFrom, moveTo, movementDirections, mom.getSessionDescription ().getOverlandMapSize ());
 
 			// Work out where this moves us to
-			final MapCoordinates3DEx oneStep = new MapCoordinates3DEx (moveFrom);
+			// If we are moving ON to a tower from Myrror then plane still must be 1, or moveUnitStack thinks we can't click there, and it will adjust the plane when we actually move
+			// If we are moving OFF of a tower onto Myrror, then plane must be 1 or we'll get off on the wrong plane
+			// So plane must always be set from moveTo
+			final MapCoordinates3DEx oneStep = new MapCoordinates3DEx (moveFrom.getX (), moveFrom.getY (), moveTo.getZ ());
 			getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), oneStep, movementDirection);
-
-			final MemoryGridCell oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
 
 			// Does this initiate a combat?
 			final boolean combatInitiated = movingHereResultsInAttack [oneStep.getZ ()] [oneStep.getY ()] [oneStep.getX ()];
-
-			// Adjust move to plane if moving onto or off of a tower
-			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
-				oneStep.setZ (0);
-			else
-				oneStep.setZ (moveTo.getZ ());
 
 			// Set up result
 			result = new OneCellPendingMovement (unitStackOwner, pendingMovement, oneStep, combatInitiated);

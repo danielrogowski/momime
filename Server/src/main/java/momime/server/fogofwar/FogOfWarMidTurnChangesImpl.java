@@ -1335,7 +1335,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 
 		if (direction < 0)
-			throw new MomException ("determineMovementDirection: Failed to trace a route from the movement target back to the movement origin");
+			throw new MomException ("determineMovementDirection: Failed to trace a route from the movement target " + moveTo + " back to the movement origin " + moveFrom);
 
 		log.trace ("Exiting determineMovementDirection = " + direction);
 		return direction;

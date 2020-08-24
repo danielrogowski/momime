@@ -202,7 +202,7 @@ public final class CombatEndedUI extends MomClientDialogUI
 		}
 		
 		// Hero items?
-		if (getMessage ().getHeroItemCount () > 0)
+		if ((getMessage ().getHeroItemCount () > 0) && (getMessage ().getWinningPlayerID () == getClient ().getOurPlayerID ()))
 		{
 			if (bottomText.length () > 0)
 				bottomText.append (System.lineSeparator ());

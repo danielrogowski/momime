@@ -97,57 +97,67 @@ public final class CityAIImpl implements CityAI
 	/**
 	 * @param cityLocation Where to consider putting a city
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
+	 * @param enforceMinimumQuality Whether to avoid returning data about cities that are too small to be useful; so usually true, but false if we want to evalulate even terrible cities
 	 * @param knownMap Known terrain
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @return Estimate of how good a city here is/will be
+	 * @return null if enforceMinimumQuality = true and a city here is too small to be useful; otherwise an estimate of how good a city here is/will be
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final int evaluateCityQuality (final MapCoordinates3DEx cityLocation, final boolean avoidOtherCities,
+	public final Integer evaluateCityQuality (final MapCoordinates3DEx cityLocation, final boolean avoidOtherCities, final boolean enforceMinimumQuality,
 		final MapVolumeOfMemoryGridCells knownMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering evaluateCityQuality: " + cityLocation);
 		
+		Integer thisCityQuality;
+		
 		final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, knownMap, null, cityLocation, null, sd, false, true, db);
-		final CityProductionBreakdown productionProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-		final CityProductionBreakdown goldProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		final CityProductionBreakdown foodProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-		
-		final int productionPercentageBonus = (productionProduction != null) ? productionProduction.getPercentageBonus () : 0;
-		final int goldTradePercentageBonus = (goldProduction != null) ? goldProduction.getTradePercentageBonusCapped () : 0;
 		final int maxCitySize = (foodProduction != null) ? foodProduction.getCappedProductionAmount () : 0;
-
-		// Add on how good production and gold bonuses are
-		int thisCityQuality = (maxCitySize * 10) +		// Typically 5-25 -> 50-250
-			goldTradePercentageBonus +					// Typically 0-30
-			productionPercentageBonus;					// Typically 0-80 usefully
-
-		// Improve the estimate according to nearby map features e.g. always stick cities next to adamantium!
-		final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
 		
-		for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
-			if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, direction.getDirectionID ()))
-			{
-				final OverlandMapTerrainData checkFeatureData = knownMap.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				if ((checkFeatureData != null) && (checkFeatureData.getMapFeatureID () != null))
-				{
-					final Integer featureCityQualityEstimate = db.findMapFeature (checkFeatureData.getMapFeatureID (), "chooseCityLocation").getCityQualityEstimate ();
-					if (featureCityQualityEstimate != null)
-						thisCityQuality = thisCityQuality + featureCityQualityEstimate;
-				}
-			}
-		
-		// Avoid placing start cities near other cities, especially don't put wizards near each other
-		if (avoidOtherCities)
+		// If city will be so small as to not be useful then just discount it; remember granary adds +2 and farmers' market adds +3 to this, so really minimum size is 10
+		if ((enforceMinimumQuality) && (maxCitySize < 5))
+			thisCityQuality = null;
+		else
 		{
-			// What's the closest existing city to these coordinates?
-			Integer closestDistance = getCityServerUtils ().findClosestCityTo (cityLocation, knownMap, sd.getOverlandMapSize ());
-			if (closestDistance != null)
-				thisCityQuality = thisCityQuality + (closestDistance * 2);		// Maximum would be 40 apart (north-south of map) x2 = 80
+			final CityProductionBreakdown productionProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
+			final CityProductionBreakdown goldProduction = productions.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+			
+			final int productionPercentageBonus = (productionProduction != null) ? productionProduction.getPercentageBonus () : 0;
+			final int goldTradePercentageBonus = (goldProduction != null) ? goldProduction.getTradePercentageBonusCapped () : 0;
+	
+			// Add on how good production and gold bonuses are
+			thisCityQuality = (maxCitySize * 10) +			// Typically 5-25 -> 50-250
+				goldTradePercentageBonus +					// Typically 0-30
+				productionPercentageBonus;					// Typically 0-80 usefully
+	
+			// Improve the estimate according to nearby map features e.g. always stick cities next to adamantium!
+			final MapCoordinates3DEx coords = new MapCoordinates3DEx (cityLocation);
+			
+			for (final SquareMapDirection direction : CityCalculationsImpl.DIRECTIONS_TO_TRAVERSE_CITY_RADIUS)
+				if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), coords, direction.getDirectionID ()))
+				{
+					final OverlandMapTerrainData checkFeatureData = knownMap.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
+					if ((checkFeatureData != null) && (checkFeatureData.getMapFeatureID () != null))
+					{
+						final Integer featureCityQualityEstimate = db.findMapFeature (checkFeatureData.getMapFeatureID (), "chooseCityLocation").getCityQualityEstimate ();
+						if (featureCityQualityEstimate != null)
+							thisCityQuality = thisCityQuality + featureCityQualityEstimate;
+					}
+				}
+			
+			// Avoid placing start cities near other cities, especially don't put wizards near each other
+			if (avoidOtherCities)
+			{
+				// What's the closest existing city to these coordinates?
+				Integer closestDistance = getCityServerUtils ().findClosestCityTo (cityLocation, knownMap, sd.getOverlandMapSize ());
+				if (closestDistance != null)
+					thisCityQuality = thisCityQuality + (closestDistance * 2);		// Maximum would be 40 apart (north-south of map) x2 = 80
+			}
 		}
 		
 		log.trace ("Exiting evaluateCityQuality = " + thisCityQuality);
@@ -200,10 +210,10 @@ public final class CityAIImpl implements CityAI
 					{
 						// How good will this city be?
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
-						final int thisCityQuality = evaluateCityQuality (cityLocation, avoidOtherCities, knownMap, sd, db); 
+						final Integer thisCityQuality = evaluateCityQuality (cityLocation, avoidOtherCities, true, knownMap, sd, db); 
 
 						// Is it the best so far?
-						if ((bestLocation == null) || (thisCityQuality > bestCityQuality))
+						if ((thisCityQuality != null) && ((bestLocation == null) || (thisCityQuality > bestCityQuality)))
 						{
 							bestLocation = cityLocation;
 							bestCityQuality = thisCityQuality;

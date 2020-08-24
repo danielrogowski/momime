@@ -31,15 +31,16 @@ public interface CityAI
 	/**
 	 * @param cityLocation Where to consider putting a city
 	 * @param avoidOtherCities Whether to avoid putting this city close to any existing cities (regardless of who owns them); used for placing starter cities but not when AI builds new ones
+	 * @param enforceMinimumQuality Whether to avoid returning data about cities that are too small to be useful; so usually true, but false if we want to evalulate even terrible cities
 	 * @param knownMap Known terrain
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @return Estimate of how good a city here is/will be
+	 * @return null if enforceMinimumQuality = true and a city here is too small to be useful; otherwise an estimate of how good a city here is/will be
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public int evaluateCityQuality (final MapCoordinates3DEx cityLocation, final boolean avoidOtherCities,
+	public Integer evaluateCityQuality (final MapCoordinates3DEx cityLocation, final boolean avoidOtherCities, final boolean enforceMinimumQuality,
 		final MapVolumeOfMemoryGridCells knownMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	

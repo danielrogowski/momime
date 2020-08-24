@@ -59,9 +59,9 @@ public final class TestTreasureUI extends ClientTestData
 		when (lang.findCategoryEntry ("frmTreasure", "Nothing")).thenReturn ("Absolutely nothing!");
 		when (lang.findCategoryEntry ("frmTreasure", "Spell")).thenReturn ("SPELL_NAME spell");
 		when (lang.findCategoryEntry ("frmTreasure", "Retort")).thenReturn ("Retort of PICK_NAME_SINGULAR");
-		when (lang.findCategoryEntry ("frmTreasure", "PrisonerC")).thenReturn ("PrisonerCText");
-		when (lang.findCategoryEntry ("frmTreasure", "PrisonerB")).thenReturn ("PrisonerBText");
-		when (lang.findCategoryEntry ("frmTreasure", "PrisonerN")).thenReturn ("PrisonerNText");
+		when (lang.findCategoryEntry ("frmTreasure", "PrisonerC")).thenReturn ("A_UNIT_NAME");
+		when (lang.findCategoryEntry ("frmTreasure", "PrisonerB")).thenReturn ("A_UNIT_NAME, who would not fit here so was moved to an adjacent tile");
+		when (lang.findCategoryEntry ("frmTreasure", "PrisonerN")).thenReturn ("A_UNIT_NAME, who would not fit anywhere so escaped");
 		
 		final MapFeatureLang mapFeatureLang = new MapFeatureLang ();
 		mapFeatureLang.setMapFeatureDescription ("Mysterious Cave");
@@ -110,17 +110,16 @@ public final class TestTreasureUI extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		for (int n = 1; n <= 3; n++)
+		for (int n = 1; n <= 2; n++)
 		{
 			final MemoryUnit unit = new MemoryUnit ();
-			when (unitUtils.findUnitURN (n, fow.getUnit (), "TreasureUI")).thenReturn (unit);
+			when (unitUtils.findUnitURN (n, fow.getUnit ())).thenReturn (unit);
 		}
 		
 		// Unit names
 		final UnitStatsLanguageVariableReplacer unitStatsReplacer = mock (UnitStatsLanguageVariableReplacer.class);
-		when (unitStatsReplacer.replaceVariables ("PrisonerCText")).thenReturn ("Brax the Dwarf");
-		when (unitStatsReplacer.replaceVariables ("PrisonerBText")).thenReturn ("Zaldron the Sage, who would not fit here so was moved to an adjacent tile");
-		when (unitStatsReplacer.replaceVariables ("PrisonerNText")).thenReturn ("Valana the Bard, who would not fit anywhere so escaped");
+		when (unitStatsReplacer.replaceVariables ("A_UNIT_NAME;")).thenReturn ("Brax the Dwarf");
+		when (unitStatsReplacer.replaceVariables ("A_UNIT_NAME, who would not fit here so was moved to an adjacent tile;")).thenReturn ("Zaldron the Sage, who would not fit here so was moved to an adjacent tile");
 		
 		// Set up some sample treasure
 		final TreasureRewardMessage reward = new TreasureRewardMessage ();

@@ -215,15 +215,21 @@ public final class TreasureUI extends MomClientDialogUI
 				// Prisoners - mention whether they fit or got bumped outside or lost completely
 				for (final TreasureRewardPrisoner prisoner : getTreasureReward ().getPrisoner ())
 				{
-					final MemoryUnit unit = getUnitUtils ().findUnitURN (prisoner.getPrisonerUnitURN (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "TreasureUI");
+					String prisonerText = getLanguage ().findCategoryEntry ("frmTreasure", "Prisoner" + prisoner.getUnitAddBumpType ().value ()) + ";";
 					
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
-						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-					
-					getUnitStatsReplacer ().setUnit (xu);
-					text.append (System.lineSeparator () + BULLET_POINT + getUnitStatsReplacer ().replaceVariables
-						(getLanguage ().findCategoryEntry ("frmTreasure", "Prisoner" + prisoner.getUnitAddBumpType ().value ())) + ";");
+					final MemoryUnit mu = getUnitUtils ().findUnitURN (prisoner.getPrisonerUnitURN (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+					if (mu == null)
+						prisonerText = prisonerText.replaceAll ("A_UNIT_NAME", "A hero");
+					else
+					{
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+						
+						getUnitStatsReplacer ().setUnit (xu);
+						prisonerText = getUnitStatsReplacer ().replaceVariables (prisonerText);
+					}
+					text.append (System.lineSeparator () + BULLET_POINT + prisonerText);
 				}
 				
 				// Hero items

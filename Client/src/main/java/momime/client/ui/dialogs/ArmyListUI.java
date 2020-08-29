@@ -1,4 +1,4 @@
-package momime.client.ui.frames;
+package momime.client.ui.dialogs;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -29,7 +29,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import com.ndg.utils.Holder;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,12 +40,16 @@ import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
+import com.ndg.utils.Holder;
 
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.ShortcutKeyLang;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.HeroItemsUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.renderer.ArmyListCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
@@ -65,7 +68,7 @@ import momime.common.utils.UnitUtils;
 /**
  * UI for the army list, which shows one line per unit stack on the overland map
  */
-public final class ArmyListUI extends MomClientFrameUI
+public final class ArmyListUI extends MomClientDialogUI
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (ArmyListUI.class);
@@ -168,7 +171,7 @@ public final class ArmyListUI extends MomClientFrameUI
 		
 		// Actions
 		heroItemsAction = new LoggingAction ((ev) -> getHeroItemsUI ().setVisible (true));
-		okAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
+		okAction = new LoggingAction ((ev) -> getDialog ().setVisible (false));
 		
 		// Initialize the content pane
 		contentPane = new JPanel ()
@@ -308,11 +311,11 @@ public final class ArmyListUI extends MomClientFrameUI
 		refreshArmyList (null);
 		
 		// Lock frame size
-		getFrame ().setContentPane (contentPane);
-		getFrame ().setResizable (false);
-		getFrame ().setUndecorated (true);
+		getDialog ().setContentPane (contentPane);
+		getDialog ().setResizable (false);
+		getDialog ().setUndecorated (true);
 		
-		getFrame ().setShape (new Polygon
+		getDialog ().setShape (new Polygon
 			(new int [] {10, 6, 6, 10, 0, 0,		830, 830, 820, 824, 824, 820,		820, 824, 824, 820, 830, 830,		0, 0, 10, 6, 6, 10},
 			new int [] {38, 38, 30, 30, 10, 0,	0, 10, 30, 30, 38, 38,					378, 378, 386, 386, 406, 416,		416, 406, 386, 386, 378, 378},
 			24));		
@@ -482,7 +485,7 @@ public final class ArmyListUI extends MomClientFrameUI
 			titleText = titleText.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourPlayer));
 		
 		title.setText (titleText);
-		getFrame ().setTitle (titleText);
+		getDialog ().setTitle (titleText);
 		
 		// Buttons
 		heroItemsAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmArmyList", "HeroItems"));

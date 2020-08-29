@@ -59,6 +59,7 @@ import momime.client.messages.process.MoveUnitStackOverlandMessageImpl;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.client.ui.dialogs.ArmyListUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -132,9 +133,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	
 	/** Spell book */
 	private SpellBookUI spellBookUI;
-	
-	/** Army list */
-	private ArmyListUI armyListUI;
 	
 	/** Cities list */
 	private CitiesListUI citiesListUI;
@@ -284,12 +282,17 @@ public final class OverlandMapUI extends MomClientFrameUI
 		// Actions
 		gameAction = new LoggingAction ((ev) -> {});
 		spellsAction = new LoggingAction ((ev) -> getSpellBookUI ().setVisible (true));
-		armiesAction = new LoggingAction ((ev) -> getArmyListUI ().setVisible (true));
 		citiesAction = new LoggingAction ((ev) -> getCitiesListUI ().setVisible (true));
 		magicAction = new LoggingAction ((ev) -> getMagicSlidersUI ().setVisible (true));
 		planeAction = new LoggingAction ((ev) -> switchMapViewPlane ());
 		messagesAction = new LoggingAction ((ev) -> getNewTurnMessagesUI ().setVisible (true));
 		chatAction = new LoggingAction ((ev) -> {});
+
+		armiesAction = new LoggingAction ((ev) ->
+		{
+			final ArmyListUI armyListUI = getPrototypeFrameCreator ().createArmyList ();
+			armyListUI.setVisible (true);
+		});
 		
 		final Action infoAction = new LoggingAction ((ev) -> getSelectAdvisorUI ().setVisible (true));
 		final Action optionsAction = new LoggingAction ((ev) -> getOptionsUI ().setVisible (true));
@@ -1638,22 +1641,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setSpellBookUI (final SpellBookUI ui)
 	{
 		spellBookUI = ui;
-	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
 	}
 	
 	/**

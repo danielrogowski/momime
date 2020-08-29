@@ -144,6 +144,9 @@ public final class CityProcessingImpl implements CityProcessing
 	/** Spell processing methods */
 	private SpellProcessing spellProcessing;
 	
+	/** Methods for dealing with player msgs */
+	private PlayerMessageProcessing playerMessageProcessing;
+	
 	/**
 	 * Creates the starting cities for each Wizard and Raiders
 	 *
@@ -980,7 +983,10 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			// If it was a human player, convert them to AI and possibly end the session
 			if (defendingPlayer.getPlayerDescription ().isHuman ())
-				mom.updateHumanPlayerToAI (defendingPlayer.getPlayerDescription ().getPlayerID ());			
+				mom.updateHumanPlayerToAI (defendingPlayer.getPlayerDescription ().getPlayerID ());
+			
+			// The attacker may have just defeated the last wizard
+			getPlayerMessageProcessing ().checkIfWonGame (mom);
 		}
 		
 		// Its possible by this point that the session doesn't exist, which wipes out the player list
@@ -1367,5 +1373,21 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
+	}
+
+	/**
+	 * @return Methods for dealing with player msgs
+	 */
+	public PlayerMessageProcessing getPlayerMessageProcessing ()
+	{
+		return playerMessageProcessing;
+	}
+
+	/**
+	 * @param obj Methods for dealing with player msgs
+	 */
+	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
+	{
+		playerMessageProcessing = obj;
 	}
 }

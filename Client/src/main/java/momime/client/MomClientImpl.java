@@ -45,7 +45,6 @@ import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.RazeCityUI;
 import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.ui.frames.AlchemyUI;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
@@ -122,9 +121,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 
 	/** Queued spells UI */
 	private QueuedSpellsUI queuedSpellsUI;
-	
-	/** Army list */
-	private ArmyListUI armyListUI;
 	
 	/** Cities list */
 	private CitiesListUI citiesListUI;
@@ -382,7 +378,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 					getAlchemyUI ().setVisible (false);
 					getSpellBookUI ().setVisible (false);
 					getQueuedSpellsUI ().setVisible (false);
-					getArmyListUI ().setVisible (false);
 					getCitiesListUI ().setVisible (false);
 					getNewTurnMessagesUI ().setVisible (false);
 					getSelectAdvisorUI ().setVisible (false);
@@ -864,22 +859,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setQueuedSpellsUI (final QueuedSpellsUI ui)
 	{
 		queuedSpellsUI = ui;
-	}
-	
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
 	}
 	
 	/**

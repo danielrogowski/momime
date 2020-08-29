@@ -13,7 +13,6 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.zorder.ZOrderGraphics;
 
@@ -38,7 +37,6 @@ import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.HeroItemsUI;
@@ -119,9 +117,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Combat UI */
 	private CombatUI combatUI;
-	
-	/** Army list */
-	private ArmyListUI armyListUI;
 
 	/** Hero items UI */
 	private HeroItemsUI heroItemsUI;
@@ -364,8 +359,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Update various UI screens if our units get killed
 		if (unit.getOwningPlayerID () == getClient ().getOurPlayerID ())
 		{
-			getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) unit.getUnitLocation ());
-
 			if (getClient ().getClientDB ().findUnit (unit.getUnitID (), "killUnit").getUnitMagicRealm ().equals
 				(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 					
@@ -1043,22 +1036,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
-	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
 	}
 	
 	/**

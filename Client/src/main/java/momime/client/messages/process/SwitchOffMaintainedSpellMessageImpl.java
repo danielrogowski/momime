@@ -8,11 +8,9 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.MagicSlidersUI;
@@ -40,9 +38,6 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
-	
-	/** Army list */
-	private ArmyListUI armyListUI;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -98,16 +93,6 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 				final UnitInfoUI ui = getClient ().getUnitInfos ().get (spell.getUnitURN ());
 				if (ui != null)
 					ui.getUnitInfoPanel ().refreshUnitDetails ();
-				
-				// Also need to update the upkeep shown on the army list?
-				if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
-				{
-					final MemoryUnit u = getUnitUtils ().findUnitURN (spell.getUnitURN (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (A)");
-					
-					if (u.getOwningPlayerID () == getClient ().getOurPlayerID ())
-						getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) u.getUnitLocation ());
-				}
 
 				// If its being removed from a combat unit, need to check if we need to remove an animation from over the unit's head to no longer show the effect, e.g. Confusion
 				if (spell.isCastInCombat ())
@@ -181,23 +166,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	{
 		magicSlidersUI = ui;
 	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
-	}
-
+	
 	/**
 	 * @return Unit utils
 	 */

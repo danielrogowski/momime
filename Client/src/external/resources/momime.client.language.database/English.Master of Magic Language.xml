@@ -7003,6 +7003,23 @@ This will cease production of your PREREQUISITE_NAME.</languageEntryText>
 			<languageEntryText>BANISHING_WIZARD defeat BANISHED_WIZARD</languageEntryText>
 		</languageEntry>
 	</languageCategory>
+	<languageCategory languageCategoryID="frmWizardWon">
+		<languageEntry languageEntryID="Title">
+			<languageEntryText>You have won</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Line1">
+			<languageEntryText>Having conquered both the</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Line2">
+			<languageEntryText>worlds of Arcanus and Myrror</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Line3">
+			<languageEntryText>I and only I remain the one</languageEntryText>
+		</languageEntry>
+		<languageEntry languageEntryID="Line4">
+			<languageEntryText>and true Master of Magic</languageEntryText>
+		</languageEntry>
+	</languageCategory>
 	<languageCategory languageCategoryID="frmHistory">
 		<languageEntry languageEntryID="Title">
 			<languageEntryText>History of Wizards' Power</languageEntryText>

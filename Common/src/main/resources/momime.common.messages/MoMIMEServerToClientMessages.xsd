@@ -1315,6 +1315,23 @@ So this is what drives the Spell of Return animation on the client, not the AddB
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="playAnimationMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Server telling the client to play an animation about a significant game event, like casting Spell of Mastery.
+Unlike updateWizardStateMessage, the animation has no bearing on the game and pushes no data updates whatsoever, the client just plays the anim and that's it.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="animationID" type="momimestoc:animationID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="playerID" type="mps:playerID" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
 <!--  Enums -->
 
 	<xsd:simpleType name="damageCalculationMessageTypeID">
@@ -1330,6 +1347,23 @@ So this is what drives the Spell of Return animation on the client, not the AddB
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Defence data</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFENCE_DATA" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="animationID">
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="W"><xsd:annotation>
+				<xsd:documentation>You won the game - spinning worlds animation</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="WON" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Started casting Spell of Mastery</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="STARTED_SPELL_OF_MASTERY" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="F"><xsd:annotation>
+				<xsd:documentation>Finished casting Spell of Mastery</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="FINISHED_SPELL_OF_MASTERY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

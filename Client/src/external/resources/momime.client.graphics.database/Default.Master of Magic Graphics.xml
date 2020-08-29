@@ -16,7 +16,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ01-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ01-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ01-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-mid.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_01</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_01</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ01_102" />
 		<combatPlayList playListID="COMBAT_WZ01_103" />
@@ -27,7 +29,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ02-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ02-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ02-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-dark.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_02</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_02</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ02_102" />
 		<combatPlayList playListID="COMBAT_WZ02_103" />
@@ -38,7 +42,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ03-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ03-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ03-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-female-dark.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_03</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_03</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_034_000 - Scream F.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ03_102" />
 		<combatPlayList playListID="COMBAT_WZ03_103" />
@@ -49,7 +55,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ04-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ04-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ04-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-bright.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_04</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_04</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ04_102" />
 		<combatPlayList playListID="COMBAT_WZ04_103" />
@@ -60,7 +68,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ05-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ05-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ05-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-mid.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_05</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_05</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ05_102" />
 		<combatPlayList playListID="COMBAT_WZ05_103" />
@@ -71,7 +81,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ06-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ06-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ06-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-bright.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_06</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_06</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ06_102" />
 		<combatPlayList playListID="COMBAT_WZ06_103" />
@@ -82,7 +94,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ07-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ07-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ07-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-dark.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_07</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_07</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ07_102" />
 		<combatPlayList playListID="COMBAT_WZ07_103" />
@@ -93,7 +107,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ08-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ08-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ08-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-claws.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_08</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_08</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ08_102" />
 		<combatPlayList playListID="COMBAT_WZ08_103" />
@@ -104,7 +120,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ09-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ09-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ09-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-bright.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_09</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_09</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ09_102" />
 		<combatPlayList playListID="COMBAT_WZ09_103" />
@@ -115,7 +133,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ10-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ10-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ10-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-female-bright.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_10</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_10</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_034_000 - Scream F.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ10_102" />
 		<combatPlayList playListID="COMBAT_WZ10_103" />
@@ -126,7 +146,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ11-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ11-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ11-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-bright.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_11</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_11</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ11_102" />
 		<combatPlayList playListID="COMBAT_WZ11_103" />
@@ -137,7 +159,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ12-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ12-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ12-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-female-bright.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_12</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_12</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_034_000 - Scream F.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ12_102" />
 		<combatPlayList playListID="COMBAT_WZ12_103" />
@@ -148,7 +172,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ13-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ13-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ13-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-male-dark.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_13</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_13</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_035_000 - Scream M.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ13_102" />
 		<combatPlayList playListID="COMBAT_WZ13_103" />
@@ -159,7 +185,9 @@
 		<standingImageFile>/momime.client.graphics/wizards/WZ14-standing.png</standingImageFile>
 		<banishingImageFile>/momime.client.graphics/wizards/WZ14-banishing.png</banishingImageFile>
 		<banishingHandImageFile>/momime.client.graphics/wizards/WZ14-banishing-hand.png</banishingHandImageFile>
+		<worldHandsImageFile>/momime.client.graphics/animations/worlds/hands-female-bright.png</worldHandsImageFile>
 		<evaporatingAnimation>WIZARD_EVAPORATING_14</evaporatingAnimation>
+		<talkingAnimation>WIZARD_TALKING_14</talkingAnimation>
 		<screamSoundFile>/momime.client.sounds/SOUNDFX_034_000 - Scream F.mp3</screamSoundFile>
 		<combatPlayList playListID="COMBAT_WZ14_102" />
 		<combatPlayList playListID="COMBAT_WZ14_103" />
@@ -68111,6 +68139,502 @@
 		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-12.png</frame>
 		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-13.png</frame>
 		<frame>/momime.client.graphics/ui/spellBook/swirl-frame-14.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_01">
+		<animationDescription>Wizard 01 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ01-talk-frame-20.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_02">
+		<animationDescription>Wizard 02 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ02-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_03">
+		<animationDescription>Wizard 03 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ03-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_04">
+		<animationDescription>Wizard 04 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ04-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_05">
+		<animationDescription>Wizard 05 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ05-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_06">
+		<animationDescription>Wizard 06 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ06-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_07">
+		<animationDescription>Wizard 07 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ07-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_08">
+		<animationDescription>Wizard 08 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ08-talk-frame-20.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_09">
+		<animationDescription>Wizard 09 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ09-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_10">
+		<animationDescription>Wizard 10 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ10-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_11">
+		<animationDescription>Wizard 11 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ11-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_12">
+		<animationDescription>Wizard 12 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ12-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_13">
+		<animationDescription>Wizard 13 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ13-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WIZARD_TALKING_14">
+		<animationDescription>Wizard 14 talking</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-01.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-02.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-03.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-04.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-05.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-06.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-07.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-08.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-09.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-10.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-11.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-12.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-13.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-14.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-15.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-16.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-17.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-18.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-19.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-20.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-21.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-22.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-23.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-24.png</frame>
+		<frame>/momime.client.graphics/wizards/WZ14-talk-frame-25.png</frame>
+	</animation>
+	<animation animationID="WORLDS_SPARKLES">
+		<animationDescription>Worlds animation red sparkles</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-01.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-02.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-03.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-04.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-05.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-06.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-07.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-08.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-09.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-10.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-11.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-12.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-13.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-14.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-15.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-16.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-17.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-18.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-19.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-20.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-21.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-22.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-23.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-24.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/sparkles-frame-25.png</frame>
+	</animation>
+	<animation animationID="WORLDS_SPINNING">
+		<animationDescription>Worlds spinning animation</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-01.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-02.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-03.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-04.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-05.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-06.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-07.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-08.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-09.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-10.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-11.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-12.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-13.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-14.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-15.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-16.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-17.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-18.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-19.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-20.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-21.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-22.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-23.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-24.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-25.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-26.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-27.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-28.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-29.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-30.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-31.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-32.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-33.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-34.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-35.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-36.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-37.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-38.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-39.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-40.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-41.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-42.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-43.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-44.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-45.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-46.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-47.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-48.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-49.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-50.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-51.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-52.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-53.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-54.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-55.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-56.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-57.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-58.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-59.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-60.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-61.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-62.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-63.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-64.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-65.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-66.png</frame>
+		<frame>/momime.client.graphics/animations/worlds/worlds-frame-67.png</frame>
 	</animation>
 	<playList playListID="OVERLAND">
 		<audioFile>/momime.client.music/MUSIC_099 - BGM.mp3</audioFile>

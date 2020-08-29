@@ -17,7 +17,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.utils.Holder;
 
 import momime.client.MomClient;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -50,9 +49,6 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
-	
-	/** Army list */
-	private ArmyListUI armyListUI;
 	
 	/** Cities list */
 	private CitiesListUI citiesListUI;
@@ -123,16 +119,15 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		if (getAddOrUpdateUnit ().size () > 0)
 		{
 			final List<MapCoordinates3DEx> unitLocations = new ArrayList<MapCoordinates3DEx> ();
-			final Holder<MapCoordinates3DEx> ourUnitLocation = new Holder<MapCoordinates3DEx> ();
 			final Holder<Boolean> anyOfOurHeroes = new Holder<Boolean> (false);
 			
 			final AddOrUpdateUnitMessageImpl proc = getFactory ().createAddOrUpdateUnitMessage ();
 			for (final MemoryUnit thisUnit : getAddOrUpdateUnit ())
 			{
 				proc.setMemoryUnit (thisUnit);
-				proc.processOneUpdate (unitLocations, ourUnitLocation, anyOfOurHeroes);
+				proc.processOneUpdate (unitLocations, anyOfOurHeroes);
 			}
-			proc.endUpdates (unitLocations, ourUnitLocation, anyOfOurHeroes);
+			proc.endUpdates (unitLocations, anyOfOurHeroes);
 		}
 		
 		// Units killed or gone out of view
@@ -207,10 +202,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		
 		if ((getTerrainUpdate ().size () > 0) || (getCityUpdate ().size () > 0))
-		{
 			getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
-			getArmyListUI ().regenerateMiniMapBitmaps ();
-		}
 		
 		if (getCityUpdate ().size () > 0)
 		{
@@ -283,22 +275,6 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
 	{
 		overlandMapRightHandPanel = panel;
-	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-	
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
 	}
 
 	/**

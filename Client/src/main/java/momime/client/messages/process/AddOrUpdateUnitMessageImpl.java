@@ -17,7 +17,6 @@ import com.ndg.utils.Holder;
 import momime.client.MomClient;
 import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
@@ -48,9 +47,6 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Army list */
-	private ArmyListUI armyListUI;
-
 	/** Hero items UI */
 	private HeroItemsUI heroItemsUI;
 	
@@ -71,11 +67,10 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 		log.trace ("Entering start: Unit URN " + getMemoryUnit ().getUnitURN ());
 		
 		final List<MapCoordinates3DEx> unitLocations = new ArrayList<MapCoordinates3DEx> ();
-		final Holder<MapCoordinates3DEx> ourUnitLocation = new Holder<MapCoordinates3DEx> ();
 		final Holder<Boolean> anyOfOurHeroes = new Holder<Boolean> (false);
 		
-		processOneUpdate (unitLocations, ourUnitLocation, anyOfOurHeroes);
-		endUpdates (unitLocations, ourUnitLocation, anyOfOurHeroes);
+		processOneUpdate (unitLocations, anyOfOurHeroes);
+		endUpdates (unitLocations, anyOfOurHeroes);
 		
 		log.trace ("Exiting start");
 	}
@@ -84,13 +79,12 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	 * Method called for each individual update; so called once if message was sent in isolation, or multiple times if part of FogOfWarVisibleAreaChangedMessage
 	 * 
 	 * @param unitLocations Keeps track of the locations where all units were updated (even ones that are not ours)
-	 * @param ourUnitLocation Keeps track the location of any updated unit that belongs to us
 	 * @param anyOfOurHeroes Keeps track of whether any of the updated units belong to us and are heroes
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
 	 * @throws IOException Can be used for more general types of processing failure
 	 */
-	public final void processOneUpdate (final List<MapCoordinates3DEx> unitLocations, final Holder<MapCoordinates3DEx> ourUnitLocation, final Holder<Boolean> anyOfOurHeroes)
+	public final void processOneUpdate (final List<MapCoordinates3DEx> unitLocations, final Holder<Boolean> anyOfOurHeroes)
 		throws JAXBException, XMLStreamException, IOException
 	{
 		log.trace ("Entering processOneUpdate: Unit URN " + getMemoryUnit ().getUnitURN ());
@@ -143,8 +137,6 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 		// Keep track of things that only need updating once, if we have a lot of unit updates to process
 		if (getMemoryUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
 		{
-			ourUnitLocation.setValue ((MapCoordinates3DEx) getMemoryUnit ().getUnitLocation ());
-			
 			if (getClient ().getClientDB ().findUnit (getMemoryUnit ().getUnitID (), "AddOrUpdateUnitMessageImpl").getUnitMagicRealm ().equals
 				(CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 				
@@ -158,11 +150,10 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	 * Called after processOneUpdate has been called n times
 	 * 
 	 * @param unitLocations Keeps track of the locations where all units were updated (even ones that are not ours)
-	 * @param ourUnitLocation Keeps track the location of any updated unit that belongs to us
 	 * @param anyOfOurHeroes Keeps track of whether any of the updated units belong to us and are heroes
 	 * @throws IOException If there is a problem
 	 */
-	public final void endUpdates (final List<MapCoordinates3DEx> unitLocations, final Holder<MapCoordinates3DEx> ourUnitLocation, final Holder<Boolean> anyOfOurHeroes)
+	public final void endUpdates (final List<MapCoordinates3DEx> unitLocations, final Holder<Boolean> anyOfOurHeroes)
 		throws IOException
 	{
 		log.trace ("Entering endUpdates");
@@ -174,9 +165,6 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 			if (cityView != null)
 				cityView.unitsChanged ();
 		}
-		
-		if (ourUnitLocation.getValue () != null)
-			getArmyListUI ().refreshArmyList (ourUnitLocation.getValue ());
 		
 		if (anyOfOurHeroes.getValue ())
 			getHeroItemsUI ().refreshHeroes ();
@@ -214,22 +202,6 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
 	}
 
 	/**

@@ -12,7 +12,6 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CitiesListUI;
 import momime.client.ui.frames.CityViewUI;
@@ -39,9 +38,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
-	/** Army list */
-	private ArmyListUI armyListUI;
-	
 	/** New turn messages UI */
 	private NewTurnMessagesUI newTurnMessagesUI;
 
@@ -65,7 +61,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		// Regenerate city images to show change in size or owner
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
-		getArmyListUI ().regenerateMiniMapBitmaps ();
 		getCitiesListUI ().refreshCitiesList ();
 		getCitiesListUI ().regenerateMiniMapBitmaps ();
 		
@@ -176,22 +171,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
 	{
 		newTurnMessagesUI = ui;
-	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-	
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
 	}
 
 	/**

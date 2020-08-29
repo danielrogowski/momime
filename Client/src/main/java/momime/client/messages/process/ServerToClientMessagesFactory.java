@@ -308,4 +308,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public AddPowerBaseHistoryMessageImpl createAddPowerBaseHistoryMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public PlayAnimationMessageImpl createPlayAnimationMessage ();
 }

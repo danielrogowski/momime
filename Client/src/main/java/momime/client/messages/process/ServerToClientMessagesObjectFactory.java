@@ -38,6 +38,7 @@ import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessag
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PendingSaleMessage;
+import momime.common.messages.servertoclient.PlayAnimationMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
@@ -615,6 +616,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 		return getFactory ().createAddPowerBaseHistoryMessage ();
 	}
 
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final PlayAnimationMessage createPlayAnimationMessage ()
+	{
+		return getFactory ().createPlayAnimationMessage ();
+	}
+	
 	/**
 	 * @return Factory for creating prototype message beans from spring
 	 */

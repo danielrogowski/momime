@@ -62,6 +62,12 @@ public final class GraphicsDatabaseConstants
 	/** Banishing animation double blast */
 	public static final String ANIM_WIZARD_BANISHED_DOUBLE_BLAST = "BANISHING_BLAST_DOUBLE";
 	
+	/** Winning animation spinning worlds */
+	public static final String ANIM_WIZARD_WON_WORLDS = "WORLDS_SPINNING";
+
+	/** Winning animation sparkles */
+	public static final String ANIM_WIZARD_WON_SPARKLES = "WORLDS_SPARKLES";
+	
 	/**
 	 * Prevent instatiation of this class
 	 */

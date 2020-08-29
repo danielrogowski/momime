@@ -131,4 +131,14 @@ public interface PlayerMessageProcessing
 	 */
 	public void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
+
+	/**
+	 * Checks to see if anyone has won the game, by every other wizard being defeated
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws PlayerNotFoundException If the requested playerID cannot be found
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	public void checkIfWonGame (final MomSessionVariables mom) throws PlayerNotFoundException, JAXBException, XMLStreamException;
 }

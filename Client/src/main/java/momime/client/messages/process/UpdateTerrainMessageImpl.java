@@ -7,7 +7,6 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.RecordNotFoundException;
@@ -41,9 +40,6 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	/** Overland map right hand panel showing economy etc */
 	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
-	/** Army list */
-	private ArmyListUI armyListUI;
-	
 	/** Overland map bitmap generator */
 	private OverlandMapBitmapGenerator overlandMapBitmapGenerator;
 	
@@ -72,7 +68,6 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		// about... so that's already almost everything (although we could avoid regenerating the units...)
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
-		getArmyListUI ().regenerateMiniMapBitmaps ();
 		
 		log.trace ("Exiting start");
 	}
@@ -197,21 +192,5 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	public final void setOverlandMapBitmapGenerator (final OverlandMapBitmapGenerator gen)
 	{
 		overlandMapBitmapGenerator = gen;
-	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-	
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
 	}
 }

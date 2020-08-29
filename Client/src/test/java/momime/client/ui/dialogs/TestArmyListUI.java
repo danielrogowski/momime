@@ -1,4 +1,4 @@
-package momime.client.ui.frames;
+package momime.client.ui.dialogs;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -146,7 +146,7 @@ public final class TestArmyListUI extends ClientTestData
 		when (gen.generateMiniMapBitmap (1)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x402000));
 		
 		// Layout
-		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/ArmyListUI.xml"));
+		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/ArmyListUI.xml"));
 		layout.buildMaps ();
 		
 		// Set up form
@@ -166,6 +166,7 @@ public final class TestArmyListUI extends ClientTestData
 		army.setArmyListCellRenderer (renderer);
 		
 		// Display form		
+		army.setModal (false);
 		army.setVisible (true);
 		Thread.sleep (5000);
 		army.setVisible (false);

@@ -42,8 +42,10 @@ import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
+import momime.common.messages.servertoclient.AnimationID;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
 import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
@@ -53,6 +55,7 @@ import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
 import momime.common.messages.servertoclient.ErasePendingMovementsMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
+import momime.common.messages.servertoclient.PlayAnimationMessage;
 import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
@@ -1258,6 +1261,46 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 		
 		log.trace ("Exiting onlyOnePlayerID");
+	}
+	
+	/**
+	 * Checks to see if anyone has won the game, by every other wizard being defeated
+	 * 
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws PlayerNotFoundException If the requested playerID cannot be found
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 */
+	@Override
+	public final void checkIfWonGame (final MomSessionVariables mom) throws PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering checkIfWonGame");
+		
+		int aliveCount = 0;
+		PlayerServerDetails aliveWizard = null;
+		
+		for (final PlayerServerDetails player : mom.getPlayers ())
+		{
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
+			{
+				aliveCount++;
+				aliveWizard = player;
+			}
+		}
+		
+		if ((aliveCount == 1) && (aliveWizard != null) && (aliveWizard.getPlayerDescription ().isHuman ()))
+		{
+			// Tell them they won, then end the session by converting them to an AI player
+			final PlayAnimationMessage msg = new PlayAnimationMessage ();
+			msg.setAnimationID (AnimationID.WON);
+			msg.setPlayerID (aliveWizard.getPlayerDescription ().getPlayerID ());
+			aliveWizard.getConnection ().sendMessageToClient (msg);
+			
+			mom.updateHumanPlayerToAI (aliveWizard.getPlayerDescription ().getPlayerID ());
+		}
+		
+		log.trace ("Exiting checkIfWonGame");
 	}
 
 	/**

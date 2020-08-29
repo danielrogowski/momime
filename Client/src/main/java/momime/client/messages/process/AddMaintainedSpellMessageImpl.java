@@ -22,7 +22,6 @@ import momime.client.graphics.database.SpellGfx;
 import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
-import momime.client.ui.frames.ArmyListUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
@@ -66,9 +65,6 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
-	
-	/** Army list */
-	private ArmyListUI armyListUI;
 	
 	/** Bitmap generator includes routines for calculating pixel coords */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
@@ -347,16 +343,6 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				if (ui != null)
 					ui.getUnitInfoPanel ().refreshUnitDetails ();
 				
-				// Also need to update the upkeep shown on the army list?
-				if (getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ())
-				{
-					final MemoryUnit u = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl.processOneUpdate (A)");
-					
-					if (u.getOwningPlayerID () == getClient ().getOurPlayerID ())
-						getArmyListUI ().refreshArmyList ((MapCoordinates3DEx) u.getUnitLocation ());
-				}
-				
 				// If its being cast on a combat unit, need to check if we now need to display an animation over the unit's head to show the new effect, e.g. Confusion
 				if (getMaintainedSpell ().isCastInCombat ())
 				{
@@ -507,22 +493,6 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
-	}
-
-	/**
-	 * @return Army list
-	 */
-	public final ArmyListUI getArmyListUI ()
-	{
-		return armyListUI;
-	}
-
-	/**
-	 * @param ui Army list
-	 */
-	public final void setArmyListUI (final ArmyListUI ui)
-	{
-		armyListUI = ui;
 	}
 	
 	/**

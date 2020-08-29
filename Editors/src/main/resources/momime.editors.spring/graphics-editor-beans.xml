@@ -32,6 +32,7 @@
 				<value>standingImageFile</value>
 				<value>banishingImageFile</value>
 				<value>banishingHandImageFile</value>
+				<value>worldHandsImageFile</value>
 			</list>
 		</property>
 	</bean>

@@ -25866,6 +25866,13 @@
 		<languageEntry languageEntryID="DefeatedByWizard" />
 		<languageEntry languageEntryID="DefeatedByRaiders" />
 	</languageCategory>
+	<languageCategory languageCategoryID="frmWizardWon">
+		<languageEntry languageEntryID="Title" />
+		<languageEntry languageEntryID="Line1" />
+		<languageEntry languageEntryID="Line2" />
+		<languageEntry languageEntryID="Line3" />
+		<languageEntry languageEntryID="Line4" />
+	</languageCategory>
 	<languageCategory languageCategoryID="frmHistory">
 		<languageEntry languageEntryID="Title" />
 	</languageCategory>

@@ -177,6 +177,10 @@ public final class WizardBanishedUI extends MomClientDialogUI
 						getClient ().finishCustomDurationMessage (getUpdateWizardStateMessage ());
 						unblocked = true;
 					}
+					
+					// Stop animation timer
+					if ((timer != null) && (timer.isRunning ()))
+						timer.stop ();
 				}
 				catch (final Exception e)
 				{
@@ -328,14 +332,6 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		log.trace ("Exiting languageChanged");
 	}
 
-	/**
-	 * Close out the UI when the animation finishes
-	 */
-	public final void finish ()
-	{
-		getDialog ().dispose ();
-	}
-	
 	/**
 	 * @return XML layout
 	 */

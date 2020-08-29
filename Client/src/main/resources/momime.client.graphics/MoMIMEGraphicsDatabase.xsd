@@ -202,9 +202,13 @@
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="@wizardID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimegfx:animationPK" name="wizardFKanimation">
+		<xsd:keyref refer="momimegfx:animationPK" name="wizardFKanimationE">
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="evaporatingAnimation" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimegfx:animationPK" name="wizardFKanimationT">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="talkingAnimation" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimegfx:playListPK" name="wizardCombatPlayListFKplayList">
 			<xsd:selector xpath="wizard/combatPlayList" />
@@ -407,7 +411,15 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="standingImageFile" type="momimegfx:imageFilename" nxe:label="Standing image file" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="banishingImageFile" type="momimegfx:imageFilename" nxe:label="Banishing image file" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="banishingHandImageFile" type="momimegfx:imageFilename" nxe:label="Banishing hand image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="worldHandsImageFile" type="momimegfx:imageFilename" nxe:label="World hands image file" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="evaporatingAnimation" type="momimegfx:animationID" nxe:label="Evaporating anim" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="talkingAnimation" type="momimegfx:animationID" nxe:label="Talking anim" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>

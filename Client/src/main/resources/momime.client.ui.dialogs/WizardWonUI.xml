@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>640</formWidth>		<!-- 320 x 2 -->
+	<formHeight>480</formHeight>		<!-- 200 x 2.4 -->
+	<component name="frmWizardWonWorlds">
+		<left>0</left>
+		<top>0</top>
+		<width>596</width>		<!-- 298 x 2 -->
+		<height>356</height>	<!-- 148 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardWonSparkles">
+		<left>0</left>
+		<top>0</top>
+		<width>640</width>		<!-- 320 x 2 -->
+		<height>480</height>	<!-- 200 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardWonHands">
+		<left>44</left>				<!-- 22 x 2 -->
+		<top>343</top>			<!-- 143 x 2.4 -->
+		<width>554</width>		<!-- 277 x 2 -->
+		<height>134</height>	<!-- 56 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardWonTalking">
+		<left>186</left>			<!-- 93 x 2 -->
+		<top>5</top>				<!-- 2 x 2.4 -->
+		<width>264</width>		<!-- 132 x 2 -->
+		<height>400</height>	<!-- 167 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmWizardWonLine">
+		<left>320</left>
+		<top>440</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

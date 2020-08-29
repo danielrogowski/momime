@@ -1,5 +1,6 @@
 package momime.client.ui.frames;
 
+import momime.client.ui.dialogs.ArmyListUI;
 import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
@@ -7,6 +8,7 @@ import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.dialogs.TreasureUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.dialogs.WizardBanishedUI;
+import momime.client.ui.dialogs.WizardWonUI;
 
 /**
  * Allows spring to create instances of frames that we allow multiple copies of, like message boxes and the city screen, and perform all necessary injections
@@ -77,4 +79,15 @@ public interface PrototypeFrameCreator
 	 * @return New wizard banished UI
 	 */
 	public WizardBanishedUI createWizardBanished ();
+
+	/**
+	 * @return New wizard won UI
+	 */
+	public WizardWonUI createWizardWon ();
+	
+	
+	/**
+	 * @return New army list UI
+	 */
+	public ArmyListUI createArmyList ();
 }

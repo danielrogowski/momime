@@ -347,7 +347,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, (int) goldSwiped + goldFromRazing);
 			}
 			
-			// Cancel any spells that were cast in combat
+			// Cancel any spells that were cast in combat, note doing so can actually kill some units
 			getFogOfWarMidTurnMultiChanges ().switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients
 				(mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), combatLocation, mom.getServerDB (), mom.getSessionDescription ());
 			

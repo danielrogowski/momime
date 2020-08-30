@@ -37,13 +37,14 @@ public interface DamageProcessor
 	 * @param castingPlayer The player casting the spell; or null if the attack isn't coming from a spell
 	 * @param combatLocation Where the combat is taking place
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether the attack resulted in the combat ending
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
+	public boolean resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer attackerDirection, final String attackSkillID,
 		final SpellSvr spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)

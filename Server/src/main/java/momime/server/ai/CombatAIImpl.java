@@ -2,6 +2,7 @@ package momime.server.ai;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -228,7 +229,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	final boolean moveOneUnit (final ExpandedUnitDetails tu, final MapCoordinates3DEx combatLocation,
+	final CombatAIMovementResult moveOneUnit (final ExpandedUnitDetails tu, final MapCoordinates3DEx combatLocation,
 		final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -250,7 +251,7 @@ public final class CombatAIImpl implements CombatAI
 			selectBestTarget (tu, combatLocation, movementDirections, doubleMovementDistances, movementTypes, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ()) : null;
 		
-		boolean moved = false;
+		CombatAIMovementResult result = CombatAIMovementResult.NOTHING; 
 		if (bestUnit != null)
 		{
 			// If we can attack at range then shoot it - if not then start walking towards it, or if adjacent to it already then attack it
@@ -276,12 +277,12 @@ public final class CombatAIImpl implements CombatAI
 				}				
 			
 			// Move there
-			getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom);
-			moved = true;
+			result = getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom) ?
+				CombatAIMovementResult.ENDED_COMBAT : CombatAIMovementResult.MOVED_OR_ATTACKED;
 		}
 		
-		log.trace ("Exiting moveOneUnit = " + moved);
-		return moved;
+		log.trace ("Exiting moveOneUnit = " + result);
+		return result;
 	}
 	
 	/**
@@ -301,7 +302,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final boolean aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
+	public final CombatAIMovementResult aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering aiCombatTurn: Player ID + " + currentPlayer.getPlayerDescription ().getPlayerID ());
@@ -329,17 +330,24 @@ public final class CombatAIImpl implements CombatAI
 		Collections.sort (sortedUnitsToMove);
 		
 		// Move each unit in turn
-		boolean moved = false;
-		for (final ExpandedUnitDetailsAndCombatAIOrder tu : sortedUnitsToMove)
+		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
+		final Iterator<ExpandedUnitDetailsAndCombatAIOrder> sortedUnitsToMoveIter = sortedUnitsToMove.iterator ();
+		while ((result != CombatAIMovementResult.ENDED_COMBAT) && (sortedUnitsToMoveIter.hasNext ()))
+		{
+			final ExpandedUnitDetailsAndCombatAIOrder tu = sortedUnitsToMoveIter.next ();
 			
 			// A previous unit might have already fired the shot that wiped out the enemy and ended the
 			// combat, in which case all units would have had their CombatX, CombatY values set to -1, -1
 			if (tu.getUnit ().getCombatPosition () != null)
-				if (moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom))
-					moved = true;
+			{
+				final CombatAIMovementResult thisResult = moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom);
+				if (thisResult != CombatAIMovementResult.NOTHING)
+					result = thisResult;
+			}
+		}
 		
-		log.trace ("Exiting aiCombatTurn = " + moved);
-		return moved;
+		log.trace ("Exiting aiCombatTurn = " + result);
+		return result;
 	}
 
 	/**

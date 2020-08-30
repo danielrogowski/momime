@@ -2,6 +2,8 @@ package momime.server.process;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -203,8 +205,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
+		assertFalse (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom));
 
 		// Ensure steps were processed
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -380,8 +382,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
-			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
+		assertTrue (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
+			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom));
 		
 		// Ensure steps were processed
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
@@ -525,8 +527,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null,
-			null, spell, null, castingPlayer, combatLocation, mom);
+		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null,
+			null, spell, null, castingPlayer, combatLocation, mom));
 
 		// Ensure steps were processed
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
@@ -698,8 +700,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenders.add (defender2);
 		defenders.add (defender3);
 		
-		proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null,
-			null, spell, null, castingPlayer, combatLocation, mom);
+		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null,
+			null, spell, null, castingPlayer, combatLocation, mom));
 
 		// Ensure steps were processed
 		final AttackResolutionUnit defender1Wrapper = new AttackResolutionUnit (defender1);

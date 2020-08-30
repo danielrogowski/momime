@@ -340,7 +340,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 									break;
 									
 								default:
-									throw new MomException ("resolveAttack trying to deal attack damage of type " + potentialDamage.getDamageResolutionTypeID () +
+									throw new MomException ("processAttackResolutionStep trying to deal attack damage of type " + potentialDamage.getDamageResolutionTypeID () +
 										" to the unitBeingAttacked, which it does not know how to deal with yet");
 							}
 							

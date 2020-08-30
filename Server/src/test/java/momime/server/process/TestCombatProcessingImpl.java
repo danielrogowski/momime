@@ -3,6 +3,7 @@ package momime.server.process;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -55,6 +56,7 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.ai.CombatAI;
+import momime.server.ai.CombatAIMovementResult;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSvr;
@@ -672,10 +674,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Defender/human player just finished turn
 		gc.setCombatCurrentPlayerID (defendingPd.getPlayerID ());
+		
+		// AI player takes their turn
+		final CombatAI ai = mock (CombatAI.class);
+		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
-		final CombatAI ai = mock (CombatAI.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
@@ -779,8 +784,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Both players have something useful to do
 		final CombatAI ai = mock (CombatAI.class);
-		when (ai.aiCombatTurn (combatLocation, defendingPlayer, mom)).thenReturn (true);
-		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (true);
+		when (ai.aiCombatTurn (combatLocation, defendingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
+		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
 		
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -889,8 +894,8 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Both players have something useful to do
 		final CombatAI ai = mock (CombatAI.class);
-		when (ai.aiCombatTurn (combatLocation, defendingPlayer, mom)).thenReturn (true);
-		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (true);
+		when (ai.aiCombatTurn (combatLocation, defendingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
+		when (ai.aiCombatTurn (combatLocation, attackingPlayer, mom)).thenReturn (CombatAIMovementResult.MOVED_OR_ATTACKED);
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -3482,7 +3487,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		
 		// Run method
-		proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom);
+		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom));
 		
 		// Check movement path messages
 		assertEquals (2, msgs.getMessages ().size ());
@@ -3669,7 +3674,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setDamageProcessor (damageProcessor);
 		
 		// Run method
-		proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom);
+		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom));
 		
 		// Check there were no movement path messages
 		assertEquals (0, msgs.getMessages ().size ());
@@ -3850,7 +3855,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		proc.setDamageProcessor (damageProcessor);
 		
 		// Run method
-		proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom);
+		assertFalse (proc.okToMoveUnitInCombat (xu, moveTo, movementDirections, movementTypes, mom));
 		
 		// Check movement path messages
 		assertEquals (1, msgs.getMessages ().size ());

@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-client</artifactId>
-	<version>0.9.8.4</version>
+	<version>0.9.8.5-SNAPSHOT</version>
 	<name>momimeClient</name>
 	<description>MoM IME Client</description>
 
 	<scm>
-		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEClient/tags/momime-client-0.9.8.4</connection>
+		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEClient/trunk</connection>
 	</scm>
 
 	<parent>

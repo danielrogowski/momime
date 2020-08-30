@@ -37,8 +37,46 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.8.3</b></td>
-			<td align=left><b>13 Aug 2020</b></td>
+			<td align=left><b>Current version: 0.9.8.4</b></td>
+			<td align=left><b>30 Aug 2020</b></td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>Historian screen added, showing graph of all wizards' power base
+					<li>Ending animation and game closes down properly when you win the game by capturing the last wizards' last city
+				</ul>
+
+				<b>AI improvements:</b>
+				<ul>
+					<li>In combat (both AI wizards, raiders, and your own units if you put the combat on Auto), units now prefer to attack units close to them, so they won't run past perfectly good targets to try to reach an identical unit at the back
+					<li>Stopped AI from using settlers to build cities with max city size less than 5, so it doesn't go throwing tiny useless cities all along the tundra
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>In simultaneous turns games, units with a pending combat are no longer considered to be "halfway there" to the combat they are waiting to do, and can be attacked by another combat in their old cell prior to leaving.  The old rules gave rise to some unresolvable situations.
+					<li>In simultaneous turns games, fixed problems with casting spells if there's more than one combat in the same location in the same turn
+					<li>In simultaneous turns games, fixed problems with a player possibly losing their turn altogether if there's more than one combat in the same location in the same turn
+					<li>In simultaneous turns games, fixed melding with nodes
+					<li>In simultaneous turns games, fixed moving onto towers from Myrror
+					<li>Fixed error in treasure reward screen when you find a hero, but there is no space for them to fit or to be bumped to an adjacent tile
+					<li>If a unit has a spell cast on it (e.g. Lionheart) that gives it +HP, and takes enough damage and then has the spell removed thus ending up with 0 or negative HP, then the unit is killed off
+					<li>Stopped combat ended scroll from saying "hero item(s) from heroes that died in battle were added to your fortress vault" if you lost the combat
+					<li>Fixed graphics XML editor to correctly handle the xsd:union used to allow colours to be 6 or 8 chars long
+				</ul>
+
+				<b>Performance:</b>
+				<ul>
+					<li>Moved code to work out where units can move to on the overland map into common lib, so the client can work this out itself - previously sent a message to the server and the server replied back with the movement area which made things very slow especially for non-local server
+					<li>Army list screen is now a modal, so you can open it but must close it again, you can't leave it open and continue using other screens.  Did this because once you have several hundred units, this screen was making the client freeze and lock up and generally run terribly.
+					<li>All data sent between client and server is now compressed, which helps a lot with a non-local server
+					<li>Several actions on the server that generate a lot of unit updates to the client now collate those into a single bulk message (e.g. units all getting full movement back at start of a turn, units healing 1 HP and gaining 1 exp at the end of a turn) so the client doesn't get flooded with messages
+					<li>The client when processing bulk unit update messages is now more clever about only updating certain UI components once for the whole bulk message, instead of once per unit
+				</ul>
+			</td>
+		</tr>
+			<td align=left>0.9.8.3</td>
+			<td align=left>13 Aug 2020</td>
 			<td align=left>
 				<b>New features:</b>
 				<ul>

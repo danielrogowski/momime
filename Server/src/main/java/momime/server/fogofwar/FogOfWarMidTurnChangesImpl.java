@@ -758,6 +758,23 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
 			}
 		}
+		
+		// If spell was cast on a unit, then see if removing the spell killed it
+		// e.g. Unit has 5 HP, cast Lionheart on it in combat gives +3 so now has 8 HP.  Unit takes 6 HP damage, then wins the combat.
+		// Lionheart gets cancelled so now unit has -1 HP.
+		if (trueSpell.getUnitURN () != null)
+		{
+			final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellOnServerAndClients");
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
+			if (xu.calculateAliveFigureCount () <= 0)
+				
+				// Damage type here is dubious as we don't have any context as to why + when the spell was switched off.  If we assume this is most
+				// likely to happen with Lionheart in combat being dispelled at the end of combat then either combat or overland damage is fine.
+				// But the player could willfully turn the spell off themseleves too, either in combat or overland, and if overland then we don't want
+				// units left laying around at DEAD status.  So I'm kind of assuming that nobody's going to willingly turn off their Lionheart spell
+				// in the middle of a combat and kill their own unit by doing so, but if they do then it won't be available for Raise/Animate dead.
+				killUnitOnServerAndClients (mu, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+		}
 
 		// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffMaintainedSpellOnServerAndClients");

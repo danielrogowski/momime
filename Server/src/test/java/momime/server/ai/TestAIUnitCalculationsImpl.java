@@ -16,6 +16,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -73,9 +74,11 @@ public final class TestAIUnitCalculationsImpl
 		when (xu.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (2);
 		
 		// Resources we have (note we aren't generating enough rations but that's ignored)
+		final SpellSetting spellSettings = new SpellSetting ();
+
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
-		when (resources.findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (6);
-		when (resources.findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (1);
+		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (6);
+		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, spellSettings, db)).thenReturn (1);
 		
 		// Set up object to test
 		final AIUnitCalculationsImpl ai = new AIUnitCalculationsImpl ();
@@ -83,11 +86,11 @@ public final class TestAIUnitCalculationsImpl
 		ai.setResourceValueUtils (resources);
 		
 		// Run method
-		assertTrue (ai.canAffordUnitMaintenance (player, players, unit, db));
+		assertTrue (ai.canAffordUnitMaintenance (player, players, unit, spellSettings, db));
 
 		// Now we produce less, so no longer enough
-		when (resources.findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (4);
-		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, db));
+		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, spellSettings, db)).thenReturn (4);
+		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, spellSettings, db));
 	}
 
 	/**
@@ -130,8 +133,10 @@ public final class TestAIUnitCalculationsImpl
 		when (xu.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (8);
 		
 		// Resources we have
+		final SpellSetting spellSettings = new SpellSetting ();
+		
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
-		when (resources.findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
+		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (5);
 		
 		// Set up object to test
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -142,13 +147,13 @@ public final class TestAIUnitCalculationsImpl
 		ai.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, db));
+		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, spellSettings, db));
 		
 		// Now we have channeler retort, so upkeep reduced to 4
 		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
 
 		// Now we produce less, so no longer enough
-		when (resources.findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (3);
-		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, db));
+		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (3);
+		assertFalse (ai.canAffordUnitMaintenance (player, players, unit, spellSettings, db));
 	}
 }

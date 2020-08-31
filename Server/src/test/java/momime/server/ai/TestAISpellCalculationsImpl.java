@@ -19,6 +19,7 @@ import com.ndg.utils.Holder;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -43,6 +44,9 @@ public final class TestAISpellCalculationsImpl
 	@Test
 	public final void testCanAffordSpellMaintenance_Normal () throws Exception
 	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
@@ -62,8 +66,10 @@ public final class TestAISpellCalculationsImpl
 		spell.getSpellUpkeep ().add (spellUpkeep);		
 		
 		// Resources we have
+		final SpellSetting spellSettings = new SpellSetting ();
+
 		final ResourceValueUtils resources = mock (ResourceValueUtils.class);
-		when (resources.findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
+		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (5);
 		
 		// Set up object to test
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -73,15 +79,15 @@ public final class TestAISpellCalculationsImpl
 		ai.setResourceValueUtils (resources);
 		
 		// Run method
-		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null, null));
+		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null, spellSettings, null));
 	
 		// Now we have channeler retort, so upkeep reduced to 3
 		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
-		assertTrue (ai.canAffordSpellMaintenance (player, null, spell, null, null));
+		assertTrue (ai.canAffordSpellMaintenance (player, null, spell, null, spellSettings, db));
 
 		// Now we produce less, so no longer enough
-		when (resources.findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (2);
-		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null, null));
+		when (resources.calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, spellSettings, db)).thenReturn (2);
+		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null, spellSettings, db));
 	}
 
 	/**
@@ -123,10 +129,11 @@ public final class TestAISpellCalculationsImpl
 		
 		// Summoned units
 		final AIUnitCalculations aiUnitCalculations = mock (AIUnitCalculations.class);
+		final SpellSetting spellSettings = new SpellSetting ();
 		
 		final ArgumentCaptor<AvailableUnit> unit = ArgumentCaptor.forClass (AvailableUnit.class);
 		final Holder<Boolean> canAffordUnit3 = new Holder<Boolean> (false);
-		when (aiUnitCalculations.canAffordUnitMaintenance (eq (player), eq (players), unit.capture (), eq (db))).thenAnswer ((i) ->
+		when (aiUnitCalculations.canAffordUnitMaintenance (eq (player), eq (players), unit.capture (), eq (spellSettings), eq (db))).thenAnswer ((i) ->
 		{
 			final String unitID = unit.getValue ().getUnitID ();
 			
@@ -141,10 +148,10 @@ public final class TestAISpellCalculationsImpl
 		ai.setServerUnitCalculations (serverUnitCalculations);
 		
 		// Run method
-		assertFalse (ai.canAffordSpellMaintenance (player, players, spell, trueUnits, db));
+		assertFalse (ai.canAffordSpellMaintenance (player, players, spell, trueUnits, spellSettings, db));
 		
 		// Now something changes (checking resource values, channeler retort and so on are all done inside the mocked method), and we can afford unit 3
 		canAffordUnit3.setValue (true);
-		assertTrue (ai.canAffordSpellMaintenance (player, players, spell, trueUnits, db));
+		assertTrue (ai.canAffordSpellMaintenance (player, players, spell, trueUnits, spellSettings, db));
 	}
 }

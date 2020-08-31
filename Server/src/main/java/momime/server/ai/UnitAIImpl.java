@@ -48,6 +48,7 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -180,33 +181,34 @@ public final class UnitAIImpl implements UnitAI
 							results.add (new AIConstructableUnit ((UnitSvr) unitDef, cityLocation, null,
 								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
 								getAiUnitCalculations ().determineAIUnitType (xu),
-								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db)));
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
 						}									
 					}
 				}
 		
 		// Summonining spells we know
-		for (final SpellSvr spell : db.getSpells ())
-			if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getSummonedUnit ().size () == 1) && (spell.getOverlandCastingCost () != null) &&
-				(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
-			{
-				final List<UnitSvr> unitDefs = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db);
-				for (final UnitSvr unitDef : unitDefs)
+		if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+			for (final SpellSvr spell : db.getSpells ())
+				if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getOverlandCastingCost () != null) &&
+					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
 				{
-					final AvailableUnit unit = new AvailableUnit ();
-					unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
-					unit.setUnitID (unitDef.getUnitID ());
-					
-					getUnitUtils ().initializeUnitSkills (unit, null, db);
-	
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
-					
-					results.add (new AIConstructableUnit (unitDef, null, spell,
-						getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
-						getAiUnitCalculations ().determineAIUnitType (xu),
-						getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db)));
+					final List<UnitSvr> unitDefs = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db);
+					for (final UnitSvr unitDef : unitDefs)
+					{
+						final AvailableUnit unit = new AvailableUnit ();
+						unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
+						unit.setUnitID (unitDef.getUnitID ());
+						
+						getUnitUtils ().initializeUnitSkills (unit, null, db);
+		
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
+						
+						results.add (new AIConstructableUnit (unitDef, null, spell,
+							getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
+							getAiUnitCalculations ().determineAIUnitType (xu),
+							getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
+					}
 				}
-			}
 		
 		// Sort the results
 		Collections.sort (results);

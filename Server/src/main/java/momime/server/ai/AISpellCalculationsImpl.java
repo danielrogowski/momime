@@ -14,6 +14,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -54,6 +55,7 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 	 * @param players Players list
 	 * @param spell Spell they want to cast
 	 * @param trueUnits List of true units
+	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether the player can afford maintence cost of the spell after it is cast
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
@@ -62,7 +64,7 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 	 */
 	@Override
 	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final SpellSvr spell,
-		final List<MemoryUnit> trueUnits, final ServerDatabaseEx db)
+		final List<MemoryUnit> trueUnits, final SpellSetting spellSettings, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering canAffordSpellMaintenance: Player ID " + player.getPlayerDescription ().getPlayerID () + ", spell ID " + spell.getSpellID ());
@@ -89,7 +91,7 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 					consumption = consumption - (consumption / 2);
 				
 				// Are we generating enough spare mana?
-				if (consumption > getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), upkeep.getProductionTypeID ()))
+				if (consumption > getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), upkeep.getProductionTypeID (), spellSettings, db))
 					ok = false;
 			}
 		}
@@ -109,7 +111,7 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 				
 				getUnitUtils ().initializeUnitSkills (unit, null, db);
 				
-				if (!getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db))
+				if (!getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, spellSettings, db))
 					ok = false;
 			}
 		}

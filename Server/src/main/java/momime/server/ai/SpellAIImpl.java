@@ -1,7 +1,9 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -17,7 +19,6 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -180,6 +181,7 @@ public final class SpellAIImpl implements SpellAI
 	 * If AI player is not currently casting any spells overland, then look through all of them and consider if we should cast any.
 	 * 
 	 * @param player AI player who needs to choose what to cast
+	 * @param constructableUnits List of everything we can construct everywhere or summon
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -188,7 +190,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void decideWhatToCastOverland (final PlayerServerDetails player, final MomSessionVariables mom)
+	public final void decideWhatToCastOverland (final PlayerServerDetails player, final List<AIConstructableUnit> constructableUnits, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering decideWhatToCastOverland: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -197,23 +199,69 @@ public final class SpellAIImpl implements SpellAI
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		if (priv.getQueuedSpell ().size () == 0)
 		{
+			// Unit types classify magic/guardian spirits as non-combat units, so just look at all other kinds of summoned units we can get.
+			// Also we want to split them up by magic realm, as if we can get very rare creatures in multiple realms, we shouldn't just summon lots of the one type.
+			// Note this list includes units we cannot afford maintenance of which is what we want.  They'll get filtered out below when we check each spell.
+			int maxSummonCost = 0;
+			final Map<String, List<AIConstructableUnit>> summonableCombatUnits = new HashMap<String, List<AIConstructableUnit>> ();
+			for (final AIConstructableUnit summonUnit : constructableUnits)
+				if ((summonUnit.getAiUnitType () == AIUnitType.COMBAT_UNIT) && (summonUnit.getSpell () != null))
+				{
+					// Put into correct list
+					List<AIConstructableUnit> summonableUnitsForThisMagicRealm = summonableCombatUnits.get (summonUnit.getSpell ().getSpellRealm ());
+					if (summonableUnitsForThisMagicRealm == null)
+					{
+						summonableUnitsForThisMagicRealm = new ArrayList<AIConstructableUnit> ();
+						summonableCombatUnits.put (summonUnit.getSpell ().getSpellRealm (), summonableUnitsForThisMagicRealm);
+					}
+					summonableUnitsForThisMagicRealm.add (summonUnit);
+					
+					// Find most expensive summonable unit across all magic realms
+					if (summonUnit.getSpell ().getOverlandCastingCost () > maxSummonCost)
+						maxSummonCost = summonUnit.getSpell ().getOverlandCastingCost ();
+				}
+			
+			// Don't summon anything 25% cheaper than maximum
+			final int minSummonCost = (maxSummonCost * 3) / 4;
+			
+			// Sort them all, within each magic realm, most expensive first
+			for (final List<AIConstructableUnit> summonableUnitsForThisMagicRealm : summonableCombatUnits.values ())
+				summonableUnitsForThisMagicRealm.sort ((s1, s2) -> s2.getSpell ().getOverlandCastingCost () - s1.getSpell ().getOverlandCastingCost ());
+			
 			// Consider every possible spell we could cast overland and can afford maintainence of
 			final List<SpellSvr> considerSpells = new ArrayList<SpellSvr> ();
 			for (final SpellSvr spell : mom.getServerDB ().getSpells ())
-				if ((getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
+				if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
 					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE) &&
-					(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ())))
-				{
-					// For now, only consider overland enchantments - and we must not already have in the enchantment in effect
-					if ((spell.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&
-						(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-							player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null))
+					(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+						mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())))
+					
+					switch (spell.getSpellBookSectionID ())
 					{
-						log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting overland spell " + spell.getSpellID ());
-						considerSpells.add (spell);
+						// Consider casting any overland enchantment that we don't already have
+						case OVERLAND_ENCHANTMENTS:
+							if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+								player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
+							{
+								log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting overland enchantment " + spell.getSpellID ());
+								considerSpells.add (spell);
+							}
+							break;
+							
+						// Consider summoning combat units that are the best we can get in that realm, and over minimum summoning cost
+						case SUMMONING:
+							if ((spell.getHeroItemBonusMaximumCraftingCost () == null) && (spell.getOverlandCastingCost () >= minSummonCost) &&
+								(summonableCombatUnits.containsKey (spell.getSpellRealm ())) && (summonableCombatUnits.get (spell.getSpellRealm ()).get (0).getSpell () == spell))
+							{
+								log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting summoning spell " + spell.getSpellID ());
+								considerSpells.add (spell);
+							}
+							break;
+							
+						// This is fine, the AI doesn't cast every type of spell yet
+						default:
 					}
-				}
-			
+						
 			// If we found any, then pick one randomly
 			if (considerSpells.size () > 0)
 			{

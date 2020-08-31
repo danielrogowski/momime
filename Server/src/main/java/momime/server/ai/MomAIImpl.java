@@ -348,7 +348,7 @@ public final class MomAIImpl implements MomAI
 					getSpellAI ().decideWhatToResearch (player, mom.getServerDB ());
 				
 				// Pick spells to cast overland
-				getSpellAI ().decideWhatToCastOverland (player, mom);
+				getSpellAI ().decideWhatToCastOverland (player, constructableUnits, mom);
 			}
 		}
 

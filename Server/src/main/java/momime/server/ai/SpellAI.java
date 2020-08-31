@@ -49,6 +49,7 @@ public interface SpellAI
 	 * If AI player is not currently casting any spells overland, then look through all of them and consider if we should cast any.
 	 * 
 	 * @param player AI player who needs to choose what to cast
+	 * @param constructableUnits List of everything we can construct everywhere or summon
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -56,7 +57,7 @@ public interface SpellAI
 	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	public void decideWhatToCastOverland (final PlayerServerDetails player, final MomSessionVariables mom)
+	public void decideWhatToCastOverland (final PlayerServerDetails player, final List<AIConstructableUnit> constructableUnits, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**

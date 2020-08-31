@@ -12,12 +12,12 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
@@ -38,6 +38,9 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	
 	/** Underlying methods that the AI uses to calculate ratings about how good units are */
 	private AIUnitRatingCalculations aiUnitRatingCalculations;
+	
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * @param xu Unit to check
@@ -99,7 +102,6 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	 * @param player AI player who is considering constructing the specified unit
 	 * @param players Players list
 	 * @param unit Unit they want to construct
-	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether or not we can afford the additional maintenance cost of this unit - will ignore rations since we can always allocate more farmers
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
@@ -108,7 +110,7 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	 */
 	@Override
 	public final boolean canAffordUnitMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final AvailableUnit unit,
-		final SpellSetting spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering canAffordUnitMaintenance: " + unit.getUnitID () + " owned by player ID " + player.getPlayerDescription ().getPlayerID ());
 
@@ -123,10 +125,21 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 		while ((ok) && (iter.hasNext ()))
 		{
 			final String productionTypeID = iter.next ();
-			if ((!productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)) &&
-				(xu.getModifiedUpkeepValue (productionTypeID) > getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), productionTypeID, spellSettings, db)))
+			
+			// Ignore rations - we can always just change more workers into farmers
+			if (!productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS))
+			{
+				int upkeep = xu.getModifiedUpkeepValue (productionTypeID);
 				
-				ok = false;
+				// Halve mana upkeep if we have channeler retort
+				if ((upkeep > 1) && (productionTypeID.equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) &&
+					(getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
+					
+					upkeep = upkeep - (upkeep / 2);
+				
+				if (upkeep > getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), productionTypeID))
+					ok = false;
+			}
 		}
 		
 		log.trace ("Exiting canAffordUnitMaintenance = " + ok);
@@ -179,5 +192,21 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	public final void setAiUnitRatingCalculations (final AIUnitRatingCalculations calc)
 	{
 		aiUnitRatingCalculations = calc;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

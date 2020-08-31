@@ -773,6 +773,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="aiUnitRatingCalculations" ref="aiUnitRatingCalculations" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 	
 	<bean id="aiUnitRatingCalculations" class="momime.server.ai.AIUnitRatingCalculationsImpl">
@@ -786,6 +787,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="aiSpellCalculations" class="momime.server.ai.AISpellCalculationsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="aiUnitCalculations" ref="aiUnitCalculations" />
+		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 	
 	<!-- Fog of War -->

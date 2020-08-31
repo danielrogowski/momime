@@ -175,7 +175,7 @@ public final class UnitAIImpl implements UnitAI
 							results.add (new AIConstructableUnit ((UnitSvr) unitDef, cityLocation, null,
 								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
 								getAiUnitCalculations ().determineAIUnitType (xu),
-								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db)));
 						}									
 					}
 				}
@@ -196,7 +196,7 @@ public final class UnitAIImpl implements UnitAI
 				results.add (new AIConstructableUnit (unitDef, null, spell,
 					getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
 					getAiUnitCalculations ().determineAIUnitType (xu),
-					getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
+					getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db)));
 			}
 		
 		// Sort the results

@@ -16,6 +16,7 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -125,13 +126,13 @@ public final class SpellAIImpl implements SpellAI
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-		final List<momime.common.database.Spell> researchableSpells = getSpellUtils ().getSpellsForStatus
+		final List<Spell> researchableSpells = getSpellUtils ().getSpellsForStatus
 			(priv.getSpellResearchStatus (), SpellResearchStatusID.RESEARCHABLE_NOW, db);
 
 		if (!researchableSpells.isEmpty ())
 		{
 			final List<SpellSvr> researchableServerSpells = new ArrayList<SpellSvr> ();
-			for (final momime.common.database.Spell spell : researchableSpells)
+			for (final Spell spell : researchableSpells)
 				researchableServerSpells.add ((SpellSvr) spell);
 
 			final SpellSvr chosenSpell = chooseSpellToResearchAI (researchableServerSpells, player.getPlayerDescription ().getPlayerID ());
@@ -160,9 +161,9 @@ public final class SpellAIImpl implements SpellAI
 		log.trace ("Entering chooseFreeSpellAI: Player ID " + aiPlayerID + ", " + magicRealmID + ", " + spellRankID);
 
 		// Get candidate spells
-		final List<momime.common.database.Spell> commonSpellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
+		final List<Spell> commonSpellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
 		final List<SpellSvr> spellList = new ArrayList<SpellSvr> ();
-		for (final momime.common.database.Spell thisSpell : commonSpellList)
+		for (final Spell thisSpell : commonSpellList)
 			spellList.add ((SpellSvr) thisSpell);
 
 		// Choose a spell
@@ -201,7 +202,7 @@ public final class SpellAIImpl implements SpellAI
 			for (final SpellSvr spell : mom.getServerDB ().getSpells ())
 				if ((getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
 					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE) &&
-					(getAiSpellCalculations ().canAffordSpellMaintenance (player, spell)))
+					(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getServerDB ())))
 				{
 					// For now, only consider overland enchantments - and we must not already have in the enchantment in effect
 					if ((spell.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&

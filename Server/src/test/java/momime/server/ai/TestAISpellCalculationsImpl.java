@@ -18,15 +18,18 @@ import com.ndg.utils.Holder;
 
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
-import momime.common.database.SummonedUnit;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 
 /**
  * Tests the AISpellCalculationsImpl class
@@ -55,6 +58,7 @@ public final class TestAISpellCalculationsImpl
 		spellUpkeep.setUndoubledProductionValue (6);
 		
 		final SpellSvr spell = new SpellSvr ();
+		spell.setSpellBookSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 		spell.getSpellUpkeep ().add (spellUpkeep);		
 		
 		// Resources we have
@@ -69,15 +73,15 @@ public final class TestAISpellCalculationsImpl
 		ai.setResourceValueUtils (resources);
 		
 		// Run method
-		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null));
+		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null, null));
 	
 		// Now we have channeler retort, so upkeep reduced to 3
 		when (playerPickUtils.getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER)).thenReturn (1);
-		assertTrue (ai.canAffordSpellMaintenance (player, null, spell, null));
+		assertTrue (ai.canAffordSpellMaintenance (player, null, spell, null, null));
 
 		// Now we produce less, so no longer enough
 		when (resources.findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (2);
-		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null));
+		assertFalse (ai.canAffordSpellMaintenance (player, null, spell, null, null));
 	}
 
 	/**
@@ -103,12 +107,19 @@ public final class TestAISpellCalculationsImpl
 
 		// Test spell
 		final SpellSvr spell = new SpellSvr ();
+		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		
+		final List<UnitSvr> unitDefs = new ArrayList<UnitSvr> ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final SummonedUnit summonedUnit = new SummonedUnit ();
-			summonedUnit.setSummonedUnitID ("UN00" + n);
-			spell.getSummonedUnit ().add (summonedUnit);
+			final UnitSvr unitDef = new UnitSvr ();
+			unitDef.setUnitID ("UN00" + n);
+			unitDefs.add (unitDef);
 		}
+		
+		final List<MemoryUnit> trueUnits = new ArrayList<MemoryUnit> ();
+		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
+		when (serverUnitCalculations.listUnitsSpellMightSummon (spell, player, trueUnits, db)).thenReturn (unitDefs);
 		
 		// Summoned units
 		final AIUnitCalculations aiUnitCalculations = mock (AIUnitCalculations.class);
@@ -127,12 +138,13 @@ public final class TestAISpellCalculationsImpl
 		final AISpellCalculationsImpl ai = new AISpellCalculationsImpl ();
 		ai.setAiUnitCalculations (aiUnitCalculations);
 		ai.setUnitUtils (mock (UnitUtils.class));
+		ai.setServerUnitCalculations (serverUnitCalculations);
 		
 		// Run method
-		assertFalse (ai.canAffordSpellMaintenance (player, players, spell, db));
+		assertFalse (ai.canAffordSpellMaintenance (player, players, spell, trueUnits, db));
 		
 		// Now something changes (checking resource values, channeler retort and so on are all done inside the mocked method), and we can afford unit 3
 		canAffordUnit3.setValue (true);
-		assertTrue (ai.canAffordSpellMaintenance (player, players, spell, db));
+		assertTrue (ai.canAffordSpellMaintenance (player, players, spell, trueUnits, db));
 	}
 }

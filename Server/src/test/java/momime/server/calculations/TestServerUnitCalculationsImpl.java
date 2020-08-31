@@ -1,6 +1,7 @@
 package momime.server.calculations;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,27 +18,35 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.PickAndQuantity;
+import momime.common.database.SummonedUnit;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.database.RangedAttackTypeSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.database.SpellSvr;
 import momime.server.database.UnitSkillSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * Tests the ServerUnitCalculationsImpl class
@@ -336,5 +345,126 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		
 		// Run method
 		assertEquals (1, calc.calculateRangedAttackDistancePenalty (attacker, defender, sys));
+	}
+	
+	/**
+	 * Tests the listUnitsSpellMightSummon method on a normal summoning spell that can only summon one kind of unit with no restrictions
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListUnitsSpellMightSummon_Normal () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitMagicRealm ("LT01");
+		when (db.findUnit ("UN001", "listUnitsSpellMightSummon")).thenReturn (unitDef);
+		
+		// Units
+		final List<MemoryUnit> trueUnits = new ArrayList<MemoryUnit> ();
+
+		// Player
+		final PlayerServerDetails player = new PlayerServerDetails (null, null, null, null, null);
+
+		// Spell
+		final SummonedUnit summonedUnit = new SummonedUnit ();
+		summonedUnit.setSummonedUnitID ("UN001");
+		
+		final SpellSvr spell = new SpellSvr ();
+		spell.getSummonedUnit ().add (summonedUnit);
+		
+		// Set up object to test
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		
+		// Run method
+		final List<UnitSvr> list = calc.listUnitsSpellMightSummon (spell, player, trueUnits, db);
+		
+		// Check results
+		assertEquals (1, list.size ());
+		assertSame (unitDef, list.get (0));
+	}
+
+	/**
+	 * Tests the listUnitsSpellMightSummon method on a hero summoning spell that has many choices and must consider the status and prereqs of each hero
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testListUnitsSpellMightSummon_Heroes () throws Exception
+	{
+		// Mock database
+		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		
+		for (int n = 1; n <= 9; n++)
+		{
+			final UnitSvr unitDef = new UnitSvr ();
+			unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+			unitDef.setUnitID ("UN00" + n);
+			when (db.findUnit (unitDef.getUnitID (), "listUnitsSpellMightSummon")).thenReturn (unitDef);
+			
+			// 7 & 8 are special hereos that require a particular pick to get
+			if ((n == 7) || (n == 8))
+			{
+				final PickAndQuantity prereq = new PickAndQuantity ();
+				prereq.setPickID ("MB0" + n);
+				prereq.setQuantity (1);
+				unitDef.getUnitPickPrerequisite ().add (prereq);
+			}
+		}
+		
+		// Units
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		final List<MemoryUnit> trueUnits = new ArrayList<MemoryUnit> ();
+		
+		for (int n = 1; n <= 9; n++)
+		{
+			final MemoryUnit mu = new MemoryUnit ();
+			if (n == 3)
+				mu.setStatus (UnitStatusID.ALIVE);
+			else if (n == 5)
+				mu.setStatus (UnitStatusID.DEAD);
+			else
+				mu.setStatus (UnitStatusID.GENERATED);
+			
+			when (unitServerUtils.findUnitWithPlayerAndID (trueUnits, 3, "UN00" + n)).thenReturn (mu);
+		}		
+
+		// Player
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (3);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, null, null, null);
+
+		// We don't have a MB07, but we do have a MB08
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (pub.getPick (), "MB08")).thenReturn (1);
+		
+		// Spell
+		final SpellSvr spell = new SpellSvr ();
+		for (int n = 1; n <= 9; n++)
+		{
+			final SummonedUnit summonedUnit = new SummonedUnit ();
+			summonedUnit.setSummonedUnitID ("UN00" + n);
+			spell.getSummonedUnit ().add (summonedUnit);
+		}		
+		
+		// Set up object to test
+		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
+		calc.setUnitServerUtils (unitServerUtils);
+		calc.setPlayerPickUtils (playerPickUtils);
+		
+		// Run method
+		final List<UnitSvr> list = calc.listUnitsSpellMightSummon (spell, player, trueUnits, db);
+		
+		// Check results
+		assertEquals (6, list.size ());
+		assertEquals ("UN001", list.get (0).getUnitID ()); 
+		assertEquals ("UN002", list.get (1).getUnitID ()); 
+		assertEquals ("UN004", list.get (2).getUnitID ()); 
+		assertEquals ("UN006", list.get (3).getUnitID ()); 
+		assertEquals ("UN008", list.get (4).getUnitID ()); 
+		assertEquals ("UN009", list.get (5).getUnitID ()); 
 	}
 }

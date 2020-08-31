@@ -14,8 +14,11 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.database.ServerDatabaseEx;
+import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
@@ -30,7 +33,6 @@ public interface ServerUnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	public int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
-
 
 	/**
 	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
@@ -64,4 +66,18 @@ public interface ServerUnitCalculations
 	 */
 	public int calculateRangedAttackDistancePenalty (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender,
 		final CombatMapSize combatMapCoordinateSystem) throws MomException;
+	
+	/**
+	 * Gets a list of all the units a summoning spell might summon if we cast it.  That's straightforward for normal summoning spells, but heroes can only be
+	 * hired once and if killed are never available to summon again.  Plus some heroes are restricted depending on what our spell book picks are.
+	 * 
+	 * @param spell Summoning spell
+	 * @param player Player casting the spell
+	 * @param trueUnits List of true units
+	 * @param db Lookup lists built over the XML database
+	 * @return List of units this spell might summon if we cast it; list can be empty if we're already summoned and killed all heroes for example
+	 * @throws RecordNotFoundException If one of the summoned unit IDs can't be found in the DB
+	 */
+	public List<UnitSvr> listUnitsSpellMightSummon (final SpellSvr spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final ServerDatabaseEx db)
+		throws RecordNotFoundException;
 }

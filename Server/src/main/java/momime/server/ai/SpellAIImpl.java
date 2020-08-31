@@ -202,7 +202,7 @@ public final class SpellAIImpl implements SpellAI
 			for (final SpellSvr spell : mom.getServerDB ().getSpells ())
 				if ((getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
 					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE) &&
-					(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getServerDB ())))
+					(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ())))
 				{
 					// For now, only consider overland enchantments - and we must not already have in the enchantment in effect
 					if ((spell.getSpellBookSectionID () == SpellBookSectionID.OVERLAND_ENCHANTMENTS) &&

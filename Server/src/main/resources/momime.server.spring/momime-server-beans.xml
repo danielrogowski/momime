@@ -467,11 +467,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="serverUnitCalculations" class="momime.server.calculations.ServerUnitCalculationsImpl">
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
 	<bean id="serverResourceCalculations" class="momime.server.calculations.ServerResourceCalculationsImpl">
@@ -601,7 +603,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="damageProcessor" ref="damageProcessor" />
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
-		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="combatMapOperations" ref="combatMapOperations" />
 		<property name="cityServerUtils" ref="cityServerUtils" />
@@ -611,6 +612,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="spellAI" ref="spellAI" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -760,6 +762,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="aiUnitRatingCalculations" ref="aiUnitRatingCalculations" />
 		<property name="cityAI" ref="cityAI" />
 		<property name="cityProcessing" ref="cityProcessing" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">
@@ -789,6 +792,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
 		<property name="aiUnitCalculations" ref="aiUnitCalculations" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 	
 	<!-- Fog of War -->

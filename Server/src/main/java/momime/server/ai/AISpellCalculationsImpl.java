@@ -13,15 +13,18 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.SummonedUnit;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.AvailableUnit;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 
 /**
  * Methods that the AI uses to calculate stats about types of spells it might want to cast
@@ -43,10 +46,14 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
+	
 	/**
 	 * @param player Player who wants to cast a spell
 	 * @param players Players list
 	 * @param spell Spell they want to cast
+	 * @param trueUnits List of true units
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether the player can afford maintence cost of the spell after it is cast
 	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
@@ -54,7 +61,8 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final SpellSvr spell, final ServerDatabaseEx db)
+	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final SpellSvr spell,
+		final List<MemoryUnit> trueUnits, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering canAffordSpellMaintenance: Player ID " + player.getPlayerDescription ().getPlayerID () + ", spell ID " + spell.getSpellID ());
@@ -86,20 +94,24 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 			}
 		}
 		
-		// Upkeep of any units the spell may summon
-		final Iterator<SummonedUnit> summonedIter = spell.getSummonedUnit ().iterator ();
-		while ((ok) && (summonedIter.hasNext ()))
+		// Upkeep of any units the spell may summon.
+		// Use proper method for this that will ignore heroes we already have.
+		if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 		{
-			final String unitID = summonedIter.next ().getSummonedUnitID ();
-
-			final AvailableUnit unit = new AvailableUnit ();
-			unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
-			unit.setUnitID (unitID);
-			
-			getUnitUtils ().initializeUnitSkills (unit, null, db);
-			
-			if (!getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db))
-				ok = false;
+			final Iterator<UnitSvr> summonedIter = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db).iterator ();
+			while ((ok) && (summonedIter.hasNext ()))
+			{
+				final UnitSvr unitDef = summonedIter.next ();
+	
+				final AvailableUnit unit = new AvailableUnit ();
+				unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
+				unit.setUnitID (unitDef.getUnitID ());
+				
+				getUnitUtils ().initializeUnitSkills (unit, null, db);
+				
+				if (!getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db))
+					ok = false;
+			}
 		}
 		
 		log.trace ("Exiting canAffordSpellMaintenance = " + ok);
@@ -168,5 +180,21 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

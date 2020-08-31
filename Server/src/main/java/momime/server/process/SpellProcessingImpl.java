@@ -2,7 +2,6 @@ package momime.server.process;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -30,12 +29,10 @@ import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.HeroItem;
-import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.StoredDamageTypeID;
-import momime.common.database.SummonedUnit;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
@@ -73,7 +70,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -82,6 +78,7 @@ import momime.server.MomSessionVariables;
 import momime.server.ai.SpellAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.BuildingSvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
@@ -161,9 +158,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Methods dealing with hero items */
 	private HeroItemServerUtils heroItemServerUtils;
 
-	/** Player pick utils */
-	private PlayerPickUtils playerPickUtils;
-
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
 	
@@ -191,6 +185,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Server-only spell calculations */
 	private ServerSpellCalculations serverSpellCalculations;
 	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
@@ -212,7 +209,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
 		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
@@ -273,50 +269,20 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (summoningCircleLocation != null)
 			{
 				// List out all the Unit IDs that this spell can summon
-				final List<String> possibleUnitIDs = new ArrayList<String> ();
-				for (final SummonedUnit possibleSummonedUnit : spell.getSummonedUnit ())
-				{
-					// Check whether we can summon this unit If its a hero, this depends on whether we've summoned the hero before, or if he's dead
-					final UnitSvr possibleUnit = mom.getServerDB ().findUnit (possibleSummonedUnit.getSummonedUnitID (), "castOverlandNow");
-					boolean addToList;
-					if (possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
-					{
-						final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-							player.getPlayerDescription ().getPlayerID (), possibleSummonedUnit.getSummonedUnitID ());
-
-						if (hero == null)
-							addToList = false;
-						else
-							addToList = ((hero.getStatus () == UnitStatusID.NOT_GENERATED) || (hero.getStatus () == UnitStatusID.GENERATED));
-					}
-					else
-						addToList = true;
-					
-					// Check for units that require particular picks to summon
-					final Iterator<PickAndQuantity> iter = possibleUnit.getUnitPickPrerequisite ().iterator ();
-					while ((addToList) && (iter.hasNext ()))
-					{
-						final PickAndQuantity prereq = iter.next ();
-						if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
-							addToList = false;
-					}
-
-					if (addToList)
-						possibleUnitIDs.add (possibleSummonedUnit.getSummonedUnitID ());
-				}
+				final List<UnitSvr> possibleUnits = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
 
 				// Pick one at random
-				if (possibleUnitIDs.size () > 0)
+				if (possibleUnits.size () > 0)
 				{
-					final String summonedUnitID = possibleUnitIDs.get (getRandomUtils ().nextInt (possibleUnitIDs.size ()));
+					final UnitSvr summonedUnit = possibleUnits.get (getRandomUtils ().nextInt (possibleUnits.size ()));
 
-					log.debug ("Player " + player.getPlayerDescription ().getPlayerName () + " had " + possibleUnitIDs.size () + " possible units to summon from spell " +
-						spell.getSpellID () + ", randomly picked unit ID " + summonedUnitID);
+					log.debug ("Player " + player.getPlayerDescription ().getPlayerName () + " had " + possibleUnits.size () + " possible units to summon from spell " +
+						spell.getSpellID () + ", randomly picked unit ID " + summonedUnit.getUnitID ());
 
 					// Check if the city with the summoning circle has space for the unit
 					final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) summoningCircleLocation.getCityLocation ();
 					final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
-						(cityLocation, summonedUnitID, player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						(cityLocation, summonedUnit.getUnitID (), player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 					final MemoryUnit newUnit;
 					if (addLocation.getUnitLocation () == null)
@@ -324,10 +290,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 					else
 					{
 						// Add the unit
-						if (mom.getServerDB ().findUnit (summonedUnitID, "castOverlandNow").getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+						if (summonedUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 						{
 							// The unit object already exists for heroes
-							newUnit = getUnitServerUtils ().findUnitWithPlayerAndID (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summonedUnitID);
+							newUnit = getUnitServerUtils ().findUnitWithPlayerAndID (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summonedUnit.getUnitID ());
 
 							if (newUnit.getStatus () == UnitStatusID.NOT_GENERATED)
 								getUnitServerUtils ().generateHeroNameAndRandomSkills (newUnit, mom.getServerDB ());
@@ -336,7 +302,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						else
 							// For non-heroes, create a new unit
-							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (), summonedUnitID, addLocation.getUnitLocation (), null,
+							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (), summonedUnit.getUnitID (), addLocation.getUnitLocation (), null,
 								null, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						
 						// Let it move this turn
@@ -350,7 +316,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						final NewTurnMessageSummonUnit summoningSpell = new NewTurnMessageSummonUnit ();
 						summoningSpell.setMsgType (NewTurnMessageTypeID.SUMMONED_UNIT);
 						summoningSpell.setSpellID (spell.getSpellID ());
-						summoningSpell.setUnitID (summonedUnitID);
+						summoningSpell.setUnitID (summonedUnit.getUnitID ());
 						summoningSpell.setCityLocation (addLocation.getUnitLocation ());
 						summoningSpell.setUnitAddBumpType (addLocation.getBumpType ());
 
@@ -1567,22 +1533,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	}
 
 	/**
-	 * @return Player pick utils
-	 */
-	public final PlayerPickUtils getPlayerPickUtils ()
-	{
-		return playerPickUtils;
-	}
-
-	/**
-	 * @param utils Player pick utils
-	 */
-	public final void setPlayerPickUtils (final PlayerPickUtils utils)
-	{
-		playerPickUtils = utils;
-	}
-
-	/**
 	 * @return Starting and ending combats
 	 */
 	public final CombatStartAndEnd getCombatStartAndEnd ()
@@ -1724,5 +1674,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setServerSpellCalculations (final ServerSpellCalculations calc)
 	{
 		serverSpellCalculations = calc;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

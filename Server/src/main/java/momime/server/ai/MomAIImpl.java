@@ -99,7 +99,8 @@ public final class MomAIImpl implements MomAI
 		
 		// First find out what the best units we can construct or summon are - this gives us
 		// something to gauge existing units by, to know if they're now obsolete or not
-		final List<AIConstructableUnit> constructableUnits = getUnitAI ().listAllUnitsWeCanConstruct (player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		final List<AIConstructableUnit> constructableUnits = getUnitAI ().listAllUnitsWeCanConstruct (player, mom.getPlayers (),
+			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getSessionDescription (), mom.getServerDB ());
 		
 		// Ignore summoned units - otherwise at the start the AI realises that Magic Spirits are actually better than the Spearmen + Swordsmen that it has and tries to use them to defend its city.
 		// Similarly later on, the AI shouldn't be trying to fill its cities defensively with all great drakes.

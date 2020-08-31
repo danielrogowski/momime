@@ -1,6 +1,7 @@
 package momime.server.calculations;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -18,20 +19,28 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SummonedUnit;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
+import momime.server.database.SpellSvr;
+import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
+import momime.server.utils.UnitServerUtils;
 
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
@@ -43,6 +52,9 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Server-only unit utils */
+	private UnitServerUtils unitServerUtils;
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
@@ -58,6 +70,9 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	
 	/** Random utils */
 	private RandomUtils randomUtils; 
+	
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * @param unit The unit to check
@@ -225,6 +240,61 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	}
 	
 	/**
+	 * Gets a list of all the units a summoning spell might summon if we cast it.  That's straightforward for normal summoning spells, but heroes can only be
+	 * hired once and if killed are never available to summon again.  Plus some heroes are restricted depending on what our spell book picks are.
+	 * 
+	 * @param spell Summoning spell
+	 * @param player Player casting the spell
+	 * @param trueUnits List of true units
+	 * @param db Lookup lists built over the XML database
+	 * @return List of units this spell might summon if we cast it; list can be empty if we're already summoned and killed all heroes for example
+	 * @throws RecordNotFoundException If one of the summoned unit IDs can't be found in the DB
+	 */
+	@Override
+	public final List<UnitSvr> listUnitsSpellMightSummon (final SpellSvr spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final ServerDatabaseEx db)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering listUnitsSpellMightSummon: " + spell.getSpellID ());
+		
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		
+		final List<UnitSvr> possibleUnits = new ArrayList<UnitSvr> ();
+		for (final SummonedUnit possibleSummonedUnit : spell.getSummonedUnit ())
+		{
+			// Check whether we can summon this unit If its a hero, this depends on whether we've summoned the hero before, or if he's dead
+			final UnitSvr possibleUnit = db.findUnit (possibleSummonedUnit.getSummonedUnitID (), "listUnitsSpellMightSummon");
+			boolean addToList;
+			if (possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+			{
+				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (trueUnits,
+					player.getPlayerDescription ().getPlayerID (), possibleSummonedUnit.getSummonedUnitID ());
+
+				if (hero == null)
+					addToList = false;
+				else
+					addToList = ((hero.getStatus () == UnitStatusID.NOT_GENERATED) || (hero.getStatus () == UnitStatusID.GENERATED));
+			}
+			else
+				addToList = true;
+			
+			// Check for units that require particular picks to summon
+			final Iterator<PickAndQuantity> iter = possibleUnit.getUnitPickPrerequisite ().iterator ();
+			while ((addToList) && (iter.hasNext ()))
+			{
+				final PickAndQuantity prereq = iter.next ();
+				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
+					addToList = false;
+			}
+
+			if (addToList)
+				possibleUnits.add (possibleUnit);
+		}
+		
+		log.trace ("Exiting listUnitsSpellMightSummon = " + possibleUnits.size ());
+		return possibleUnits;
+	}
+	
+	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()
@@ -240,6 +310,22 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		unitUtils = utils;
 	}
 
+	/**
+	 * @return Server-only unit utils
+	 */
+	public final UnitServerUtils getUnitServerUtils ()
+	{
+		return unitServerUtils;
+	}
+
+	/**
+	 * @param utils Server-only unit utils
+	 */
+	public final void setUnitServerUtils (final UnitServerUtils utils)
+	{
+		unitServerUtils = utils;
+	}
+	
 	/**
 	 * @return Unit calculations
 	 */
@@ -318,5 +404,21 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -52,6 +53,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 import momime.server.database.UnitSvr;
@@ -312,10 +314,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	{
 		// Mock database
 		final UnitSvr unitDef = new UnitSvr ();
+		unitDef.setUnitID ("UN001");
 		unitDef.setUnitMagicRealm ("LT01");
 		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.findUnit ("UN001", "castOverlandNow")).thenReturn (unitDef);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -360,9 +362,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		spell.setSpellID ("SP001");
 		
 		// It only summons 1 kind of unit
-		final SummonedUnit summonedUnit = new SummonedUnit ();
-		summonedUnit.setSummonedUnitID ("UN001");
-		spell.getSummonedUnit ().add (summonedUnit);
+		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
+		when (serverUnitCalculations.listUnitsSpellMightSummon (spell, player3, trueMap.getUnit (), db)).thenReturn (Arrays.asList (unitDef));
 		
 		// Fix random results
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -398,6 +399,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setRandomUtils (randomUtils);
 		proc.setUnitServerUtils (unitServerUtils);
 		proc.setUnitUtils (unitUtils);
+		proc.setServerUnitCalculations (serverUnitCalculations);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, mom);
@@ -423,8 +425,18 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	@Test
 	public final void testCastOverlandNow_Summon_Hero () throws Exception
 	{
-		// Mock database
+		// Mock database; also lets say there's 9 possible heroes but 1 we've already summoned, and another we've already summoned and got them killed
+		final List<UnitSvr> possibleSummons = new ArrayList<UnitSvr> ();
+		
 		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		for (int n = 1; n <= 9; n++)
+			if ((n != 3) && (n != 6))		// See alive + dead heroes below 
+			{
+				final UnitSvr unitDef = new UnitSvr ();
+				unitDef.setUnitID ("UN00" + n);
+				unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+				possibleSummons.add (unitDef);
+			}
 
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -468,18 +480,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final SpellSvr spell = new SpellSvr ();
 		spell.setSpellID ("SP001");
 		
-		// Lets say there's 9 possible heroes we could get
-		for (int n = 1; n <= 9; n++)
-		{
-			final UnitSvr unitDef = new UnitSvr ();
-			unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
-			when (db.findUnit ("UN00" + n, "castOverlandNow")).thenReturn (unitDef);
-			
-			final SummonedUnit summonedUnit = new SummonedUnit ();
-			summonedUnit.setSummonedUnitID ("UN00" + n);
-			spell.getSummonedUnit ().add (summonedUnit);
-		}
-		
+		// List of units that the spell may summon is built already above  
+		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
+		when (serverUnitCalculations.listUnitsSpellMightSummon (spell, player3, trueMap.getUnit (), db)).thenReturn (possibleSummons);
+
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
 		researchStatus.setStatus (SpellResearchStatusID.AVAILABLE);
@@ -529,6 +533,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setRandomUtils (randomUtils);
 		proc.setUnitServerUtils (unitServerUtils);
 		proc.setUnitUtils (unitUtils);
+		proc.setServerUnitCalculations (serverUnitCalculations);
 
 		// Run test
 		proc.castOverlandNow (player3, spell, null, mom);

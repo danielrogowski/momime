@@ -35,6 +35,7 @@ public interface UnitAI
 	 * 
 	 * @param player AI player who is considering constructing a unit
 	 * @param players Players list
+	 * @param trueUnits List of true units
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return List of all possible units this AI player can construct or summon, sorted with the best first
@@ -43,7 +44,7 @@ public interface UnitAI
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public List<AIConstructableUnit> listAllUnitsWeCanConstruct (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<MemoryUnit> trueUnits, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**

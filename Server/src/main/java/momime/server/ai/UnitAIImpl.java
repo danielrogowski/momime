@@ -51,6 +51,7 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.AiUnitCategorySvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
@@ -113,6 +114,9 @@ public final class UnitAIImpl implements UnitAI
 	/** City processing methods */
 	private CityProcessing cityProcessing;
 	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
+	
 	/**
 	 * Lists every unit this AI player can build at every city they own, as well as any units they can summon, sorted with the best units first.
 	 * This won't list heroes, since if we cast Summon Hero/Champion, we never know which one we're going to get.
@@ -121,6 +125,7 @@ public final class UnitAIImpl implements UnitAI
 	 * 
 	 * @param player AI player who is considering constructing a unit
 	 * @param players Players list
+	 * @param trueUnits List of true units
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return List of all possible units this AI player can construct or summon, sorted with the best first
@@ -130,7 +135,7 @@ public final class UnitAIImpl implements UnitAI
 	 */
 	@Override
 	public final List<AIConstructableUnit> listAllUnitsWeCanConstruct (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<MemoryUnit> trueUnits, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering listAllUnitsWeCanConstruct: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -185,18 +190,22 @@ public final class UnitAIImpl implements UnitAI
 			if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getSummonedUnit ().size () == 1) && (spell.getOverlandCastingCost () != null) &&
 				(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE))
 			{
-				final AvailableUnit unit = new AvailableUnit ();
-				unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
-				unit.setUnitID (spell.getSummonedUnit ().get (0).getSummonedUnitID ());
-				
-				final UnitSvr unitDef = (UnitSvr) getUnitUtils ().initializeUnitSkills (unit, null, db);
-
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
-				
-				results.add (new AIConstructableUnit (unitDef, null, spell,
-					getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
-					getAiUnitCalculations ().determineAIUnitType (xu),
-					getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db)));
+				final List<UnitSvr> unitDefs = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db);
+				for (final UnitSvr unitDef : unitDefs)
+				{
+					final AvailableUnit unit = new AvailableUnit ();
+					unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
+					unit.setUnitID (unitDef.getUnitID ());
+					
+					getUnitUtils ().initializeUnitSkills (unit, null, db);
+	
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
+					
+					results.add (new AIConstructableUnit (unitDef, null, spell,
+						getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
+						getAiUnitCalculations ().determineAIUnitType (xu),
+						getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, db)));
+				}
 			}
 		
 		// Sort the results
@@ -1085,5 +1094,21 @@ public final class UnitAIImpl implements UnitAI
 	public final void setCityProcessing (final CityProcessing obj)
 	{
 		cityProcessing = obj;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

@@ -258,6 +258,45 @@ public final class SpellAIImpl implements SpellAI
 							}
 							break;
 							
+						// City enchantments and curses - we don't pick the target until its finished casting, but must prove that there is a valid target to pick
+						case CITY_ENCHANTMENTS:
+						case CITY_CURSES:
+							// Ignore Spell of Return, Summoning Circle & Move Fortress or the AI will just keep wasting mana moving them around
+							if (spell.getBuildingID () == null)
+							{
+								boolean validTargetFound = false;
+								int z = 0;
+								while ((!validTargetFound) && (z < mom.getSessionDescription ().getOverlandMapSize ().getDepth ()))
+								{
+									int y = 0;
+									while ((!validTargetFound) && (y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()))
+									{
+										int x = 0;
+										while ((!validTargetFound) && (x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()))
+										{
+											final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+											
+											// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
+											if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
+												player.getPlayerDescription ().getPlayerID (), cityLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
+												mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+												
+												validTargetFound = true;
+	
+											x++;
+										}
+										y++;
+									}
+									z++;
+								}
+								if (validTargetFound)
+								{
+									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting city enchantment/curse spell " + spell.getSpellID ());
+									considerSpells.add (spell);
+								}
+							}
+							break;							
+							
 						// This is fine, the AI doesn't cast every type of spell yet
 						default:
 					}
@@ -306,7 +345,7 @@ public final class SpellAIImpl implements SpellAI
 		
 		switch (spell.getSpellBookSectionID ())
 		{
-			// City enchantments - currently this is only here for Spell of Return but tried to make it generic enough to work for others
+			// City enchantments and curses, including Spell of Return
 			case CITY_ENCHANTMENTS:
 			case CITY_CURSES:
 				int bestCityQuality = -1;
@@ -339,7 +378,25 @@ public final class SpellAIImpl implements SpellAI
 		if ((targetLocation == null) && (targetUnit == null))
 			getSpellProcessing ().cancelTargetOverlandSpell (maintainedSpell, mom);
 		else
+		{
+			// Pick a specific spell effect if we need to
+			switch (spell.getSpellBookSectionID ())
+			{
+				case CITY_ENCHANTMENTS:
+				case CITY_CURSES:
+					final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, player.getPlayerDescription ().getPlayerID (), targetLocation);
+					if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () > 0))
+						citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+					break;
+			
+				// This is fine, only need to do this for certain types of spells
+				default:
+			}
+			
+			// Target it
 			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, targetLocation, targetUnit, citySpellEffectID, unitSkillID, mom);
+		}
 		
 		log.trace ("Exiting decideSpellTarget");
 	}

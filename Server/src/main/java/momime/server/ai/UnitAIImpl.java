@@ -34,6 +34,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
@@ -56,6 +57,7 @@ import momime.server.calculations.ServerUnitCalculations;
 import momime.server.database.AiUnitCategorySvr;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.database.TileTypeSvr;
 import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.messages.ServerMemoryGridCellUtils;
@@ -561,6 +563,7 @@ public final class UnitAIImpl implements UnitAI
 	/**
 	 * @param playerID AI player whose turn it is
 	 * @param players List of players in this session
+	 * @param ourUnits Array of our unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
 	 * @param sd Session description
@@ -572,7 +575,8 @@ public final class UnitAIImpl implements UnitAI
 	 */
 	@Override
 	public final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> determineDesiredSpecialUnitLocationsOnEachPlane (final int playerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final AIUnitsAndRatings [] [] [] ourUnits, final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap,
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering determineDesiredSpecialUnitLocationsOnEachPlane: AI player ID " + playerID);
@@ -597,6 +601,28 @@ public final class UnitAIImpl implements UnitAI
 			{
 				log.debug ("AI Player ID " + playerID + " has " + missingRoadCells.size () + " cells it wants to put road on plane " + plane);
 				desiredSpecialUnitLocations.put (AIUnitType.BUILD_ROAD, missingRoadCells);
+			}
+			
+			// All places on each plane where we have units guarding a node, but don't own the node
+			// Don't just send spirits wildly towards nodes where we have no units or they'll end up attacking enemies guarding it and just die pointlessly
+			final List<MapCoordinates3DEx> nodesWeDontOwn = listNodesWeDontOwnOnPlane (playerID, plane, fogOfWarMemory.getMap (), sd.getOverlandMapSize (), db);
+			if (nodesWeDontOwn != null)
+			{
+				// Remove places where we don't have units
+				final Iterator<MapCoordinates3DEx> iter = nodesWeDontOwn.iterator ();
+				while (iter.hasNext ())
+				{
+					final MapCoordinates3DEx coords = iter.next ();
+					final AIUnitsAndRatings ourUnitsAtNode = ourUnits [coords.getZ ()] [coords.getY ()] [coords.getX ()];
+					if ((ourUnitsAtNode == null) || (ourUnitsAtNode.size () == 0))
+						iter.remove ();
+				}
+				
+				if (nodesWeDontOwn.size () > 0)
+				{
+					log.debug ("AI Player ID " + playerID + " has " + nodesWeDontOwn.size () + " guarded nodes it needs to capture on plane " + plane);
+					desiredSpecialUnitLocations.put (AIUnitType.MELD_WITH_NODE, nodesWeDontOwn);
+				}
 			}
 		}
 		
@@ -856,6 +882,41 @@ public final class UnitAIImpl implements UnitAI
 		
 		log.trace ("Exiting decideAndExecuteUnitMovement = " + result);
 		return result;
+	}
+	
+	/**
+	 * @param playerID AI player who is deciding movement
+	 * @param plane Plane to look on
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @return List of locations where there are nodes either unowned or owned by somebody else
+	 * @throws RecordNotFoundException If we can't find one of the tile types
+	 */
+	final List<MapCoordinates3DEx> listNodesWeDontOwnOnPlane (final int playerID, final int plane, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys,
+		final ServerDatabaseEx db) throws RecordNotFoundException
+	{
+		log.trace ("Entering listNodesWeDontOwnOnPlane: AI Player ID " + playerID + ", " + plane); 
+
+		final List<MapCoordinates3DEx> list = new ArrayList<MapCoordinates3DEx> ();
+		
+		final MapAreaOfMemoryGridCells terrainPlane = terrain.getPlane ().get (0);
+		for (int y = 0; y < sys.getHeight (); y++)
+			for (int x = 0; x < sys.getWidth (); x++)
+			{
+				final MemoryGridCell mc = terrainPlane.getRow ().get (y).getCell ().get (x);
+				if ((mc != null) && (mc.getTerrainData () != null) && (mc.getTerrainData ().getTileTypeID () != null))
+				{
+					final TileTypeSvr tileTypeDef = db.findTileType (mc.getTerrainData ().getTileTypeID (), "listNodesWeDontOwnOnPlane");
+					if ((tileTypeDef.getMagicRealmID () != null) &&
+						((mc.getTerrainData ().getNodeOwnerID () == null) || (mc.getTerrainData ().getNodeOwnerID () != playerID)))
+						
+						list.add (new MapCoordinates3DEx (x, y, plane));
+				}
+			}
+
+		log.trace ("Exiting listNodesWeDontOwnOnPlane = " + list.size ());
+		return list;
 	}
 	
 	/**

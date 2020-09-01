@@ -123,6 +123,7 @@ public interface UnitAI
 	/**
 	 * @param playerID AI player whose turn it is
 	 * @param players List of players in this session
+	 * @param ourUnits Array of our unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
 	 * @param sd Session description
@@ -133,7 +134,8 @@ public interface UnitAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> determineDesiredSpecialUnitLocationsOnEachPlane (final int playerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final AIUnitsAndRatings [] [] [] ourUnits, final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap,
+		final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**

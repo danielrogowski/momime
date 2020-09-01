@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -50,6 +51,7 @@ public interface SpellAI
 	 * 
 	 * @param player AI player who needs to choose what to cast
 	 * @param constructableUnits List of everything we can construct everywhere or summon
+	 * @param wantedUnitTypesOnEachPlane Map of which unit types we need to construct or summon on each plane
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -57,7 +59,8 @@ public interface SpellAI
 	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	public void decideWhatToCastOverland (final PlayerServerDetails player, final List<AIConstructableUnit> constructableUnits, final MomSessionVariables mom)
+	public void decideWhatToCastOverland (final PlayerServerDetails player, final List<AIConstructableUnit> constructableUnits,
+		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**

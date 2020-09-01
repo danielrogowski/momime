@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -17,13 +18,16 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
@@ -63,6 +67,9 @@ public final class SpellAIImpl implements SpellAI
 	/** Spell processing methods */
 	private SpellProcessing spellProcessing;
 	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
+
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
 	 * @param spells List of possible spells to choose from
@@ -182,6 +189,7 @@ public final class SpellAIImpl implements SpellAI
 	 * 
 	 * @param player AI player who needs to choose what to cast
 	 * @param constructableUnits List of everything we can construct everywhere or summon
+	 * @param wantedUnitTypesOnEachPlane Map of which unit types we need to construct or summon on each plane
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
@@ -190,7 +198,8 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void decideWhatToCastOverland (final PlayerServerDetails player, final List<AIConstructableUnit> constructableUnits, final MomSessionVariables mom)
+	public final void decideWhatToCastOverland (final PlayerServerDetails player, final List<AIConstructableUnit> constructableUnits,
+		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering decideWhatToCastOverland: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -199,107 +208,127 @@ public final class SpellAIImpl implements SpellAI
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		if (priv.getQueuedSpell ().size () == 0)
 		{
-			// Unit types classify magic/guardian spirits as non-combat units, so just look at all other kinds of summoned units we can get.
-			// Also we want to split them up by magic realm, as if we can get very rare creatures in multiple realms, we shouldn't just summon lots of the one type.
-			// Note this list includes units we cannot afford maintenance of which is what we want.  They'll get filtered out below when we check each spell.
-			int maxSummonCost = 0;
-			final Map<String, List<AIConstructableUnit>> summonableCombatUnits = new HashMap<String, List<AIConstructableUnit>> ();
-			for (final AIConstructableUnit summonUnit : constructableUnits)
-				if ((summonUnit.getAiUnitType () == AIUnitType.COMBAT_UNIT) && (summonUnit.getSpell () != null))
-				{
-					// Put into correct list
-					List<AIConstructableUnit> summonableUnitsForThisMagicRealm = summonableCombatUnits.get (summonUnit.getSpell ().getSpellRealm ());
-					if (summonableUnitsForThisMagicRealm == null)
-					{
-						summonableUnitsForThisMagicRealm = new ArrayList<AIConstructableUnit> ();
-						summonableCombatUnits.put (summonUnit.getSpell ().getSpellRealm (), summonableUnitsForThisMagicRealm);
-					}
-					summonableUnitsForThisMagicRealm.add (summonUnit);
-					
-					// Find most expensive summonable unit across all magic realms
-					if (summonUnit.getSpell ().getOverlandCastingCost () > maxSummonCost)
-						maxSummonCost = summonUnit.getSpell ().getOverlandCastingCost ();
-				}
+			// Find our summoning circle - we have to have one, or we wouldn't be able to cast spells and be in this method
+			final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (player.getPlayerDescription ().getPlayerID (),
+				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 			
-			// Don't summon anything 25% cheaper than maximum
-			final int minSummonCost = (maxSummonCost * 3) / 4;
-			
-			// Sort them all, within each magic realm, most expensive first
-			for (final List<AIConstructableUnit> summonableUnitsForThisMagicRealm : summonableCombatUnits.values ())
-				summonableUnitsForThisMagicRealm.sort ((s1, s2) -> s2.getSpell ().getOverlandCastingCost () - s1.getSpell ().getOverlandCastingCost ());
-			
-			// Consider every possible spell we could cast overland and can afford maintainence of
+			// Do we need a magic/guardian spirit in order to capture a node on the same plane as our summoning circle?
+			// If so then that's important enough to just do it, with no randomness.
 			final List<SpellSvr> considerSpells = new ArrayList<SpellSvr> ();
-			for (final SpellSvr spell : mom.getServerDB ().getSpells ())
-				if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
-					(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE) &&
-					(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-						mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())))
-					
-					switch (spell.getSpellBookSectionID ())
+			if (wantedUnitTypesOnEachPlane.get (summoningCircleLocation.getCityLocation ().getZ ()).contains (AIUnitType.MELD_WITH_NODE))
+			{
+				// What's the best spirit summoning unit we can get?  So summon Guardian Spirit if we have it, otherwise Magic Spirit
+				final List<AIConstructableUnit> spirits = constructableUnits.stream ().filter
+					(u -> (u.getAiUnitType () == AIUnitType.MELD_WITH_NODE) && (u.getSpell () != null)).sorted ().collect (Collectors.toList ());
+				
+				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " has a guarded node to capture on same plane as their summoning circle " +
+					summoningCircleLocation.getCityLocation () + " so summonining spirit with " + spirits.get (0).getSpell ().getSpellID ());
+				considerSpells.add (spirits.get (0).getSpell ());
+			}
+			else
+			{
+				// Unit types classify magic/guardian spirits as non-combat units, so just look at all other kinds of summoned units we can get.
+				// Also we want to split them up by magic realm, as if we can get very rare creatures in multiple realms, we shouldn't just summon lots of the one type.
+				// Note this list includes units we cannot afford maintenance of which is what we want.  They'll get filtered out below when we check each spell.
+				int maxSummonCost = 0;
+				final Map<String, List<AIConstructableUnit>> summonableCombatUnits = new HashMap<String, List<AIConstructableUnit>> ();
+				for (final AIConstructableUnit summonUnit : constructableUnits)
+					if ((summonUnit.getAiUnitType () == AIUnitType.COMBAT_UNIT) && (summonUnit.getSpell () != null))
 					{
-						// Consider casting any overland enchantment that we don't already have
-						case OVERLAND_ENCHANTMENTS:
-							if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-								player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
-							{
-								log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting overland enchantment " + spell.getSpellID ());
-								considerSpells.add (spell);
-							}
-							break;
-							
-						// Consider summoning combat units that are the best we can get in that realm, and over minimum summoning cost
-						case SUMMONING:
-							if ((spell.getHeroItemBonusMaximumCraftingCost () == null) && (spell.getOverlandCastingCost () >= minSummonCost) &&
-								(summonableCombatUnits.containsKey (spell.getSpellRealm ())) && (summonableCombatUnits.get (spell.getSpellRealm ()).get (0).getSpell () == spell))
-							{
-								log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting summoning spell " + spell.getSpellID ());
-								considerSpells.add (spell);
-							}
-							break;
-							
-						// City enchantments and curses - we don't pick the target until its finished casting, but must prove that there is a valid target to pick
-						case CITY_ENCHANTMENTS:
-						case CITY_CURSES:
-							// Ignore Spell of Return, Summoning Circle & Move Fortress or the AI will just keep wasting mana moving them around
-							if (spell.getBuildingID () == null)
-							{
-								boolean validTargetFound = false;
-								int z = 0;
-								while ((!validTargetFound) && (z < mom.getSessionDescription ().getOverlandMapSize ().getDepth ()))
+						// Put into correct list
+						List<AIConstructableUnit> summonableUnitsForThisMagicRealm = summonableCombatUnits.get (summonUnit.getSpell ().getSpellRealm ());
+						if (summonableUnitsForThisMagicRealm == null)
+						{
+							summonableUnitsForThisMagicRealm = new ArrayList<AIConstructableUnit> ();
+							summonableCombatUnits.put (summonUnit.getSpell ().getSpellRealm (), summonableUnitsForThisMagicRealm);
+						}
+						summonableUnitsForThisMagicRealm.add (summonUnit);
+						
+						// Find most expensive summonable unit across all magic realms
+						if (summonUnit.getSpell ().getOverlandCastingCost () > maxSummonCost)
+							maxSummonCost = summonUnit.getSpell ().getOverlandCastingCost ();
+					}
+				
+				// Don't summon anything 25% cheaper than maximum
+				final int minSummonCost = (maxSummonCost * 3) / 4;
+				
+				// Sort them all, within each magic realm, most expensive first
+				for (final List<AIConstructableUnit> summonableUnitsForThisMagicRealm : summonableCombatUnits.values ())
+					summonableUnitsForThisMagicRealm.sort ((s1, s2) -> s2.getSpell ().getOverlandCastingCost () - s1.getSpell ().getOverlandCastingCost ());
+				
+				// Consider every possible spell we could cast overland and can afford maintainence of
+				for (final SpellSvr spell : mom.getServerDB ().getSpells ())
+					if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
+						(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE) &&
+						(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+							mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ())))
+						
+						switch (spell.getSpellBookSectionID ())
+						{
+							// Consider casting any overland enchantment that we don't already have
+							case OVERLAND_ENCHANTMENTS:
+								if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+									player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 								{
-									int y = 0;
-									while ((!validTargetFound) && (y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()))
-									{
-										int x = 0;
-										while ((!validTargetFound) && (x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()))
-										{
-											final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-											
-											// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
-											if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
-												player.getPlayerDescription ().getPlayerID (), cityLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-												mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
-												
-												validTargetFound = true;
-	
-											x++;
-										}
-										y++;
-									}
-									z++;
-								}
-								if (validTargetFound)
-								{
-									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting city enchantment/curse spell " + spell.getSpellID ());
+									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting overland enchantment " + spell.getSpellID ());
 									considerSpells.add (spell);
 								}
-							}
-							break;							
-							
-						// This is fine, the AI doesn't cast every type of spell yet
-						default:
-					}
+								break;
+								
+							// Consider summoning combat units that are the best we can get in that realm, and over minimum summoning cost
+							case SUMMONING:
+								if ((spell.getHeroItemBonusMaximumCraftingCost () == null) && (spell.getOverlandCastingCost () >= minSummonCost) &&
+									(summonableCombatUnits.containsKey (spell.getSpellRealm ())) && (summonableCombatUnits.get (spell.getSpellRealm ()).get (0).getSpell () == spell))
+								{
+									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting summoning spell " + spell.getSpellID ());
+									considerSpells.add (spell);
+								}
+								break;
+								
+							// City enchantments and curses - we don't pick the target until its finished casting, but must prove that there is a valid target to pick
+							case CITY_ENCHANTMENTS:
+							case CITY_CURSES:
+								// Ignore Spell of Return, Summoning Circle & Move Fortress or the AI will just keep wasting mana moving them around
+								if (spell.getBuildingID () == null)
+								{
+									boolean validTargetFound = false;
+									int z = 0;
+									while ((!validTargetFound) && (z < mom.getSessionDescription ().getOverlandMapSize ().getDepth ()))
+									{
+										int y = 0;
+										while ((!validTargetFound) && (y < mom.getSessionDescription ().getOverlandMapSize ().getHeight ()))
+										{
+											int x = 0;
+											while ((!validTargetFound) && (x < mom.getSessionDescription ().getOverlandMapSize ().getWidth ()))
+											{
+												final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+												
+												// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
+												if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
+													player.getPlayerDescription ().getPlayerID (), cityLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
+													mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+													
+													validTargetFound = true;
+		
+												x++;
+											}
+											y++;
+										}
+										z++;
+									}
+									if (validTargetFound)
+									{
+										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting city enchantment/curse spell " + spell.getSpellID ());
+										considerSpells.add (spell);
+									}
+								}
+								break;							
+								
+							// This is fine, the AI doesn't cast every type of spell yet
+							default:
+						}
+			}
 						
 			// If we found any, then pick one randomly
 			if (considerSpells.size () > 0)
@@ -511,5 +540,21 @@ public final class SpellAIImpl implements SpellAI
 	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
 	}
 }

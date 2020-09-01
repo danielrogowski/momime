@@ -108,6 +108,8 @@ public final class MomAIImpl implements MomAI
 			(u -> (u.getAiUnitType () == AIUnitType.COMBAT_UNIT) && (u.getCityLocation () != null)).collect (Collectors.toList ());
 		
 		boolean combatStarted = false;
+		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane = new HashMap<Integer, List<AIUnitType>> ();
+		
 		if (cityConstructableCombatUnits.isEmpty ())
 			log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " can't make any combat units in cities at all");
 		else
@@ -142,7 +144,7 @@ public final class MomAIImpl implements MomAI
 			
 			// What's the best place we can put a new city on each plane?
 			final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> desiredSpecialUnitLocationsOnEachPlane = getUnitAI ().determineDesiredSpecialUnitLocationsOnEachPlane
-				(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), ourUnits, priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getSessionDescription (), mom.getServerDB ());
 			
 			if (((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) || (isRaiders)) && (!mobileUnits.isEmpty ()))
@@ -273,6 +275,7 @@ public final class MomAIImpl implements MomAI
 						// We need to NOT have one of that type of unit already, so that we want to build one
 						final List<AIUnitType> wantedUnitTypes = desiredSpecialUnitLocations.keySet ().stream ().filter (ut ->
 							(specialistUnitsOnThisPlane == null) || (!specialistUnitsOnThisPlane.containsKey (ut))).collect (Collectors.toList ());
+						wantedUnitTypesOnEachPlane.put (z, wantedUnitTypes);
 						
 						for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 							for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
@@ -348,7 +351,7 @@ public final class MomAIImpl implements MomAI
 					getSpellAI ().decideWhatToResearch (player, mom.getServerDB ());
 				
 				// Pick spells to cast overland
-				getSpellAI ().decideWhatToCastOverland (player, constructableUnits, mom);
+				getSpellAI ().decideWhatToCastOverland (player, constructableUnits, wantedUnitTypesOnEachPlane, mom);
 			}
 		}
 

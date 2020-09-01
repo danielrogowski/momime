@@ -24078,12 +24078,12 @@
 		<humanStartingGold>25</humanStartingGold>
 		<aiStartingGold>100</aiStartingGold>
 		<customWizards>true</customWizards>
-		<aiWizardsPopulationGrowthRateMultiplier>300</aiWizardsPopulationGrowthRateMultiplier>
-		<aiRaidersPopulationGrowthRateMultiplier>145</aiRaidersPopulationGrowthRateMultiplier>
-		<aiWizardsProductionRateMultiplier>250</aiWizardsProductionRateMultiplier>
-		<aiRaidersProductionRateMultiplier>175</aiRaidersProductionRateMultiplier>
-		<aiSpellResearchMultiplier>125</aiSpellResearchMultiplier>
-		<aiUpkeepMultiplier>50</aiUpkeepMultiplier>
+		<aiWizardsPopulationGrowthRateMultiplier>200</aiWizardsPopulationGrowthRateMultiplier>
+		<aiRaidersPopulationGrowthRateMultiplier>130</aiRaidersPopulationGrowthRateMultiplier>
+		<aiWizardsProductionRateMultiplier>200</aiWizardsProductionRateMultiplier>
+		<aiRaidersProductionRateMultiplier>150</aiRaidersProductionRateMultiplier>
+		<aiSpellResearchMultiplier>110</aiSpellResearchMultiplier>
+		<aiUpkeepMultiplier>60</aiUpkeepMultiplier>
 		<eachWizardOnlyOnce>true</eachWizardOnlyOnce>
 		<towerMonstersMinimum>875</towerMonstersMinimum>
 		<towerMonstersMaximum>1500</towerMonstersMaximum>

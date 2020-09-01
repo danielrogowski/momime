@@ -186,10 +186,12 @@ public interface UnitAIMovement
 	 * 
 	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param nodeCaptureLocations Locations where we have guarded nodes ready to capture
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
-	public AIMovementDecision considerUnitMovement_MeldWithNode (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys);
+	public AIMovementDecision considerUnitMovement_MeldWithNode (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final List<MapCoordinates3DEx> nodeCaptureLocations, final CoordinateSystem sys);
 	
 	/**
 	 * AI transports look for a suitable island to carry units to, if we are holding any.

@@ -797,19 +797,66 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 * 
 	 * @param units The units to move
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
+	 * @param nodeCaptureLocations Locations where we have guarded nodes ready to capture
 	 * @param sys Overland map coordinate system
 	 * @return See AIMovementDecision for explanation of return values
 	 */
 	@Override
-	public final AIMovementDecision considerUnitMovement_MeldWithNode (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
+	public final AIMovementDecision considerUnitMovement_MeldWithNode (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
+		final List<MapCoordinates3DEx> nodeCaptureLocations, final CoordinateSystem sys)
 	{
 		log.trace ("Entering considerUnitMovement_MeldWithNode");
 
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
-		log.warn ("AI movement code MELD_WITH_NODE is not yet implemented");
+		// If we have no nodes to capture, then nothing to do
+		final AIMovementDecision decision;
+		if ((nodeCaptureLocations == null) || (nodeCaptureLocations.size () == 0))
+			decision = null;
 		
-		final AIMovementDecision decision = null;
+		// If we're already at any of the right spots, then go ahead and try to capture the node
+		else if (nodeCaptureLocations.contains (currentLocation))
+		{
+			log.debug ("Unit movement AI - Decided to stay at " + currentLocation + " and try to capture the node here");
+			decision = new AIMovementDecision (UnitSpecialOrder.MELD_WITH_NODE);
+		}
+		
+		// Find the closest location where we want to capture a node and head there
+		else
+		{
+			final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
+			AIMovementDistance bestDistanceSoFar = null;
+			
+			// Check all locations we want to head to and find the closest one (or multiple closest ones)
+			for (final MapCoordinates3DEx location : nodeCaptureLocations)
+			{
+				final int doubleThisDistance = doubleMovementDistances [location.getZ ()] [location.getY ()] [location.getX ()];
+				if (doubleThisDistance >= 0)
+				{
+					// We can get there, eventually
+					final AIMovementDistance thisDistance = new AIMovementDistance (doubleThisDistance,
+						getCoordinateSystemUtils ().determineStep2DDistanceBetween (sys, currentLocation, location));
+					
+					if ((bestDistanceSoFar == null) || (thisDistance.isShorterThan (bestDistanceSoFar)))
+					{
+						bestDistanceSoFar = thisDistance;
+						destinations.clear ();
+						destinations.add (location);
+					}
+					else if (thisDistance.equals (bestDistanceSoFar))
+						destinations.add (location);
+				}
+			}
+			
+			if (destinations.isEmpty ())
+				decision = null;		// No reachable nodes
+			else
+			{
+				final MapCoordinates3DEx chosenLocation = destinations.get (getRandomUtils ().nextInt (destinations.size ()));
+				log.debug ("Unit movement AI - Decided to go head towards " + chosenLocation + " to capture a node there which is " + bestDistanceSoFar + " away");
+				decision = new AIMovementDecision (chosenLocation);
+			}
+		}
 		
 		log.trace ("Exiting considerUnitMovement_MeldWithNode = " + decision);
 		return decision;

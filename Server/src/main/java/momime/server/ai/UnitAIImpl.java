@@ -716,7 +716,7 @@ public final class UnitAIImpl implements UnitAI
 					break;
 					
 				case MELD_WITH_NODE:
-					decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (units, doubleMovementDistances, sys);
+					decision = getUnitAIMovement ().considerUnitMovement_MeldWithNode (units, doubleMovementDistances, desiredSpecialUnitLocations.get (AIUnitType.MELD_WITH_NODE), sys);
 					break;
 				
 				case CARRY_UNITS:

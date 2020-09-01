@@ -712,6 +712,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityAI" ref="cityAI" />
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="unitAI" ref="unitAI" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 	</bean>
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">

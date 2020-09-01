@@ -256,6 +256,9 @@ public final class CommonDatabaseConstants
 	
 	// spells
 	
+	/** Summoning circle spell */
+	public static final String SPELL_ID_SUMMONING_CIRCLE = "SP203";
+	
 	/** Summon hero spell - used as a means to get a list of the heroes we can rescue from lairs/nodes/towers */
 	public static final String SPELL_ID_SUMMON_HERO = "SP208";
 

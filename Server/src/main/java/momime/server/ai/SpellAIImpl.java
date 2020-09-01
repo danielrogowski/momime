@@ -12,6 +12,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -22,6 +23,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -70,6 +72,12 @@ public final class SpellAIImpl implements SpellAI
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 
+	/** AI decisions about units */
+	private UnitAI unitAI;
+	
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
+	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
 	 * @param spells List of possible spells to choose from
@@ -213,10 +221,13 @@ public final class SpellAIImpl implements SpellAI
 				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 			
+			final int summoningCirclePlane = summoningCircleLocation.getCityLocation ().getZ ();
+			final int oppositeSummoningCirclePlane = 1 - summoningCirclePlane;
+			
 			// Do we need a magic/guardian spirit in order to capture a node on the same plane as our summoning circle?
 			// If so then that's important enough to just do it, with no randomness.
 			final List<SpellSvr> considerSpells = new ArrayList<SpellSvr> ();
-			if (wantedUnitTypesOnEachPlane.get (summoningCircleLocation.getCityLocation ().getZ ()).contains (AIUnitType.MELD_WITH_NODE))
+			if (wantedUnitTypesOnEachPlane.get (summoningCirclePlane).contains (AIUnitType.MELD_WITH_NODE))
 			{
 				// What's the best spirit summoning unit we can get?  So summon Guardian Spirit if we have it, otherwise Magic Spirit
 				final List<AIConstructableUnit> spirits = constructableUnits.stream ().filter
@@ -226,6 +237,17 @@ public final class SpellAIImpl implements SpellAI
 					summoningCircleLocation.getCityLocation () + " so summonining spirit with " + spirits.get (0).getSpell ().getSpellID ());
 				considerSpells.add (spirits.get (0).getSpell ());
 			}
+
+			// Do we need a magic/guardian spirit in order to capture a node on the opposite plane as our summoning circle AND have a city there we can move our summoning circle to?
+			else if ((wantedUnitTypesOnEachPlane.get (oppositeSummoningCirclePlane).contains (AIUnitType.MELD_WITH_NODE)) &&
+				(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), CommonDatabaseConstants.SPELL_ID_SUMMONING_CIRCLE).getStatus () == SpellResearchStatusID.AVAILABLE) &&
+				(constructableUnits.stream ().anyMatch (u -> (u.getCityLocation () != null) && (u.getCityLocation ().getZ () == oppositeSummoningCirclePlane))))
+			{
+				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " has a guarded node on the opposite plane to their summoning circle, " +
+					" so casting summoning circle spell to move our summoning circle onto that plane, so after we can summon a spirit there");
+				considerSpells.add (mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_SUMMONING_CIRCLE, "decideWhatToCastOverland"));
+			}
+			
 			else
 			{
 				// Unit types classify magic/guardian spirits as non-combat units, so just look at all other kinds of summoned units we can get.
@@ -377,26 +399,60 @@ public final class SpellAIImpl implements SpellAI
 			// City enchantments and curses, including Spell of Return
 			case CITY_ENCHANTMENTS:
 			case CITY_CURSES:
-				int bestCityQuality = -1;
-				for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
-					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
-						for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
-						{
-							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
-							
-							// Routine checks everything, even down to whether there is even a city there or not, so just let it handle it
-							if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
-								player.getPlayerDescription ().getPlayerID (), cityLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-								mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SUMMONING_CIRCLE))
+				{
+					final List<MapCoordinates3DEx> nodeLocations = getUnitAI ().listNodesWeDontOwnOnPlane (player.getPlayerDescription ().getPlayerID (), null, priv.getFogOfWarMemory (),
+						mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
+					
+					// Find the city nearest any listed node
+					Integer shortestDistance = null;
+					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+						for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+							for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 							{
-								final int thisCityQuality = getCityAI ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription (), mom.getServerDB ());
-								if ((targetLocation == null) || (thisCityQuality > bestCityQuality))
+								final MemoryGridCell mc = priv.getFogOfWarMemory ().getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x);
+								if ((mc != null) && (mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 								{
-									targetLocation = cityLocation;
-									bestCityQuality = thisCityQuality;
+									final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+									
+									for (final MapCoordinates3DEx nodeLocation : nodeLocations)
+										if (nodeLocation.getZ () == z)
+										{
+											final int thisDistance = getCoordinateSystemUtils ().determineStep2DDistanceBetween (mom.getSessionDescription ().getOverlandMapSize (),
+												nodeLocation, cityLocation);
+											
+											if ((shortestDistance == null) || (thisDistance < shortestDistance))
+											{
+												shortestDistance = thisDistance;
+												targetLocation = cityLocation;
+											}
+										}
 								}
 							}
-						}
+				}
+				else
+				{
+					int bestCityQuality = -1;
+					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
+						for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
+							for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
+							{
+								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
+								
+								// Routine checks everything, even down to whether there is even a city there or not, so just let it handle it
+								if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
+									player.getPlayerDescription ().getPlayerID (), cityLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
+									mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+								{
+									final int thisCityQuality = getCityAI ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription (), mom.getServerDB ());
+									if ((targetLocation == null) || (thisCityQuality > bestCityQuality))
+									{
+										targetLocation = cityLocation;
+										bestCityQuality = thisCityQuality;
+									}
+								}
+							}
+				}
 				break;
 				
 			default:
@@ -556,5 +612,37 @@ public final class SpellAIImpl implements SpellAI
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return AI decisions about units
+	 */
+	public final UnitAI getUnitAI ()
+	{
+		return unitAI;
+	}
+
+	/**
+	 * @param ai AI decisions about units
+	 */
+	public final void setUnitAI (final UnitAI ai)
+	{
+		unitAI = ai;
+	}
+
+	/**
+	 * @return Coordinate system utils
+	 */
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
+	{
+		return coordinateSystemUtils;
+	}
+
+	/**
+	 * @param csu Coordinate system utils
+	 */
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils csu)
+	{
+		coordinateSystemUtils = csu;
 	}
 }

@@ -123,7 +123,6 @@ public interface UnitAI
 	/**
 	 * @param playerID AI player whose turn it is
 	 * @param players List of players in this session
-	 * @param ourUnits Array of our unit ratings populated by calculateUnitRatingsAtEveryMapCell
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
 	 * @param sd Session description
@@ -134,8 +133,7 @@ public interface UnitAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> determineDesiredSpecialUnitLocationsOnEachPlane (final int playerID, final List<PlayerServerDetails> players,
-		final AIUnitsAndRatings [] [] [] ourUnits, final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**
@@ -184,4 +182,16 @@ public interface UnitAI
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * @param playerID AI player who is deciding movement
+	 * @param plane Plane to look on, optional, null = both
+	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
+	 * @param sys Overland map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @return List of locations where there are nodes either unowned or owned by somebody else
+	 * @throws RecordNotFoundException If we can't find one of the tile types
+	 */
+	public List<MapCoordinates3DEx> listNodesWeDontOwnOnPlane (final int playerID, final Integer plane, final FogOfWarMemory fogOfWarMemory, final CoordinateSystem sys,
+		final ServerDatabaseEx db) throws RecordNotFoundException;
 }

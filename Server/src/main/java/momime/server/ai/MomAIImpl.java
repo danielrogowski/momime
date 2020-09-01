@@ -144,7 +144,7 @@ public final class MomAIImpl implements MomAI
 			
 			// What's the best place we can put a new city on each plane?
 			final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> desiredSpecialUnitLocationsOnEachPlane = getUnitAI ().determineDesiredSpecialUnitLocationsOnEachPlane
-				(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), ourUnits, priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getSessionDescription (), mom.getServerDB ());
 			
 			if (((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) || (isRaiders)) && (!mobileUnits.isEmpty ()))

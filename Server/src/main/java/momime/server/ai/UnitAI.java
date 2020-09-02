@@ -115,10 +115,12 @@ public interface UnitAI
 	/**
 	 * @param playerID AI player whose turn it is
 	 * @param mobileUnits List of units AI decided it can move each turn; note all non-combat units are automatically considered to be mobile
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
 	 * @return List of non-combat units, broken up by what type they are and which plane they are on
 	 */
 	public Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> determineSpecialistUnitsOnEachPlane
-		(final int playerID, final List<AIUnitAndRatings> mobileUnits);
+		(final int playerID, final List<AIUnitAndRatings> mobileUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys);
 	
 	/**
 	 * @param playerID AI player whose turn it is
@@ -127,12 +129,12 @@ public interface UnitAI
 	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @return Map listing all locations on each plane that the AI wants to send specialised units of each type
+	 * @return Map listing all locations the AI wants to send specialised units of each type
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
-	public Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> determineDesiredSpecialUnitLocationsOnEachPlane (final int playerID, final List<PlayerServerDetails> players,
+	public Map<AIUnitType, List<MapCoordinates3DEx>> determineDesiredSpecialUnitLocations (final int playerID, final List<PlayerServerDetails> players,
 		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	

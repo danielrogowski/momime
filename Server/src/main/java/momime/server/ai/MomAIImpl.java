@@ -140,10 +140,10 @@ public final class MomAIImpl implements MomAI
 			
 			// Get a list of all specialist units split by category and what plane they are on
 			final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> specialistUnitsOnEachPlane = getUnitAI ().determineSpecialistUnitsOnEachPlane
-				(player.getPlayerDescription ().getPlayerID (), mobileUnits);
+				(player.getPlayerDescription ().getPlayerID (), mobileUnits, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription ().getOverlandMapSize ());
 			
 			// What's the best place we can put a new city on each plane?
-			final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> desiredSpecialUnitLocationsOnEachPlane = getUnitAI ().determineDesiredSpecialUnitLocationsOnEachPlane
+			final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = getUnitAI ().determineDesiredSpecialUnitLocations
 				(player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), priv.getFogOfWarMemory (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getSessionDescription (), mom.getServerDB ());
 			
@@ -182,7 +182,7 @@ public final class MomAIImpl implements MomAI
 									category.getAiUnitCategoryDescription () + "  from " + unitStack.get (0).getUnit ().getUnitLocation () + ", first Unit URN " + unitStack.get (0).getUnit ().getUnitURN ());
 								
 								final AIMovementResult movementResult = getUnitAI ().decideAndExecuteUnitMovement (unitStack, category, underdefendedLocations, ourUnitStacksInThisCategory, enemyUnits,
-									desiredSpecialUnitLocationsOnEachPlane.get (unitStack.get (0).getUnit ().getUnitLocation ().getZ ()), player, mom);
+									desiredSpecialUnitLocations, player, mom);
 
 								// In a one-player-at-a-time game, units are moved instantly and so may have joined onto other unit stacks, have movement left,
 								// and that remaining movement now be affected by something in the stack they've joined such as a hero with Pathfinding.
@@ -268,13 +268,17 @@ public final class MomAIImpl implements MomAI
 					
 					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 					{
-						// What unit types do we want to build on this plane?
-						final Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (z);								// May be null					
-						final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = desiredSpecialUnitLocationsOnEachPlane.get (z);	// Always a valid list, even if empty
+						final int finalZ = z;
 						
-						// We need to NOT have one of that type of unit already, so that we want to build one
-						final List<AIUnitType> wantedUnitTypes = desiredSpecialUnitLocations.keySet ().stream ().filter (ut ->
-							(specialistUnitsOnThisPlane == null) || (!specialistUnitsOnThisPlane.containsKey (ut))).collect (Collectors.toList ());
+						// What unit types do we want to build on this plane?
+						final Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (z);		// May be null					
+						
+						// This finds all unit types for which we have at least one desired location on this plane
+						final List<AIUnitType> wantedUnitTypes = desiredSpecialUnitLocations.entrySet ().stream ().filter (e -> e.getValue ().stream ().anyMatch (c -> c.getZ () == finalZ)).map (e -> e.getKey ()).filter
+						
+							// Then out of those, find the unit types that we don't already have
+							(ut -> (specialistUnitsOnThisPlane == null) || (!specialistUnitsOnThisPlane.containsKey (ut))).collect (Collectors.toList ());
+						
 						wantedUnitTypesOnEachPlane.put (z, wantedUnitTypes);
 						
 						for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)

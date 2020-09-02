@@ -1,7 +1,6 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -521,11 +520,13 @@ public final class UnitAIImpl implements UnitAI
 	/**
 	 * @param playerID AI player whose turn it is
 	 * @param mobileUnits List of units AI decided it can move each turn; note all non-combat units are automatically considered to be mobile
+	 * @param terrain Player knowledge of terrain
+	 * @param sys Overland map coordinate system
 	 * @return List of non-combat units, broken up by what type they are and which plane they are on
 	 */
 	@Override
 	public final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> determineSpecialistUnitsOnEachPlane
-		(final int playerID, final List<AIUnitAndRatings> mobileUnits)
+		(final int playerID, final List<AIUnitAndRatings> mobileUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
 	{
 		log.trace ("Entering determineSpecialistUnitsOnEachPlane: AI player ID " + playerID);
 
@@ -533,27 +534,35 @@ public final class UnitAIImpl implements UnitAI
 		for (final AIUnitAndRatings mu : mobileUnits)
 			if (mu.getAiUnitType () != AIUnitType.COMBAT_UNIT)
 			{
-				log.debug ("AI Player ID " + playerID + " can move " + mu);
+				// If the unit is standing on a tower, then we could use it on either plane
+				final MemoryGridCell mc = terrain.getPlane ().get (mu.getUnit ().getUnitLocation ().getZ ()).getRow ().get (mu.getUnit ().getUnitLocation ().getY ()).getCell ().get (mu.getUnit ().getUnitLocation ().getX ());
+				final boolean isTower = getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ());
+
+				log.debug ("AI Player ID " + playerID + " has a spare " + mu.getAiUnitType () + " Unit URN " + mu.getUnit ().getUnitURN () + " at " + mu.getUnit ().getUnitLocation () +
+					(isTower ? " which is a tower of wizardry" : ""));
 				
-				// Make sure the plane is listed
-				Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (mu.getUnit ().getUnitLocation ().getZ ());
-				if (specialistUnitsOnThisPlane == null)
-				{
-					specialistUnitsOnThisPlane = new HashMap<AIUnitType, List<AIUnitAndRatings>> ();
-					specialistUnitsOnEachPlane.put (mu.getUnit ().getUnitLocation ().getZ (), specialistUnitsOnThisPlane);
-				}
-				
-				// Make sure the unit type is listed
-				List<AIUnitAndRatings> specialistUnits = specialistUnitsOnThisPlane.get (mu.getAiUnitType ());
-				if (specialistUnits == null)
-				{
-					specialistUnits = new ArrayList<AIUnitAndRatings> ();
-					specialistUnitsOnThisPlane.put (mu.getAiUnitType (), specialistUnits);
-				}
-				
-				// Now can just add it
-				specialistUnits.add (mu);
-				log.debug ("AI Player ID " + playerID + " has a spare " + mu.getAiUnitType () + " Unit URN " + mu.getUnit ().getUnitURN () + " at " + mu.getUnit ().getUnitLocation ());
+				for (int z = 0; z < sys.getDepth (); z++)
+					if ((isTower) || (z == mu.getUnit ().getUnitLocation ().getZ ()))
+					{
+						// Make sure the plane is listed
+						Map<AIUnitType, List<AIUnitAndRatings>> specialistUnitsOnThisPlane = specialistUnitsOnEachPlane.get (z);
+						if (specialistUnitsOnThisPlane == null)
+						{
+							specialistUnitsOnThisPlane = new HashMap<AIUnitType, List<AIUnitAndRatings>> ();
+							specialistUnitsOnEachPlane.put (z, specialistUnitsOnThisPlane);
+						}
+						
+						// Make sure the unit type is listed
+						List<AIUnitAndRatings> specialistUnits = specialistUnitsOnThisPlane.get (mu.getAiUnitType ());
+						if (specialistUnits == null)
+						{
+							specialistUnits = new ArrayList<AIUnitAndRatings> ();
+							specialistUnitsOnThisPlane.put (mu.getAiUnitType (), specialistUnits);
+						}
+						
+						// Now can just add it
+						specialistUnits.add (mu);
+					}
 			}
 		
 		log.trace ("Exiting determineSpecialistUnitsOnEachPlane");
@@ -567,30 +576,30 @@ public final class UnitAIImpl implements UnitAI
 	 * @param trueMap True map, just used to ensure we don't put a city too closed to another city that we cannot see
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
-	 * @return Map listing all locations on each plane that the AI wants to send specialised units of each type
+	 * @return Map listing all locations the AI wants to send specialised units of each type
 	 * @throws PlayerNotFoundException If we can't find the player who owns the city
 	 * @throws RecordNotFoundException If we encounter a tile type or map feature that can't be found in the cache
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	@Override
-	public final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> determineDesiredSpecialUnitLocationsOnEachPlane (final int playerID, final List<PlayerServerDetails> players,
+	public final Map<AIUnitType, List<MapCoordinates3DEx>> determineDesiredSpecialUnitLocations (final int playerID, final List<PlayerServerDetails> players,
 		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering determineDesiredSpecialUnitLocationsOnEachPlane: AI player ID " + playerID);
+		log.trace ("Entering determineDesiredSpecialUnitLocations: AI player ID " + playerID);
 		
-		final Map<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> desiredSpecialUnitLocationsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<MapCoordinates3DEx>>> ();
+		final List<MapCoordinates3DEx> desiredCityLocations = new ArrayList<MapCoordinates3DEx> ();
+		final List<MapCoordinates3DEx> desiredRoadLocations = new ArrayList<MapCoordinates3DEx> ();
+		final List<MapCoordinates3DEx> desiredNodeLocations = new ArrayList<MapCoordinates3DEx> ();
+		
 		for (int plane = 0; plane < sd.getOverlandMapSize ().getDepth (); plane++)
 		{
-			final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = new HashMap<AIUnitType, List<MapCoordinates3DEx>> ();
-			desiredSpecialUnitLocationsOnEachPlane.put (plane, desiredSpecialUnitLocations);
-		
 			// Best place on each plane to put a new city
 			final MapCoordinates3DEx desiredCityLocation = getCityAI ().chooseCityLocation (fogOfWarMemory.getMap (), trueMap, plane, false, sd, db, "considering building/moving settler");
 			if (desiredCityLocation != null)
 			{
 				log.debug ("AI Player ID " + playerID + " can put a city at " + desiredCityLocation);
-				desiredSpecialUnitLocations.put (AIUnitType.BUILD_CITY, Arrays.asList (desiredCityLocation));
+				desiredCityLocations.add (desiredCityLocation);
 			}
 			
 			// All places on each plane that we want to put road tiles
@@ -598,7 +607,7 @@ public final class UnitAIImpl implements UnitAI
 			if ((missingRoadCells != null) && (missingRoadCells.size () > 0))
 			{
 				log.debug ("AI Player ID " + playerID + " has " + missingRoadCells.size () + " cells it wants to put road on plane " + plane);
-				desiredSpecialUnitLocations.put (AIUnitType.BUILD_ROAD, missingRoadCells);
+				desiredRoadLocations.addAll (missingRoadCells);
 			}
 			
 			// All places on each plane where we have units guarding a node, but don't own the node
@@ -607,12 +616,23 @@ public final class UnitAIImpl implements UnitAI
 			if ((nodesWeDontOwn != null) && (nodesWeDontOwn.size () > 0))
 			{
 				log.debug ("AI Player ID " + playerID + " has " + nodesWeDontOwn.size () + " guarded nodes it needs to capture on plane " + plane);
-				desiredSpecialUnitLocations.put (AIUnitType.MELD_WITH_NODE, nodesWeDontOwn);
+				desiredNodeLocations.addAll (nodesWeDontOwn);
 			}
 		}
+
+		// Now put the non-empty lists into the map
+		final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations = new HashMap<AIUnitType, List<MapCoordinates3DEx>> ();
+		if (desiredCityLocations.size () > 0)
+			desiredSpecialUnitLocations.put (AIUnitType.BUILD_CITY, desiredCityLocations);
+
+		if (desiredRoadLocations.size () > 0)
+			desiredSpecialUnitLocations.put (AIUnitType.BUILD_ROAD, desiredRoadLocations);
+
+		if (desiredNodeLocations.size () > 0)
+			desiredSpecialUnitLocations.put (AIUnitType.MELD_WITH_NODE, desiredNodeLocations);
 		
-		log.trace ("Exiting determineDesiredSpecialUnitLocationsOnEachPlane");
-		return desiredSpecialUnitLocationsOnEachPlane;
+		log.trace ("Exiting determineDesiredSpecialUnitLocations");
+		return desiredSpecialUnitLocations;
 	}
 	
 	/**
@@ -774,6 +794,7 @@ public final class UnitAIImpl implements UnitAI
 
 		// Get the list of units who are actually moving
 		final List<ExpandedUnitDetails> movingUnits = (unitStack.getTransports ().size () > 0) ? unitStack.getTransports () : unitStack.getUnits ();
+		
 		// What's the lowest movement remaining of any unit in the stack
 		int doubleMovementRemaining = Integer.MAX_VALUE;
 		for (final ExpandedUnitDetails thisUnit : movingUnits)

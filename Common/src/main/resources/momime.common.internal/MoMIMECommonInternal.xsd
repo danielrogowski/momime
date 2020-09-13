@@ -29,7 +29,12 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="currentPopulation" type="momimecommon:cityPopulation" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="maximumPopulation" type="momimecommon:cityPopulation" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="finalTotal" type="momimecommon:cityPopulationGrowthRate" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="initialTotal" type="momimecommon:cityPopulationGrowthRate">
+				<xsd:annotation><xsd:documentation>+ve value for growing; -ve value for dying</xsd:documentation></xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="cappedTotal" type="momimecommon:cityPopulationGrowthRate">
+				<xsd:annotation><xsd:documentation>Adjusted to ensure city never goes over maximum population, or falls under 1,000</xsd:documentation></xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -69,11 +74,6 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 					<xsd:element minOccurs="1" maxOccurs="1" name="totalGrowthRateAdjustedForDifficultyLevel" type="momimecommon:cityPopulationGrowthRate">
 						<xsd:annotation>
 							<xsd:documentation>Total growth rate including housing modifier, multiplied up according to difficulty level for AI players</xsd:documentation>
-						</xsd:annotation>
-					</xsd:element>
-					<xsd:element minOccurs="1" maxOccurs="1" name="cappedGrowthRate" type="momimecommon:cityPopulationGrowthRate">
-						<xsd:annotation>
-							<xsd:documentation>Total growth rate including housing modifier and AI difficulty level bonus, possibly reduced to prevent city going over maximum size.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
 				</xsd:sequence>

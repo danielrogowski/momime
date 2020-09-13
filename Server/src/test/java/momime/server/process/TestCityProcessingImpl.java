@@ -583,15 +583,15 @@ public final class TestCityProcessingImpl extends ServerTestData
 		
 		// City growth rate
 		final CityGrowthRateBreakdown humanGrowthRate = new CityGrowthRateBreakdown ();
-		humanGrowthRate.setFinalTotal (650);
+		humanGrowthRate.setCappedTotal (650);
 		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), humanLocation, humanCityMaxSize, difficultyLevel, db)).thenReturn (humanGrowthRate);
 
 		final CityGrowthRateBreakdown aiGrowthRate = new CityGrowthRateBreakdown ();
-		aiGrowthRate.setFinalTotal (250);
+		aiGrowthRate.setCappedTotal (250);
 		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), aiLocation, aiCityMaxSize, difficultyLevel, db)).thenReturn (aiGrowthRate);
 		
 		final CityGrowthRateBreakdown raidersGrowthRate = new CityGrowthRateBreakdown ();
-		raidersGrowthRate.setFinalTotal (400);
+		raidersGrowthRate.setCappedTotal (400);
 		when (cityCalc.calculateCityGrowthRate (players, trueTerrain, trueMap.getBuilding (), raidersLocation, raidersCityMaxSize, difficultyLevel, db)).thenReturn (raidersGrowthRate);
 
 		// Rebels in each city

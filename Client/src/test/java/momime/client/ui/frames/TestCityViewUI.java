@@ -239,7 +239,7 @@ public final class TestCityViewUI extends ClientTestData
 		when (calc.calculateAllCityProductions (client.getPlayers (), terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), "TR01", sd, true, false, db)).thenReturn (productions);
 		
 		final CityGrowthRateBreakdown cityGrowthBreakdown = new CityGrowthRateBreakdown ();
-		cityGrowthBreakdown.setFinalTotal (70);
+		cityGrowthBreakdown.setCappedTotal (70);
 		when (calc.calculateCityGrowthRate (players, terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
 		
 		// Display at least some landscape

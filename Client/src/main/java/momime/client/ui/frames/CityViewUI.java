@@ -1228,7 +1228,7 @@ public final class CityViewUI extends MomClientFrameUI
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (), maxCitySize,
 					getClient ().getSessionDescription ().getDifficultyLevel (), getClient ().getClientDB ());
 			
-				final int cityGrowth = cityGrowthBreakdown.getFinalTotal ();
+				final int cityGrowth = cityGrowthBreakdown.getCappedTotal ();
 				final String cityPopulation = getTextUtils ().intToStrCommas (cityData.getCityPopulation ());
 			
 				if (cityGrowth == 0)

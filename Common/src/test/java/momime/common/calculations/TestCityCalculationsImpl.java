@@ -502,7 +502,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (CityGrowthRateBreakdown.class.getName (), maximum.getClass ().getName ());
 		assertEquals (10000, maximum.getCurrentPopulation ());
 		assertEquals (10000, maximum.getMaximumPopulation ());
-		assertEquals (0, maximum.getFinalTotal ());
+		assertEquals (0, maximum.getInitialTotal ());
+		assertEquals (0, maximum.getCappedTotal ());
 
 		// Growing (this is the example quoted in the strategy guide, however note the example is in contradiction with the formula - from testing I believe the example is right and the formula is supposed to be a -1 not a +1)
 		cityData.setCityPopulation (12000);
@@ -517,8 +518,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, growingEven.getTotalGrowthRate ());
 		assertEquals (100, growingEven.getDifficultyLevelMultiplier ());
 		assertEquals (50, growingEven.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (50, growingEven.getCappedGrowthRate ());
-		assertEquals (50, growingEven.getFinalTotal ());
+		assertEquals (50, growingEven.getInitialTotal ());
+		assertEquals (50, growingEven.getCappedTotal ());
 
 		final CityGrowthRateBreakdown growingOddBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 23, difficultyLevel, db);
 		assertEquals (CityGrowthRateBreakdownGrowing.class.getName (), growingOddBreakdown.getClass ().getName ());
@@ -531,8 +532,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (50, growingOdd.getTotalGrowthRate ());
 		assertEquals (100, growingOdd.getDifficultyLevelMultiplier ());
 		assertEquals (50, growingOdd.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (50, growingOdd.getCappedGrowthRate ());
-		assertEquals (50, growingOdd.getFinalTotal ());
+		assertEquals (50, growingOdd.getInitialTotal ());
+		assertEquals (50, growingOdd.getCappedTotal ());
 
 		// Bonus from race - positive
 		cityData.setCityRaceID ("RC02");
@@ -547,8 +548,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (70, barbarian.getTotalGrowthRate ());
 		assertEquals (100, barbarian.getDifficultyLevelMultiplier ());
 		assertEquals (70, barbarian.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (70, barbarian.getCappedGrowthRate ());
-		assertEquals (70, barbarian.getFinalTotal ());
+		assertEquals (70, barbarian.getInitialTotal ());
+		assertEquals (70, barbarian.getCappedTotal ());
 
 		// Bonus from race - negative
 		cityData.setCityRaceID ("RC03");
@@ -563,8 +564,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (30, highElf.getTotalGrowthRate ());
 		assertEquals (100, highElf.getDifficultyLevelMultiplier ());
 		assertEquals (30, highElf.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (30, highElf.getCappedGrowthRate ());
-		assertEquals (30, highElf.getFinalTotal ());
+		assertEquals (30, highElf.getInitialTotal ());
+		assertEquals (30, highElf.getCappedTotal ());
 
 		// Bonus from buildings
 		final MemoryBuilding granary = new MemoryBuilding ();
@@ -597,8 +598,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (80, withBuildings.getTotalGrowthRate ());
 		assertEquals (100, withBuildings.getDifficultyLevelMultiplier ());
 		assertEquals (80, withBuildings.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (80, withBuildings.getCappedGrowthRate ());
-		assertEquals (80, withBuildings.getFinalTotal ());
+		assertEquals (80, withBuildings.getInitialTotal ());
+		assertEquals (80, withBuildings.getCappedTotal ());
 		
 		// Bonus for AI players
 		pd.setHuman (false);
@@ -618,8 +619,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (80, aiWithBuildings.getTotalGrowthRate ());
 		assertEquals (300, aiWithBuildings.getDifficultyLevelMultiplier ());
 		assertEquals (240, aiWithBuildings.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (240, aiWithBuildings.getCappedGrowthRate ());
-		assertEquals (240, aiWithBuildings.getFinalTotal ());
+		assertEquals (240, aiWithBuildings.getInitialTotal ());
+		assertEquals (240, aiWithBuildings.getCappedTotal ());
 		
 		pd.setHuman (true);
 		
@@ -640,8 +641,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (30, almostCapped.getTotalGrowthRate ());
 		assertEquals (100, almostCapped.getDifficultyLevelMultiplier ());
 		assertEquals (30, almostCapped.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (30, almostCapped.getCappedGrowthRate ());
-		assertEquals (30, almostCapped.getFinalTotal ());
+		assertEquals (30, almostCapped.getInitialTotal ());
+		assertEquals (30, almostCapped.getCappedTotal ());
 
 		// +30 with only 20 to spare would push us over max size
 		cityData.setCityPopulation (21980);
@@ -660,8 +661,8 @@ public final class TestCityCalculationsImpl
 		assertEquals (30, overCap.getTotalGrowthRate ());
 		assertEquals (100, overCap.getDifficultyLevelMultiplier ());
 		assertEquals (30, overCap.getTotalGrowthRateAdjustedForDifficultyLevel ());
-		assertEquals (20, overCap.getCappedGrowthRate ());
-		assertEquals (20, overCap.getFinalTotal ());
+		assertEquals (30, overCap.getInitialTotal ());
+		assertEquals (20, overCap.getCappedTotal ());
 
 		// Dying - note the race and building modifiers don't apply, because we can't by virtue of bonuses force a city to go over max size
 		final CityGrowthRateBreakdown dyingBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 18, difficultyLevel, db);
@@ -671,7 +672,20 @@ public final class TestCityCalculationsImpl
 		assertEquals (18000, dying.getMaximumPopulation ());
 		assertEquals (3, dying.getBaseDeathRate ());
 		assertEquals (150, dying.getCityDeathRate ());
-		assertEquals (-150, dying.getFinalTotal ());
+		assertEquals (-150, dying.getInitialTotal ());
+		assertEquals (-150, dying.getCappedTotal ());
+
+		// Dying and would go under minimum size
+		cityData.setCityPopulation (1020);
+		final CityGrowthRateBreakdown underCapBreakdown = calc.calculateCityGrowthRate (players, map, buildings, cityLocation, 0, difficultyLevel, db);
+		assertEquals (CityGrowthRateBreakdownDying.class.getName (), underCapBreakdown.getClass ().getName ());
+		final CityGrowthRateBreakdownDying underCap = (CityGrowthRateBreakdownDying) underCapBreakdown;
+		assertEquals (1020, underCap.getCurrentPopulation ());
+		assertEquals (1000, underCap.getMaximumPopulation ());
+		assertEquals (1, underCap.getBaseDeathRate ());
+		assertEquals (50, underCap.getCityDeathRate ());
+		assertEquals (-50, underCap.getInitialTotal ());
+		assertEquals (-20, underCap.getCappedTotal ());
 	}
 
 	/**

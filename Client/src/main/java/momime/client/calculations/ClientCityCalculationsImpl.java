@@ -188,15 +188,16 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			// Special boost for AI players
 			if (growing.getDifficultyLevelMultiplier () != 100)
 				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DifficultyLevelMultiplier"));
-				
-			if (growing.getCappedGrowthRate () < growing.getTotalGrowthRate ())
-				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateCapped"));
 		}
 		else if (breakdown instanceof CityGrowthRateBreakdownDying)
 			getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DeathRate"));
 		
 		else
 			getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "AtMaximumSize"));
+
+		// Population cap
+		if (breakdown.getCappedTotal () != breakdown.getInitialTotal ())
+			getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateCapped"));
 		
 		log.trace ("Exiting describeCityGrowthRateCalculation");
 		return text.toString ();

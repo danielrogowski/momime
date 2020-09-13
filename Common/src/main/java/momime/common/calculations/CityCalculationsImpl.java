@@ -437,7 +437,8 @@ public final class CityCalculationsImpl implements CityCalculations
 
 		// Start off calculation
 		final int currentPopulation = cityData.getCityPopulation ();
-		final int maximumPopulation = maxCitySize * 1000;
+		final int maximumPopulation = Math.max (maxCitySize, 1)  * 1000;
+		final int minimumPopulation = 1000;
 
 		// Work out the direction the population is changing in
 		final int spaceLeft = maximumPopulation - currentPopulation;
@@ -503,21 +504,14 @@ public final class CityCalculationsImpl implements CityCalculations
 			// AI players get a special bonus
 			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "calculateCityGrowthRate");
 			final MomPersistentPlayerPublicKnowledge cityOwnerPub = (MomPersistentPlayerPublicKnowledge) cityOwner.getPersistentPlayerPublicKnowledge ();
-			if (cityOwner.getPlayerDescription ().isHuman ())
+			if ((cityOwner.getPlayerDescription ().isHuman ()) || (growing.getTotalGrowthRateIncludingHousingModifier () <= 0))
 				growing.setDifficultyLevelMultiplier (100);
 			else
 				growing.setDifficultyLevelMultiplier (PlayerKnowledgeUtils.isWizard (cityOwnerPub.getWizardID ()) ? difficultyLevel.getAiWizardsPopulationGrowthRateMultiplier () :
 					difficultyLevel.getAiRaidersPopulationGrowthRateMultiplier ());
 
-			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingHousingModifier () * growing.getDifficultyLevelMultiplier ()) / 100); 
-
-			// Don't allow maximum to go over maximum population
-			if (growing.getTotalGrowthRateAdjustedForDifficultyLevel () > spaceLeft)
-				growing.setCappedGrowthRate (spaceLeft);
-			else
-				growing.setCappedGrowthRate (growing.getTotalGrowthRateAdjustedForDifficultyLevel ());
-
-			growing.setFinalTotal (growing.getCappedGrowthRate ());
+			growing.setTotalGrowthRateAdjustedForDifficultyLevel ((growing.getTotalGrowthRateIncludingHousingModifier () * growing.getDifficultyLevelMultiplier ()) / 100);
+			growing.setInitialTotal (growing.getTotalGrowthRateAdjustedForDifficultyLevel ());
 			breakdown = growing;
 		}
 		else if (spaceLeft < 0)
@@ -528,7 +522,7 @@ public final class CityCalculationsImpl implements CityCalculations
 			// Calculate how many population units we're over
 			dying.setBaseDeathRate ((currentPopulation / 1000) - maxCitySize);
 			dying.setCityDeathRate (dying.getBaseDeathRate () * 50);
-			dying.setFinalTotal (-dying.getCityDeathRate ());
+			dying.setInitialTotal (-dying.getCityDeathRate ());
 
 			breakdown = dying;
 		}
@@ -538,11 +532,31 @@ public final class CityCalculationsImpl implements CityCalculations
 			breakdown = new CityGrowthRateBreakdown ();
 		}
 
+		// Don't allow population to grow over maximum
+		if (breakdown.getInitialTotal () > 0)
+		{
+			if (currentPopulation + breakdown.getInitialTotal () > maximumPopulation)
+				breakdown.setCappedTotal (maximumPopulation - currentPopulation);
+			else
+				breakdown.setCappedTotal (breakdown.getInitialTotal ());
+		}
+
+		// Don't allow population to shrink under minimum
+		else if (breakdown.getInitialTotal () < 0)
+		{
+			if (currentPopulation + breakdown.getInitialTotal () < minimumPopulation)
+				breakdown.setCappedTotal (minimumPopulation - currentPopulation);
+			else
+				breakdown.setCappedTotal (breakdown.getInitialTotal ());
+		}
+		
+		// else initial total is exaclty 0, in which case we can leave capped total to default to 0 as well
+
 		// Set common values
 		breakdown.setCurrentPopulation (currentPopulation);
-		breakdown.setMaximumPopulation (maximumPopulation);
+		breakdown.setMaximumPopulation (maximumPopulation);		
 
-		log.trace ("Exiting calculateCityGrowthRate = " + breakdown.getFinalTotal ());
+		log.trace ("Exiting calculateCityGrowthRate = " + breakdown.getCappedTotal ());
 		return breakdown;
 	}
 

@@ -101,16 +101,6 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 					text = null;
 				break;
 				
-			case "CAPPED_GROWTH_RATE":
-				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
-				{
-					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
-					text = getTextUtils ().intToStrPlusMinus (growing.getCappedGrowthRate ());
-				}
-				else
-					text = null;
-				break;
-				
 			// AI players
 			case "AI_POPULATION_GROWTH_RATE_MULTIPLIER":
 				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
@@ -148,6 +138,17 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 				{
 					final CityGrowthRateBreakdownDying dying = (CityGrowthRateBreakdownDying) getBreakdown ();
 					text = getTextUtils ().intToStrPlusMinus (dying.getCityDeathRate ());
+				}
+				else
+					text = null;
+				break;
+
+			// Applicable to both growing + dying
+			case "CAPPED_RATE":
+				if (getBreakdown () instanceof CityGrowthRateBreakdownGrowing)
+				{
+					final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) getBreakdown ();
+					text = getTextUtils ().intToStrPlusMinus (growing.getCappedTotal ());
 				}
 				else
 					text = null;

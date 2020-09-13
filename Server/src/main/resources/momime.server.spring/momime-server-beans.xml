@@ -716,6 +716,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="aiUnitCalculations" ref="aiUnitCalculations" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="spellCalculations" ref="spellCalculations" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
 	</bean>
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">
@@ -749,6 +753,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="spellAI" ref="spellAI" />
 	</bean>
 
 	<bean id="unitAI" class="momime.server.ai.UnitAIImpl">

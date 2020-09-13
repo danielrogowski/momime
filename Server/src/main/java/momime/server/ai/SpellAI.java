@@ -10,10 +10,12 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -81,4 +83,21 @@ public interface SpellAI
 	 */
 	public void decideSpellTarget (final PlayerServerDetails player, final SpellSvr spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+
+	/**
+	 * AI player decides whether to cast a spell in combat
+	 * 
+	 * @param player AI player who needs to choose what to cast
+	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
+	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
+	 * @throws MomException If there are any issues with data or calculation logic
+	 */
+	public void decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation,
+		final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

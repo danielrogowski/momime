@@ -27,8 +27,11 @@ import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.WizardState;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
@@ -55,6 +58,9 @@ public final class CombatAIImpl implements CombatAI
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** AI decisions about spells */
+	private SpellAI spellAI;
 	
 	/**
 	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
@@ -307,6 +313,13 @@ public final class CombatAIImpl implements CombatAI
 	{
 		log.trace ("Entering aiCombatTurn: Player ID + " + currentPlayer.getPlayerDescription ().getPlayerID ());
 		
+		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) currentPlayer.getPersistentPlayerPublicKnowledge ();
+		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
+			(pub.getWizardState () == WizardState.ACTIVE))
+			
+			getSpellAI ().decideWhatToCastCombat (currentPlayer, null, combatLocation, mom);
+		
 		// Get the combat terrain
 		final ServerGridCellEx serverGridCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
@@ -412,5 +425,21 @@ public final class CombatAIImpl implements CombatAI
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return AI decisions about spells
+	 */
+	public final SpellAI getSpellAI ()
+	{
+		return spellAI;
+	}
+
+	/**
+	 * @param ai AI decisions about spells
+	 */
+	public final void setSpellAI (final SpellAI ai)
+	{
+		spellAI = ai;
 	}
 }

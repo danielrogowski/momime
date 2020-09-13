@@ -21,19 +21,28 @@ import com.ndg.random.RandomUtils;
 import com.ndg.random.WeightedChoicesImpl;
 
 import momime.common.MomException;
+import momime.common.calculations.SpellCalculations;
+import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitCanCast;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -41,6 +50,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.SpellProcessing;
 import momime.server.process.SpellQueueing;
 
@@ -87,6 +97,18 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Methods that the AI uses to calculate stats about types of units and rating how good units are */
 	private AIUnitCalculations aiUnitCalculations;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
+	
+	/** Spell calculations */
+	private SpellCalculations spellCalculations;
+	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -553,6 +575,173 @@ public final class SpellAIImpl implements SpellAI
 	}
 
 	/**
+	 * AI player decides whether to cast a spell in combat
+	 * 
+	 * @param player AI player who needs to choose what to cast
+	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
+	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
+	 * @throws MomException If there are any issues with data or calculation logic
+	 */
+	@Override
+	public final void decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation,
+		final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		log.trace ("Entering decideWhatToCastCombat: Player ID " + player.getPlayerDescription ().getPlayerID ());
+		
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+		
+		// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
+		// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
+		String overridePickID = null;
+		if ((combatCastingUnit != null) && (combatCastingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)))
+		{
+			overridePickID = combatCastingUnit.getModifiedUnitMagicRealmLifeformType ().getCastSpellsFromPickID ();
+			if (overridePickID == null)
+				overridePickID = combatCastingUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ();
+		}
+		
+		// Now we can go through every spell in the book to test which we can consider casting
+		final List<CombatAISpellChoice> choices = new ArrayList<CombatAISpellChoice> ();
+		for (final SpellSvr spell : mom.getServerDB ().getSpells ())
+			if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) &&
+					
+				// Ignore "recall" spells then the AI would then have to understand its likelehood of losing a combat, and there's nothing like this yet
+				((spell.getSpellBookSectionID () != SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getCombatBaseDamage () != null)))
+			{
+				// A lot of this is lifted from the same validation that requestCastSpell does
+				boolean knowSpell;
+				if (overridePickID != null)
+					knowSpell = overridePickID.equals (spell.getSpellRealm ());
+				else
+				{
+					final SpellResearchStatusID researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus ();
+					knowSpell = (researchStatus == SpellResearchStatusID.AVAILABLE);
+					
+					// Some heroes have their own list of spells they know even if their owning wizard does not
+					if ((!knowSpell) && (combatCastingUnit != null))
+					{
+						final Iterator<UnitCanCast> knownSpellsIter = combatCastingUnit.getUnitDefinition ().getUnitCanCast ().iterator ();
+						while ((!knowSpell) && (knownSpellsIter.hasNext ()))
+						{
+							final UnitCanCast thisKnownSpell = knownSpellsIter.next ();
+							if ((thisKnownSpell.getUnitSpellID ().equals (spell.getSpellID ())) && (thisKnownSpell.getNumberOfTimes () == null))
+								knowSpell = true;
+						}
+					}
+				}
+				
+				if (knowSpell)
+				{
+					// Now validate we have enough remaining MP and casting skill to cast it
+					final boolean canAffordSpell;
+					final int unmodifiedCombatCastingCost = spell.getCombatCastingCost ();
+					if (combatCastingUnit == null)
+					{
+						// Can wizard afford casting skill and mana to cast this spell?
+						final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+							(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+
+						// Wizards get range penalty depending where the combat is in relation to their Fortress; units participating in the combat don't get this
+						final int reducedCombatCastingCost = getSpellUtils ().getReducedCastingCost
+							(spell, unmodifiedCombatCastingCost, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+
+						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
+							getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (),
+							mom.getSessionDescription ().getOverlandMapSize ());
+					
+						final int multipliedManaCost = (doubleRangePenalty == null) ? Integer.MAX_VALUE :
+							(reducedCombatCastingCost * doubleRangePenalty + 1) / 2;
+						
+						// Wizards have limited casting skill they can use in each combat
+						final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+							(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+
+						final int ourSkill;
+						if (player == combatPlayers.getAttackingPlayer ())
+							ourSkill = gc.getCombatAttackerCastingSkillRemaining ();
+						else if (player == combatPlayers.getDefendingPlayer ())
+							ourSkill = gc.getCombatDefenderCastingSkillRemaining ();
+						else
+							ourSkill = 0;
+
+						canAffordSpell = (reducedCombatCastingCost <= ourSkill) &&
+							(multipliedManaCost <= getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA));
+					}
+					else
+					{
+						// Validation for units casting is much simpler, as reductions for number of spell books or certain retorts and the range penalty all don't apply
+						canAffordSpell = (unmodifiedCombatCastingCost <= combatCastingUnit.getManaRemaining ());
+					}
+					
+					if (canAffordSpell)
+					{
+						// Only add combat enchantments that aren't already there.  Summoning spells (that are not raise dead-type spells) require no target or special checks.
+						if ((spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS) ||
+							((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getSummonedUnit ().size () > 0)))
+						{
+							log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " (" + spell.getSpellName () + ") in combat which requires no unit checks");
+							choices.add (new CombatAISpellChoice (spell, null, null));
+						}
+						else
+						{
+							// Every other kind of spell requires either to be targetted on a specific unit, or at least for spells that hit all units (e.g. Flame Strike or Mass Healing)
+							// that there are some appropriate targets for the spell to act on.  First figure out which of those situations it is.
+							Integer targetCount;
+							if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
+								(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
+									(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
+								
+								targetCount = null;		// Targetted at a specific unit, so do not keep a count of targets
+							else
+								targetCount = 0;		// Targetted at all units, so count how many
+
+							for (final MemoryUnit targetUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+							{
+								final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
+									mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+								
+								if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, player.getPlayerDescription ().getPlayerID (),
+									null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+								{
+									if (targetCount == null)
+									{
+										log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " (" + spell.getSpellName () + ") in combat at Unit URN " + targetUnit.getUnitURN ());
+										choices.add (new CombatAISpellChoice (spell, xu, null));
+									}
+									else
+										targetCount++;
+								}
+							}
+							
+							// Is it a spell that hits all units, and found some targets?
+							if ((targetCount != null) && (targetCount > 0))
+							{
+								log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " (" + spell.getSpellName () + ") in combat which will hit " + targetCount + " target(s)");
+								choices.add (new CombatAISpellChoice (spell, null, targetCount));
+							}
+						}
+					}
+				}
+			}
+		
+		if (choices.size () > 0)
+		{
+			log.debug ("Cast something in combat");
+		}
+		// getSpellQueueing ().requestCastSpell (player, (combatCastingUnit == null) ? null : combatCastingUnit.getUnitURN (), null, null, spell.getSpellID (), null, combatLocation, null, null, null, mom);
+
+		log.trace ("Exiting decideWhatToCastCombat");
+	}
+	
+	/**
 	 * @return Spell utils
 	 */
 	public final SpellUtils getSpellUtils ()
@@ -742,5 +931,69 @@ public final class SpellAIImpl implements SpellAI
 	public final void setAiUnitCalculations (final AIUnitCalculations calc)
 	{
 		aiUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+	
+	/**
+	 * @param utils Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils utils)
+	{
+		combatMapUtils = utils;
+	}
+
+	/**
+	 * @return Spell calculations
+	 */
+	public final SpellCalculations getSpellCalculations ()
+	{
+		return spellCalculations;
+	}
+
+	/**
+	 * @param calc Spell calculations
+	 */
+	public final void setSpellCalculations (final SpellCalculations calc)
+	{
+		spellCalculations = calc;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param utils Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils utils)
+	{
+		resourceValueUtils = utils;
 	}
 }

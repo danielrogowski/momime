@@ -383,30 +383,32 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 					final List<MomResourceConsumer> consumers = listConsumersOfProductionType (player, mom.getPlayers (), productionType.getProductionTypeID (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 					log.debug ("findInsufficientProductionAndSellSomething: Found " + consumers.size () + " consumers of productionType " + productionType.getProductionTypeID ());
-
-					// Want random choice to be weighted, e.g. if something consumes 4 gold then it should be 4x more likely to be chosen than something that only consumes 1 gold
-					int totalConsumption = 0;
-					for (final MomResourceConsumer consumer : consumers)
-						totalConsumption = totalConsumption + consumer.getConsumptionAmount ();
-
-					int randomConsumption = getRandomUtils ().nextInt (totalConsumption);
-					MomResourceConsumer chosenConsumer = null;
-					final Iterator<MomResourceConsumer> consumerIter = consumers.iterator ();
-					while ((chosenConsumer == null) && (consumerIter.hasNext ()))
+					if (consumers.size () > 0)
 					{
-						final MomResourceConsumer thisConsumer = consumerIter.next ();
-						if (randomConsumption < thisConsumer.getConsumptionAmount ())
-							chosenConsumer = thisConsumer;
-						else
-							randomConsumption = randomConsumption - thisConsumer.getConsumptionAmount ();
+						// Want random choice to be weighted, e.g. if something consumes 4 gold then it should be 4x more likely to be chosen than something that only consumes 1 gold
+						int totalConsumption = 0;
+						for (final MomResourceConsumer consumer : consumers)
+							totalConsumption = totalConsumption + consumer.getConsumptionAmount ();
+	
+						int randomConsumption = getRandomUtils ().nextInt (totalConsumption);
+						MomResourceConsumer chosenConsumer = null;
+						final Iterator<MomResourceConsumer> consumerIter = consumers.iterator ();
+						while ((chosenConsumer == null) && (consumerIter.hasNext ()))
+						{
+							final MomResourceConsumer thisConsumer = consumerIter.next ();
+							if (randomConsumption < thisConsumer.getConsumptionAmount ())
+								chosenConsumer = thisConsumer;
+							else
+								randomConsumption = randomConsumption - thisConsumer.getConsumptionAmount ();
+						}
+	
+						if (chosenConsumer == null)
+							throw new MomException ("findInsufficientProductionAndSellSomething failed to pick random weighted consumer from total consumption " + totalConsumption);
+	
+						// Kill off the unit/building/spell and generate a new turn message about it
+						found = true;
+						chosenConsumer.kill (mom);
 					}
-
-					if (chosenConsumer == null)
-						throw new MomException ("findInsufficientProductionAndSellSomething failed to pick random weighted consumer from total consumption " + totalConsumption);
-
-					// Kill off the unit/building/spell and generate a new turn message about it
-					found = true;
-					chosenConsumer.kill (mom);
 				}
 			}
 		}

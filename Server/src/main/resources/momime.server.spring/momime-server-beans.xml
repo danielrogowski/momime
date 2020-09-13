@@ -714,6 +714,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitAI" ref="unitAI" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="aiUnitCalculations" ref="aiUnitCalculations" />
 	</bean>
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">

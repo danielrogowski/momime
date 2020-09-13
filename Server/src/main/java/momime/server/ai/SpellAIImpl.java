@@ -2,6 +2,7 @@ package momime.server.ai;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
+import com.ndg.random.WeightedChoicesImpl;
 
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
@@ -29,11 +31,13 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.database.ServerDatabaseEx;
 import momime.server.database.SpellSvr;
@@ -77,6 +81,12 @@ public final class SpellAIImpl implements SpellAI
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Methods that the AI uses to calculate stats about types of units and rating how good units are */
+	private AIUnitCalculations aiUnitCalculations;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -226,7 +236,9 @@ public final class SpellAIImpl implements SpellAI
 			
 			// Do we need a magic/guardian spirit in order to capture a node on the same plane as our summoning circle?
 			// If so then that's important enough to just do it, with no randomness.
-			final List<SpellSvr> considerSpells = new ArrayList<SpellSvr> ();
+			final WeightedChoicesImpl<SpellSvr> considerSpells = new WeightedChoicesImpl<SpellSvr> ();
+			considerSpells.setRandomUtils (getRandomUtils ());
+			
 			if (wantedUnitTypesOnEachPlane.get (summoningCirclePlane).contains (AIUnitType.MELD_WITH_NODE))
 			{
 				// What's the best spirit summoning unit we can get?  So summon Guardian Spirit if we have it, otherwise Magic Spirit
@@ -235,7 +247,7 @@ public final class SpellAIImpl implements SpellAI
 				
 				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " has a guarded node to capture on same plane as their summoning circle " +
 					summoningCircleLocation.getCityLocation () + " so summonining spirit with " + spirits.get (0).getSpell ().getSpellID ());
-				considerSpells.add (spirits.get (0).getSpell ());
+				considerSpells.add (1, spirits.get (0).getSpell ());
 			}
 
 			// Do we need a magic/guardian spirit in order to capture a node on the opposite plane as our summoning circle AND have a city there we can move our summoning circle to?
@@ -245,7 +257,7 @@ public final class SpellAIImpl implements SpellAI
 			{
 				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " has a guarded node on the opposite plane to their summoning circle, " +
 					" so casting summoning circle spell to move our summoning circle onto that plane, so after we can summon a spirit there");
-				considerSpells.add (mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_SUMMONING_CIRCLE, "decideWhatToCastOverland"));
+				considerSpells.add (1, mom.getServerDB ().findSpell (CommonDatabaseConstants.SPELL_ID_SUMMONING_CIRCLE, "decideWhatToCastOverland"));
 			}
 			
 			else
@@ -294,7 +306,7 @@ public final class SpellAIImpl implements SpellAI
 									player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 								{
 									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting overland enchantment " + spell.getSpellID ());
-									considerSpells.add (spell);
+									considerSpells.add (2, spell);
 								}
 								break;
 								
@@ -304,7 +316,7 @@ public final class SpellAIImpl implements SpellAI
 									(summonableCombatUnits.containsKey (spell.getSpellRealm ())) && (summonableCombatUnits.get (spell.getSpellRealm ()).get (0).getSpell () == spell))
 								{
 									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting summoning spell " + spell.getSpellID ());
-									considerSpells.add (spell);
+									considerSpells.add (3, spell);
 								}
 								break;
 								
@@ -327,9 +339,9 @@ public final class SpellAIImpl implements SpellAI
 												final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 												
 												// Routine checks everything, even down to whether there is even a city there or not, or whether the city already has that spell cast on it, so just let it handle it
-												if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
-													player.getPlayerDescription ().getPlayerID (), cityLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-													mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+												if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
+													player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
+													priv.getFogOfWarMemory ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
 													
 													validTargetFound = true;
 		
@@ -342,10 +354,33 @@ public final class SpellAIImpl implements SpellAI
 									if (validTargetFound)
 									{
 										log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering casting city enchantment/curse spell " + spell.getSpellID ());
-										considerSpells.add (spell);
+										considerSpells.add (1, spell);
 									}
 								}
-								break;							
+								break;
+								
+							// Unit enchantments - again don't pick target until its finished casting
+							case UNIT_ENCHANTMENTS:
+								boolean validTargetFound = false;
+								final Iterator<MemoryUnit> iter = priv.getFogOfWarMemory ().getUnit ().iterator ();
+								while ((!validTargetFound) && (iter.hasNext ()))
+								{
+									final MemoryUnit mu = iter.next ();
+									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
+									if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
+										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, player.getPlayerDescription ().getPlayerID (), null, xu,
+											priv.getFogOfWarMemory (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+										
+										validTargetFound = true;
+								}
+
+								if (validTargetFound)
+								{
+									log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " considering unit enchantment spell " + spell.getSpellID ());
+									considerSpells.add (1, spell);
+								}
+								
+								break;
 								
 							// This is fine, the AI doesn't cast every type of spell yet
 							default:
@@ -353,10 +388,9 @@ public final class SpellAIImpl implements SpellAI
 			}
 						
 			// If we found any, then pick one randomly
-			if (considerSpells.size () > 0)
+			final SpellSvr spell = considerSpells.nextWeightedValue ();
+			if (spell != null)
 			{
-				final SpellSvr spell = considerSpells.get (getRandomUtils ().nextInt (considerSpells.size ()));
-
 				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " casting overland spell " + spell.getSpellID ());
 				getSpellQueueing ().requestCastSpell (player, null, null, null, spell.getSpellID (), null, null, null, null, null, mom);
 			}
@@ -440,9 +474,9 @@ public final class SpellAIImpl implements SpellAI
 								final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, z);
 								
 								// Routine checks everything, even down to whether there is even a city there or not, so just let it handle it
-								if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell,
-									player.getPlayerDescription ().getPlayerID (), cityLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (),
-									mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
+								if (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (priv.getFogOfWarMemory ().getMaintainedSpell (), spell,
+									player.getPlayerDescription ().getPlayerID (), cityLocation, priv.getFogOfWarMemory ().getMap (), priv.getFogOfWar (),
+									priv.getFogOfWarMemory ().getBuilding ()) == TargetSpellResult.VALID_TARGET)
 								{
 									final int thisCityQuality = getCityAI ().evaluateCityQuality (cityLocation, false, false, priv.getFogOfWarMemory ().getMap (), mom.getSessionDescription (), mom.getServerDB ());
 									if ((targetLocation == null) || (thisCityQuality > bestCityQuality))
@@ -452,6 +486,31 @@ public final class SpellAIImpl implements SpellAI
 									}
 								}
 							}
+				}
+				break;
+				
+			// Unit enchantments
+			case UNIT_ENCHANTMENTS:
+				int bestUnitRating = -1;
+				for (final MemoryUnit mu : priv.getFogOfWarMemory ().getUnit ())
+				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
+					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
+						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, player.getPlayerDescription ().getPlayerID (), null, xu,
+							priv.getFogOfWarMemory (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
+					{
+						int thisUnitRating = getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
+						
+						// Give priority to buffing heroes
+						if (xu.isHero ())
+							thisUnitRating = thisUnitRating + 10;
+						
+						if ((targetUnit == null) || (thisUnitRating > bestUnitRating))
+						{
+							targetUnit = mu;
+							bestUnitRating = thisUnitRating;
+						}
+					}
 				}
 				break;
 				
@@ -473,6 +532,13 @@ public final class SpellAIImpl implements SpellAI
 						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, player.getPlayerDescription ().getPlayerID (), targetLocation);
 					if ((citySpellEffectIDs != null) && (citySpellEffectIDs.size () > 0))
 						citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+					break;
+					
+				case UNIT_ENCHANTMENTS:
+					final List<String> unitSkillIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+						(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), spell, player.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
+					if ((unitSkillIDs != null) && (unitSkillIDs.size () > 0))
+						unitSkillID = unitSkillIDs.get (getRandomUtils ().nextInt (unitSkillIDs.size ()));
 					break;
 			
 				// This is fine, only need to do this for certain types of spells
@@ -644,5 +710,37 @@ public final class SpellAIImpl implements SpellAI
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils csu)
 	{
 		coordinateSystemUtils = csu;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Methods that the AI uses to calculate stats about types of units and rating how good units are
+	 */
+	public final AIUnitCalculations getAiUnitCalculations ()
+	{
+		return aiUnitCalculations;
+	}
+
+	/**
+	 * @param calc Methods that the AI uses to calculate stats about types of units and rating how good units are
+	 */
+	public final void setAiUnitCalculations (final AIUnitCalculations calc)
+	{
+		aiUnitCalculations = calc;
 	}
 }

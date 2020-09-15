@@ -1,5 +1,6 @@
 package momime.server.ai;
 
+import momime.common.database.SpellBookSectionID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.database.SpellSvr;
 
@@ -27,6 +28,38 @@ final class CombatAISpellChoice
 		spell = aSpell;
 		targetUnit = aTargetUnit;
 		targetCount = aTargetCount;
+	}
+	
+	/**
+	 * @return Estimate of how useful this spell will be
+	 */
+	public final int getWeighting ()
+	{
+		int value;
+
+		// Rate multiple target spells according to how many targets they have (2..18)
+		if (targetCount != null)
+			value = targetCount * 2;
+		
+		// Rate other kinds of spells according to their type
+		else if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
+			value = 7;
+
+		else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+			value = 5;
+		
+		else
+			value = 3;
+
+		// Assume more expensive spells are better.
+		// Note multiplier here is purposefully small so really expensive spells will bump over the initial value ratings from above and move themselves higher up the list.
+		value = (value * 20) + spell.getCombatCastingCost ();
+		
+		// Also pay more attention to heroes (both ours and theirs)
+		if ((getTargetUnit () != null) && (getTargetUnit ().isHero ()))
+			value = value + 25;
+		
+		return value;
 	}
 
 	/**

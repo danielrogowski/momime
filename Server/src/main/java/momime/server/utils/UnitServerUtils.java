@@ -5,6 +5,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -16,6 +18,7 @@ import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
@@ -196,4 +199,18 @@ public interface UnitServerUtils
 	 * @param experienceSkillValue The number of experience points the unit now has
 	 */
 	public void checkIfHeroGainedALevel (final int unitURN, final UnitTypeSvr unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue);
+
+	/**
+	 * @param combatLocation Location of combat to check
+	 * @param combatMap Scenery of the combat map at that location
+	 * @param startPosition Position in the combat map to start checking from
+	 * @param trueUnits List of true units
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
+	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 */
+	public MapCoordinates2DEx findFreeCombatPositionClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final ServerDatabaseEx db)
+		throws RecordNotFoundException;
 }

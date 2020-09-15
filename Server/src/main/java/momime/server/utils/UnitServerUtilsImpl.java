@@ -10,7 +10,9 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -29,6 +31,7 @@ import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
@@ -844,6 +847,63 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		}
 		
 		log.trace ("Exiting checkIfHeroGainedALevel");
+	}
+	
+	/**
+	 * @param combatLocation Location of combat to check
+	 * @param combatMap Scenery of the combat map at that location
+	 * @param startPosition Position in the combat map to start checking from
+	 * @param trueUnits List of true units
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
+	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 */
+	@Override
+	public final MapCoordinates2DEx findFreeCombatPositionClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final ServerDatabaseEx db)
+		throws RecordNotFoundException
+	{
+		log.trace ("Entering findFreeCombatPositionClosestTo: " + combatLocation + ", " + startPosition);
+		
+		MapCoordinates2DEx found = null;
+		final MapCoordinates2DEx coords = new MapCoordinates2DEx (startPosition);
+		
+		int ringNumber = 1;
+		while (found == null)
+		{
+			// Move left
+			getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 7);
+
+			int directionChk = 1;
+			while ((found == null) && (directionChk <= 4))
+			{
+				final int d = directionChk * 2;
+				int traverseSide = 1;
+				while ((found == null) && (traverseSide <= ringNumber * 2))
+				{
+					// Move in direction d
+					if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, d))
+					{
+						// Is this cell unoccupied + passable terrain?
+						if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords) == null) &&
+							(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+								(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
+							
+							found = coords;
+					}
+					
+					traverseSide++;
+				}
+				
+				directionChk++;
+			}
+			
+			ringNumber++;
+		}
+		
+		log.trace ("Exiting findFreeCombatPositionClosestTo = " + found);
+		return found;
 	}
 	
 	/**

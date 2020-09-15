@@ -720,6 +720,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellCalculations" ref="spellCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">

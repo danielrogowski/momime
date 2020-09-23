@@ -377,6 +377,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @param targetUnit Unit to target the spell on, if appropriate for spell book section, otherwise null
 	 * @param targetLocation Location to target the spell at, if appropriate for spell book section, otherwise null
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether the spell cast was an attack that resulted in the combat ending
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
 	 * @throws JAXBException If there is a problem sending the reply to the client
@@ -384,7 +385,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final Integer combatCastingFixedSpellNumber,
+	public final boolean castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
@@ -407,6 +408,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		// Set this if we need to call combatEnded at the end
 		PlayerServerDetails winningPlayer = null;
+		
+		// Keep track of if we, or if resolveAttack, called combatEnded
+		boolean combatEnded = false;
 		
 		// Combat enchantments
 		if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
@@ -641,7 +645,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (targetUnits.size () > 0)
 			{
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
-					getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
+					combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
 						null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 				
 				else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
@@ -822,9 +826,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		// Did casting the spell result in winning/losing the combat?
 		if (winningPlayer != null)
+		{
 			getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+			combatEnded = true;
+		}
 
-		log.trace ("Exiting castCombatNow");
+		log.trace ("Exiting castCombatNow = " + combatEnded);
+		return combatEnded;
 	}
 	
 	/**

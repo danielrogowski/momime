@@ -315,47 +315,59 @@ public final class CombatAIImpl implements CombatAI
 		
 		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) currentPlayer.getPersistentPlayerPublicKnowledge ();
+		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
+		
 		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (!currentPlayer.getPlayerDescription ().isHuman ()) &&
 			(pub.getWizardState () == WizardState.ACTIVE))
 			
-			getSpellAI ().decideWhatToCastCombat (currentPlayer, null, combatLocation, mom);
+			result = getSpellAI ().decideWhatToCastCombat (currentPlayer, null, combatLocation, mom);
 		
-		// Get the combat terrain
-		final ServerGridCellEx serverGridCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		
-		final MapAreaOfCombatTiles combatMap = serverGridCell.getCombatMap ();
-		
-		// Get a list of all unit we need to move
-		final List<MemoryUnit> unitsToMove = listUnitsToMove (combatLocation, currentPlayer.getPlayerDescription ().getPlayerID (),
-			mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-		
-		// Sort the list so that we use spellcasters first, then ranged attacks, and only move close combat guys last
-		final List<ExpandedUnitDetailsAndCombatAIOrder> sortedUnitsToMove = new ArrayList<ExpandedUnitDetailsAndCombatAIOrder> ();
-		for (final MemoryUnit tu : unitsToMove)
+		if (result != CombatAIMovementResult.ENDED_COMBAT)
 		{
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			// Get the combat terrain
+			final ServerGridCellEx serverGridCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 			
-			sortedUnitsToMove.add (new ExpandedUnitDetailsAndCombatAIOrder (xu, calculateUnitCombatAIOrder (xu)));
-		}
-		
-		Collections.sort (sortedUnitsToMove);
-		
-		// Move each unit in turn
-		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
-		final Iterator<ExpandedUnitDetailsAndCombatAIOrder> sortedUnitsToMoveIter = sortedUnitsToMove.iterator ();
-		while ((result != CombatAIMovementResult.ENDED_COMBAT) && (sortedUnitsToMoveIter.hasNext ()))
-		{
-			final ExpandedUnitDetailsAndCombatAIOrder tu = sortedUnitsToMoveIter.next ();
+			final MapAreaOfCombatTiles combatMap = serverGridCell.getCombatMap ();
 			
-			// A previous unit might have already fired the shot that wiped out the enemy and ended the
-			// combat, in which case all units would have had their CombatX, CombatY values set to -1, -1
-			if (tu.getUnit ().getCombatPosition () != null)
+			// Get a list of all unit we need to move
+			final List<MemoryUnit> unitsToMove = listUnitsToMove (combatLocation, currentPlayer.getPlayerDescription ().getPlayerID (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+			
+			// Sort the list so that we use spellcasters first, then ranged attacks, and only move close combat guys last
+			final List<ExpandedUnitDetailsAndCombatAIOrder> sortedUnitsToMove = new ArrayList<ExpandedUnitDetailsAndCombatAIOrder> ();
+			for (final MemoryUnit tu : unitsToMove)
 			{
-				final CombatAIMovementResult thisResult = moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom);
-				if (thisResult != CombatAIMovementResult.NOTHING)
-					result = thisResult;
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				sortedUnitsToMove.add (new ExpandedUnitDetailsAndCombatAIOrder (xu, calculateUnitCombatAIOrder (xu)));
+			}
+			
+			Collections.sort (sortedUnitsToMove);
+			
+			// Move each unit in turn
+			final Iterator<ExpandedUnitDetailsAndCombatAIOrder> sortedUnitsToMoveIter = sortedUnitsToMove.iterator ();
+			while ((result != CombatAIMovementResult.ENDED_COMBAT) && (sortedUnitsToMoveIter.hasNext ()))
+			{
+				final ExpandedUnitDetailsAndCombatAIOrder tu = sortedUnitsToMoveIter.next ();
+				
+				// A previous unit might have already fired the shot that wiped out the enemy and ended the
+				// combat, in which case all units would have had their CombatX, CombatY values set to -1, -1
+				if (tu.getUnit ().getCombatPosition () != null)
+				{
+					// Consider casting a spell if the unit is a spellcaster without a ranged attack (e.g. Angel)
+					CombatAIMovementResult thisResult = CombatAIMovementResult.NOTHING;
+					
+					if ((tu.getUnit ().getManaRemaining () > 0) && (!getUnitCalculations ().canMakeRangedAttack (tu.getUnit ())))
+						thisResult = getSpellAI ().decideWhatToCastCombat (currentPlayer, tu.getUnit (), combatLocation, mom);
+					
+					if (thisResult == CombatAIMovementResult.NOTHING)
+						thisResult = moveOneUnit (tu.getUnit (), combatLocation, combatMap, mom);
+					
+					if (thisResult != CombatAIMovementResult.NOTHING)
+						result = thisResult;
+				}
 			}
 		}
 		

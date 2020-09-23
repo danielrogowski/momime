@@ -590,6 +590,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param combatLocation Location of the combat where this spell is being cast
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether a spell was cast or not
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
@@ -597,7 +598,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation,
+	public final CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation,
 		final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -774,7 +775,10 @@ public final class SpellAIImpl implements SpellAI
 			}
 		
 		final CombatAISpellChoice choice = choices.nextWeightedValue ();
-		if (choice != null)
+		final CombatAIMovementResult result;
+		if (choice == null)
+			result = CombatAIMovementResult.NOTHING;
+		else
 		{
 			log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " decided to cast combat spell " + choice.getSpell ().getSpellID () + " (" +
 				choice.getSpell ().getSpellName () + ")");
@@ -785,11 +789,16 @@ public final class SpellAIImpl implements SpellAI
 					new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
 					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 			
-			getSpellQueueing ().requestCastSpell (player, (combatCastingUnit == null) ? null : combatCastingUnit.getUnitURN (), null, null,
-				choice.getSpell ().getSpellID (), null, combatLocation, summoningLocation, (choice.getTargetUnit () == null) ? null : choice.getTargetUnit ().getUnitURN (), null, mom);
+			if (getSpellQueueing ().requestCastSpell (player, (combatCastingUnit == null) ? null : combatCastingUnit.getUnitURN (), null, null,
+				choice.getSpell ().getSpellID (), null, combatLocation, summoningLocation, (choice.getTargetUnit () == null) ? null : choice.getTargetUnit ().getUnitURN (), null, mom))
+				
+				result = CombatAIMovementResult.ENDED_COMBAT;
+			else
+				result = CombatAIMovementResult.MOVED_OR_ATTACKED;
 		}
 
-		log.trace ("Exiting decideWhatToCastCombat");
+		log.trace ("Exiting decideWhatToCastCombat = " + result);
+		return result;
 	}
 	
 	/**

@@ -8,9 +8,9 @@ public enum CombatAIMovementResult
 	/** Found nothing useful to do */
 	NOTHING,
 	
-	/** Found a useful move or attack to do */
+	/** Found a useful move or attack to do, or cast a spell */
 	MOVED_OR_ATTACKED,
 	
-	/** Attacked and that attack wiped out one or both sides in the combat */
+	/** Attacked or cast a spell and that attack or spell wiped out one or both sides in the combat */
 	ENDED_COMBAT;
 }

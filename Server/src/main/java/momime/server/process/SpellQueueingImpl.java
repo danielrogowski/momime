@@ -117,6 +117,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @param combatTargetUnitURN Which specific unit within combat the spell is being cast at, for unit-targetted spells like Fire Bolt
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+ 	 * @return Whether the spell cast was a combat spell that was an attack that resulted in the combat ending
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
@@ -124,7 +125,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final void requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final Integer combatCastingFixedSpellNumber,
+	public final boolean requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)
@@ -482,6 +483,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			msg = getHeroItemServerUtils ().validateHeroItem (player, spell, heroItem, mom.getSessionDescription ().getUnitSetting (), mom.getServerDB ());
 		
 		// Ok to go ahead and cast (or queue) it?
+		boolean combatEnded = false;
 		if (msg != null)
 		{
 			log.warn (player.getPlayerDescription ().getPlayerName () + " disallowed from casting spell " + spellID + ": " + msg);
@@ -495,7 +497,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Cast combat spell
 			// Always cast instantly
 			// If its a spell where we need to choose a target and/or additional mana, the client will already have done so
-			getSpellProcessing ().castCombatNow (player, combatCastingUnit, combatCastingFixedSpellNumber, combatCastingSlotNumber, spell,
+			combatEnded = getSpellProcessing ().castCombatNow (player, combatCastingUnit, combatCastingFixedSpellNumber, combatCastingSlotNumber, spell,
 				reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				combatTargetUnit, combatTargetLocation, mom);
@@ -527,7 +529,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 				queueSpell (player, spellID, heroItem);
 		}
 		
-		log.trace ("Exiting requestCastSpell");
+		log.trace ("Exiting requestCastSpell = " + combatEnded);
+		return combatEnded;
 	}
 	
 	/**

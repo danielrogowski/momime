@@ -36,13 +36,14 @@ public interface SpellQueueing
 	 * @param combatTargetUnitURN Which specific unit within combat the spell is being cast at, for unit-targetted spells like Fire Bolt
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+ 	 * @return Whether the spell cast was a combat spell that was an attack that resulted in the combat ending
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
-	public void requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final Integer combatCastingFixedSpellNumber,
+	public boolean requestCastSpell (final PlayerServerDetails player, final Integer combatCastingUnitURN, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final String spellID, final HeroItem heroItem,
 		final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatTargetLocation, final Integer combatTargetUnitURN,
 		final Integer variableDamage, final MomSessionVariables mom)

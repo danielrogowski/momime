@@ -169,20 +169,25 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 		
 						if (getMaintainedSpell ().isCastInCombat ())
 						{
-							// Show anim on CombatUI
-							final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
-							
-							final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
-							final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
-							
-							getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
-								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet),
-							adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
-								(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet)));
-			
-							getCombatUI ().setCombatCastAnimationFrame (0);
-							getCombatUI ().setCombatCastAnimation (anim);
-							getCombatUI ().setCombatCastAnimationInFront (true);
+							if ((getCombatUI ().isVisible ()) && (spellTargetUnit.getCombatPosition () != null))
+							{
+								// Show anim on CombatUI
+								final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
+								
+								final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
+								final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
+								
+								getCombatUI ().getCombatCastAnimationPositions ().add (new Point (adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX
+									(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet),
+								adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY
+									(spellTargetUnit.getCombatPosition ().getX (), spellTargetUnit.getCombatPosition ().getY (), combatMapTileSet)));
+				
+								getCombatUI ().setCombatCastAnimationFrame (0);
+								getCombatUI ().setCombatCastAnimation (anim);
+								getCombatUI ().setCombatCastAnimationInFront (true);
+							}
+							else
+								anim = null;
 						}
 						else
 						{

@@ -362,7 +362,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    					int resistance = Math.max (0, unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE));
 	    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
 	    					{
-	    						final Integer savingThrowModifier = (spell.getCombatMaxDamage () == null) ? spell.getCombatBaseDamage () : variableDamage;
+	    						final Integer savingThrowModifier = ((spell.getCombatMaxDamage () == null) || (variableDamage == null)) ? spell.getCombatBaseDamage () : variableDamage;
 	    						if (savingThrowModifier != null)
 	    							resistance = resistance - savingThrowModifier;
 	    					}

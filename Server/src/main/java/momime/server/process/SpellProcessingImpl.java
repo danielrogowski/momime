@@ -702,6 +702,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						resultsMap.put (castingPlayer.getPlayerDescription ().getPlayerID (), new ArrayList<DispelMagicResult> ());
 					
 					// Now go through trying to dispel each one
+					final Integer dispellingPower = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
 					for (final MemoryMaintainedSpell spellToDispel : spellsToDispel)
 					{
 						// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
@@ -711,8 +712,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						result.setOwningPlayerID (spellToDispel.getCastingPlayerID ());
 						result.setSpellID (spellToDispel.getSpellID ());
 						result.setCastingCost (spellToDispel.isCastInCombat () ? spellToDispelDef.getCombatCastingCost () : spellToDispelDef.getOverlandCastingCost ());
-						result.setChance (variableDamage.doubleValue () / (result.getCastingCost () + variableDamage));
-						result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + variableDamage) < variableDamage));
+						result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
+						result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
 						
 						if (result.isDispelled ())
 							getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),

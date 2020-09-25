@@ -1,6 +1,6 @@
 package momime.client.graphics.database;
 
-import momime.client.graphics.database.v0_9_8.UnitSpecialOrderImage;
+import momime.client.graphics.database.v0_9_9.UnitSpecialOrderImage;
 
 /**
  * Empty extension, just so that majority of code doesn't need to reference a package that changes between versions

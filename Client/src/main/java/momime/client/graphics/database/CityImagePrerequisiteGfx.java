@@ -1,6 +1,6 @@
 package momime.client.graphics.database;
 
-import momime.client.graphics.database.v0_9_8.CityImagePrerequisite;
+import momime.client.graphics.database.v0_9_9.CityImagePrerequisite;
 
 
 /**

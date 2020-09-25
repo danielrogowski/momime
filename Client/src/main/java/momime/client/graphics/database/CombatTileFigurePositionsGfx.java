@@ -3,8 +3,8 @@ package momime.client.graphics.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_8.CombatTileFigurePositions;
-import momime.client.graphics.database.v0_9_8.FigurePositionsForFigureCount;
+import momime.client.graphics.database.v0_9_9.CombatTileFigurePositions;
+import momime.client.graphics.database.v0_9_9.FigurePositionsForFigureCount;
 import momime.common.database.RecordNotFoundException;
 
 /**

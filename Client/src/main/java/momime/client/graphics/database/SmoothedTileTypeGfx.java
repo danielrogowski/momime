@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import momime.client.graphics.database.v0_9_8.SmoothedTile;
-import momime.client.graphics.database.v0_9_8.SmoothedTileType;
+import momime.client.graphics.database.v0_9_9.SmoothedTile;
+import momime.client.graphics.database.v0_9_9.SmoothedTileType;
 import momime.common.database.RecordNotFoundException;
 
 import org.apache.commons.logging.Log;

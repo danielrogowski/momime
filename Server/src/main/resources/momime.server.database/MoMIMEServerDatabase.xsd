@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:nxe="http://www.ndg.com/xmleditor/1.0.0"
 	xmlns:map="http://www.ndg.com/map" xmlns:momimecommon="http://momime/common/database"
-	xmlns:momimesvr="http://momime/server/database/v0_9_8" targetNamespace="http://momime/server/database/v0_9_8"
+	xmlns:momimesvr="http://momime/server/database/v0_9_9" targetNamespace="http://momime/server/database/v0_9_9"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map" />
@@ -18,7 +18,7 @@
 		<xsd:documentation>Defines the portions of the main data XML file that are needed only on the server</xsd:documentation>
 		<xsd:appinfo>
 			<nxe:backuponopen>Y</nxe:backuponopen>
-			<nxe:database namespaceURI="http://momime/server/database/v0_9_8">
+			<nxe:database namespaceURI="http://momime/server/database/v0_9_9">
 				<nxe:title>Master of Magic Server Database</nxe:title>
 				<nxe:xmlfilename>../server/databases/Original Master of Magic 1.31 rules.Master of Magic Server.xml</nxe:xmlfilename>
 			</nxe:database>

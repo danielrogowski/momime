@@ -3,9 +3,9 @@ package momime.client.graphics.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_8.RangedAttackType;
-import momime.client.graphics.database.v0_9_8.RangedAttackTypeCombatImage;
-import momime.client.graphics.database.v0_9_8.RangedAttackTypeWeaponGrade;
+import momime.client.graphics.database.v0_9_9.RangedAttackType;
+import momime.client.graphics.database.v0_9_9.RangedAttackTypeCombatImage;
+import momime.client.graphics.database.v0_9_9.RangedAttackTypeWeaponGrade;
 import momime.common.database.RangedAttackTypeActionID;
 import momime.common.database.RecordNotFoundException;
 

@@ -2,7 +2,7 @@ package momime.server.database;
 
 import java.util.List;
 
-import momime.server.database.v0_9_8.TileType;
+import momime.server.database.v0_9_9.TileType;
 
 /**
  * Just for typecasting various lists

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database/v0_9_8" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database/v0_9_9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<wizard wizardID="MONSTERS">
 		<flagColour>442404</flagColour>
 		<combatPlayList playListID="COMBAT_GENERAL_102" />

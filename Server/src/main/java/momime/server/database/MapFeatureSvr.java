@@ -2,7 +2,7 @@ package momime.server.database;
 
 import java.util.List;
 
-import momime.server.database.v0_9_8.MapFeature;
+import momime.server.database.v0_9_9.MapFeature;
 
 /**
  * Typecast sub lists, so that majority of code doesn't need to reference a package that changes between versions

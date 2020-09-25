@@ -2,7 +2,7 @@ package momime.server.database;
 
 import java.util.List;
 
-import momime.server.database.v0_9_8.Race;
+import momime.server.database.v0_9_9.Race;
 
 /**
  * Just for typecasting the list of city names

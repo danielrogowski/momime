@@ -1,8 +1,8 @@
 package momime.server.knowledge;
 
-import momime.server.messages.v0_9_8.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_8.ObjectFactory;
-import momime.server.messages.v0_9_8.ServerGridCell;
+import momime.server.messages.v0_9_9.MomGeneralServerKnowledge;
+import momime.server.messages.v0_9_9.ObjectFactory;
+import momime.server.messages.v0_9_9.ServerGridCell;
 
 /**
  * Object factory necessary to create correct extensions of classes when reloading saved games

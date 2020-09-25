@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.random.RandomUtils;
 
-import momime.client.graphics.database.v0_9_8.Pick;
+import momime.client.graphics.database.v0_9_9.Pick;
 import momime.common.database.RecordNotFoundException;
 
 /**

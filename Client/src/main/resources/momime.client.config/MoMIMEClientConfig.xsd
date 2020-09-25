@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-	xmlns:momimecltconfig="http://momime/client/config/v0_9_8" xmlns:momimecommon="http://momime/common/database" targetNamespace="http://momime/client/config/v0_9_8"
+	xmlns:momimecltconfig="http://momime/client/config/v0_9_9" xmlns:momimecommon="http://momime/common/database" targetNamespace="http://momime/client/config/v0_9_9"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://momime/common/database"/>

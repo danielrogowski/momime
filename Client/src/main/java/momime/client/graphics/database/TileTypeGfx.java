@@ -3,9 +3,9 @@ package momime.client.graphics.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_8.TileType;
-import momime.client.graphics.database.v0_9_8.TileTypeMiniMap;
-import momime.client.graphics.database.v0_9_8.TileTypeRoad;
+import momime.client.graphics.database.v0_9_9.TileType;
+import momime.client.graphics.database.v0_9_9.TileTypeMiniMap;
+import momime.client.graphics.database.v0_9_9.TileTypeRoad;
 import momime.common.database.RecordNotFoundException;
 
 /**

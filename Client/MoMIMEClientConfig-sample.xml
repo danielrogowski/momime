@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<config:momImeClientConfig xmlns:config="http://momime/client/config/v0_9_8">
+<config:momImeClientConfig xmlns:config="http://momime/client/config/v0_9_9">
 	<compressDataSentToServer>true</compressDataSentToServer>
 	<decompressDataReceivedFromServer>true</decompressDataReceivedFromServer>
 	<graphicsXmlFilename>client/graphics/Default.Master of Magic Graphics.xml</graphicsXmlFilename>

@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-server</artifactId>
-	<version>0.9.8.5</version>
+	<version>0.9.9.0-SNAPSHOT</version>
 	<name>momimeServer</name>
 	<description>MoM IME Server</description>
 
 	<scm>
-		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEServer/tags/momime-server-0.9.8.5</connection>
+		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEServer/trunk</connection>
 	</scm>
 
 	<parent>

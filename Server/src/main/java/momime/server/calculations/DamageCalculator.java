@@ -9,12 +9,12 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 import momime.server.process.AttackResolutionUnit;
 
 /**
@@ -59,7 +59,7 @@ public interface DamageCalculator
 	 */
 	public AttackDamage attackFromUnitSkill (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
@@ -77,8 +77,8 @@ public interface DamageCalculator
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 */
-	public AttackDamage attackFromSpell (final SpellSvr spell, final Integer variableDamage,
-		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final ServerDatabaseEx db)
+	public AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage,
+		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**

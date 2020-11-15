@@ -18,13 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import javax.swing.Action;
 import javax.swing.Box;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.WindowConstants;
@@ -48,13 +47,9 @@ import com.ndg.swing.actions.LoggingAction;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetGfx;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.ShortcutKeyLang;
-import momime.client.language.database.SpellLang;
+import momime.client.languages.database.Month;
+import momime.client.languages.database.Shortcut;
 import momime.client.messages.process.MoveUnitStackOverlandMessageImpl;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
@@ -66,10 +61,12 @@ import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.common.MomException;
 import momime.common.ai.ZoneAI;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
-import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.TileSetEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
@@ -201,7 +198,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	private BufferedImage topBarBackground;
 	
 	/** Overland map tileset */
-	private TileSetGfx overlandMapTileSet;
+	private TileSetEx overlandMapTileSet;
 
 	/** Animation to display for a spell being cast */
 	private AnimationGfx overlandCastAnimation;
@@ -310,7 +307,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 			moveUnitStackInDirectionActions.put (d, new LoggingAction ((ev) -> moveUnitStackInDirection (d)));
 		
 		// Need the tile set in a few places
-		overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
+		overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init");
 		
 		// Initialize the frame
 		getFrame ().setTitle ("Overland Map");
@@ -464,7 +461,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 									try
 									{
 										final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
-										final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+										final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
 	
 										final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
 										final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
@@ -510,7 +507,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 					try
 					{
 						final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
-						final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+						final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
 
 						final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
 						final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
@@ -864,29 +861,21 @@ public final class OverlandMapUI extends MomClientFrameUI
 										// Close out the "Target Spell" right hand panel
 										getOverlandMapProcessing ().updateMovementRemaining ();
 									}
-									else if (validTarget.getCityLanguageEntryID () != null)
+									else
 									{
-										final SpellLang spellLang = getLanguage ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
-										final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+										final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 										
-										String buildingName;
+										final String buildingName;
 										if (spell.getBuildingID () == null)
 											buildingName = "";
 										else
-										{
-											final BuildingLang buildingLang = getLanguage ().findBuilding (spell.getBuildingID ());
-											buildingName = (buildingLang != null) ? buildingLang.getBuildingName () : null;
-											if (buildingName == null)
-												buildingName = "";
-										}
+											buildingName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (spell.getBuildingID (), "OverlandMapUI").getBuildingName ());
 										
-										final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getCityLanguageEntryID ()).replaceAll
-											("SPELL_NAME", (spellName != null) ? spellName : getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ()).replaceAll
-											("BUILDING_NAME", buildingName);
+										final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getCityLanguageText (validTarget)).replaceAll
+											("SPELL_NAME", spellName).replaceAll ("BUILDING_NAME", buildingName);
 										
 										final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-										msg.setTitleLanguageCategoryID ("SpellTargetting");
-										msg.setTitleLanguageEntryID ("Title");
+										msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
 										msg.setText (text);
 										msg.setVisible (true);												
 									}
@@ -931,17 +920,15 @@ public final class OverlandMapUI extends MomClientFrameUI
 									// Close out the "Target Spell" right hand panel
 									getOverlandMapProcessing ().updateMovementRemaining ();
 								}
-								else if (validTarget.getLocationLanguageEntryID () != null)
+								else
 								{
-									final SpellLang spellLang = getLanguage ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
-									final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+									final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 									
-									final String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getLocationLanguageEntryID ()).replaceAll
-										("SPELL_NAME", (spellName != null) ? spellName : getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ());
+									final String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getLocationLanguageText (validTarget)).replaceAll
+										("SPELL_NAME", spellName);
 									
 									final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-									msg.setTitleLanguageCategoryID ("SpellTargetting");
-									msg.setTitleLanguageEntryID ("Title");
+									msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
 									msg.setText (text);
 									msg.setVisible (true);												
 								}
@@ -1097,28 +1084,17 @@ public final class OverlandMapUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 
-		gameAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Game"));
-		spellsAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Spells"));
-		armiesAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Armies"));
-		citiesAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Cities"));
-		magicAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Magic"));
-		planeAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Plane"));
-		messagesAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "NewTurnMessages"));
-		chatAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMapButtonBar", "Chat"));
+		gameAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getGame ()));
+		spellsAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getSpells ()));
+		armiesAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getArmies ()));
+		citiesAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getCities ()));
+		magicAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getMagic ()));
+		planeAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getPlane ()));
+		messagesAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getNewTurnMessages ()));
+		chatAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getChat ()));
 
 		// Shortcut keys
-		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
-		for (final Object shortcut : contentPane.getActionMap ().keys ())
-			if (shortcut instanceof Shortcut)
-			{
-				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
-				if (shortcutKey != null)
-				{
-					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
-					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
-					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
-				}
-			}
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -1313,8 +1289,14 @@ public final class OverlandMapUI extends MomClientFrameUI
 			month = 12;
 
 		// Build up description
-		final String monthText = getLanguage ().findCategoryEntry ("Months", "MNTH" + ((month < 10) ? "0" : "") + month);
-		turnLabel.setText (getLanguage ().findCategoryEntry ("frmMapButtonBar", "Turn").replaceAll ("MONTH", monthText).replaceAll ("YEAR", Integer.valueOf (year).toString ()).replaceAll ("TURN", Integer.valueOf (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
+		final int monthNumber = month;
+		final Optional<Month> monthLang = getLanguages ().getMonth ().stream ().filter (m -> m.getMonthNumber () == monthNumber).findAny ();
+		final String monthText = monthLang.isEmpty () ? Integer.valueOf (month).toString () :
+			getLanguageHolder ().findDescription (monthLang.get ().getName ());
+		
+		turnLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getTurn ()).replaceAll
+			("MONTH", monthText).replaceAll ("YEAR", Integer.valueOf (year).toString ()).replaceAll
+			("TURN", Integer.valueOf (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
 
 		log.trace ("Exiting updateTurnLabelText");
 	}

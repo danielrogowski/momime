@@ -20,9 +20,12 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Plane;
+import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
@@ -44,10 +47,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
 
 /**
  * Tests the FogOfWarProcessing class
@@ -163,23 +163,23 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 	public final void testMarkVisibleArea () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PlaneSvr arcanus = new PlaneSvr ();
-		final PlaneSvr myrror = new PlaneSvr ();
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
 		
-		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
+		final List<Plane> planes = new ArrayList<Plane> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlanes ()).thenReturn (planes);
+		when (db.getPlane ()).thenReturn (planes);
 		
-		final SpellSvr naturesEyeDef = new SpellSvr ();
+		final Spell naturesEyeDef = new Spell ();
 		naturesEyeDef.setSpellRadius (5);
 		when (db.findSpell ("SP012", "markVisibleArea")).thenReturn (naturesEyeDef);
 
-		final SpellSvr curseDef = new SpellSvr ();
+		final Spell curseDef = new Spell ();
 		when (db.findSpell ("SP110", "markVisibleArea")).thenReturn (curseDef);
 		
 		// Map
@@ -282,7 +282,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		when (unitUtils.expandUnitDetails (unitThree, null, null, null, players, trueMap, db)).thenReturn (xu3);
 		
 		// Unit in a tower
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 		{
 			final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
 			terrainData.setMapFeatureID (CommonDatabaseConstants.FEATURE_CLEARED_TOWER_OF_WIZARDRY);
@@ -343,7 +343,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 
 		try (final Workbook workbook = WorkbookFactory.create (getClass ().getResourceAsStream ("/markVisibleArea.xlsx")))
 		{
-			for (final PlaneSvr plane : db.getPlanes ())
+			for (final Plane plane : db.getPlane ())
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					{
@@ -362,7 +362,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 			priv.setFogOfWar (createFogOfWarArea (sd.getOverlandMapSize ()));
 			proc.markVisibleArea (trueMap, player, players, sd, db);
 	
-			for (final PlaneSvr plane : db.getPlanes ())
+			for (final Plane plane : db.getPlane ())
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					{
@@ -380,7 +380,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		priv.setFogOfWar (createFogOfWarArea (sd.getOverlandMapSize ()));
 		proc.markVisibleArea (trueMap, player, players, sd, db);
 
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					assertEquals (x + "," + y + "," + plane.getPlaneNumber (), FogOfWarStateID.TEMP_SEEING_IT_FOR_FIRST_TIME, priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x));

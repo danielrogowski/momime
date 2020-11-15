@@ -7,6 +7,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,9 +26,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SpellGfx;
-import momime.client.language.database.CitySpellEffectLang;
-import momime.client.language.database.SpellLang;
 import momime.client.messages.process.AddBuildingMessageImpl;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.messages.process.UpdateWizardStateMessageImpl;
@@ -37,6 +35,8 @@ import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.LanguageText;
+import momime.common.database.Spell;
 import momime.common.messages.servertoclient.RenderCityData;
 
 /**
@@ -192,31 +192,31 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		if (spellID != null)
 			try
 			{
-				final SpellGfx spellGfx = getGraphicsDB ().findSpell (spellID, "MiniCityViewUI");
+				final Spell spell = getClient ().getClientDB ().findSpell (spellID, "MiniCityViewUI");
 				
 				// Play the right music
-				if (spellGfx.getSpellMusicFile () != null)
-					getMusicPlayer ().playThenResume (spellGfx.getSpellMusicFile ());
+				if (spell.getSpellMusicFile () != null)
+					getMusicPlayer ().playThenResume (spell.getSpellMusicFile ());
 				
 				// If there's no delay, then play the sound effect and add the building right away too
-				if ((spellGfx.getSoundAndImageDelay () == null) || (spellGfx.getSoundAndImageDelay () <= 0))
+				if ((spell.getSoundAndImageDelay () == null) || (spell.getSoundAndImageDelay () <= 0))
 				{
-					if (spellGfx.getSpellSoundFile () != null)
-						getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+					if (spell.getSpellSoundFile () != null)
+						getSoundPlayer ().playAudioFile (spell.getSpellSoundFile ());
 					
 					addSpellOrBuilding ();
 				}
 				else
 				{
 					// Set up a timer to add the spell or building after a while
-					timer = new Timer (spellGfx.getSoundAndImageDelay () * 1000, (ev) ->
+					timer = new Timer (spell.getSoundAndImageDelay () * 1000, (ev) ->
 					{
 						timer.stop ();
 						if (!added)
 							try
 							{
-								if (spellGfx.getSpellSoundFile () != null)
-									getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+								if (spell.getSpellSoundFile () != null)
+									getSoundPlayer ().playAudioFile (spell.getSpellSoundFile ());
 							
 								addSpellOrBuilding ();
 								
@@ -323,16 +323,23 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		
 		// Get details about the city
 		if (getRenderCityData () != null)
-		{
-			String cityName = getLanguage ().findCitySizeName (getRenderCityData ().getCitySizeID (), true).replaceAll ("CITY_NAME", getRenderCityData ().getCityName ());
-			
-			final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getRenderCityData ().getCityOwnerID ());
-			if (cityOwner != null)
-				cityName = cityName.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (cityOwner));
-			
-			cityNameLabel.setText (cityName);
-			getDialog ().setTitle (cityName);
-		}
+			try
+			{
+				String cityName = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findCitySize (getRenderCityData ().getCitySizeID (), "MiniCityViewUI").getCitySizeNameIncludingOwner ());
+				cityName = cityName.replaceAll ("CITY_NAME", getRenderCityData ().getCityName ());
+				
+				final PlayerPublicDetails cityOwner = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getRenderCityData ().getCityOwnerID ());
+				if (cityOwner != null)
+					cityName = cityName.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (cityOwner));
+				
+				cityNameLabel.setText (cityName);
+				getDialog ().setTitle (cityName);
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
 		
 		// Set the text at the bottom
 		// Use the name of the specific effect in preference to the generic spell name, so Spell Ward says e.g. "You have completed casting Chaos Ward"
@@ -355,30 +362,32 @@ public final class MiniCityViewUI extends MomClientDialogUI
 			castingPlayerID = getRenderCityData ().getCityOwnerID ();
 		}
 
-		String text = null;
-		if (((spellID != null) || (citySpellEffectID != null)) && (castingPlayerID != null))
+		try
 		{
-			final String useSpellName;
-			if (citySpellEffectID != null)
+			String text = null;
+			if (((spellID != null) || (citySpellEffectID != null)) && (castingPlayerID != null))
 			{
-				final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (citySpellEffectID);
-				final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
-				useSpellName = (effectName != null) ? effectName : citySpellEffectID;
+				final String useSpellName;
+				if (citySpellEffectID != null)
+					useSpellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findCitySpellEffect (citySpellEffectID, "MiniCityViewUI").getCitySpellEffectName ());
+				else
+					useSpellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (spellID, "MiniCityViewUI").getSpellName ());
+				
+				final PlayerPublicDetails castingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID);
+				
+				final List<LanguageText> languageText = (castingPlayerID.equals (getClient ().getOurPlayerID ())) ? 
+					getLanguages ().getSpellCasting ().getYouHaveCast () : getLanguages ().getSpellCasting ().getSomeoneElseHasCast ();
+					
+				text = getLanguageHolder ().findDescription (languageText).replaceAll
+					("SPELL_NAME", useSpellName).replaceAll
+					("PLAYER_NAME", (castingPlayer != null) ? getWizardClientUtils ().getPlayerName (castingPlayer) : "Player " + castingPlayerID);
 			}
-			else
-			{
-				final SpellLang spell = getLanguage ().findSpell (spellID);
-				final String spellName = (spell != null) ? spell.getSpellName () : null;
-				useSpellName = (spellName != null) ? spellName : spellID;
-			}
-			
-			final PlayerPublicDetails castingPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), castingPlayerID);
-			
-			text = getLanguage ().findCategoryEntry ("SpellCasting", (castingPlayerID.equals (getClient ().getOurPlayerID ())) ? "YouHaveCast" : "SomeoneElseHasCast").replaceAll
-				("SPELL_NAME", useSpellName).replaceAll
-				("PLAYER_NAME", (castingPlayer != null) ? getWizardClientUtils ().getPlayerName (castingPlayer) : "Player " + castingPlayerID);
+			textLabel.setText (text);
 		}
-		textLabel.setText (text);
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}
 
 		log.trace ("Exiting languageChanged");
 	}

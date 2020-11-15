@@ -4,6 +4,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -16,10 +17,15 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.HistoryScreen;
+import momime.client.languages.database.MapButtonBar;
+import momime.client.languages.database.Month;
+import momime.client.languages.database.OverlandMapScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.Language;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
@@ -41,15 +47,26 @@ public final class TestHistoryUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final HistoryScreen historyScreenLang = new HistoryScreen ();
+		historyScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "History of Wizards' Power"));
 
-		when (lang.findCategoryEntry ("frmHistory", "Title")).thenReturn ("History of Wizards' Power");
+		final MapButtonBar mapButtonBarLang = new MapButtonBar ();
+		mapButtonBarLang.getTurn ().add (createLanguageText (Language.ENGLISH, "MONTH YEAR (Turn TURN)"));
 		
-		when (lang.findCategoryEntry ("Months", "MNTH01")).thenReturn ("January");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Turn")).thenReturn ("MONTH YEAR (Turn TURN)");
+		final OverlandMapScreen overlandMapScreen = new OverlandMapScreen ();
+		overlandMapScreen.setMapButtonBar (mapButtonBarLang);
+		
+		final Month month = new Month ();
+		month.setMonthNumber (1);
+		month.getName ().add (createLanguageText (Language.ENGLISH, "January"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHistoryScreen ()).thenReturn (historyScreenLang);
+		when (lang.getOverlandMapScreen ()).thenReturn (overlandMapScreen);
+		when (lang.getMonth ()).thenReturn (Arrays.asList (month));
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -125,15 +142,26 @@ public final class TestHistoryUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final HistoryScreen historyScreenLang = new HistoryScreen ();
+		historyScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "History of Wizards' Power"));
 
-		when (lang.findCategoryEntry ("frmHistory", "Title")).thenReturn ("History of Wizards' Power");
+		final MapButtonBar mapButtonBarLang = new MapButtonBar ();
+		mapButtonBarLang.getTurn ().add (createLanguageText (Language.ENGLISH, "MONTH YEAR (Turn TURN)"));
 		
-		when (lang.findCategoryEntry ("Months", "MNTH01")).thenReturn ("January");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Turn")).thenReturn ("MONTH YEAR (Turn TURN)");
+		final OverlandMapScreen overlandMapScreen = new OverlandMapScreen ();
+		overlandMapScreen.setMapButtonBar (mapButtonBarLang);
+		
+		final Month month = new Month ();
+		month.setMonthNumber (1);
+		month.getName ().add (createLanguageText (Language.ENGLISH, "January"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHistoryScreen ()).thenReturn (historyScreenLang);
+		when (lang.getOverlandMapScreen ()).thenReturn (overlandMapScreen);
+		when (lang.getMonth ()).thenReturn (Arrays.asList (month));
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -209,15 +237,26 @@ public final class TestHistoryUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final HistoryScreen historyScreenLang = new HistoryScreen ();
+		historyScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "History of Wizards' Power"));
 
-		when (lang.findCategoryEntry ("frmHistory", "Title")).thenReturn ("History of Wizards' Power");
+		final MapButtonBar mapButtonBarLang = new MapButtonBar ();
+		mapButtonBarLang.getTurn ().add (createLanguageText (Language.ENGLISH, "MONTH YEAR (Turn TURN)"));
 		
-		when (lang.findCategoryEntry ("Months", "MNTH01")).thenReturn ("January");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Turn")).thenReturn ("MONTH YEAR (Turn TURN)");
+		final OverlandMapScreen overlandMapScreen = new OverlandMapScreen ();
+		overlandMapScreen.setMapButtonBar (mapButtonBarLang);
+		
+		final Month month = new Month ();
+		month.setMonthNumber (1);
+		month.getName ().add (createLanguageText (Language.ENGLISH, "January"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHistoryScreen ()).thenReturn (historyScreenLang);
+		when (lang.getOverlandMapScreen ()).thenReturn (overlandMapScreen);
+		when (lang.getMonth ()).thenReturn (Arrays.asList (month));
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -293,15 +332,26 @@ public final class TestHistoryUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final HistoryScreen historyScreenLang = new HistoryScreen ();
+		historyScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "History of Wizards' Power"));
 
-		when (lang.findCategoryEntry ("frmHistory", "Title")).thenReturn ("History of Wizards' Power");
+		final MapButtonBar mapButtonBarLang = new MapButtonBar ();
+		mapButtonBarLang.getTurn ().add (createLanguageText (Language.ENGLISH, "MONTH YEAR (Turn TURN)"));
 		
-		when (lang.findCategoryEntry ("Months", "MNTH01")).thenReturn ("January");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Turn")).thenReturn ("MONTH YEAR (Turn TURN)");
+		final OverlandMapScreen overlandMapScreen = new OverlandMapScreen ();
+		overlandMapScreen.setMapButtonBar (mapButtonBarLang);
+		
+		final Month month = new Month ();
+		month.setMonthNumber (1);
+		month.getName ().add (createLanguageText (Language.ENGLISH, "January"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHistoryScreen ()).thenReturn (historyScreenLang);
+		when (lang.getOverlandMapScreen ()).thenReturn (overlandMapScreen);
+		when (lang.getMonth ()).thenReturn (Arrays.asList (month));
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

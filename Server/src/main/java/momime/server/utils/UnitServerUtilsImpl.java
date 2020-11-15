@@ -21,14 +21,19 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.MapFeature;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
+import momime.common.database.TileType;
 import momime.common.database.Unit;
 import momime.common.database.UnitSetting;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpecialOrder;
+import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -51,12 +56,6 @@ import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.MapFeatureSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.TileTypeSvr;
-import momime.server.database.UnitSkillSvr;
-import momime.server.database.UnitSvr;
-import momime.server.database.UnitTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.process.SpecialOrderButtonMessageImpl;
 import momime.server.process.PlayerMessageProcessing;
@@ -142,7 +141,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 */
 	@Override
 	public final MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final Integer startingExperience,
-		final ServerDatabaseEx db) throws RecordNotFoundException
+		final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering createMemoryUnit: " + unitID + ", Unit URN " + unitURN);
 
@@ -171,11 +170,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws RecordNotFoundException If we can't find the definition for the unit
 	 */
 	@Override
-	public final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final ServerDatabaseEx db) throws MomException, RecordNotFoundException
+	public final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final CommonDatabase db) throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering generateHeroNameAndRandomSkills: " + unit.getUnitID ());
 
-		final UnitSvr unitDefinition = db.findUnit (unit.getUnitID (), "generateHeroNameAndRandomSkills");
+		final Unit unitDefinition = db.findUnit (unit.getUnitID (), "generateHeroNameAndRandomSkills");
 
 		// Pick a name at random
 		if (unitDefinition.getHeroName ().size () == 0)
@@ -193,7 +192,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			{
 				// Get a list of all valid choices
 				final List<String> skillChoices = new ArrayList<String> ();
-				for (final UnitSkillSvr thisSkill : db.getUnitSkills ())
+				for (final UnitSkillEx thisSkill : db.getUnitSkills ())
 				{
 					// We can spot hero skills since they'll have at least one of these values filled in
 					if ( ( (thisSkill.getHeroSkillTypeID () != null) && (!thisSkill.getHeroSkillTypeID ().equals (""))) || ( (thisSkill.isOnlyIfHaveAlready () != null) && (thisSkill.isOnlyIfHaveAlready ())) || ( (thisSkill.getMaxOccurrences () != null) && (thisSkill.getMaxOccurrences () > 0)))
@@ -264,7 +263,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 */
 	@Override
 	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering setAndSendSpecialOrder: Player ID " + player.getPlayerDescription ().getPlayerID () +
@@ -343,8 +342,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		// Get map cell
 		final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(mapLocation.getZ ()).getRow ().get (mapLocation.getY ()).getCell ().get (mapLocation.getX ());
-		final TileTypeSvr tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "SpecialOrderButtonMessageImpl");
-		final MapFeatureSvr mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
+		final TileType tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "SpecialOrderButtonMessageImpl");
+		final MapFeature mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
 			(tc.getTerrainData ().getMapFeatureID (), "SpecialOrderButtonMessageImpl");
 		
 		// Process through all the units
@@ -500,7 +499,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final ExpandedUnitDetails testUnit,
-		final FogOfWarMemory trueMap, final UnitSetting settings, final ServerDatabaseEx db) throws RecordNotFoundException
+		final FogOfWarMemory trueMap, final UnitSetting settings, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering canUnitBeAddedHere: " + addLocation + ", " + testUnit.getDebugIdentifier ());
 
@@ -572,7 +571,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 */
 	@Override
 	public final UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering findNearestLocationWhereUnitCanBeAdded: " + desiredLocation + ", " + unitID + ", Player ID + " + playerID);
@@ -830,7 +829,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param experienceSkillValue The number of experience points the unit now has
 	 */
 	@Override
-	public final void checkIfHeroGainedALevel (final int unitURN, final UnitTypeSvr unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue)
+	public final void checkIfHeroGainedALevel (final int unitURN, final UnitType unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue)
 	{
 		log.trace ("Entering checkIfHeroGainedALevel: Unit URN " + unitURN);
 		
@@ -861,7 +860,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 */
 	@Override
 	public final MapCoordinates2DEx findFreeCombatPositionClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
-		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final ServerDatabaseEx db)
+		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering findFreeCombatPositionClosestTo: " + combatLocation + ", " + startPosition);

@@ -1,7 +1,8 @@
 package momime.client.language;
 
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.common.database.Language;
 
 /**
  * Interface describing general contract that all UI components that display any language-variable text must conform to.
@@ -24,10 +25,15 @@ public interface LanguageVariableUI
 	public void setLanguageHolder (final LanguageDatabaseHolder holder);
 
 	/**
-	 * Convenience shortcut for accessing the Language XML database
-	 * @return Language database
+	 * @return Currently chosen language
 	 */
-	public LanguageDatabaseEx getLanguage ();
+	public Language getLanguage ();
+	
+	/**
+	 * Convenience shortcut for accessing the Language XML database
+	 * @return New singular language XML
+	 */
+	public MomLanguagesEx getLanguages ();
 	
 	/**
 	 * Notifies this screen that the language contained by the holder has changed

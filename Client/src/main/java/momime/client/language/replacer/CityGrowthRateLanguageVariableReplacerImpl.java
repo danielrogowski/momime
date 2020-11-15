@@ -1,6 +1,6 @@
 package momime.client.language.replacer;
 
-import momime.client.language.database.BuildingLang;
+import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
@@ -17,9 +17,10 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 	/**
 	 * @param code Code to replace
 	 * @return Replacement value; or null if the code is not recognized
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
-	public final String determineVariableValue (final String code)
+	public final String determineVariableValue (final String code) throws RecordNotFoundException
 	{
 		final String text;
 		switch (code)
@@ -156,8 +157,7 @@ public final class CityGrowthRateLanguageVariableReplacerImpl extends BreakdownL
 				
 			// Dependant on current building
 			case "BUILDING_NAME":
-				final BuildingLang building = getLanguage ().findBuilding (getCurrentBuilding ().getBuildingID ());
-				text = (building == null) ? getCurrentBuilding ().getBuildingID () : building.getBuildingName ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (getCurrentBuilding ().getBuildingID (), "determineVariableValue").getBuildingName ());
 				break;
 				
 			case "BUILDING_GROWTH_MODIFIER":

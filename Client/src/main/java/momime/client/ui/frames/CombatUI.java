@@ -16,11 +16,9 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -44,20 +42,10 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.CombatTileBorderImageGfx;
+import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SmoothedTileGfx;
-import momime.client.graphics.database.SmoothedTileTypeGfx;
-import momime.client.graphics.database.TileSetGfx;
-import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.WizardGfx;
-import momime.client.language.database.MapFeatureLang;
-import momime.client.language.database.ShortcutKeyLang;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.TileTypeLang;
+import momime.client.languages.database.Shortcut;
 import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.process.CombatMapProcessing;
@@ -76,13 +64,21 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AnimationGfx;
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CombatTileBorderImage;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FrontOrBack;
+import momime.common.database.MapFeature;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Shortcut;
+import momime.common.database.SmoothedTile;
+import momime.common.database.SmoothedTileTypeEx;
 import momime.common.database.Spell;
+import momime.common.database.TileSetEx;
+import momime.common.database.TileType;
 import momime.common.database.Unit;
+import momime.common.database.UnitSkillEx;
+import momime.common.database.WizardEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -375,7 +371,7 @@ public final class CombatUI extends MomClientFrameUI
 	private ApplyDamageMessageImpl attackAnim;
 	
 	/** Combat tile set */
-	private TileSetGfx combatMapTileSet;
+	private TileSetEx combatMapTileSet;
 	
 	/** Combat tile that the mouse is currently over */
 	private MapCoordinates2DEx moveToLocation;
@@ -430,7 +426,7 @@ public final class CombatUI extends MomClientFrameUI
 		final BufferedImage calculatorButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/combat/calculatorButtonPressed.png");
 		
 		// We need the tile set to know the frame rate and number of frames
-		combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "CombatUI");
+		combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "CombatUI");
 		
 		// Actions
 		waitAction = new LoggingAction ((ev) -> getCombatMapProcessing ().selectedUnitWait ());
@@ -513,7 +509,7 @@ public final class CombatUI extends MomClientFrameUI
 						final int x = getCombatMapBitmapGenerator ().combatCoordinatesX (moveToLocation.getX (), moveToLocation.getY (), combatMapTileSet);
 						final int y = getCombatMapBitmapGenerator ().combatCoordinatesY (moveToLocation.getX (), moveToLocation.getY (), combatMapTileSet);
 						
-						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_MOVE_TO", false);
+						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_MOVE_TO", false, AnimationContainer.GRAPHICS_XML);
 						g.drawImage (image, x, y, image.getWidth () * 2, image.getHeight () * 2, null);
 						
 						// Show icon for whether we can move here, shoot here, target a spell here or so on
@@ -601,7 +597,7 @@ public final class CombatUI extends MomClientFrameUI
 						final int y = getCombatMapBitmapGenerator ().combatCoordinatesY (getSelectedUnitInCombat ().getCombatPosition ().getX (),
 							getSelectedUnitInCombat ().getCombatPosition ().getY (), combatMapTileSet);
 						
-						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_SELECTED_UNIT", false);
+						final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, "COMBAT_SELECTED_UNIT", false, AnimationContainer.GRAPHICS_XML);
 						g.drawImage (image, x, y, image.getWidth () * 2, image.getHeight () * 2, null);
 					}
 					catch (final Exception e)
@@ -687,14 +683,14 @@ public final class CombatUI extends MomClientFrameUI
 					for (int y = 0; y < getClient ().getSessionDescription ().getCombatMapSize ().getHeight (); y++)
 						for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
 						{
-							final SmoothedTileTypeGfx [] [] smoothedTileTypesLayer = getCombatMapBitmapGenerator ().getSmoothedTileTypes ().get (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
-							final SmoothedTileGfx [] [] smoothedTilesLayer = getCombatMapBitmapGenerator ().getSmoothedTiles ().get (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
+							final SmoothedTileTypeEx [] [] smoothedTileTypesLayer = getCombatMapBitmapGenerator ().getSmoothedTileTypes ().get (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
+							final SmoothedTile [] [] smoothedTilesLayer = getCombatMapBitmapGenerator ().getSmoothedTiles ().get (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES);
 							
 							// Terrain
-							final SmoothedTileGfx tile = smoothedTilesLayer [y] [x];
+							final SmoothedTile tile = smoothedTilesLayer [y] [x];
 							if ((tile != null) && ((tile.getTileFile () != null) || (tile.getTileAnimation () != null)))
 							{
-								final BufferedImage image = getAnim ().loadImageOrAnimationFrame (tile.getTileFile (), tile.getTileAnimation (), false);
+								final BufferedImage image = getAnim ().loadImageOrAnimationFrame (tile.getTileFile (), tile.getTileAnimation (), false, AnimationContainer.COMMON_XML);
 									
 								// Offset image - this is to offset things like the nature node tree and the wizard's fortress so the base sits in the middle of the tile
 								int xpos = getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet);
@@ -729,13 +725,13 @@ public final class CombatUI extends MomClientFrameUI
 									// May have separate front and back images, or not
 									for (final FrontOrBack frontOrBack : FrontOrBack.values ())
 									{
-										final CombatTileBorderImageGfx borderImage = getGraphicsDB ().findCombatTileBorderImages (combatTileBorderID, tile.getBorderDirections (), frontOrBack);
+										final CombatTileBorderImage borderImage = getClient ().getClientDB ().findCombatTileBorderImages (combatTileBorderID, tile.getBorderDirections (), frontOrBack);
 										if (borderImage != null)
 										{
 											// If wall section is wrecked then use alternative image if we have one (wrecked wall sections are N/A for walls of fire/darkness)
 											final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 												(((tile.isWrecked ()) && (borderImage.getWreckedFile () != null)) ?
-													borderImage.getWreckedFile () : borderImage.getStandardFile (), borderImage.getStandardAnimation (), false);
+													borderImage.getWreckedFile () : borderImage.getStandardFile (), borderImage.getStandardAnimation (), false, AnimationContainer.GRAPHICS_XML);
 											
 											zOrderGraphics.drawImage (image,
 												getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) - (2 * 2),
@@ -761,7 +757,7 @@ public final class CombatUI extends MomClientFrameUI
 					{
 						// Draw which missile image?
 						final BufferedImage ratImage = getAnim ().loadImageOrAnimationFrame (getAttackAnim ().getRatCurrentImage ().getRangedAttackTypeCombatImageFile (),
-							getAttackAnim ().getRatCurrentImage ().getRangedAttackTypeCombatAnimation (), false);
+							getAttackAnim ().getRatCurrentImage ().getRangedAttackTypeCombatAnimation (), false, AnimationContainer.COMMON_XML);
 						
 						// Draw each missile
 						for (final int [] position : getAttackAnim ().getCurrent ())
@@ -793,7 +789,7 @@ public final class CombatUI extends MomClientFrameUI
 									final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
 									final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
 									
-									final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false);
+									final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.GRAPHICS_XML);
 									g.drawImage (image,
 										getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) + adjustX,
 										getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
@@ -814,7 +810,7 @@ public final class CombatUI extends MomClientFrameUI
 							final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
 							final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
 							
-							final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false);
+							final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.GRAPHICS_XML);
 							g.drawImage (image, getUnitMoving ().getCurrentX () + adjustX, getUnitMoving ().getCurrentY () + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
 						}
 					}
@@ -1079,12 +1075,12 @@ public final class CombatUI extends MomClientFrameUI
 									}
 	
 									// If we can't target on this unit, tell the player why not
-									else if (validTarget.getUnitLanguageEntryID () != null)
+									else
 									{
-										final SpellLang spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
-										final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+										final String spellName = getLanguageHolder ().findDescription
+											(getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "CombatUI").getSpellName ());
 										
-										String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
+										String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getUnitLanguageText (validTarget)).replaceAll
 											("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargetted ().getSpellID ());
 										
 										// If spell can only be targetted on specific magic realm/lifeform types, the list them
@@ -1092,8 +1088,7 @@ public final class CombatUI extends MomClientFrameUI
 											text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (getSpellBeingTargetted ());
 										
 										final MessageBoxUI msgBox = getPrototypeFrameCreator ().createMessageBox ();
-										msgBox.setTitleLanguageCategoryID ("SpellTargetting");
-										msgBox.setTitleLanguageEntryID ("Title");
+										msgBox.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
 										msgBox.setText (text);
 										msgBox.setVisible (true);
 									}
@@ -1255,16 +1250,16 @@ public final class CombatUI extends MomClientFrameUI
 			// Now we can start the right music; if they've got a custom photo then default to the standard (raiders) music
 			final MomPersistentPlayerPublicKnowledge otherPub = (MomPersistentPlayerPublicKnowledge) otherPlayer.getPersistentPlayerPublicKnowledge ();
 			final String otherPhotoID = (otherPub.getStandardPhotoID () != null) ? otherPub.getStandardPhotoID () : CommonDatabaseConstants.WIZARD_ID_RAIDERS;
-			final WizardGfx wizardGfx = getGraphicsDB ().findWizard (otherPhotoID, "initNewCombat");
+			final WizardEx wizardDef = getClient ().getClientDB ().findWizard (otherPhotoID, "initNewCombat");
 			
 			// Pick a music track at random
 			try
 			{
-				if (wizardGfx.getCombatPlayList ().size () < 1)
+				if (wizardDef.getCombatPlayList ().size () < 1)
 					throw new MomException ("Wizard " + otherPhotoID + " has no combat music defined");
 				
 				getMusicPlayer ().setShuffle (false);
-				getMusicPlayer ().playPlayList (wizardGfx.chooseRandomCombatPlayListID ());
+				getMusicPlayer ().playPlayList (wizardDef.chooseRandomCombatPlayListID (), AnimationContainer.COMMON_XML);
 			}
 			catch (final Exception e)
 			{
@@ -1535,7 +1530,7 @@ public final class CombatUI extends MomClientFrameUI
 					}
 					
 					// Add the image - caeList.size () is a sneaky way of generating the 'x' values for the GridBagLayout
-					final BufferedImage image = getUtils ().loadImage (getGraphicsDB ().findCombatAreaEffect
+					final BufferedImage image = getUtils ().loadImage (getClient ().getClientDB ().findCombatAreaEffect
 						(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ());
 					final JLabel label = getUtils ().createImage (getUtils ().doubleSize (image));
 					
@@ -1579,19 +1574,19 @@ public final class CombatUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmCombat", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getTitle ()));
 		
-		spellAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Spell"));
-		waitAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Wait"));
-		doneAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Done"));
-		fleeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Flee"));
-		autoAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "Auto"));
-		cancelTargetSpellAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCombat", "CancelTargetSpell"));
+		spellAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getSpell ()));
+		waitAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getWait ()));
+		doneAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getDone ()));
+		fleeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getFlee ()));
+		autoAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getAuto ()));
+		cancelTargetSpellAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getCancelTargetSpell ()));
 		
-		skillLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Skill") + ":");
-		manaLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Mana") + ":");
-		rangeLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Range") + ":");
-		castableLabel.setText (getLanguage ().findCategoryEntry ("frmCombat", "Castable") + ":");
+		skillLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getSkill ()) + ":");
+		manaLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getMana ()) + ":");
+		rangeLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getRange ()) + ":");
+		castableLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getCastable ()) + ":");
 
 		if (players != null)
 		{
@@ -1620,20 +1615,17 @@ public final class CombatUI extends MomClientFrameUI
 						try
 						{
 							// Tile types (nodes)
-							if ((mc.getTerrainData ().getTileTypeID () != null) && (getClient ().getClientDB ().findTileType (mc.getTerrainData ().getTileTypeID (), "CombatUI").getMagicRealmID () != null))
-							{
-								final TileTypeLang tileType = getLanguage ().findTileType (mc.getTerrainData ().getTileTypeID ());
-								if ((tileType != null) && (tileType.getTileTypeShowAsFeature () != null))
-									defPlayerName = tileType.getTileTypeShowAsFeature ();
-							}
+							final TileType tileTypeDef = (mc.getTerrainData ().getTileTypeID () == null) ? null :
+								getClient ().getClientDB ().findTileType (mc.getTerrainData ().getTileTypeID (), "CombatUI");
+							final MapFeature mapFeatureDef = (mc.getTerrainData ().getMapFeatureID () == null) ? null:
+								getClient ().getClientDB ().findMapFeature (mc.getTerrainData ().getMapFeatureID (), "CombatUI");
+							
+							if ((tileTypeDef != null) && (tileTypeDef.getMagicRealmID () != null))
+								defPlayerName = getLanguageHolder ().findDescription (tileTypeDef.getTileTypeShowAsFeature ());
 							
 							// Map features (lairs and towers)
-							else if ((mc.getTerrainData ().getMapFeatureID () != null) && (getClient ().getClientDB ().findMapFeature (mc.getTerrainData ().getMapFeatureID (), "CombatUI").isAnyMagicRealmsDefined ()))
-							{
-								final MapFeatureLang mapFeature = getLanguage ().findMapFeature (mc.getTerrainData ().getMapFeatureID ());
-								if ((mapFeature != null) && (mapFeature.getMapFeatureDescription () != null))
-									defPlayerName = mapFeature.getMapFeatureDescription (); 
-							}
+							else if ((mapFeatureDef != null) && (mapFeatureDef.getMapFeatureMagicRealm ().size () > 0))
+								defPlayerName = getLanguageHolder ().findDescription (mapFeatureDef.getMapFeatureDescription ()); 
 						}
 						catch (final RecordNotFoundException e)
 						{
@@ -1648,19 +1640,7 @@ public final class CombatUI extends MomClientFrameUI
 		languageOrSelectedUnitChanged ();
 		
 		// Shortcut keys
-		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
-		if (contentPane.getActionMap ().keys () != null)
-			for (final Object shortcut : contentPane.getActionMap ().keys ())
-				if (shortcut instanceof Shortcut)
-				{
-					final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
-					if (shortcutKey != null)
-					{
-						final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
-						log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
-						contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
-					}
-				}
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -1784,7 +1764,7 @@ public final class CombatUI extends MomClientFrameUI
 			
 			// Unit image
 			selectedUnitImage.setIcon (new ImageIcon (getUtils ().loadImage
-				(getGraphicsDB ().findUnit (unit.getUnitID (), "setSelectedUnitInCombat").getUnitOverlandImageFile ())));
+				(xu.getUnitDefinition ().getUnitOverlandImageFile ())));
 		}
 		
 		enableOrDisableSpellAction ();
@@ -1807,7 +1787,7 @@ public final class CombatUI extends MomClientFrameUI
 		if (getSelectedUnitInCombat () != null)
 			try
 			{
-				final String avg = getLanguage ().findCategoryEntry ("frmCombat", "AveragePrefix");
+				final String avg = getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getAveragePrefix ());
 				
 				if (selectedUnitMeleeAverage != null)
 					selectedUnitMeleeAverageLabel.setText (avg + " " + selectedUnitMeleeAverage);
@@ -1836,8 +1816,9 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * Sets up prompt and cancel button to target a spell
 	 * @param spell Spell chosen from spell book that we want to cast into this combat, and need to select a target for
+	 * @throws RecordNotFoundException If the spell or spell book section can't be found
 	 */
-	public final void setSpellBeingTargetted (final Spell spell)
+	public final void setSpellBeingTargetted (final Spell spell) throws RecordNotFoundException
 	{
 		log.trace ("Entering setSpellBeingTargetted: " + spell.getSpellID ());
 		
@@ -1862,14 +1843,10 @@ public final class CombatUI extends MomClientFrameUI
 		}
 		
 		// Set up prompt
-		final SpellLang spellLang = getLanguage ().findSpell (getSpellBeingTargetted ().getSpellID ());
-		final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+		final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "setSpellBeingTargetted").getSpellName ());
+		final String target = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "setSpellBeingTargetted").getSpellTargetPrompt ());
 		
-		final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
-		final String target = (section != null) ? section.getSpellTargetPrompt () : null;
-		
-		spellPrompt.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :
-			(target.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getSpellBeingTargetted ().getSpellID ())));
+		spellPrompt.setText (target.replaceAll ("SPELL_NAME", spellName));
 		
 		playerName.setVisible (false);
 		spellCancel.setVisible (true);
@@ -1911,12 +1888,12 @@ public final class CombatUI extends MomClientFrameUI
 			
 			for (final String unitSkillID : xu.listModifiedSkillIDs ())
 			{
-				final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "setUnitToDrawAtLocation");
-				if (unitSkillGfx.getUnitSkillCombatAnimation () != null)
-					animations.add (getGraphicsDB ().findAnimation (unitSkillGfx.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
+				final UnitSkillEx UnitSkillEx = getClient ().getClientDB ().findUnitSkill (unitSkillID, "setUnitToDrawAtLocation");
+				if (UnitSkillEx.getUnitSkillCombatAnimation () != null)
+					animations.add (getGraphicsDB ().findAnimation (UnitSkillEx.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
 				
-				if (unitSkillGfx.getUnitSkillCombatColour () != null)
-					shadingColours.add (unitSkillGfx.getUnitSkillCombatColour ());
+				if (UnitSkillEx.getUnitSkillCombatColour () != null)
+					shadingColours.add (UnitSkillEx.getUnitSkillCombatColour ());
 			}
 			
 			unitToDrawAtEachLocation [y] [x] = new CombatUIUnitAndAnimations

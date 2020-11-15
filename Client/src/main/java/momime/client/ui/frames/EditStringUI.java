@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -24,6 +25,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.LanguageText;
 import momime.common.messages.clienttoserver.ChooseCityNameMessage;
 import momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage;
 
@@ -50,17 +52,11 @@ public final class EditStringUI extends MomClientFrameUI
 	/** Prompt text saying what needs to be entered */
 	private JLabel promptLabel;
 	
-	/** Language category ID to use for the title; null if title is not language-variable */
-	private String titleLanguageCategoryID;
+	/** Language text to use for the title; null if title is not language-variable */
+	private List<LanguageText> languageTitle;
 	
-	/** Language entry ID to use for the title; null if title is not language-variable */
-	private String titleLanguageEntryID;
-	
-	/** Language category ID to use for the prompt; null if prompt is not language-variable */
-	private String promptLanguageCategoryID;
-	
-	/** Language entry ID to use for the prompt; null if prompt is not language-variable */
-	private String promptLanguageEntryID;
+	/** Language text to use for the prompt; null if prompt is not language-variable */
+	private List<LanguageText> languagePrompt;
 	
 	/** Fixed title that isn't lanuage variant; null if title is language variable */
 	private String title;	
@@ -166,16 +162,21 @@ public final class EditStringUI extends MomClientFrameUI
 		log.trace ("Entering languageChanged");
 
 		// Title
+		final String useTitle;
 		if (getTitle () != null)
-			getFrame ().setTitle (getTitle ());
+			useTitle = getTitle ();
 		else
-			getFrame ().setTitle (getLanguage ().findCategoryEntry (getTitleLanguageCategoryID (), getTitleLanguageEntryID ()));
+			useTitle = getLanguageHolder ().findDescription (getLanguageTitle ());
 		
 		// Prompt
+		final String usePrompt;
 		if (getPrompt () != null)
-			promptLabel.setText (getPrompt ());
+			usePrompt = getPrompt ();
 		else
-			promptLabel.setText (getLanguage ().findCategoryEntry (getPromptLanguageCategoryID (), getPromptLanguageEntryID ()));
+			usePrompt = getLanguageHolder ().findDescription (getLanguagePrompt ());
+		
+		getFrame ().setTitle (useTitle);
+		promptLabel.setText (usePrompt);
 		
 		// No action text to set, because the button has OK on it as part of the image
 
@@ -231,67 +232,35 @@ public final class EditStringUI extends MomClientFrameUI
 	}
 	
 	/**
-	 * @return Language category ID to use for the title; null if title is not language-variable
+	 * @return Language text to use for the title; null if title is not language-variable
 	 */
-	public final String getTitleLanguageCategoryID ()
+	public final List<LanguageText> getLanguageTitle ()
 	{
-		return titleLanguageCategoryID;
+		return languageTitle;
 	}
 
 	/**
-	 * @param cat Language category ID to use for the title; null if title is not language-variable
+	 * @param t Language text to use for the title; null if title is not language-variable
 	 */
-	public final void setTitleLanguageCategoryID (final String cat)
+	public final void setLanguageTitle (final List<LanguageText> t)
 	{
-		titleLanguageCategoryID = cat;
+		languageTitle = t;
 	}
 	
 	/**
-	 * @return Language entry ID to use for the title; null if title is not language-variable
+	 * @return Language text to use for the prompt; null if prompt is not language-variable
 	 */
-	public final String getTitleLanguageEntryID ()
+	public final List<LanguageText> getLanguagePrompt ()
 	{
-		return titleLanguageEntryID;
-	}
-
-	/**
-	 * @param entry Language entry ID to use for the title; null if title is not language-variable
-	 */
-	public final void setTitleLanguageEntryID (final String entry)
-	{
-		titleLanguageEntryID = entry;
+		return languagePrompt;	
 	}
 	
 	/**
-	 * @return Language category ID to use for the message; null if message is not language-variable
+	 * @param p Language text to use for the prompt; null if prompt is not language-variable
 	 */
-	public final String getPromptLanguageCategoryID ()
+	public final void setLanguagePrompt (final List<LanguageText> p)
 	{
-		return promptLanguageCategoryID;
-	}
-	
-	/**
-	 * @param cat Language category ID to use for the message; null if message is not language-variable
-	 */
-	public final void setPromptLanguageCategoryID (final String cat)
-	{
-		promptLanguageCategoryID = cat;
-	}
-
-	/**
-	 * @return Language entry ID to use for the message; null if message is not language-variable
-	 */
-	public final String getPromptLanguageEntryID ()
-	{
-		return promptLanguageEntryID;
-	}
-	
-	/**
-	 * @param ent Language entry ID to use for the message; null if message is not language-variable
-	 */
-	public final void setPromptLanguageEntryID (final String ent)
-	{
-		promptLanguageEntryID = ent;
+		languagePrompt = p;
 	}
 
 	/**

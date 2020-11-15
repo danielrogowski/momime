@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 
 import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.PlayerPick;
 
@@ -20,21 +21,24 @@ public interface SpellClientUtils
 	 * @param spell Spell to list upkeeps of
 	 * @param picks Picks owned by the player who is casting the spell
 	 * @return Descriptive list of all the upkeeps of the specified spell; null if the spell has no upkeep
+	 * @throws RecordNotFoundException If one of the upkeeps can't be found
 	 */
-	public String listUpkeepsOfSpell (final Spell spell, final List<PlayerPick> picks);
+	public String listUpkeepsOfSpell (final Spell spell, final List<PlayerPick> picks) throws RecordNotFoundException;
 	
 	/**
 	 * @param spell Spell to list valid Magic realm/Lifeform type targets of
 	 * @return Descriptive list of all the valid Magic realm/Lifeform types for this spell; always returns some text, never null
+	 * @throws RecordNotFoundException If one of the magic realms can't be found
 	 */
-	public String listValidMagicRealmLifeformTypeTargetsOfSpell (final Spell spell);
+	public String listValidMagicRealmLifeformTypeTargetsOfSpell (final Spell spell) throws RecordNotFoundException;
 	
 	/**
 	 * @param spell Spell to list saving throws of
 	 * @return Descriptive list of all the saving throws of the specified curse spell; always returns some text, never null
 	 * @throws MomException If there are multiple saving throws listed, but against different unit attributes
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
-	public String listSavingThrowsOfSpell (final Spell spell) throws MomException;
+	public String listSavingThrowsOfSpell (final Spell spell) throws MomException, RecordNotFoundException;
 	
 	/**
 	 * Spell images are derived all sorts of ways, depending on the kind of spell.  This method deals with all that.

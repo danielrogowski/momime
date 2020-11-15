@@ -23,9 +23,14 @@ import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitMovement;
 import momime.common.calculations.UnitStack;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Plane;
+import momime.common.database.Race;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
@@ -42,12 +47,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
-import momime.server.database.BuildingSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.RaceSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.fogofwar.KillUnitActionID;
@@ -132,7 +132,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 */
 	@Override
 	public final String validateCityConstruction (final PlayerServerDetails player, final FogOfWarMemory trueMap, final MapCoordinates3DEx cityLocation,
-		final String buildingID, final String unitID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
+		final String buildingID, final String unitID, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering validateCityConstruction: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + buildingID + ", " + unitID);
@@ -145,11 +145,11 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		else
 		{
 			// Check if we're constructing a building or a unit
-			BuildingSvr building = null;
+			Building building = null;
 			if (buildingID != null)
 				building = db.findBuilding (buildingID, "validateCityConstruction");
 
-			UnitSvr unit = null;
+			Unit unit = null;
 			if (unitID != null)
 				unit = db.findUnit (unitID, "validateCityConstruction");
 
@@ -160,7 +160,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 					msg = "The city already has the type of building you're trying to build - change ignored.";
 				else
 				{
-					final RaceSvr race = db.findRace (cityData.getCityRaceID (), "validateCityConstruction");
+					final Race race = db.findRace (cityData.getCityRaceID (), "validateCityConstruction");
 
 					// Check that the race inhabiting the city can build this building
 					boolean cannotBuild = false;
@@ -251,7 +251,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 */
 	@Override
 	public final void buildCityFromSettler (final MomGeneralServerKnowledgeEx gsk, final PlayerServerDetails player, final MemoryUnit settler,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering buildCityFromSettler: " + settler.getUnitURN ());
@@ -259,7 +259,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		// Add the city on the server
 		final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) settler.getUnitLocation ();
 		final MemoryGridCell tc = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
-		final UnitSvr settlerUnit = db.findUnit (settler.getUnitID (), "buildCityFromSettler");
+		final Unit settlerUnit = db.findUnit (settler.getUnitID (), "buildCityFromSettler");
 		
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityOwnerID (player.getPlayerDescription ().getPlayerID ());
@@ -271,7 +271,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		tc.setCityData (cityData);
 		
 		// Cities automatically get a road
-		final PlaneSvr plane = (PlaneSvr) db.findPlane (cityLocation.getZ (), "buildCityFromSettler");
+		final Plane plane = db.findPlane (cityLocation.getZ (), "buildCityFromSettler");
 		final String roadTileTypeID = ((plane.isRoadsEnchanted () != null) && (plane.isRoadsEnchanted ())) ?
 			CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
 
@@ -306,7 +306,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @throws RecordNotFoundException If one of the buildings can't be found in the db
 	 */
 	@Override
-	public final int totalCostOfBuildingsAtLocation (final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final ServerDatabaseEx db)
+	public final int totalCostOfBuildingsAtLocation (final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering totalCostOfBuildingsAtLocation: " + cityLocation);
@@ -315,7 +315,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		for (final MemoryBuilding thisBuilding : buildings)
 			if (cityLocation.equals (thisBuilding.getCityLocation ()))
 			{
-				final BuildingSvr building = db.findBuilding (thisBuilding.getBuildingID (), "totalCostOfBuildingsAtLocation");
+				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "totalCostOfBuildingsAtLocation");
 				if (building.getProductionCost () != null)
 					total = total + building.getProductionCost ();
 			}
@@ -390,7 +390,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 */
 	@Override
 	public final List<MapCoordinates3DEx> listMissingRoadCellsBetween (final MapCoordinates3DEx firstCityLocation, final MapCoordinates3DEx secondCityLocation, final int playerID,
-		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering listMissingRoadCellsBetween: " + firstCityLocation + " to " + secondCityLocation);

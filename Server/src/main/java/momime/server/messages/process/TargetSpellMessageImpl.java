@@ -15,6 +15,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.random.RandomUtils;
 
+import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -28,7 +29,6 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.SpellSvr;
 import momime.server.process.SpellProcessing;
 
 /**
@@ -77,7 +77,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), getSpellID ());
-		final SpellSvr spell = mom.getServerDB ().findSpell (getSpellID (), "TargetSpellMessageImpl");
+		final Spell spell = mom.getServerDB ().findSpell (getSpellID (), "TargetSpellMessageImpl");
 		
 		// Do all the checks
 		final String error;
@@ -106,7 +106,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				else if ((getOverlandTargetLocation ().getX () < 0) || (getOverlandTargetLocation ().getY () < 0) || (getOverlandTargetLocation ().getZ () < 0) ||
 					(getOverlandTargetLocation ().getX () >= mom.getSessionDescription ().getOverlandMapSize ().getWidth ()) ||
 					(getOverlandTargetLocation ().getY () >= mom.getSessionDescription ().getOverlandMapSize ().getHeight ()) ||
-					(getOverlandTargetLocation ().getZ () >= mom.getServerDB ().getPlanes ().size ()))
+					(getOverlandTargetLocation ().getZ () >= mom.getServerDB ().getPlane ().size ()))
 					
 					error = "The coordinates you are trying to aim a city spell at are off the edge of the map";
 				else
@@ -203,7 +203,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				else if ((getOverlandTargetLocation ().getX () < 0) || (getOverlandTargetLocation ().getY () < 0) || (getOverlandTargetLocation ().getZ () < 0) ||
 						(getOverlandTargetLocation ().getX () >= mom.getSessionDescription ().getOverlandMapSize ().getWidth ()) ||
 						(getOverlandTargetLocation ().getY () >= mom.getSessionDescription ().getOverlandMapSize ().getHeight ()) ||
-						(getOverlandTargetLocation ().getZ () >= mom.getServerDB ().getPlanes ().size ()))
+						(getOverlandTargetLocation ().getZ () >= mom.getServerDB ().getPlane ().size ()))
 						
 						error = "The coordinates you are trying to aim a special overland spell at are off the edge of the map";
 				

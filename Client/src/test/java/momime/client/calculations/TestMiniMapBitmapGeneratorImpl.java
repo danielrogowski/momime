@@ -16,9 +16,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileTypeGfx;
-import momime.client.graphics.database.TileTypeMiniMapGfx;
+import momime.common.database.CommonDatabase;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.TileTypeEx;
+import momime.common.database.TileTypeMiniMap;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -39,17 +40,17 @@ public final class TestMiniMapBitmapGeneratorImpl extends ClientTestData
 	@Test
 	public final void testGenerateMiniMapBitmap () throws Exception
 	{
-		// Mock graphics database
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		for (int n = 1; n <= 4; n++)
 		{
-			final TileTypeGfx tileType = new TileTypeGfx ();
-			when (gfx.findTileType ("TT0" + n, "generateMiniMapBitmap")).thenReturn (tileType);
+			final TileTypeEx tileType = new TileTypeEx ();
+			when (db.findTileType ("TT0" + n, "generateMiniMapBitmap")).thenReturn (tileType);
 
 			if (n < 4)
 			{
-				final TileTypeMiniMapGfx miniMap = new TileTypeMiniMapGfx ();
+				final TileTypeMiniMap miniMap = new TileTypeMiniMap ();
 				miniMap.setPlaneNumber (0);
 				miniMap.setMiniMapPixelColour ("00000" + n);
 				tileType.getTileTypeMiniMap ().add (miniMap);
@@ -57,6 +58,9 @@ public final class TestMiniMapBitmapGeneratorImpl extends ClientTestData
 			
 			tileType.buildMap ();
 		}
+		
+		// Mock graphics database
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Map size
 		final OverlandMapSize mapSize = new OverlandMapSize ();
@@ -115,6 +119,7 @@ public final class TestMiniMapBitmapGeneratorImpl extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getPlayers ()).thenReturn (players);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Set up object to test
 		final MiniMapBitmapGeneratorImpl gen = new MiniMapBitmapGeneratorImpl ();

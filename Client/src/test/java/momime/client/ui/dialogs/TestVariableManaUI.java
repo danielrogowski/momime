@@ -1,30 +1,12 @@
 package momime.client.ui.dialogs;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.anyString;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import momime.client.ClientTestData;
-import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.client.ui.frames.CombatUI;
-import momime.client.utils.TextUtilsImpl;
-import momime.common.calculations.SpellCalculations;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.Spell;
-import momime.common.database.SpellSetting;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
-import momime.common.utils.SpellUtilsImpl;
 
 import org.junit.Test;
 
@@ -34,6 +16,26 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.VariableMana;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.ui.frames.CombatUI;
+import momime.client.utils.TextUtilsImpl;
+import momime.common.calculations.SpellCalculations;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.ProductionTypeEx;
+import momime.common.database.Spell;
+import momime.common.database.SpellSetting;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.utils.SpellUtilsImpl;
 
 /**
  * Tests the VariableManaUI class
@@ -51,17 +53,23 @@ public final class TestVariableManaUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("VariableMana", "Title")).thenReturn ("Additional Power");
-		when (lang.findCategoryEntry ("VariableMana", "Damage")).thenReturn ("VALUE damage");
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx manaProduction = new ProductionTypeEx ();
+		manaProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "sliderPositionChanged")).thenReturn (manaProduction);
 		
-		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
-		manaProduction.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		// Mock entries from the language XML
+		final VariableMana variableManaLang = new VariableMana ();
+		variableManaLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Additional Power"));
+		variableManaLang.getDamage ().add (createLanguageText (Language.ENGLISH, "VALUE damage"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getVariableMana ()).thenReturn (variableManaLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -87,9 +95,6 @@ public final class TestVariableManaUI extends ClientTestData
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getSessionDescription ()).thenReturn (sd);
-		
-		// Client db
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Session utils
@@ -148,18 +153,24 @@ public final class TestVariableManaUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx manaProduction = new ProductionTypeEx ();
+		manaProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "sliderPositionChanged")).thenReturn (manaProduction);
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("VariableMana", "Title")).thenReturn ("Additional Power");
-		when (lang.findCategoryEntry ("VariableMana", "Damage")).thenReturn ("VALUE dispel power");
-		
-		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
-		manaProduction.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		final VariableMana variableManaLang = new VariableMana ();
+		variableManaLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Additional Power"));
+		variableManaLang.getDamage ().add (createLanguageText (Language.ENGLISH, "VALUE damage"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getVariableMana ()).thenReturn (variableManaLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -185,9 +196,6 @@ public final class TestVariableManaUI extends ClientTestData
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd.getPlayerID ());
 		when (client.getSessionDescription ()).thenReturn (sd);
-		
-		// Client db
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Session utils

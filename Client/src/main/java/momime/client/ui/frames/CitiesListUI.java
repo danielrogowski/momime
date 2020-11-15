@@ -41,8 +41,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.MiniMapBitmapGenerator;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.UnitLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.renderer.CitiesListCellRenderer;
 import momime.client.ui.renderer.CitiesListEntry;
@@ -296,8 +294,7 @@ public final class CitiesListUI extends MomClientFrameUI
 	
 								for (final Building building : getClientCityCalculations ().listBuildingsCityCanConstruct (cityLocation))
 								{
-									final BuildingLang buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
-									final String buildingName = (buildingLang == null) ? null : buildingLang.getBuildingName ();
+									final String buildingName = getLanguageHolder ().findDescription (building.getBuildingName ());
 									
 									final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction
 										((buildingName != null) ? buildingName : building.getBuildingID (), (ev2) ->
@@ -317,24 +314,22 @@ public final class CitiesListUI extends MomClientFrameUI
 
 								popup.addSeparator ();
 								
-								for (final Unit unit : getCityCalculations ().listUnitsCityCanConstruct (cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+								for (final Unit unitDef : getCityCalculations ().listUnitsCityCanConstruct (cityLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getClient ().getClientDB ()))									
 								{
-									final UnitLang unitLang = getLanguage ().findUnit (unit.getUnitID ());
-									final String unitName = (unitLang == null) ? null : unitLang.getUnitName ();
+									final String unitName = getLanguageHolder ().findDescription (unitDef.getUnitName ());
 
-									final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction
-										((unitName != null) ? unitName : unit.getUnitID (), (ev2) ->
-										{
-											// Tell server that we want to change our construction
-											// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
-											final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
-											msg.setUnitID (unit.getUnitID ());
-											msg.setCityLocation (cityLocation);
-											getClient ().getServerConnection ().sendMessageToServer (msg);
-										}));
+									final JCheckBoxMenuItem item = new JCheckBoxMenuItem (new LoggingAction (unitName, (ev2) ->
+									{
+										// Tell server that we want to change our construction
+										// Note we don't update our own copy of it on the client - the server will confirm back to us that the choice was OK
+										final ChangeCityConstructionMessage msg = new ChangeCityConstructionMessage ();
+										msg.setUnitID (unitDef.getUnitID ());
+										msg.setCityLocation (cityLocation);
+										getClient ().getServerConnection ().sendMessageToServer (msg);
+									}));
 
-									item.setSelected (unit.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()));
+									item.setSelected (unitDef.getUnitID ().equals (cityData.getCurrentlyConstructingUnitID ()));
 									item.setFont (getSmallFont ());
 									popup.add (item);
 								}
@@ -469,7 +464,8 @@ public final class CitiesListUI extends MomClientFrameUI
 		log.trace ("Entering languageChanged");
 
 		// Title containing player name
-		String titleText = getLanguage ().findCategoryEntry ("frmCitiesList", "Title");
+		String titleText = getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getTitle ());
+		
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID ());
 		if (ourPlayer != null)
 			titleText = titleText.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourPlayer));
@@ -478,16 +474,16 @@ public final class CitiesListUI extends MomClientFrameUI
 		getFrame ().setTitle (titleText);
 
 		// Column headings
-		cityNameHeading.setText			(getLanguage ().findCategoryEntry ("frmCitiesList", "CityName"));
-		cityRaceHeading.setText				(getLanguage ().findCategoryEntry ("frmCitiesList", "CityRace"));
-		cityPopulationHeading.setText		(getLanguage ().findCategoryEntry ("frmCitiesList", "CityPopulation"));
-		cityRationsHeading.setText			(getLanguage ().findCategoryEntry ("frmCitiesList", "CityRations"));
-		cityGoldHeading.setText				(getLanguage ().findCategoryEntry ("frmCitiesList", "CityGold"));
-		cityProductionHeading.setText		(getLanguage ().findCategoryEntry ("frmCitiesList", "CityProduction"));
-		cityConstructingHeading.setText	(getLanguage ().findCategoryEntry ("frmCitiesList", "CityConstructing"));
+		cityNameHeading.setText			(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityName ()));
+		cityRaceHeading.setText				(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityRace ()));
+		cityPopulationHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityPopulation ()));
+		cityRationsHeading.setText			(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityRations ()));
+		cityGoldHeading.setText				(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityGold ()));
+		cityProductionHeading.setText		(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityProduction ()));
+		cityConstructingHeading.setText	(getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getCityConstructing ()));
 		
 		// Buttons
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCitiesList", "OK"));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 		
 		log.trace ("Exiting languageChanged");
 	}

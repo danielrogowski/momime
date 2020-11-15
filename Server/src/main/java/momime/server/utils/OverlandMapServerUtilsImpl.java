@@ -22,8 +22,13 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.database.CityNameContainer;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Plane;
+import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileType;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -38,11 +43,6 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
-import momime.server.database.CityNameContainerSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.RaceSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
@@ -86,7 +86,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	final void setContinentalRace (final MapVolumeOfMemoryGridCells map, final MapArea3D<String> continentalRace,
-		final int x, final int y, final int plane, final String raceID, final ServerDatabaseEx db) throws RecordNotFoundException
+		final int x, final int y, final int plane, final String raceID, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering setContinentalRace: (" + x + ", " + y + ", " + plane + "), " + raceID);
 
@@ -102,7 +102,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			if (getCoordinateSystemUtils ().move3DCoordinates (sys, coords, d))
 			{
 				final OverlandMapTerrainData terrain = map.getPlane ().get (plane).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ();
-				final TileTypeSvr tileType = db.findTileType (terrain.getTileTypeID (), "setContinentalRace");
+				final TileType tileType = db.findTileType (terrain.getTileTypeID (), "setContinentalRace");
 				
 				if ((tileType.isLand () != null) && (tileType.isLand ()) && (continentalRace.get (coords) == null))
 					setContinentalRace (map, continentalRace, coords.getX (), coords.getY (), plane, raceID, db);
@@ -124,7 +124,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 */
 	@Override
 	public final MapArea3D<String> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
-		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
+		final CoordinateSystem sys, final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering decideAllContinentalRaces");
 
@@ -132,12 +132,12 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
 		continentalRace.setCoordinateSystem (sys);
 
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sys.getWidth (); x++)
 				for (int y = 0; y < sys.getHeight (); y++)
 				{
 					final OverlandMapTerrainData terrain = map.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					final TileTypeSvr tileType = db.findTileType (terrain.getTileTypeID (), "decideAllContinentalRaces");
+					final TileType tileType = db.findTileType (terrain.getTileTypeID (), "decideAllContinentalRaces");
 					
 					if ((tileType.isLand () != null) && (tileType.isLand ()) &&
 						(continentalRace.get (x, y, plane.getPlaneNumber ()) == null))
@@ -159,7 +159,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @return Auto generated city name
 	 */
 	@Override
-	public final String generateCityName (final MomGeneralServerKnowledgeEx gsk, final RaceSvr race)
+	public final String generateCityName (final MomGeneralServerKnowledgeEx gsk, final Race race)
 	{
 		final List<String> possibleChoices = new ArrayList<String> ();
 
@@ -171,7 +171,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		{
 			// Test each name to see if it has been used before
 			possibleChoices.clear ();
-			for (final CityNameContainerSvr thisCache : race.getCityNames ())
+			for (final CityNameContainer thisCache : race.getCityName ())
 			{
 				String thisName = thisCache.getCityName ();
 				if (numeral > 1)
@@ -210,7 +210,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 */
 	@Override
 	public final void attemptToMeldWithNode (final ExpandedUnitDetails attackingSpirit, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		log.trace ("Entering attemptToMeldWithNode: " +
@@ -280,7 +280,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			// Resolve the node ownership out across the full area, updating the true map as well as players' memory of who can see each cell and informing the clients too
 			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
-					for (final PlaneSvr plane : db.getPlanes ())
+					for (final Plane plane : db.getPlane ())
 					{
 						final ServerGridCellEx aura = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
 						if (attackingSpirit.getUnitLocation ().equals (aura.getAuraFromNode ()))
@@ -311,14 +311,14 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @return Total population this player has across all their cities
 	 */
 	@Override
-	public final int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
+	public final int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 	{
 		log.trace ("Entering totalPlayerPopulation: Player ID " + playerID);
 		
 		int total = 0;
 		for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
 			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
-				for (final PlaneSvr plane : db.getPlanes ())
+				for (final Plane plane : db.getPlane ())
 				{
 					final OverlandMapCityData cityData = map.getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getCityData ();
 					if ((cityData != null) && (cityData.getCityOwnerID () == playerID))

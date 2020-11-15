@@ -27,33 +27,34 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.database.MapFeature;
-import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SmoothedTileGfx;
-import momime.client.graphics.database.TileSetGfx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.WizardCombatPlayListGfx;
-import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.MapFeatureLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.CombatScreen;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.client.utils.WizardClientUtilsImpl;
+import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CombatAreaEffect;
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
-import momime.common.database.TileType;
+import momime.common.database.SmoothedTile;
+import momime.common.database.TileSetEx;
+import momime.common.database.TileTypeEx;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
+import momime.common.database.WizardCombatPlayList;
+import momime.common.database.WizardEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -89,65 +90,64 @@ public final class TestCombatUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmCombat", "Title")).thenReturn ("Combat");
-		when (lang.findCategoryEntry ("frmCombat", "Spell")).thenReturn ("Spell");
-		when (lang.findCategoryEntry ("frmCombat", "Wait")).thenReturn ("Wait");
-		when (lang.findCategoryEntry ("frmCombat", "Done")).thenReturn ("Done");
-		when (lang.findCategoryEntry ("frmCombat", "Flee")).thenReturn ("Flee");
-		when (lang.findCategoryEntry ("frmCombat", "Auto")).thenReturn ("Auto");
-
-		when (lang.findCategoryEntry ("frmCombat", "Skill")).thenReturn ("Skill");
-		when (lang.findCategoryEntry ("frmCombat", "Mana")).thenReturn ("Mana");
-		when (lang.findCategoryEntry ("frmCombat", "Range")).thenReturn ("Range");
-		when (lang.findCategoryEntry ("frmCombat", "Castable")).thenReturn ("Max");
-		when (lang.findCategoryEntry ("frmCombat", "AveragePrefix")).thenReturn ("avg");
+		final CombatScreen combatScreenLang = new CombatScreen ();
+		combatScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Combat"));
+		combatScreenLang.getSpell ().add (createLanguageText (Language.ENGLISH, "Spell"));
+		combatScreenLang.getWait ().add (createLanguageText (Language.ENGLISH, "Wait"));
+		combatScreenLang.getDone ().add (createLanguageText (Language.ENGLISH, "Done"));
+		combatScreenLang.getFlee ().add (createLanguageText (Language.ENGLISH, "Flee"));
+		combatScreenLang.getAuto ().add (createLanguageText (Language.ENGLISH, "Auto"));
 		
-		when (lang.findWizardName (CommonDatabaseConstants.WIZARD_ID_MONSTERS)).thenReturn ("Rampaging Monsters");
-		
-		final MapFeatureLang mapFeatureLang = new MapFeatureLang ();
-		mapFeatureLang.setMapFeatureDescription ("Abandoned Keep");
-		when (lang.findMapFeature ("MF01")).thenReturn (mapFeatureLang);
+		combatScreenLang.getSkill ().add (createLanguageText (Language.ENGLISH, "Skill"));
+		combatScreenLang.getMana ().add (createLanguageText (Language.ENGLISH, "Mana"));
+		combatScreenLang.getRange ().add (createLanguageText (Language.ENGLISH, "Range"));
+		combatScreenLang.getCastable ().add (createLanguageText (Language.ENGLISH, "Max"));
+		combatScreenLang.getAveragePrefix ().add (createLanguageText (Language.ENGLISH, "avg"));
 
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getCombatScreen ()).thenReturn (combatScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Mock entries from the graphics XML
-		final WizardGfx monsterWizardGfx = new WizardGfx ();
-		monsterWizardGfx.getCombatPlayList ().add (new WizardCombatPlayListGfx ());
-		monsterWizardGfx.setRandomUtils (mock (RandomUtils.class));
-		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "initNewCombat")).thenReturn (monsterWizardGfx);
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileSetGfx combatMapTileSet = new TileSetGfx ();
+		final WizardEx monsterWizardEx = new WizardEx ();
+		monsterWizardEx.getCombatPlayList ().add (new WizardCombatPlayList ());
+		monsterWizardEx.setRandomUtils (mock (RandomUtils.class));
+		
+		when (db.findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "initNewCombat")).thenReturn (monsterWizardEx);
+		
+		final TileSetEx combatMapTileSet = new TileSetEx ();
 		combatMapTileSet.setAnimationSpeed (2.0);
 		combatMapTileSet.setAnimationFrameCount (3);
-		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "CombatUI")).thenReturn (combatMapTileSet);
+		when (db.findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "CombatUI")).thenReturn (combatMapTileSet);
 		
-		final UnitGfx unitGfx = new UnitGfx ();
-		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN197/overland.png");
-		when (gfx.findUnit ("UN197", "setSelectedUnitInCombat")).thenReturn (unitGfx);
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitOverlandImageFile ("/momime.client.graphics/units/UN197/overland.png");
+		when (db.findUnit ("UN197", "setSelectedUnitInCombat")).thenReturn (unitDef);
+		
+		final TileTypeEx tileType = new TileTypeEx ();
+		when (db.findTileType ("TT01", "CombatUI")).thenReturn (tileType);
+		
+		final MapFeatureEx mapFeature = new MapFeatureEx ();
+		mapFeature.getMapFeatureDescription ().add (createLanguageText (Language.ENGLISH, "Abandoned Keep"));
+		mapFeature.getMapFeatureMagicRealm ().add (null);
+		when (db.findMapFeature ("MF01", "CombatUI")).thenReturn (mapFeature);
 		
 		for (int n = 1; n <= 6; n++)
 		{
-			final CombatAreaEffectGfx cae = new CombatAreaEffectGfx ();
+			final CombatAreaEffect cae = new CombatAreaEffect ();
 			cae.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CAE0" + n + ".png");
-			when (gfx.findCombatAreaEffect ("CAE0" + n, "generateCombatAreaEffectIcons")).thenReturn (cae);
+			when (db.findCombatAreaEffect ("CAE0" + n, "generateCombatAreaEffectIcons")).thenReturn (cae);
 		}
-		
-		// Mock entries from the client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
-		final TileType tileType = new TileType ();
-		when (db.findTileType ("TT01", "CombatUI")).thenReturn (tileType);
-		
-		final MapFeature mapFeature = new MapFeature ();
-		mapFeature.setAnyMagicRealmsDefined (true);
-		when (db.findMapFeature ("MF01", "CombatUI")).thenReturn (mapFeature);
 		
 		// Overland map
 		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
@@ -241,8 +241,9 @@ public final class TestCombatUI extends ClientTestData
 			(new CombatPlayers (attackingPlayer, defendingPlayer));
 		
 		// Player name generator
-		final WizardClientUtilsImpl wizardClientUtils = new WizardClientUtilsImpl ();
-		wizardClientUtils.setLanguageHolder (langHolder);
+		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
+		when (wizardClientUtils.getPlayerName (defendingPlayer)).thenReturn ("Rampaging Monsters");	// This name doesn't appear, because its overwritten by "Abandoned Keep"
+		when (wizardClientUtils.getPlayerName (attackingPlayer)).thenReturn (atkPd.getPlayerName ());
 		
 		// CAEs
 		final MemoryCombatAreaEffect cae1 = new MemoryCombatAreaEffect ();
@@ -278,9 +279,9 @@ public final class TestCombatUI extends ClientTestData
 		when (gen.generateCombatMapBitmaps (combatMap)).thenReturn (combatMapBitmaps);
 		
 		// Mock other outputs from the bitmap generator, used to draw the building layer
-		final SmoothedTileGfx [] [] buildingTiles = new SmoothedTileGfx [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+		final SmoothedTile [] [] buildingTiles = new SmoothedTile [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		
-		final Map<CombatMapLayerID, SmoothedTileGfx [] []> smoothedTiles = new HashMap<CombatMapLayerID, SmoothedTileGfx [] []> ();
+		final Map<CombatMapLayerID, SmoothedTile [] []> smoothedTiles = new HashMap<CombatMapLayerID, SmoothedTile [] []> ();
 		smoothedTiles.put (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES, buildingTiles);
 		when (gen.getSmoothedTiles ()).thenReturn (smoothedTiles);
 		
@@ -294,6 +295,7 @@ public final class TestCombatUI extends ClientTestData
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xuSelectedUnit = mock (ExpandedUnitDetails.class);
+		when (xuSelectedUnit.getUnitDefinition ()).thenReturn (unitDef);
 		when (unitUtils.expandUnitDetails (selectedUnit, null, null, null, players, fow, db)).thenReturn (xuSelectedUnit);
 		
 		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);
@@ -310,7 +312,7 @@ public final class TestCombatUI extends ClientTestData
 		when (unitClientUtils.getUnitSkillComponentBreakdownIcon (xuSelectedUnit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK)).thenReturn
 			(utils.loadImage ("/momime.client.graphics/rangedAttacks/rock/iconNormal.png"));
 		
-		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
+		final UnitSkillEx movementSkill = new UnitSkillEx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		
 		final ClientUnitCalculations clientUnitCalculations = mock (ClientUnitCalculations.class);

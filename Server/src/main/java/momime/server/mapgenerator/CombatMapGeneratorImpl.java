@@ -3,8 +3,20 @@ package momime.server.mapgenerator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.MapCoordinates2D;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.random.RandomUtils;
+
+import momime.common.database.CombatMapElement;
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CombatTileType;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileType;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -15,20 +27,8 @@ import momime.common.messages.MomCombatTileLayer;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
-import momime.server.database.CombatMapElementSvr;
-import momime.server.database.CombatTileTypeSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.TileTypeSvr;
 import momime.server.knowledge.ServerGridCellEx;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.MapCoordinates2D;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.random.RandomUtils;
 
 /**
  * Server only class which contains all the code for generating a random combat map
@@ -63,14 +63,14 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 */
 	@Override
 	public final MapAreaOfCombatTiles generateCombatMap (final CombatMapSize combatMapCoordinateSystem,
-		final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+		final CommonDatabase db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering generateCombatMap: " + combatMapLocation);
 		
 		// What tileType is the map cell we're generating a combat map for?
 		final ServerGridCellEx mc = (ServerGridCellEx) trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
-		final TileTypeSvr tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
+		final TileType tileType = db.findTileType (mc.getTerrainData ().getTileTypeID (), "generateCombatMap");
 
 		// Start map generation, this initializes all the map cells
 		final MapAreaOfCombatTiles map = setAllToGrass (combatMapCoordinateSystem);
@@ -241,7 +241,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 * @param combatMapLocation The location that the map is being generated for (we need this in order to look for buildings, etc)
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
-	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+	final void placeCombatMapElements (final MapAreaOfCombatTiles map, final CommonDatabase db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering placeCombatMapElements");
@@ -250,7 +250,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 		final MemoryGridCell mc = trueTerrain.getMap ().getPlane ().get (combatMapLocation.getZ ()).getRow ().get (combatMapLocation.getY ()).getCell ().get (combatMapLocation.getX ());
 		
 		// Check each element
-		for (final CombatMapElementSvr element : db.getCombatMapElements ())
+		for (final CombatMapElement element : db.getCombatMapElement ())
 		{
 			// Check conditions
 			final String tileTypeID;
@@ -282,7 +282,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 				// Place combat tile
 				if (element.getCombatTileTypeID () != null)
 				{
-					final CombatTileTypeSvr ctt = db.findCombatTileType (element.getCombatTileTypeID (), "placeCombatMapElements");
+					final CombatTileType ctt = db.findCombatTileType (element.getCombatTileTypeID (), "placeCombatMapElements");
 					getCombatMapUtils ().setCombatTileTypeForLayer (combatTile, ctt.getCombatMapLayer (), element.getCombatTileTypeID ());
 				}
 				
@@ -310,7 +310,7 @@ public final class CombatMapGeneratorImpl implements CombatMapGenerator
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
 	@Override
-	public final void regenerateCombatTileBorders (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+	public final void regenerateCombatTileBorders (final MapAreaOfCombatTiles map, final CommonDatabase db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering regenerateCombatTileBorders");

@@ -34,21 +34,21 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.GenerateTestData;
-import momime.common.database.MapFeature;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
-import momime.common.database.ProductionType;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeAndDoubledValue;
-import momime.common.database.Race;
+import momime.common.database.RaceEx;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.RoundingDirectionID;
 import momime.common.database.TaxRate;
-import momime.common.database.TileType;
-import momime.common.database.Unit;
+import momime.common.database.TileTypeEx;
+import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownDying;
 import momime.common.internal.CityGrowthRateBreakdownGrowing;
@@ -80,13 +80,13 @@ public final class TestCityCalculationsImpl
 	public final void testListCityProductionPercentageBonusesFromTerrainTiles () throws RecordNotFoundException
 	{
 		// Mock database
-		final TileType hillsTileType = new TileType ();
+		final TileTypeEx hillsTileType = new TileTypeEx ();
 		hillsTileType.setProductionBonus (3);
 
-		final TileType mountainsTileType = new TileType ();
+		final TileTypeEx mountainsTileType = new TileTypeEx ();
 		mountainsTileType.setProductionBonus (5);
 
-		final TileType riverTileType = new TileType ();
+		final TileTypeEx riverTileType = new TileTypeEx ();
 
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findTileType ("TT01", "listCityProductionPercentageBonusesFromTerrainTiles")).thenReturn (hillsTileType);
@@ -144,21 +144,21 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final TileType centreTileType = new TileType ();
+		final TileTypeEx centreTileType = new TileTypeEx ();
 		centreTileType.setGoldBonus (20);
 		when (db.findTileType ("TT01", "calculateGoldTradeBonus")).thenReturn (centreTileType);
 		
-		final TileType adjacentTileType = new TileType ();
+		final TileTypeEx adjacentTileType = new TileTypeEx ();
 		adjacentTileType.setGoldBonus (10);
 		when (db.findTileType ("TT02", "calculateGoldTradeBonus")).thenReturn (adjacentTileType);
 
-		final TileType uninterestingTileType = new TileType ();
+		final TileTypeEx uninterestingTileType = new TileTypeEx ();
 		when (db.findTileType ("TT03", "calculateGoldTradeBonus")).thenReturn (uninterestingTileType);
 		
-		final Race uninterestingRace = new Race ();
+		final RaceEx uninterestingRace = new RaceEx ();
 		when (db.findRace ("RC01", "calculateGoldTradeBonus")).thenReturn (uninterestingRace);
 		
-		final Race nomads = new Race ();
+		final RaceEx nomads = new RaceEx ();
 		nomads.setGoldTradeBonus (50);
 		when (db.findRace ("RC02", "calculateGoldTradeBonus")).thenReturn (nomads);
 		
@@ -362,15 +362,15 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final TileType hillsDef = new TileType ();
+		final TileTypeEx hillsDef = new TileTypeEx ();
 		hillsDef.setDoubleFood (1);
 		when (db.findTileType ("TT01", "listCityFoodProductionFromTerrainTiles")).thenReturn (hillsDef);
 		
-		final TileType riverDef = new TileType ();
+		final TileTypeEx riverDef = new TileTypeEx ();
 		riverDef.setDoubleFood (4);
 		when (db.findTileType ("TT02", "listCityFoodProductionFromTerrainTiles")).thenReturn (riverDef);
 		
-		final TileType mountainsDef = new TileType ();
+		final TileTypeEx mountainsDef = new TileTypeEx ();
 		when (db.findTileType ("TT03", "listCityFoodProductionFromTerrainTiles")).thenReturn (mountainsDef);
 		
 		// Set up object to test
@@ -435,14 +435,14 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Race standardRace = new Race ();
+		final RaceEx standardRace = new RaceEx ();
 		when (db.findRace ("RC01", "calculateCityGrowthRate")).thenReturn (standardRace);
 
-		final Race raceWithBonus = new Race ();
+		final RaceEx raceWithBonus = new RaceEx ();
 		raceWithBonus.setGrowthRateModifier (20);
 		when (db.findRace ("RC02", "calculateCityGrowthRate")).thenReturn (raceWithBonus);
 		
-		final Race raceWithPenalty = new Race ();
+		final RaceEx raceWithPenalty = new RaceEx ();
 		raceWithPenalty.setGrowthRateModifier (-20);
 		when (db.findRace ("RC03", "calculateCityGrowthRate")).thenReturn (raceWithPenalty);
 
@@ -727,7 +727,7 @@ public final class TestCityCalculationsImpl
 		when (db.findTaxRate ("TR03", "calculateCityRebels")).thenReturn (taxRate3);
 		
 		// Units
-		final Unit normalUnitDef = new Unit ();
+		final UnitEx normalUnitDef = new UnitEx ();
 		normalUnitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "calculateCityRebels")).thenReturn (normalUnitDef);
 		
@@ -735,7 +735,7 @@ public final class TestCityCalculationsImpl
 		normalMagicRealm.setUnitTypeID ("N");
 		when (db.findPick ("LTN", "calculateCityRebels")).thenReturn (normalMagicRealm);
 
-		final Unit summonedUnitDef = new Unit ();
+		final UnitEx summonedUnitDef = new UnitEx ();
 		summonedUnitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN002", "calculateCityRebels")).thenReturn (summonedUnitDef);
 		
@@ -743,7 +743,7 @@ public final class TestCityCalculationsImpl
 		summonedMagicRealm.setUnitTypeID (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED);
 		when (db.findPick ("MB01", "calculateCityRebels")).thenReturn (summonedMagicRealm);
 		
-		final Unit heroUnitDef = new Unit ();
+		final UnitEx heroUnitDef = new UnitEx ();
 		heroUnitDef.setUnitMagicRealm ("LTH");
 		when (db.findUnit ("UN003", "calculateCityRebels")).thenReturn (heroUnitDef);
 		
@@ -756,7 +756,7 @@ public final class TestCityCalculationsImpl
 		klackonUnrest.setCapitalRaceID ("RC01");
 		klackonUnrest.setUnrestLiteral (-2);
 		
-		final Race klackonsDef = new Race ();
+		final RaceEx klackonsDef = new RaceEx ();
 		klackonsDef.getRaceUnrest ().add (klackonUnrest);
 		when (db.findRace ("RC01", "calculateCityRebels")).thenReturn (klackonsDef);
 		
@@ -764,7 +764,7 @@ public final class TestCityCalculationsImpl
 		highElfDwarfUnrest.setCapitalRaceID ("RC03");
 		highElfDwarfUnrest.setUnrestPercentage (30);
 		
-		final Race highElvesDef = new Race ();
+		final RaceEx highElvesDef = new RaceEx ();
 		highElvesDef.getRaceUnrest ().add (highElfDwarfUnrest);
 		when (db.findRace ("RC02", "calculateCityRebels")).thenReturn (highElvesDef);
 		
@@ -1276,7 +1276,7 @@ public final class TestCityCalculationsImpl
 		populationTask.getRacePopulationTaskProduction ().add (prod1);
 		populationTask.getRacePopulationTaskProduction ().add (prod2);
 		
-		final Race race = new Race ();
+		final RaceEx race = new RaceEx ();
 		race.getRacePopulationTask ().add (populationTask);
 		
 		// Building list
@@ -1492,11 +1492,11 @@ public final class TestCityCalculationsImpl
 		thirdProd.setProductionTypeID ("RE03");
 		thirdProd.setDoubledProductionValue (4);
 		
-		final MapFeature firstFeature = new MapFeature ();
+		final MapFeatureEx firstFeature = new MapFeatureEx ();
 		firstFeature.getMapFeatureProduction ().add (firstProd);
 		firstFeature.getMapFeatureProduction ().add (secondProd);
 		
-		final MapFeature secondFeature = new MapFeature ();
+		final MapFeatureEx secondFeature = new MapFeatureEx ();
 		secondFeature.setRaceMineralMultiplerApplies (true);
 		secondFeature.getMapFeatureProduction ().add (thirdProd);
 		
@@ -1581,12 +1581,12 @@ public final class TestCityCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Tile types
-		final TileType hillsDef = new TileType ();
+		final TileTypeEx hillsDef = new TileTypeEx ();
 		hillsDef.setDoubleFood (1);
 		hillsDef.setProductionBonus (3);
 		when (db.findTileType (eq ("TT01"), anyString ())).thenReturn (hillsDef);
 
-		final TileType riverDef = new TileType ();
+		final TileTypeEx riverDef = new TileTypeEx ();
 		riverDef.setDoubleFood (4);
 		riverDef.setGoldBonus (20);
 		when (db.findTileType (eq ("TT02"), anyString ())).thenReturn (riverDef);
@@ -1600,7 +1600,7 @@ public final class TestCityCalculationsImpl
 		wildGameRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		wildGameRations.setDoubledProductionValue (4);
 		
-		final MapFeature wildGame = new MapFeature ();
+		final MapFeatureEx wildGame = new MapFeatureEx ();
 		wildGame.getMapFeatureProduction ().add (wildGameFood);
 		wildGame.getMapFeatureProduction ().add (wildGameRations);
 		when (db.findMapFeature ("MF01", "addProductionFromMapFeatures")).thenReturn (wildGame);
@@ -1609,7 +1609,7 @@ public final class TestCityCalculationsImpl
 		gemsGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		gemsGold.setDoubledProductionValue (10);
 		
-		final MapFeature gems = new MapFeature ();
+		final MapFeatureEx gems = new MapFeatureEx ();
 		gems.setRaceMineralMultiplerApplies (true);
 		gems.getMapFeatureProduction ().add (gemsGold);
 		when (db.findMapFeature ("MF02", "addProductionFromMapFeatures")).thenReturn (gems);
@@ -1618,37 +1618,37 @@ public final class TestCityCalculationsImpl
 		adamantiumMagicPower.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER);
 		adamantiumMagicPower.setDoubledProductionValue (4);
 		
-		final MapFeature adamantium = new MapFeature ();
+		final MapFeatureEx adamantium = new MapFeatureEx ();
 		adamantium.setRaceMineralMultiplerApplies (true);
 		adamantium.getMapFeatureProduction ().add (adamantiumMagicPower);
 		when (db.findMapFeature ("MF03", "addProductionFromMapFeatures")).thenReturn (adamantium);		
 
 		// Production types
-		final ProductionType rationProduction = new ProductionType ();
+		final ProductionTypeEx rationProduction = new ProductionTypeEx ();
 		rationProduction.setRoundingDirectionID (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 		rationProduction.setDifficultyLevelMultiplierApplies (true);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "halveAddPercentageBonusAndCapProduction")).thenReturn (rationProduction);
 
-		final ProductionType foodProduction = new ProductionType ();
+		final ProductionTypeEx foodProduction = new ProductionTypeEx ();
 		foodProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "halveAddPercentageBonusAndCapProduction")).thenReturn (foodProduction);
 
-		final ProductionType productionProduction = new ProductionType ();
+		final ProductionTypeEx productionProduction = new ProductionTypeEx ();
 		productionProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
 		productionProduction.setDifficultyLevelMultiplierApplies (true);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, "halveAddPercentageBonusAndCapProduction")).thenReturn (productionProduction);
 
-		final ProductionType goldProduction = new ProductionType ();
+		final ProductionTypeEx goldProduction = new ProductionTypeEx ();
 		goldProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
 		goldProduction.setDifficultyLevelMultiplierApplies (true);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "halveAddPercentageBonusAndCapProduction")).thenReturn (goldProduction);
 
-		final ProductionType magicPowerProduction = new ProductionType ();
+		final ProductionTypeEx magicPowerProduction = new ProductionTypeEx ();
 		magicPowerProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
 		magicPowerProduction.setDifficultyLevelMultiplierApplies (true);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, "halveAddPercentageBonusAndCapProduction")).thenReturn (magicPowerProduction);
 		
-		final ProductionType spellResearchProduction = new ProductionType ();
+		final ProductionTypeEx spellResearchProduction = new ProductionTypeEx ();
 		spellResearchProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "halveAddPercentageBonusAndCapProduction")).thenReturn (spellResearchProduction);
 		
@@ -1674,7 +1674,7 @@ public final class TestCityCalculationsImpl
 		raceWorkers.getRacePopulationTaskProduction ().add (raceWorkerProduction);
 		raceWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
 		
-		final Race raceDef = new Race ();
+		final RaceEx raceDef = new RaceEx ();
 		raceDef.setMineralBonusMultiplier (1);
 		raceDef.getRacePopulationTask ().add (raceFarmers);
 		raceDef.getRacePopulationTask ().add (raceWorkers);
@@ -1702,7 +1702,7 @@ public final class TestCityCalculationsImpl
 		dwarvesWorkers.getRacePopulationTaskProduction ().add (dwarvesWorkerProduction);
 		dwarvesWorkers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER);
 		
-		final Race dwarvesDef = new Race ();
+		final RaceEx dwarvesDef = new RaceEx ();
 		dwarvesDef.setMineralBonusMultiplier (2);
 		dwarvesDef.getRacePopulationTask ().add (dwarvesFarmers);
 		dwarvesDef.getRacePopulationTask ().add (dwarvesWorkers);
@@ -1748,7 +1748,7 @@ public final class TestCityCalculationsImpl
 		highElfRebels.getRacePopulationTaskProduction ().add (highElfRebelMagicPower);
 		highElfRebels.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL);
 		
-		final Race highElfDef = new Race ();
+		final RaceEx highElfDef = new RaceEx ();
 		highElfDef.setMineralBonusMultiplier (1);
 		highElfDef.getRacePopulationTask ().add (highElfFarmers);
 		highElfDef.getRacePopulationTask ().add (highElfWorkers);
@@ -1814,7 +1814,7 @@ public final class TestCityCalculationsImpl
 		buildingDefs.add (sawmillDef);
 		buildingDefs.add (minersGuildDef);
 		
-		doReturn (buildingDefs).when (db).getBuildings ();
+		doReturn (buildingDefs).when (db).getBuilding ();
 		
 		// Planes
 		final ProductionTypeAndDoubledValue fortressPlaneProduction = new ProductionTypeAndDoubledValue ();
@@ -1837,7 +1837,7 @@ public final class TestCityCalculationsImpl
 		final List<PickType> pickTypes = new ArrayList<PickType> ();
 		pickTypes.add (books);
 		
-		doReturn (pickTypes).when (db).getPickTypes ();
+		doReturn (pickTypes).when (db).getPickType ();
 		
 		// Location
 		final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (2, 2, 1);
@@ -2480,21 +2480,21 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileType foodTile = new TileType ();
+		final TileTypeEx foodTile = new TileTypeEx ();
 		foodTile.setDoubleFood (3);
 		when (db.findTileType (eq ("TT01"), anyString ())).thenReturn (foodTile);
 		
-		final TileType bothTile = new TileType ();
+		final TileTypeEx bothTile = new TileTypeEx ();
 		bothTile.setDoubleFood (1);
 		bothTile.setProductionBonus (1);
 		bothTile.setGoldBonus (30);
 		when (db.findTileType (eq ("TT02"), anyString ())).thenReturn (bothTile);
 		
-		final TileType productionTile = new TileType ();
+		final TileTypeEx productionTile = new TileTypeEx ();
 		productionTile.setProductionBonus (3);
 		when (db.findTileType (eq ("TT03"), anyString ())).thenReturn (productionTile);
 		
-		final ProductionType foodProduction = new ProductionType ();
+		final ProductionTypeEx foodProduction = new ProductionTypeEx ();
 		foodProduction.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
 		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD), anyString ())).thenReturn (foodProduction);
 		
@@ -2517,7 +2517,7 @@ public final class TestCityCalculationsImpl
 		final List<Building> buildings = new ArrayList<Building> ();
 		buildings.add (granary);
 		buildings.add (farmersMarket);
-		doReturn (buildings).when (db).getBuildings ();
+		doReturn (buildings).when (db).getBuilding ();
 		
 		// Session description
 		final OverlandMapSize overlandMapSize = GenerateTestData.createOverlandMapSize ();
@@ -2592,11 +2592,11 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final ProductionType gold = new ProductionType ();
+		final ProductionTypeEx gold = new ProductionTypeEx ();
 		gold.setRoundingDirectionID (RoundingDirectionID.ROUND_DOWN);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "halveAddPercentageBonusAndCapProduction")).thenReturn (gold);
 		
-		final ProductionType food = new ProductionType ();
+		final ProductionTypeEx food = new ProductionTypeEx ();
 		food.setRoundingDirectionID (RoundingDirectionID.ROUND_UP);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "halveAddPercentageBonusAndCapProduction")).thenReturn (food);
 		
@@ -2694,17 +2694,17 @@ public final class TestCityCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final TileType hillsDef = new TileType ();
+		final TileTypeEx hillsDef = new TileTypeEx ();
 		when (db.findTileType (eq ("TT01"), anyString ())).thenReturn (hillsDef);
 
-		final TileType riverDef = new TileType ();
+		final TileTypeEx riverDef = new TileTypeEx ();
 		when (db.findTileType (eq ("TT02"), anyString ())).thenReturn (riverDef);
 		
 		final ProductionTypeAndDoubledValue wildGameProduction = new ProductionTypeAndDoubledValue ();
 		wildGameProduction.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 		wildGameProduction.setDoubledProductionValue (4);
 		
-		final MapFeature wildGame = new MapFeature ();
+		final MapFeatureEx wildGame = new MapFeatureEx ();
 		wildGame.getMapFeatureProduction ().add (wildGameProduction);
 		when (db.findMapFeature ("MF01", "addProductionFromMapFeatures")).thenReturn (wildGame);
 
@@ -2716,7 +2716,7 @@ public final class TestCityCalculationsImpl
 		raceFarmers.getRacePopulationTaskProduction ().add (raceFarmerProduction);
 		raceFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
-		final Race raceDef = new Race ();
+		final RaceEx raceDef = new RaceEx ();
 		raceDef.getRacePopulationTask ().add (raceFarmers);
 		when (db.findRace ("RC01", "calculateAllCityProductions")).thenReturn (raceDef);
 		
@@ -2724,7 +2724,7 @@ public final class TestCityCalculationsImpl
 		when (db.findTaxRate ("TR01", "calculateAllCityProductions")).thenReturn (taxRate);
 
 		// Production types
-		final ProductionType rationProduction = new ProductionType ();
+		final ProductionTypeEx rationProduction = new ProductionTypeEx ();
 		rationProduction.setRoundingDirectionID (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
 		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "halveAddPercentageBonusAndCapProduction")).thenReturn (rationProduction);
 		

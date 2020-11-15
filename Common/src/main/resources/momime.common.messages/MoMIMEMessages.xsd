@@ -460,7 +460,7 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 		<xsd:complexContent>
 			<xsd:extension base="mps:generalPublicKnowledge">
 		        <xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="clientDatabase" type="momimeclient:clientDatabase" />
+					<xsd:element ref="momimecommon:momDatabase" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="turnNumber" type="momimemsgs:turnNumber" />
 					<xsd:element minOccurs="0" maxOccurs="1" name="currentPlayerID" type="mps:playerID">
 					    <xsd:annotation>

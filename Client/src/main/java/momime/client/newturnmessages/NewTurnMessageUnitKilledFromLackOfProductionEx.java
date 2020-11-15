@@ -9,11 +9,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageUnitKilledFromLackOfProduction;
 import momime.common.messages.UnitStatusID;
@@ -97,14 +97,13 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 	
 	/**
 	 * @return Text to display for this NTM
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
-	public final String getText ()
+	public final String getText () throws RecordNotFoundException
 	{
-		final ProductionTypeLang productionType = getLanguage ().findProductionType (getProductionTypeID ());
-		String text = (productionType != null) ? productionType.getUnitKilledFromLackOfProduction () : null;
-		if (text == null)
-			text = "Unit lost from lack of " + getProductionTypeID ();
+		String text = getLanguageHolder ().findDescription
+			(getClient ().getClientDB ().findProductionType (getProductionTypeID (), "NewTurnMessageUnitKilledFromLackOfProductionEx").getUnitKilledFromLackOfProduction ());
 		
 		getUnitStatsReplacer ().setUnit (xu);
 		text = getUnitStatsReplacer ().replaceVariables (text);
@@ -185,9 +184,9 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

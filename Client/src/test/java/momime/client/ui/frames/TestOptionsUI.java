@@ -4,7 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
-import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
@@ -23,13 +24,17 @@ import momime.client.config.MomImeClientConfigEx;
 import momime.client.config.v0_9_9.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.LanguageOptionEx;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.MainMenuScreen;
+import momime.client.languages.database.OptionsScreen;
+import momime.client.languages.database.Simple;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.UnitClientUtilsImpl;
-import momime.common.database.UnitCombatScale;
+import momime.common.database.Language;
 import momime.common.database.UnitSkillTypeID;
 
 /**
@@ -52,39 +57,47 @@ public final class TestOptionsUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmOptions", "Title")).thenReturn ("Options");
-		when (lang.findCategoryEntry ("frmMainMenu", "ShortTitle")).thenReturn ("Implode's Multiplayer Edition - Client");
-		when (lang.findCategoryEntry ("frmMainMenu", "Version")).thenReturn ("version VERSION");
-		when (lang.findCategoryEntry ("frmOptions", "OK")).thenReturn ("OK");
-
-		when (lang.findCategoryEntry ("frmOptions", "DebugSection")).thenReturn ("Debug Options");
-		when (lang.findCategoryEntry ("frmOptions", "OverlandMapSection")).thenReturn ("Overland Map");
-		when (lang.findCategoryEntry ("frmOptions", "CombatMapSection")).thenReturn ("Combat Map");
-		when (lang.findCategoryEntry ("frmOptions", "LanguageSection")).thenReturn ("Language");
-		when (lang.findCategoryEntry ("frmOptions", "UnitInfoSection")).thenReturn ("Unit Info Display");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
 		
-		when (lang.findCategoryEntry ("frmOptions", "SmoothTerrain")).thenReturn ("Smooth edges of terrain");
-		when (lang.findCategoryEntry ("frmOptions", "LinearTextureFilter")).thenReturn ("Smooth textures when zooming in on overland map");
-		when (lang.findCategoryEntry ("frmOptions", "ShowFogOfWar")).thenReturn ("Darken areas of the map not currently visible");
-		when (lang.findCategoryEntry ("frmOptions", "SmoothFogOfWar")).thenReturn ("Smooth edges of visible area");
-		when (lang.findCategoryEntry ("frmOptions", "ShowOurBorder")).thenReturn ("Show border of territory that we control");
-		when (lang.findCategoryEntry ("frmOptions", "ShowEnemyBorders")).thenReturn ("Show borders of territory that others wizards control");
-		when (lang.findCategoryEntry ("frmOptions", "AnimateUnitsMoving")).thenReturn ("Animate units moving");
+		final MainMenuScreen mainMenuScreenLang = new MainMenuScreen ();
+		mainMenuScreenLang.getShortTitle ().add (createLanguageText (Language.ENGLISH, "Implode's Multiplayer Edition - Client"));
+		mainMenuScreenLang.getVersion ().add (createLanguageText (Language.ENGLISH, "version VERSION"));
 		
-		when (lang.findCategoryEntry ("frmOptions", "ShowUnitURNs")).thenReturn ("Show Unit, Building and Spell URNs");
-		when (lang.findCategoryEntry ("frmOptions", "ShowEdgesOfMap")).thenReturn ("Show edges of map");
-		when (lang.findCategoryEntry ("frmOptions", "CombatUnitScale")).thenReturn ("Unit scale (visual only; showing 4x figures does not mean 4x attacks):");
-		when (lang.findCategoryEntry ("frmOptions", "ChooseLanguage")).thenReturn ("Choose Language:");
+		final OptionsScreen optionsScreenLang = new OptionsScreen ();
+		optionsScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Options"));
+		optionsScreenLang.getDebug ().add (createLanguageText (Language.ENGLISH, "Debug Options"));
+		optionsScreenLang.getOverlandMap ().add (createLanguageText (Language.ENGLISH, "Overland Map"));
+		optionsScreenLang.getCombatMap ().add (createLanguageText (Language.ENGLISH, "Combat Map"));
+		optionsScreenLang.getLanguage ().add (createLanguageText (Language.ENGLISH, "Language"));
+		optionsScreenLang.getUnitInfo ().add (createLanguageText (Language.ENGLISH, "Unit Info Display"));
+		
+		optionsScreenLang.getSmoothTerrain ().add (createLanguageText (Language.ENGLISH, "Smooth edges of terrain"));
+		optionsScreenLang.getLinearTextureFilter ().add (createLanguageText (Language.ENGLISH, "Smooth textures when zooming in on overland map"));
+		optionsScreenLang.getShowFogOfWar ().add (createLanguageText (Language.ENGLISH, "Darken areas of the map not currently visible"));
+		optionsScreenLang.getSmoothFogOfWar ().add (createLanguageText (Language.ENGLISH, "Smooth edges of visible area"));
+		optionsScreenLang.getShowOurBorder ().add (createLanguageText (Language.ENGLISH, "Show border of territory that we control"));
+		optionsScreenLang.getShowEnemyBorders ().add (createLanguageText (Language.ENGLISH, "Show borders of territory that others wizards control"));
+		optionsScreenLang.getAnimateUnitsMoving ().add (createLanguageText (Language.ENGLISH, "Animate units moving"));
+		
+		optionsScreenLang.getShowUnitURNs ().add (createLanguageText (Language.ENGLISH, "Show Unit, Building and Spell URNs"));
+		optionsScreenLang.getShowEdgesOfMap ().add (createLanguageText (Language.ENGLISH, "Show edges of map"));
+		optionsScreenLang.getCombatUnitScale ().add (createLanguageText (Language.ENGLISH, "Unit scale (visual only; showing 4x figures does not mean 4x attacks):"));
+		optionsScreenLang.getChooseLanguage ().add (createLanguageText (Language.ENGLISH, "Choose Language:"));
+		optionsScreenLang.getShowHeroPortraits ().add (createLanguageText (Language.ENGLISH, "Show hero portraits"));
+		
+		optionsScreenLang.getUnitAttributes ().add (createLanguageText (Language.ENGLISH, "Show full breakdown (in top list) for:"));
+		optionsScreenLang.getUnitAttributesStandard ().add (createLanguageText (Language.ENGLISH, "Only standard attributes Melee, HP, etc"));
+		optionsScreenLang.getUnitAttributesModifyable ().add (createLanguageText (Language.ENGLISH, "Skills with values modifyable by exp, auras, etc"));
+		optionsScreenLang.getUnitAttributesAll ().add (createLanguageText (Language.ENGLISH, "All skills with values"));
 
-		when (lang.findCategoryEntry ("frmOptions", "ShowHeroPortraits")).thenReturn ("Show hero portraits");		
-		when (lang.findCategoryEntry ("frmOptions", "UnitAttributes")).thenReturn ("Show full breakdown (in top list) for:");
-		when (lang.findCategoryEntry ("frmOptions", "UnitAttributesA")).thenReturn ("Only standard attributes Melee, HP, etc");
-		when (lang.findCategoryEntry ("frmOptions", "UnitAttributesM")).thenReturn ("Skills with values modifyable by exp, auras, etc");
-		when (lang.findCategoryEntry ("frmOptions", "UnitAttributesF")).thenReturn ("All skills with values");
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getMainMenuScreen ()).thenReturn (mainMenuScreenLang);
+		when (lang.getOptionsScreen ()).thenReturn (optionsScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -100,20 +113,26 @@ public final class TestOptionsUI extends ClientTestData
 		anim.setGraphicsDB (gfx);
 		anim.setUtils (utils);
 		anim.setPlayerColourImageGenerator (gen);
+		
+		// Language choices
+		final MomLanguagesEx languages = mock (MomLanguagesEx.class);
+		
+		final List<LanguageOptionEx> languageOptions = new ArrayList<LanguageOptionEx> ();
+		for (final Language language : Language.values ())
+		{
+			final LanguageOptionEx option = new LanguageOptionEx ();
+			option.setLanguage (language);
+			option.setLanguageDescription (language.toString ());
+			languageOptions.add (option);
+		}
+		when (languages.getLanguageOptions ()).thenReturn (languageOptions);
 
 		// Config
 		final MomImeClientConfigEx config = new MomImeClientConfigEx ();
 		config.setCombatSmoothTerrain (true);
 		config.setOverlandSmoothTextures (true);
 		config.setDebugShowEdgesOfMap (true);
-		config.setUnitCombatScale (UnitCombatScale.DOUBLE_SIZE_UNITS);
 		config.setDisplayUnitSkillsAsAttributes (UnitSkillTypeID.MODIFYABLE);
-		
-		// Find the test folder containing empty language files
-		String path = getClass ().getResource ("/momime.client.language/Lang 1.Master of Magic Language.xml").toString ();
-		path = URLDecoder.decode (path, "UTF-8").substring (6);
-		path = path.substring (0, path.length () - 35);
-		config.setPathToLanguageXmlFiles (path);
 		
 		// Decide a temp location to save updates to the config file
 		final String clientConfigLocation = File.createTempFile ("MomImeClientConfigEx", ".xml").getAbsolutePath ();

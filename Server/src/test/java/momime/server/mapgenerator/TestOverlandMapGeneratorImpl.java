@@ -23,16 +23,33 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
 
+import org.junit.Test;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+
+import com.ndg.map.CoordinateSystemUtilsImpl;
+import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.random.RandomUtils;
+import com.ndg.random.RandomUtilsImpl;
+
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.database.LandProportion;
 import momime.common.database.LandProportionPlane;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.MapSizePlane;
 import momime.common.database.NodeStrength;
 import momime.common.database.NodeStrengthPlane;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileTypeEx;
+import momime.common.database.TileTypeAreaEffect;
+import momime.common.database.TileTypeFeatureChance;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSetting;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
@@ -44,28 +61,11 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.server.ServerTestData;
-import momime.server.database.MapFeatureSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.TileTypeAreaEffectSvr;
-import momime.server.database.TileTypeFeatureChanceSvr;
-import momime.server.database.TileTypeSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.unittests.mapstorage.StoredOverlandMap;
-
-import org.junit.Test;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-
-import com.ndg.map.CoordinateSystemUtilsImpl;
-import com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.RandomUtilsImpl;
 
 /**
  * Tests the OverlandMapGenerator class
@@ -512,17 +512,17 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		sd.setLandProportion (landProportion);
 		
 		// Mock server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeSvr ocean = new TileTypeSvr ();
+		final TileTypeEx ocean = new TileTypeEx ();
 		when (db.findTileType (ServerDatabaseValues.TILE_TYPE_OCEAN, "placeTerrainFeatures")).thenReturn (ocean);
 
 		// Arcanus can get MF01..02, Myrror can get MF01..03
-		final TileTypeSvr mountain = new TileTypeSvr ();
+		final TileTypeEx mountain = new TileTypeEx ();
 		for (int plane = 0; plane < overlandMapSize.getDepth (); plane++)
 			for (int n = 1; n <= 2+plane; n++)
 			{
-				final TileTypeFeatureChanceSvr feature = new TileTypeFeatureChanceSvr ();
+				final TileTypeFeatureChance feature = new TileTypeFeatureChance ();
 				feature.setMapFeatureID ("MF0" + n);
 				feature.setFeatureChance (n);
 				feature.setPlaneNumber (plane);
@@ -739,12 +739,12 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		sd.setNodeStrength (nodeStrength);
 		
 		// Mock server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final List<TileTypeSvr> nodeTypes = new ArrayList<TileTypeSvr> ();
+		final List<TileTypeEx> nodeTypes = new ArrayList<TileTypeEx> ();
 		for (int n = 1; n <= 6; n++)
 		{
-			final TileTypeSvr nodeType = new TileTypeSvr ();
+			final TileTypeEx nodeType = new TileTypeEx ();
 			nodeType.setTileTypeID ("NT0" + n);
 			
 			if (n <= 3)
@@ -835,12 +835,12 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 	public final void testChooseRandomNodeTileTypeID () throws Exception
 	{
 		// Mock server database - 3 node tile types, and 3 non-node tile types
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final List<TileTypeSvr> nodeTypes = new ArrayList<TileTypeSvr> ();
+		final List<TileTypeEx> nodeTypes = new ArrayList<TileTypeEx> ();
 		for (int n = 1; n <= 6; n++)
 		{
-			final TileTypeSvr nodeType = new TileTypeSvr ();
+			final TileTypeEx nodeType = new TileTypeEx ();
 			nodeType.setTileTypeID ("NT0" + n);
 			
 			if (n <= 3)
@@ -870,12 +870,12 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 	public final void testChooseRandomLairFeatureID () throws Exception
 	{
 		// Mock server database - creates 7 map features, MF10A .. MF16A, note MF12A is intentionally the code for an uncleared tower so won't be considered
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final List<MapFeatureSvr> mapFeatures = new ArrayList<MapFeatureSvr> ();
+		final List<MapFeatureEx> mapFeatures = new ArrayList<MapFeatureEx> ();
 		for (int n = 0; n <= 6; n++)
 		{
-			final MapFeatureSvr mapFeature = new MapFeatureSvr ();
+			final MapFeatureEx mapFeature = new MapFeatureEx ();
 			mapFeature.setMapFeatureID ("MF1" + n + "A");
 			
 			if (n <= 3)
@@ -911,21 +911,21 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		sd.setOverlandMapSize (overlandMapSize);
 		
 		// Mock server database - ocean is TT09 so lets create 3 tile types that can get lairs and 6 that can't
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		for (int n = 1; n <= 9; n++)
 		{
-			final TileTypeSvr tileType = new TileTypeSvr ();
+			final TileTypeEx tileType = new TileTypeEx ();
 			tileType.setTileTypeID ("TT0" + n);
 			tileType.setCanPlaceLair (n <= 3);
 			
 			when (db.findTileType (tileType.getTileTypeID (), "placeLairs")).thenReturn (tileType);
 		}		
 
-		final List<MapFeatureSvr> mapFeatures = new ArrayList<MapFeatureSvr> ();
+		final List<MapFeatureEx> mapFeatures = new ArrayList<MapFeatureEx> ();
 		for (int n = 1; n <= 6; n++)
 		{
-			final MapFeatureSvr mapFeature = new MapFeatureSvr ();
+			final MapFeatureEx mapFeature = new MapFeatureEx ();
 			mapFeature.setMapFeatureID ("MF0" + n);
 			
 			if (n <= 3)
@@ -1129,7 +1129,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 	@Test
 	public final void testGenerateOverlandTerrain () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 
@@ -1168,7 +1168,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Check that all node/lair/towers have their proportion set between 0 and 1 (and that the proportion isn't set for any other cells)
 
 		// Dump the maps to the standard output
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 		{
 			System.out.println (plane.getPlaneDescription () + ":");
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
@@ -1211,26 +1211,26 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		sd.setOverlandMapSize (overlandMapSize);
 
 		// Mock server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeSvr ocean = new TileTypeSvr ();
+		final TileTypeEx ocean = new TileTypeEx ();
 		ocean.setTileTypeID (ServerDatabaseValues.TILE_TYPE_OCEAN);
 		when (db.findTileType (ocean.getTileTypeID (), "generateInitialCombatAreaEffects")).thenReturn (ocean);
 		
-		final TileTypeSvr dudTileType = new TileTypeSvr ();
+		final TileTypeEx dudTileType = new TileTypeEx ();
 		dudTileType.setTileTypeID ("TT01");
 		when (db.findTileType (dudTileType.getTileTypeID (), "generateInitialCombatAreaEffects")).thenReturn (dudTileType);
 
-		final TileTypeSvr activeTileType = new TileTypeSvr ();
+		final TileTypeEx activeTileType = new TileTypeEx ();
 		activeTileType.setTileTypeID ("TT02");
 		when (db.findTileType (activeTileType.getTileTypeID (), "generateInitialCombatAreaEffects")).thenReturn (activeTileType);
 		
-		final TileTypeAreaEffectSvr centreOnly = new TileTypeAreaEffectSvr ();
+		final TileTypeAreaEffect centreOnly = new TileTypeAreaEffect ();
 		centreOnly.setCombatAreaEffectID ("CAE01");
 		centreOnly.setExtendAcrossNodeAura (false);
 		activeTileType.getTileTypeAreaEffect ().add (centreOnly);
 
-		final TileTypeAreaEffectSvr expandsAcross = new TileTypeAreaEffectSvr ();
+		final TileTypeAreaEffect expandsAcross = new TileTypeAreaEffect ();
 		expandsAcross.setCombatAreaEffectID ("CAE02");
 		expandsAcross.setExtendAcrossNodeAura (true);
 		activeTileType.getTileTypeAreaEffect ().add (expandsAcross);
@@ -1279,13 +1279,13 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 	public final void testFindMostExpensiveMonster () throws Exception
 	{
 		// Mock server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Set up 10 units, costing 0..900, except every other one is the wrong magic realm
-		final List<UnitSvr> unitDefs = new ArrayList<UnitSvr> ();
+		final List<UnitEx> unitDefs = new ArrayList<UnitEx> ();
 		for (int n = 0; n < 10; n++)
 		{
-			final UnitSvr unitDef = new UnitSvr ();
+			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitID ("UN00" + n);
 			unitDef.setProductionCost (n * 100);
 			unitDef.setUnitMagicRealm ("MB0" + (n % 2));
@@ -1294,7 +1294,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		}
 		
 		// Add another with no production cost at all, just to prove it doesn't break
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitID ("UN010");
 		unitDef.setUnitMagicRealm ("MB00");
 		unitDefs.add (unitDef);
@@ -1330,12 +1330,12 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		sd.setUnitSetting (unitSettings);
 		
 		// Mock server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final List<UnitSvr> unitDefs = new ArrayList<UnitSvr> ();
+		final List<UnitEx> unitDefs = new ArrayList<UnitEx> ();
 		for (int n = 0; n < 10; n++)
 		{
-			final UnitSvr unitDef = new UnitSvr ();
+			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitID ("UN00" + n);
 			unitDef.setProductionCost (n * 100);
 			unitDef.setUnitMagicRealm ("MB01");

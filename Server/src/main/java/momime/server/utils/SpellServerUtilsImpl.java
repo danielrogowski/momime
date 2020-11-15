@@ -1,18 +1,18 @@
 package momime.server.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SwitchResearch;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtils;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Server side methods dealing with researching and casting spells
@@ -35,7 +35,7 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 	 */
 	@Override
 	public final String validateResearch (final PlayerServerDetails player, final String spellID,
-		final SwitchResearch switchResearch, final ServerDatabaseEx db) throws RecordNotFoundException
+		final SwitchResearch switchResearch, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering validateResearch: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spellID);
 
@@ -45,7 +45,7 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 		final SpellResearchStatus spellWeWantToResearch = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID);
 
 		// Find the spell that was previously being researched
-		final SpellSvr spellPreviouslyBeingResearched;
+		final Spell spellPreviouslyBeingResearched;
 		final SpellResearchStatus spellPreviouslyBeingResearchedStatus;
 
 		if (priv.getSpellIDBeingResearched () == null)

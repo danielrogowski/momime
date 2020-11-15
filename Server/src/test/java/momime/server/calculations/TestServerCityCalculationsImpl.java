@@ -21,9 +21,13 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.database.Building;
+import momime.common.database.CitySize;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.ProductionTypeAndDoubledValue;
+import momime.common.database.RaceEx;
 import momime.common.database.RacePopulationTask;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -35,10 +39,6 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.server.ServerTestData;
-import momime.server.database.BuildingSvr;
-import momime.server.database.CitySizeSvr;
-import momime.server.database.RaceSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 
 /**
@@ -53,7 +53,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 	@Test
 	public final void testCalculateDoubleFarmingRate () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);
@@ -112,26 +112,26 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 	public final void testCalculateCitySizeIDAndMinimumFarmers () throws Exception
 	{
 		// Mock database
-		final CitySizeSvr smallCity = new CitySizeSvr ();
+		final CitySize smallCity = new CitySize ();
 		smallCity.setCitySizeID ("CS01");
 		smallCity.setCitySizeMaximum (3999);
 		
-		final CitySizeSvr mediumCity = new CitySizeSvr ();
+		final CitySize mediumCity = new CitySize ();
 		mediumCity.setCitySizeID ("CS02");
 		mediumCity.setCitySizeMinimum (4000);
 		mediumCity.setCitySizeMaximum (6999);
 		
-		final CitySizeSvr largeCity = new CitySizeSvr ();
+		final CitySize largeCity = new CitySize ();
 		largeCity.setCitySizeID ("CS03");
 		largeCity.setCitySizeMinimum (7000);
 		
-		final List<CitySizeSvr> citySizes = new ArrayList<CitySizeSvr> ();
+		final List<CitySize> citySizes = new ArrayList<CitySize> ();
 		citySizes.add (smallCity);
 		citySizes.add (mediumCity);
 		citySizes.add (largeCity);
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
-		when (db.getCitySizes ()).thenReturn (citySizes);
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getCitySize ()).thenReturn (citySizes);
 		
 		final ProductionTypeAndDoubledValue highMenRations = new ProductionTypeAndDoubledValue ();
 		highMenRations.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
@@ -141,7 +141,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		highMenFarmers.getRacePopulationTaskProduction ().add (highMenRations);
 		highMenFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
-		final RaceSvr highMen = new RaceSvr ();
+		final RaceEx highMen = new RaceEx ();
 		highMen.getRacePopulationTask ().add (highMenFarmers);
 		when (db.findRace ("RC05", "calculateDoubleFarmingRate")).thenReturn (highMen);
 
@@ -153,7 +153,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		halflingFarmers.getRacePopulationTaskProduction ().add (halflingRations);
 		halflingFarmers.setPopulationTaskID (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER);
 		
-		final RaceSvr halfling = new RaceSvr ();
+		final RaceEx halfling = new RaceEx ();
 		halfling.getRacePopulationTask ().add (halflingFarmers);
 		when (db.findRace ("RC03", "calculateDoubleFarmingRate")).thenReturn (halfling);
 
@@ -294,7 +294,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 	@Test
 	public final void testCalculateCityScoutingRange () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
 
@@ -347,7 +347,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 	@Test
 	public final void testCanEventuallyConstructBuilding () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sd.getOverlandMapSize ());
@@ -383,7 +383,7 @@ public final class TestServerCityCalculationsImpl extends ServerTestData
 		
 		// Orcs can build absolutely everything
 		cityData.setCityRaceID ("RC09");
-		for (final BuildingSvr building : db.getBuildings ())
+		for (final Building building : db.getBuilding ())
 			if ((!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS)) &&
 				(!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE)))
 

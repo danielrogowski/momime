@@ -6,11 +6,11 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.MemoryUnit;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 
 /**
  * Methods that the AI uses to calculate stats about types of spells it might want to cast
@@ -29,7 +29,7 @@ public interface AISpellCalculations
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final SpellSvr spell,
-		final List<MemoryUnit> trueUnits, final SpellSetting spellSettings, final ServerDatabaseEx db)
+	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final Spell spell,
+		final List<MemoryUnit> trueUnits, final SpellSetting spellSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

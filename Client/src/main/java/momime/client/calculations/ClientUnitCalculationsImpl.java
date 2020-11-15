@@ -5,8 +5,8 @@ import org.apache.commons.logging.LogFactory;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitSkillGfx;
 import momime.common.MomException;
+import momime.common.database.UnitSkillEx;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -38,13 +38,13 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	 * @throws MomException If this unit has no skills which have movement graphics, or we can't find its experience level
 	 */
 	@Override
-	public final UnitSkillGfx findPreferredMovementSkillGraphics (final ExpandedUnitDetails unit) throws MomException
+	public final UnitSkillEx findPreferredMovementSkillGraphics (final ExpandedUnitDetails unit) throws MomException
 	{
 		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID ());
 		
 		// Check all movement skills
-		UnitSkillGfx bestMatch = null;
-		for (final UnitSkillGfx thisSkill : getGraphicsDB ().getUnitSkills ())
+		UnitSkillEx bestMatch = null;
+		for (final UnitSkillEx thisSkill : getClient ().getClientDB ().getUnitSkills ())
 			if (thisSkill.getMovementIconImagePreference () != null)
 				if ((bestMatch == null) || (thisSkill.getMovementIconImagePreference () < bestMatch.getMovementIconImagePreference ()))
 					if (unit.hasModifiedSkill (thisSkill.getUnitSkillID ()))
@@ -83,7 +83,7 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID () + ", " + isMoving);
 		
 		// This is pretty straightforward, findPreferredMovementSkillGraphics does most of the work for us
-		final UnitSkillGfx movementSkill = findPreferredMovementSkillGraphics (unit);
+		final UnitSkillEx movementSkill = findPreferredMovementSkillGraphics (unit);
 		final String combatActionID = isMoving ? movementSkill.getMoveActionID () : movementSkill.getStandActionID ();
 		
 		if (combatActionID == null)

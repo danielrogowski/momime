@@ -27,13 +27,18 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.SkillCalculationsImpl;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.NodeStrength;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RoundingDirectionID;
+import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.database.UnitEx;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -62,11 +67,6 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
-import momime.server.database.BuildingSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
 import momime.server.process.resourceconsumer.MomResourceConsumerFactory;
@@ -87,22 +87,22 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	public final void testRecalculateAmountsPerTurn () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PlaneSvr arcanus = new PlaneSvr ();
-		final PlaneSvr myrror = new PlaneSvr ();
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
 		
-		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
+		final List<Plane> planes = new ArrayList<Plane> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlanes ()).thenReturn (planes);
+		when (db.getPlane ()).thenReturn (planes);
 		
 		final ProductionTypeAndUndoubledValue shadowDemonsUpkeep = new ProductionTypeAndUndoubledValue ();
 		shadowDemonsUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		
-		final UnitSvr shadowDemonsDef = new UnitSvr ();
+		final UnitEx shadowDemonsDef = new UnitEx ();
 		shadowDemonsDef.getUnitUpkeep ().add (shadowDemonsUpkeep);
 		when (db.findUnit ("UN172", "recalculateAmountsPerTurn")).thenReturn (shadowDemonsDef);
 
@@ -112,7 +112,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final ProductionTypeAndUndoubledValue warlocksGold = new ProductionTypeAndUndoubledValue ();
 		warlocksGold.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		
-		final UnitSvr warlocksDef = new UnitSvr ();
+		final UnitEx warlocksDef = new UnitEx ();
 		warlocksDef.getUnitUpkeep ().add (warlocksGold);
 		warlocksDef.getUnitUpkeep ().add (warlocksRations);
 		when (db.findUnit ("UN065", "recalculateAmountsPerTurn")).thenReturn (warlocksDef);
@@ -121,7 +121,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		crusadeUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		crusadeUpkeep.setUndoubledProductionValue (10);
 		
-		final SpellSvr crusadeDef = new SpellSvr ();
+		final Spell crusadeDef = new Spell ();
 		crusadeDef.getSpellUpkeep ().add (crusadeUpkeep);
 		when (db.findSpell ("SP158", "recalculateAmountsPerTurn")).thenReturn (crusadeDef);
 		
@@ -405,26 +405,26 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	public final void testListConsumersOfProductionType () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		final ProductionTypeAndUndoubledValue gargoylesUpkeep = new ProductionTypeAndUndoubledValue ();
 		gargoylesUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		
-		final UnitSvr gargoylesDef = new UnitSvr ();
+		final UnitEx gargoylesDef = new UnitEx ();
 		gargoylesDef.getUnitUpkeep ().add (gargoylesUpkeep);
 		when (db.findUnit ("UN157", "listConsumersOfProductionType")).thenReturn (gargoylesDef);
 		
-		final BuildingSvr wizardsGuildDef = new BuildingSvr ();
+		final Building wizardsGuildDef = new Building ();
 		when (db.findBuilding ("BL21", "listConsumersOfProductionType")).thenReturn (wizardsGuildDef);
 		
-		final SpellSvr entangleDef = new SpellSvr ();
+		final Spell entangleDef = new Spell ();
 		when (db.findSpell ("SP033", "listConsumersOfProductionType")).thenReturn (entangleDef);
 		
 		final ProductionTypeAndUndoubledValue natureAwarenessUpkeep = new ProductionTypeAndUndoubledValue ();
 		natureAwarenessUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		natureAwarenessUpkeep.setUndoubledProductionValue (7);
 		
-		final SpellSvr natureAwarenessDef = new SpellSvr ();
+		final Spell natureAwarenessDef = new Spell ();
 		natureAwarenessDef.getSpellUpkeep ().add (natureAwarenessUpkeep);
 		when (db.findSpell ("SP034", "listConsumersOfProductionType")).thenReturn (natureAwarenessDef);
 		
@@ -600,7 +600,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	@Test
 	public final void testAccumulateGlobalProductionValues () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		// Player
@@ -662,7 +662,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	@Test(expected=MomException.class)
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoPositive").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
@@ -694,7 +694,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	@Test(expected=MomException.class)
 	public final void testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 		final SpellSetting spellSettings = new SpellSetting ();	// Only used by mock, so don't really care what's actually in here
 
 		db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "testAccumulateGlobalProductionValues_NotMultipleOfTwoNegative").setAccumulationHalved (RoundingDirectionID.MUST_BE_EXACT_MULTIPLE);
@@ -727,7 +727,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	 */
 	private final void testProgressResearch (final boolean isHuman) throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();

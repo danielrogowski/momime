@@ -25,22 +25,25 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
 
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseExImpl;
-import momime.client.graphics.database.GraphicsDatabaseFactory;
 import momime.client.graphics.database.GraphicsDatabaseObjectFactory;
-import momime.client.graphics.database.MapFeatureGfx;
-import momime.client.graphics.database.PickGfx;
-import momime.client.graphics.database.SmoothedTileTypeGfx;
-import momime.client.graphics.database.TileSetGfx;
-import momime.client.graphics.database.WizardGfx;
 import momime.client.graphics.database.v0_9_9.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
+import momime.common.database.AnimationGfx;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.CommonDatabaseFactory;
+import momime.common.database.CommonDatabaseImpl;
+import momime.common.database.CommonDatabaseObjectFactory;
 import momime.common.database.CommonXsdResourceResolver;
+import momime.common.database.Language;
+import momime.common.database.LanguageText;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.SmoothedTileTypeEx;
+import momime.common.database.TileSetEx;
+import momime.common.database.WizardEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapAreaOfMemoryGridCells;
@@ -65,7 +68,7 @@ public class ClientTestData
 	{
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location
-		final URL languageXSD = getClass ().getResource (LanguageDatabaseConstants.LANGUAGE_XSD_LOCATION);
+		final URL languageXSD = getClass ().getResource (LanguageDatabaseConstants.LANGUAGES_XSD_LOCATION);
 		final File languageFile = new File (languageXSD.getFile ());
 		final File englishXmlFile = new File (languageFile, "../../../../src/external/resources/momime.client.language.database");
 
@@ -96,31 +99,41 @@ public class ClientTestData
 	public final GraphicsDatabaseEx loadGraphicsDatabase (final NdgUIUtils utils, final RandomUtils randomUtils) throws Exception
 	{
 		// Need to set up a proper factory to create classes with spring injections
-		final GraphicsDatabaseObjectFactory factory = new GraphicsDatabaseObjectFactory ();
-		factory.setFactory (new GraphicsDatabaseFactory ()
+		final CommonDatabaseObjectFactory commonDatabaseFactory = new CommonDatabaseObjectFactory ();
+		commonDatabaseFactory.setFactory (new CommonDatabaseFactory ()
 		{
 			@Override
-			public final SmoothedTileTypeGfx createSmoothedTileType ()
+			public final CommonDatabaseImpl createDatabase ()
 			{
-				final SmoothedTileTypeGfx tileType = new SmoothedTileTypeGfx ();
+				return new CommonDatabaseImpl ();
+			}
+
+			@Override
+			public final WizardEx createWizard ()
+			{
+				return new WizardEx ();
+			}
+			
+			@Override
+			public final MapFeatureEx createMapFeature ()
+			{
+				return new MapFeatureEx ();
+			}
+			
+			@Override
+			public final SmoothedTileTypeEx createSmoothedTileType ()
+			{
+				final SmoothedTileTypeEx tileType = new SmoothedTileTypeEx ();
 				tileType.setRandomUtils (randomUtils);
 				return tileType;
 			}
 			
 			@Override
-			public final TileSetGfx createTileSet ()
+			public final TileSetEx createTileSet ()
 			{
-				final TileSetGfx tileSet = new TileSetGfx ();
+				final TileSetEx tileSet = new TileSetEx ();
 				tileSet.setUtils (utils);
 				return tileSet;
-			}
-			
-			@Override
-			public final MapFeatureGfx createMapFeature ()
-			{
-				final MapFeatureGfx mapFeature = new MapFeatureGfx ();
-				mapFeature.setUtils (utils);
-				return mapFeature;
 			}
 			
 			@Override
@@ -130,23 +143,9 @@ public class ClientTestData
 				anim.setUtils (utils);
 				return anim;
 			}
-
-			@Override
-			public final PickGfx createPick ()
-			{
-				final PickGfx pick = new PickGfx ();
-				pick.setRandomUtils (randomUtils);
-				return pick;
-			}
-
-			@Override
-			public final WizardGfx createWizard ()
-			{
-				final WizardGfx wizard = new WizardGfx ();
-				wizard.setRandomUtils (randomUtils);
-				return wizard;
-			}
 		});
+		
+		final GraphicsDatabaseObjectFactory graphicsDatabaseFactory = new GraphicsDatabaseObjectFactory ();
 		
 		// XSD
 		final URL xsdResource = getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION_NO_SERVER_LINK);
@@ -158,12 +157,11 @@ public class ClientTestData
 		final Schema schema = schemaFactory.newSchema (xsdResource);
 
 		final Unmarshaller unmarshaller = JAXBContext.newInstance (GraphicsDatabase.class).createUnmarshaller ();		
-		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {factory});
+		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {commonDatabaseFactory, graphicsDatabaseFactory});
 		unmarshaller.setSchema (schema);
 		
 		// XML
 		final GraphicsDatabaseExImpl graphicsDB = (GraphicsDatabaseExImpl) unmarshaller.unmarshal (locateDefaultGraphicsXmlFile ());
-		graphicsDB.setUtils (utils);
 		graphicsDB.buildMapsAndRunConsistencyChecks ();
 		return graphicsDB;
 	}
@@ -311,5 +309,18 @@ public class ClientTestData
 		}
 		
 		return image;
+	}
+	
+	/**
+	 * @param language Language to set
+	 * @param text Text to set
+	 * @return LanguageText object
+	 */
+	public final LanguageText createLanguageText (final Language language, final String text)
+	{
+		final LanguageText obj = new LanguageText ();
+		obj.setLanguage (language);
+		obj.setText (text);
+		return obj;
 	}
 }

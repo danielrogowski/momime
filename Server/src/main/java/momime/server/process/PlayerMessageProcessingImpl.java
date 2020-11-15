@@ -2,8 +2,8 @@ package momime.server.process;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -18,15 +18,22 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
-import momime.client.database.ClientDatabase;
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.MomDatabase;
 import momime.common.database.PickAndQuantity;
+import momime.common.database.PickFreeSpell;
+import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileType;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
+import momime.common.database.WizardEx;
+import momime.common.database.WizardPickCount;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -73,13 +80,6 @@ import momime.server.ai.CityAI;
 import momime.server.ai.MomAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
-import momime.server.database.PickFreeSpellSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.TileTypeSvr;
-import momime.server.database.UnitSvr;
-import momime.server.database.WizardPickCountSvr;
-import momime.server.database.WizardSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
@@ -176,14 +176,14 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 */
 	@Override
 	public final void chooseWizard (final String wizardID, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering chooseWizard: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + wizardID);
 
 		// Check if not specified
 		boolean valid;
-		WizardSvr wizard = null;
+		WizardEx wizard = null;
 		if (!PlayerKnowledgeUtils.hasWizardBeenChosen (wizardID))
 			valid = false;
 		
@@ -249,21 +249,13 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					else
 						desiredPickCount = sd.getDifficultyLevel ().getAiSpellPicks ();
 
-					WizardPickCountSvr pickCount = null;
-					final Iterator<WizardPickCountSvr> iter = wizard.getWizardPickCounts ().iterator ();
-					while ((pickCount == null) && (iter.hasNext ()))
-					{
-						final WizardPickCountSvr thisPickCount = iter.next ();
-						if (thisPickCount.getPickCount () == desiredPickCount)
-							pickCount = thisPickCount;
-					}
-
-					if (pickCount == null)
-						throw new RecordNotFoundException (WizardPickCountSvr.class, wizardID + "-" + desiredPickCount, "chooseWizard");
+					final Optional<WizardPickCount> pickCount = wizard.getWizardPickCount ().stream ().filter (pc -> pc.getPickCount () == desiredPickCount).findAny ();
+					if (pickCount.isEmpty ())
+						throw new RecordNotFoundException (WizardPickCount.class, wizardID + "-" + desiredPickCount, "chooseWizard");
 
 					// Read pre-defined wizard's list of picks from the DB and send them to the player
 					// We'll send them to everyone else when the game starts
-					for (final PickAndQuantity srcPick : pickCount.getWizardPick ())
+					for (final PickAndQuantity srcPick : pickCount.get ().getWizardPick ())
 					{
 						final PlayerPick destPick = new PlayerPick ();
 						destPick.setPickID (srcPick.getPickID ());
@@ -355,7 +347,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @param wizard Wizard this AI player is playing
 	 * @return Player description created for this AI player
 	 */
-	private final PlayerDescription createAiPlayerDescription (final WizardSvr wizard)
+	private final PlayerDescription createAiPlayerDescription (final WizardEx wizard)
 	{
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerName (wizard.getWizardID () + "-" + wizard.getWizardName ());
@@ -377,12 +369,12 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @throws XMLStreamException This only gets generated if addUnitOnServerAndClients tries to send into to players, but we pass null for player list, so won't happen
 	 */
 	private final void createHeroes (final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering createHeroes");
 
-		for (final UnitSvr thisUnit : db.getUnits ())
+		for (final UnitEx thisUnit : db.getUnits ())
 			if (thisUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 
 				// Add this hero for all players, even raiders, just not the monsters
@@ -420,14 +412,14 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			if (mom.getSessionDescription ().getAiPlayerCount () > 0)
 			{
 				// Get list of wizard IDs for AI players to choose from
-				final List<WizardSvr> availableWizards = getPlayerPickServerUtils ().listWizardsForAIPlayers (mom.getPlayers (), mom.getServerDB ());
+				final List<WizardEx> availableWizards = getPlayerPickServerUtils ().listWizardsForAIPlayers (mom.getPlayers (), mom.getServerDB ());
 				for (int aiPlayerNo = 0; aiPlayerNo < mom.getSessionDescription ().getAiPlayerCount (); aiPlayerNo++)
 				{
 					// Pick a random wizard for this AI player
 					if (availableWizards.size () == 0)
 						throw new MomException ("Not enough Wizards defined for number of AI players");
 
-					final WizardSvr chosenWizard = availableWizards.get (getRandomUtils ().nextInt (availableWizards.size ()));
+					final WizardEx chosenWizard = availableWizards.get (getRandomUtils ().nextInt (availableWizards.size ()));
 					availableWizards.remove (chosenWizard);
 
 					// Add AI player
@@ -503,7 +495,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// Grant any free spells the player gets from the picks they've chosen (i.e. Enchant Item & Create Artifact from Artificer)
 				final List<String> freeSpellIDs = new ArrayList<String> ();
 				for (final PlayerPick pick : ppk.getPick ())
-					for (final PickFreeSpellSvr freeSpell : mom.getServerDB ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpells ())
+					for (final PickFreeSpell freeSpell : mom.getServerDB ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpell ())
 						freeSpellIDs.add (freeSpell.getFreeSpellID ());
 
 				if (freeSpellIDs.size () > 0)
@@ -716,18 +708,16 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		try
 		{
-			// Temporarily strip out the client database, so it doesn't get included in the saved game file.
-			// The server database doesn't get included either way, only its name gets saved and we reload it from the XML,
-			// so saving the client database which can be derived from it anyway doesn't make much sense.
-			final ClientDatabase clientDB = mom.getGeneralPublicKnowledge ().getClientDatabase ();
-			mom.getGeneralPublicKnowledge ().setClientDatabase (null);
+			// Temporarily strip out the database, so it doesn't get included in the saved game file.
+			final MomDatabase db = mom.getGeneralPublicKnowledge ().getMomDatabase ();
+			mom.getGeneralPublicKnowledge ().setMomDatabase (null);
 			try
 			{
 				mom.saveGame (Integer.valueOf (mom.getGeneralPublicKnowledge ().getTurnNumber ()).toString ());
 			}
 			finally
 			{
-				mom.getGeneralPublicKnowledge ().setClientDatabase (clientDB);
+				mom.getGeneralPublicKnowledge ().setMomDatabase (db);
 			}
 			
 			if (getSavePointKeepCount () > 0)
@@ -999,7 +989,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	final void progressMultiTurnSpecialOrders (final FogOfWarMemory trueMap, final int onlyOnePlayerID,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering progressMultiTurnSpecialOrders: Player ID " + onlyOnePlayerID);
@@ -1056,14 +1046,14 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						gc.setRoadProductionSoFar (oldValue + skillValue);
 						
 						// Finished?
-						final TileTypeSvr tileType = db.findTileType (terrainData.getTileTypeID (), "progressMultiTurnSpecialOrders");
+						final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "progressMultiTurnSpecialOrders");
 						if ((tileType.getProductionToBuildRoad () != null) && (gc.getRoadProductionSoFar () >= tileType.getProductionToBuildRoad ()))
 						{
 							gc.setRoadProductionSoFar (null);
 							
 							// If we're standing on a tower, then we build a road on both planes
 							final Integer singlePlane = getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData) ? null : tu.getUnitLocation ().getZ ();
-							for (final PlaneSvr plane : db.getPlanes ())
+							for (final Plane plane : db.getPlane ())
 								if ((singlePlane == null) || (singlePlane == plane.getPlaneNumber ()))
 								{
 									final OverlandMapTerrainData roadTerrainData = trueMap.getMap ().getPlane ().get

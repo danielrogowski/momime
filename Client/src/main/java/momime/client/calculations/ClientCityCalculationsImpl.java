@@ -10,9 +10,8 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.client.MomClient;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.CityGrowthRateLanguageVariableReplacer;
 import momime.client.language.replacer.CityProductionLanguageVariableReplacer;
 import momime.client.language.replacer.CityUnrestLanguageVariableReplacer;
@@ -26,6 +25,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Race;
 import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitPrerequisite;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
@@ -92,51 +92,51 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		
 		// Percentages
 		if (breakdown.getTaxPercentage () > 0)
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "TaxPercentage"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getTaxPercentage ()));
 
 		if (breakdown.getRacialPercentage () > 0)
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "RacialPercentage"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getRacialPercentage ()));
 
 		if ((breakdown.getTaxPercentage () > 0) && (breakdown.getRacialPercentage () > 0))
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "TotalPercentage"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getTotalPercentage ()));
 		
 		if ((breakdown.getTaxPercentage () > 0) || (breakdown.getRacialPercentage () > 0))
 		{
 			text.append (System.lineSeparator ());
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "BaseValue"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getBaseValue ()));
 		}
 		
 		// Klackons
 		if (breakdown.getRacialLiteral () != 0)
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "RacialLiteral"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getRacialLiteral ()));
 		
 		// Buildings
 		for (final CityUnrestBreakdownBuilding buildingUnrest : breakdown.getBuildingReducingUnrest ())
 		{
 			getUnrestReplacer ().setCurrentBuilding (buildingUnrest);			
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "BuildingUnrestReduction"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getBuildingUnrestReduction ()));
 		}
 		
 		// Divine Power / Infernal Power retort
 		if (breakdown.getReligiousBuildingReduction () != 0)
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "Retort"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getRetort ()));
 		
 		// Units stationed in city
 		if (breakdown.getUnitCount () > 0)
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "UnitReduction"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getUnitReduction ()));
 		
 		// Total
-		getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "BaseTotal"));
+		getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getBaseTotal ()));
 		text.append (System.lineSeparator ());
 
 		if (breakdown.isForcePositive ())
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "ForcePositive"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getForcePositive ()));
 
 		if (breakdown.isForceAll ())
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "ForceAll"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getForceAll ()));
 		
 		if (breakdown.getMinimumFarmers () > 0)
-			getUnrestReplacer ().addLine (text, getLanguage ().findCategoryEntry ("UnrestCalculation", "MinimumFarmers"));
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getMinimumFarmers ()));
 		
 		log.trace ("Exiting describeCityUnrestCalculation");
 		return text.toString ();
@@ -155,20 +155,20 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		final StringBuilder text = new StringBuilder ();
 		
 		// Start off calculation description
-		getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CurrentPopulation"));
-		getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "MaximumPopulation"));
+		getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getCurrentPopulation ()));
+		getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getMaximumPopulation ()));
 		
 		if (breakdown instanceof CityGrowthRateBreakdownGrowing)
 		{
 			final CityGrowthRateBreakdownGrowing growing = (CityGrowthRateBreakdownGrowing) breakdown;
 			
-			getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "BaseGrowthRate"));
+			getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getBaseGrowthRate ()));
 
 			boolean showTotal = false;
 			if (growing.getRacialGrowthModifier () != 0)
 			{
 				showTotal = true;
-				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "RacialGrowthModifier"));
+				getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getRacialGrowthModifier ()));
 			}
 				
 			// Bonuses from buildings
@@ -176,28 +176,28 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			{
 				showTotal = true;
 				getGrowthReplacer ().setCurrentBuilding (buildingGrowth);
-				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "GrowthBonusFromBuilding"));
+				getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getGrowthBonusFromBuilding ()));
 			}
 				
 			if (showTotal)
-				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateTotal"));
+				getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getCityGrowthRateTotal ()));
 			
 			if (growing.getHousingPercentageBonus () > 0)
-				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "Housing"));
+				getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getHousing ()));
 			
 			// Special boost for AI players
 			if (growing.getDifficultyLevelMultiplier () != 100)
-				getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DifficultyLevelMultiplier"));
+				getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getDifficultyLevelMultiplier ()));
 		}
 		else if (breakdown instanceof CityGrowthRateBreakdownDying)
-			getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "DeathRate"));
+			getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getDeathRate ()));
 		
 		else
-			getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "AtMaximumSize"));
+			getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getAtMaximumSize ()));
 
 		// Population cap
 		if (breakdown.getCappedTotal () != breakdown.getInitialTotal ())
-			getGrowthReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityGrowthRate", "CityGrowthRateCapped"));
+			getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getCityGrowthRateCapped ()));
 		
 		log.trace ("Exiting describeCityGrowthRateCalculation");
 		return text.toString ();
@@ -226,18 +226,18 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			getProductionReplacer ().setCurrentPopulationTask (populationTaskProduction);
 			
 			if (populationTaskProduction.getCount () == 1)
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromSinglePopulation")));
+				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSinglePopulation ())));
 			else
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMultiplePopulation")));
+				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultiplePopulation ())));
 		}
 		
 		// Production from population irrespective of what task they're performing (taxes)
 		if (calc.getDoubleProductionAmountAllPopulation () > 0)
-			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "GoldFromTaxes")));
+			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldFromTaxes ())));
 		
 		// Consumption from population irrespective of what task they're performing (eating rations)
 		if (calc.getConsumptionAmountAllPopulation () > 0)
-			consumptionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "RationsAteByPopulation")));
+			consumptionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRationsAteByPopulation ())));
 		
 		for (final CityProductionBreakdownTileType tileTypeProduction : calc.getTileTypeProduction ())
 		{
@@ -247,18 +247,18 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			if (tileTypeProduction.getDoubleProductionAmountAllTiles () > 0)
 			{
 				if (tileTypeProduction.getCount () == 1)
-					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromSingleTile")));
+					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSingleTile ())));
 				else
-					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMultipleTiles")));
+					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultipleTiles ())));
 			}
 			
 			// % bonus from terrain tiles (production)
 			if (tileTypeProduction.getPercentageBonusAllTiles () > 0)
 			{
 				if (tileTypeProduction.getCount () == 1)
-					percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "PercentageBonusFromSingleTile")));
+					percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getPercentageBonusFromSingleTile ())));
 				else
-					percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "PercentageBonusFromMultipleTiles")));
+					percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getPercentageBonusFromMultipleTiles ())));
 			}
 		}
 		
@@ -268,15 +268,15 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			getProductionReplacer ().setCurrentMapFeature (mapFeatureProduction);
 			
 			if (mapFeatureProduction.getCount () == 1)
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromSingleMapFeature")));
+				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromSingleMapFeature ())));
 			else
-				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMultipleMapFeatures")));
+				productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMultipleMapFeatures ())));
 
 			if (mapFeatureProduction.getRaceMineralBonusMultiplier () > 1)
-				productionBreakdowns.add (INDENT + getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMapFeatureRaceBonus")));
+				productionBreakdowns.add (INDENT + getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMapFeatureRaceBonus ())));
 		
 			if (mapFeatureProduction.getBuildingMineralPercentageBonus () > 0)
-				productionBreakdowns.add (INDENT + getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromMapFeatureBuildingBonus")));
+				productionBreakdowns.add (INDENT + getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromMapFeatureBuildingBonus ())));
 		}
 		
 		for (final CityProductionBreakdownBuilding buildingProduction : calc.getBuildingBreakdown ())
@@ -288,30 +288,30 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			{
 				// Shrines etc. generate +50% more power if wizard has Divine or Infernal Power retort
 				if (buildingProduction.getReligiousBuildingPercentageBonus () == 0)
-					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromBuildingWithoutReligiousRetortBonus")));
+					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromBuildingWithoutReligiousRetortBonus ())));
 				else
-					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromBuildingWithReligiousRetortBonus")));
+					productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromBuildingWithReligiousRetortBonus ())));
 			}
 			
 			// % bonus from buildings, e.g. Marketplace generating +25% gold
 			if (buildingProduction.getPercentageBonus () > 0)
-				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "PercentageBonusFromBuilding")));
+				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getPercentageBonusFromBuilding ())));
 			
 			// Consumption from buildings, mainly gold maintenance
 			if (buildingProduction.getConsumptionAmount () > 0)
-				consumptionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "BuildingConsumption")));
+				consumptionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getBuildingConsumption ())));
 		}
 		
 		// Production from how many books we have at our wizards' fortress
 		for (final CityProductionBreakdownPickType pickTypeProduction : calc.getPickTypeProduction ())
 		{
 			getProductionReplacer ().setCurrentPickType (pickTypeProduction);
-			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromFortressPicks")));
+			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromFortressPicks ())));
 		}
 		
 		// Production from what plane our wizards' fortress is on
 		if (calc.getDoubleProductionAmountFortressPlane () > 0)
-			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "ProductionFromFortressPlane")));
+			productionBreakdowns.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionFromFortressPlane ())));
 		
 		// Gold trade bonus
 		if (calc.getDoubleProductionAmount () > 0)
@@ -320,28 +320,28 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			if (calc.getTradePercentageBonusFromTileType () > 0)
 			{
 				goldTradeBonusCount++;
-				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusFromTileType")));
+				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldTradeBonusFromTileType ())));
 			}
 			
 			if (calc.getTradePercentageBonusFromRoads () > 0)
 			{
 				goldTradeBonusCount++;
-				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusFromRoads")));
+				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldTradeBonusFromRoads ())));
 			}
 			
 			if (calc.getTradePercentageBonusFromRace () > 0)
 			{
 				goldTradeBonusCount++;
-				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusFromRace")));
+				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldTradeBonusFromRace ())));
 			}
 			
 			// Show a total only if there were multiple bonuses to combine
 			if (goldTradeBonusCount > 1)
-				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusUncapped")));
+				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldTradeBonusUncapped ())));
 			
 			// Show cap only if it has an effect
 			if (calc.getTradePercentageBonusCapped () < calc.getTradePercentageBonusUncapped ())
-				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguage ().findCategoryEntry ("CityProduction", "GoldTradeBonusCapped")));
+				percentageBonuses.add (getProductionReplacer ().replaceVariables (getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getGoldTradeBonusCapped ())));
 		}
 		
 		// Did we get 0, 1 or many sources of production?
@@ -352,7 +352,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			netEffectCount++;
 			
 			// Heading
-			getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionMainHeading"));
+			getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionMainHeading ()));
 			
 			// Detail line(s)
 			for (final String line : productionBreakdowns)
@@ -360,18 +360,18 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			
 			// Total
 			if (productionBreakdowns.size ()  > 1)
-				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "RoundingTotalBefore"));
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingTotalBefore ()));
 			
 			// Rounding - roundingDirectionID only gets set if the production wasn't an exact multiple of 2
 			if (calc.getRoundingDirectionID () != null)
 				switch (calc.getRoundingDirectionID ())
 				{
 					case ROUND_UP:
-						getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "RoundingUp"));
+						getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingUp ()));
 						break;
 					
 					case ROUND_DOWN:
-						getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "RoundingDown"));
+						getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getRoundingDown ()));
 						break;
 						
 					default:
@@ -383,23 +383,23 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			{
 				// Heading
 				getProductionReplacer ().addLine (text, null);
-				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionPercentageBonusHeading"));
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentageBonusHeading ()));
 				
 				// Detail line(s)
 				for (final String line : percentageBonuses)
 					getProductionReplacer ().addLine (text, line);
 				
 				// Total
-				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionPercentageBonusTotal"));
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionPercentageBonusTotal ()));
 			}
 			
 			// Special boost for AI players
 			if (calc.getDifficultyLevelMultiplier () != 100)
-				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "DifficultyLevelMultiplier"));
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getDifficultyLevelMultiplier ()));
 			
 			// Cap
 			if (calc.getCappedProductionAmount () < calc.getTotalAdjustedForDifficultyLevel ())
-				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ProductionCapped"));
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getProductionCapped ()));
 		}
 		
 		// Did we get 0, 1 or many sources of consumption?
@@ -411,7 +411,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			netEffectCount++;
 			
 			// Heading
-			getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "ConsumptionMainHeading"));
+			getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getConsumptionMainHeading ()));
 			
 			// Detail line(s)
 			for (final String line : consumptionBreakdowns)
@@ -424,20 +424,20 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			getProductionReplacer ().addLine (text, null);
 
 			if (calc.getCappedProductionAmount () == calc.getConsumptionAmount ())
-				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectBreakingEven"));
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getNetEffectBreakingEven ()));
 
 			else if (calc.getCappedProductionAmount () > calc.getConsumptionAmount ())
-				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectGain"));
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getNetEffectGain ()));
 
 			else
-				getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "NetEffectLoss"));
+				getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getNetEffectLoss ()));
 		}
 		
 		// Trade goods setting
 		if (calc.getConvertFromProductionTypeID () != null)
 		{
 			getProductionReplacer ().addLine (text, null);
-			getProductionReplacer ().addLine (text, getLanguage ().findCategoryEntry ("CityProduction", "TradeGoods"));
+			getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getTradeGoods ()));
 		}
 
 		log.trace ("Exiting describeCityProductionCalculation");
@@ -465,7 +465,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "describeWhatBuildingAllows");
 		
 			// Buildings
-			for (final momime.common.database.Building building : getClient ().getClientDB ().getBuildings ())
+			for (final momime.common.database.Building building : getClient ().getClientDB ().getBuilding ())
 			
 				// Don't list buildings we already have
 				if (getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), cityLocation, building.getBuildingID ()) == null)
@@ -492,8 +492,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 							if (allows.length () > 0)
 								allows.append (", ");
 						
-							final BuildingLang buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
-							allows.append ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
+							allows.append (getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (building.getBuildingID (), "describeWhatBuildingAllows").getBuildingName ()));
 						}
 					}
 				}
@@ -502,7 +501,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			final AvailableUnit dummyUnit = new AvailableUnit ();
 			
 			// Units
-			for (final momime.common.database.Unit unit : getClient ().getClientDB ().getUnits ())
+			for (final UnitEx unit : getClient ().getClientDB ().getUnits ())
 			
 				// Check that the unit is the right race for this city or is a generic non-race specific unit, like a Trireme
 				if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (unit.getUnitMagicRealm ())) &&
@@ -533,7 +532,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		}
 		
 		// Did we find anything?
-		final String s = (allows.length () == 0) ? null : getLanguage ().findCategoryEntry ("frmChangeConstruction", "Allows") + " " + allows.toString () + ".";
+		final String s = (allows.length () == 0) ? null : getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getAllows ()) + " " + allows.toString () + ".";
 		log.trace ("Exiting describeWhatBuildingAllows = " + s);
 		return s;
 	}
@@ -554,7 +553,7 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		final Race race = getClient ().getClientDB ().findRace (cityData.getCityRaceID (), "listBuildingsCityCanConstruct");
 		
 		final List<Building> buildList = new ArrayList<Building> ();
-		for (final Building thisBuilding : getClient ().getClientDB ().getBuildings ())
+		for (final Building thisBuilding : getClient ().getClientDB ().getBuilding ())
 			
 			// If we don't have this building already
 			if ((getMemoryBuildingUtils ().findBuilding (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
@@ -670,9 +669,9 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

@@ -1,12 +1,12 @@
 package momime.server.process;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,14 +25,20 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.database.AttackResolution;
+import momime.common.database.AttackResolutionStep;
 import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.DamageType;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
+import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -49,13 +55,7 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
-import momime.server.database.AttackResolutionStepSvr;
-import momime.server.database.AttackResolutionSvr;
-import momime.server.database.DamageTypeSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSkillSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -76,7 +76,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 	public final void testResolveAttack_Melee_ContinuesCombat () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -148,14 +148,14 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
 
-		final AttackResolutionSvr attackResolution = new AttackResolutionSvr ();
+		final AttackResolution attackResolution = new AttackResolution ();
 		when (attackResolutionProc.chooseAttackResolution (xuAttacker, xuDefender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db)).thenReturn (attackResolution);
 		
-		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		
-		final List<List<AttackResolutionStepSvr>> stepNumbers = new ArrayList<List<AttackResolutionStepSvr>> ();
+		final List<List<AttackResolutionStep>> stepNumbers = new ArrayList<List<AttackResolutionStep>> ();
 		stepNumbers.add (steps);
-		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ())).thenReturn (stepNumbers);
+		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ())).thenReturn (stepNumbers);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -257,7 +257,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 	public final void testResolveAttack_Ranged_EndsCombat () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -329,14 +329,14 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
 
-		final AttackResolutionSvr attackResolution = new AttackResolutionSvr ();
+		final AttackResolution attackResolution = new AttackResolution ();
 		when (attackResolutionProc.chooseAttackResolution (xuAttacker, xuDefender, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, db)).thenReturn (attackResolution);
 		
-		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		
-		final List<List<AttackResolutionStepSvr>> stepNumbers = new ArrayList<List<AttackResolutionStepSvr>> ();
+		final List<List<AttackResolutionStep>> stepNumbers = new ArrayList<List<AttackResolutionStep>> ();
 		stepNumbers.add (steps);
-		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ())).thenReturn (stepNumbers);
+		when (attackResolutionProc.splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ())).thenReturn (stepNumbers);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -434,7 +434,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 	public final void testResolveAttack_Spell_Survives () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -499,14 +499,14 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Spell we're attacking with
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		spell.setAttackSpellCombatTarget (AttackSpellCombatTargetID.SINGLE_UNIT);
 		
 		// Damage from spell
 		final DamageCalculator calc = mock (DamageCalculator.class);
-		final DamageTypeSvr damageType = new DamageTypeSvr (); 
+		final DamageType damageType = new DamageType (); 
 		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
 		when (calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
 
@@ -533,7 +533,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Ensure steps were processed
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
-		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		steps.add (null);
 		
 		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, steps, spellDamage, players,
@@ -566,13 +566,13 @@ public final class TestDamageProcessorImpl extends ServerTestData
 	public final void testResolveAttack_MultiUnitSpell_Survives () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final NegatedBySkill immunityToIllusions = new NegatedBySkill ();
 		immunityToIllusions.setNegatedByUnitID (NegatedByUnitID.ENEMY_UNIT);
 		immunityToIllusions.setNegatedBySkillID ("US001");
 		
-		final UnitSkillSvr illusionaryAttackSkill = new UnitSkillSvr ();
+		final UnitSkillEx illusionaryAttackSkill = new UnitSkillEx ();
 		illusionaryAttackSkill.getNegatedBySkill ().add (immunityToIllusions);
 		when (db.findUnitSkill (ServerDatabaseValues.UNIT_SKILL_ID_ILLUSIONARY_ATTACK, "resolveAttack")).thenReturn (illusionaryAttackSkill);
 
@@ -668,14 +668,14 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
 		
 		// Spell we're attacking with
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.ILLUSIONARY);
 		spell.setAttackSpellCombatTarget (AttackSpellCombatTargetID.ALL_UNITS);
 		
 		// Damage from spell
 		final DamageCalculator calc = mock (DamageCalculator.class);
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
 		when (calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
 
@@ -708,7 +708,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit defender2Wrapper = new AttackResolutionUnit (defender2);
 		final AttackResolutionUnit defender3Wrapper = new AttackResolutionUnit (defender3);
 
-		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		steps.add (null);
 
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);

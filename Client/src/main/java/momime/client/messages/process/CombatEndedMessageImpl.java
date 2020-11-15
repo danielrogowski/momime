@@ -7,6 +7,7 @@ import javax.xml.stream.XMLStreamException;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
+import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.dialogs.CombatEndedUI;
@@ -88,7 +89,7 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 		try
 		{
 			getMusicPlayer ().setShuffle (true);
-			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC);
+			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC, AnimationContainer.GRAPHICS_XML);
 		}
 		catch (final Exception e)
 		{

@@ -10,8 +10,12 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemSlotType;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Unit;
+import momime.common.database.UnitSkill;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -20,10 +24,6 @@ import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
-import momime.server.database.HeroItemSlotTypeSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSkillSvr;
-import momime.server.database.UnitSvr;
 import momime.server.utils.UnitSkillDirectAccess;
 
 /**
@@ -50,7 +50,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	 * @throws MomException If we hit any problems reading unit skill values
 	 * @throws RecordNotFoundException If the unit has a skill that we can't find in the database
 	 */
-	final int calculateUnitRating (final ExpandedUnitDetails xu, final ServerDatabaseEx db)
+	final int calculateUnitRating (final ExpandedUnitDetails xu, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{		
 		log.trace ("Entering calculateUnitRating: " + xu.getDebugIdentifier ());
@@ -71,7 +71,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 				if ((value == null) || (value == 0))
 					value = 1;
 				
-				final UnitSkillSvr skillDef = db.findUnitSkill (unitSkillID, "calculateUnitRating");
+				final UnitSkill skillDef = db.findUnitSkill (unitSkillID, "calculateUnitRating");
 				if (skillDef.getAiRatingMultiplicative () != null)
 					multipliers = multipliers * skillDef.getAiRatingMultiplicative ();
 				
@@ -110,7 +110,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final int calculateUnitCurrentRating (final AvailableUnit unit, final ExpandedUnitDetails xu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+	public final int calculateUnitCurrentRating (final AvailableUnit unit, final ExpandedUnitDetails xu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering calculateUnitCurrentRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
@@ -132,7 +132,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final int calculateUnitPotentialRating (final AvailableUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+	public final int calculateUnitPotentialRating (final AvailableUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering calculateUnitPotentialRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
@@ -148,7 +148,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 		if (unit instanceof MemoryUnit)
 		{
 			mu = (MemoryUnit) unit;
-			final UnitSvr unitDef = db.findUnit (unit.getUnitID (), "calculateUnitPotentialRating");
+			final Unit unitDef = db.findUnit (unit.getUnitID (), "calculateUnitPotentialRating");
 			
 			unitDamage = new ArrayList<UnitDamage> ();
 			unitDamage.addAll (mu.getUnitDamage ());
@@ -163,7 +163,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 				// Is the item in this slot good enough already?
 				if ((slotNumber < unitDef.getHeroItemSlot ().size ()) && ((slot.getHeroItem () == null) || (getAiHeroItemRatingCalculations ().calculateHeroItemRating (slot.getHeroItem (), db) < 6)))
 				{
-					final HeroItemSlotTypeSvr slotType = db.findHeroItemSlotType (unitDef.getHeroItemSlot ().get (slotNumber).getHeroItemSlotTypeID (), "calculateUnitPotentialRating");
+					final HeroItemSlotType slotType = db.findHeroItemSlotType (unitDef.getHeroItemSlot ().get (slotNumber).getHeroItemSlotTypeID (), "calculateUnitPotentialRating");
 					
 					if (slotType.getBasicHeroItemForAiRatingItemTypeID () != null)
 					{

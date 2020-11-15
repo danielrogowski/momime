@@ -15,6 +15,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
@@ -22,7 +23,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Tests the CombatAIImpl class
@@ -123,7 +123,7 @@ public final class TestCombatAIImpl
 	public final void testCalculateUnitCombatAIOrder () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();

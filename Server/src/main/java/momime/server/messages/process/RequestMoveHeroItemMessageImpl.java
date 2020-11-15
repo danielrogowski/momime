@@ -14,8 +14,10 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -30,8 +32,6 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.HeroItemSlotTypeSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
 /**
@@ -155,13 +155,13 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 							else
 							{
 								// Now have to go get the slot type to verify the item can be put in it
-								final UnitSvr unitDef = mom.getServerDB ().findUnit (toHero.getUnitID (), "RequestMoveHeroItemMessageImpl");
+								final Unit unitDef = mom.getServerDB ().findUnit (toHero.getUnitID (), "RequestMoveHeroItemMessageImpl");
 								if (getToSlotNumber () >= unitDef.getHeroItemSlot ().size ())
 									error = "The hero who you want to move the item to doesn't define the specified slot number.";
 								else
 								{
 									final String slotTypeID = unitDef.getHeroItemSlot ().get (getToSlotNumber ()).getHeroItemSlotTypeID ();
-									final HeroItemSlotTypeSvr slotType = mom.getServerDB ().findHeroItemSlotType (slotTypeID, "RequestMoveHeroItemMessageImpl");
+									final HeroItemSlotType slotType = mom.getServerDB ().findHeroItemSlotType (slotTypeID, "RequestMoveHeroItemMessageImpl");
 									boolean ok = false;
 									for (final HeroSlotAllowedItemType allowed : slotType.getHeroSlotAllowedItemType ())
 										if (allowed.getHeroItemTypeID ().equals (item.getHeroItemTypeID ()))

@@ -15,10 +15,16 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AttackResolution;
+import momime.common.database.AttackResolutionCondition;
+import momime.common.database.AttackResolutionStep;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.DamageType;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -28,12 +34,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.AttackResolutionConditionSvr;
-import momime.server.database.AttackResolutionStepSvr;
-import momime.server.database.AttackResolutionSvr;
-import momime.server.database.DamageTypeSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSkillSvr;
 import momime.server.utils.UnitServerUtilsImpl;
 
 /**
@@ -49,7 +49,7 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testChooseAttackResolution_Exists () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Units
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
@@ -59,31 +59,31 @@ public final class TestAttackResolutionProcessingImpl
 		when (defender.hasModifiedSkill ("US002")).thenReturn (true);
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
-		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
+		final AttackResolutionCondition condition1 = new AttackResolutionCondition ();
 		condition1.setCombatSide (UnitCombatSideID.ATTACKER);
 		condition1.setUnitSkillID ("US001");
 		
-		final AttackResolutionSvr res1 = new AttackResolutionSvr ();
-		res1.getAttackResolutionConditions ().add (condition1);
+		final AttackResolution res1 = new AttackResolution ();
+		res1.getAttackResolutionCondition ().add (condition1);
 
 		// Now one that does match
-		final AttackResolutionConditionSvr condition2 = new AttackResolutionConditionSvr ();
+		final AttackResolutionCondition condition2 = new AttackResolutionCondition ();
 		condition2.setCombatSide (UnitCombatSideID.DEFENDER);
 		condition2.setUnitSkillID ("US002");
 		
-		final AttackResolutionSvr res2 = new AttackResolutionSvr ();
-		res2.getAttackResolutionConditions ().add (condition2);
+		final AttackResolution res2 = new AttackResolution ();
+		res2.getAttackResolutionCondition ().add (condition2);
 		
-		final UnitSkillSvr unitAttr = new UnitSkillSvr ();
-		unitAttr.getAttackResolutions ().add (res1);
-		unitAttr.getAttackResolutions ().add (res2);
+		final UnitSkillEx unitAttr = new UnitSkillEx ();
+		unitAttr.getAttackResolution ().add (res1);
+		unitAttr.getAttackResolution ().add (res2);
 		when (db.findUnitSkill ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
 
 		// Run method
-		final AttackResolutionSvr chosen = proc.chooseAttackResolution (attacker, defender, "UA01", db);
+		final AttackResolution chosen = proc.chooseAttackResolution (attacker, defender, "UA01", db);
 		
 		// Check results
 		assertSame (res2, chosen);
@@ -97,7 +97,7 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testChooseAttackResolution_NotExists () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Units
 		final ExpandedUnitDetails attacker = mock (ExpandedUnitDetails.class);
@@ -107,24 +107,24 @@ public final class TestAttackResolutionProcessingImpl
 		when (defender.hasModifiedSkill ("US002")).thenReturn (false);	// <---
 		
 		// Attack resolutions to choose between - first one that doesn't match (see mocked skill values above, attacker returns -1 for this)
-		final AttackResolutionConditionSvr condition1 = new AttackResolutionConditionSvr ();
+		final AttackResolutionCondition condition1 = new AttackResolutionCondition ();
 		condition1.setCombatSide (UnitCombatSideID.ATTACKER);
 		condition1.setUnitSkillID ("US001");
 		
-		final AttackResolutionSvr res1 = new AttackResolutionSvr ();
-		res1.getAttackResolutionConditions ().add (condition1);
+		final AttackResolution res1 = new AttackResolution ();
+		res1.getAttackResolutionCondition ().add (condition1);
 
 		// Now another one that doesn't match
-		final AttackResolutionConditionSvr condition2 = new AttackResolutionConditionSvr ();
+		final AttackResolutionCondition condition2 = new AttackResolutionCondition ();
 		condition2.setCombatSide (UnitCombatSideID.DEFENDER);
 		condition2.setUnitSkillID ("US002");
 		
-		final AttackResolutionSvr res2 = new AttackResolutionSvr ();
-		res2.getAttackResolutionConditions ().add (condition2);
+		final AttackResolution res2 = new AttackResolution ();
+		res2.getAttackResolutionCondition ().add (condition2);
 		
-		final UnitSkillSvr unitAttr = new UnitSkillSvr ();
-		unitAttr.getAttackResolutions ().add (res1);
-		unitAttr.getAttackResolutions ().add (res2);
+		final UnitSkillEx unitAttr = new UnitSkillEx ();
+		unitAttr.getAttackResolution ().add (res1);
+		unitAttr.getAttackResolution ().add (res2);
 		when (db.findUnitSkill ("UA01", "chooseAttackResolution")).thenReturn (unitAttr);
 		
 		// Set up object to test
@@ -142,17 +142,17 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testSplitAttackResolutionStepsByStepNumber_Valid () throws MomException
 	{
 		// Set up example list
-		final List<AttackResolutionStepSvr> src = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> src = new ArrayList<AttackResolutionStep> ();
 		for (final int stepNumber : new int [] {1, 1, 2, 3, 3, 3, 4})
 		{
-			final AttackResolutionStepSvr step = new AttackResolutionStepSvr ();
+			final AttackResolutionStep step = new AttackResolutionStep ();
 			step.setStepNumber (stepNumber);
 			src.add (step);
 		}
 		
 		// Run method
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
-		final List<List<AttackResolutionStepSvr>> dest = proc.splitAttackResolutionStepsByStepNumber (src);
+		final List<List<AttackResolutionStep>> dest = proc.splitAttackResolutionStepsByStepNumber (src);
 		
 		// Check results
 		assertEquals (4, dest.size ());
@@ -181,10 +181,10 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testSplitAttackResolutionStepsByStepNumber_OutOfSequence () throws MomException
 	{
 		// Set up example list
-		final List<AttackResolutionStepSvr> src = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> src = new ArrayList<AttackResolutionStep> ();
 		for (final int stepNumber : new int [] {1, 1, 2, 3, 4, 3})
 		{
-			final AttackResolutionStepSvr step = new AttackResolutionStepSvr ();
+			final AttackResolutionStep step = new AttackResolutionStep ();
 			step.setStepNumber (stepNumber);
 			src.add (step);
 		}
@@ -202,10 +202,10 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testSplitAttackResolutionStepsByStepNumber_SkippedSequence () throws MomException
 	{
 		// Set up example list
-		final List<AttackResolutionStepSvr> src = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> src = new ArrayList<AttackResolutionStep> ();
 		for (final int stepNumber : new int [] {1, 1, 2, 4, 4})
 		{
-			final AttackResolutionStepSvr step = new AttackResolutionStepSvr ();
+			final AttackResolutionStep step = new AttackResolutionStep ();
 			step.setStepNumber (stepNumber);
 			src.add (step);
 		}
@@ -223,10 +223,10 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testSplitAttackResolutionStepsByStepNumber_Zero () throws MomException
 	{
 		// Set up example list
-		final List<AttackResolutionStepSvr> src = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> src = new ArrayList<AttackResolutionStep> ();
 		for (final int stepNumber : new int [] {0, 1, 1, 2, 3, 3, 3, 4})
 		{
-			final AttackResolutionStepSvr step = new AttackResolutionStepSvr ();
+			final AttackResolutionStep step = new AttackResolutionStep ();
 			step.setStepNumber (stepNumber);
 			src.add (step);
 		}
@@ -244,10 +244,10 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testSplitAttackResolutionStepsByStepNumber_SkippedStart () throws MomException
 	{
 		// Set up example list
-		final List<AttackResolutionStepSvr> src = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> src = new ArrayList<AttackResolutionStep> ();
 		for (final int stepNumber : new int [] {2, 2, 3, 3, 3, 4})
 		{
-			final AttackResolutionStepSvr step = new AttackResolutionStepSvr ();
+			final AttackResolutionStep step = new AttackResolutionStep ();
 			step.setStepNumber (stepNumber);
 			src.add (step);
 		}
@@ -265,15 +265,15 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testProcessAttackResolutionStep_Ranged () throws Exception
 	{
 		// Attack resolution steps
-		final AttackResolutionStepSvr attackStep = new AttackResolutionStepSvr ();
+		final AttackResolutionStep attackStep = new AttackResolutionStep ();
 		attackStep.setCombatSide (UnitCombatSideID.ATTACKER);
 		attackStep.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK);
 		
-		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		steps.add (attackStep);
 
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Combat map
 		final CombatMapSize combatMapSize = new CombatMapSize ();
@@ -333,7 +333,7 @@ public final class TestAttackResolutionProcessingImpl
 		// We make 5 hit rolls with 40% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final DamageTypeSvr damageTypeToDefender = new DamageTypeSvr (); 
+		final DamageType damageTypeToDefender = new DamageType (); 
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK,
@@ -370,20 +370,20 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testProcessAttackResolutionStep_Melee () throws Exception
 	{
 		// Attack resolution steps
-		final AttackResolutionStepSvr attackStep = new AttackResolutionStepSvr ();
+		final AttackResolutionStep attackStep = new AttackResolutionStep ();
 		attackStep.setCombatSide (UnitCombatSideID.ATTACKER);
 		attackStep.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 
-		final AttackResolutionStepSvr counterattackStep = new AttackResolutionStepSvr ();
+		final AttackResolutionStep counterattackStep = new AttackResolutionStep ();
 		counterattackStep.setCombatSide (UnitCombatSideID.DEFENDER);
 		counterattackStep.setUnitSkillID (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK);
 		
-		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		steps.add (attackStep);
 		steps.add (counterattackStep);
 
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Combat map
 		final CombatMapSize combatMapSize = new CombatMapSize ();
@@ -450,8 +450,8 @@ public final class TestAttackResolutionProcessingImpl
 		// Attacker make 5 hit rolls with 40% chance of each one striking; defender makes 6 hit rolls with 30% chance of each one striking
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final DamageTypeSvr damageTypeToDefender = new DamageTypeSvr ();
-		final DamageTypeSvr damageTypeToAttacker = new DamageTypeSvr ();
+		final DamageType damageTypeToDefender = new DamageType ();
+		final DamageType damageTypeToAttacker = new DamageType ();
 		
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK,
@@ -489,17 +489,17 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testProcessAttackResolutionStep_Skills () throws Exception
 	{
 		// Attack resolution steps
-		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		for (int n = 1; n <= 4; n++)
 		{
-			final AttackResolutionStepSvr attackStep = new AttackResolutionStepSvr ();
+			final AttackResolutionStep attackStep = new AttackResolutionStep ();
 			attackStep.setCombatSide (UnitCombatSideID.ATTACKER);
 			attackStep.setUnitSkillID ("US00" + n);
 			steps.add (attackStep);
 		}
 
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Combat map
 		final CombatMapSize combatMapSize = new CombatMapSize ();
@@ -558,8 +558,8 @@ public final class TestAttackResolutionProcessingImpl
 		// Two of the skills we have and so generate some damage, the other two we don't
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 		
-		final DamageTypeSvr damageTypeToDefender = new DamageTypeSvr ();
-		final DamageTypeSvr damageTypeToAttacker = new DamageTypeSvr ();
+		final DamageType damageTypeToDefender = new DamageType ();
+		final DamageType damageTypeToAttacker = new DamageType ();
 		
 		final AttackDamage potentialDamageToDefender1 = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE, null, null, null, 1);
 		when (damageCalc.attackFromUnitSkill (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, "US002",
@@ -597,11 +597,11 @@ public final class TestAttackResolutionProcessingImpl
 	public final void testProcessAttackResolutionStep_Spell () throws Exception
 	{
 		// Attack resolution steps
-		final List<AttackResolutionStepSvr> steps = new ArrayList<AttackResolutionStepSvr> ();
+		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		steps.add (null);
 
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Combat map
 		final CombatMapSize combatMapSize = new CombatMapSize ();
@@ -652,7 +652,7 @@ public final class TestAttackResolutionProcessingImpl
 		// Spell does preset damage
 		final DamageCalculator damageCalc = mock (DamageCalculator.class);
 
-		final DamageTypeSvr damageTypeToDefender = new DamageTypeSvr ();
+		final DamageType damageTypeToDefender = new DamageType ();
 
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		

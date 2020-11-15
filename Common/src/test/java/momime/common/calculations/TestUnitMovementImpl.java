@@ -25,8 +25,8 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.GenerateTestData;
-import momime.common.database.TileType;
-import momime.common.database.Unit;
+import momime.common.database.TileTypeEx;
+import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -126,10 +126,10 @@ public final class TestUnitMovementImpl
 		final CommonDatabase db = mock (CommonDatabase.class);		
 		
 		// All possible tile types
-		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		final List<TileTypeEx> tileTypes = new ArrayList<TileTypeEx> ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final TileType thisTileType = new TileType ();
+			final TileTypeEx thisTileType = new TileTypeEx ();
 			thisTileType.setTileTypeID ("TT0" + n);
 			tileTypes.add (thisTileType);
 		}
@@ -240,9 +240,9 @@ public final class TestUnitMovementImpl
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		final Set<String> unitStackSkills = new HashSet<String> ();
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		
-		final Unit transportDef = new Unit ();
+		final UnitEx transportDef = new UnitEx ();
 		transportDef.setTransportCapacity (2);
 		
 		// At 0, 0, 1 there's a regular unit (it shouldn't really be here, since its standing on impassable terrain with no transport holding it)
@@ -380,7 +380,7 @@ public final class TestUnitMovementImpl
 		final int [] [] [] ourUnitCountAtLocation = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
 
 		// Units
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		
 		final UnitCalculations unitCalculations = mock (UnitCalculations.class);
 		

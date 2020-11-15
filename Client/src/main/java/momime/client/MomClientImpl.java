@@ -36,10 +36,10 @@ import com.ndg.swing.NdgUIUtils;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.database.ClientDatabaseExImpl;
 import momime.client.database.NewGameDatabase;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.dialogs.CastCombatSpellFromUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.RazeCityUI;
@@ -68,6 +68,9 @@ import momime.client.ui.frames.SpellBookUI;
 import momime.client.ui.frames.TaxRateUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.frames.WizardsUI;
+import momime.common.MomException;
+import momime.common.database.CommonDatabase;
+import momime.common.database.LanguageText;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -173,6 +176,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	/** UI manager helper */
 	private NdgUIUtils utils;
 	
+	/** Language database holder */
+	private LanguageDatabaseHolder languageHolder;
+	
 	/** List of all city views currently open, keyed by coordinates.toString () */
 	private Map<String, CityViewUI> cityViews = new HashMap<String, CityViewUI> (); 
 	
@@ -251,10 +257,8 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			public final void kickedByAnotherLogin () throws JAXBException, XMLStreamException, IOException
 			{
 				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setTitleLanguageCategoryID ("Multiplayer");
-				msg.setTitleLanguageEntryID ("KickedTitle");
-				msg.setTextLanguageCategoryID ("Multiplayer");
-				msg.setTextLanguageEntryID ("KickedText");
+				msg.setLanguageTitle (getLanguages ().getMultiplayer ().getKickedTitle ());
+				msg.setLanguageText (getLanguages ().getMultiplayer ().getKickedText ());
 				try
 				{
 					msg.setVisible (true);
@@ -292,7 +296,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			@Override
 			public final void joinedSession (final JoinSuccessfulReason reason) throws JAXBException, XMLStreamException, IOException
 			{
-				((ClientDatabaseExImpl) getClientDB ()).buildMapsAndRunConsistencyChecks ();
+				getClientDB ().buildMaps ();
+				getClientDB ().consistencyChecks ();
+				getClientDB ().clientConsistencyChecks ();
 				getJoinGameUI ().setVisible (false);
 				getLoadGameUI ().setVisible (false);
 				getMainMenuUI ().setVisible (false);
@@ -314,7 +320,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 						trans.setFlagColour (pub.getCustomFlagColour ());
 					
 					else if (pub.getStandardPhotoID () != null)
-						trans.setFlagColour (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "joinedSession").getFlagColour ());
+						trans.setFlagColour (getClientDB ().findWizard (pub.getStandardPhotoID (), "joinedSession").getFlagColour ());
 				}
 				
 				// Also if reloading a game, or joining a game being reloaded, show the wait for players screen
@@ -504,79 +510,218 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				throws JAXBException, XMLStreamException, IOException
 			{
 				// Get relevant entry from language XML
-				final String languageCategoryID;
-				final String languageEntryID;
-				final String titleEntryID;
+				final List<LanguageText> languageTitle;
+				final List<LanguageText> languageText;
 				
 				if (createAccountFailed != null)
 				{
-					titleEntryID = "CreateAccountFailedTitle";
-					languageCategoryID = "CreateAccountFailedReason";
-					languageEntryID = createAccountFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getCreateAccountFailed ().getTitle ();
+					switch (createAccountFailed)
+					{
+						case PLAYER_ALREADY_EXISTS:
+							languageText = getLanguages ().getMultiplayer ().getCreateAccountFailed ().getPlayerAlreadyExists ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand create account failure code of " + createAccountFailed);
+					}
 				}
 				else if (loginFailed != null)
 				{
-					titleEntryID = "LoginFailedTitle";
-					languageCategoryID = "LoginFailedReason";
-					languageEntryID = loginFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getLoginFailed ().getTitle ();
+					switch (loginFailed)
+					{
+						case YOUR_CONNECTION_IS_ALREADY_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getLoginFailed ().getYourConnectionIsAlreadyLoggedIn ();
+							break;
+							
+						case PLAYER_NAME_OR_PASSWORD_NOT_RECOGNIZED:
+							languageText = getLanguages ().getMultiplayer ().getLoginFailed ().getPlayerNameOrPasswordNotRecognized ();
+							break;
+
+						case ANOTHER_CONNECTION_USING_YOUR_PLAYER_ID:
+							languageText = getLanguages ().getMultiplayer ().getLoginFailed ().getAnotherConnectionUsingYourPlayerID ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand login failure code of " + loginFailed);
+					}
 				}
 				else if (logoutFailed != null)
 				{
-					titleEntryID = "LogoutFailedTitle";
-					languageCategoryID = "LogoutFailedReason";
-					languageEntryID = logoutFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getLogoutFailed ().getTitle ();
+					switch (logoutFailed)
+					{
+						case NOT_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getLogoutFailed ().getNotLoggedIn ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand logout failure code of " + logoutFailed);
+					}
 				}
 				else if (requestSessionListFailed != null)
 				{
-					titleEntryID = "RequestSessionListFailedTitle";
-					languageCategoryID = "RequestSessionListFailedReason";
-					languageEntryID = requestSessionListFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getRequestSessionListFailed ().getTitle ();
+					switch (requestSessionListFailed)
+					{
+						case NOT_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getRequestSessionListFailed ().getNotLoggedIn ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand request session list failure code of " + requestSessionListFailed);
+					}
 				}
 				else if (joinFailed != null)
 				{
-					titleEntryID = "JoinSessionFailedTitle";
-					languageCategoryID = "JoinFailedReason";
-					languageEntryID = joinFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getJoinFailed ().getTitle ();
+					switch (joinFailed)
+					{
+						case NOT_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getJoinFailed ().getNotLoggedIn ();
+							break;
+							
+						case ALREADY_IN_SESSION:
+							languageText = getLanguages ().getMultiplayer ().getJoinFailed ().getAlreadyInSession ();
+							break;
+							
+						case SESSION_ID_NOT_FOUND:
+							languageText = getLanguages ().getMultiplayer ().getJoinFailed ().getSessionIDNotFound ();
+							break;
+							
+						case SESSION_FULL:
+							languageText = getLanguages ().getMultiplayer ().getJoinFailed ().getSessionFull ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand join session failure code of " + joinFailed);
+					}
 				}
 				else if (leaveSessionFailed != null)
 				{
-					titleEntryID = "LeaveSessionFailedTitle";
-					languageCategoryID = "LeaveSessionFailedReason";
-					languageEntryID = leaveSessionFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getLeaveSessionFailed ().getTitle ();
+					switch (leaveSessionFailed)
+					{
+						case NOT_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getLeaveSessionFailed ().getNotLoggedIn ();
+							break;
+							
+						case NOT_IN_SESSION:
+							languageText = getLanguages ().getMultiplayer ().getLeaveSessionFailed ().getNotInSession ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand leave session failure code of " + leaveSessionFailed);
+					}
 				}
 				else if (browseSavedGamesFailed != null)
 				{
-					titleEntryID = "BrowseSavedGamesFailedTitle";
-					languageCategoryID = "BrowseSavedGamesFailedReason";
-					languageEntryID = browseSavedGamesFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getBrowseSavedGamesFailed ().getTitle ();
+					switch (browseSavedGamesFailed)
+					{
+						case NOT_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getBrowseSavedGamesFailed ().getNotLoggedIn ();
+							break;
+							
+						case ALREADY_IN_SESSION:
+							languageText = getLanguages ().getMultiplayer ().getBrowseSavedGamesFailed ().getAlreadyInSession ();
+							break;
+							
+						case SAVED_GAMES_NOT_SUPPORTED:
+							languageText = getLanguages ().getMultiplayer ().getBrowseSavedGamesFailed ().getSavedGamesNotSupported ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand browse saved games failure code of " + browseSavedGamesFailed);
+					}
 				}
 				else if (browseSavePointsFailed != null)
 				{
-					titleEntryID = "BrowseSavePointsFailedTitle";
-					languageCategoryID = "BrowseSavePointsFailedReason";
-					languageEntryID = browseSavePointsFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getBrowseSavePointsFailed ().getTitle ();
+					switch (browseSavePointsFailed)
+					{
+						case NOT_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getBrowseSavePointsFailed ().getNotLoggedIn ();
+							break;
+							
+						case ALREADY_IN_SESSION:
+							languageText = getLanguages ().getMultiplayer ().getBrowseSavePointsFailed ().getAlreadyInSession ();
+							break;
+							
+						case SAVE_GAME_ID_NOT_FOUND:
+							languageText = getLanguages ().getMultiplayer ().getBrowseSavePointsFailed ().getSavedGameIDNotFound ();
+							break;
+							
+						case SAVED_GAMES_NOT_SUPPORTED:
+							languageText = getLanguages ().getMultiplayer ().getBrowseSavePointsFailed ().getSavedGamesNotSupported ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand browse save points failure code of " + browseSavePointsFailed);
+					}
 				}
 				else if (deleteSavedGameFailed != null)
 				{
-					titleEntryID = "DeleteSavedGameFailedTitle";
-					languageCategoryID = "DeleteSavedGameFailedReason";
-					languageEntryID = deleteSavedGameFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getDeleteSavedGameFailed ().getTitle ();
+					switch (deleteSavedGameFailed)
+					{
+						case ALREADY_IN_SESSION:
+							languageText = getLanguages ().getMultiplayer ().getDeleteSavedGameFailed ().getAlreadyInSession ();
+							break;
+							
+						case NOT_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getDeleteSavedGameFailed ().getNotLoggedIn ();
+							break;
+							
+						case SAVE_GAME_ID_NOT_FOUND:
+							languageText = getLanguages ().getMultiplayer ().getDeleteSavedGameFailed ().getSavedGameIDNotFound ();
+							break;
+							
+						case SAVED_GAMES_NOT_SUPPORTED:
+							languageText = getLanguages ().getMultiplayer ().getDeleteSavedGameFailed ().getSavedGamesNotSupported ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand delete saved game failure code of " + deleteSavedGameFailed);
+					}
 				}
 				else if (loadGameFailed != null)
 				{
-					titleEntryID = "LoadGameFailedTitle";
-					languageCategoryID = "LoadGameFailedReason";
-					languageEntryID = loadGameFailed.value ();
+					languageTitle = getLanguages ().getMultiplayer ().getLoadGameFailed ().getTitle ();
+					switch (loadGameFailed)
+					{
+						case NOT_LOGGED_IN:
+							languageText = getLanguages ().getMultiplayer ().getLoadGameFailed ().getNotLoggedIn ();
+							break;
+							
+						case ALREADY_IN_SESSION:
+							languageText = getLanguages ().getMultiplayer ().getLoadGameFailed ().getAlreadyInSession ();
+							break;
+							
+						case SAVE_GAME_ID_NOT_FOUND:
+							languageText = getLanguages ().getMultiplayer ().getLoadGameFailed ().getSavedGameIDNotFound ();
+							break;
+							
+						case SAVE_GAME_FILENAME_NOT_FOUND:
+							languageText = getLanguages ().getMultiplayer ().getLoadGameFailed ().getSavedGameFilenameNotFound ();
+							break;
+							
+						case SAVED_GAMES_NOT_SUPPORTED:
+							languageText = getLanguages ().getMultiplayer ().getLoadGameFailed ().getSavedGamesNotSupported ();
+							break;
+							
+						default:
+							throw new MomException ("Don't understand load game failure code of " + loadGameFailed);
+					}
 				}
 				else
-					throw new IOException ("MultiplayerSessionClientEvent.failed handler: Every failure code was null");
+					throw new MomException ("MultiplayerSessionClientEvent.failed handler: Every failure code was null");
 
 				// Display in window
 				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setTitleLanguageCategoryID ("Multiplayer");
-				msg.setTitleLanguageEntryID (titleEntryID);
-				msg.setTextLanguageCategoryID (languageCategoryID);
-				msg.setTextLanguageEntryID (languageEntryID);
+				msg.setLanguageTitle (languageTitle);
+				msg.setLanguageText (languageText);
 				try
 				{
 					msg.setVisible (true);
@@ -619,9 +764,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	 * @return Client XML in use for this session
 	 */
 	@Override
-	public final ClientDatabaseEx getClientDB ()
+	public final CommonDatabase getClientDB ()
 	{
-		return (ClientDatabaseEx) getGeneralPublicKnowledge ().getClientDatabase ();
+		return (CommonDatabase) getGeneralPublicKnowledge ().getMomDatabase ();
 	}
 	
 	/**
@@ -1133,6 +1278,31 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setUtils (final NdgUIUtils mgr)
 	{
 		utils = mgr;
+	}
+
+	/**
+	 * @return Language database holder
+	 */
+	public final LanguageDatabaseHolder getLanguageHolder ()
+	{
+		return languageHolder;
+	}
+	
+	/**
+	 * @param holder Language database holder
+	 */
+	public final void setLanguageHolder (final LanguageDatabaseHolder holder)
+	{
+		languageHolder = holder;
+	}
+
+	/**
+	 * Convenience shortcut for accessing the Language XML database
+	 * @return Language database
+	 */
+	public final MomLanguagesEx getLanguages ()
+	{
+		return languageHolder.getLanguages ();
 	}
 	
 	/**

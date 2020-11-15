@@ -10,6 +10,9 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.SwingConstants;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import momime.client.newturnmessages.NewTurnMessageComplexUI;
 import momime.client.newturnmessages.NewTurnMessageSimpleUI;
 import momime.client.newturnmessages.NewTurnMessageUI;
@@ -19,6 +22,9 @@ import momime.client.newturnmessages.NewTurnMessageUI;
  */
 public final class NewTurnMessageRenderer implements ListCellRenderer<NewTurnMessageUI>
 {
+	/** Class logger */
+	private static final Log log = LogFactory.getLog (NewTurnMessageRenderer.class);
+	
 	/** Label used to display SimpleUIs */
 	private JLabel simpleUILabel = new JLabel ();
 	
@@ -36,7 +42,16 @@ public final class NewTurnMessageRenderer implements ListCellRenderer<NewTurnMes
 			final NewTurnMessageSimpleUI simple = (NewTurnMessageSimpleUI) msg;
 			simpleUILabel.setForeground (simple.getColour ());
 			simpleUILabel.setFont (simple.getFont ());
-			simpleUILabel.setText (simple.getText ());
+			
+			try
+			{
+				simpleUILabel.setText (simple.getText ());
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
+			
 			simpleUILabel.setHorizontalAlignment (SwingConstants.CENTER);
 			
 			final Image image = simple.getImage ();

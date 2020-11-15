@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 
-import momime.client.language.database.LanguageDatabaseEx;
+import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.NewTurnMessageSpellSwitchedOffFromLackOfProduction;
 
 /**
@@ -25,6 +25,9 @@ public final class NewTurnMessageSpellSwitchedOffFromLackOfProductionEx extends 
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -46,19 +49,20 @@ public final class NewTurnMessageSpellSwitchedOffFromLackOfProductionEx extends 
 	
 	/**
 	 * @return Text to display for this NTM
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
-	public final String getText ()
+	public final String getText () throws RecordNotFoundException
 	{
-		final ProductionTypeLang productionType = getLanguage ().findProductionType (getProductionTypeID ());
-		String text = (productionType != null) ? productionType.getSpellSwitchedOffFromLackOfProduction () : null;
-		if (text == null)
-			text = "Spell lost from lack of " + getProductionTypeID ();
+		String text = getLanguageHolder ().findDescription
+			(getClient ().getClientDB ().findProductionType (getProductionTypeID (), "NewTurnMessageSpellSwitchedOffFromLackOfProductionEx").getSpellSwitchedOffFromLackOfProduction ());
 		
-		final SpellLang spell = getLanguage ().findSpell (getSpellID ());
-		final String spellName = (spell != null) ? spell.getSpellName () : null;
+		final String spellName = getLanguageHolder ().findDescription
+			(getClient ().getClientDB ().findSpell (getSpellID (), "NewTurnMessageSpellSwitchedOffFromLackOfProductionEx").getSpellName ());
 
-		return text.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getSpellID ());
+		text = text.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getSpellID ());
+		
+		return text;
 	}
 	
 	/**
@@ -133,8 +137,24 @@ public final class NewTurnMessageSpellSwitchedOffFromLackOfProductionEx extends 
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

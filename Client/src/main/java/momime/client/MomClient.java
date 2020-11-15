@@ -11,12 +11,12 @@ import com.ndg.multiplayer.base.client.ClientToServerConnection;
 import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
-import momime.client.database.ClientDatabaseEx;
 import momime.client.database.NewGameDatabase;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.HeroItemInfoUI;
 import momime.client.ui.frames.UnitInfoUI;
+import momime.common.database.CommonDatabase;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -92,7 +92,7 @@ public interface MomClient
 	/**
 	 * @return Client XML in use for this session
 	 */
-	public ClientDatabaseEx getClientDB ();
+	public CommonDatabase getClientDB ();
 	
 	/**
 	 * @return Session description, typecasted to MoM specific type

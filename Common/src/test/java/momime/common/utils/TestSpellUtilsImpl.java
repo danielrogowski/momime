@@ -23,7 +23,7 @@ import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
-import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -120,7 +120,7 @@ public final class TestSpellUtilsImpl
 			summonedUnit.setSummonedUnitID ("UN00" + n);
 			summoningSpell.getSummonedUnit ().add (summonedUnit);
 			
-			final Unit unitDef = new Unit ();
+			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitMagicRealm ("MB01");
 			when (db.findUnit (summonedUnit.getSummonedUnitID (), "spellSummonsUnitTypeID")).thenReturn (unitDef);
 		}
@@ -161,7 +161,7 @@ public final class TestSpellUtilsImpl
 			summonedUnit.setSummonedUnitID ("UN00" + n);
 			summoningSpell.getSummonedUnit ().add (summonedUnit);
 			
-			final Unit unitDef = new Unit ();
+			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitMagicRealm ("MB0" + n);
 			when (db.findUnit (summonedUnit.getSummonedUnitID (), "spellSummonsUnitTypeID")).thenReturn (unitDef);
 		}

@@ -86,14 +86,13 @@ public final class UnitInfoUI extends MomClientFrameUI
 			dismissAction = new LoggingAction ((ev) ->
 			{
 				// Show name of unit
-				String text = getLanguage ().findCategoryEntry ("frmUnitInfo", "DismissPrompt");
+				String text = getLanguageHolder ().findDescription (getLanguages ().getUnitInfoScreen ().getDismissPrompt ());
 				getUnitStatsReplacer ().setUnit (getUnitInfoPanel ().getUnit ());
 				text = getUnitStatsReplacer ().replaceVariables (text);
 				
 				// Show message box
 				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setTitleLanguageCategoryID ("frmUnitInfo");
-				msg.setTitleLanguageEntryID ("DismissTitle");
+				msg.setLanguageTitle (getLanguages ().getUnitInfoScreen ().getDismissTitle ());
 				msg.setText (text);
 				msg.setUnitToDismiss (getUnit ());
 				msg.setVisible (true);
@@ -108,10 +107,8 @@ public final class UnitInfoUI extends MomClientFrameUI
 				renameAction = new LoggingAction ((ev) ->
 				{
 					final EditStringUI msg = getPrototypeFrameCreator ().createEditString ();
-					msg.setTitleLanguageCategoryID ("frmUnitInfo");
-					msg.setTitleLanguageEntryID ("Rename");
-					msg.setPromptLanguageCategoryID ("frmUnitInfo");
-					msg.setPromptLanguageEntryID ("RenamePrompt");
+					msg.setLanguageTitle (getLanguages ().getUnitInfoScreen ().getRename ());
+					msg.setLanguagePrompt (getLanguages ().getUnitInfoScreen ().getRenamePrompt ());
 					msg.setUnitBeingNamed (getUnit ().getUnitURN ());
 					msg.setText (getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.SIMPLE_UNIT_NAME));
 					msg.setVisible (true);
@@ -183,16 +180,17 @@ public final class UnitInfoUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged: " + getUnit ().getUnitURN ());
 
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmUnitInfo", "OK"));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 		if (dismissAction != null)
-			dismissAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmUnitInfo", "Dismiss"));
+			dismissAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getUnitInfoScreen ().getDismiss ()));
 
 		if (renameAction != null)
-			renameAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmUnitInfo", "Rename"));
+			renameAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getUnitInfoScreen ().getRename ()));
 		
 		try
 		{
-			String unitName = getLanguage ().findCategoryEntry ("frmUnitInfo", "Title").replaceAll ("UNIT_NAME", getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME));
+			String unitName = getLanguageHolder ().findDescription (getLanguages ().getUnitInfoScreen ().getTitle ()).replaceAll
+				("UNIT_NAME", getUnitClientUtils ().getUnitName (getUnit (), UnitNameType.RACE_UNIT_NAME));
 			
 			final PlayerPublicDetails owningPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getUnit ().getOwningPlayerID ());
 			if (owningPlayer != null)

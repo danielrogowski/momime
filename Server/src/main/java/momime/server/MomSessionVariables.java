@@ -12,9 +12,9 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.sessionbase.JoinSuccessfulReason;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.database.CommonDatabase;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
 
@@ -31,7 +31,7 @@ public interface MomSessionVariables
 	/**
 	 * @return Server XML in use for this session
 	 */
-	public ServerDatabaseEx getServerDB ();
+	public CommonDatabase getServerDB ();
 
 	/**
 	 * @return Server general knowledge, typecasted to MoM specific type

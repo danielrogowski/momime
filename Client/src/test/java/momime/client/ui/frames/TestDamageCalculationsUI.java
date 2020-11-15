@@ -5,18 +5,21 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 
-import momime.client.ClientTestData;
-import momime.client.calculations.damage.DamageCalculationText;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.fonts.CreateFontsForTests;
-
 import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.calculations.damage.DamageCalculationText;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.CombatDamage;
+import momime.client.languages.database.Simple;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.Language;
 
 /**
  * Tests the DamageCalculationsUI class
@@ -35,12 +38,18 @@ public final class TestDamageCalculationsUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("CombatDamage", "Title")).thenReturn ("Damage calculations");
-		when (lang.findCategoryEntry ("frmMessageBox", "OK")).thenReturn ("OK");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		
+		final CombatDamage combatDamageLang = new CombatDamage ();
+		combatDamageLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Damage calculations"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getCombatDamage ()).thenReturn (combatDamageLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

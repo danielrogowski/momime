@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemBonusStat;
-import momime.server.database.HeroItemBonusSvr;
 
 /**
  * Tests the AIHeroItemRatingCalculationsImpl class
@@ -22,7 +22,7 @@ public final class TestAIHeroItemRatingCalculationsImpl
 		final AIHeroItemRatingCalculationsImpl ai = new AIHeroItemRatingCalculationsImpl ();
 
 		// No stat entries
-		final HeroItemBonusSvr bonus = new HeroItemBonusSvr ();
+		final HeroItemBonus bonus = new HeroItemBonus ();
 		assertEquals (2, ai.calculateHeroItemBonusRating (bonus));
 		
 		// A +1 stat, a valueless stat, and a +5 stat

@@ -25,7 +25,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
@@ -150,8 +149,8 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 				heroName.setText (getUnitClientUtils ().getUnitName (unit, UnitNameType.RACE_UNIT_NAME));
 				
 				// Hero portrait
-				final UnitGfx unitGfx = getGraphicsDB ().findUnit (unit.getUnitID (), "HeroTableCellRenderer");
-				final BufferedImage unitImage = getUtils ().loadImage (unitGfx.getHeroPortraitImageFile ());
+				final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "HeroTableCellRenderer");
+				final BufferedImage unitImage = getUtils ().loadImage (unitDef.getHeroPortraitImageFile ());
 			
 				// Stretch it to the correct size
 				final Image resizedImage = unitImage.getScaledInstance
@@ -159,7 +158,6 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 				heroPortrait.setIcon (new ImageIcon (resizedImage));
 				
 				// Item slots
-				final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "HeroTableCellRenderer");
 				int slotNumber = 0;
 				for (final HeroItemSlot slot : unitDef.getHeroItemSlot ())
 				{
@@ -176,9 +174,10 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 					{
 						String itemImageFilename;
 						if (item == null)
-							itemImageFilename = getGraphicsDB ().findHeroItemSlotType (slot.getHeroItemSlotTypeID (), "HeroTableCellRenderer").getHeroItemSlotTypeImageFile ();
+							itemImageFilename = getClient ().getClientDB ().findHeroItemSlotType
+								(slot.getHeroItemSlotTypeID (), "HeroTableCellRenderer").getHeroItemSlotTypeImageFile ();
 						else
-							itemImageFilename = getGraphicsDB ().findHeroItemType
+							itemImageFilename = getClient ().getClientDB ().findHeroItemType
 								(item.getHeroItemTypeID (), "HeroTableCellRenderer").getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ());
 						
 						itemLabels.get (slotNumber).setIcon (new ImageIcon (getUtils ().doubleSize (getUtils ().loadImage (itemImageFilename))));

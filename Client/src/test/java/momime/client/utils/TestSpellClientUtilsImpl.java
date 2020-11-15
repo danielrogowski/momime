@@ -3,6 +3,8 @@ package momime.client.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,31 +20,31 @@ import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 
+import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.CityViewElementGfx;
-import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SpellGfx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.UnitSkillLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.HelpScreen;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
-import momime.common.MomException;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CityViewElement;
+import momime.common.database.CombatAreaEffect;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.SummonedUnit;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerPickUtils;
@@ -50,13 +52,14 @@ import momime.common.utils.PlayerPickUtils;
 /**
  * Tests the SpellClientUtilsImpl class
  */
-public final class TestSpellClientUtilsImpl
+public final class TestSpellClientUtilsImpl extends ClientTestData
 {
 	/**
 	 * Tests the listUpkeepsOfSpell method when the spell has no upkeeps
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListUpkeepsOfSpell_None ()
+	public final void testListUpkeepsOfSpell_None () throws Exception
 	{
 		// Spell
 		final Spell spell = new Spell ();
@@ -73,22 +76,32 @@ public final class TestSpellClientUtilsImpl
 
 	/**
 	 * Tests the listUpkeepsOfSpell method when the spell has a single normal upkeep
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListUpkeepsOfSpell_One ()
+	public final void testListUpkeepsOfSpell_One () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithoutChanneler")).thenReturn ("UPKEEP_VALUE PRODUCTION_TYPE");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Mana"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "listUpkeepsOfSpell")).thenReturn (mana);
 		
-		final ProductionTypeLang mana = new ProductionTypeLang ();
-		mana.setProductionTypeDescription ("Mana");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellUpkeepWithoutChanneler ().add (createLanguageText (Language.ENGLISH, "UPKEEP_VALUE PRODUCTION_TYPE"));
+		helpLang.getSpellUpkeepWithChanneler ().add (createLanguageText (Language.ENGLISH, "HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)"));
+		helpLang.getSpellUpkeepFixed ().add (createLanguageText (Language.ENGLISH, "Upkeep: UPKEEP_LIST per turn"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Spell
 		final ProductionTypeAndUndoubledValue upkeep = new ProductionTypeAndUndoubledValue ();
@@ -108,6 +121,7 @@ public final class TestSpellClientUtilsImpl
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
 		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 		
 		// Run method
@@ -116,22 +130,32 @@ public final class TestSpellClientUtilsImpl
 
 	/**
 	 * Tests the listUpkeepsOfSpell method when the spell has a single normal upkeep, but have the channeler retort
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListUpkeepsOfSpell_Channeler ()
+	public final void testListUpkeepsOfSpell_Channeler () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithoutChanneler")).thenReturn ("UPKEEP_VALUE PRODUCTION_TYPE");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final ProductionTypeLang mana = new ProductionTypeLang ();
-		mana.setProductionTypeDescription ("Mana");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Mana"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "listUpkeepsOfSpell")).thenReturn (mana);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellUpkeepWithoutChanneler ().add (createLanguageText (Language.ENGLISH, "UPKEEP_VALUE PRODUCTION_TYPE"));
+		helpLang.getSpellUpkeepWithChanneler ().add (createLanguageText (Language.ENGLISH, "HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)"));
+		helpLang.getSpellUpkeepFixed ().add (createLanguageText (Language.ENGLISH, "Upkeep: UPKEEP_LIST per turn"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Spell
 		final ProductionTypeAndUndoubledValue upkeep = new ProductionTypeAndUndoubledValue ();
@@ -151,6 +175,7 @@ public final class TestSpellClientUtilsImpl
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
 		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 		
 		// Run method
@@ -159,26 +184,36 @@ public final class TestSpellClientUtilsImpl
 
 	/**
 	 * Tests the listUpkeepsOfSpell method when the spell has a more than one upkeep
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListUpkeepsOfSpell_Two ()
+	public final void testListUpkeepsOfSpell_Two () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithoutChanneler")).thenReturn ("UPKEEP_VALUE PRODUCTION_TYPE");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler")).thenReturn ("HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)");
-		when (lang.findCategoryEntry ("frmHelp", "SpellUpkeepFixed")).thenReturn ("Upkeep: UPKEEP_LIST per turn");
-		
-		final ProductionTypeLang mana = new ProductionTypeLang ();
-		mana.setProductionTypeDescription ("Mana");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final ProductionTypeLang gold = new ProductionTypeLang ();
-		gold.setProductionTypeDescription ("Gold");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (gold);
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Mana"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "listUpkeepsOfSpell")).thenReturn (mana);
+
+		final ProductionTypeEx gold = new ProductionTypeEx ();
+		gold.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Gold"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "listUpkeepsOfSpell")).thenReturn (gold);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellUpkeepWithoutChanneler ().add (createLanguageText (Language.ENGLISH, "UPKEEP_VALUE PRODUCTION_TYPE"));
+		helpLang.getSpellUpkeepWithChanneler ().add (createLanguageText (Language.ENGLISH, "HALF_UPKEEP_VALUE PRODUCTION_TYPE (reduced from UPKEEP_VALUE PRODUCTION_TYPE)"));
+		helpLang.getSpellUpkeepFixed ().add (createLanguageText (Language.ENGLISH, "Upkeep: UPKEEP_LIST per turn"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Spell
 		final ProductionTypeAndUndoubledValue upkeep1 = new ProductionTypeAndUndoubledValue ();
@@ -203,6 +238,7 @@ public final class TestSpellClientUtilsImpl
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
 		utils.setPlayerPickUtils (playerPickUtils);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 		
 		// Run method
@@ -211,28 +247,32 @@ public final class TestSpellClientUtilsImpl
 	
 	/**
 	 * Tests the listValidMagicRealmLifeformTypeTargetsOfSpell method
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListValidMagicRealmLifeformTypeTargetsOfSpell ()
+	public final void testListValidMagicRealmLifeformTypeTargetsOfSpell () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		
-		final PickLang magicRealm1 = new PickLang ();
-		magicRealm1.setUnitMagicRealmPlural ("Chaos units");
-		when (lang.findPick ("LT01")).thenReturn (magicRealm1);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PickLang magicRealm3 = new PickLang ();
-		magicRealm3.setUnitMagicRealmPlural ("Death units");
-		when (lang.findPick ("LT03")).thenReturn (magicRealm3);
+		final Pick magicRealm1 = new Pick ();
+		magicRealm1.getUnitMagicRealmPlural ().add (createLanguageText (Language.ENGLISH, "Chaos units"));
+		when (db.findPick ("LT01", "listValidMagicRealmLifeformTypeTargetsOfSpell")).thenReturn (magicRealm1);
+
+		final Pick magicRealm3 = new Pick ();
+		magicRealm3.getUnitMagicRealmPlural ().add (createLanguageText (Language.ENGLISH, "Death units"));
+		when (db.findPick ("LT02", "listValidMagicRealmLifeformTypeTargetsOfSpell")).thenReturn (magicRealm3);
 		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
 
 		// Spell
 		final Spell spell = new Spell ();
 		
-		for (int n = 1; n <= 3; n++)
+		for (int n = 1; n <= 2; n++)
 		{
 			final SpellValidUnitTarget target = new SpellValidUnitTarget ();
 			target.setTargetMagicRealmID ("LT0" + n);
@@ -243,25 +283,29 @@ public final class TestSpellClientUtilsImpl
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		
 		// Run method
-		assertEquals (System.lineSeparator () + "Chaos units" + System.lineSeparator () + "LT02" + System.lineSeparator () + "Death units",
+		assertEquals (System.lineSeparator () + "Chaos units" + System.lineSeparator () + "Death units",
 			utils.listValidMagicRealmLifeformTypeTargetsOfSpell (spell));
 	}
 	
 	/**
 	 * Tests the listSavingThrowsOfSpell method when there are no ValidUnitTarget records at all
-	 * @throws MomException If there are multiple saving throws listed, but against different unit attributes
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListSavingThrowsOfSpell_None () throws MomException
+	public final void testListSavingThrowsOfSpell_None () throws Exception
 	{
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookNoSavingThrow")).thenReturn ("None");
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellBookNoSavingThrow ().add (createLanguageText (Language.ENGLISH, "None"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Spell details
 		final Spell spell = new Spell ();
@@ -276,17 +320,20 @@ public final class TestSpellClientUtilsImpl
 	
 	/**
 	 * Tests the listSavingThrowsOfSpell method when there are ValidUnitTarget records defined, but none list a saving throw
-	 * @throws MomException If there are multiple saving throws listed, but against different unit attributes
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListSavingThrowsOfSpell_LimitedTargets () throws MomException
+	public final void testListSavingThrowsOfSpell_LimitedTargets () throws Exception
 	{
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookNoSavingThrow")).thenReturn ("None");
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellBookNoSavingThrow ().add (createLanguageText (Language.ENGLISH, "None"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Spell details
 		final Spell spell = new Spell ();
@@ -305,21 +352,30 @@ public final class TestSpellClientUtilsImpl
 
 	/**
 	 * Tests the listSavingThrowsOfSpell method when there is a saving throw defined, with no modifier
-	 * @throws MomException If there are multiple saving throws listed, but against different unit attributes
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListSavingThrowsOfSpell_BasicSavingThrow () throws MomException
+	public final void testListSavingThrowsOfSpell_BasicSavingThrow () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookNoSavingThrowModifier")).thenReturn ("Saves against UNIT_SKILL");
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final UnitSkillEx attr = new UnitSkillEx ();
+		attr.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Resistance"));
+		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (attr);
 		
-		final UnitSkillLang attr = new UnitSkillLang ();
-		attr.setUnitSkillDescription ("Resistance");
-		when (lang.findUnitSkill ("UA01")).thenReturn (attr);
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellBookNoSavingThrowModifier ().add (createLanguageText (Language.ENGLISH, "Saves against UNIT_SKILL"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Spell details
 		final Spell spell = new Spell ();
@@ -331,6 +387,7 @@ public final class TestSpellClientUtilsImpl
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		
 		// Run method
 		assertEquals ("Saves against Resistance", utils.listSavingThrowsOfSpell (spell));
@@ -338,22 +395,31 @@ public final class TestSpellClientUtilsImpl
 	
 	/**
 	 * Tests the listSavingThrowsOfSpell method when there is a saving throw defined, with no modifier
-	 * @throws MomException If there are multiple saving throws listed, but against different unit attributes
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListSavingThrowsOfSpell_ModifiedSavingThrow () throws MomException
+	public final void testListSavingThrowsOfSpell_ModifiedSavingThrow () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookSingleSavingThrowModifier")).thenReturn ("Saves against UNIT_SKILL at SAVING_THROW_MODIFIER");
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final UnitSkillEx attr = new UnitSkillEx ();
+		attr.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Resistance"));
+		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (attr);
 		
-		final UnitSkillLang attr = new UnitSkillLang ();
-		attr.setUnitSkillDescription ("Resistance");
-		when (lang.findUnitSkill ("UA01")).thenReturn (attr);
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellBookSingleSavingThrowModifier ().add (createLanguageText (Language.ENGLISH, "Saves against UNIT_SKILL at SAVING_THROW_MODIFIER"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
-		
+		langHolder.setLanguages (lang);
+				
 		// Spell details
 		final Spell spell = new Spell ();
 		
@@ -365,6 +431,7 @@ public final class TestSpellClientUtilsImpl
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 		
 		// Run method
@@ -373,21 +440,30 @@ public final class TestSpellClientUtilsImpl
 
 	/**
 	 * Tests the listSavingThrowsOfSpell method when there are different saving throws for different magic realms
-	 * @throws MomException If there are multiple saving throws listed, but against different unit attributes
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListSavingThrowsOfSpell_MultipleSavingThrow () throws MomException
+	public final void testListSavingThrowsOfSpell_MultipleSavingThrow () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookMultipleSavingThrowModifiers")).thenReturn ("Saves against UNIT_SKILL from SAVING_THROW_MODIFIER_MINIMUM to SAVING_THROW_MODIFIER_MAXIMUM");
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final UnitSkillEx attr = new UnitSkillEx ();
+		attr.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Resistance"));
+		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (attr);
+
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
 		
-		final UnitSkillLang attr = new UnitSkillLang ();
-		attr.setUnitSkillDescription ("Resistance");
-		when (lang.findUnitSkill ("UA01")).thenReturn (attr);
+		// Mock entries from the language XML
+		final HelpScreen helpLang = new HelpScreen ();
+		helpLang.getSpellBookMultipleSavingThrowModifiers ().add (createLanguageText (Language.ENGLISH, "Saves against UNIT_SKILL from SAVING_THROW_MODIFIER_MINIMUM to SAVING_THROW_MODIFIER_MAXIMUM"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Spell details
 		final Spell spell = new Spell ();
@@ -410,6 +486,7 @@ public final class TestSpellClientUtilsImpl
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 		
 		// Run method
@@ -424,7 +501,7 @@ public final class TestSpellClientUtilsImpl
 	public final void testFindImageForSpell_NoSection () throws IOException
 	{
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -448,7 +525,7 @@ public final class TestSpellClientUtilsImpl
 	public final void testFindImageForSpell_ImagelessSection () throws IOException
 	{
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -482,14 +559,10 @@ public final class TestSpellClientUtilsImpl
 		when (uiUtils.loadImage ("SP001.png")).thenReturn (image);
 		
 		// Mock entries from graphics DB
-		final SpellGfx spellGfx = new SpellGfx ();
-		spellGfx.setOverlandEnchantmentImageFile ("SP001.png");
-		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findSpell ("SP001", "findImageForSpell")).thenReturn (spellGfx);
 		
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -497,6 +570,7 @@ public final class TestSpellClientUtilsImpl
 		// Spell details
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		spell.setOverlandEnchantmentImageFile ("SP001.png");
 		when (db.findSpell ("SP001", "findImageForSpell")).thenReturn (spell);
 		
 		// Set up object to test
@@ -542,11 +616,7 @@ public final class TestSpellClientUtilsImpl
 		when (uiUtils.loadImage ("SP001.png")).thenReturn (image);
 		
 		// Mock entries from graphics DB
-		final SpellGfx spellGfx = new SpellGfx ();
-		spellGfx.setOverlandEnchantmentImageFile ("SP001.png");
-		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findSpell ("SP001", "findImageForSpell")).thenReturn (spellGfx);
 		
 		// Mock border from mirror
 		final BufferedImage mirror = new BufferedImage (6, 6, BufferedImage.TYPE_INT_ARGB);
@@ -558,7 +628,7 @@ public final class TestSpellClientUtilsImpl
 		when (gen.getOverlandEnchantmentMirror (3)).thenReturn (mirror);
 		
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -566,6 +636,7 @@ public final class TestSpellClientUtilsImpl
 		// Spell details
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		spell.setOverlandEnchantmentImageFile ("SP001.png");
 		when (db.findSpell ("SP001", "findImageForSpell")).thenReturn (spell);
 		
 		// Set up object to test
@@ -615,20 +686,17 @@ public final class TestSpellClientUtilsImpl
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("Male.png")).thenReturn (maleImage);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// So this creates units 1,3,5,7,9 all which use the same male summonining image
 		for (int n = 1; n < 10; n++)
 			if (n % 2 != 0)
 			{
-				final UnitGfx unitGfx = new UnitGfx ();
-				unitGfx.setUnitSummonImageFile ("Male.png");
-				when (gfx.findUnit ("UN00" + n, "findImageForSpell")).thenReturn (unitGfx);
+				final UnitEx unitDef = new UnitEx ();
+				unitDef.setUnitSummonImageFile ("Male.png");
+				when (db.findUnit ("UN00" + n, "findImageForSpell")).thenReturn (unitDef);
 			}
-		
-		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -649,7 +717,6 @@ public final class TestSpellClientUtilsImpl
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -693,19 +760,16 @@ public final class TestSpellClientUtilsImpl
 		when (uiUtils.loadImage ("Male.png")).thenReturn (maleImage);
 		when (uiUtils.loadImage ("Female.png")).thenReturn (femaleImage);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// So this creates units 1,3,5,7,9 all which use the male summonining image, and 2,4,6,8 use the female image
 		for (int n = 1; n < 10; n++)
 		{
-			final UnitGfx unitGfx = new UnitGfx ();
-			unitGfx.setUnitSummonImageFile ((n % 2 != 0) ? "Male.png" : "Female.png");
-			when (gfx.findUnit ("UN00" + n, "findImageForSpell")).thenReturn (unitGfx);
+			final UnitEx unitDef = new UnitEx ();
+			unitDef.setUnitSummonImageFile ((n % 2 != 0) ? "Male.png" : "Female.png");
+			when (db.findUnit ("UN00" + n, "findImageForSpell")).thenReturn (unitDef);
 		}
-		
-		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -725,7 +789,6 @@ public final class TestSpellClientUtilsImpl
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -763,15 +826,12 @@ public final class TestSpellClientUtilsImpl
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("US050.png")).thenReturn (effect1Image);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSkillGfx skill = new UnitSkillGfx ();
+		final UnitSkillEx skill = new UnitSkillEx ();
 		skill.setUnitSkillImageFile ("US050.png");
-		when (gfx.findUnitSkill ("US050", "findImageForSpell")).thenReturn (skill);
-		
-		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		when (db.findUnitSkill ("US050", "findImageForSpell")).thenReturn (skill);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -789,7 +849,6 @@ public final class TestSpellClientUtilsImpl
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -817,17 +876,14 @@ public final class TestSpellClientUtilsImpl
 		when (uiUtils.loadImage ("US050.png")).thenReturn (effect1Image);
 		when (uiUtils.loadImage ("US051.png")).thenReturn (effect2Image);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		for (int n = 50; n <= 51; n++)
 		{
-			final UnitSkillGfx skill = new UnitSkillGfx ();
+			final UnitSkillEx skill = new UnitSkillEx ();
 			skill.setUnitSkillImageFile ("US0" + n + ".png");
-			when (gfx.findUnitSkill ("US0" + n, "findImageForSpell")).thenReturn (skill);
-		}
-		
-		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+			when (db.findUnitSkill ("US0" + n, "findImageForSpell")).thenReturn (skill);
+		}		
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -848,7 +904,6 @@ public final class TestSpellClientUtilsImpl
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -889,12 +944,12 @@ public final class TestSpellClientUtilsImpl
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final CityViewElementGfx element = new CityViewElementGfx ();
-		element.setCityViewAlternativeImageFile ("CSE050.png");
-		when (gfx.findCitySpellEffect ("CSE050")).thenReturn (element);
-		
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final CityViewElement element = new CityViewElement ();
+		element.setCityViewAlternativeImageFile ("CSE050.png");
+		when (db.findCityViewElementSpellEffect ("CSE050")).thenReturn (element);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -942,9 +997,13 @@ public final class TestSpellClientUtilsImpl
 		
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		
+		// Mock entries from client DB
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		for (int n = 50; n <= 51; n++)
 		{
-			final CityViewElementGfx element = new CityViewElementGfx ();
+			final CityViewElement element = new CityViewElement ();
 			if (n == 50)
 			{
 				// Prove alt image gets used in preference
@@ -954,11 +1013,8 @@ public final class TestSpellClientUtilsImpl
 			else
 				element.setCityViewImageFile ("CSE051.png");
 			
-			when (gfx.findCitySpellEffect ("CSE0" + n)).thenReturn (element);
+			when (db.findCityViewElementSpellEffect ("CSE0" + n)).thenReturn (element);
 		}
-		
-		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -1024,18 +1080,18 @@ public final class TestSpellClientUtilsImpl
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
+		// Mock entries from client DB
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		final AnimationGfx anim = new AnimationGfx ();
 		for (int n = 1; n <= 3; n++)
 			anim.getFrame ().add ("BL15-frame" + n + ".png");
 		
-		when (gfx.findAnimation ("BL15-anim", "findImageForSpell")).thenReturn (anim);
+		when (db.findAnimation ("BL15-anim", "findImageForSpell")).thenReturn (anim);
 
-		final CityViewElementGfx element = new CityViewElementGfx ();
+		final CityViewElement element = new CityViewElement ();
 		element.setCityViewAnimation ("BL15-anim");
-		when (gfx.findCityViewElementBuilding ("BL15", "findImageForSpell")).thenReturn (element);
-		
-		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		when (db.findCityViewElementBuilding ("BL15", "findImageForSpell")).thenReturn (element);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -1075,12 +1131,12 @@ public final class TestSpellClientUtilsImpl
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final CombatAreaEffectGfx cae = new CombatAreaEffectGfx ();
-		cae.setCombatAreaEffectImageFile ("CAE050.png");
-		when (gfx.findCombatAreaEffect ("CAE050", "findImageForSpell")).thenReturn (cae);
-		
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final CombatAreaEffect cae = new CombatAreaEffect ();
+		cae.setCombatAreaEffectImageFile ("CAE050.png");
+		when (db.findCombatAreaEffect ("CAE050", "findImageForSpell")).thenReturn (cae);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -1128,15 +1184,16 @@ public final class TestSpellClientUtilsImpl
 		
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		for (int n = 50; n <= 51; n++)
-		{
-			final CombatAreaEffectGfx cae = new CombatAreaEffectGfx ();
-			cae.setCombatAreaEffectImageFile ("CAE0" + n + ".png");
-			when (gfx.findCombatAreaEffect ("CAE0" + n, "findImageForSpell")).thenReturn (cae);
-		}
 		
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		for (int n = 50; n <= 51; n++)
+		{
+			final CombatAreaEffect cae = new CombatAreaEffect ();
+			cae.setCombatAreaEffectImageFile ("CAE0" + n + ".png");
+			when (db.findCombatAreaEffect ("CAE0" + n, "findImageForSpell")).thenReturn (cae);
+		}
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);

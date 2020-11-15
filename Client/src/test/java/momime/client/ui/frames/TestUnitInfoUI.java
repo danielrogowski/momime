@@ -20,13 +20,12 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.ChangeConstructionScreen;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.UnitInfoScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.client.ui.renderer.UnitAttributeListCellRenderer;
@@ -36,7 +35,10 @@ import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
-import momime.common.database.Unit;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -62,27 +64,32 @@ public final class TestUnitInfoUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		
+		final UnitInfoScreen unitInfoScreenLang = new UnitInfoScreen ();
+		unitInfoScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "PLAYER_NAME's UNIT_NAME"));
+		unitInfoScreenLang.getDismiss ().add (createLanguageText (Language.ENGLISH, "Dismiss"));
 
-		when (lang.findCategoryEntry ("frmUnitInfo", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("frmUnitInfo", "Dismiss")).thenReturn ("Dismiss");
-		when (lang.findCategoryEntry ("frmUnitInfo", "Title")).thenReturn ("PLAYER_NAME's UNIT_NAME");
+		final ChangeConstructionScreen changeConstructionScreenLang = new ChangeConstructionScreen ();
+		changeConstructionScreenLang.getUpkeep ().add (createLanguageText (Language.ENGLISH, "Upkeep"));
+		changeConstructionScreenLang.getCost ().add (createLanguageText (Language.ENGLISH, "Cost"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getUnitInfoScreen ()).thenReturn (unitInfoScreenLang);
+		when (lang.getChangeConstructionScreen ()).thenReturn (changeConstructionScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Mock entries from Graphics XML
-		final UnitGfx unitGfx = new UnitGfx ();
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findUnit (eq ("UN001"), anyString ())).thenReturn (unitGfx);
-
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit longbowmen = new Unit ();
+		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm ("X");
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (longbowmen);
 		
@@ -143,7 +150,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
-		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
+		final UnitSkillEx movementSkill = new UnitSkillEx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (xu)).thenReturn (movementSkill);
 
@@ -165,7 +172,6 @@ public final class TestUnitInfoUI extends ClientTestData
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
-		panel.setGraphicsDB (gfx);
 		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
@@ -207,26 +213,31 @@ public final class TestUnitInfoUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		
+		final UnitInfoScreen unitInfoScreenLang = new UnitInfoScreen ();
+		unitInfoScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "PLAYER_NAME's UNIT_NAME"));
 
-		when (lang.findCategoryEntry ("frmUnitInfo", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("frmUnitInfo", "Title")).thenReturn ("PLAYER_NAME's UNIT_NAME");
+		final ChangeConstructionScreen changeConstructionScreenLang = new ChangeConstructionScreen ();
+		changeConstructionScreenLang.getUpkeep ().add (createLanguageText (Language.ENGLISH, "Upkeep"));
+		changeConstructionScreenLang.getCost ().add (createLanguageText (Language.ENGLISH, "Cost"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getUnitInfoScreen ()).thenReturn (unitInfoScreenLang);
+		when (lang.getChangeConstructionScreen ()).thenReturn (changeConstructionScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
-		// Mock entries from Graphics XML
-		final UnitGfx unitGfx = new UnitGfx ();
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findUnit (eq ("UN001"), anyString ())).thenReturn (unitGfx);
-		
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit longbowmen = new Unit ();
+		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm ("X");
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (longbowmen);
 		
@@ -287,7 +298,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		
-		final UnitSkillGfx movementSkill = new UnitSkillGfx ();
+		final UnitSkillEx movementSkill = new UnitSkillEx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		when (clientUnitCalc.findPreferredMovementSkillGraphics (xu)).thenReturn (movementSkill);
 
@@ -309,7 +320,6 @@ public final class TestUnitInfoUI extends ClientTestData
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
-		panel.setGraphicsDB (gfx);
 		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);

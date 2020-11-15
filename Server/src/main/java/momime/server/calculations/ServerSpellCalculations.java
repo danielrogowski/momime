@@ -2,10 +2,10 @@ package momime.server.calculations;
 
 import java.util.List;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Calculations pertaining to spells that are only used on the server
@@ -24,7 +24,7 @@ public interface ServerSpellCalculations
 	 * @throws RecordNotFoundException If we encounter a pick or other item that we can't find in the cache
 	 */
 	public void randomizeResearchableSpells (final List<SpellResearchStatus> spells, final List<PlayerPick> picks,
-		final ServerDatabaseEx db)
+		final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -34,6 +34,6 @@ public interface ServerSpellCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
-	public void randomizeSpellsResearchableNow (final List<SpellResearchStatus> spells, final ServerDatabaseEx db)
+	public void randomizeSpellsResearchableNow (final List<SpellResearchStatus> spells, final CommonDatabase db)
 		throws RecordNotFoundException;
 }

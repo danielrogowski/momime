@@ -4,16 +4,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
 import momime.common.database.DamageTypeImmunity;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
-import momime.server.database.DamageTypeSvr;
-import momime.server.database.PickSvr;
-import momime.server.database.RangedAttackTypeSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.WeaponGradeSvr;
 
 /**
  * Methods dealing with deciding the damage type of attacks, and dealing with immunities to damage types
@@ -35,7 +33,7 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	 * @throws MomException If there is an error in the game logic
 	 */
 	@Override
-	public final DamageTypeSvr determineSkillDamageType (final ExpandedUnitDetails attacker, final String attackSkillID, final ServerDatabaseEx db)
+	public final DamageType determineSkillDamageType (final ExpandedUnitDetails attacker, final String attackSkillID, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering determineSkillDamageType: " + attacker.getDebugIdentifier () + " skill " + attackSkillID);
@@ -43,21 +41,21 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 		// Look up basic damage type of skill - if it is the ranged attack skill, then the base damage type comes from the RAT instead
 		final String damageTypeID;
 		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackSkillID))
-			damageTypeID = ((RangedAttackTypeSvr) attacker.getRangedAttackType ()).getDamageTypeID ();
+			damageTypeID = attacker.getRangedAttackType ().getDamageTypeID ();
 		else
 			damageTypeID = db.findUnitSkill (attackSkillID, "determineSkillDamageType").getDamageTypeID ();
 		
-		DamageTypeSvr damageType = db.findDamageType (damageTypeID, "determineSkillDamageType");
+		DamageType damageType = db.findDamageType (damageTypeID, "determineSkillDamageType");
 		
 		// Does it have an enhanced version?
 		if (damageType.getEnhancedVersion () != null)
 		{
 			// Do we have a unit type or weapon grade that grants the enhanced version?
-			final PickSvr magicRealm = (PickSvr) attacker.getModifiedUnitMagicRealmLifeformType ();
+			final Pick magicRealm = attacker.getModifiedUnitMagicRealmLifeformType ();
 			boolean enhanced = (magicRealm.isEnhancesDamageType () != null) && (magicRealm.isEnhancesDamageType ());
 			
 			if ((!enhanced) && (attacker.getWeaponGrade () != null))
-				enhanced = ((WeaponGradeSvr) attacker.getWeaponGrade ()).isEnhancesDamageType ();
+				enhanced = attacker.getWeaponGrade ().isEnhancesDamageType ();
 			
 			if (enhanced)
 				damageType = db.findDamageType (damageType.getEnhancedVersion (), "determineSkillDamageType-E");

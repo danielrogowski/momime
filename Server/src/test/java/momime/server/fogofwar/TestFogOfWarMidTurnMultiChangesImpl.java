@@ -22,12 +22,19 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
+import momime.common.database.MapFeatureEx;
+import momime.common.database.MapFeatureMagicRealm;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Pick;
+import momime.common.database.Plane;
 import momime.common.database.StoredDamageTypeID;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -46,13 +53,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
-import momime.server.database.MapFeatureMagicRealmSvr;
-import momime.server.database.MapFeatureSvr;
-import momime.server.database.PickSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSkillSvr;
-import momime.server.database.UnitSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.process.PlayerMessageProcessing;
 import momime.server.utils.UnitServerUtils;
@@ -71,7 +71,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testSwitchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -123,7 +123,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testSwitchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -202,7 +202,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testSwitchOffMaintainedSpellsInLocationOnServerAndClients_OnePlayer () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -254,7 +254,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testSwitchOffMaintainedSpellsInLocationOnServerAndClients_AllPlayers () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -306,7 +306,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testDestroyAllBuildingsInLocationOnServerAndClients () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -349,16 +349,16 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testHealUnitsAndGainExperience_AllPlayers () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
-		final UnitSkillSvr expSkillDef = new UnitSkillSvr ();
+		final UnitSkillEx expSkillDef = new UnitSkillEx ();
 		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE), anyString ())).thenReturn (expSkillDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		magicRealm.setHealEachTurn (true);
 		magicRealm.setGainExperienceEachTurn (true);
 		when (db.findPick ("LTN", "healUnitsAndGainExperience")).thenReturn (magicRealm);
@@ -512,13 +512,13 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testGrantExperienceToUnitsInCombat () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PickSvr normalUnit = new PickSvr ();
+		final Pick normalUnit = new Pick ();
 		normalUnit.setGainExperienceEachTurn (true);
 		when (db.findPick ("N", "grantExperienceToUnitsInCombat")).thenReturn (normalUnit);
 		
-		final PickSvr summonedUnit = new PickSvr ();
+		final Pick summonedUnit = new Pick ();
 		summonedUnit.setGainExperienceEachTurn (false);
 		when (db.findPick ("S", "grantExperienceToUnitsInCombat")).thenReturn (summonedUnit);
 		
@@ -655,10 +655,10 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testMoveUnitStackOneCellOnServerAndClients () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Map feature is something irrelevant, like gems
-		final MapFeatureSvr mapFeature = new MapFeatureSvr ();
+		final MapFeatureEx mapFeature = new MapFeatureEx ();
 		when (db.findMapFeature ("MF01", "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
@@ -889,11 +889,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testMoveUnitStackOneCellOnServerAndClients_MoveToLair () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Map feature is one that may contain monsters
-		final MapFeatureSvr mapFeature = new MapFeatureSvr ();
-		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealmSvr ());
+		final MapFeatureEx mapFeature = new MapFeatureEx ();
+		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealm ());
 		when (db.findMapFeature ("MF01", "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
@@ -1022,21 +1022,21 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testMoveUnitStackOneCellOnServerAndClients_MoveToTower () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PlaneSvr arcanus = new PlaneSvr ();
-		final PlaneSvr myrror = new PlaneSvr ();
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
 		
-		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
+		final List<Plane> planes = new ArrayList<Plane> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlanes ()).thenReturn (planes);
+		when (db.getPlane ()).thenReturn (planes);
 		
 		// Map feature is one that may contain monsters
-		final MapFeatureSvr mapFeature = new MapFeatureSvr ();
-		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealmSvr ());
+		final MapFeatureEx mapFeature = new MapFeatureEx ();
+		mapFeature.getMapFeatureMagicRealm ().add (new MapFeatureMagicRealm ());
 		when (db.findMapFeature (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, "moveUnitStackOneCellOnServerAndClients")).thenReturn (mapFeature);
 		
 		// Session description
@@ -1168,7 +1168,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testResetUnitOverlandMovement_AllPlayers () throws Exception
 	{
 		// Empty mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
@@ -1225,7 +1225,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 	public final void testResetUnitOverlandMovement_OnePlayer () throws Exception
 	{
 		// Empty mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();

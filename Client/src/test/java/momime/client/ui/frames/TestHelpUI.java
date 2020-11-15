@@ -1,6 +1,7 @@
 package momime.client.ui.frames;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,37 +20,37 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.CityViewElementGfx;
-import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemSlotTypeGfx;
-import momime.client.graphics.database.PickGfx;
 import momime.client.graphics.database.UnitSkillComponentImageGfx;
-import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.UnitSkillWeaponGradeGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.CitySpellEffectLang;
-import momime.client.language.database.CombatAreaEffectLang;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitSkillLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.language.replacer.SpringEvaluationContextRoot;
 import momime.client.language.replacer.SpringExpressionReplacerImpl;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.languages.database.HelpScreen;
+import momime.client.languages.database.HeroItemInfoScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
+import momime.common.database.CitySpellEffect;
+import momime.common.database.CityViewElement;
+import momime.common.database.CombatAreaEffect;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlotType;
+import momime.common.database.HeroItemType;
 import momime.common.database.HeroSlotAllowedItemType;
+import momime.common.database.Language;
+import momime.common.database.Pick;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillEx;
+import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.ExpandedUnitDetails;
@@ -70,104 +71,123 @@ public final class TestHelpUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHelp", "Title")).thenReturn ("Help");
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookSection")).thenReturn ("Spell book section: SPELL_BOOK_SECTION");
-		when (lang.findCategoryEntry ("frmHelp", "SpellBookResearchCostNotOurs")).thenReturn ("Research cost: RESEARCH_TOTAL PRODUCTION_TYPE");
-		when (lang.findCategoryEntry ("frmHeroItemInfo", "ItemSlotHelpTextPrefix")).thenReturn ("The following types of hero items can be used in this slot:");
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final PickLang retort = new PickLang ();
-		retort.setPickDescriptionSingular ("Alchemy");
-		retort.setPickHelpText ("Allows the wizard to change gold into mana and mana into gold in a 1 to 1 ratio, instead of loosing ½ in the exchange process." +
+		final Pick retort = new Pick ();
+		retort.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Alchemy"));
+		retort.getPickHelpText ().add (createLanguageText (Language.ENGLISH, "Allows the wizard to change gold into mana and mana into gold in a 1 to 1 ratio, instead of loosing ½ in the exchange process." +
 			System.lineSeparator () + System.lineSeparator () +
 			"It also gives all units built in cities magic weapons with +1 to hit bonus and the ability to hurt units with Weapon Immunity, the same as if they were built in a city with an Alchemists' Guild." +
 			System.lineSeparator () + System.lineSeparator () +
-			"The Alchemy retort is the only way that Gnolls, Klackons, Lizardmen or Trolls can build units with magic weapons, since these races cannot build Alchemists' Guilds.");
-		when (lang.findPick ("RT01")).thenReturn (retort);
+			"The Alchemy retort is the only way that Gnolls, Klackons, Lizardmen or Trolls can build units with magic weapons, since these races cannot build Alchemists' Guilds."));
+		when (db.findPick (eq ("RT01"), anyString ())).thenReturn (retort);
 		
-		final PickLang book = new PickLang ();
-		book.setPickDescriptionSingular ("Life Book");
-		book.setPickHelpText ("Life spells focus on healing, protections and inspirational enchantments, and planar travel.  Life magic forcefully opposes the forces of death and mildly resists the forces of chaos.");
-		when (lang.findPick ("MB01")).thenReturn (book);
+		final Pick book = new Pick ();
+		book.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Life Book"));
+		book.getPickHelpText ().add (createLanguageText (Language.ENGLISH,
+			"Life spells focus on healing, protections and inspirational enchantments, and planar travel.  Life magic forcefully opposes the forces of death and mildly resists the forces of chaos."));
 		
-		final UnitSkillLang unitSkill = new UnitSkillLang ();
-		unitSkill.setUnitSkillDescription ("PFTitle");
-		unitSkill.setUnitSkillHelpText ("PFText");
-		when (lang.findUnitSkill ("US020")).thenReturn (unitSkill);
+		for (int n = 1; n <= 3; n++)
+			book.getBookImageFile ().add ("/momime.client.graphics/picks/life-" + n + ".png");
+
+		when (db.findPick (eq ("MB01"), anyString ())).thenReturn (book);
 		
-		final UnitSkillLang unitAttribute = new UnitSkillLang ();
-		unitAttribute.setUnitSkillDescription ("MeleeTitle");
-		unitAttribute.setUnitSkillHelpText ("Each icon represents one chance that each figure has to strike a blow in a hand to hand attack.  The base chance that each sword icon will score a hit is 30%, although this can be modified by the attacker's + to Hit attribute." +
+		final UnitSkillEx unitSkill = new UnitSkillEx ();
+		unitSkill.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "PFTitle"));
+		unitSkill.getUnitSkillHelpText ().add (createLanguageText (Language.ENGLISH, "PFText"));
+		when (db.findUnitSkill (eq ("US020"), anyString ())).thenReturn (unitSkill);
+		
+		final UnitSkillEx unitAttribute = new UnitSkillEx ();
+		unitAttribute.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "MeleeTitle"));
+		unitAttribute.getUnitSkillHelpText ().add (createLanguageText (Language.ENGLISH, "Each icon represents one chance that each figure has to strike a blow in a hand to hand attack.  The base chance that each sword icon will score a hit is 30%, although this can be modified by the attacker's + to Hit attribute." +
 			System.lineSeparator () + System.lineSeparator () +
 			"The unit being attacked can then use its Defence attribute to try to block some of the hits.  The base chance that each shield icon will block a hit is 30%, although this can be modified by the defender's + to Block attribute." +
 			System.lineSeparator () + System.lineSeparator () +
 			"Melee weapons are available in a number of weapon grades which confer improved stats:" + System.lineSeparator () +
-			"#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon" + System.lineSeparator () +
-			"#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon" + System.lineSeparator () +
-			"#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon" + System.lineSeparator () +
-			"#{findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon" +
+			"#{clientDB.findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (0, 'HelpText')} Standard weapon" + System.lineSeparator () +
+			"#{clientDB.findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (1, 'HelpText')} Magic weapon" + System.lineSeparator () +
+			"#{clientDB.findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (2, 'HelpText')} Mithril weapon" + System.lineSeparator () +
+			"#{clientDB.findUnitSkill ('UA01', 'HelpText').findWeaponGradeImageFile (3, 'HelpText')} Adamantium weapon" +
 			System.lineSeparator () + System.lineSeparator () +
 			"The background colour of each icon depicts the source of the attribute:" + System.lineSeparator () +
-			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').UnitSkillComponentImageFile} Basic statistic of the unit" + System.lineSeparator () +
-			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').UnitSkillComponentImageFile} Bonus from an improved weapon grade" + System.lineSeparator () +
-			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').UnitSkillComponentImageFile} Bonus from experience" + System.lineSeparator () +
-			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').UnitSkillComponentImageFile} Bonus from Might hero skill" + System.lineSeparator () +
-			"#{findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').UnitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)" +
+			"#{graphicsDB.findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).BASIC, 'HelpText').UnitSkillComponentImageFile} Basic statistic of the unit" + System.lineSeparator () +
+			"#{graphicsDB.findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).WEAPON_GRADE, 'HelpText').UnitSkillComponentImageFile} Bonus from an improved weapon grade" + System.lineSeparator () +
+			"#{graphicsDB.findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).EXPERIENCE, 'HelpText').UnitSkillComponentImageFile} Bonus from experience" + System.lineSeparator () +
+			"#{graphicsDB.findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).HERO_SKILLS, 'HelpText').UnitSkillComponentImageFile} Bonus from Might hero skill" + System.lineSeparator () +
+			"#{graphicsDB.findUnitSkillComponent (T(momime.common.database.UnitSkillComponent).COMBAT_AREA_EFFECTS, 'HelpText').UnitSkillComponentImageFile} Bonus from a combat area effect (e.g. node aura or Prayer spell)" +
 			System.lineSeparator () + System.lineSeparator () +
 			"A darkened icon represents a minus, for example from a curse type spell." +
 			System.lineSeparator () + System.lineSeparator () +
 			"And some extra text on the end" + System.lineSeparator () +
 			"to make the help text long enough" + System.lineSeparator () +
-			"to require a scroll bar to appear.");
-		when (lang.findUnitSkill ("UA01")).thenReturn (unitAttribute);
+			"to require a scroll bar to appear."));
+		when (db.findUnitSkill (eq ("UA01"), anyString ())).thenReturn (unitAttribute);
 		
-		final CombatAreaEffectLang cae = new CombatAreaEffectLang ();
-		cae.setCombatAreaEffectDescription ("Counter Magic");
-		cae.setCombatAreaEffectHelpText ("Creates a standing dispel magic spell over the entire battlefield." +
+		final CombatAreaEffect cae = new CombatAreaEffect ();
+		cae.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CSE048.png");
+		cae.getCombatAreaEffectDescription ().add (createLanguageText (Language.ENGLISH, "Counter Magic"));
+		cae.getCombatAreaEffectHelpText ().add (createLanguageText (Language.ENGLISH, "Creates a standing dispel magic spell over the entire battlefield." +
 			System.lineSeparator () + System.lineSeparator () +
 			"A spell cast by the enemy wizard or an enemy hero must first overcome the effects of this dispel magic spell (of strength equal to the magic power poured into the counter magic spell) before it can exert its effects." +
 			System.lineSeparator () + System.lineSeparator () +
-			"Every spell cast by the enemy drains the magic power (strength) of the counter magic spell by 5 mana points and, therefore, lessens its effectiveness against subsequent spells.");
-		when (lang.findCombatAreaEffect ("CSE048")).thenReturn (cae);
+			"Every spell cast by the enemy drains the magic power (strength) of the counter magic spell by 5 mana points and, therefore, lessens its effectiveness against subsequent spells."));
+		when (db.findCombatAreaEffect (eq ("CSE048"), anyString ())).thenReturn (cae);
 		
-		final CitySpellEffectLang citySpellEffect = new CitySpellEffectLang ();
-		citySpellEffect.setCitySpellEffectName ("Chaos Rift");
-		citySpellEffect.setCitySpellEffectHelpText ("Opens a great magical vortex over an enemy city." +
+		final CitySpellEffect citySpellEffect = new CitySpellEffect ();
+		citySpellEffect.getCitySpellEffectName ().add (createLanguageText (Language.ENGLISH, "Chaos Rift"));
+		citySpellEffect.getCitySpellEffectHelpText ().add (createLanguageText (Language.ENGLISH, "Opens a great magical vortex over an enemy city." +
 			System.lineSeparator () + System.lineSeparator () +
-			"Each turn, units inside the city sustain five strength 8 Lightning Bolt attacks, and there is a 5% chance of a building being destroyed.");
-		when (lang.findCitySpellEffect ("SE110")).thenReturn (citySpellEffect);
-		
-		final SpellLang spell = new SpellLang ();
-		spell.setSpellName ("Counter Magic");
-		spell.setSpellDescription ("All enemy spell cast in combat must resist being dispelled while this spell is in effect.");
-		spell.setSpellHelpText ("Creates a reserve of counter magic power which resists all spells cast by an opponent wizard as if you had cast an equally-strong dispel magic." +
-			System.lineSeparator () + System.lineSeparator () +
-			"Each spell casting attempt by the opposing wizard reduces the strength of the counter magic reserve by five mana.");
-		when (lang.findSpell ("SP048")).thenReturn (spell);
+			"Each turn, units inside the city sustain five strength 8 Lightning Bolt attacks, and there is a 5% chance of a building being destroyed."));
+		when (db.findCitySpellEffect (eq ("SE110"), anyString ())).thenReturn (citySpellEffect);
+
+		// Mock entries from the language XML
+		final HelpScreen helpScreenLang = new HelpScreen ();
+		helpScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Help"));
+		helpScreenLang.getSpellBookSection ().add (createLanguageText (Language.ENGLISH, "Spell book section: SPELL_BOOK_SECTION"));
+		helpScreenLang.getSpellBookResearchCostNotOurs ().add (createLanguageText (Language.ENGLISH, "Research cost: RESEARCH_TOTAL PRODUCTION_TYPE"));
+
+		final HeroItemInfoScreen heroItemInfoScreenLang = new HeroItemInfoScreen ();
+		heroItemInfoScreenLang.getItemSlotHelpTextPrefix ().add (createLanguageText (Language.ENGLISH, "The following types of hero items can be used in this slot:"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getHelpScreen ()).thenReturn (helpScreenLang);
+		when (lang.getHeroItemInfoScreen ()).thenReturn (heroItemInfoScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Spell book section
-		final SpellBookSectionLang section = new SpellBookSectionLang ();
-		section.setSpellBookSectionName ("Combat Enchantments");
-		when (lang.findSpellBookSection (SpellBookSectionID.COMBAT_ENCHANTMENTS)).thenReturn (section);
+		final SpellBookSection section = new SpellBookSection ();
+		section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Combat Enchantments"));
+		when (db.findSpellBookSection (eq (SpellBookSectionID.COMBAT_ENCHANTMENTS), anyString ())).thenReturn (section);
 		
-		// Production type
-		final ProductionTypeLang research = new ProductionTypeLang ();
-		research.setProductionTypeSuffix ("RP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (research);
+		// Production types
+		final ProductionTypeEx research = new ProductionTypeEx();
+		research.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "RP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "HelpUI")).thenReturn (research);
 
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "HelpUI")).thenReturn (mana);
+		
+		final CityViewElement citySpellEffectGfx = new CityViewElement ();
+		citySpellEffectGfx.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-SE110-mini.png");
+		when (db.findCityViewElementSpellEffect ("SE110")).thenReturn (citySpellEffectGfx);
+		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock entries from client XML
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
 		final Spell spellDef1 = new Spell ();
 		spellDef1.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		spellDef1.setResearchCost (180);
+		spellDef1.getSpellName ().add (createLanguageText (Language.ENGLISH, "Counter Magic"));
+		spellDef1.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "All enemy spell cast in combat must resist being dispelled while this spell is in effect."));
+		spellDef1.getSpellHelpText ().add (createLanguageText (Language.ENGLISH,
+			"Creates a reserve of counter magic power which resists all spells cast by an opponent wizard as if you had cast an equally-strong dispel magic." +
+			System.lineSeparator () + System.lineSeparator () +
+			"Each spell casting attempt by the opposing wizard reduces the strength of the counter magic reserve by five mana."));
 		when (db.findSpell ("SP048", "HelpUI")).thenReturn (spellDef1);
 
 		final Spell spellDef2 = new Spell ();		
@@ -179,27 +199,12 @@ public final class TestHelpUI extends ClientTestData
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final PickGfx bookGfx = new PickGfx ();
-		for (int n = 1; n <= 3; n++)
-			bookGfx.getBookImageFile ().add ("/momime.client.graphics/picks/life-" + n + ".png");
-		
-		when (gfx.findPick ("MB01", "showPickID")).thenReturn (bookGfx);
-		when (gfx.findPick ("RT01", "showPickID")).thenReturn (new PickGfx ());
-		
-		final CombatAreaEffectGfx caeGfx = new CombatAreaEffectGfx ();
-		caeGfx.setCombatAreaEffectImageFile ("/momime.client.graphics/combat/effects/CSE048.png");
-		when (gfx.findCombatAreaEffect ("CSE048", "showCombatAreaEffectID")).thenReturn (caeGfx);
-		
-		final CityViewElementGfx citySpellEffectGfx = new CityViewElementGfx ();
-		citySpellEffectGfx.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-SE110-mini.png");
-		when (gfx.findCitySpellEffect ("SE110")).thenReturn (citySpellEffectGfx);
-		
 		// Images for inline text in EL expressions
-		final UnitSkillGfx meleeGfx = new UnitSkillGfx ();
+		final UnitSkillEx meleeGfx = new UnitSkillEx ();
 		int weaponGradeNumber = 0;
 		for (final String imageFilename : new String [] {"Normal", "Alchemy", "Mithril", "Adamantium"})
 		{
-			final UnitSkillWeaponGradeGfx weaponGrade = new UnitSkillWeaponGradeGfx ();
+			final UnitSkillWeaponGrade weaponGrade = new UnitSkillWeaponGrade ();
 			weaponGrade.setWeaponGradeNumber (weaponGradeNumber);
 			weaponGrade.setSkillImageFile ("/momime.client.graphics/unitSkills/melee" + imageFilename + ".png");
 			meleeGfx.getUnitSkillWeaponGrade ().add (weaponGrade);
@@ -208,7 +213,7 @@ public final class TestHelpUI extends ClientTestData
 		}
 		
 		meleeGfx.buildMap ();
-		when (gfx.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "HelpText")).thenReturn (meleeGfx);
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "HelpText")).thenReturn (meleeGfx);
 		
 		// Unit attribute component backgrounds
 		final UnitSkillComponentImageGfx basicBackground = new UnitSkillComponentImageGfx ();
@@ -246,20 +251,20 @@ public final class TestHelpUI extends ClientTestData
 		
 		// Spells
 		final SpellClientUtils spellClientUtils = mock (SpellClientUtils.class);
-		when (spellClientUtils.findImageForSpell ("SP048", 3)).thenReturn (utils.loadImage (caeGfx.getCombatAreaEffectImageFile ()));
+		when (spellClientUtils.findImageForSpell ("SP048", 3)).thenReturn (utils.loadImage (cae.getCombatAreaEffectImageFile ()));
 		
 		when (spellClientUtils.listUpkeepsOfSpell (spellDef2, new ArrayList<PlayerPick> ())).thenReturn ("Upkeep: 5 Mana per turn");
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
 		
 		// Hero item slots
-		final HeroItemSlotTypeGfx slotType = new HeroItemSlotTypeGfx ();
+		final HeroItemSlotType slotType = new HeroItemSlotType ();
 		slotType.setHeroItemSlotTypeImageFileWithBackground ("/momime.client.graphics/heroItems/slots/armour-bkg.png");
-		when (gfx.findHeroItemSlotType ("IST01", "showHeroItemSlotTypeID")).thenReturn (slotType);
-		
-		when (lang.findHeroItemSlotTypeDescription ("IST01")).thenReturn ("Armour slot");
+		when (db.findHeroItemSlotType ("IST01", "showHeroItemSlotTypeID")).thenReturn (slotType);
 		
 		final HeroItemSlotType slot = new HeroItemSlotType ();
+		slot.getSlotTypeDescription ().add (createLanguageText (Language.ENGLISH, "Armour slot"));
+		
 		for (int n = 1; n <= 3; n++)
 		{
 			final HeroSlotAllowedItemType allowed = new HeroSlotAllowedItemType ();
@@ -273,12 +278,14 @@ public final class TestHelpUI extends ClientTestData
 		for (final String itemTypeDescription : new String [] {"Shield", "Chain", "Plate"})
 		{
 			n++;
-			when (lang.findHeroItemTypeDescription ("IT0" + n)).thenReturn (itemTypeDescription);
+			final HeroItemType heroItemType = new HeroItemType ();
+			heroItemType.getHeroItemTypeDescription ().add (createLanguageText (Language.ENGLISH, itemTypeDescription));
+			when (db.findHeroItemType ("IT0" + n, "HelpUI")).thenReturn (heroItemType);
 		}
 		
 		// EL replacer
 		final StandardEvaluationContext context = new StandardEvaluationContext ();
-		context.setRootObject (gfx);
+		context.setRootObject (new SpringEvaluationContextRoot (gfx, client));
 		
 		final SpringExpressionReplacerImpl replacer = new SpringExpressionReplacerImpl ();
 		replacer.setEvaluationContext (context);

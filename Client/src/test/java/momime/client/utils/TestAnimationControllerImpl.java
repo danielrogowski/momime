@@ -11,13 +11,14 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.common.MomException;
-
 import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
+
+import momime.client.graphics.AnimationContainer;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.common.MomException;
+import momime.common.database.AnimationGfx;
 
 /**
  * Tests the AnimationControllerImpl class
@@ -35,7 +36,7 @@ public final class TestAnimationControllerImpl
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame (null, null, true);
+		controller.loadImageOrAnimationFrame (null, null, true, AnimationContainer.GRAPHICS_XML);
 	}
 
 	/**
@@ -49,7 +50,7 @@ public final class TestAnimationControllerImpl
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame ("a", "b", true);
+		controller.loadImageOrAnimationFrame ("a", "b", true, AnimationContainer.GRAPHICS_XML);
 	}
 
 	/**
@@ -70,7 +71,7 @@ public final class TestAnimationControllerImpl
 		controller.setUtils (utils);
 		
 		// Run method
-		final BufferedImage imageResult = controller.loadImageOrAnimationFrame ("blah.png", null, true);
+		final BufferedImage imageResult = controller.loadImageOrAnimationFrame ("blah.png", null, true, AnimationContainer.GRAPHICS_XML);
 	
 		// Check results
 		assertSame (image, imageResult);
@@ -87,7 +88,7 @@ public final class TestAnimationControllerImpl
 		final AnimationControllerImpl controller = new AnimationControllerImpl ();
 		
 		// Run method
-		controller.loadImageOrAnimationFrame (null, "ANIM", true);
+		controller.loadImageOrAnimationFrame (null, "ANIM", true, AnimationContainer.GRAPHICS_XML);
 	}
 
 	/**
@@ -130,7 +131,7 @@ public final class TestAnimationControllerImpl
 			{
 				try
 				{
-					triggeredFrames.append (images.indexOf (controller.loadImageOrAnimationFrame (null, "ANIM", true)));
+					triggeredFrames.append (images.indexOf (controller.loadImageOrAnimationFrame (null, "ANIM", true, AnimationContainer.GRAPHICS_XML)));
 				}
 				catch (final Exception e)
 				{
@@ -140,7 +141,7 @@ public final class TestAnimationControllerImpl
 		};
 		
 		// Register to receive repaint events
-		controller.registerRepaintTrigger ("ANIM", dummy);
+		controller.registerRepaintTrigger ("ANIM", dummy, AnimationContainer.GRAPHICS_XML);
 		
 		// This is here to simulate that normally this would all be being done in a frame's init () method, and so the frame would get drawn
 		// once by virtue of being displayed, prior to the frame timer starting to send any triggers

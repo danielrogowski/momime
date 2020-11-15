@@ -11,9 +11,18 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Pick;
 import momime.common.database.PickAndQuantity;
+import momime.common.database.PickType;
+import momime.common.database.PickTypeCountContainer;
+import momime.common.database.PickTypeGrantsSpells;
+import momime.common.database.Plane;
+import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -26,15 +35,6 @@ import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellUtils;
 import momime.server.ai.SpellAI;
-import momime.server.database.PickSvr;
-import momime.server.database.PickTypeCountContainerSvr;
-import momime.server.database.PickTypeGrantsSpellsSvr;
-import momime.server.database.PickTypeSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.RaceSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-import momime.server.database.WizardSvr;
 
 /**
  * Server side only helper methods for dealing with picks
@@ -63,14 +63,14 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
 	@Override
-	public final int getTotalInitialSkill (final List<PlayerPick> picks, final ServerDatabaseEx db) throws RecordNotFoundException
+	public final int getTotalInitialSkill (final List<PlayerPick> picks, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering getTotalInitialSkill: " + picks.size ());
 
 		int total = 0;
 		for (final PlayerPick thisPick : picks)
 		{
-			final PickSvr thisPickRecord = db.findPick (thisPick.getPickID (), "getTotalInitialSkill");
+			final Pick thisPickRecord = db.findPick (thisPick.getPickID (), "getTotalInitialSkill");
 			if (thisPickRecord.getPickInitialSkill () != null)
 				total = total + (thisPickRecord.getPickInitialSkill () * thisPick.getQuantity ());
 		}
@@ -139,7 +139,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
 	@Override
-	public final String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final ServerDatabaseEx db)
+	public final String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final CommonDatabase db)
 	{
 		log.trace ("Entering validateCustomPicks: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + picks.size ());
 
@@ -164,7 +164,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			{
 				for (final PickAndQuantity thisPick : picks)
 				{
-					final PickSvr pick = db.findPick (thisPick.getPickID (), "validateCustomPicks");
+					final Pick pick = db.findPick (thisPick.getPickID (), "validateCustomPicks");
 					totalPickCost = totalPickCost + (thisPick.getQuantity () * pick.getPickCost ());
 				}
 
@@ -192,7 +192,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @return Message containing magic realm and counts of how many spells we need to pick of each rank - can be an empty list; null indicates that the quantity of pick we have doesn't grant any free spells
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
-	final ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final ServerDatabaseEx db)
+	final ChooseInitialSpellsNowMessage countFreeSpellsLeftToChoose (final PlayerServerDetails player, final PlayerPick pick, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering countFreeSpellsLeftToChoose: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -200,14 +200,14 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// What type of pick is it - a book or retort?
-		final PickTypeSvr pickType = db.findPickType (db.findPick (pick.getPickID (), "countFreeSpellsLeftToChoose").getPickType (), "countFreeSpellsLeftToChoose");
+		final PickType pickType = db.findPickType (db.findPick (pick.getPickID (), "countFreeSpellsLeftToChoose").getPickType (), "countFreeSpellsLeftToChoose");
 
 		// Find the entry for how many of this number book we have
-		PickTypeCountContainerSvr pickTypeCount = null;
-		final Iterator<PickTypeCountContainerSvr> pickTypeCountIterator = pickType.getPickTypeCounts ().iterator ();
+		PickTypeCountContainer pickTypeCount = null;
+		final Iterator<PickTypeCountContainer> pickTypeCountIterator = pickType.getPickTypeCount ().iterator ();
 		while ((pickTypeCount == null) && (pickTypeCountIterator.hasNext ()))
 		{
-			final PickTypeCountContainerSvr thisPickTypeCount = pickTypeCountIterator.next ();
+			final PickTypeCountContainer thisPickTypeCount = pickTypeCountIterator.next ();
 			if (thisPickTypeCount.getCount () == pick.getQuantity ())
 				pickTypeCount = thisPickTypeCount;
 		}
@@ -222,7 +222,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 			msg = new ChooseInitialSpellsNowMessage ();
 			msg.setMagicRealmID (pick.getPickID ());
 
-			for (final PickTypeGrantsSpellsSvr thisSpellRank : pickTypeCount.getSpellCounts ())
+			for (final PickTypeGrantsSpells thisSpellRank : pickTypeCount.getSpellCount ())
 			{
 				final int freeSpellsAlreadySelected = getSpellUtils ().getSpellsForRealmRankStatus (priv.getSpellResearchStatus (),
 					pick.getPickID (), thisSpellRank.getSpellRank (), SpellResearchStatusID.AVAILABLE, db).size ();
@@ -262,7 +262,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @throws RecordNotFoundException If the player has picks which we can't find in the cache, or the AI player chooses a spell which we can't then find in their list
 	 */
 	@Override
-	public final ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final ServerDatabaseEx db)
+	public final ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering findRealmIDWhereWeNeedToChooseFreeSpells: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -315,7 +315,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
 	@Override
-	public final String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final ServerDatabaseEx db)
+	public final String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering validateInitialSpellSelection: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + pickID);
@@ -348,7 +348,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 				final Iterator<String> spellsIterator = spellIDs.iterator ();
 				while ((msg == null) && (spellsIterator.hasNext ()))
 				{
-					final SpellSvr thisSpell = db.findSpell (spellsIterator.next (), "validateInitialSpellSelection");
+					final Spell thisSpell = db.findSpell (spellsIterator.next (), "validateInitialSpellSelection");
 					if (!pickID.equals (thisSpell.getSpellRealm ()))
 						msg = "You are trying to choose free spells that don't match the magic realm specified";
 
@@ -384,14 +384,14 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @throws RecordNotFoundException If we choose a race whose native plane can't be found
 	 */
 	@Override
-	public final String validateRaceChoice (final PlayerServerDetails player, final String raceID, final ServerDatabaseEx db)
+	public final String validateRaceChoice (final PlayerServerDetails player, final String raceID, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering validateRaceChoice: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + raceID);
 
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 
-		RaceSvr race = null;
+		RaceEx race = null;
 		try
 		{
 			race = db.findRace (raceID, "validateRaceChoice");
@@ -497,13 +497,13 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list
 	 */
 	@Override
-	public final List<WizardSvr> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db)
+	public final List<WizardEx> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final CommonDatabase db)
 	{
 		log.trace ("Entering listWizardsForAIPlayers: " + players.size ());
 
 		// First get a list of all the available wizards
-		final List<WizardSvr> availableWizards = new ArrayList<WizardSvr> ();
-		for (final WizardSvr thisWizard : db.getWizards ())
+		final List<WizardEx> availableWizards = new ArrayList<WizardEx> ();
+		for (final WizardEx thisWizard : db.getWizards ())
 			if ((!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
 				(!thisWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)) &&
 				(findPlayerUsingStandardPhoto (players, thisWizard.getWizardID ()) == null))
@@ -521,7 +521,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @return Plane the wizard should start on
 	 */
 	@Override
-	public final int startingPlaneForWizard (final List<PlayerPick> picks, final ServerDatabaseEx db)
+	public final int startingPlaneForWizard (final List<PlayerPick> picks, final CommonDatabase db)
 	{
 		log.trace ("Entering startingPlaneForWizard");
 
@@ -529,7 +529,7 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 		int bestMatchPrerequisiteCount = 0;
 
 		// Check each plane
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 		{
 			// Meet whatever pre-requisites are defined?
 			if ((plane.getPrerequisitePickToChooseNativeRace () == null) || (getPlayerPickUtils ().getQuantityOfPick (picks, plane.getPrerequisitePickToChooseNativeRace ()) > 0))
@@ -559,14 +559,14 @@ public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 	 * @throws MomException If there are no races defined in the database that inhabit this plane
 	 */
 	@Override
-	public final String chooseRandomRaceForPlane (final int planeNumber, final ServerDatabaseEx db)
+	public final String chooseRandomRaceForPlane (final int planeNumber, final CommonDatabase db)
 		throws MomException
 	{
 		log.trace ("Entering chooseRandomRaceForPlane: " + planeNumber);
 
 		final List<String> possibleRaces = new ArrayList<String> ();
 
-		for (final RaceSvr thisRace : db.getRaces ())
+		for (final RaceEx thisRace : db.getRaces ())
 			if (thisRace.getNativePlane () == planeNumber)
 				possibleRaces.add (thisRace.getRaceID ());
 

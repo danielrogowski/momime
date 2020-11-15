@@ -4,15 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.PickTypeLang;
-import momime.common.database.Pick;
-import momime.common.database.PickPrerequisite;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import com.ndg.random.RandomUtils;
+
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.common.database.Pick;
+import momime.common.database.PickPrerequisite;
+import momime.common.database.PickType;
+import momime.common.database.RecordNotFoundException;
 
 /**
  * Client side only helper methods for dealing with players' pick choices
@@ -28,12 +31,19 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 	/** Text utils */
 	private TextUtils textUtils;
 	
+	/** Multiplayer client */
+	private MomClient client;
+	
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
 	/**
 	 * @param pick Pick we want pre-requisites for
 	 * @return Description of the pre-requisites for this pick (e.g. "2 Spell Books in any 3 Realms of Magic"), or null if it has no pre-requisites
+	 * @throws RecordNotFoundException If one of the prerequisite picks cannot be found
 	 */
 	@Override
-	public final String describePickPreRequisites (final Pick pick)
+	public final String describePickPreRequisites (final Pick pick) throws RecordNotFoundException
 	{
 		log.trace ("Entering describePickPreRequisites: " + pick.getPickID ());
 
@@ -47,20 +57,18 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 			if (req.getPrerequisiteID () != null)
 			{
 				// Pre-requisite for a specific type of book, e.g. 4 life books, so just add this directly to the output
-				final PickLang pickLang = getLanguage ().findPick (req.getPrerequisiteID ());
+				final Pick prereq = getClient ().getClientDB ().findPick (req.getPrerequisiteID (), "describePickPreRequisites");
 				
 				final String pickDesc;
-				if (pickLang == null)
-					pickDesc = null;
-				else if (req.getPrerequisiteCount () == 1)
-					pickDesc = pickLang.getPickDescriptionSingular ();
+				if (req.getPrerequisiteCount () == 1)
+					pickDesc = getLanguageHolder ().findDescription (prereq.getPickDescriptionSingular ());
 				else
-					pickDesc = pickLang.getPickDescriptionPlural ();
+					pickDesc = getLanguageHolder ().findDescription (prereq.getPickDescriptionPlural ());
 				
 				if (result.length () > 0)
 					result.append (", ");
 				
-				result.append (req.getPrerequisiteCount () + " " + ((pickDesc != null) ? pickDesc : req.getPrerequisiteID ()));
+				result.append (req.getPrerequisiteCount () + " " + pickDesc);
 			}
 			else if (req.getPrerequisiteTypeID () != null)
 			{
@@ -81,40 +89,54 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 		// Now generate text for the values in the generic map
 		for (final Entry<String, Map<Integer, Integer>> pickType : genericPrerequisites.entrySet ())
 		{
-			final PickTypeLang pickTypeLang = getLanguage ().findPickType (pickType.getKey ());
+			final PickType pickTypePrereq = getClient ().getClientDB ().findPickType (pickType.getKey (), "describePickPreRequisites");
 			for (final Entry<Integer, Integer> counts : pickType.getValue ().entrySet ())
 			{
 				// This is the number of books that we need (e.g. pairs)
 				final String pickTypeDesc;
-				if (pickTypeLang == null)
-					pickTypeDesc = null;
-				else if (counts.getKey () == 1)
-					pickTypeDesc = pickTypeLang.getPickTypeDescriptionSingular ();
+				if (counts.getKey () == 1)
+					pickTypeDesc = getLanguageHolder ().findDescription (pickTypePrereq.getPickTypeDescriptionSingular ());
 				else
-					pickTypeDesc = pickTypeLang.getPickTypeDescriptionPlural ();
+					pickTypeDesc = getLanguageHolder ().findDescription (pickTypePrereq.getPickTypeDescriptionPlural ());
 				
 				// This is how many repetitions we need (e.g. 3 pairs)
 				final String repetitionsDesc;
-				if (pickTypeLang == null)
-					repetitionsDesc = null;
-				else if (counts.getValue () == 1)
-					repetitionsDesc = pickTypeLang.getPickTypePrerequisiteSingular ();
+				if (counts.getValue () == 1)
+					repetitionsDesc = getLanguageHolder ().findDescription (pickTypePrereq.getPickTypePrerequisiteSingular ());
 				else
-					repetitionsDesc = pickTypeLang.getPickTypePrerequisitePlural ();
+					repetitionsDesc = getLanguageHolder ().findDescription (pickTypePrereq.getPickTypePrerequisitePlural ());
 				
 				// Now can work out the text
 				if (result.length () > 0)
 					result.append (", ");
 				
-				result.append (((repetitionsDesc != null ) ? repetitionsDesc : pickType.getKey ()).replaceAll
+				result.append (repetitionsDesc.replaceAll
 					("REPETITIONS", counts.getValue ().toString ()).replaceAll
-					("PICK_TYPE", counts.getKey () + " " + ((pickTypeDesc != null) ? pickTypeDesc : pickType.getKey ())));
+					("PICK_TYPE", counts.getKey () + " " + pickTypeDesc));
 			}
 		}
 		
 		final String text = (result.length () == 0) ? null : getTextUtils ().replaceFinalCommaByAnd (result.toString ());
 		log.trace ("Exiting describePickPreRequisites = " + text);
 		return text;
+	}
+	
+	/**
+	 * @param pick Magic realm we want a book image for
+	 * @return Randomly selected image for this type of pick
+	 * @throws RecordNotFoundException If this wizard has no combat music playlists defined
+	 */
+	@Override
+	public final String chooseRandomBookImageFilename (final Pick pick) throws RecordNotFoundException	
+	{
+		log.trace ("Entering chooseRandomBookImageFilename");
+		
+		if (pick.getBookImageFile ().size () == 0)
+			throw new RecordNotFoundException ("BookImage", null, "chooseRandomBookImageFilename");
+		
+		final String filename = pick.getBookImageFile ().get (getRandomUtils ().nextInt (pick.getBookImageFile ().size ()));
+		log.trace ("Exiting chooseRandomBookImageFilename = " + filename);
+		return filename;
 	}
 
 	/**
@@ -137,9 +159,9 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**
@@ -156,5 +178,37 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

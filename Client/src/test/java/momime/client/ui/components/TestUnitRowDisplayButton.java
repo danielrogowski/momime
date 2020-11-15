@@ -11,14 +11,6 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.ui.PlayerColourImageGeneratorImpl;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomTransientPlayerPublicKnowledge;
-
 import org.junit.Test;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -27,6 +19,14 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
+
+import momime.client.MomClient;
+import momime.client.ui.PlayerColourImageGeneratorImpl;
+import momime.common.database.CommonDatabase;
+import momime.common.database.UnitEx;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
 /**
  * Tests the UnitRowDisplayButton class
@@ -44,12 +44,12 @@ public final class TestUnitRowDisplayButton
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitGfx unitGfx = new UnitGfx ();
-		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
-		when (gfx.findUnit ("UN176", "UnitRowDisplayButton")).thenReturn (unitGfx);
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
+		when (db.findUnit ("UN176", "UnitRowDisplayButton")).thenReturn (unitDef);
 		
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();
@@ -66,7 +66,8 @@ public final class TestUnitRowDisplayButton
 		players.add (player1);
 		
 		final MomClient client = mock (MomClient.class);
-		when (client.getPlayers ()).thenReturn (players);		
+		when (client.getPlayers ()).thenReturn (players);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -86,8 +87,8 @@ public final class TestUnitRowDisplayButton
 		final UnitRowDisplayButton button = new UnitRowDisplayButton ();
 		button.setUtils (utils);
 		button.setPlayerColourImageGenerator (gen);
-		button.setGraphicsDB (gfx);
 		button.setUnit (unit);
+		button.setClient (client);
 		button.init ();
 		
 		// Set up dummy panel to display the button

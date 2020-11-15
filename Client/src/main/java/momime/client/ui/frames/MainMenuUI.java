@@ -31,6 +31,7 @@ import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
+import momime.client.graphics.AnimationContainer;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.AnimationController;
 
@@ -114,9 +115,6 @@ public final class MainMenuUI extends MomClientFrameUI
 	/** Original copyright line 2 */
 	private JLabel originalCopyrightLine2Label;
 	
-	/** Language file author */
-	private JLabel authorLabel;
-	
 	/** Gap above labels */
 	private Filler labelsGap;
 	
@@ -186,7 +184,8 @@ public final class MainMenuUI extends MomClientFrameUI
 				
 				try
 				{
-					g.drawImage (getAnim ().loadImageOrAnimationFrame (null, ANIM_MAIN_MENU_TITLE, true), leftBorder, topBorder, imgWidth, titleHeight, null);
+					g.drawImage (getAnim ().loadImageOrAnimationFrame (null, ANIM_MAIN_MENU_TITLE, true, AnimationContainer.GRAPHICS_XML),
+						leftBorder, topBorder, imgWidth, titleHeight, null);
 				}
 				catch (final Exception e)
 				{
@@ -219,9 +218,6 @@ public final class MainMenuUI extends MomClientFrameUI
 		originalCopyrightLine2Label = getUtils ().createLabel (MomUIConstants.GOLD, getMediumFont ());
 		contentPane.add (originalCopyrightLine2Label, getUtils ().createConstraintsNoFill (0, 4, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
 		
-		authorLabel = getUtils ().createLabel (MomUIConstants.SILVER, getMediumFont ());
-		contentPane.add (authorLabel, getUtils ().createConstraintsNoFill (0, 5, 1, 1, INSET, GridBagConstraintsNoFill.EAST));
-		
 		// Space in between
 		final GridBagConstraints constraints = getUtils ().createConstraintsNoFill (0, 6, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE);
 		constraints.weighty = 1;
@@ -249,7 +245,7 @@ public final class MainMenuUI extends MomClientFrameUI
 		// Animate the title
 		// This anim never finishes - if we close the window or click exit, it immediately shuts down the JVM and so it doesn't matter
 		// If we proceed to start a game, this main menu frame is merely hidden and not disposed so it can be reused later, so the anim just also becomes hidden
-		getAnim ().registerRepaintTrigger (ANIM_MAIN_MENU_TITLE, contentPane);
+		getAnim ().registerRepaintTrigger (ANIM_MAIN_MENU_TITLE, contentPane, AnimationContainer.GRAPHICS_XML);
 
 		// Resize the areas above+below the image as the size of the window changes
 		final ComponentListener onResize = new ComponentAdapter ()
@@ -311,19 +307,18 @@ public final class MainMenuUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		getFrame ().setTitle						(getLanguage ().findCategoryEntry ("frmMainMenu", "LongTitle").replaceAll ("VERSION", getVersion ()));
-		shortTitleLabel.setText					(getLanguage ().findCategoryEntry ("frmMainMenu", "ShortTitle"));
-		versionLabel.setText						(getLanguage ().findCategoryEntry ("frmMainMenu", "Version").replaceAll ("VERSION", getVersion ()));
-		originalCopyrightLine1Label.setText	(getLanguage ().findCategoryEntry ("frmMainMenu", "OriginalCopyrightLine1"));
-		originalCopyrightLine2Label.setText	(getLanguage ().findCategoryEntry ("frmMainMenu", "OriginalCopyrightLine2"));
-		authorLabel.setText						(getLanguage ().findCategoryEntry ("frmMainMenu", "LanguageFileAuthor"));
+		getFrame ().setTitle						(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getLongTitle ()).replaceAll ("VERSION", getVersion ()));
+		shortTitleLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getShortTitle ()));
+		versionLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getVersion ()).replaceAll ("VERSION", getVersion ()));
+		originalCopyrightLine1Label.setText	(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getOriginalCopyrightLine1 ()));
+		originalCopyrightLine2Label.setText	(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getOriginalCopyrightLine2 ()));
 
-		connectToServerAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "ConnectToServer"));
-		newGameAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "NewGame"));
-		joinGameAction.putValue				(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "JoinGame"));
-		loadGameAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "LoadGame"));
-		optionsAction.putValue				(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "Options"));
-		exitToWindowsAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmMainMenu", "Exit"));
+		connectToServerAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getConnectToServer ()));
+		newGameAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getNewGame ()));
+		joinGameAction.putValue				(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getJoinGame ()));
+		loadGameAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getLoadGame ()));
+		optionsAction.putValue				(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getOptions ()));
+		exitToWindowsAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getExit ()));
 	}
 	
 	/**

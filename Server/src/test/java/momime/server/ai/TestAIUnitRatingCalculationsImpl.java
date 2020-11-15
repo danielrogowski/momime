@@ -17,17 +17,16 @@ import org.junit.Test;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSkillSvr;
-import momime.server.database.UnitSvr;
 import momime.server.utils.UnitServerUtilsImpl;
 import momime.server.utils.UnitSkillDirectAccessImpl;
 
@@ -50,24 +49,24 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 	public final void testCalculateUnitRating_Basic () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSkillSvr skillOne = new UnitSkillSvr ();
+		final UnitSkillEx skillOne = new UnitSkillEx ();
 		skillOne.setAiRatingAdditive (10);
 		when (db.findUnitSkill ("US001", "calculateUnitRating")).thenReturn (skillOne);
 
-		final UnitSkillSvr skillTwo = new UnitSkillSvr ();
+		final UnitSkillEx skillTwo = new UnitSkillEx ();
 		skillTwo.setAiRatingAdditive (20);
 		when (db.findUnitSkill ("US002", "calculateUnitRating")).thenReturn (skillTwo);
 
-		final UnitSkillSvr skillThree = new UnitSkillSvr ();
+		final UnitSkillEx skillThree = new UnitSkillEx ();
 		when (db.findUnitSkill ("US003", "calculateUnitRating")).thenReturn (skillThree);
 
-		final UnitSkillSvr skillFour = new UnitSkillSvr ();
+		final UnitSkillEx skillFour = new UnitSkillEx ();
 		skillFour.setAiRatingAdditive (25);
 		when (db.findUnitSkill ("US004", "calculateUnitRating")).thenReturn (skillFour);
 
-		final UnitSkillSvr skillFive = new UnitSkillSvr ();
+		final UnitSkillEx skillFive = new UnitSkillEx ();
 		skillFive.setAiRatingMultiplicative (2d);
 		when (db.findUnitSkill ("US005", "calculateUnitRating")).thenReturn (skillFive);
 		
@@ -109,9 +108,9 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 	public final void testCalculateUnitRating_Diminishing () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSkillSvr skillOne = new UnitSkillSvr ();
+		final UnitSkillEx skillOne = new UnitSkillEx ();
 		skillOne.setAiRatingAdditive (10);
 		skillOne.setAiRatingDiminishesAfter (5);
 		when (db.findUnitSkill ("US001", "calculateUnitRating")).thenReturn (skillOne);
@@ -148,9 +147,9 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 	public final void testCalculateUnitRating_Diminishing_Maximum () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSkillSvr skillOne = new UnitSkillSvr ();
+		final UnitSkillEx skillOne = new UnitSkillEx ();
 		skillOne.setAiRatingAdditive (10);
 		skillOne.setAiRatingDiminishesAfter (5);
 		when (db.findUnitSkill ("US001", "calculateUnitRating")).thenReturn (skillOne);
@@ -188,7 +187,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 	public final void testUnitBaseRatings () throws Exception
 	{
 		// Need the real database
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 		
 		// Other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -205,17 +204,17 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		ai.setUnitUtils (unitUtils);
 		
 		// Calculate each unit in turn
-		final Map<Integer, List<UnitSvr>> ratings = new HashMap<Integer, List<UnitSvr>> ();
-		for (final UnitSvr unitDef : db.getUnits ())
+		final Map<Integer, List<UnitEx>> ratings = new HashMap<Integer, List<UnitEx>> ();
+		for (final UnitEx unitDef : db.getUnits ())
 		{
 			// Need to create a real MemoryUnit so that heroes get their item slots
 			final MemoryUnit unit = unitServerUtils.createMemoryUnit (unitDef.getUnitID (), 0, null, 0, db);
 			final int rating = ai.calculateUnitCurrentRating (unit, null, players, fow, db);
 			
-			List<UnitSvr> unitsWithThisScore = ratings.get (rating);
+			List<UnitEx> unitsWithThisScore = ratings.get (rating);
 			if (unitsWithThisScore == null)
 			{
-				unitsWithThisScore = new ArrayList<UnitSvr> ();
+				unitsWithThisScore = new ArrayList<UnitEx> ();
 				ratings.put (rating, unitsWithThisScore);
 			}
 			unitsWithThisScore.add (unitDef);
@@ -226,13 +225,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		{
 			String race = "";
 			if (u.getUnitRaceID () != null)
-				try
-				{
-					race = db.findRace (u.getUnitRaceID (), "testUnitBaseRatings").getRaceName () + " ";
-				}
-				catch (final RecordNotFoundException ex)
-				{
-				}
+				race = u.getUnitRaceID () + " - ";
 			log.debug (race + u.getUnitName () + " has base rating of " + e.getKey ());
 		}));
 	}
@@ -246,7 +239,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 	public final void testUnitPotentialRatings () throws Exception
 	{
 		// Need the real database
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 		
 		// Other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -264,17 +257,17 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		ai.setUnitSkillDirectAccess (new UnitSkillDirectAccessImpl ());
 		
 		// Calculate each unit in turn
-		final Map<Integer, List<UnitSvr>> ratings = new HashMap<Integer, List<UnitSvr>> ();
-		for (final UnitSvr unitDef : db.getUnits ())
+		final Map<Integer, List<UnitEx>> ratings = new HashMap<Integer, List<UnitEx>> ();
+		for (final UnitEx unitDef : db.getUnits ())
 		{
 			// Need to create a real MemoryUnit so that heroes get their item slots
 			final MemoryUnit unit = unitServerUtils.createMemoryUnit (unitDef.getUnitID (), 0, null, 0, db);
 			final int rating = ai.calculateUnitPotentialRating (unit, players, fow, db);
 			
-			List<UnitSvr> unitsWithThisScore = ratings.get (rating);
+			List<UnitEx> unitsWithThisScore = ratings.get (rating);
 			if (unitsWithThisScore == null)
 			{
-				unitsWithThisScore = new ArrayList<UnitSvr> ();
+				unitsWithThisScore = new ArrayList<UnitEx> ();
 				ratings.put (rating, unitsWithThisScore);
 			}
 			unitsWithThisScore.add (unitDef);
@@ -285,13 +278,7 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		{
 			String race = "";
 			if (u.getUnitRaceID () != null)
-				try
-				{
-					race = db.findRace (u.getUnitRaceID (), "testUnitBaseRatings").getRaceName () + " ";
-				}
-				catch (final RecordNotFoundException ex)
-				{
-				}
+				race = u.getUnitRaceID () + " - ";
 			log.debug (race + u.getUnitName () + " has potential rating of " + e.getKey ());
 		}));
 	}

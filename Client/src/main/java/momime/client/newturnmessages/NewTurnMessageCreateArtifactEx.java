@@ -4,17 +4,20 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.swing.NdgUIUtils;
 
+import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.HeroItemsUI;
+import momime.common.database.LanguageText;
 import momime.common.messages.NewTurnMessageCreateArtifact;
 
 /**
@@ -38,6 +41,9 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
@@ -84,7 +90,7 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 		String music = null;
 		try
 		{
-			music = getGraphicsDB ().findSpell (getSpellID (), "NewTurnMessageCreateArtifactEx").getSpellMusicFile ();
+			music = getClient ().getClientDB ().findSpell (getSpellID (), "NewTurnMessageCreateArtifactEx").getSpellMusicFile ();
 		}
 		catch (final Exception e)
 		{
@@ -100,9 +106,13 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 	@Override
 	public final String getText ()
 	{
-		String text = getLanguage ().findCategoryEntry ("NewTurnMessages",
-			(getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? "CreateArtifactLastTurn" : "CreateArtifact");
+		final List<LanguageText> languageText;
+		if (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN)
+			languageText = getLanguages ().getNewTurnMessages ().getCreateArtifactLastTurn ();
+		else
+			languageText = getLanguages ().getNewTurnMessages ().getCreateArtifact ();
 		
+		String text = getLanguageHolder ().findDescription (languageText);		
 		return text.replaceAll ("ITEM_NAME", getHeroItemName ());
 	}
 	
@@ -188,9 +198,9 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 	
 	/**
@@ -209,6 +219,22 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 		graphicsDB = db;
 	}
 
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+	
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */

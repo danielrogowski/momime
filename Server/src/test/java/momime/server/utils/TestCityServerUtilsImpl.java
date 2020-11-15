@@ -18,18 +18,18 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.calculations.CityCalculations;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RaceEx;
 import momime.common.database.RaceCannotBuild;
+import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.ServerTestData;
-import momime.server.database.BuildingSvr;
-import momime.server.database.RaceSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSvr;
 
 /**
  * Tests the CityServerUtilsImpl class
@@ -83,7 +83,7 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_InvalidConstructionProject () throws Exception
 	{
 		// Mock details
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -128,11 +128,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Building () throws Exception
 	{
 		// Mock details
-		final RaceSvr raceDef = new RaceSvr ();
+		final RaceEx raceDef = new RaceEx ();
 		
-		final BuildingSvr blacksmithDef = new BuildingSvr ();
+		final Building blacksmithDef = new Building ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding ("BL08", "validateCityConstruction")).thenReturn (blacksmithDef);
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
@@ -188,11 +188,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Building_HasAlready () throws Exception
 	{
 		// Mock details
-		final RaceSvr raceDef = new RaceSvr ();
+		final RaceEx raceDef = new RaceEx ();
 		
-		final BuildingSvr blacksmithDef = new BuildingSvr ();
+		final Building blacksmithDef = new Building ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding ("BL08", "validateCityConstruction")).thenReturn (blacksmithDef);
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
@@ -244,12 +244,12 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 		final RaceCannotBuild rcb = new RaceCannotBuild ();
 		rcb.setCannotBuildBuildingID ("BL08");
 		
-		final RaceSvr raceDef = new RaceSvr ();
+		final RaceEx raceDef = new RaceEx ();
 		raceDef.getRaceCannotBuild ().add (rcb);		// <---
 		
-		final BuildingSvr blacksmithDef = new BuildingSvr ();
+		final Building blacksmithDef = new Building ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding ("BL08", "validateCityConstruction")).thenReturn (blacksmithDef);
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
@@ -298,11 +298,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Building_MissingPreqBuilding () throws Exception
 	{
 		// Mock details
-		final RaceSvr raceDef = new RaceSvr ();
+		final RaceEx raceDef = new RaceEx ();
 		
-		final BuildingSvr blacksmithDef = new BuildingSvr ();
+		final Building blacksmithDef = new Building ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding ("BL08", "validateCityConstruction")).thenReturn (blacksmithDef);
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
@@ -351,11 +351,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Building_MissingPrereqTile () throws Exception
 	{
 		// Mock details
-		final RaceSvr raceDef = new RaceSvr ();
+		final RaceEx raceDef = new RaceEx ();
 		
-		final BuildingSvr blacksmithDef = new BuildingSvr ();
+		final Building blacksmithDef = new Building ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding ("BL08", "validateCityConstruction")).thenReturn (blacksmithDef);
 		when (db.findRace ("RC09", "validateCityConstruction")).thenReturn (raceDef);
 
@@ -404,11 +404,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Unit () throws Exception
 	{
 		// Mock details
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		unitDef.setUnitRaceID ("RC09");
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
@@ -451,11 +451,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Unit_WrongUnitType () throws Exception
 	{
 		// Mock details
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("X");		// <---
 		unitDef.setUnitRaceID ("RC09");
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
@@ -498,11 +498,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Unit_WrongRace () throws Exception
 	{
 		// Mock details
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		unitDef.setUnitRaceID ("RC08");		// <---
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
@@ -545,11 +545,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Unit_NoRace () throws Exception
 	{
 		// Mock details
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		unitDef.setUnitRaceID (null);		// <---
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
@@ -592,11 +592,11 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Unit_MissingPreqBuilding () throws Exception
 	{
 		// Mock details
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		unitDef.setUnitRaceID ("RC09");
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findUnit ("UN001", "validateCityConstruction")).thenReturn (unitDef);
 
 		// Map
@@ -686,15 +686,15 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testTotalCostOfBuildingsAtLocation () throws Exception
 	{
 		// Mock some building details
-		final BuildingSvr buildersHallDef = new BuildingSvr ();
+		final Building buildersHallDef = new Building ();
 		buildersHallDef.setProductionCost (60);
 		
-		final BuildingSvr bankDef = new BuildingSvr ();
+		final Building bankDef = new Building ();
 		bankDef.setProductionCost (250);
 		
-		final BuildingSvr summoningCircleDef = new BuildingSvr ();
+		final Building summoningCircleDef = new Building ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findBuilding ("BL32", "totalCostOfBuildingsAtLocation")).thenReturn (buildersHallDef);
 		when (db.findBuilding ("BL27", "totalCostOfBuildingsAtLocation")).thenReturn (bankDef);
 		when (db.findBuilding (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, "totalCostOfBuildingsAtLocation")).thenReturn (summoningCircleDef);

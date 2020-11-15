@@ -19,11 +19,14 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SummonedUnit;
+import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -34,10 +37,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.UnitServerUtils;
@@ -82,7 +82,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final ServerDatabaseEx db) throws RecordNotFoundException, MomException
+	public final int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering calculateUnitScoutingRange: " + unit.getDebugIdentifier ());
 
@@ -122,7 +122,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 */
 	@Override
 	public final void recheckTransportCapacity (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		log.trace ("Entering recheckTransportCapacity: " + combatLocation);
@@ -251,18 +251,18 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @throws RecordNotFoundException If one of the summoned unit IDs can't be found in the DB
 	 */
 	@Override
-	public final List<UnitSvr> listUnitsSpellMightSummon (final SpellSvr spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final ServerDatabaseEx db)
+	public final List<UnitEx> listUnitsSpellMightSummon (final Spell spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering listUnitsSpellMightSummon: " + spell.getSpellID ());
 		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
-		final List<UnitSvr> possibleUnits = new ArrayList<UnitSvr> ();
+		final List<UnitEx> possibleUnits = new ArrayList<UnitEx> ();
 		for (final SummonedUnit possibleSummonedUnit : spell.getSummonedUnit ())
 		{
 			// Check whether we can summon this unit If its a hero, this depends on whether we've summoned the hero before, or if he's dead
-			final UnitSvr possibleUnit = db.findUnit (possibleSummonedUnit.getSummonedUnitID (), "listUnitsSpellMightSummon");
+			final UnitEx possibleUnit = db.findUnit (possibleSummonedUnit.getSummonedUnitID (), "listUnitsSpellMightSummon");
 			boolean addToList;
 			if (possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 			{

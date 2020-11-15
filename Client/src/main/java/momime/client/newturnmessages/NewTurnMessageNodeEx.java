@@ -3,17 +3,19 @@ package momime.client.newturnmessages;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
-
-import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.UnitLang;
-import momime.client.ui.MomUIConstants;
-import momime.common.messages.NewTurnMessageNode;
-import momime.common.messages.NewTurnMessageTypeID;
+import java.util.List;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.ui.MomUIConstants;
+import momime.common.database.LanguageText;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.NewTurnMessageNode;
+import momime.common.messages.NewTurnMessageTypeID;
 
 /**
  * NTM about a node that we captured or lost
@@ -56,44 +58,43 @@ public final class NewTurnMessageNodeEx extends NewTurnMessageNode
 	
 	/**
 	 * @return Text to display for this NTM
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
-	public final String getText ()
+	public final String getText () throws RecordNotFoundException
 	{
 		// Work out the right languageEntryID
-		String languageEntryID;
+		final List<LanguageText> languageText;
 		String otherPlayerName = "";
 		if (getMsgType () == NewTurnMessageTypeID.NODE_CAPTURED)
 		{
-			languageEntryID = "NodeCaptured";
 			if ((getOtherUnitID () != null) && (getOtherPlayerID () != null))
 			{
-				languageEntryID = "Owned" + languageEntryID;
+				languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? getLanguages ().getNewTurnMessages ().getOwnedNodeCapturedLastTurn () :
+					getLanguages ().getNewTurnMessages ().getOwnedNodeCaptured ();
 				
 				final PlayerPublicDetails otherPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getOtherPlayerID ());
 				otherPlayerName = (otherPlayer != null) ? otherPlayer.getPlayerDescription ().getPlayerName () : getOtherPlayerID ().toString ();
 			}
 			else
-				languageEntryID = "Empty" + languageEntryID;
+				languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? getLanguages ().getNewTurnMessages ().getEmptyNodeCapturedLastTurn () :
+					getLanguages ().getNewTurnMessages ().getEmptyNodeCaptured ();
 		}
 		else
-			languageEntryID = "NostLost";
-		
-		if (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN)
-			languageEntryID = languageEntryID + "LastTurn";
+			languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? getLanguages ().getNewTurnMessages ().getNodeLostLastTurn () :
+				getLanguages ().getNewTurnMessages ().getNodeLost ();
 		
 		// Find the unit(s) and other player involved
-		final UnitLang ourUnit = getLanguage ().findUnit (getUnitID ());
-		final String ourUnitName = (ourUnit != null) ? ourUnit.getUnitName () : null;
+		final String ourUnitName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findUnit (getUnitID (), "NewTurnMessageNodeEx").getUnitName ());
 
-		final UnitLang otherUnit = (getOtherUnitID () != null) ? getLanguage ().findUnit (getOtherUnitID ()) : null;
-		final String otherUnitName = (otherUnit != null) ? otherUnit.getUnitName () : null;
+		final String otherUnitName = (getOtherUnitID () == null) ? "" : getLanguageHolder ().findDescription
+			(getClient ().getClientDB ().findUnit (getOtherUnitID (), "NewTurnMessageNodeEx").getUnitName ());
 		
 		// Look up text and do replacements
-		return getLanguage ().findCategoryEntry ("NewTurnMessages", languageEntryID).replaceAll
+		return getLanguageHolder ().findDescription (languageText).replaceAll
 			("OTHER_PLAYER_NAME", otherPlayerName).replaceAll
-			("OTHER_UNIT_NAME", (otherUnitName != null) ? otherUnitName : getOtherUnitID ()).replaceAll
-			("UNIT_NAME", (ourUnitName != null) ? ourUnitName : getUnitID ());
+			("OTHER_UNIT_NAME", otherUnitName).replaceAll
+			("UNIT_NAME", ourUnitName);
 	}
 	
 	/**
@@ -168,9 +169,9 @@ public final class NewTurnMessageNodeEx extends NewTurnMessageNode
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

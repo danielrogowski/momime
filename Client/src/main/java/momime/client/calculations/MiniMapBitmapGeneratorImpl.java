@@ -11,8 +11,8 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileTypeGfx;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileTypeEx;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
@@ -69,7 +69,7 @@ public final class MiniMapBitmapGeneratorImpl implements MiniMapBitmapGenerator
 					final String tileTypeID = mc.getTerrainData ().getTileTypeID ();
 					if (tileTypeID != null)
 					{
-						final TileTypeGfx tileType = getGraphicsDB ().findTileType (tileTypeID, "generateMiniMapBitmap");
+						final TileTypeEx tileType = getClient ().getClientDB ().findTileType (tileTypeID, "generateMiniMapBitmap");
 						colour = tileType.findMiniMapColour (mapViewPlane);
 					}
 				}

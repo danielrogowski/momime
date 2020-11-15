@@ -22,12 +22,12 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.WizardGfx;
 import momime.client.messages.process.PlayAnimationMessageImpl;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.AnimationGfx;
+import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 
 /**
@@ -65,8 +65,8 @@ public final class WizardWonUI extends MomClientDialogUI
 	/** Line of text */
 	private JLabel lineLabel;
 	
-	/** Text to display */
-	private String lineText;
+	/** Line number to display */
+	private int lineTextNumber;
 
 	/** Content pane */
 	private JPanel contentPane;
@@ -91,15 +91,15 @@ public final class WizardWonUI extends MomClientDialogUI
 
 		// Find details about the wizard
 		final MomPersistentPlayerPublicKnowledge winningWizardPub = (MomPersistentPlayerPublicKnowledge) getWinningWizard ().getPersistentPlayerPublicKnowledge ();
-		final WizardGfx winningWizardGfx = (winningWizardPub.getStandardPhotoID () == null) ? null :
-			getGraphicsDB ().findWizard (winningWizardPub.getStandardPhotoID (), "WizardWonUI");
+		final WizardEx winningWizardDef = (winningWizardPub.getStandardPhotoID () == null) ? null :
+			getClient ().getClientDB ().findWizard (winningWizardPub.getStandardPhotoID (), "WizardWonUI");
 		
 		final XmlLayoutComponent handsLayout = getWizardWonLayout ().findComponent ("frmWizardWonHands");
-		final Image handsImage = (winningWizardGfx == null) ? null : getUtils ().loadImage (winningWizardGfx.getWorldHandsImageFile ()).getScaledInstance
+		final Image handsImage = (winningWizardDef == null) ? null : getUtils ().loadImage (winningWizardDef.getWorldHandsImageFile ()).getScaledInstance
 			(handsLayout.getWidth (), handsLayout.getHeight (), Image.SCALE_SMOOTH);
 		
 		final XmlLayoutComponent talkingLayout = getWizardWonLayout ().findComponent ("frmWizardWonTalking");
-		final AnimationGfx talkingAnim = (winningWizardGfx == null) ? null : getGraphicsDB ().findAnimation (winningWizardGfx.getTalkingAnimation (), "WizardWonUI (T)");
+		final AnimationGfx talkingAnim = (winningWizardDef == null) ? null : getGraphicsDB ().findAnimation (winningWizardDef.getTalkingAnimation (), "WizardWonUI (T)");
 		
 		// Static images
 		final Image background = getUtils ().loadImage ("/momime.client.graphics/animations/worlds/background.png").getScaledInstance
@@ -205,7 +205,7 @@ public final class WizardWonUI extends MomClientDialogUI
 		contentPane.setLayout (new XmlLayoutManager (getWizardWonLayout ()));
 		
 		lineLabel = getUtils ().createShadowedLabel (MomUIConstants.DARK_RED, MomUIConstants.RED, getLargeFont ());
-		lineText = null;
+		lineTextNumber = 0;
 		contentPane.add (lineLabel, "frmWizardWonLine");
 		
 		// Lock frame size
@@ -230,14 +230,10 @@ public final class WizardWonUI extends MomClientDialogUI
 			
 			// Update to next line of text
 			int lineNumber = tickNumber / 25;
-			if ((lineNumber >= 1) && (lineNumber <= 4)) 
+			if ((lineNumber >= 1) && (lineNumber <= 4) && (lineNumber != lineTextNumber)) 
 			{
-				final String newLine = "Line" + lineNumber;
-				if (!newLine.equals (lineText))
-				{
-					lineText = newLine;
-					languageChanged ();
-				}
+				lineTextNumber = lineNumber;
+				languageChanged ();
 			}
 			
 			contentPane.repaint ();
@@ -255,10 +251,16 @@ public final class WizardWonUI extends MomClientDialogUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getDialog ().setTitle (getLanguage ().findCategoryEntry ("frmWizardWon", "Title"));
+		getDialog ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getWizardWonScreen ().getTitle ()));
 		
-		lineLabel.setText ((lineText == null) ? null : getLanguage ().findCategoryEntry ("frmWizardWon", lineText));
-		
+		switch (lineTextNumber)
+		{
+			case 1: lineLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardWonScreen ().getLine1 ())); break;
+			case 2: lineLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardWonScreen ().getLine2 ())); break;
+			case 3: lineLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardWonScreen ().getLine3 ())); break;
+			case 4: lineLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardWonScreen ().getLine4 ())); break;
+		}
+				
 		log.trace ("Exiting languageChanged");
 	}
 

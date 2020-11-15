@@ -16,11 +16,14 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.AttackResolution;
+import momime.common.database.AttackResolutionStep;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.MemoryUnit;
@@ -32,10 +35,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
-import momime.server.database.AttackResolutionStepSvr;
-import momime.server.database.AttackResolutionSvr;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -99,7 +99,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	@Override
 	public final boolean resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer attackerDirection, final String attackSkillID,
-		final SpellSvr spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
+		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
@@ -177,20 +177,20 @@ public final class DamageProcessorImpl implements DamageProcessor
 
 			// For attacks based on unit attributes (i.e. melee or ranged attacks), use the full routine to work out the sequence of steps to resolve the attack.
 			// If its an attack from a spell, just make a dummy list with a null in it - processAttackResolutionStep looks for this.
-			final List<List<AttackResolutionStepSvr>> steps;
+			final List<List<AttackResolutionStep>> steps;
 			if (commonPotentialDamageToDefenders != null)
 			{
-				final List<AttackResolutionStepSvr> dummySteps = new ArrayList<AttackResolutionStepSvr> ();
+				final List<AttackResolutionStep> dummySteps = new ArrayList<AttackResolutionStep> ();
 				dummySteps.add (null);
 				
-				steps = new ArrayList<List<AttackResolutionStepSvr>> ();
+				steps = new ArrayList<List<AttackResolutionStep>> ();
 				steps.add (dummySteps);
 			}
 			else
 			{
-				final AttackResolutionSvr attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (xuAttacker, xuDefender, attackSkillID, mom.getServerDB ());
+				final AttackResolution attackResolution = getAttackResolutionProcessing ().chooseAttackResolution (xuAttacker, xuDefender, attackSkillID, mom.getServerDB ());
 				
-				steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionSteps ());
+				steps = getAttackResolutionProcessing ().splitAttackResolutionStepsByStepNumber (attackResolution.getAttackResolutionStep ());
 			}
 
 			// If this particular defender is immune to an illusionary attack, then temporarily set the spell damage resolution type to normal
@@ -217,7 +217,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 			final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 			
 			// Process each step
-			for (final List<AttackResolutionStepSvr> step : steps)
+			for (final List<AttackResolutionStep> step : steps)
 				
 				// Skip the entire step if either unit is already dead
 				if (((xuAttacker == null) || (xuAttacker.calculateAliveFigureCount () > 0)) &&

@@ -10,11 +10,14 @@ import org.junit.Test;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
+import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.PickAndQuantity;
+import momime.common.database.Spell;
 import momime.common.database.UnitSetting;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -23,9 +26,6 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
-import momime.server.database.HeroItemBonusSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 
 /**
  * Tests the HeroItemServerUtilsImpl class
@@ -40,13 +40,13 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_Trivial () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
 		
 		// Casting player
@@ -73,13 +73,12 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_NormalBonus () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n <= 1; n++)
 		{
-			final HeroItemBonusSvr bonus = new HeroItemBonusSvr ();
+			final HeroItemBonus bonus = new HeroItemBonus ();
 			bonus.setBonusCraftingCost (100 * n);
-			bonus.setHeroItemBonusDescription ("B" + n);
 			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
 		}
 		
@@ -87,7 +86,7 @@ public final class TestHeroItemServerUtilsImpl
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
 		
 		// Casting player
@@ -120,13 +119,12 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_ExceedBonusCount () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n <= 2; n++)
 		{
-			final HeroItemBonusSvr bonus = new HeroItemBonusSvr ();
+			final HeroItemBonus bonus = new HeroItemBonus ();
 			bonus.setBonusCraftingCost (100 * n);
-			bonus.setHeroItemBonusDescription ("B" + n);
 			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
 		}
 		
@@ -135,7 +133,7 @@ public final class TestHeroItemServerUtilsImpl
 		unitSettings.setMaxHeroItemBonuses (1);
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
 		
 		// Casting player
@@ -168,21 +166,21 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_SameBonusTwice () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n <= 1; n++)
 		{
-			final HeroItemBonusSvr bonus = new HeroItemBonusSvr ();
+			final HeroItemBonus bonus = new HeroItemBonus ();
+			bonus.setHeroItemBonusID ("IB0" + n);
 			bonus.setBonusCraftingCost (100 * n);
-			bonus.setHeroItemBonusDescription ("B" + n);
-			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
+			when (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem")).thenReturn (bonus);
 		}
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
 		
 		// Casting player
@@ -204,7 +202,7 @@ public final class TestHeroItemServerUtilsImpl
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
 		
 		// Run method
-		assertEquals ("Bonus B1 was chosen more than once", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Bonus IB01 was chosen more than once", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
 	}
 
 	/**
@@ -215,21 +213,21 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_ExceedMaximumBonusCost () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n <= 2; n++)
 		{
-			final HeroItemBonusSvr bonus = new HeroItemBonusSvr ();
+			final HeroItemBonus bonus = new HeroItemBonus ();
+			bonus.setHeroItemBonusID ("IB0" + n);
 			bonus.setBonusCraftingCost (100 * n);
-			bonus.setHeroItemBonusDescription ("B" + n);
-			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
+			when (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem")).thenReturn (bonus);
 		}
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (100);
 		
 		// Casting player
@@ -251,7 +249,7 @@ public final class TestHeroItemServerUtilsImpl
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
 		
 		// Run method
-		assertEquals ("Bonus B2 exceeds the maximum cost of 100 per bonus", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Bonus IB02 exceeds the maximum cost of 100 per bonus", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
 	}
 
 	/**
@@ -262,20 +260,20 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_ExceedUnspecifiedBonusCost () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n <= 1; n++)
 		{
-			final HeroItemBonusSvr bonus = new HeroItemBonusSvr ();
-			bonus.setHeroItemBonusDescription ("B" + n);
-			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
+			final HeroItemBonus bonus = new HeroItemBonus ();
+			bonus.setHeroItemBonusID ("IB0" + n);
+			when (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem")).thenReturn (bonus);
 		}
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (100);
 		
 		// Casting player
@@ -297,7 +295,7 @@ public final class TestHeroItemServerUtilsImpl
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
 		
 		// Run method
-		assertEquals ("Bonus B1 exceeds the maximum cost of 100 per bonus", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Bonus IB01 exceeds the maximum cost of 100 per bonus", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
 	}
 
 	/**
@@ -308,27 +306,27 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_DontHavePrerequisite () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n <= 2; n++)
 		{
-			final HeroItemBonusSvr bonus = new HeroItemBonusSvr ();
+			final HeroItemBonus bonus = new HeroItemBonus ();
+			bonus.setHeroItemBonusID ("IB0" + n);
 			bonus.setBonusCraftingCost (100 * n);
-			bonus.setHeroItemBonusDescription ("B" + n);
 			
 			final PickAndQuantity prereq = new PickAndQuantity ();
 			prereq.setPickID ("MB01");
 			prereq.setQuantity (n);
 			bonus.getHeroItemBonusPrerequisite ().add (prereq);
 			
-			when (db.findHeroItemBonus ("IB0" + n, "validateHeroItem")).thenReturn (bonus);
+			when (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem")).thenReturn (bonus);
 		}
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
 		
 		// Casting player
@@ -356,7 +354,7 @@ public final class TestHeroItemServerUtilsImpl
 		utils.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		assertEquals ("Bonus B2 requires at least 2 picks in magic realm MB01", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
+		assertEquals ("Bonus IB02 requires at least 2 picks in magic realm MB01", utils.validateHeroItem (player, spell, heroItem, unitSettings, db));
 	}
 
 	/**
@@ -367,13 +365,12 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_SameStatTwice () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n <= 2; n++)
 		{
-			final HeroItemBonusSvr bonus = new HeroItemBonusSvr ();
+			final HeroItemBonus bonus = new HeroItemBonus ();
 			bonus.setBonusCraftingCost (100 * n);
-			bonus.setHeroItemBonusDescription ("B" + n);
 			
 			final HeroItemBonusStat stat = new HeroItemBonusStat ();
 			stat.setUnitSkillID ("UA01");
@@ -387,7 +384,7 @@ public final class TestHeroItemServerUtilsImpl
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (200);
 		
 		// Casting player
@@ -420,13 +417,13 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_SpellButDidntPick () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		
 		// Casting player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -453,13 +450,13 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_SpellCountButDidntPick () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		
 		// Casting player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -486,17 +483,16 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_DidntSpecifySpell () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final HeroItemBonusSvr scDef = new HeroItemBonusSvr ();
-		scDef.setHeroItemBonusDescription ("SC");
+		final HeroItemBonus scDef = new HeroItemBonus ();
 		when (db.findHeroItemBonus (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES, "validateHeroItem")).thenReturn (scDef);
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
 		
 		// Casting player
@@ -527,17 +523,16 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_DidntSpecifySpellCount () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final HeroItemBonusSvr scDef = new HeroItemBonusSvr ();
-		scDef.setHeroItemBonusDescription ("SC");
+		final HeroItemBonus scDef = new HeroItemBonus ();
 		when (db.findHeroItemBonus (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES, "validateHeroItem")).thenReturn (scDef);
 		
 		// Item settings
 		final UnitSetting unitSettings = new UnitSetting ();
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
 		
 		// Casting player
@@ -569,10 +564,9 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_ExceedSpellCount () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final HeroItemBonusSvr scDef = new HeroItemBonusSvr ();
-		scDef.setHeroItemBonusDescription ("SC");
+		final HeroItemBonus scDef = new HeroItemBonus ();
 		when (db.findHeroItemBonus (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES, "validateHeroItem")).thenReturn (scDef);
 		
 		// Item settings
@@ -580,7 +574,7 @@ public final class TestHeroItemServerUtilsImpl
 		unitSettings.setMaxHeroItemSpellCharges (3);
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
 		
 		// Casting player
@@ -613,13 +607,12 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_UnresearchedSpell () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final HeroItemBonusSvr scDef = new HeroItemBonusSvr ();
-		scDef.setHeroItemBonusDescription ("SC");
+		final HeroItemBonus scDef = new HeroItemBonus ();
 		when (db.findHeroItemBonus (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES, "validateHeroItem")).thenReturn (scDef);
 		
-		final SpellSvr spellChargeDef = new SpellSvr ();
+		final Spell spellChargeDef = new Spell ();
 		when (db.findSpell ("SP001", "validateHeroItem")).thenReturn (spellChargeDef);
 		
 		// Item settings
@@ -627,7 +620,7 @@ public final class TestHeroItemServerUtilsImpl
 		unitSettings.setMaxHeroItemSpellCharges (4);
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
 		
 		// Casting player
@@ -670,13 +663,12 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_OverlandSpell () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final HeroItemBonusSvr scDef = new HeroItemBonusSvr ();
-		scDef.setHeroItemBonusDescription ("SC");
+		final HeroItemBonus scDef = new HeroItemBonus ();
 		when (db.findHeroItemBonus (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES, "validateHeroItem")).thenReturn (scDef);
 		
-		final SpellSvr spellChargeDef = new SpellSvr ();
+		final Spell spellChargeDef = new Spell ();
 		when (db.findSpell ("SP001", "validateHeroItem")).thenReturn (spellChargeDef);
 		
 		// Item settings
@@ -684,7 +676,7 @@ public final class TestHeroItemServerUtilsImpl
 		unitSettings.setMaxHeroItemSpellCharges (4);
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
 		
 		// Casting player
@@ -729,13 +721,12 @@ public final class TestHeroItemServerUtilsImpl
 	public final void testValidateHeroItem_SpellCharges () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final HeroItemBonusSvr scDef = new HeroItemBonusSvr ();
-		scDef.setHeroItemBonusDescription ("SC");
+		final HeroItemBonus scDef = new HeroItemBonus ();
 		when (db.findHeroItemBonus (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES, "validateHeroItem")).thenReturn (scDef);
 		
-		final SpellSvr spellChargeDef = new SpellSvr ();
+		final Spell spellChargeDef = new Spell ();
 		when (db.findSpell ("SP001", "validateHeroItem")).thenReturn (spellChargeDef);
 		
 		// Item settings
@@ -743,7 +734,7 @@ public final class TestHeroItemServerUtilsImpl
 		unitSettings.setMaxHeroItemSpellCharges (4);
 
 		// Crafting spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setHeroItemBonusMaximumCraftingCost (0);
 		
 		// Casting player

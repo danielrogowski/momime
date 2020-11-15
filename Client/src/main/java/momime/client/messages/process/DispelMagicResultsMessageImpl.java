@@ -1,6 +1,7 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -12,13 +13,13 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 
 import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.LanguageText;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 
@@ -69,22 +70,25 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 		final StringBuilder text = new StringBuilder ();
 		
 		if (getCastingPlayerID () == getClient ().getOurPlayerID ())
-			text.append (getLanguage ().findCategoryEntry ("DispelMagic", "OurDispelMagicHeading"));
+			text.append (getLanguageHolder ().findDescription (getLanguages ().getDispelMagic ().getOurDispelMagicHeading ()));
 		else
-			text.append (getLanguage ().findCategoryEntry ("DispelMagic", "TheirDispelMagicHeading").replaceAll
+			text.append (getLanguageHolder ().findDescription (getLanguages ().getDispelMagic ().getTheirDispelMagicHeading ()).replaceAll
 				("PLAYER_NAME", getWizardClientUtils ().getPlayerName (getMultiplayerSessionUtils ().findPlayerWithID
 					(getClient ().getPlayers (), getCastingPlayerID (), "DispelMagicResultsMessageImpl (C)"))));
 		
 		for (final DispelMagicResult result : getDispelMagicResult ())
 		{
-			final String languageEntryID = ((getCastingPlayerID () == getClient ().getOurPlayerID ()) ? "OurDispelMagic" : "TheirDispelMagic") +
-				(result.isDispelled () ? "Success" : "Fail");
+			final List<LanguageText> languageText;
+			if (getCastingPlayerID () == getClient ().getOurPlayerID ())
+				languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getOurDispelMagicSuccess () : getLanguages ().getDispelMagic ().getOurDispelMagicFail ();
+			else
+				languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getTheirDispelMagicSuccess () : getLanguages ().getDispelMagic ().getTheirDispelMagicFail ();
+				
+			// This is the spell that was dispelled (or not)
+			final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (result.getSpellID (), "DispelMagicResultsMessageImpl (R)").getSpellName ());
 			
-			final SpellLang spell = getLanguage ().findSpell (result.getSpellID ());
-			final String spellName = (spell == null) ? null : spell.getSpellName ();
-			
-			String line = getLanguage ().findCategoryEntry ("DispelMagic", languageEntryID).replaceAll
-				("SPELL_NAME", (spellName != null) ? spellName : result.getSpellID ()).replaceAll
+			String line = getLanguageHolder ().findDescription (languageText).replaceAll
+				("SPELL_NAME", spellName).replaceAll
 				("CASTING_COST", getTextUtils ().intToStrCommas (result.getCastingCost ())).replaceAll
 				("PERCENTAGE", Integer.valueOf ((int) (result.getChance () * 100d)).toString ());
 			
@@ -96,11 +100,11 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 		}
 		
 		// Set up message box
-		final SpellLang spell = getLanguage ().findSpell (getSpellID ());
-		final String spellName = (spell == null) ? null : spell.getSpellName ();
+		// This is the dispel magic-type spell
+		final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getSpellID (), "DispelMagicResultsMessageImpl (C)").getSpellName ());
 		
 		final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-		msg.setTitle ((spellName != null) ? spellName : getSpellID ());
+		msg.setTitle (spellName);
 		msg.setText (text.toString ());
 		msg.setVisible (true);
 
@@ -143,9 +147,9 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

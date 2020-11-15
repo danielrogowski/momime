@@ -1,19 +1,29 @@
 package momime.client.utils;
 
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 
 /**
  * Client side only helper methods for dealing with players/wizards
  */
 public final class WizardClientUtilsImpl implements WizardClientUtils
 {
+	/** Class logger */
+	private static final Log log = LogFactory.getLog (WizardClientUtilsImpl.class);
+	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/**
 	 * Human players display as whatever name they've chosen, i.e. the account name associated with their playerID.
 	 * AI players pull their wizard name from the language XML file and will only default to the playerName from the
@@ -32,7 +42,14 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 		{
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 			if (pub.getWizardID () != null)
-				playerName = getLanguage ().findWizardName (pub.getWizardID ());
+				try
+				{
+					playerName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findWizard (pub.getWizardID (), "getPlayerName").getWizardName ());
+				}
+				catch (final RecordNotFoundException e)
+				{
+					log.error (e, e);
+				}
 		}
 	
 		return playerName;
@@ -55,11 +72,18 @@ public final class WizardClientUtilsImpl implements WizardClientUtils
 	}
 
 	/**
-	 * Convenience shortcut for accessing the Language XML database
-	 * @return Language database
+	 * @return Multiplayer client
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomClient getClient ()
 	{
-		return languageHolder.getLanguage ();
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

@@ -21,13 +21,12 @@ import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.UnitEx;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -89,12 +88,12 @@ public final class TestSelectUnitButton
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitGfx unit = new UnitGfx ();
+		final UnitEx unit = new UnitEx ();
 		unit.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
-		when (gfx.findUnit ("UN176", "SelectUnitButton")).thenReturn (unit);
+		when (db.findUnit ("UN176", "SelectUnitButton")).thenReturn (unit);
 		
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();
@@ -113,6 +112,7 @@ public final class TestSelectUnitButton
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
+		when (client.getClientDB ()).thenReturn (db);
 
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -141,7 +141,6 @@ public final class TestSelectUnitButton
 		final SelectUnitButton button = new SelectUnitButton ();
 		button.setUtils (utils);
 		button.setClient (client);
-		button.setGraphicsDB (gfx);
 		button.setPlayerColourImageGenerator (gen);
 		button.init ();
 		
@@ -180,24 +179,18 @@ public final class TestSelectUnitButton
 		utils.useNimbusLookAndFeel ();
 
 		// Mock entries from the client XML
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final momime.common.database.Unit unitDef = new momime.common.database.Unit ();
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitOverlandImageFile ("/momime.client.graphics/units/UN102/overland.png");
 		when (db.findUnit ("UN102", "SelectUnitButton")).thenReturn (unitDef);
 		
 		final WeaponGrade wepGradeDef = new WeaponGrade ();
 		wepGradeDef.setWeaponGradeNumber (2);
+		wepGradeDef.setWeaponGradeMiniImageFile ("/momime.client.graphics/weaponGrades/weaponGradeMiniImageMithril.png");
 		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
-		final UnitGfx unit = new UnitGfx ();
-		unit.setUnitOverlandImageFile ("/momime.client.graphics/units/UN102/overland.png");
-		when (gfx.findUnit ("UN102", "SelectUnitButton")).thenReturn (unit);
-		
-		final WeaponGradeGfx wepGrade = new WeaponGradeGfx ();
-		wepGrade.setWeaponGradeMiniImageFile ("/momime.client.graphics/weaponGrades/weaponGradeMiniImageMithril.png");
-		when (gfx.findWeaponGrade (2, "SelectUnitButton")).thenReturn (wepGrade);
 		
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();

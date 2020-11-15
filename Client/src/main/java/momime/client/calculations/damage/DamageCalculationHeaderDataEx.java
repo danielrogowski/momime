@@ -1,24 +1,24 @@
 package momime.client.calculations.damage;
 
 import java.io.IOException;
-
-import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitSkillLang;
-import momime.client.utils.UnitClientUtils;
-import momime.client.utils.UnitNameType;
-import momime.client.utils.WizardClientUtils;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.servertoclient.DamageCalculationHeaderData;
-import momime.common.utils.UnitUtils;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
+import momime.client.utils.WizardClientUtils;
+import momime.common.database.LanguageText;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.DamageCalculationHeaderData;
+import momime.common.utils.UnitUtils;
 
 /**
  * Header about how the source and target of an attack, before any attacks or counterattacks are rolled
@@ -105,28 +105,20 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 		// Either a unit skill ID or a unit attribute ID
 		final String attackType;
 		if (getAttackSpellID () != null)
-		{
-			final SpellLang spell = getLanguage ().findSpell (getAttackSpellID ());
-			final String spellName = (spell == null) ? null : spell.getSpellName ();
-			attackType = (spellName != null) ? spellName : getAttackSpellID ();
-		}
+			attackType = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getAttackSpellID (), "getText").getSpellName ());
 		else
-		{
-			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (getAttackSkillID ());
-			final String unitSkillDescription = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
-			attackType = (unitSkillDescription != null) ? unitSkillDescription : getAttackSkillID ();
-		}
+			attackType = getLanguageHolder ().findDescription (getClient ().getClientDB ().findUnitSkill (getAttackSkillID (), "getText").getUnitSkillDescription ());
 
 		// Now work out the rest of the text
-		final String languageEntryID;
+		final List<LanguageText> languageText;
 		if (getDefenderUnit () == null)
-			languageEntryID = "HeaderWithoutEitherUnit";
+			languageText = getLanguages ().getCombatDamage ().getHeaderWithoutEitherUnit ();
 		else if (getAttackerUnit () == null)
-			languageEntryID = "HeaderWithoutAttackerUnit";
+			languageText = getLanguages ().getCombatDamage ().getHeaderWithoutAttackerUnit ();
 		else
-			languageEntryID = "HeaderWithAttackerUnit";
+			languageText = getLanguages ().getCombatDamage ().getHeaderWithAttackerUnit ();
 		
-		String text = getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
+		String text = getLanguageHolder ().findDescription (languageText).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
 			("ATTACK_TYPE", attackType);
 
@@ -226,9 +218,9 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

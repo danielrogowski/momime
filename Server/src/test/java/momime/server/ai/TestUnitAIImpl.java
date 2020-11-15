@@ -11,6 +11,9 @@ import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AiUnitCategory;
+import momime.common.database.CommonDatabase;
+import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -19,9 +22,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.server.ServerTestData;
-import momime.server.database.AiUnitCategorySvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSvr;
 
 /**
  * Tests the UnitAIImpl class
@@ -36,10 +36,10 @@ public final class TestUnitAIImpl extends ServerTestData
 	public final void testUnitMatchesCategory_NoCriteria () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Category
-		final AiUnitCategorySvr category = new AiUnitCategorySvr ();
+		final AiUnitCategory category = new AiUnitCategory ();
 		
 		// Unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
@@ -62,10 +62,10 @@ public final class TestUnitAIImpl extends ServerTestData
 	public final void testUnitMatchesCategory_UnitSkill () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Category
-		final AiUnitCategorySvr category = new AiUnitCategorySvr ();
+		final AiUnitCategory category = new AiUnitCategory ();
 		category.setUnitSkillID ("US001");
 		
 		// Unit
@@ -91,12 +91,12 @@ public final class TestUnitAIImpl extends ServerTestData
 	public final void testUnitMatchesCategory_Transport () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		
 		// Category
-		final AiUnitCategorySvr category = new AiUnitCategorySvr ();
+		final AiUnitCategory category = new AiUnitCategory ();
 		category.setTransport (true);
 		
 		// Unit
@@ -123,10 +123,10 @@ public final class TestUnitAIImpl extends ServerTestData
 	public final void testUnitMatchesCategory_AllTerrain () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Category
-		final AiUnitCategorySvr category = new AiUnitCategorySvr ();
+		final AiUnitCategory category = new AiUnitCategory ();
 		category.setAllTerrainPassable (true);
 		
 		// Unit
@@ -155,17 +155,17 @@ public final class TestUnitAIImpl extends ServerTestData
 	public final void testUnitMatchesCategory_InTransport () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr nonTransportDef = new UnitSvr ();
+		final UnitEx nonTransportDef = new UnitEx ();
 		when (db.findUnit ("UN001", "unitMatchesCategory")).thenReturn (nonTransportDef);
 		
-		final UnitSvr transportDef = new UnitSvr ();
+		final UnitEx transportDef = new UnitEx ();
 		transportDef.setTransportCapacity (1);
 		when (db.findUnit ("UN002", "unitMatchesCategory")).thenReturn (transportDef);
 		
 		// Category
-		final AiUnitCategorySvr category = new AiUnitCategorySvr ();
+		final AiUnitCategory category = new AiUnitCategory ();
 		category.setInTransport (true);
 		
 		// Unit

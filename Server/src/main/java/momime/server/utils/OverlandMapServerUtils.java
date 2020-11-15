@@ -12,6 +12,8 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Race;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
@@ -19,8 +21,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.database.RaceSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
@@ -39,7 +39,7 @@ public interface OverlandMapServerUtils
  	 * @throws MomException If no races are defined for a particular plane
 	 */
 	public MapArea3D<String> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
-		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
+		final CoordinateSystem sys, final CommonDatabase db) throws RecordNotFoundException, MomException;
 
 	/**
 	 * NB. This will always return names unique from those names it has generated before - but if human players happen to rename their cities
@@ -49,7 +49,7 @@ public interface OverlandMapServerUtils
 	 * @param race The race who is creating a new city
 	 * @return Auto generated city name
 	 */
-	public String generateCityName (final MomGeneralServerKnowledgeEx gsk, final RaceSvr race);
+	public String generateCityName (final MomGeneralServerKnowledgeEx gsk, final Race race);
 
 	/**
 	 * A spirit attempts to capture a node
@@ -67,7 +67,7 @@ public interface OverlandMapServerUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void attemptToMeldWithNode (final ExpandedUnitDetails attackingSpirit, final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 	
 	/**
@@ -77,7 +77,7 @@ public interface OverlandMapServerUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return Total population this player has across all their cities
 	 */
-	public int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db);
+	public int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db);
 
 	/**
 	 * @param combatLocation Location of combat we're interested in

@@ -15,10 +15,8 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -80,32 +78,27 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 		rightLabel.setFont (getFont ());
 		rightLabel.setForeground (getForeground ());
 		
-		// Get spell name
-		if (queued.getHeroItem () != null)
-			leftLabel.setText (queued.getHeroItem ().getHeroItemName ());
-		else
-		{
-			final SpellLang spellLang = getLanguage ().findSpell (queued.getQueuedSpellID ());
-			final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-			leftLabel.setText ((spellName != null) ? spellName : queued.getQueuedSpellID ());
-		}
-		
 		// Get spell cost
 		String castingCostText = null;
 		try
 		{
+			// Get spell name
+			final Spell spell = getClient ().getClientDB ().findSpell (queued.getQueuedSpellID (), "QueuedSpellListCellRenderer");
+			if (queued.getHeroItem () != null)
+				leftLabel.setText (queued.getHeroItem ().getHeroItemName ());
+			else
+				leftLabel.setText (getLanguageHolder ().findDescription (spell.getSpellName ()));
+
+			// Work out text
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "QueuedSpellListCellRenderer");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
-			final Spell spell = getClient ().getClientDB ().findSpell (queued.getQueuedSpellID (), "QueuedSpellListCellRenderer");
 			final int castingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (),
 				pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
-			final ProductionTypeLang manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-			String suffix = (manaProduction == null) ? null : manaProduction.getProductionTypeSuffix ();
-			suffix = (suffix == null) ? "" : (" " + suffix);
-			
-			castingCostText = castingCost + suffix;
+			final String suffix = " " + getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "QueuedSpellListCellRenderer").getProductionTypeSuffix ());
+			castingCostText = castingCost + suffix; 
 			
 			// If this is the top spell in the list, show how much we've put towards casting it so far
 			if (index == 0)
@@ -141,9 +134,9 @@ public final class QueuedSpellListCellRenderer extends JPanel implements ListCel
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

@@ -12,6 +12,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.zorder.ZOrderGraphics;
@@ -20,19 +21,12 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfigEx;
+import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.CombatTileFigurePositionsGfx;
 import momime.client.graphics.database.FigurePositionsForFigureCountGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.RangedAttackTypeGfx;
-import momime.client.graphics.database.UnitCombatActionGfx;
-import momime.client.graphics.database.UnitCombatImageGfx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.UnitTypeGfx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.RaceLang;
-import momime.client.language.database.UnitLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.components.HideableComponent;
@@ -45,9 +39,13 @@ import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.LanguageText;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Unit;
+import momime.common.database.UnitCombatActionEx;
+import momime.common.database.UnitCombatImage;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
@@ -136,6 +134,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	{
 		log.trace ("Entering getUnitName: " + unit.getUnitID () + ", " + unitNameType);
 		
+		final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitName");
+		
 		// Heroes just output their name for all unitNameTypes, so in that case we don't need to look up anything at all
 		String unitName = null;
 		if (unit instanceof MemoryUnit)
@@ -144,43 +144,41 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			if (mu.getUnitName () != null)
 				unitName = mu.getUnitName ();
 			else if (mu.getHeroNameID () != null)
-				unitName = getLanguage ().findHeroName (mu.getHeroNameID ());
+				unitName = getLanguageHolder ().findDescription (unitDef.findHeroName (mu.getHeroNameID (), "getUnitName").getHeroNameLang ());
 		}
 		
 		if (unitName == null)
 		{
 			// Find the name in the language XML
-			final UnitLang unitLang = getLanguage ().findUnit (unit.getUnitID ());
-			unitName = (unitLang != null) ? unitLang.getUnitName () : unit.getUnitID ();
+			unitName = getLanguageHolder ().findDescription (unitDef.getUnitName ());
 			
 			// If we just want the simple name with no race prefix, then we're done
 			if (unitNameType != UnitNameType.SIMPLE_UNIT_NAME)
 			{
 				// Need the record from the server XML to know whether to put the racial prefix on or not
-				final Unit unitInfo = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitName");
-				if ((unitInfo.isIncludeRaceInUnitName () != null) && (unitInfo.isIncludeRaceInUnitName ()))
-				{
-					final RaceLang race = getLanguage ().findRace (unitInfo.getUnitRaceID ());
-					unitName = ((race != null) ? race.getRaceName () : unitInfo.getUnitRaceID ()) + " " + unitName;
-				}
+				if ((unitDef.isIncludeRaceInUnitName () != null) && (unitDef.isIncludeRaceInUnitName ()))
+					unitName = getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findRace (unitDef.getUnitRaceID (), "getUnitName").getRaceNameSingular ()) + " " + unitName;
 				
 				// How we modify this now depends on the requested unitNameType
 				switch (unitNameType)
 				{
 					case A_UNIT_NAME:
-						if ((unitLang != null) && (unitLang.getUnitNamePrefix () != null))
-							unitName = unitLang.getUnitNamePrefix () + " " + unitName;
+					{
+						final String prefix = getLanguageHolder ().findDescription (unitDef.getUnitNamePrefix ());
+						if (!StringUtils.isEmpty (prefix))
+							unitName = prefix + " " + unitName;
 						break;
+					}
 						
 					case THE_UNIT_OF_NAME:
-						final String languageEntryID;
-						if ((unitLang != null) && (unitLang.getUnitNamePrefix () != null))
-							languageEntryID = "Singular";
-						else
-							languageEntryID = "Plural";
+					{
+						final String prefix = getLanguageHolder ().findDescription (unitDef.getUnitNamePrefix ());
+						final List<LanguageText> languageText = StringUtils.isEmpty (prefix) ? getLanguages ().getUnitName ().getTheUnitOfNamePlural () : getLanguages ().getUnitName ().getTheUnitOfNameSingular ();
 						
-						unitName = getLanguage ().findCategoryEntry ("UnitName", "TheUnitOfName" + languageEntryID).replaceAll ("RACE_UNIT_NAME", unitName);
+						unitName = getLanguageHolder ().findDescription (languageText).replaceAll ("RACE_UNIT_NAME", unitName);
 						break;
+					}
 						
 					// Other name types are handled elsewhere or require nothing to be added
 					default:
@@ -222,11 +220,10 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			else
 			{
 				// If there is only a single image then just use it; if there are multiple, then select the right one by weapon grade
-				final RangedAttackTypeGfx rat = getGraphicsDB ().findRangedAttackType (unit.getRangedAttackType ().getRangedAttackTypeID (), "getUnitSkillComponentBreakdownIcon");
-				if ((unit.getWeaponGrade () == null) || (rat.getRangedAttackTypeWeaponGrade ().size () == 1))
-					skillImageName = rat.getRangedAttackTypeWeaponGrade ().get (0).getUnitDisplayRangedImageFile ();
+				if ((unit.getWeaponGrade () == null) || (unit.getRangedAttackType ().getRangedAttackTypeWeaponGrade ().size () == 1))
+					skillImageName = unit.getRangedAttackType ().getRangedAttackTypeWeaponGrade ().get (0).getUnitDisplayRangedImageFile ();
 				else
-					skillImageName = rat.findWeaponGradeImageFile (unit.getWeaponGrade ().getWeaponGradeNumber (), "getUnitSkillComponentBreakdownIcon");
+					skillImageName = unit.getRangedAttackType ().findWeaponGradeImageFile (unit.getWeaponGrade ().getWeaponGradeNumber (), "getUnitSkillComponentBreakdownIcon");
 			}
 		}
 		else if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED))
@@ -237,7 +234,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		else
 		{
 			// Some skill other than ranged attack; same behaviour as above with weapon grades
-			final UnitSkillGfx skillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "getUnitSkillComponentBreakdownIcon");
+			final UnitSkillEx skillGfx = getClient ().getClientDB ().findUnitSkill (unitSkillID, "getUnitSkillComponentBreakdownIcon");
 			if ((unit.getWeaponGrade () == null) || (skillGfx.getUnitSkillWeaponGrade ().size () == 1))
 				skillImageName = skillGfx.getUnitSkillWeaponGrade ().get (0).getSkillImageFile ();
 			else
@@ -276,15 +273,12 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			if (expLvl == null)
 				image = null;
 			else
-			{
-				final UnitTypeGfx unitType = getGraphicsDB ().findUnitType (unit.getUnitType ().getUnitTypeID (), "getUnitSkillSingleIcon");
-				image = unitType.findExperienceLevelImageFile (expLvl.getLevelNumber (), "getUnitSkillSingleIcon");
-			}
+				image = expLvl.getExperienceLevelImageFile ();
 		}
 		else
 		{
 			// Regular skill
-			final UnitSkillGfx skillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "getUnitSkillSingleIcon");
+			final UnitSkillEx skillGfx = getClient ().getClientDB ().findUnitSkill (unitSkillID, "getUnitSkillSingleIcon");
 			image = skillGfx.getUnitSkillImageFile ();
 		}
 
@@ -386,16 +380,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	{
 		log.trace ("Entering registerUnitFiguresAnimation: " + unitID + ", " + combatActionID + ", " + direction + ", " + component);
 		
-		final UnitGfx unit = getGraphicsDB ().findUnit (unitID, "registerUnitFiguresAnimation");
-		final UnitCombatImageGfx unitImage = unit.findCombatAction (combatActionID, "registerUnitFiguresAnimation").findDirection (direction, "registerUnitFiguresAnimation");
-		getAnim ().registerRepaintTrigger (unitImage.getUnitCombatAnimation (), component);
-		
-		if (unit.getSecondaryUnitID () != null)
-		{
-			final UnitGfx secondaryUnit = getGraphicsDB ().findUnit (unit.getSecondaryUnitID (), "registerUnitFiguresAnimation");
-			final UnitCombatImageGfx secondaryUnitImage = secondaryUnit.findCombatAction (combatActionID, "registerUnitFiguresAnimation").findDirection (direction, "registerUnitFiguresAnimation");
-			getAnim ().registerRepaintTrigger (secondaryUnitImage.getUnitCombatAnimation (), component);
-		}
+		final UnitEx unit = getClient ().getClientDB ().findUnit (unitID, "registerUnitFiguresAnimation");
+		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "registerUnitFiguresAnimation").findDirection (direction, "registerUnitFiguresAnimation");
+		getAnim ().registerRepaintTrigger (unitImage.getUnitCombatAnimation (), component, AnimationContainer.COMMON_XML);
 
 		log.trace ("Exiting registerUnitFiguresAnimation");
 	}
@@ -416,16 +403,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	{
 		log.trace ("Entering unregisterUnitFiguresAnimation: " + unitID + ", " + combatActionID + ", " + direction + ", " + component);
 
-		final UnitGfx unit = getGraphicsDB ().findUnit (unitID, "unregisterUnitFiguresAnimation");
-		final UnitCombatImageGfx unitImage = unit.findCombatAction (combatActionID, "unregisterUnitFiguresAnimation").findDirection (direction, "unregisterUnitFiguresAnimation");
+		final UnitEx unit = getClient ().getClientDB ().findUnit (unitID, "unregisterUnitFiguresAnimation");
+		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "unregisterUnitFiguresAnimation").findDirection (direction, "unregisterUnitFiguresAnimation");
 		getAnim ().unregisterRepaintTrigger (unitImage.getUnitCombatAnimation (), component);
-		
-		if (unit.getSecondaryUnitID () != null)
-		{
-			final UnitGfx secondaryUnit = getGraphicsDB ().findUnit (unit.getSecondaryUnitID (), "unregisterUnitFiguresAnimation");
-			final UnitCombatImageGfx secondaryUnitImage = secondaryUnit.findCombatAction (combatActionID, "unregisterUnitFiguresAnimation").findDirection (direction, "unregisterUnitFiguresAnimation");
-			getAnim ().unregisterRepaintTrigger (secondaryUnitImage.getUnitCombatAnimation (), component);
-		}
 		
 		log.trace ("Exiting unregisterUnitFiguresAnimation");
 	}
@@ -436,8 +416,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * NB. The resulting array may not have aliveFigureCount elements; it may be x1, x4 or x5 depending on combat scale.
 	 * The calling routine should just iterate over the resulting array and make no assumptions about how many elements will contain. 
 	 * 
-	 * @param unitID The unit to draw
-	 * @param unitTypeID The type of unit it is (can pass in null - the only value it cares about is if this is 'S' for summoned units)
 	 * @param totalFigureCount The number of figures the unit had when fully healed
 	 * @param aliveFigureCount The number of figures the unit has now
 	 * @param offsetX The x offset into the graphics context to draw the unit at
@@ -446,52 +424,17 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final int [] [] calcUnitFigurePositions (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount,
-		final int offsetX, final int offsetY) throws IOException
+	public final int [] [] calcUnitFigurePositions (final int totalFigureCount, final int aliveFigureCount, final int offsetX, final int offsetY) throws IOException
 	{
-		// Get the main unit
-		final UnitGfx unit = getGraphicsDB ().findUnit (unitID, "calcUnitFigurePositions");
-		
 		// relativeScale = which set of positions from the graphics XML to use for this unit's figures
 		// relativeScaleMultiplier = what to multiply the tileRelativeX, Y in th egraphics XML by
 		// unitImageMultiplier = how much to multiply the size of the unit figures by
 		// figureMultiplier = how many times the number of figures should we draw
-		final int relativeScale;
-		final int relativeScaleMultiplier;
-		int figureMultiplier;
-		final int unitImageMultiplier;
+		final int relativeScale = 1;
+		final int relativeScaleMultiplier = 2;
+		final int figureMultiplier = 1;
+		final int unitImageMultiplier = 2;
 		
-		switch (getClientConfig ().getUnitCombatScale ())
-		{
-			case DOUBLE_SIZE_UNITS:
-				relativeScale = 1;
-				relativeScaleMultiplier = 2;
-				figureMultiplier = 1;
-				unitImageMultiplier = 2;
-				break;
-				
-			case FOUR_TIMES_FIGURES:
-				relativeScale = 2;
-				relativeScaleMultiplier = 1;
-				figureMultiplier = 4;
-				unitImageMultiplier = 1;
-				break;
-				
-			case FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED:
-				relativeScale = 2;
-				relativeScaleMultiplier = 1;
-				figureMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 1 : 4;
-				unitImageMultiplier = ((totalFigureCount == 1) && (CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED.equals (unitTypeID))) ? 2 : 1;
-				break;
-				
-			default:
-				throw new MomException ("calcUnitFigurePositions encountered a scale that it doesn't know how to handle: " + getClientConfig ().getUnitCombatScale ());
-		}
-		
-		// Show heroes with entourage of cavalry accompanying them
-		if ((figureMultiplier == 4) && (unit.getSecondaryUnitID () != null))
-			figureMultiplier++;
-
 		// This is to account that the unit's feet don't touch the bottom of the image
 		final int fudgeY = (totalFigureCount <= 2) ? 4 : 6;
 		
@@ -518,7 +461,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
 	 * 
 	 * @param unitID The unit to draw
-	 * @param unitTypeID The type of unit it is (can pass in null - the only value it cares about is if this is 'S' for summoned units)
 	 * @param totalFigureCount The number of figures the unit had when fully healed
 	 * @param aliveFigureCount The number of figures the unit has now
 	 * @param combatActionID The action to show the unit doing
@@ -533,7 +475,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
+	public final void drawUnitFigures (final String unitID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
 		final int baseZOrder, final List<String> shadingColours) throws IOException
 	{
@@ -545,48 +487,28 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		}
 		
 		// Get the main unit
-		final UnitGfx unit = getGraphicsDB ().findUnit (unitID, "drawUnitFigures");
+		final UnitEx unit = getClient ().getClientDB ().findUnit (unitID, "drawUnitFigures");
 		
 		// Get all the figure positions
-		final int [] [] figurePositions = calcUnitFigurePositions (unitID, unitTypeID, totalFigureCount, aliveFigureCount, offsetX, offsetY);
-		
-		// Show heroes with entourage of cavalry accompanying them
-		BufferedImage secondaryImage = null;
-		if (figurePositions.length / aliveFigureCount == 5)		// sneaky way to figure out figureMultiplier value
-		{
-			final UnitGfx secondaryUnit = getGraphicsDB ().findUnit (unit.getSecondaryUnitID (), "drawUnitFigures");
-			final UnitCombatImageGfx secondaryUnitImage = secondaryUnit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
-			secondaryImage = getAnim ().loadImageOrAnimationFrameWithShading
-				(secondaryUnitImage.getUnitCombatImageFile (), secondaryUnitImage.getUnitCombatAnimation (), shadingColours, registeredAnimation);
-		}
+		final int [] [] figurePositions = calcUnitFigurePositions (totalFigureCount, aliveFigureCount, offsetX, offsetY);
 		
 		// Work out the image to draw n times
-		final UnitCombatImageGfx unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
+		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
 		final BufferedImage image = getAnim ().loadImageOrAnimationFrameWithShading
-			(unitImage.getUnitCombatImageFile (), unitImage.getUnitCombatAnimation (), shadingColours, registeredAnimation);
+			(unitImage.getUnitCombatImageFile (), unitImage.getUnitCombatAnimation (), shadingColours, registeredAnimation, AnimationContainer.COMMON_XML);
 		
 		// Draw the figure in each position
-		int n = 1;
 		for (final int [] position : figurePositions)
 		{
-			// Select image to draw
-			final BufferedImage useImage;
-			if (secondaryImage == null)
-				useImage = image;
-			else
-				useImage = (n == 3) ? image : secondaryImage;
-			
 			// Last array element tells us what to multiply the image size up by
-			final int imageWidth = useImage.getWidth () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
-			final int imageHeight = useImage.getHeight () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
+			final int imageWidth = image.getWidth () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
+			final int imageHeight = image.getHeight () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
 			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
-			g.drawImage (useImage,
+			g.drawImage (image,
 				position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
 				position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight,
 				imageWidth, imageHeight, baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
-			
-			n++;
 		}
 	}
 
@@ -622,7 +544,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				sampleTileImageFile = null; 
 			
 			// Call other version now that we have all the necessary values
-			drawUnitFigures (unit.getUnitID (), unit.getUnitType ().getUnitTypeID (), unit.getFullFigureCount (), aliveFigureCount, combatActionID,
+			drawUnitFigures (unit.getUnitID (), unit.getFullFigureCount (), aliveFigureCount, combatActionID,
 				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours);
 		}
 	}
@@ -641,27 +563,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	{
 		log.trace ("Entering calculateWalkTiming: " + unit.getUnitID ());
 		
-		final int unitImageMultiplier;
-		
-		// Derivation of unitImageMultiplier is copied directly from drawUnitFigures
-		switch (getClientConfig ().getUnitCombatScale ())
-		{
-			case DOUBLE_SIZE_UNITS:
-				unitImageMultiplier = 2;
-				break;
-				
-			case FOUR_TIMES_FIGURES:
-				unitImageMultiplier = 1;
-				break;
-				
-			case FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED:
-				unitImageMultiplier = ((unit.getFullFigureCount () == 1) && (unit.isSummoned ())) ? 2 : 1;
-				break;
-				
-			default:
-				throw new MomException ("calculateWalkTiming encountered a scale that it doesn't know how to handle: " + getClientConfig ().getUnitCombatScale ());
-		}
-		
+		final int unitImageMultiplier = 2;
 		final int result = 3 - unitImageMultiplier;		
 		log.trace ("Exiting calculateWalkTiming = " + result);
 		return result;
@@ -683,14 +585,14 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// See if there's a specific override sound specified for this unit.
 		// This so earth elementals make a stomp stomp noise, cavalry go clippity clop and regular swordsmen go clank clank, even though they're all just doing the WALK action.
 		final String soundEffectFilename;
-		final UnitGfx unitGfx = getGraphicsDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
-		final UnitCombatActionGfx unitCombatAction = unitGfx.findCombatAction (combatActionID, "playCombatActionSound");
+		final UnitEx UnitEx = getClient ().getClientDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
+		final UnitCombatActionEx unitCombatAction = UnitEx.findCombatAction (combatActionID, "playCombatActionSound");
 		if (unitCombatAction.getOverrideActionSoundFile () != null)
 			soundEffectFilename = unitCombatAction.getOverrideActionSoundFile ();
 		else
 		{
 			// If we didn't find a specific sound for this unit, use the general one
-			soundEffectFilename = getGraphicsDB ().findCombatAction (combatActionID, "playCombatActionSound").getDefaultActionSoundFile ();
+			soundEffectFilename = getClient ().getClientDB ().findCombatAction (combatActionID, "playCombatActionSound").getDefaultActionSoundFile ();
 			if (soundEffectFilename == null)
 				log.warn ("Found combatAction " + combatActionID + " in the graphics XML, but it doesn't specify a defaultActionSoundFile");
 		}
@@ -841,9 +743,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

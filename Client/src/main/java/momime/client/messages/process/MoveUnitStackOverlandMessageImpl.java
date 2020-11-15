@@ -14,13 +14,13 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.utils.UnitClientUtils;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -59,7 +59,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	private MomImeClientConfigEx clientConfig;
 	
 	/** Overland map tile set */
-	private TileSetGfx overlandMapTileSet;
+	private TileSetEx overlandMapTileSet;
 	
 	/** Number of animation ticks */
 	private int tickCount;
@@ -159,7 +159,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		if (anim)
 		{
 			// We need this repeatedly so just work it out once
-			overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "MoveUnitStackOverlandMessageImpl.start");
+			overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "MoveUnitStackOverlandMessageImpl.start");
 			tickCount = Math.max (overlandMapTileSet.getTileWidth (), overlandMapTileSet.getTileHeight ());
 			
 			// Start at the starting cell - note it being at the start point means it looks no different, so is why we don't do a repaint yet

@@ -1,6 +1,8 @@
 package momime.common.utils;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -85,5 +87,27 @@ public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 					cell.setBuildingIdSoldThisTurn (null);
 
 		log.trace ("Exiting blankBuildingsSoldThisTurn");
+	}
+	
+	/**
+	 * @param terrainData Our knowledge of the terrain at this location
+	 * @param db Lookup lists built over the XML database
+	 * @return True if we know there's a Node, Lair or Tower of Wizardy (cleared or uncleared) here, false if there isn't or we have no knowledge of the location
+	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
+	 */
+	@Override
+	public final boolean isNodeLairTower (final OverlandMapTerrainData terrainData, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		final boolean result;
+		if (terrainData == null)
+			result = false;
+		else
+			result = ((terrainData.getTileTypeID () != null) && (db.findTileType (terrainData.getTileTypeID (), "isNodeLairTower").getMagicRealmID () != null)) ||
+
+			// Lairs & Towers
+			((terrainData.getMapFeatureID () != null) && (db.findMapFeature (terrainData.getMapFeatureID (), "isNodeLairTower").getMapFeatureMagicRealm ().size () > 0));
+
+		return result;
 	}
 }

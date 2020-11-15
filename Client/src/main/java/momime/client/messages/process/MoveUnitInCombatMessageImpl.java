@@ -17,14 +17,14 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetGfx;
-import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
+import momime.common.database.AnimationGfx;
+import momime.common.database.TileSetEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
 import momime.common.utils.ExpandedUnitDetails;
@@ -78,7 +78,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	private MapCoordinates2DEx moveTo;
 	
 	/** Need to know size of combat map tiles to figure out spacing of the move */
-	private TileSetGfx combatMapTileSet;
+	private TileSetEx combatMapTileSet;
 	
 	/** Current position of this unit on the combat map, in pixels */
 	private int currentX;
@@ -122,12 +122,12 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		for (final String unitSkillID : unit.listModifiedSkillIDs ())
 		{
-			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "MoveUnitInCombatMessageImpl.start");
-			if (unitSkillGfx.getUnitSkillCombatAnimation () != null)
-				animations.add (getGraphicsDB ().findAnimation (unitSkillGfx.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
+			final UnitSkillEx UnitSkillEx = getClient ().getClientDB ().findUnitSkill (unitSkillID, "MoveUnitInCombatMessageImpl.start");
+			if (UnitSkillEx.getUnitSkillCombatAnimation () != null)
+				animations.add (getGraphicsDB ().findAnimation (UnitSkillEx.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
 			
-			if (unitSkillGfx.getUnitSkillCombatColour () != null)
-				shadingColours.add (unitSkillGfx.getUnitSkillCombatColour ());
+			if (UnitSkillEx.getUnitSkillCombatColour () != null)
+				shadingColours.add (UnitSkillEx.getUnitSkillCombatColour ());
 		}
 		
 		// Remove the unit from the map cell it is leaving so the regular drawing routine stops drawing this unit
@@ -136,7 +136,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		getCombatUI ().setUnitMoving (this);
 
 		// We need this repeatedly so just work it out once
-		combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "MoveUnitInCombatMessageImpl.start");
+		combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "MoveUnitInCombatMessageImpl.start");
 		tickCount = Math.max (combatMapTileSet.getTileWidth (), combatMapTileSet.getTileHeight ()) * 2;
 		
 		currentX = getCombatMapBitmapGenerator ().combatCoordinatesX (getMoveFrom ().getX (), getMoveFrom ().getY (), combatMapTileSet);

@@ -19,6 +19,7 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.database.CommonDatabase;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -34,7 +35,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
@@ -310,7 +310,7 @@ public final class TestPlayerMessageProcessingImpl
 	public final void testContinueMovement_AllPlayers () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
@@ -393,7 +393,7 @@ public final class TestPlayerMessageProcessingImpl
 	public final void testContinueMovement_OnePlayers () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();

@@ -12,10 +12,9 @@ import org.junit.Test;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitSkillGfx;
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
@@ -32,11 +31,11 @@ public final class TestClientUnitCalculationsImpl
 	@Test
 	public final void testFindPreferredMovementSkillGraphics_Found () throws Exception
 	{
-		// Mock entries from the graphics XML
-		final List<UnitSkillGfx> skills = new ArrayList<UnitSkillGfx> ();
+		// Mock database
+		final List<UnitSkillEx> skills = new ArrayList<UnitSkillEx> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkillGfx skill = new UnitSkillGfx ();
+			final UnitSkillEx skill = new UnitSkillEx ();
 			skill.setUnitSkillID ("US0" + n);
 			
 			if ((n >= 2) || (n <= 4))
@@ -45,13 +44,11 @@ public final class TestClientUnitCalculationsImpl
 			skills.add (skill);
 		}
 		
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.getUnitSkills ()).thenReturn (skills);
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitSkills ()).thenReturn (skills);
 		
 		// Mock things accessed from MomClient
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -75,7 +72,6 @@ public final class TestClientUnitCalculationsImpl
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
-		calc.setGraphicsDB (gfx);
 		calc.setClient (client);
 		
 		// Run test
@@ -89,11 +85,11 @@ public final class TestClientUnitCalculationsImpl
 	@Test(expected=MomException.class)
 	public final void testFindPreferredMovementSkillGraphics_NotFound () throws Exception
 	{
-		// Mock entries from the graphics XML
-		final List<UnitSkillGfx> skills = new ArrayList<UnitSkillGfx> ();
+		// Mock database
+		final List<UnitSkillEx> skills = new ArrayList<UnitSkillEx> ();
 		for (int n = 1; n <= 5; n++)
 		{
-			final UnitSkillGfx skill = new UnitSkillGfx ();
+			final UnitSkillEx skill = new UnitSkillEx ();
 			skill.setUnitSkillID ("US0" + n);
 			
 			if ((n >= 2) || (n <= 4))
@@ -102,13 +98,11 @@ public final class TestClientUnitCalculationsImpl
 			skills.add (skill);
 		}
 		
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.getUnitSkills ()).thenReturn (skills);
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitSkills ()).thenReturn (skills);
 		
 		// Mock things accessed from MomClient
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -132,7 +126,6 @@ public final class TestClientUnitCalculationsImpl
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
-		calc.setGraphicsDB (gfx);
 		calc.setClient (client);
 		
 		// Run test
@@ -146,22 +139,20 @@ public final class TestClientUnitCalculationsImpl
 	@Test
 	public final void testDetermineCombatActionID_Defined () throws Exception
 	{
-		// Mock entries from the graphics XML
-		final List<UnitSkillGfx> skills = new ArrayList<UnitSkillGfx> ();
-		final UnitSkillGfx skill = new UnitSkillGfx ();
+		// Mock database
+		final List<UnitSkillEx> skills = new ArrayList<UnitSkillEx> ();
+		final UnitSkillEx skill = new UnitSkillEx ();
 		skill.setUnitSkillID ("US01");
 		skill.setMovementIconImagePreference (1);
 		skill.setStandActionID ("XXX");
 		skill.setMoveActionID ("YYY");
 		skills.add (skill);
 		
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.getUnitSkills ()).thenReturn (skills);
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitSkills ()).thenReturn (skills);
 
 		// Mock things accessed from MomClient
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -181,7 +172,6 @@ public final class TestClientUnitCalculationsImpl
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
-		calc.setGraphicsDB (gfx);
 		calc.setClient (client);
 		
 		// Run test
@@ -196,20 +186,18 @@ public final class TestClientUnitCalculationsImpl
 	@Test(expected=MomException.class)
 	public final void testDetermineCombatActionID_Undefined () throws Exception
 	{
-		// Mock entries from the graphics XML
-		final List<UnitSkillGfx> skills = new ArrayList<UnitSkillGfx> ();
-		final UnitSkillGfx skill = new UnitSkillGfx ();
+		// Mock database
+		final List<UnitSkillEx> skills = new ArrayList<UnitSkillEx> ();
+		final UnitSkillEx skill = new UnitSkillEx ();
 		skill.setUnitSkillID ("US01");
 		skill.setMovementIconImagePreference (1);
 		skills.add (skill);
 		
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.getUnitSkills ()).thenReturn (skills);
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitSkills ()).thenReturn (skills);
 
 		// Mock things accessed from MomClient
-		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
-		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();		
 		
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -229,7 +217,6 @@ public final class TestClientUnitCalculationsImpl
 		
 		// Set up object to test
 		final ClientUnitCalculationsImpl calc = new ClientUnitCalculationsImpl ();
-		calc.setGraphicsDB (gfx);
 		calc.setClient (client);
 		
 		// Run test

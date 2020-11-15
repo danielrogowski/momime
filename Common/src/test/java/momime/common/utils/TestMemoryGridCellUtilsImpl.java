@@ -4,18 +4,23 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
+import momime.common.database.MapFeatureEx;
+import momime.common.database.TileTypeEx;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapTerrainData;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
 
 /**
  * Tests the MemoryGridCellUtils class
@@ -166,5 +171,146 @@ public final class TestMemoryGridCellUtilsImpl
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 					assertNull (cell.getBuildingIdSoldThisTurn ());
+	}
+
+	/**
+	 * Tests the isNodeLairTower method when both the whole terrain data is null
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsNodeLairTower_TerrainDataNull () throws Exception
+	{
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertFalse (utils.isNodeLairTower (null, null));
+	}
+
+	/**
+	 * Tests the isNodeLairTower method when both the terrain data exists, but has tile type and map feature both null
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsNodeLairTower_BothNull () throws Exception
+	{
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertFalse (utils.isNodeLairTower (terrainData, null));
+	}
+
+	/**
+	 * Tests the isNodeLairTower method when the tile type has no magic realm defined, and map feature is null
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsNodeLairTower_TileTypeNo () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final TileTypeEx tileTypeDef = new TileTypeEx ();
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tileTypeDef);
+
+		// Set up terrain data to test
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("TT01");
+
+		// Run method
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertFalse (utils.isNodeLairTower (terrainData, db));
+	}
+
+	/**
+	 * Tests the isNodeLairTower method when the tile type does have a magic realm defined, and map feature is null
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsNodeLairTower_TileTypeYes () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final TileTypeEx tileTypeDef = new TileTypeEx ();
+		tileTypeDef.setMagicRealmID ("X");
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tileTypeDef);
+
+		// Set up terrain data to test
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("TT01");
+
+		// Run method
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertTrue (utils.isNodeLairTower (terrainData, db));
+	}
+
+	/**
+	 * Tests the isNodeLairTower method when the map feature has no magic realm defined, and tile type is null
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsNodeLairTower_MapFeatureNo () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final MapFeatureEx mapFeatureDef = new MapFeatureEx ();
+		when (db.findMapFeature ("MF01", "isNodeLairTower")).thenReturn (mapFeatureDef);
+		
+		// Set up terrain data to test
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setMapFeatureID ("MF01");
+
+		// Run method
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertFalse (utils.isNodeLairTower (terrainData, db));
+	}
+
+	/**
+	 * Tests the isNodeLairTower method when the map feature does have a magic realm defined, and tile type is null
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsNodeLairTower_MapFeatureYes () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final MapFeatureEx mapFeatureDef = new MapFeatureEx ();
+		mapFeatureDef.getMapFeatureMagicRealm ().add (null);
+		when (db.findMapFeature ("MF01", "isNodeLairTower")).thenReturn (mapFeatureDef);
+		
+		// Set up terrain data to test
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setMapFeatureID ("MF01");
+
+		// Run method
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertTrue (utils.isNodeLairTower (terrainData, db));
+	}
+
+	/**
+	 * Tests the isNodeLairTower method when the map feature does have a magic realm defined, and tile type doesn't
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsNodeLairTower_MapFeatureYes_WithTileType () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final TileTypeEx tileTypeDef = new TileTypeEx ();
+		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tileTypeDef);
+		
+		final MapFeatureEx mapFeatureDef = new MapFeatureEx ();
+		mapFeatureDef.getMapFeatureMagicRealm ().add (null);
+		when (db.findMapFeature ("MF01", "isNodeLairTower")).thenReturn (mapFeatureDef);
+		
+		// Set up terrain data to test
+		final OverlandMapTerrainData terrainData = new OverlandMapTerrainData ();
+		terrainData.setTileTypeID ("TT01");
+		terrainData.setMapFeatureID ("MF01");
+
+		// Run method
+		final MemoryGridCellUtilsImpl utils = new MemoryGridCellUtilsImpl ();
+		assertTrue (utils.isNodeLairTower (terrainData, db));
 	}
 }

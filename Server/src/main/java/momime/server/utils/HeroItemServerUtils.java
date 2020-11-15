@@ -3,12 +3,12 @@ package momime.server.utils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.UnitSetting;
 import momime.common.messages.NumberedHeroItem;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
@@ -33,6 +33,6 @@ public interface HeroItemServerUtils
 	 * @throws RecordNotFoundException If player requested a bonus that doesn't exist
 	 * @throws MomException If there any serious failures in logic
 	 */
-	public String validateHeroItem (final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem, final UnitSetting unitSettings, final ServerDatabaseEx db)
+	public String validateHeroItem (final PlayerServerDetails player, final Spell spell, final HeroItem heroItem, final UnitSetting unitSettings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException;
 }

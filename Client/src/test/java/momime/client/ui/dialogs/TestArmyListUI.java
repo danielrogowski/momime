@@ -1,10 +1,10 @@
 package momime.client.ui.dialogs;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.anyString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,17 +21,19 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.ArmyListScreen;
+import momime.client.languages.database.Simple;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.ArmyListCellRenderer;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
 import momime.common.database.OverlandMapSize;
-import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -57,35 +59,37 @@ public final class TestArmyListUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the client database
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitID ("UN001");
-		when (db.findUnit ("UN001", "refreshArmyList")).thenReturn (unitDef);
+		unitDef.setUnitOverlandImageFile ("/momime.client.graphics/units/UN040/overland.png");
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
-		final List<Unit> unitDefs = new ArrayList<Unit> ();
+		final List<UnitEx> unitDefs = new ArrayList<UnitEx> ();
 		unitDefs.add (unitDef);
 		doReturn (unitDefs).when (db).getUnits ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
 		
-		when (lang.findCategoryEntry ("frmArmyList", "Title")).thenReturn ("The Armies of PLAYER_NAME");
-		when (lang.findCategoryEntry ("frmArmyList", "HeroItems")).thenReturn ("Items");
-		when (lang.findCategoryEntry ("frmArmyList", "OK")).thenReturn ("OK");
-
+		final ArmyListScreen armyListScreenLang = new ArmyListScreen ();
+		armyListScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "The Armies of PLAYER_NAME"));
+		armyListScreenLang.getHeroItems ().add (createLanguageText (Language.ENGLISH, "Items"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getArmyListScreen ()).thenReturn (armyListScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Graphics database
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
-		final UnitGfx unitGfx = new UnitGfx ();
-		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN040/overland.png");
-		when (gfx.findUnit (eq ("UN001"), anyString ())).thenReturn (unitGfx);
 		
 		// Session description
 		final OverlandMapSize mapSize = createOverlandMapSize ();
@@ -127,11 +131,6 @@ public final class TestArmyListUI extends ClientTestData
 						when (unitUtils.expandUnitDetails (thisUnit, null, null, null, players, fow, db)).thenReturn (xu);
 					}
 		
-		// Renderer
-		final ArmyListCellRenderer renderer = new ArmyListCellRenderer ();
-		renderer.setUtils (utils);
-		renderer.setGraphicsDB (gfx);
-		
 		// Client
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPlayerID ()).thenReturn (1);
@@ -140,6 +139,12 @@ public final class TestArmyListUI extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
 
+		// Renderer
+		final ArmyListCellRenderer renderer = new ArmyListCellRenderer ();
+		renderer.setUtils (utils);
+		renderer.setGraphicsDB (gfx);
+		renderer.setClient (client);
+		
 		// Mock the minimap bitmaps provided by the RHP
 		final MiniMapBitmapGenerator gen = mock (MiniMapBitmapGenerator.class);
 		when (gen.generateMiniMapBitmap (0)).thenReturn (createSolidImage (mapSize.getWidth (), mapSize.getHeight (), 0x004000));

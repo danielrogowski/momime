@@ -13,14 +13,8 @@ public final class GraphicsDatabaseConstants
 	/** Path and name to locate the graphics XSD file that doesn't include the link to the server XML */
 	public static final String GRAPHICS_XSD_LOCATION_NO_SERVER_LINK = "/momime.client.graphics/MoMIMEGraphicsDatabase_NoServerXsdLink.xsd";
 	
-	/** Tile set for the overland map */
-	public static final String TILE_SET_OVERLAND_MAP = "TS01";
-	
 	/** Tile set for combat maps */
 	public static final String TILE_SET_COMBAT_MAP = "TS02";
-	
-	/** Special bitmask for when smoothing is turned off */
-	public static final String TILE_BITMASK_NO_SMOOTHING = "NoSmooth";
 	
 	/**
 	 * Walk action.  Avoid referencing this wherever possible - combat actions should be obtained by calling determineCombatActionID ().

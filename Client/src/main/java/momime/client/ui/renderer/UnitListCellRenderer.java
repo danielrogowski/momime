@@ -20,9 +20,8 @@ import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.UnitLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.common.utils.ExpandedUnitDetails;
@@ -110,8 +109,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 		}
 		
 		// Look up the name of the unit
-		final UnitLang unitLang = getLanguage ().findUnit (unit.getUnitID ());
-		textLabel.setText ((unitLang != null) ? unitLang.getUnitName () : unit.getUnitID ());
+		textLabel.setText (getLanguageHolder ().findDescription (unit.getUnitDefinition ().getUnitName ()));
 		textLabel.setFont (getFont ());
 		
 		if (isSelected)
@@ -158,9 +156,9 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 	
 	/**

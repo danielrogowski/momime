@@ -8,18 +8,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.MomClient;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.utils.PlayerPickUtils;
-import momime.common.utils.ResourceValueUtils;
-
 import org.junit.Test;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -28,10 +16,27 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.AlchemyScreen;
+import momime.client.languages.database.Simple;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.ProductionTypeEx;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.utils.PlayerPickUtils;
+import momime.common.utils.ResourceValueUtils;
+
 /**
  * Tests the AlchemyUI class
  */
-public final class TestAlchemyUI
+public final class TestAlchemyUI extends ClientTestData
 {
 	/**
 	 * Tests the AlchemyUI form, when we don't have the alchemy retort
@@ -64,26 +69,34 @@ public final class TestAlchemyUI
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-
-		when (lang.findCategoryEntry ("frmAlchemy", "Title")).thenReturn ("Alchemy");
-		when (lang.findCategoryEntry ("frmAlchemy", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("frmAlchemy", "Cancel")).thenReturn ("Cancel");
-		when (lang.findCategoryEntry ("frmAlchemy", "Conversion")).thenReturn ("Transmute FROM_PRODUCTION_TYPE to TO_PRODUCTION_TYPE");
-
-		final ProductionTypeLang goldProduction = new ProductionTypeLang ();
-		goldProduction.setProductionTypeDescription ("Gold");
-		goldProduction.setProductionTypeSuffix ("GP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
-		manaProduction.setProductionTypeDescription ("Mana");
-		manaProduction.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		final ProductionTypeEx goldProduction = new ProductionTypeEx ();
+		goldProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Gold"));
+		goldProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "GP"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD), anyString ())).thenReturn (goldProduction);
+		
+		final ProductionTypeEx manaProduction = new ProductionTypeEx ();
+		manaProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Mana"));
+		manaProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA), anyString ())).thenReturn (manaProduction);
+		
+		// Mock entries from the language XML
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
+		
+		final AlchemyScreen alchemyScreenLang = new AlchemyScreen ();
+		alchemyScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Alchemy"));
+		alchemyScreenLang.getConversion ().add (createLanguageText (Language.ENGLISH, "Transmute FROM_PRODUCTION_TYPE to TO_PRODUCTION_TYPE"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getAlchemyScreen ()).thenReturn (alchemyScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -105,6 +118,7 @@ public final class TestAlchemyUI
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (3);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);

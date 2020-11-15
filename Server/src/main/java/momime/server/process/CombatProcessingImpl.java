@@ -24,6 +24,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
@@ -48,16 +49,15 @@ import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CombatAI;
 import momime.server.ai.CombatAIMovementResult;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.ServerGridCellEx;
-import momime.server.messages.ServerMemoryGridCellUtils;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -107,6 +107,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
 	 * city wall corners and the main feature (node, temple, tower of wizardry, etc. on the defender side).
@@ -137,7 +140,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
 	final List<Integer> determineMaxUnitsInRow (final int startX, final int startY, final int unitHeading, final int maxRows,
-		final CoordinateSystem combatMapCoordinateSystem, final MapAreaOfCombatTiles combatMap, final ServerDatabaseEx db) throws RecordNotFoundException
+		final CoordinateSystem combatMapCoordinateSystem, final MapAreaOfCombatTiles combatMap, final CommonDatabase db) throws RecordNotFoundException
 	{
 		final List<Integer> maxUnitsInRow = new ArrayList<Integer> ();
 		final MapCoordinates2DEx centre = new MapCoordinates2DEx (startX, startY);
@@ -393,7 +396,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	final void placeCombatUnits (final MapCoordinates3DEx combatLocation, final int startX, final int startY, final int unitHeading, final UnitCombatSideID combatSide,
 		final List<MemoryUnitAndCombatClass> unitsToPosition, final List<Integer> unitsInRow, final StartCombatMessage startCombatMessage,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final CoordinateSystem combatMapCoordinateSystem, final MapAreaOfCombatTiles combatMap, final ServerDatabaseEx db)
+		final CoordinateSystem combatMapCoordinateSystem, final MapAreaOfCombatTiles combatMap, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering placeCombatUnits: " + combatLocation + ", (" + startX + ", " + startY + "), " + unitHeading + ", " + combatSide);
@@ -734,7 +737,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	@Override
 	public final List<MemoryUnit> createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
 		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering createUndead: " + combatLocation);
@@ -788,7 +791,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	@Override
 	public void killUnitsIfTooManyInMapCell (final MapCoordinates3DEx unitLocation, final List<MemoryUnit> unitsToRemove,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		log.trace ("Entering killUnitsIfTooManyInMapCell: " + unitLocation);
@@ -834,7 +837,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	@Override
 	public final void purgeDeadUnitsAndCombatSummonsFromCombat (final MapCoordinates3DEx combatLocation,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
 		log.trace ("Entering purgeDeadUnitsAndCombatSummonsFromCombat: " + combatLocation);
@@ -945,7 +948,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	@Override
 	public final void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapVolumeOfMemoryGridCells trueTerrain,
 		final MemoryUnit trueUnit, final MapCoordinates3DEx terrainLocation, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
-		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final ServerDatabaseEx db)
+		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		log.trace ("Entering setUnitIntoOrTakeUnitOutOfCombat: Unit URN " + trueUnit.getUnitURN () + ", " + combatSide + ", " + combatLocation);
@@ -956,7 +959,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// If DefendingPlayer is nil (we wiped out the monsters), there'll be no monsters to remove, so in which case we don't care that we get this value wrong
 		final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		final boolean attackingNodeLairTower = (defPub != null) && (combatLocation == null) && (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (defPub.getWizardID ())) &&
-			ServerMemoryGridCellUtils.isNodeLairTower (tc.getTerrainData (), db);
+			getMemoryGridCellUtils ().isNodeLairTower (tc.getTerrainData (), db);
 
 		// Update true unit on server
 		trueUnit.setCombatLocation (combatLocation);
@@ -1042,7 +1045,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 */
 	@Override
 	public final void removeUnitsFromCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
-		final MapCoordinates3DEx combatLocation, final ServerDatabaseEx db)
+		final MapCoordinates3DEx combatLocation, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		log.trace ("Entering removeUnitsFromCombat: " + combatLocation);
@@ -1403,5 +1406,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

@@ -3,8 +3,8 @@
 	<compressDataSentToServer>true</compressDataSentToServer>
 	<decompressDataReceivedFromServer>true</decompressDataReceivedFromServer>
 	<graphicsXmlFilename>client/graphics/Default.Master of Magic Graphics.xml</graphicsXmlFilename>
-	<pathToLanguageXmlFiles>client/languages</pathToLanguageXmlFiles>
-	<chosenLanguage>English</chosenLanguage>
+    <languagesXmlFilename>client/languages/Languages.momime.xml</languagesXmlFilename>
+	<chosenLanguage>en</chosenLanguage>
 	<overlandSmoothTerrain>true</overlandSmoothTerrain>
 	<overlandSmoothTextures>true</overlandSmoothTextures>
 	<overlandShowPartialFogOfWar>true</overlandShowPartialFogOfWar>
@@ -13,7 +13,6 @@
 	<overlandShowEnemyBorders>false</overlandShowEnemyBorders>
 	<overlandAnimateUnitsMoving>true</overlandAnimateUnitsMoving>
 	<combatSmoothTerrain>true</combatSmoothTerrain>
-	<unitCombatScale>D</unitCombatScale>
 	<showHeroPortraits>true</showHeroPortraits>
 	<displayUnitSkillsAsAttributes>A</displayUnitSkillsAsAttributes>
 	<debugShowURNs>false</debugShowURNs>

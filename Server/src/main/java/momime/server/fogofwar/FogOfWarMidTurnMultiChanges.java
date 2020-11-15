@@ -10,6 +10,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
@@ -19,7 +20,6 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PendingMovement;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.process.OneCellPendingMovement;
 
@@ -43,7 +43,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx combatLocation, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final MapCoordinates3DEx combatLocation, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**
@@ -59,7 +59,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final MapCoordinates3DEx combatLocation, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final MapCoordinates3DEx combatLocation, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**
@@ -77,7 +77,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 */
 	public void switchOffMaintainedSpellsInLocationOnServerAndClients (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
 		final MapCoordinates3DEx cityLocation, final int castingPlayerID,
-		final ServerDatabaseEx db, final MomSessionDescription sd)
+		final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**
@@ -93,7 +93,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void removeCombatAreaEffectsFromLocalisedSpells (final FogOfWarMemory trueMap, final MapCoordinates3DEx mapLocation,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 
 	/**
@@ -110,7 +110,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 */
 	public void destroyAllBuildingsInLocationOnServerAndClients (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 	
 	/**
@@ -127,7 +127,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	public void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -147,7 +147,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 */
 	public void grantExperienceToUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -181,7 +181,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 */
 	public void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 
 	/**
@@ -265,6 +265,6 @@ public interface FogOfWarMidTurnMultiChanges
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory trueMap, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		final FogOfWarMemory trueMap, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

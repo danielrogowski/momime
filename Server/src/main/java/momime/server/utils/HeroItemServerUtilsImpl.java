@@ -9,11 +9,14 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
+import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -24,9 +27,6 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
-import momime.server.database.HeroItemBonusSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
@@ -79,7 +79,7 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 	 * @throws MomException If there any serious failures in logic
 	 */
 	@Override
-	public final String validateHeroItem (final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem, final UnitSetting unitSettings, final ServerDatabaseEx db)
+	public final String validateHeroItem (final PlayerServerDetails player, final Spell spell, final HeroItem heroItem, final UnitSetting unitSettings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering validateHeroItem: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -100,10 +100,10 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 			
 			for (final HeroItemTypeAllowedBonus bonus : heroItem.getHeroItemChosenBonus ())
 			{
-				final HeroItemBonusSvr bonusDef = db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem");
+				final HeroItemBonus bonusDef = db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem");
 				
 				if (bonusIDs.contains (bonus.getHeroItemBonusID ()))
-					error = "Bonus " + bonusDef.getHeroItemBonusDescription () + " was chosen more than once";
+					error = "Bonus " + bonusDef.getHeroItemBonusID () + " was chosen more than once";
 				else
 				{
 					bonusIDs.add (bonus.getHeroItemBonusID ());
@@ -111,11 +111,11 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 					if ((spell.getHeroItemBonusMaximumCraftingCost () > 0) && ((bonusDef.getBonusCraftingCost () == null) ||
 						(bonusDef.getBonusCraftingCost () > spell.getHeroItemBonusMaximumCraftingCost ())))
 						
-						error = "Bonus " + bonusDef.getHeroItemBonusDescription () + " exceeds the maximum cost of " + spell.getHeroItemBonusMaximumCraftingCost () + " per bonus";
+						error = "Bonus " + bonusDef.getHeroItemBonusID () + " exceeds the maximum cost of " + spell.getHeroItemBonusMaximumCraftingCost () + " per bonus";
 					else
 						for (final PickAndQuantity prereq : bonusDef.getHeroItemBonusPrerequisite ())
 							if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
-								error = "Bonus " + bonusDef.getHeroItemBonusDescription () + " requires at least " + prereq.getQuantity () + " picks in magic realm " + prereq.getPickID ();
+								error = "Bonus " + bonusDef.getHeroItemBonusID () + " requires at least " + prereq.getQuantity () + " picks in magic realm " + prereq.getPickID ();
 					
 					if ((error == null) && ((bonusDef.isAllowCombiningWithBonusesToSameStat () == null) || (!bonusDef.isAllowCombiningWithBonusesToSameStat ())))
 						for (final UnitSkillAndValue bonusStat : bonusDef.getHeroItemBonusStat ())
@@ -142,7 +142,7 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 					if (error == null)
 					{
 						// Make sure the player actually knows the spell, and that its a combat spell
-						final SpellSvr spellDef = db.findSpell (heroItem.getSpellID (), "validateHeroItem");
+						final Spell spellDef = db.findSpell (heroItem.getSpellID (), "validateHeroItem");
 						final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 						final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), heroItem.getSpellID ());
 						

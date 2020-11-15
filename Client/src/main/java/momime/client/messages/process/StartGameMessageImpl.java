@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import momime.client.audio.AudioPlayer;
+import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
@@ -54,7 +55,7 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 		// Switch to the overland map background music
 		try
 		{
-			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC);
+			getMusicPlayer ().playPlayList (GraphicsDatabaseConstants.PLAY_LIST_OVERLAND_MUSIC, AnimationContainer.GRAPHICS_XML);
 		}
 		catch (final Exception e)
 		{

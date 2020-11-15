@@ -10,15 +10,20 @@ import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
+import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemTypeGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemBonus;
+import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
+import momime.common.database.Language;
+import momime.common.database.Spell;
 import momime.common.messages.NumberedHeroItem;
 
 /**
@@ -37,31 +42,45 @@ public final class TestHeroItemInfoUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
+		// Mock entries from DB
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Spell spell = new Spell ();
+		spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Lightning Bolt"));
+		when (db.findSpell ("SP001", "HeroItemInfoUI")).thenReturn (spell);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		final HeroItemType itemTypeGfx = new HeroItemType ();
+		for (int n = 1; n <= 9; n++)
+			itemTypeGfx.getHeroItemTypeImageFile ().add ("/momime.client.graphics/heroItems/items/shield-0" + n + ".png");
+		
+		when (db.findHeroItemType ("IT01", "HeroItemInfoUI")).thenReturn (itemTypeGfx);
+		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHeroItemInfo", "Close")).thenReturn ("Close");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getClose ().add (createLanguageText (Language.ENGLISH, "Close"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
 		
 		for (int n = 1; n <= 3; n++)
-			when (lang.findHeroItemBonusDescription ("IB0" + n)).thenReturn ("Bonus #" + n);
-		
-		final SpellLang spell = new SpellLang ();
-		spell.setSpellName ("Lightning Bolt");
-		when (lang.findSpell ("SP001")).thenReturn (spell);
+		{
+			final HeroItemBonus bonus = new HeroItemBonus ();
+			bonus.getHeroItemBonusDescription ().add (createLanguageText (Language.ENGLISH, "Bonus #" + n));
+			
+			when (db.findHeroItemBonus ("IB0" + n, "HeroItemInfoUI")).thenReturn (bonus);
+		}
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock graphics
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
-		final HeroItemTypeGfx itemTypeGfx = new HeroItemTypeGfx ();
-		for (int n = 1; n <= 9; n++)
-			itemTypeGfx.getHeroItemTypeImageFile ().add ("/momime.client.graphics/heroItems/items/shield-0" + n + ".png");
-		
-		when (gfx.findHeroItemType ("IT01", "HeroItemInfoUI")).thenReturn (itemTypeGfx);
 		
 		// The item to display
 		final NumberedHeroItem item = new NumberedHeroItem ();
@@ -89,6 +108,7 @@ public final class TestHeroItemInfoUI extends ClientTestData
 		itemInfo.setLanguageHolder (langHolder);
 		itemInfo.setLanguageChangeMaster (langMaster);
 		itemInfo.setGraphicsDB (gfx);
+		itemInfo.setClient (client);
 		itemInfo.setSmallFont (CreateFontsForTests.getSmallFont ());
 		itemInfo.setMediumFont (CreateFontsForTests.getMediumFont ());
 		itemInfo.setItem (item);

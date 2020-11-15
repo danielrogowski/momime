@@ -10,15 +10,15 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 
 /**
  * Server only calculations pertaining to units, e.g. calculations relating to fog of war
@@ -32,7 +32,7 @@ public interface ServerUnitCalculations
 	 * @throws RecordNotFoundException If we can't find the player who owns the unit, or the unit has a skill that we can't find in the cache
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
+	public int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final CommonDatabase db) throws RecordNotFoundException, MomException;
 
 	/**
 	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
@@ -51,7 +51,7 @@ public interface ServerUnitCalculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void recheckTransportCapacity (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 
 	/**
@@ -78,6 +78,6 @@ public interface ServerUnitCalculations
 	 * @return List of units this spell might summon if we cast it; list can be empty if we're already summoned and killed all heroes for example
 	 * @throws RecordNotFoundException If one of the summoned unit IDs can't be found in the DB
 	 */
-	public List<UnitSvr> listUnitsSpellMightSummon (final SpellSvr spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final ServerDatabaseEx db)
+	public List<UnitEx> listUnitsSpellMightSummon (final Spell spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db)
 		throws RecordNotFoundException;
 }

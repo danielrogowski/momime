@@ -15,14 +15,12 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemSlotTypeGfx;
-import momime.client.graphics.database.HeroItemTypeGfx;
-import momime.client.graphics.database.UnitGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.HeroItemsScreen;
+import momime.client.languages.database.Simple;
 import momime.client.ui.draganddrop.TransferableFactory;
 import momime.client.ui.draganddrop.TransferableHeroItem;
 import momime.client.ui.fonts.CreateFontsForTests;
@@ -31,9 +29,14 @@ import momime.client.ui.renderer.UnassignedHeroItemCellRenderer;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlot;
-import momime.common.database.Unit;
+import momime.common.database.HeroItemSlotType;
+import momime.common.database.HeroItemType;
+import momime.common.database.Language;
+import momime.common.database.ProductionTypeEx;
+import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
@@ -58,12 +61,22 @@ public final class TestHeroItemsUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
-		// Database
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx gold = new ProductionTypeEx ();
+		gold.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "GP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "updateAmountStored")).thenReturn (gold);
+		
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "updateAmountStored")).thenReturn (mana);
+		
 		for (int n = 1; n <= 3; n++)
 		{
-			final Unit unitDef = new Unit ();
+			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+			unitDef.setHeroPortraitImageFile ("/momime.client.graphics/units/UN00" + n + "/portrait.png");
 			
 			for (int s = 0; s < 3; s++)
 			{
@@ -75,45 +88,43 @@ public final class TestHeroItemsUI extends ClientTestData
 			when (db.findUnit (eq ("UN00" + n), anyString ())).thenReturn (unitDef);
 		}
 
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmHeroItems", "Title")).thenReturn ("Hero Items");
-		when (lang.findCategoryEntry ("frmHeroItems", "Bank")).thenReturn ("Fortress Vault");
-		when (lang.findCategoryEntry ("frmHeroItems", "Alchemy")).thenReturn ("Alchemy");
-		when (lang.findCategoryEntry ("frmHeroItems", "OK")).thenReturn ("OK");
-		
-		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
-
-		// Mock dummy language change master, since the language won't be changing
-		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
-		
-		// Mock graphics
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
-		final HeroItemTypeGfx itemType = new HeroItemTypeGfx ();
+		final HeroItemType itemType = new HeroItemType ();
 		for (int n = 1; n <= 4; n++)
 			itemType.getHeroItemTypeImageFile ().add ("/momime.client.graphics/heroItems/items/sword-0" + n + ".png");
 		
-		when (gfx.findHeroItemType (eq ("IT01"), anyString ())).thenReturn (itemType);
+		when (db.findHeroItemType (eq ("IT01"), anyString ())).thenReturn (itemType);
 		
 		int slotTypeNumber = 0;
 		for (final String slotImageFilename : new String [] {"melee", "bowOrMelee", "meleeOrMagic", "magic", "armour"})
 		{
 			slotTypeNumber++;
 			
-			final HeroItemSlotTypeGfx slot = new HeroItemSlotTypeGfx ();
+			final HeroItemSlotType slot = new HeroItemSlotType ();
 			slot.setHeroItemSlotTypeImageFile ("/momime.client.graphics/heroItems/slots/" + slotImageFilename + ".png");
-			when (gfx.findHeroItemSlotType ("IST0" + slotTypeNumber, "HeroTableCellRenderer")).thenReturn (slot);
+			when (db.findHeroItemSlotType ("IST0" + slotTypeNumber, "HeroTableCellRenderer")).thenReturn (slot);
 		}
 		
-		// Hero portraits
-		for (int n = 1; n <= 3; n++)
-		{
-			final UnitGfx unitGfx = new UnitGfx ();
-			unitGfx.setHeroPortraitImageFile ("/momime.client.graphics/units/UN00" + n + "/portrait.png");
-			when (gfx.findUnit ("UN00" + n, "HeroTableCellRenderer")).thenReturn (unitGfx);
-		}
+		// Mock entries from the language XML
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		
+		final HeroItemsScreen heroItemsScreenLang = new HeroItemsScreen ();
+		heroItemsScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Hero Items"));
+		heroItemsScreenLang.getBank ().add (createLanguageText (Language.ENGLISH, "Fortress Vault"));
+		heroItemsScreenLang.getAlchemy ().add (createLanguageText (Language.ENGLISH, "Alchemy"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getHeroItemsScreen ()).thenReturn (heroItemsScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock graphics
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Unassigned items
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge (); 
@@ -189,6 +200,7 @@ public final class TestHeroItemsUI extends ClientTestData
 		cellRenderer.setUnassignedHeroItemLayout (cellLayout);
 		cellRenderer.setUtils (utils);
 		cellRenderer.setGraphicsDB (gfx);
+		cellRenderer.setClient (client);
 		cellRenderer.setMediumFont (CreateFontsForTests.getMediumFont ());
 		
 		// Hero renderer

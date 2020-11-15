@@ -34,6 +34,7 @@ import com.ndg.swing.actions.LoggingAction;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
+import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.CompositeShape;
 import momime.client.ui.MomUIConstants;
@@ -354,7 +355,8 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		for (final Building thisBuilding : getClientCityCalculations ().listBuildingsCityCanConstruct (getCityLocation ()))
 		{
 			buildingsItems.addElement (thisBuilding);
-			getAnim ().registerRepaintTrigger (getGraphicsDB ().findCityViewElementBuilding (thisBuilding.getBuildingID (), "updateWhatCanBeConstructed").getCityViewAnimation (), buildingsList);
+			getAnim ().registerRepaintTrigger (getClient ().getClientDB ().findCityViewElementBuilding
+				(thisBuilding.getBuildingID (), "updateWhatCanBeConstructed").getCityViewAnimation (), buildingsList, AnimationContainer.COMMON_XML);
 			
 			// Pre-select whatever was previously being built when the form first opens up
 			if (thisBuilding.getBuildingID ().equals (cityData.getCurrentlyConstructingBuildingID ()))
@@ -411,14 +413,22 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		
 		// Dynamic labels
 		if (cityData != null)
-		{
-			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID (), false).replaceAll ("CITY_NAME", cityData.getCityName ());
-			getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmChangeConstruction", "Title").replaceAll ("CITY_NAME", cityName));
-		}
+			try
+			{
+				final String cityName = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findCitySize (cityData.getCitySizeID (), "ChangeConstructionUI").getCitySizeName ()).replaceAll
+					("CITY_NAME", cityData.getCityName ());
+				
+				getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getTitle ()).replaceAll ("CITY_NAME", cityName));
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
 
 		// Actions
-		okAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmChangeConstruction", "OK"));
-		cancelAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmChangeConstruction", "Cancel"));
+		okAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
+		cancelAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		
 		log.trace ("Exiting languageChanged");
 	}

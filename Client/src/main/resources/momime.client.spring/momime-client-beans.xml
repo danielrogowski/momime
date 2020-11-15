@@ -7,19 +7,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<import resource="../com.ndg.multiplayer.client/session-client-beans.xml" />
 	<import resource="../momime.common.spring/momime-common-beans.xml" />
 	
-	<!-- General XSD objects (may move these into common project at some stage) -->
-	
-	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
-	
-	<bean id="commonXsdResourceResolver" class="momime.common.database.CommonXsdResourceResolver">
-		<constructor-arg ref="domImplementationRegistry" />
-	</bean>
-	
-	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
-		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
-		<property name="resourceResolver" ref="commonXsdResourceResolver" />
-	</bean>	
-	
 	<!-- Client config XML -->
 	
 	<bean id="clientConfigSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
@@ -86,13 +73,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
    		</constructor-arg>
 	</bean>
 	
-	<bean id="graphicsDatabaseFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
-		<property name="serviceLocatorInterface" value="momime.client.graphics.database.GraphicsDatabaseFactory" />
-	</bean>			
-	
-	<bean id="graphicsDatabaseObjectFactory" class="momime.client.graphics.database.GraphicsDatabaseObjectFactory">		<!-- Creates GraphicsDatabaseExImpl instead of GraphicsDatabase -->
-		<property name="factory" ref="graphicsDatabaseFactory" />
-	</bean>
+	<bean id="graphicsDatabaseObjectFactory" class="momime.client.graphics.database.GraphicsDatabaseObjectFactory" />		<!-- Creates GraphicsDatabaseExImpl instead of GraphicsDatabase -->
 		
 	<bean id="graphicsDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="graphicsDatabaseJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="graphicsDatabaseSchema" />
@@ -105,6 +86,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			<list>
 				<value>com.sun.xml.bind.ObjectFactory</value>
 				<array>
+					<ref bean="commonDatabaseObjectFactory" />
 					<ref bean="graphicsDatabaseObjectFactory" />
 				</array>
 			</list>
@@ -113,73 +95,48 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="graphicsDatabase" class="momime.client.graphics.database.GraphicsDatabaseExImpl" factory-bean="graphicsDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMapsAndRunConsistencyChecks">
 		<constructor-arg value="#{clientConfig.graphicsXmlFilename}" />
-		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
-		<property name="utils" ref="uiUtils" />
 	</bean>
 	
-	<bean id="smoothedTileTypeGfx" class="momime.client.graphics.database.SmoothedTileTypeGfx" scope="prototype">
-		<property name="randomUtils" ref="randomUtils" />
-	</bean>
-
-	<bean id="pickGfx" class="momime.client.graphics.database.PickGfx" scope="prototype">
-		<property name="randomUtils" ref="randomUtils" />
-	</bean>
-
-	<bean id="wizardGfx" class="momime.client.graphics.database.WizardGfx" scope="prototype">
-		<property name="randomUtils" ref="randomUtils" />
-	</bean>
-
-	<bean id="tileSetGfx" class="momime.client.graphics.database.TileSetGfx" scope="prototype">
-		<property name="utils" ref="uiUtils" />
-	</bean>
-
-	<bean id="mapFeatureGfx" class="momime.client.graphics.database.MapFeatureGfx" scope="prototype">
-		<property name="utils" ref="uiUtils" />
-	</bean>
-
-	<bean id="animationGfx" class="momime.client.graphics.database.AnimationGfx" scope="prototype">
-		<property name="utils" ref="uiUtils" />
+	<!-- Single languages XML -->
+	
+	<bean id="languagesDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg type="java.net.URL" value="/momime.client.language/MoMIMELanguagesDatabase.xsd" />
 	</bean>
 	
-	<!-- Language XML -->
-
-	<bean id="languageDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg type="java.net.URL" value="/momime.client.language/MoMIMELanguageDatabase_NoServerXsdLink.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in language XML -->
-	</bean>
-	
-	<bean id="languageDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+	<bean id="languagesDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.client.language.database.v0_9_9.LanguageDatabase</value>
+    			<value>momime.client.languages.database.MomLanguages</value>
     		</list>
    		</constructor-arg>
 	</bean>
-	
-	<bean id="languageDatabaseFactory" class="momime.client.language.database.LanguageDatabaseFactory" />		<!-- Creates LanguageDatabaseExImpl instead of LanguageDatabase -->
-	
-	<bean id="languageDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="languageDatabaseJaxbContext" factory-method="createUnmarshaller">
-		<property name="schema" ref="languageDatabaseSchema" />
+
+	<bean id="momLanguagesFactory" class="momime.client.language.database.MomLanguagesFactory" />		<!-- Creates MomLanguagesExImpl instead of MomLanguages -->
+
+	<bean id="languagesDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="languagesDatabaseJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="languagesDatabaseSchema" />
 	</bean>
 
-	<bean id="configureLanguageDatabaseUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject" ref="languageDatabaseUnmarshaller" />
+	<bean id="configureLanguagesDatabaseUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="languagesDatabaseUnmarshaller" />
 		<property name="targetMethod" value="setProperty" />
 		<property name="arguments">
 			<list>
 				<value>com.sun.xml.bind.ObjectFactory</value>
 				<array>
-					<ref bean="languageDatabaseFactory" />
+					<ref bean="momLanguagesFactory" />
 				</array>
 			</list>
 		</property>
 	</bean>
-
-	<bean id="languageDatabase" class="momime.client.language.database.LanguageDatabaseExImpl" factory-bean="languageDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
-		<constructor-arg type="java.io.File" value="#{clientConfig.pathToLanguageXmlFiles + '/' + clientConfig.chosenLanguage + '.Master of Magic Language.xml'}" />
+	
+	<bean id="momLanguages" class="momime.client.language.database.MomLanguagesExImpl" factory-bean="languagesDatabaseUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg value="#{clientConfig.languagesXmlFilename}" />
 	</bean>
 	
 	<bean id="languageHolder" class ="momime.client.language.database.LanguageDatabaseHolder">
-		<property name="language" ref="languageDatabase" />
+		<property name="language" value="#{clientConfig.chosenLanguage}" />
+		<property name="languages" ref="momLanguages" />
 	</bean>
 
 	<!-- XML layouts -->
@@ -340,6 +297,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="textPopupMessage" class="momime.client.messages.process.TextPopupMessageImpl" scope="prototype">
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="languageHolder" ref="languageHolder" />
 	</bean>
 
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype">
@@ -679,6 +637,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>
@@ -686,6 +645,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="newTurnMessageSpellSwitchedOffFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageSpellSwitchedOffFromLackOfProductionEx" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
 	</bean>
 	
 	<bean id="newTurnMessageBuildingSoldFromLackOfProduction" class="momime.client.newturnmessages.NewTurnMessageBuildingSoldFromLackOfProductionEx" scope="prototype">
@@ -756,8 +716,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<!-- Singleton beans for client -->
 	
-	<bean id="clientDatabaseFactory" class="momime.client.database.ClientDatabaseFactory" />	<!-- Creates ClientDatabaseExImpl instead of ClientDatabase -->
-
 	<bean id="newTurnMessagesFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
 		<property name="serviceLocatorInterface" value="momime.client.newturnmessages.NewTurnMessagesFactory" />
 	</bean>
@@ -775,7 +733,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 			<array>
 				<ref bean="multiplayerSessionClientServerToClientObjectFactory" />
 				<ref bean="momClientServerToClientObjectFactory" />
-				<ref bean="clientDatabaseFactory" />
+				<ref bean="commonDatabaseObjectFactory" />
 				<ref bean="newTurnMessagesObjectFactory" />
 				<ref bean="objectFactoryMap" />
 			</array>
@@ -808,6 +766,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="utils" ref="uiUtils" />
+		<property name="languageHolder" ref="languageHolder" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="musicPlayer" ref="musicPlayer" />
@@ -820,6 +779,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="advancedPlayer" class="momime.client.audio.AdvancedPlayerImpl" scope="prototype" />
 	
 	<bean id="musicPlayer" class="momime.client.audio.AudioPlayerImpl">
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="advancedPlayerFactory" ref="advancedPlayerFactory" />
@@ -829,6 +789,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="soundPlayer" class="momime.client.audio.AudioPlayerImpl">
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="advancedPlayerFactory" ref="advancedPlayerFactory" />
@@ -836,11 +797,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerName" value="SoundPlayer" />
 	</bean>
 	
-	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />
-	
 	<bean id="anim" class="momime.client.utils.AnimationControllerImpl">
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="client" ref="client" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 	
@@ -867,6 +827,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="resourceValueClientUtils" class="momime.client.utils.ResourceValueClientUtilsImpl">
+		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 	</bean>
@@ -887,6 +848,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
+	
+	<bean id="tileSetBitmaskGenerator" class="momime.client.calculations.TileSetBitmaskGeneratorImpl">
+		<property name="client" ref="client" />
+		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="clientConfig" ref="clientConfig" />
+	</bean>
 
 	<bean id="overlandMapBitmapGenerator" class="momime.client.calculations.OverlandMapBitmapGeneratorImpl">
 		<property name="client" ref="client" />
@@ -895,6 +863,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="clientConfig" ref="clientConfig" />
+		<property name="tileSetBitmaskGenerator" ref="tileSetBitmaskGenerator" />
 	</bean>
 	
 	<bean id="miniMapBitmapGenerator" class="momime.client.calculations.MiniMapBitmapGeneratorImpl">
@@ -906,10 +875,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="combatMapBitmapGenerator" class="momime.client.calculations.CombatMapBitmapGeneratorImpl">
 		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
-		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="utils" ref="uiUtils" />
 		<property name="combatMapUtils" ref="combatMapUtils" />
-		<property name="clientConfig" ref="clientConfig" />
+		<property name="tileSetBitmaskGenerator" ref="tileSetBitmaskGenerator" />
 	</bean>
 	
 	<bean id="overlandMapProcessing" class="momime.client.process.OverlandMapProcessingImpl">
@@ -944,6 +912,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="wizardClientUtils" class="momime.client.utils.WizardClientUtilsImpl">
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
 	</bean>
 
 	<bean id="spellClientUtils" class="momime.client.utils.SpellClientUtilsImpl">
@@ -959,6 +928,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="playerPickClientUtils" class="momime.client.utils.PlayerPickClientUtilsImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="client" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
 	<bean id="heroItemClientUtils" class="momime.client.utils.HeroItemClientUtilsImpl" />
@@ -968,16 +939,19 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="unrestReplacer" class="momime.client.language.replacer.CityUnrestLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="client" />
 	</bean>
 	
 	<bean id="growthReplacer" class="momime.client.language.replacer.CityGrowthRateLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="client" />
 	</bean>
 	
 	<bean id="productionReplacer" class="momime.client.language.replacer.CityProductionLanguageVariableReplacerImpl">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="client" ref="client" />
 	</bean>
 
 	<bean id="unitStatsReplacer" class="momime.client.language.replacer.UnitStatsLanguageVariableReplacerImpl">
@@ -990,13 +964,18 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
 	
-	<bean id="graphicsDatabaseEvaluationContext" class="org.springframework.expression.spel.support.StandardEvaluationContext">
-		<!-- Trying to set this via the rootObject property gives an error because getRootObject doesn't return the same type -->
+	<bean id="springEvaluationContextRoot" class="momime.client.language.replacer.SpringEvaluationContextRoot">
 		<constructor-arg ref="graphicsDatabase" />
+		<constructor-arg ref="client" />
 	</bean>
 	
-	<bean id="graphicsDatabaseSpringExpressionReplacer" class="momime.client.language.replacer.SpringExpressionReplacerImpl">
-		<property name="evaluationContext" ref="graphicsDatabaseEvaluationContext" />
+	<bean id="springEvaluationContext" class="org.springframework.expression.spel.support.StandardEvaluationContext">
+		<!-- Trying to set this via the rootObject property gives an error because getRootObject doesn't return the same type -->
+		<constructor-arg ref="springEvaluationContextRoot" />
+	</bean>
+	
+	<bean id="springExpressionReplacer" class="momime.client.language.replacer.SpringExpressionReplacerImpl">
+		<property name="evaluationContext" ref="springEvaluationContext" />
 		<property name="classpathResource" value="true" />
 		<property name="htmlImage" value="true" />
 	</bean>
@@ -1458,6 +1437,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="helpUI" ref="helpUI" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
 	</bean>
 	
 	<bean id="optionsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1478,8 +1458,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="client" ref="client" />
-		<property name="pathToLanguageXmlFiles" value="#{clientConfig.pathToLanguageXmlFiles}" />
-		<property name="languageDatabaseUnmarshaller" ref="languageDatabaseUnmarshaller" />
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="clientConfigMarshaller" ref="clientConfigMarshaller" />
 		<property name="clientConfigLocation" value="${configDir}MoMIMEClientConfig.xml" />
@@ -1501,7 +1479,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="spellUtils" ref="spellUtils" />
-		<property name="springExpressionReplacer" ref="graphicsDatabaseSpringExpressionReplacer" />
+		<property name="springExpressionReplacer" ref="springExpressionReplacer" />
 	</bean>
 	
 	<bean id="damageCalculationsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1623,6 +1601,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="anim" ref="anim" />
 	</bean>
@@ -1637,6 +1616,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="unitAttributeListCellRenderer" class="momime.client.ui.renderer.UnitAttributeListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
 	</bean>
 
 	<bean id="unitSkillListCellRenderer" class="momime.client.ui.renderer.UnitSkillListCellRenderer" scope="prototype">
@@ -1656,6 +1636,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="memoryMaintainedSpellTableCellRenderer" class="momime.client.ui.renderer.MemoryMaintainedSpellTableCellRenderer" scope="prototype">
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
@@ -1668,6 +1649,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="armyListCellRenderer" class="momime.client.ui.renderer.ArmyListCellRenderer" scope="prototype">
+		<property name="client" ref="client" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
@@ -1679,6 +1661,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="unassignedHeroItemCellRenderer" class="momime.client.ui.renderer.UnassignedHeroItemCellRenderer" scope="prototype">
 		<property name="unassignedHeroItemLayout" ref="unassignedHeroItemLayout" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="mediumFont" ref="mediumFont" />
 	</bean>
@@ -1689,6 +1672,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="citiesListCellRenderer" class="momime.client.ui.renderer.CitiesListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
 		<property name="citiesListEntryLayout" ref="citiesListEntryLayout" />
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
@@ -1721,6 +1705,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="unitRowDisplayButton" class="momime.client.ui.components.UnitRowDisplayButton" scope="prototype">
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="client" ref="client" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 

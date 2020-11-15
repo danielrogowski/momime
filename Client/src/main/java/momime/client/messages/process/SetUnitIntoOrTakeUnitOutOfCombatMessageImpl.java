@@ -15,14 +15,14 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SpellGfx;
-import momime.client.graphics.database.TileSetGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
+import momime.common.database.AnimationGfx;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Spell;
+import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SetUnitIntoOrTakeUnitOutOfCombatMessage;
 import momime.common.utils.ExpandedUnitDetails;
@@ -80,14 +80,14 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		anim = null;
 		if (getSummonedBySpellID () != null)
 		{
-			final SpellGfx spell = getGraphicsDB ().findSpell (getSummonedBySpellID (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
+			final Spell spell = getClient ().getClientDB ().findSpell (getSummonedBySpellID (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 			if (spell.getCombatCastAnimation () != null)
 			{
 				final MapCoordinates2DEx animPosition = (MapCoordinates2DEx) ((getCombatPosition () != null) ? getCombatPosition () : unit.getCombatPosition ());
 
-				anim = getGraphicsDB ().findAnimation (spell.getCombatCastAnimation (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
+				anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 				
-				final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
+				final TileSetEx combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "SetUnitIntoOrTakeUnitOutOfCombatMessageImpl");
 				
 				final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 				final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();

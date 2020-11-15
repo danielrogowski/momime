@@ -24,7 +24,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.SelectAdvisorUI;
@@ -170,7 +169,7 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 	{
 		log.trace ("Entering languageChanged");
 
-		title.setText (getLanguage ().findCategoryEntry ("SpellCasting", "WhoWillCastTitle"));
+		title.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getWhoWillCastTitle ()));
 		
 		try
 		{
@@ -189,12 +188,11 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 					final Unit unitDef = getClient ().getClientDB ().findUnit (castingSourceAction.getKey ().getCastingUnit ().getUnitID (), "CastCombatSpellFromUI");
 					final String spellID = unitDef.getUnitCanCast ().get (castingSourceAction.getKey ().getFixedSpellNumber ()).getUnitSpellID ();
 
-					final SpellLang spell = getLanguage ().findSpell (spellID);
-					final String spellName = (spell == null) ? null : spell.getSpellName ();
+					final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (spellID, "CastCombatSpellFromUI").getSpellName ());
 
 					text = getUnitClientUtils ().getUnitName (castingSourceAction.getKey ().getCastingUnit (), UnitNameType.SIMPLE_UNIT_NAME) + " - " +
 						castingSourceAction.getKey ().getCastingUnit ().getFixedSpellsRemaining ().get
-							(castingSourceAction.getKey ().getFixedSpellNumber ()) + "x " + ((spellName != null) ? spellName : spellID);
+							(castingSourceAction.getKey ().getFixedSpellNumber ()) + "x " + spellName;
 				}
 				
 				// Casting spell imbued in a hero item
@@ -202,12 +200,11 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 				{
 					final NumberedHeroItem item = castingSourceAction.getKey ().getCastingUnit ().getHeroItemSlot ().get
 						(castingSourceAction.getKey ().getHeroItemSlotNumber ()).getHeroItem ();
-					
-					final SpellLang spell = getLanguage ().findSpell (item.getSpellID ());
-					final String spellName = (spell == null) ? null : spell.getSpellName ();
+
+					final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (item.getSpellID (), "CastCombatSpellFromUI").getSpellName ());
 					
 					text = item.getHeroItemName () + " - " + castingSourceAction.getKey ().getCastingUnit ().getHeroItemSpellChargesRemaining ().get
-						(castingSourceAction.getKey ().getHeroItemSlotNumber ()) + "x " + ((spellName != null) ? spellName : item.getSpellID ());
+						(castingSourceAction.getKey ().getHeroItemSlotNumber ()) + "x " + spellName;
 				}
 				else
 					// Hero or unit casting from their own MP pool

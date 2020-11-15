@@ -31,6 +31,7 @@ import com.ndg.utils.DateFormats;
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.common.database.LanguageText;
 import momime.common.messages.MomSessionDescription;
 
 /**
@@ -141,11 +142,10 @@ public final class LoadGameUI extends MomClientFrameUI
 			
 			// Show message box to confirm
 			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-			msg.setTitleLanguageCategoryID ("Multiplayer");
-			msg.setTitleLanguageEntryID ("DeleteSavedGameTitle");
+			msg.setLanguageTitle (getLanguages ().getMultiplayer ().getDeleteSavedGameTitle ());
 			msg.setSavedGameID (savedGame.getSessionDescription ().getSavedGameID ());
 
-			msg.setText (getLanguage ().findCategoryEntry ("Multiplayer", "DeleteSavedGameText").replaceAll
+			msg.setText (getLanguageHolder ().findDescription (getLanguages ().getMultiplayer ().getDeleteSavedGameText ()).replaceAll
 				("SAVED_GAME_NAME", savedGame.getSessionDescription ().getSessionName ()).replaceAll
 				("PLAYERS_LIST", playersList.toString ()));
 			
@@ -284,13 +284,13 @@ public final class LoadGameUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmLoadGame", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getLoadGameScreen ().getTitle ()));
 		
-		deleteSavedGameAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "DeleteSavedGame"));
-		selectSavedGameAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "SelectSavedGame"));
-		selectSavePointAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "SelectSavePoint"));
-		backAction.putValue						(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "Back"));
-		cancelAction.putValue						(Action.NAME, getLanguage ().findCategoryEntry ("frmLoadGame", "Cancel"));
+		deleteSavedGameAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getLoadGameScreen ().getDeleteSavedGame ()));
+		selectSavedGameAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getLoadGameScreen ().getSelectSavedGame ()));
+		selectSavePointAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getLoadGameScreen ().getSelectSavePoint ()));
+		backAction.putValue						(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getLoadGameScreen ().getBack ()));
+		cancelAction.putValue						(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 
 		savedGamesTableModel.fireTableDataChanged ();
 		log.trace ("Exiting languageChanged");
@@ -448,7 +448,30 @@ public final class LoadGameUI extends MomClientFrameUI
 		@Override
 		public final String getColumnName (final int column)
 		{
-			return getLanguage ().findCategoryEntry ("frmLoadGame", "SavedGamesColumn" + column);
+			final List<LanguageText> languageText;
+			switch (column)
+			{
+				case 0:
+					languageText = getLanguages ().getLoadGameScreen ().getSavedGamesColumnGameName ();
+					break;
+					
+				case 1:
+					languageText = getLanguages ().getLoadGameScreen ().getSavedGamesColumnPlayers ();
+					break;
+					
+				case 2:
+					languageText = getLanguages ().getLoadGameScreen ().getSavedGamesColumnGameStarted ();
+					break;
+					
+				case 3:
+					languageText = getLanguages ().getLoadGameScreen ().getSavedGamesColumnLatestSave ();
+					break;
+				
+				default:
+					languageText = null;
+			}
+			
+			return (languageText == null) ? null : getLanguageHolder ().findDescription (languageText);
 		}
 		
 		/**
@@ -532,7 +555,22 @@ public final class LoadGameUI extends MomClientFrameUI
 		@Override
 		public final String getColumnName (final int column)
 		{
-			return getLanguage ().findCategoryEntry ("frmLoadGame", "SavePointsColumn" + column);
+			final List<LanguageText> languageText;
+			switch (column)
+			{
+				case 0:
+					languageText = getLanguages ().getLoadGameScreen ().getSavePointsColumnSavedAt ();
+					break;
+					
+				case 1:
+					languageText = getLanguages ().getLoadGameScreen ().getSavePointsColumnTurn ();
+					break;
+				
+				default:
+					languageText = null;
+			}
+			
+			return (languageText == null) ? null : getLanguageHolder ().findDescription (languageText);
 		}
 		
 		/**

@@ -6,21 +6,25 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.KnownServerLang;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.fonts.CreateFontsForTests;
-
 import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
+import momime.client.ClientTestData;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.ConnectToServerScreen;
+import momime.client.languages.database.KnownServer;
+import momime.client.languages.database.Simple;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.Language;
+
 /**
  * Tests the ConnectToServerUI class
  */
-public final class TestConnectToServerUI
+public final class TestConnectToServerUI extends ClientTestData
 {
 	/**
 	 * Tests the ConnectToServerUI form
@@ -34,32 +38,42 @@ public final class TestConnectToServerUI
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmConnectToServer", "Title")).thenReturn ("Connect to Server");
-		when (lang.findCategoryEntry ("frmConnectToServer", "PickFromList")).thenReturn ("Select a server from the list");
-		when (lang.findCategoryEntry ("frmConnectToServer", "EnterServer")).thenReturn ("or enter a server IP address below");
-		when (lang.findCategoryEntry ("frmConnectToServer", "PlayerName")).thenReturn ("Player name:");
-		when (lang.findCategoryEntry ("frmConnectToServer", "Password")).thenReturn ("Password:");
-		when (lang.findCategoryEntry ("frmConnectToServer", "CreateAccount")).thenReturn ("This is a new account");
-		when (lang.findCategoryEntry ("frmConnectToServer", "KickExistingConnection")).thenReturn ("Kick existing connection using my account");
-		when (lang.findCategoryEntry ("frmConnectToServer", "Cancel")).thenReturn ("Cancel");
-		when (lang.findCategoryEntry ("frmConnectToServer", "OK")).thenReturn ("OK");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
 		
-		final KnownServerLang localhost = new KnownServerLang ();
-		localhost.setKnownServerDescription ("localhost");
-		localhost.setKnownServerIP ("127.0.0.1");
+		final ConnectToServerScreen connectToServerScreenLang = new ConnectToServerScreen ();
+		connectToServerScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Connect to Server"));
+		connectToServerScreenLang.getPickFromList ().add (createLanguageText (Language.ENGLISH, "Select a server from the list"));
+		connectToServerScreenLang.getEnterServer ().add (createLanguageText (Language.ENGLISH, "or enter a server IP address below"));
+		connectToServerScreenLang.getPlayerName ().add (createLanguageText (Language.ENGLISH, "Player name:"));
+		connectToServerScreenLang.getPassword ().add (createLanguageText (Language.ENGLISH, "Password:"));
+		connectToServerScreenLang.getCreateAccount ().add (createLanguageText (Language.ENGLISH, "This is a new account"));
+		connectToServerScreenLang.getKickExistingConnection ().add (createLanguageText (Language.ENGLISH, "Kick existing connection using my account"));
 
-		final KnownServerLang another = new KnownServerLang ();
-		another.setKnownServerDescription ("Some other host");
-		another.setKnownServerIP ("123.45.67.89");
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getConnectToServerScreen ()).thenReturn (connectToServerScreenLang);
 		
-		final List<KnownServerLang> servers = new ArrayList<KnownServerLang> ();
+		final KnownServer localhost = new KnownServer ();
+		localhost.setKnownServerID ("SRV01");
+		localhost.setKnownServerIP ("127.0.0.1");
+		localhost.getKnownServerDescription ().add (createLanguageText (Language.ENGLISH, "Local PC"));
+		when (lang.findKnownServer (localhost.getKnownServerID ())).thenReturn (localhost);
+
+		final KnownServer another = new KnownServer ();
+		another.setKnownServerID ("SRV02");
+		another.setKnownServerIP ("123.45.67.89");
+		another.getKnownServerDescription ().add (createLanguageText (Language.ENGLISH, "Some other server"));
+		when (lang.findKnownServer (another.getKnownServerID ())).thenReturn (another);
+		
+		final List<KnownServer> servers = new ArrayList<KnownServer> ();
 		servers.add (localhost);
 		servers.add (another);
-		when (lang.getKnownServers ()).thenReturn (servers);
+		when (lang.getKnownServer ()).thenReturn (servers);
 
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

@@ -3,7 +3,17 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
+import momime.common.database.Building;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
@@ -13,17 +23,7 @@ import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.BuildingSvr;
 import momime.server.process.CityProcessing;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Clients send this when they want to sell a building from a city, or cancel a pending sale
@@ -66,7 +66,7 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 			tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ());
 		
-		BuildingSvr building = null;
+		Building building = null;
 		int goldFromSellingBuilding = 0;
 		if (getBuildingURN () != null)
 		{

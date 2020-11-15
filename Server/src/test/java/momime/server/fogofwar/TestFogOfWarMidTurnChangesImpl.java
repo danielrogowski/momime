@@ -20,10 +20,12 @@ import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
@@ -52,8 +54,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 
@@ -277,9 +277,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testKillUnitOnServerAndClients_OverlandDamage_Normal () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
 		
@@ -462,9 +462,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testKillUnitOnServerAndClients_OverlandDamage_Hero () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
 		
@@ -657,9 +657,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testKillUnitOnServerAndClients_Dismiss_Normal () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
 		
@@ -842,9 +842,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testKillUnitOnServerAndClients_Dismiss_Hero () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
 		
@@ -1027,9 +1027,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testKillUnitOnServerAndClients_LackOfProduction_Normal () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
 		
@@ -1212,9 +1212,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testKillUnitOnServerAndClients_LackOfProduction_Hero () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
 		
@@ -1398,9 +1398,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testKillUnitOnServerAndClients_CombatDamage_Normal () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
 
@@ -1640,9 +1640,9 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testKillUnitOnServerAndClients_CombatDamage_Hero () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN001", "killUnitOnServerAndClients")).thenReturn (unitDef);
 
@@ -1890,7 +1890,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testAddExistingTrueMaintainedSpellToClients () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
@@ -2003,7 +2003,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testSwitchOffMaintainedSpellOnServerAndClients () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final FogOfWarSetting fowSettings = new FogOfWarSetting ();
@@ -2112,7 +2112,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testAddBuildingOnServerAndClients_OneBuilding () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final FogOfWarValue fowSetting = FogOfWarValue.REMEMBER_AS_LAST_SEEN;
@@ -2255,7 +2255,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testAddBuildingOnServerAndClients_TwoBuildings () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Session description
 		final FogOfWarValue fowSetting = FogOfWarValue.REMEMBER_AS_LAST_SEEN;
@@ -2406,7 +2406,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 	public final void testDestroyBuildingOnServerAndClients () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final FogOfWarValue fowSetting = FogOfWarValue.REMEMBER_AS_LAST_SEEN;

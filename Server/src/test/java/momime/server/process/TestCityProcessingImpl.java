@@ -26,12 +26,17 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Plane;
+import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
+import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
@@ -62,12 +67,7 @@ import momime.server.ServerTestData;
 import momime.server.ai.CityAI;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.BuildingSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.RaceSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
@@ -98,35 +98,35 @@ public final class TestCityProcessingImpl extends ServerTestData
 	public final void testCreateStartingCities () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final PlaneSvr arcanus = new PlaneSvr ();
-		final PlaneSvr myrror = new PlaneSvr ();
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
 		
-		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
+		final List<Plane> planes = new ArrayList<Plane> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlanes ()).thenReturn (planes);
+		when (db.getPlane ()).thenReturn (planes);
 	
 		when (db.findPlane (0, "createStartingCities")).thenReturn (arcanus);
 		when (db.findPlane (1, "createStartingCities")).thenReturn (myrror);
 		
-		final RaceSvr race1 = new RaceSvr ();
-		final RaceSvr race2 = new RaceSvr ();
-		final RaceSvr race3 = new RaceSvr ();
-		final RaceSvr race4 = new RaceSvr ();
+		final RaceEx race1 = new RaceEx ();
+		final RaceEx race2 = new RaceEx ();
+		final RaceEx race3 = new RaceEx ();
+		final RaceEx race4 = new RaceEx ();
 		when (db.findRace ("RC01", "createStartingCities")).thenReturn (race1);
 		when (db.findRace ("RC02", "createStartingCities")).thenReturn (race2);
 		when (db.findRace ("RC03", "createStartingCities")).thenReturn (race3);
 		when (db.findRace ("RC04", "createStartingCities")).thenReturn (race4);
 		
 		// Units free at the start of game for each race
-		final List<UnitSvr> units = new ArrayList<UnitSvr> ();
+		final List<UnitEx> units = new ArrayList<UnitEx> ();
 		for (int race = 1; race <= 4; race++)
 		{
-			final UnitSvr unit = new UnitSvr ();
+			final UnitEx unit = new UnitEx ();
 			unit.setUnitID ("UN00" + race);
 			unit.setFreeAtStartCount (2);
 			unit.setUnitRaceID ("RC0" + race);
@@ -136,23 +136,23 @@ public final class TestCityProcessingImpl extends ServerTestData
 		when (db.getUnits ()).thenReturn (units);
 		
 		// Buildings free at the start of the game
-		final BuildingSvr wizardBuilding = new BuildingSvr ();
+		final Building wizardBuilding = new Building ();
 		wizardBuilding.setBuildingID ("BL01");
 		wizardBuilding.setInWizardsStartingCities (true);
 
-		final BuildingSvr smallRaiderBuilding = new BuildingSvr ();
+		final Building smallRaiderBuilding = new Building ();
 		smallRaiderBuilding.setBuildingID ("BL02");
 		smallRaiderBuilding.setInRaidersStartingCitiesWithPopulationAtLeast (2);
 		
-		final BuildingSvr bigRaiderBuilding = new BuildingSvr ();
+		final Building bigRaiderBuilding = new Building ();
 		bigRaiderBuilding.setBuildingID ("BL03");
 		bigRaiderBuilding.setInRaidersStartingCitiesWithPopulationAtLeast (7);
 
-		final List<BuildingSvr> buildings = new ArrayList<BuildingSvr> ();
+		final List<Building> buildings = new ArrayList<Building> ();
 		buildings.add (wizardBuilding);
 		buildings.add (smallRaiderBuilding);
 		buildings.add (bigRaiderBuilding);
-		when (db.getBuildings ()).thenReturn (buildings);
+		when (db.getBuilding ()).thenReturn (buildings);
 		
 		// Session description
 		final OverlandMapSize sys = createOverlandMapSize ();
@@ -416,28 +416,28 @@ public final class TestCityProcessingImpl extends ServerTestData
 	public final void testGrowCitiesAndProgressConstructionProjects () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final PlaneSvr arcanus = new PlaneSvr ();
-		final PlaneSvr myrror = new PlaneSvr ();
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
 		
-		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
+		final List<Plane> planes = new ArrayList<Plane> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlanes ()).thenReturn (planes);
+		when (db.getPlane ()).thenReturn (planes);
 		
-		final BuildingSvr building = new BuildingSvr ();
+		final Building building = new Building ();
 		building.setBuildingID ("BL01");
 		building.setProductionCost (1000);
 		when (db.findBuilding ("BL01", "growCitiesAndProgressConstructionProjects")).thenReturn (building);
-		when (db.findUnit ("BL01", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (UnitSvr.class, null, null));
+		when (db.findUnit ("BL01", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (UnitEx.class, null, null));
 		
-		final UnitSvr unit = new UnitSvr ();
+		final UnitEx unit = new UnitEx ();
 		unit.setUnitID ("UN001");
 		unit.setProductionCost (100);
-		when (db.findBuilding ("UN001", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (UnitSvr.class, null, null));
+		when (db.findBuilding ("UN001", "growCitiesAndProgressConstructionProjects")).thenThrow (new RecordNotFoundException (UnitEx.class, null, null));
 		when (db.findUnit ("UN001", "growCitiesAndProgressConstructionProjects")).thenReturn (unit);				
 		
 		// Session description
@@ -676,9 +676,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 	public final void testSellBuilding () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final BuildingSvr granaryDef = new BuildingSvr ();
+		final Building granaryDef = new Building ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
 		// Session description
@@ -772,9 +772,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 	public final void testSellBuilding_Forced () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final BuildingSvr granaryDef = new BuildingSvr ();
+		final Building granaryDef = new Building ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
 		// Session description
@@ -868,9 +868,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 	public final void testSellBuilding_ConstructionBasedOn () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final BuildingSvr granaryDef = new BuildingSvr ();
+		final Building granaryDef = new Building ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
 		// Session description
@@ -964,9 +964,9 @@ public final class TestCityProcessingImpl extends ServerTestData
 	public final void testSellBuilding_Pending () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final BuildingSvr granaryDef = new BuildingSvr ();
+		final Building granaryDef = new Building ();
 		when (db.findBuilding (GRANARY, "sellBuilding")).thenReturn (granaryDef);
 		
 		// Session description
@@ -1040,17 +1040,17 @@ public final class TestCityProcessingImpl extends ServerTestData
 	public final void testChangeTaxRate () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final PlaneSvr arcanus = new PlaneSvr ();
-		final PlaneSvr myrror = new PlaneSvr ();
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
 		
-		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
+		final List<Plane> planes = new ArrayList<Plane> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlanes ()).thenReturn (planes);
+		when (db.getPlane ()).thenReturn (planes);
 		
 		final TaxRate taxRate = new TaxRate ();
 		when (db.findTaxRate ("TR03", "changeTaxRate")).thenReturn (taxRate);

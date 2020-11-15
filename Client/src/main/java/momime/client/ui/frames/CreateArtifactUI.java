@@ -36,9 +36,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemTypeGfx;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.HeroItemClientUtils;
 import momime.client.utils.TextUtils;
@@ -152,9 +149,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/** The currently selected item type */
 	private HeroItemType heroItemType;
 
-	/** The graphics for the currently selected item type */
-	private HeroItemTypeGfx heroItemTypeGfx;
-	
 	/** Index into the available images list for the selected item type */
 	private int imageNumber;
 	
@@ -337,7 +331,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 				button.setVisible (false);
 			
 			// Set base item name
-			itemName.setText (getLanguage ().findHeroItemTypeDescription (heroItemType.getHeroItemTypeID ()));
+			itemName.setText (getLanguageHolder ().findDescription (heroItemType.getHeroItemTypeDescription ()));
 			
 			// Light up the relevant item type button gold
 			for (final Entry<String, JButton> itemTypeButton : itemTypeButtons.entrySet ())
@@ -345,9 +339,8 @@ public final class CreateArtifactUI extends MomClientFrameUI
 					(itemTypeButton.getKey ().equals (heroItemType.getHeroItemTypeID ()) ? MomUIConstants.GOLD : MomUIConstants.DARK_BROWN);
 			
 			// Update the image
-			heroItemTypeGfx = getGraphicsDB ().findHeroItemType (heroItemType.getHeroItemTypeID (), "selectItemType");
-			if (heroItemTypeGfx.getHeroItemTypeImageFile ().size () == 0)
-				throw new IOException ("Hero item type " + heroItemType.getHeroItemTypeID () + " exists in graphics XML but has no image(s) defined"); 
+			if (heroItemType.getHeroItemTypeImageFile ().size () == 0)
+				throw new IOException ("Hero item type " + heroItemType.getHeroItemTypeID () + " exists in XML but has no image(s) defined"); 
 					
 			imageNumber = 0;
 			updateItemImage (0);
@@ -491,13 +484,13 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		// Update image number
 		imageNumber = imageNumber + changeBy;
 		while (imageNumber < 0)
-			imageNumber = imageNumber + heroItemTypeGfx.getHeroItemTypeImageFile ().size ();
+			imageNumber = imageNumber + heroItemType.getHeroItemTypeImageFile ().size ();
 
-		while (imageNumber >= heroItemTypeGfx.getHeroItemTypeImageFile ().size ())
-			imageNumber = imageNumber - heroItemTypeGfx.getHeroItemTypeImageFile ().size ();
+		while (imageNumber >= heroItemType.getHeroItemTypeImageFile ().size ())
+			imageNumber = imageNumber - heroItemType.getHeroItemTypeImageFile ().size ();
 		
 		// Update icon
-		itemImage.setIcon (new ImageIcon (getUtils ().doubleSize (getUtils ().loadImage (heroItemTypeGfx.getHeroItemTypeImageFile ().get (imageNumber)))));
+		itemImage.setIcon (new ImageIcon (getUtils ().doubleSize (getUtils ().loadImage (heroItemType.getHeroItemTypeImageFile ().get (imageNumber)))));
 	}
 	
 	/**
@@ -556,55 +549,48 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCreateArtifact", "OK"));
-		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmCreateArtifact", "Cancel"));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
+		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		
 		if (getSpell () != null)
-		{
-			// Title
-			final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-			final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
-			getFrame ().setTitle (spellName != null ? spellName : spell.getSpellID ());
-		
-			// Spell charges
-			if (spellChargesChosenSpell == null)
-				spellChargesChosenSpellLabel.setText (null);
-			else
-			{
-				final SpellLang chosenSpellLang = getLanguage ().findSpell (spellChargesChosenSpell.getSpellID ());
-				final String chosenSpellName = (chosenSpellLang == null) ? null : chosenSpellLang.getSpellName ();
-				spellChargesChosenSpellLabel.setText (chosenSpellName != null ? chosenSpellName : spellChargesChosenSpell.getSpellID ());
-			}
-			
-			// Item type buttons
-			for (final Entry<String, Action> itemTypeAction : itemTypeActions.entrySet ())
-				itemTypeAction.getValue ().putValue (Action.NAME, getLanguage ().findHeroItemTypeDescription (itemTypeAction.getKey ()));
-			
-			// Item bonus buttons
-			for (final Entry<String, Action> itemBonusAction : itemBonusActions.entrySet ())
-			{
-				// Show fully chosen spell charges as e.g. "Bless x4" other than just the text "Spell Charges"
-				final String bonusDescription;
-				if ((itemBonusAction.getKey ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES)) &&
-					(spellChargesChosenSpell != null) && (spellChargesChosenCount > 0))
-					
-					bonusDescription = spellChargesChosenSpellLabel.getText () + " x" + spellChargesChosenCount; 
-				else
-					bonusDescription = getLanguage ().findHeroItemBonusDescription (itemBonusAction.getKey ());
-				
-				itemBonusAction.getValue ().putValue (Action.NAME, bonusDescription);
-			}
-			
-			// The "MP" suffix may have changed
 			try
 			{
+				// Title
+				getFrame ().setTitle (getLanguageHolder ().findDescription (spell.getSpellName ()));
+			
+				// Spell charges
+				if (spellChargesChosenSpell == null)
+					spellChargesChosenSpellLabel.setText (null);
+				else
+					spellChargesChosenSpellLabel.setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell
+						(spellChargesChosenSpell.getSpellID (), "CreateArtifactUI").getSpellName ()));
+				
+				// Item type buttons
+				for (final Entry<String, Action> itemTypeAction : itemTypeActions.entrySet ())
+					itemTypeAction.getValue ().putValue (Action.NAME, getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findHeroItemType (itemTypeAction.getKey (), "CreateArtifactUI").getHeroItemTypeDescription ()));
+				
+				// Item bonus buttons
+				for (final Entry<String, Action> itemBonusAction : itemBonusActions.entrySet ())
+				{
+					// Show fully chosen spell charges as e.g. "Bless x4" other than just the text "Spell Charges"
+					if ((itemBonusAction.getKey ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES)) &&
+						(spellChargesChosenSpell != null) && (spellChargesChosenCount > 0))
+						
+						itemBonusAction.getValue ().putValue (Action.NAME, spellChargesChosenSpellLabel.getText () + " x" + spellChargesChosenCount); 
+					else
+						itemBonusAction.getValue ().putValue (Action.NAME, getLanguageHolder ().findDescription
+							(getClient ().getClientDB ().findHeroItemBonus (itemBonusAction.getKey (), "CreateArtifactUI").getHeroItemBonusDescription ()));
+				}
+				
+				// The "MP" suffix may have changed
 				updateCraftingCost ();
 			}
-			catch (final IOException e)
+			catch (final Exception e)
 			{
 				log.error (e, e);
 			}
-		}
+		
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -620,10 +606,8 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		final HeroItem heroItem = buildHeroItem ();
 		
 		// Base crafting cost
-		final ProductionTypeLang mp = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		String mpSuffix = (mp == null) ? null : mp.getProductionTypeSuffix ();
-		if (mpSuffix == null)
-			mpSuffix = CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA;
+		final String mpSuffix = getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+			(CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "updateCraftingCost").getProductionTypeSuffix ());
 
 		final int baseCost = getHeroItemCalculations ().calculateCraftingCost (heroItem, getClient ().getClientDB ());
 		String text = getTextUtils ().intToStrCommas (baseCost) + " " + mpSuffix;

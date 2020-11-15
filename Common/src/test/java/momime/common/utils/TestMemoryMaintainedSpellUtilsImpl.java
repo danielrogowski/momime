@@ -27,7 +27,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCityEffect;
 import momime.common.database.SpellValidBorderTarget;
-import momime.common.database.TileType;
+import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
@@ -900,7 +900,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Mock database entries
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final TileType tileType = new TileType ();
+		final TileTypeEx tileType = new TileTypeEx ();
 		when (db.findTileType ("TT01", "isLocationValidTargetForSpell")).thenReturn (tileType);
 		
 		// Spell being targetted

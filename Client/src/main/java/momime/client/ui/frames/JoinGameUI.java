@@ -27,7 +27,9 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.LanguageText;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.TurnSystem;
 
 /**
  * Screen for showing a list of sessions that are running on the server so we can select one to join
@@ -167,11 +169,11 @@ public final class JoinGameUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmJoinGame", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getJoinGameScreen ().getTitle ()));
 		
-		refreshAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmJoinGame", "Refresh"));
-		joinAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmJoinGame", "Join"));
-		cancelAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmJoinGame", "Cancel"));
+		refreshAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getJoinGameScreen ().getRefresh ()));
+		joinAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getJoinGameScreen ().getJoin ()));
+		cancelAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 
 		sessionsTableModel.fireTableDataChanged ();
 		log.trace ("Exiting languageChanged");
@@ -290,7 +292,30 @@ public final class JoinGameUI extends MomClientFrameUI
 		@Override
 		public final String getColumnName (final int column)
 		{
-			return getLanguage ().findCategoryEntry ("frmJoinGame", "SessionsColumn" + column);
+			final List<LanguageText> languageText;
+			switch (column)
+			{
+				case 0:
+					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnGameName ();
+					break;
+					
+				case 1:
+					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnPlayers ();
+					break;
+					
+				case 2:
+					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnSettings ();
+					break;
+					
+				case 3:
+					languageText = getLanguages ().getJoinGameScreen ().getSessionsColumnTurnSystem ();
+					break;
+				
+				default:
+					languageText = null;
+			}
+			
+			return (languageText == null) ? null : getLanguageHolder ().findDescription (languageText);
 		}
 		
 		/**
@@ -325,21 +350,28 @@ public final class JoinGameUI extends MomClientFrameUI
 
 				case 2:
 					// Display the name of each settings preset or "Custom"
-					value = (sd.getOverlandMapSize ().getOverlandMapSizeID () == null ? getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom") :
-							getLanguage ().findOverlandMapSizeDescription (sd.getOverlandMapSize ().getOverlandMapSizeID ())) + ", " +
+					value = (sd.getOverlandMapSize ().getOverlandMapSizeID () == null ?
+							getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ()) :
+							getLanguageHolder ().findDescription (sd.getOverlandMapSize ().getOverlandMapSizeDescription ())) + ", " +
 							
-						(sd.getLandProportion ().getLandProportionID () == null ? getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom") :
-							getLanguage ().findLandProportionDescription (sd.getLandProportion ().getLandProportionID ())) + ", " +
+						(sd.getLandProportion ().getLandProportionID () == null ?
+							getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ()) :
+							getLanguageHolder ().findDescription (sd.getLandProportion ().getLandProportionDescription ())) + ", " +
 						
-						(sd.getNodeStrength ().getNodeStrengthID () == null ? getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom") :
-							getLanguage ().findNodeStrengthDescription (sd.getNodeStrength ().getNodeStrengthID ())) + ", " +
+						(sd.getNodeStrength ().getNodeStrengthID () == null ?
+							getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ()) :
+							getLanguageHolder ().findDescription (sd.getNodeStrength ().getNodeStrengthDescription ())) + ", " +
 								
-						(sd.getDifficultyLevel ().getDifficultyLevelID () == null ? getLanguage ().findCategoryEntry ("frmWaitForPlayersToJoin", "Custom") :
-							getLanguage ().findDifficultyLevelDescription (sd.getDifficultyLevel ().getDifficultyLevelID ()));
+						(sd.getDifficultyLevel ().getDifficultyLevelID () == null ?
+							getLanguageHolder ().findDescription (getLanguages ().getWaitForPlayersToJoinScreen ().getCustom ()) :
+							getLanguageHolder ().findDescription (sd.getDifficultyLevel ().getDifficultyLevelDescription ()));
 					break;
 					
 				case 3:
-					value = getLanguage ().findCategoryEntry ("NewGameFormTurnSystems", sd.getTurnSystem ().name ());
+					final List<LanguageText> languageText = (sd.getTurnSystem () == TurnSystem.SIMULTANEOUS) ?
+						getLanguages ().getTurnSystems ().getSimultaneous () : getLanguages ().getTurnSystems ().getOnePlayerAtATime ();
+						
+					value = getLanguageHolder ().findDescription (languageText);
 					break;
 					
 				default:

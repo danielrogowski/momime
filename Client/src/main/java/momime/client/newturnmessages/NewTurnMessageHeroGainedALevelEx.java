@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,10 +14,11 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.LanguageText;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageHeroGainedALevel;
 import momime.common.utils.ExpandedUnitDetails;
@@ -77,7 +79,7 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 		if (xu != null)
 			try
 			{
-				final String imageName = getGraphicsDB ().findUnit (xu.getUnitID (), "NewTurnMessageHeroGainedALevelEx").getHeroPortraitImageFile ();
+				final String imageName = getClient ().getClientDB ().findUnit (xu.getUnitID (), "NewTurnMessageHeroGainedALevelEx").getHeroPortraitImageFile ();
 				if (imageName != null)
 				{
 					final BufferedImage fullSizeImage = getUtils ().loadImage (imageName);
@@ -118,9 +120,13 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 	@Override
 	public final String getText ()
 	{
-		// Get prefix
-		String text = getLanguage ().findCategoryEntry ("NewTurnMessages",
-			(getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? "HeroGainedALevelLastTurn" : "HeroGainedALevel");
+		final List<LanguageText> languageText;
+		if (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN)
+			languageText = getLanguages ().getNewTurnMessages ().getHeroGainedALevelLastTurn ();
+		else
+			languageText = getLanguages ().getNewTurnMessages ().getHeroGainedALevel ();
+		
+		String text = getLanguageHolder ().findDescription (languageText);
 		
 		getUnitStatsReplacer ().setUnit (xu);
 		text = getUnitStatsReplacer ().replaceVariables (text);
@@ -209,9 +215,9 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

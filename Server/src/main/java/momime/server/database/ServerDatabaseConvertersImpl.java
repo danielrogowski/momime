@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -17,13 +16,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import momime.client.database.AvailableDatabase;
-import momime.client.database.ClientDatabase;
 import momime.client.database.NewGameDatabase;
 import momime.common.MomException;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.PickAndQuantity;
-import momime.common.database.ProductionTypeAndDoubledValue;
-import momime.common.database.RecordNotFoundException;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseImpl;
+import momime.common.database.DifficultyLevel;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.LandProportion;
+import momime.common.database.NodeStrength;
+import momime.common.database.OverlandMapSize;
+import momime.common.database.SpellSetting;
+import momime.common.database.UnitSetting;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 
 /**
@@ -36,38 +39,38 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	private static final Log log = LogFactory.getLog (ServerDatabaseConvertersImpl.class);
 	
 	/** Extension that XML files for the server must have */
-	public static final String SERVER_XML_FILE_EXTENSION = ".Master of Magic Server.xml";
+	public static final String SERVER_XML_FILE_EXTENSION = ".momime.xml";
 
 	/**
 	 * @param src Server XML to extract from
 	 * @param dbName Filename the server XML was read from
 	 * @return Info extracted from server XML
 	 */
-	private final AvailableDatabase convertServerToAvailableDatabase (final ServerDatabaseEx src, final String dbName)
+	private final AvailableDatabase convertServerToAvailableDatabase (final CommonDatabase src, final String dbName)
 	{
 		final AvailableDatabase dest = new AvailableDatabase ();
 		dest.setDbName (dbName);
 		dest.setNewGameDefaults (src.getNewGameDefaults ());
 
-		for (final OverlandMapSizeSvr overlandMapSize : src.getOverlandMapSizes ())
+		for (final OverlandMapSize overlandMapSize : src.getOverlandMapSize ())
 			dest.getOverlandMapSize ().add (overlandMapSize);
 
-		for (final LandProportionSvr landProportion : src.getLandProportions ())
+		for (final LandProportion landProportion : src.getLandProportion ())
 			dest.getLandProportion ().add (landProportion);
 
-		for (final NodeStrengthSvr nodeStrength : src.getNodeStrengths ())
+		for (final NodeStrength nodeStrength : src.getNodeStrength ())
 			dest.getNodeStrength ().add (nodeStrength);
 
-		for (final DifficultyLevelSvr difficultyLevel : src.getDifficultyLevels ())
+		for (final DifficultyLevel difficultyLevel : src.getDifficultyLevel ())
 			dest.getDifficultyLevel ().add (difficultyLevel);
 
-		for (final FogOfWarSettingSvr fogOfWarSetting : src.getFogOfWarSettings ())
+		for (final FogOfWarSetting fogOfWarSetting : src.getFogOfWarSetting ())
 			dest.getFogOfWarSetting ().add (fogOfWarSetting);
 
-		for (final UnitSettingSvr unitSetting : src.getUnitSettings ())
+		for (final UnitSetting unitSetting : src.getUnitSetting ())
 			dest.getUnitSetting ().add (unitSetting);
 
-		for (final SpellSettingSvr spellSetting : src.getSpellSettings ())
+		for (final SpellSetting spellSetting : src.getSpellSetting ())
 			dest.getSpellSetting ().add (spellSetting);
 
 		return dest;
@@ -76,14 +79,14 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	/**
 	 * Finds all the compatible (i.e. correct namespace) XML databases on the server and extracts a small portion of each needed for setting up new games
 	 * @param xmlFolder Folder in which to look for server XML files, e.g. F:\Workspaces\Delphi\Master of Magic\XML Files\Server\
-	 * @param serverDatabaseUnmarshaller JAXB Unmarshaller for loading server XML files
+	 * @param commonDatabaseUnmarshaller JAXB Unmarshaller for loading database XML files
 	 * @return Info extracted from all available XML databases
 	 * @throws JAXBException If there is a problem creating the server XML unmarshaller
 	 * @throws MomException If there are no compatible server XML databases
 	 * @throws IOException If there is a problem reading the XML databases
 	 */
 	@Override
-	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Unmarshaller serverDatabaseUnmarshaller)
+	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Unmarshaller commonDatabaseUnmarshaller)
 		throws JAXBException, MomException, IOException
 	{
 		log.trace ("Entering buildNewGameDatabase");
@@ -118,7 +121,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		}
 		
 		// Call other method to do the guts of the work
-		final NewGameDatabaseMessage msg = buildNewGameDatabase (map, serverDatabaseUnmarshaller);
+		final NewGameDatabaseMessage msg = buildNewGameDatabase (map, commonDatabaseUnmarshaller);
 		
 		log.trace ("Exiting buildNewGameDatabase");
 		return msg;
@@ -131,12 +134,12 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	 * so in a command line build there is no physical folder on disk to pass into the method signature declared in the interface.
 	 * 
 	 * @param xmlFiles Map of database names to URLs to locate them
-	 * @param serverDatabaseUnmarshaller JAXB Unmarshaller for loading server XML files
+	 * @param commonDatabaseUnmarshaller JAXB Unmarshaller for loading server XML files
 	 * @return Info extracted from all available XML databases
 	 * @throws JAXBException If there is a problem creating the server XML unmarshaller
 	 * @throws MomException If there are no compatible server XML databases
 	 */
-	final NewGameDatabaseMessage buildNewGameDatabase (final Map<String, File> xmlFiles, final Unmarshaller serverDatabaseUnmarshaller)
+	final NewGameDatabaseMessage buildNewGameDatabase (final Map<String, File> xmlFiles, final Unmarshaller commonDatabaseUnmarshaller)
 		throws JAXBException, MomException
 	{
 		log.trace ("Entering buildNewGameDatabase");
@@ -148,7 +151,7 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 			try
 			{
 				// Attempt to load it in
-				final ServerDatabaseExImpl db = (ServerDatabaseExImpl) serverDatabaseUnmarshaller.unmarshal (thisXmlFile.getValue ());
+				final CommonDatabaseImpl db = (CommonDatabaseImpl) commonDatabaseUnmarshaller.unmarshal (thisXmlFile.getValue ());
 				db.buildMaps ();
 				db.consistencyChecks ();
 
@@ -170,94 +173,5 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		log.info ("Found " + newGameDatabase.getMomimeXmlDatabase ().size () + " compatible server XML file(s)");
 		log.trace ("Exiting buildNewGameDatabase = " + newGameDatabase.getMomimeXmlDatabase ().size ());
 		return msg;
-	}
-
-	/**
-	 * @param src Server side database loaded from XML
-	 * @param humanSpellPicks Number of picks human players get in this game, as per session description
-	 * @return Info extracted from server XML
-	 * @throws RecordNotFoundException If one of the wizards does not have picks for the specified number of human picks defined
-	 */
-	@Override
-	public final ClientDatabase buildClientDatabase (final ServerDatabaseEx src, final int humanSpellPicks) throws RecordNotFoundException
-	{
-		log.trace ("Exiting buildClientDatabase");
-
-		final ClientDatabase dest = new ClientDatabase ();
-
-		dest.getPlane ().addAll (src.getPlanes ());
-		dest.getProductionType ().addAll (src.getProductionTypes ());
-		dest.getTileType ().addAll (src.getTileTypes ());
-		dest.getPickType ().addAll (src.getPickTypes ());
-		dest.getPick ().addAll (src.getPicks ());
-		dest.getRace ().addAll (src.getRaces ());
-		dest.getTaxRate ().addAll (src.getTaxRate ());
-		dest.getBuilding ().addAll (src.getBuildings ());
-		dest.getUnitType ().addAll (src.getUnitTypes ());
-		dest.getUnitSkill ().addAll (src.getUnitSkills ());
-		dest.getRangedAttackType ().addAll (src.getRangedAttackTypes ());
-		dest.getUnit ().addAll (src.getUnits ());
-		dest.getWeaponGrade ().addAll (src.getWeaponGrades ());
-		dest.getCombatAreaEffect ().addAll (src.getCombatAreaEffects ());
-		dest.getSpell ().addAll (src.getSpells ());
-		dest.getCombatTileType ().addAll (src.getCombatTileTypes ());
-		dest.getCombatTileBorder ().addAll (src.getCombatTileBorders ());
-		dest.getMovementRateRule ().addAll (src.getMovementRateRule ());
-		dest.getHeroItemSlotType ().addAll (src.getHeroItemSlotType ());
-		dest.getHeroItemType ().addAll (src.getHeroItemType ());
-		dest.getHeroItemBonus ().addAll (src.getHeroItemBonus ());
-		dest.getDamageType ().addAll (src.getDamageTypes ());
-
-	    // Derive client-side only flag for map features
-		for (final MapFeatureSvr srcMapFeature : src.getMapFeatures ())
-		{
-			final momime.client.database.MapFeature destMapFeature = new momime.client.database.MapFeature ();
-
-			destMapFeature.setMapFeatureID (srcMapFeature.getMapFeatureID ());
-			destMapFeature.setCanBuildCity (srcMapFeature.isCanBuildCity ());
-			destMapFeature.setFeatureSpellProtection (srcMapFeature.isFeatureSpellProtection ());
-			destMapFeature.setFeatureMagicWeapons (srcMapFeature.getFeatureMagicWeapons ());
-			destMapFeature.setRaceMineralMultiplerApplies (srcMapFeature.isRaceMineralMultiplerApplies ());
-
-			for (final ProductionTypeAndDoubledValue mapFeatureProduction : srcMapFeature.getMapFeatureProduction ())
-				destMapFeature.getMapFeatureProduction ().add (mapFeatureProduction);
-
-			destMapFeature.setAnyMagicRealmsDefined (srcMapFeature.getMapFeatureMagicRealm ().size () > 0);
-
-		    dest.getMapFeature ().add (destMapFeature);
-		}
-
-	    // Select correct number of picks for wizards
-		for (final WizardSvr srcWizard : src.getWizards ())
-		{
-			final momime.client.database.Wizard destWizard = new momime.client.database.Wizard ();
-
-			destWizard.setWizardID (srcWizard.getWizardID ());
-
-			if ((!srcWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS)) &&
-				(!srcWizard.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_RAIDERS)))
-			{
-				final Iterator<WizardPickCountSvr> iter = srcWizard.getWizardPickCounts ().iterator ();
-				boolean found = false;
-				while ((!found) && (iter.hasNext ()))
-				{
-					final WizardPickCountSvr pickCount = iter.next ();
-					if (pickCount.getPickCount () == humanSpellPicks)
-					{
-						found = true;
-						for (final PickAndQuantity pick : pickCount.getWizardPick ())
-							destWizard.getWizardPick ().add (pick);
-					}
-				}
-
-				if (!found)
-					throw new RecordNotFoundException (WizardPickCountSvr.class, srcWizard.getWizardID () + "-" + humanSpellPicks, "buildClientDatabase");
-			}
-
-			dest.getWizard ().add (destWizard);
-		}
-
-		log.trace ("Exiting buildClientDatabase");
-		return dest;
 	}
 }

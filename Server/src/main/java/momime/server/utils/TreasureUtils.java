@@ -10,10 +10,10 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
 /**
@@ -57,7 +57,7 @@ public interface TreasureUtils
 	 */
 	public TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
 		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**
@@ -72,6 +72,6 @@ public interface TreasureUtils
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	public void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 }

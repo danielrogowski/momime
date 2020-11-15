@@ -2,25 +2,29 @@ package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import momime.client.MomClient;
-import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.client.utils.AnimationControllerImpl;
 
 import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.MainMenuScreen;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.AnimationControllerImpl;
+import momime.common.database.AnimationGfx;
+import momime.common.database.Language;
+
 /**
  * Tests the MainMenuUI class
  */
-public final class TestMainMenuUI
+public final class TestMainMenuUI extends ClientTestData
 {
 	/**
 	 * Tests the MainMenuUI form
@@ -34,24 +38,25 @@ public final class TestMainMenuUI
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmMainMenu", "LongTitle")).thenReturn ("Master of Magic - Implode's Multiplayer Edition - Client vVERSION");
-		when (lang.findCategoryEntry ("frmMainMenu", "ShortTitle")).thenReturn ("Implode's Multiplayer Edition - Client");
-		when (lang.findCategoryEntry ("frmMainMenu", "Version")).thenReturn ("version VERSION");
-		when (lang.findCategoryEntry ("frmMainMenu", "OriginalCopyrightLine1")).thenReturn ("Original Master of Magic is Copyright");
-		when (lang.findCategoryEntry ("frmMainMenu", "OriginalCopyrightLine2")).thenReturn ("Simtex Software and Microprose");
+		final MainMenuScreen mainMenuScreenLang = new MainMenuScreen ();
+		mainMenuScreenLang.getLongTitle ().add (createLanguageText (Language.ENGLISH, "Master of Magic - Implode's Multiplayer Edition - Client vVERSION"));
+		mainMenuScreenLang.getShortTitle ().add (createLanguageText (Language.ENGLISH, "Implode's Multiplayer Edition - Client"));
+		mainMenuScreenLang.getVersion ().add (createLanguageText (Language.ENGLISH, "version VERSION"));
+		mainMenuScreenLang.getOriginalCopyrightLine1 ().add (createLanguageText (Language.ENGLISH, "Original Master of Magic is Copyright"));
+		mainMenuScreenLang.getOriginalCopyrightLine2 ().add (createLanguageText (Language.ENGLISH, "Simtex Software and Microprose"));
+		
+		mainMenuScreenLang.getConnectToServer ().add (createLanguageText (Language.ENGLISH, "Connect to Server"));
+		mainMenuScreenLang.getNewGame ().add (createLanguageText (Language.ENGLISH, "New Game"));
+		mainMenuScreenLang.getJoinGame ().add (createLanguageText (Language.ENGLISH, "Join Game"));
+		mainMenuScreenLang.getLoadGame ().add (createLanguageText (Language.ENGLISH, "Load Game"));
+		mainMenuScreenLang.getOptions ().add (createLanguageText (Language.ENGLISH, "Options"));
+		mainMenuScreenLang.getExit ().add (createLanguageText (Language.ENGLISH, "Exit"));
 
-		when (lang.findCategoryEntry ("frmMainMenu", "ChangeLanguage")).thenReturn ("Change Language");
-		when (lang.findCategoryEntry ("frmMainMenu", "ConnectToServer")).thenReturn ("Connect to Server");
-		when (lang.findCategoryEntry ("frmMainMenu", "NewGame")).thenReturn ("New Game");
-		when (lang.findCategoryEntry ("frmMainMenu", "JoinGame")).thenReturn ("Join Game");
-		when (lang.findCategoryEntry ("frmMainMenu", "LoadGame")).thenReturn ("Load Game");
-		when (lang.findCategoryEntry ("frmMainMenu", "Options")).thenReturn ("Options");
-		when (lang.findCategoryEntry ("frmMainMenu", "Exit")).thenReturn ("Exit");
-		when (lang.findCategoryEntry ("frmMainMenu", "LanguageFileAuthor")).thenReturn ("Language file written by Blah");
-
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getMainMenuScreen ()).thenReturn (mainMenuScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

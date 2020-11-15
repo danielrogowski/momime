@@ -17,13 +17,8 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.RangedAttackTypeCombatImageGfx;
-import momime.client.graphics.database.RangedAttackTypeGfx;
-import momime.client.graphics.database.SpellGfx;
-import momime.client.graphics.database.TileSetGfx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
@@ -34,10 +29,14 @@ import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AnimationGfx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RangedAttackTypeActionID;
+import momime.common.database.RangedAttackTypeCombatImage;
+import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
+import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
@@ -142,13 +141,13 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	private int [] [] current;
 	
 	/** Image of ranged attack flying towards its target */
-	private RangedAttackTypeCombatImageGfx ratFlyImage;
+	private RangedAttackTypeCombatImage ratFlyImage;
 
 	/** Image of ranged attack hitting its target */
-	private RangedAttackTypeCombatImageGfx ratStrikeImage;
+	private RangedAttackTypeCombatImage ratStrikeImage;
 	
 	/** Current image of ranged attack */
-	private RangedAttackTypeCombatImageGfx ratCurrentImage;
+	private RangedAttackTypeCombatImage ratCurrentImage;
 	
 	/** Animation to display; null if the damage isn't coming from a spell or the spell has no animation */
 	private AnimationGfx spellAnim;
@@ -157,10 +156,10 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	private AnimationGfx spellAnimFly;
 	
 	/** Combat map tile set is required all over the place */
-	private TileSetGfx combatMapTileSet;
+	private TileSetEx combatMapTileSet;
 	
 	/** Details of spell graphics */
-	private SpellGfx spellGfx;
+	private Spell spell;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -205,7 +204,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		else
 		{
 			getCombatUI ().setAttackAnim (this);
-			combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ApplyDamageMessageImpl");
+			combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ApplyDamageMessageImpl");
 			
 			if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackSkillID ())) && (getDefenderUnits ().size () == 1))
 			{
@@ -235,22 +234,20 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				final int totalFigureCount = xuAttacker.getFullFigureCount ();
 				final int aliveFigureCount = xuAttacker.calculateAliveFigureCount ();
 				
-				start = getUnitClientUtils ().calcUnitFigurePositions (attackerUnit.getUnitID (), xuAttacker.getUnitType ().getUnitTypeID (), totalFigureCount, aliveFigureCount, startX, startY);
+				start = getUnitClientUtils ().calcUnitFigurePositions (totalFigureCount, aliveFigureCount, startX, startY);
 
 				// Start animation of the missile; e.g. fireballs don't have a constant image
-				final String rangedAttackTypeID = xuAttacker.getRangedAttackType ().getRangedAttackTypeID ();
-				final RangedAttackTypeGfx rat = getGraphicsDB ().findRangedAttackType (rangedAttackTypeID, "ApplyDamageMessageImpl");
-				ratFlyImage = rat.findCombatImage (RangedAttackTypeActionID.FLY, getAttackerDirection (), "ApplyDamageMessageImpl");
+				ratFlyImage = xuAttacker.getRangedAttackType ().findCombatImage (RangedAttackTypeActionID.FLY, getAttackerDirection (), "ApplyDamageMessageImpl");
 				
-				ratStrikeImage = rat.findCombatImage (RangedAttackTypeActionID.STRIKE, getAttackerDirection (), "ApplyDamageMessageImpl");
+				ratStrikeImage = xuAttacker.getRangedAttackType ().findCombatImage (RangedAttackTypeActionID.STRIKE, getAttackerDirection (), "ApplyDamageMessageImpl");
 				
 				// Play shooting sound, based on the rangedAttackType
-				if (rat.getRangedAttackSoundFile () == null)
-					log.warn ("Found entry in graphics DB for rangedAttackType " + rangedAttackTypeID + " but it has no sound effect defined");
+				if (xuAttacker.getRangedAttackType ().getRangedAttackSoundFile () == null)
+					log.warn ("Found entry for rangedAttackType " + xuAttacker.getRangedAttackType ().getRangedAttackTypeID () + " but it has no sound effect defined");
 				else
 					try
 					{
-						getSoundPlayer ().playAudioFile (rat.getRangedAttackSoundFile ());
+						getSoundPlayer ().playAudioFile (xuAttacker.getRangedAttackType ().getRangedAttackSoundFile ());
 					}
 					catch (final Exception e)
 					{
@@ -269,20 +266,20 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			else if (getAttackSpellID () != null)
 			{
 				// Find spell graphics
-				spellGfx = getGraphicsDB ().findSpell (getAttackSpellID (), "ApplyDamageMessageImpl");
+				spell = getClient ().getClientDB ().findSpell (getAttackSpellID (), "ApplyDamageMessageImpl");
 				
 				// Is there an animation to display for it?
-				if (spellGfx.getCombatCastAnimationFly () != null)
+				if (spell.getCombatCastAnimationFly () != null)
 				{
 					// Spell that flies in from off the combat map, like fire bolt
-					spellAnim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "ApplyDamageMessageImpl");
-					spellAnimFly = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimationFly (), "ApplyDamageMessageImpl (F)");
+					spellAnim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "ApplyDamageMessageImpl");
+					spellAnimFly = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimationFly (), "ApplyDamageMessageImpl (F)");
 					tickCount = INCOMING_SPELL_TICKS + spellAnim.getFrame ().size () + 1;
 					duration = tickCount / spellAnim.getAnimationSpeed ();
 
 					// Show anim on CombatUI
 					final int distance = INCOMING_SPELL_TICK_DISTANCE * INCOMING_SPELL_TICKS;
-					final int xMultiplier = (spellGfx.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spellGfx.getCombatCastAnimationFlyXMultiplier ();
+					final int xMultiplier = (spell.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spell.getCombatCastAnimationFlyXMultiplier ();
 					final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
 					final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
 					
@@ -296,10 +293,10 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					getCombatUI ().setCombatCastAnimation (spellAnimFly);
 					getCombatUI ().setCombatCastAnimationInFront (true);
 				}
-				else if (spellGfx.getCombatCastAnimation () != null)
+				else if (spell.getCombatCastAnimation () != null)
 				{
 					// Spell that animates in place, like psionic blast
-					spellAnim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "ApplyDamageMessageImpl");
+					spellAnim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "ApplyDamageMessageImpl");
 					tickCount = spellAnim.getFrame ().size ();
 					duration = spellAnim.getFrame ().size () / spellAnim.getAnimationSpeed ();
 
@@ -315,14 +312,14 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	
 					getCombatUI ().setCombatCastAnimationFrame (0);
 					getCombatUI ().setCombatCastAnimation (spellAnim);
-					getCombatUI ().setCombatCastAnimationInFront ((spellGfx.isCombatCastAnimationInFront () == null) ? true : spellGfx.isCombatCastAnimationInFront ());
+					getCombatUI ().setCombatCastAnimationInFront ((spell.isCombatCastAnimationInFront () == null) ? true : spell.isCombatCastAnimationInFront ());
 				}
 				
 				// Play spell sound if there is one (some spells are silent, so should be no warning for this)
-				if (spellGfx.getSpellSoundFile () != null)
+				if (spell.getSpellSoundFile () != null)
 					try
 					{
-						getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+						getSoundPlayer ().playAudioFile (spell.getSpellSoundFile ());
 					}
 					catch (final Exception e)
 					{
@@ -440,7 +437,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			if (tickNumber <= INCOMING_SPELL_TICKS)
 			{
 				final int distance = INCOMING_SPELL_TICK_DISTANCE * (INCOMING_SPELL_TICKS - tickNumber);
-				final int xMultiplier = (spellGfx.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spellGfx.getCombatCastAnimationFlyXMultiplier ();
+				final int xMultiplier = (spell.getCombatCastAnimationFlyXMultiplier () == null) ? 0 : spell.getCombatCastAnimationFlyXMultiplier ();
 				final int adjustX = 2 * ((xMultiplier * distance) + ((spellAnim.getCombatCastOffsetX () == null) ? 0 : spellAnim.getCombatCastOffsetX ()));
 				final int adjustY = 2 * (-distance + ((spellAnim.getCombatCastOffsetY () == null) ? 0 : spellAnim.getCombatCastOffsetY ()));
 				
@@ -778,7 +775,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/**
 	 * @return Current image of ranged attack
 	 */
-	public final RangedAttackTypeCombatImageGfx getRatCurrentImage ()
+	public final RangedAttackTypeCombatImage getRatCurrentImage ()
 	{
 		return ratCurrentImage;
 	}

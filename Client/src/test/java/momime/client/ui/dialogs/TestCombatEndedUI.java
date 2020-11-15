@@ -2,16 +2,6 @@ package momime.client.ui.dialogs;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import momime.client.ClientTestData;
-import momime.client.MomClient;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.messages.process.CombatEndedMessageImpl;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.common.messages.FogOfWarMemory;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 
 import org.junit.Test;
 
@@ -20,6 +10,19 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.CombatEndedScreen;
+import momime.client.messages.process.CombatEndedMessageImpl;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.Language;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 
 /**
  * Tests the CombatEndedUI class
@@ -39,12 +42,15 @@ public final class TestCombatEndedUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmCombatEnded", "Defeat")).thenReturn ("You have been defeated");
-		when (lang.findCategoryEntry ("frmCombatEnded", "Victory")).thenReturn ("You are triumphant");
-
+		final CombatEndedScreen combatEndedScreenLang = new CombatEndedScreen ();
+		combatEndedScreenLang.getDefeat ().add (createLanguageText (Language.ENGLISH, "You have been defeated"));
+		combatEndedScreenLang.getVictory ().add (createLanguageText (Language.ENGLISH, "You are triumphant"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getCombatEndedScreen ()).thenReturn (combatEndedScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

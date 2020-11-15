@@ -3,6 +3,8 @@ package momime.client.utils;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,32 +33,31 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.CombatActionGfx;
-import momime.client.graphics.database.ExperienceLevelGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.RangedAttackTypeGfx;
-import momime.client.graphics.database.RangedAttackTypeWeaponGradeGfx;
-import momime.client.graphics.database.UnitCombatActionGfx;
-import momime.client.graphics.database.UnitGfx;
 import momime.client.graphics.database.UnitSkillComponentImageGfx;
-import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.graphics.database.UnitSkillWeaponGradeGfx;
-import momime.client.graphics.database.UnitTypeGfx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.RaceLang;
-import momime.client.language.database.UnitLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.UnitName;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CombatAction;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.RangedAttackType;
+import momime.common.database.HeroName;
+import momime.common.database.Language;
+import momime.common.database.RaceEx;
+import momime.common.database.RangedAttackTypeEx;
+import momime.common.database.RangedAttackTypeWeaponGrade;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Unit;
-import momime.common.database.UnitCombatScale;
+import momime.common.database.UnitCombatActionEx;
+import momime.common.database.UnitCombatImage;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillPositiveNegative;
+import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.AvailableUnit;
@@ -103,53 +104,53 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 	public final void testGetUnitName () throws RecordNotFoundException
 	{
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
-		for (int n = 1; n <= 7; n++)
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		int n = 0;
+		for (final String unitName : new String [] {"Bard", "Trireme", "Swordsmen", "Longbowmen", "Magic Spirit", "Hell Hounds"})
 		{
-			final Unit unitInfo = new Unit ();
+			n++;
+			final UnitEx unitInfo = new UnitEx ();
+			unitInfo.getUnitName ().add (createLanguageText (Language.ENGLISH, unitName));
+
+			if ((n == 2) || (n == 5))
+				unitInfo.getUnitNamePrefix ().add (createLanguageText (Language.ENGLISH, "a")); 
 			
-			if ((n == 3) || (n == 7))
+			if (n == 3)
 				unitInfo.setIncludeRaceInUnitName (true);
 			
 			if ((n == 3) || (n == 4))
 				unitInfo.setUnitRaceID ("RC01");
-			else if (n == 7)
-				unitInfo.setUnitRaceID ("RC02");
-				
+
+			if (n == 1)
+			{
+				final HeroName heroName = new HeroName ();
+				heroName.setHeroNameID ("UN001_HN01");
+				heroName.getHeroNameLang ().add (createLanguageText (Language.ENGLISH, "Valana the Bard"));
+				unitInfo.getHeroName ().add (heroName);
+			}
+			
+			unitInfo.buildMaps ();
 			when (db.findUnit ("UN00" + n, "getUnitName")).thenReturn (unitInfo);
 		}
+		
+		final RaceEx race = new RaceEx ();
+		race.getRaceNameSingular ().add (createLanguageText (Language.ENGLISH, "Orc"));
+		when (db.findRace ("RC01", "getUnitName")).thenReturn (race);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
 
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final UnitName unitNameLang = new UnitName ();
+		unitNameLang.getTheUnitOfNameSingular ().add (createLanguageText (Language.ENGLISH, "the RACE_UNIT_NAME"));
+		unitNameLang.getTheUnitOfNamePlural ().add (createLanguageText (Language.ENGLISH, "the unit of RACE_UNIT_NAME"));
 		
-		int n = 0;
-		for (final String unitName : new String [] {"Bard", "Trireme", "Swordsmen", "Longbowmen", "Magic Spirit", "Hell Hounds"})
-		{
-			n++;
-			final UnitLang unitLang = new UnitLang ();
-			unitLang.setUnitName (unitName);
-			
-			if ((n == 2) || (n == 5))
-				unitLang.setUnitNamePrefix ("a"); 
-			
-			when (lang.findUnit ("UN00" + n)).thenReturn (unitLang);
-		}
-		
-		final RaceLang race = new RaceLang ();
-		race.setRaceName ("Orc");
-		when (lang.findRace ("RC01")).thenReturn (race);
-		
-		when (lang.findCategoryEntry ("UnitName", "TheUnitOfNameSingular")).thenReturn ("the RACE_UNIT_NAME");
-		when (lang.findCategoryEntry ("UnitName", "TheUnitOfNamePlural")).thenReturn ("the unit of RACE_UNIT_NAME");
-		
-		when (lang.findHeroName ("UN001_HN01")).thenReturn ("Valana the Bard");				
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getUnitName ()).thenReturn (unitNameLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Create one of each kind of unit
 		final MemoryUnit heroOverridden = new MemoryUnit ();
@@ -192,7 +193,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		assertEquals ("Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.SIMPLE_UNIT_NAME));
 		assertEquals ("Magic Spirit",		utils.getUnitName (summonedSingular,		UnitNameType.SIMPLE_UNIT_NAME));
 		assertEquals ("Hell Hounds",		utils.getUnitName (summonedPlural,		UnitNameType.SIMPLE_UNIT_NAME));
-		assertEquals ("UN007",				utils.getUnitName (unknown,					UnitNameType.SIMPLE_UNIT_NAME));
 
 		// Test RACE_UNIT_NAME
 		assertEquals ("Renamed Hero",	utils.getUnitName (heroOverridden,			UnitNameType.RACE_UNIT_NAME));
@@ -202,7 +202,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		assertEquals ("Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.RACE_UNIT_NAME));
 		assertEquals ("Magic Spirit",		utils.getUnitName (summonedSingular,		UnitNameType.RACE_UNIT_NAME));
 		assertEquals ("Hell Hounds",		utils.getUnitName (summonedPlural,		UnitNameType.RACE_UNIT_NAME));
-		assertEquals ("RC02 UN007",		utils.getUnitName (unknown,					UnitNameType.RACE_UNIT_NAME));
 
 		// Test A_UNIT_NAME
 		assertEquals ("Renamed Hero",	utils.getUnitName (heroOverridden,			UnitNameType.A_UNIT_NAME));
@@ -212,7 +211,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		assertEquals ("Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.A_UNIT_NAME));
 		assertEquals ("a Magic Spirit",		utils.getUnitName (summonedSingular,		UnitNameType.A_UNIT_NAME));
 		assertEquals ("Hell Hounds",		utils.getUnitName (summonedPlural,		UnitNameType.A_UNIT_NAME));
-		assertEquals ("RC02 UN007",		utils.getUnitName (unknown,					UnitNameType.A_UNIT_NAME));
 
 		// Test THE_UNIT_OF_NAME
 		assertEquals ("Renamed Hero",					utils.getUnitName (heroOverridden,			UnitNameType.THE_UNIT_OF_NAME));
@@ -222,7 +220,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		assertEquals ("the unit of Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the Magic Spirit",					utils.getUnitName (summonedSingular,		UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the unit of Hell Hounds",		utils.getUnitName (summonedPlural,		UnitNameType.THE_UNIT_OF_NAME));
-		assertEquals ("the unit of RC02 UN007",		utils.getUnitName (unknown,					UnitNameType.THE_UNIT_OF_NAME));
 	}
 	
 	/**
@@ -259,49 +256,49 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final BufferedImage rat2wepGrade3Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("rat2-3.png")).thenReturn (rat2wepGrade3Image);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// + to hit doesn't vary by weapon grade
-		final UnitSkillGfx plusToHit = new UnitSkillGfx ();
+		final UnitSkillEx plusToHit = new UnitSkillEx ();
 
-		final UnitSkillWeaponGradeGfx plusToHitIcon = new UnitSkillWeaponGradeGfx ();
+		final UnitSkillWeaponGrade plusToHitIcon = new UnitSkillWeaponGrade ();
 		plusToHitIcon.setSkillImageFile ("plusToHit.png");
 		plusToHit.getUnitSkillWeaponGrade ().add (plusToHitIcon);
 		
 		plusToHit.buildMap ();;
-		when (gfx.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "getUnitSkillComponentBreakdownIcon")).thenReturn (plusToHit);
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "getUnitSkillComponentBreakdownIcon")).thenReturn (plusToHit);
 		
 		// melee varies by weapon grade
-		final UnitSkillGfx melee = new UnitSkillGfx ();
+		final UnitSkillEx melee = new UnitSkillEx ();
 
 		for (int wepGrade = 1; wepGrade <= 3; wepGrade++)
 		{
-			final UnitSkillWeaponGradeGfx meleeIcon = new UnitSkillWeaponGradeGfx ();
+			final UnitSkillWeaponGrade meleeIcon = new UnitSkillWeaponGrade ();
 			meleeIcon.setSkillImageFile ("melee" + wepGrade + ".png");
 			meleeIcon.setWeaponGradeNumber (wepGrade);
 			melee.getUnitSkillWeaponGrade ().add (meleeIcon);
 		}
 		
 		melee.buildMap ();
-		when (gfx.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "getUnitSkillComponentBreakdownIcon")).thenReturn (melee);
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "getUnitSkillComponentBreakdownIcon")).thenReturn (melee);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// RAT that doesn't vary by weapon grade
-		final RangedAttackTypeGfx rat1 = new RangedAttackTypeGfx ();
-		when (gfx.findRangedAttackType ("RAT01", "getUnitSkillComponentBreakdownIcon")).thenReturn (rat1);
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
+		rat.setRangedAttackTypeID ("RAT01");
 
-		final RangedAttackTypeWeaponGradeGfx rat1Icon = new RangedAttackTypeWeaponGradeGfx ();
+		final RangedAttackTypeWeaponGrade rat1Icon = new RangedAttackTypeWeaponGrade ();
 		rat1Icon.setUnitDisplayRangedImageFile ("rat1.png");
-		rat1.getRangedAttackTypeWeaponGrade ().add (rat1Icon);
+		rat.getRangedAttackTypeWeaponGrade ().add (rat1Icon);
 		
-		rat1.buildMap ();
+		rat.buildMaps ();
 		
 		// Dummy unit
 		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setWeaponGradeNumber (2);
-		
-		final RangedAttackType rat = new RangedAttackType ();
-		rat.setRangedAttackTypeID ("RAT01");
 		
 		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
 		when (unit.getWeaponGrade ()).thenReturn (weaponGrade);
@@ -310,7 +307,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
 		unitUtils.setUtils (utils);
-		unitUtils.setGraphicsDB (gfx);
+		unitUtils.setClient (client);
 		
 		// Run tests
 		assertSame (plusToHitImage, unitUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT));
@@ -320,18 +317,15 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		// RAT that does vary by weapon grade
 		rat.setRangedAttackTypeID ("RAT02");
 
-		final RangedAttackTypeGfx rat2 = new RangedAttackTypeGfx ();
-		when (gfx.findRangedAttackType ("RAT02", "getUnitSkillComponentBreakdownIcon")).thenReturn (rat2);
-
 		for (int wepGrade = 1; wepGrade <= 3; wepGrade++)
 		{
-			final RangedAttackTypeWeaponGradeGfx rat2Icon = new RangedAttackTypeWeaponGradeGfx ();
+			final RangedAttackTypeWeaponGrade rat2Icon = new RangedAttackTypeWeaponGrade ();
 			rat2Icon.setUnitDisplayRangedImageFile ("rat2-" + wepGrade + ".png");
 			rat2Icon.setWeaponGradeNumber (wepGrade);
-			rat2.getRangedAttackTypeWeaponGrade ().add (rat2Icon);
+			rat.getRangedAttackTypeWeaponGrade ().add (rat2Icon);
 		}
 		
-		rat2.buildMap ();
+		rat.buildMaps ();
 
 		assertSame (rat2wepGrade2Image, unitUtils.getUnitSkillComponentBreakdownIcon (unit, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK));
 	}
@@ -349,42 +343,26 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final BufferedImage skillImage = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("skill.png")).thenReturn (skillImage);
 
-		final BufferedImage exp0Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.loadImage ("exp0.png")).thenReturn (exp0Image);
-		
-		final BufferedImage exp1Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.loadImage ("exp1.png")).thenReturn (exp1Image);
-		
 		final BufferedImage exp2Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
 		when (utils.loadImage ("exp2.png")).thenReturn (exp2Image);
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final BufferedImage exp3Image = new BufferedImage (1, 1, BufferedImage.TYPE_INT_ARGB);
-		when (utils.loadImage ("exp3.png")).thenReturn (exp3Image);
+		final UnitSkillEx skillGfx = new UnitSkillEx ();
+		skillGfx.setUnitSkillImageFile ("skill.png");
+		when (db.findUnitSkill ("US001", "getUnitSkillSingleIcon")).thenReturn (skillGfx);
 		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+
 		// Mock entries from graphics DB
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
-		final UnitSkillGfx skillGfx = new UnitSkillGfx ();
-		skillGfx.setUnitSkillImageFile ("skill.png");
-		when (gfx.findUnitSkill ("US001", "getUnitSkillSingleIcon")).thenReturn (skillGfx);
-
-		final UnitTypeGfx unitType = new UnitTypeGfx ();
-		
-		for (int n = 0; n < 4; n++)
-		{
-			final ExperienceLevelGfx expLvl = new ExperienceLevelGfx ();
-			expLvl.setLevelNumber (n);
-			expLvl.setExperienceLevelImageFile ("exp" + n + ".png");
-			unitType.getExperienceLevel ().add (expLvl);
-		}
-		
-		unitType.buildMap ();
-		
-		when (gfx.findUnitType ("N", "getUnitSkillSingleIcon")).thenReturn (unitType);
 		
 		// Experience
 		final ExperienceLevel expLvl = new ExperienceLevel ();
 		expLvl.setLevelNumber (2);
+		expLvl.setExperienceLevelImageFile ("exp2.png");
 
 		// Dummy unit
 		final UnitType unitTypeDef = new UnitType ();
@@ -398,10 +376,48 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final UnitClientUtilsImpl unitClientUtils = new UnitClientUtilsImpl ();
 		unitClientUtils.setGraphicsDB (gfx);
 		unitClientUtils.setUtils (utils);
+		unitClientUtils.setClient (client);
 
 		// Run tests
 		assertSame (skillImage, unitClientUtils.getUnitSkillSingleIcon (unit, "US001"));
 		assertSame (exp2Image, unitClientUtils.getUnitSkillSingleIcon (unit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE));
+	}
+	
+	/**
+	 * @param unitID ID of unit to set up graphics for
+	 * @return Unit with necessary details for testDrawUnit
+	 */
+	private final UnitEx createUnitGraphics (final String unitID)
+	{
+		final UnitCombatImage direction = new UnitCombatImage ();
+		direction.setDirection (4);
+		direction.setUnitCombatAnimation (unitID + "_D4_WALKFLY");
+
+		final UnitCombatActionEx action = new UnitCombatActionEx ();
+		action.setCombatActionID (GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK);
+		action.getUnitCombatImage ().add (direction);
+		
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.getUnitCombatActions ().add (action);
+		unitDef.buildMaps ();
+		
+		return unitDef;
+	}
+	
+	/**
+	 * @param unitID ID of unit to set up animation for
+	 * @return Animation with necessary details for testDrawUnit
+	 */
+	private final AnimationGfx createUnitAnimation (final String unitID)
+	{
+		final AnimationGfx anim = new AnimationGfx ();
+		anim.setAnimationSpeed (6);
+		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-move-frame1.png");
+		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-stand.png");
+		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-move-frame3.png");
+		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-stand.png");
+		
+		return anim;
 	}
 	
 	/**
@@ -415,6 +431,23 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.findUnit (eq ("UN106"), anyString ())).thenReturn (createUnitGraphics ("UN106")); 
+		when (db.findUnit (eq ("UN075"), anyString ())).thenReturn (createUnitGraphics ("UN075")); 
+		when (db.findUnit (eq ("UN035"), anyString ())).thenReturn (createUnitGraphics ("UN035")); 
+		when (db.findUnit (eq ("UN197"), anyString ())).thenReturn (createUnitGraphics ("UN197")); 
+		when (db.findUnit (eq ("UN037"), anyString ())).thenReturn (createUnitGraphics ("UN037"));
+		
+		when (db.findAnimation (eq ("UN106_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN106"));
+		when (db.findAnimation (eq ("UN075_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN075"));
+		when (db.findAnimation (eq ("UN035_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN035"));
+		when (db.findAnimation (eq ("UN197_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN197"));
+		when (db.findAnimation (eq ("UN037_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN037"));
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
 		// This is dependant on way too many values to mock them all - so use the real graphics DB
 		final GraphicsDatabaseEx gfx = loadGraphicsDatabase (utils, null);
 		
@@ -424,6 +457,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
 		anim.setGraphicsDB (gfx);
+		anim.setClient (client);
 		anim.setUtils (utils);
 		anim.setPlayerColourImageGenerator (gen);
 		
@@ -434,6 +468,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
 		unitUtils.setAnim (anim);
 		unitUtils.setGraphicsDB (gfx);
+		unitUtils.setClient (client);
 		unitUtils.setUtils (utils);
 		unitUtils.setClientConfig (config);
 		
@@ -451,18 +486,12 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 				{
 					zOrderGraphics.setGraphics (g);
 					
-					int y = 40;
-					for (final UnitCombatScale scale : UnitCombatScale.values ())
-					{
-						config.setUnitCombatScale (scale);
-						unitUtils.drawUnitFigures ("UN106", null, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null);
-						unitUtils.drawUnitFigures ("UN075", null, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null);
-						unitUtils.drawUnitFigures ("UN035", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null);
-						unitUtils.drawUnitFigures ("UN197", CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null);
-						unitUtils.drawUnitFigures ("UN037", null, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null);
-						
-						y = y + 80;
-					}
+					final int y = 40;
+					unitUtils.drawUnitFigures ("UN106", 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null);
+					unitUtils.drawUnitFigures ("UN075", 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null);
+					unitUtils.drawUnitFigures ("UN035", 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null);
+					unitUtils.drawUnitFigures ("UN197", 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null);
+					unitUtils.drawUnitFigures ("UN037", 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null);
 				}
 				catch (final IOException e)
 				{
@@ -522,21 +551,8 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		obj.setClientConfig (config);
 		
 		// Test double size units scale
-		config.setUnitCombatScale (UnitCombatScale.DOUBLE_SIZE_UNITS);
 		assertEquals (1, obj.calculateWalkTiming (regularUnit), 0.0001);
 		assertEquals (1, obj.calculateWalkTiming (summonedMultiple), 0.0001);
-		assertEquals (1, obj.calculateWalkTiming (summonedSingle), 0.0001);
-
-		// Test 4x figures scale
-		config.setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES);
-		assertEquals (2, obj.calculateWalkTiming (regularUnit), 0.0001);
-		assertEquals (2, obj.calculateWalkTiming (summonedMultiple), 0.0001);
-		assertEquals (2, obj.calculateWalkTiming (summonedSingle), 0.0001);
-
-		// Test 4x figures scale except single summoned units scale
-		config.setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED);
-		assertEquals (2, obj.calculateWalkTiming (regularUnit), 0.0001);
-		assertEquals (2, obj.calculateWalkTiming (summonedMultiple), 0.0001);
 		assertEquals (1, obj.calculateWalkTiming (summonedSingle), 0.0001);
 	}
 	
@@ -547,20 +563,23 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 	@Test
 	public final void testPlayCombatActionSound_Default () throws Exception
 	{
-		// Mock entries from graphics DB
-		final UnitCombatActionGfx unitCombatAction = new UnitCombatActionGfx ();
+		// Mock database
+		final UnitCombatActionEx unitCombatAction = new UnitCombatActionEx ();
 		unitCombatAction.setCombatActionID ("X");
 		
-		final UnitGfx unitGfx = new UnitGfx ();
+		final UnitEx unitGfx = new UnitEx ();
 		unitGfx.getUnitCombatAction ().add (unitCombatAction);
-		unitGfx.buildMap ();
+		unitGfx.buildMaps ();
 		
-		final CombatActionGfx defaultAction = new CombatActionGfx ();
+		final CombatAction defaultAction = new CombatAction ();
 		defaultAction.setDefaultActionSoundFile ("DefaultActionSound.mp3");
 		
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findUnit ("UN001", "playCombatActionSound")).thenReturn (unitGfx);
-		when (gfx.findCombatAction ("X", "playCombatActionSound")).thenReturn (defaultAction);
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.findUnit ("UN001", "playCombatActionSound")).thenReturn (unitGfx);
+		when (db.findCombatAction ("X", "playCombatActionSound")).thenReturn (defaultAction);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -571,7 +590,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
 		obj.setSoundPlayer (soundPlayer);
-		obj.setGraphicsDB (gfx);
+		obj.setClient (client);
 		
 		// Run method
 		obj.playCombatActionSound (unit, "X");
@@ -587,21 +606,24 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 	@Test
 	public final void testPlayCombatActionSound_Override () throws Exception
 	{
-		// Mock entries from graphics DB
-		final UnitCombatActionGfx unitCombatAction = new UnitCombatActionGfx ();
+		// Mock database
+		final UnitCombatActionEx unitCombatAction = new UnitCombatActionEx ();
 		unitCombatAction.setCombatActionID ("X");
 		unitCombatAction.setOverrideActionSoundFile ("OverrideActionSound.mp3");
 		
-		final UnitGfx unitGfx = new UnitGfx ();
+		final UnitEx unitGfx = new UnitEx ();
 		unitGfx.getUnitCombatAction ().add (unitCombatAction);
-		unitGfx.buildMap ();
+		unitGfx.buildMaps ();
 		
-		final CombatActionGfx defaultAction = new CombatActionGfx ();
+		final CombatAction defaultAction = new CombatAction ();
 		defaultAction.setDefaultActionSoundFile ("DefaultActionSound.mp3");
 		
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findUnit ("UN001", "playCombatActionSound")).thenReturn (unitGfx);
-		when (gfx.findCombatAction ("X", "playCombatActionSound")).thenReturn (defaultAction);
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.findUnit ("UN001", "playCombatActionSound")).thenReturn (unitGfx);
+		when (db.findCombatAction ("X", "playCombatActionSound")).thenReturn (defaultAction);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -612,7 +634,7 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
 		obj.setSoundPlayer (soundPlayer);
-		obj.setGraphicsDB (gfx);
+		obj.setClient (client);
 		
 		// Run method
 		obj.playCombatActionSound (unit, "X");
@@ -628,20 +650,21 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 	@Test
 	public final void testGenerateAttributeImage () throws IOException
 	{
-		// Mock database
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final NdgUIUtils utils = mock (NdgUIUtils.class);
+		when (utils.loadImage ("s.png")).thenReturn (createSolidImage (1, 1, SKILL_ICON));
 
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final UnitSkillWeaponGrade skillWeaponGradeGfx = new UnitSkillWeaponGrade ();
+		skillWeaponGradeGfx.setSkillImageFile ("s.png");
+				
+		final UnitSkillEx skillGfx = new UnitSkillEx ();
+		skillGfx.getUnitSkillWeaponGrade ().add (skillWeaponGradeGfx);
+		when (db.findUnitSkill ("UA01", "getUnitSkillComponentBreakdownIcon")).thenReturn (skillGfx);
+				
 		// Mock graphics
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		final NdgUIUtils utils = mock (NdgUIUtils.class);
-		
-		final UnitSkillWeaponGradeGfx skillWeaponGradeGfx = new UnitSkillWeaponGradeGfx ();
-		skillWeaponGradeGfx.setSkillImageFile ("s.png");
-		
-		final UnitSkillGfx skillGfx = new UnitSkillGfx ();
-		skillGfx.getUnitSkillWeaponGrade ().add (skillWeaponGradeGfx);
-		when (gfx.findUnitSkill ("UA01", "getUnitSkillComponentBreakdownIcon")).thenReturn (skillGfx);
-		when (utils.loadImage ("s.png")).thenReturn (createSolidImage (1, 1, SKILL_ICON));
 		
 		// Attribute component backgrounds
 		final UnitSkillComponentImageGfx basicComponentBackground = new UnitSkillComponentImageGfx ();

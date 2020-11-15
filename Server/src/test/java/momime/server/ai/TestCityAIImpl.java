@@ -18,7 +18,9 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Wizard;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
@@ -32,9 +34,7 @@ import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.PlayerPickUtils;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerCityCalculationsImpl;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.WizardSvr;
 
 /**
  * Tests the CityAI class
@@ -48,7 +48,7 @@ public final class TestCityAIImpl extends ServerTestData
 	@Test
 	public final void testChooseCityLocation () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 		final MapVolumeOfMemoryGridCells map = createOverlandMap (sd.getOverlandMapSize ());
@@ -177,7 +177,7 @@ public final class TestCityAIImpl extends ServerTestData
 	@Test
 	public final void testFindWorkersToConvertToFarmers () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		// Map
 		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
@@ -265,7 +265,7 @@ public final class TestCityAIImpl extends ServerTestData
 	@Test
 	public final void testDecideWhatToBuild () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		// Map
 		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
@@ -292,7 +292,7 @@ public final class TestCityAIImpl extends ServerTestData
 		trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
 		// Set up wizard
-		final WizardSvr wizard = new WizardSvr ();
+		final Wizard wizard = new Wizard ();
 		wizard.setBuildingChance (1);
 
 		// Set up test object

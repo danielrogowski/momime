@@ -11,15 +11,15 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 
 /**
  * Methods for processing the effects of spells that have completed casting
@@ -39,7 +39,7 @@ public interface SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void castOverlandNow (final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem, final MomSessionVariables mom)
+	public void castOverlandNow (final PlayerServerDetails player, final Spell spell, final HeroItem heroItem, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 	
 	/**
@@ -69,7 +69,7 @@ public interface SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public boolean castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final Integer combatCastingFixedSpellNumber,
-		final Integer combatCastingSlotNumber, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+		final Integer combatCastingSlotNumber, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;
@@ -96,7 +96,7 @@ public interface SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void switchOffSpell (final FogOfWarMemory trueMap, final int spellURN,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**
@@ -119,7 +119,7 @@ public interface SpellProcessing
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void targetOverlandSpell (final SpellSvr spell, final MemoryMaintainedSpell maintainedSpell,
+	public void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell,
 		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit,
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
@@ -152,6 +152,6 @@ public interface SpellProcessing
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
-	public List<String> stealSpells (final PlayerServerDetails stealFrom, final PlayerServerDetails giveTo, final int spellsStolenFromFortress, final ServerDatabaseEx db)
+	public List<String> stealSpells (final PlayerServerDetails stealFrom, final PlayerServerDetails giveTo, final int spellsStolenFromFortress, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 }

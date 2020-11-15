@@ -36,67 +36,6 @@ the common project and so accessible to the server so that the server is able to
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="momimeXmlDatabase" type="momimeclient:availableDatabase" />
 		</xsd:sequence>
 	</xsd:complexType>
-
-<!-- The client side database that it sends to each client as they join a session -->
-
-	<xsd:complexType name="clientDatabase">
-	    <xsd:annotation>
-    		<xsd:documentation>Cut down portion of the main server XML that is required on the client - this is converted from
-the server XML and send to the client once they join a session.</xsd:documentation>
-		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="plane" type="momimecommon:plane" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionType" type="momimecommon:productionType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeature" type="momimeclient:mapFeature" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileType" type="momimecommon:tileType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickType" type="momimecommon:pickType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:pick" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizard" type="momimeclient:wizard" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="race" type="momimecommon:race" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="taxRate" type="momimecommon:taxRate" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="building" type="momimecommon:building" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitType" type="momimecommon:unitType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkill" type="momimecommon:unitSkill" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimecommon:rangedAttackType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="damageType" type="momimecommon:damageType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimecommon:unit" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimecommon:weaponGrade" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimecommon:combatAreaEffect" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimecommon:spell" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileType" type="momimecommon:combatTileType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorder" type="momimecommon:combatTileBorder" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimecommon:movementRateRule" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlotType" type="momimecommon:heroItemSlotType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimecommon:heroItemType" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonus" type="momimecommon:heroItemBonus" />
-		</xsd:sequence>
-	</xsd:complexType>
-
-	<xsd:complexType name="mapFeature">
-        <xsd:annotation>
-        	<xsd:documentation>Client needs to know that a map feature will be inhabited, but doesn't need to know what by - so we replace the child entities with a simple flag.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimecommon:mapFeature">
-				<xsd:sequence>
-					<xsd:element minOccurs="1" maxOccurs="1" name="anyMagicRealmsDefined" type="xsd:boolean" />
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
-	
-	<xsd:complexType name="wizard">
-        <xsd:annotation>
-        	<xsd:documentation>Client only needs to know about the predefined wizard picks for the number of human picks chosen for this game, so we strip out a level.</xsd:documentation>
-        </xsd:annotation>
-		<xsd:complexContent>
-			<xsd:extension base="momimecommon:wizard">
-				<xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizardPick" type="momimecommon:pickAndQuantity" />
-				</xsd:sequence>
-			</xsd:extension>
-		</xsd:complexContent>
-	</xsd:complexType>
 	
 <!--  Simple types -->
 

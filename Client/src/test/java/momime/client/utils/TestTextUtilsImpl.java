@@ -4,15 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
 
 import org.junit.Test;
+
+import momime.client.ClientTestData;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
+import momime.common.database.Language;
 
 /**
  * Tests the TextUtilsImpl class
  */
-public final class TestTextUtilsImpl
+public final class TestTextUtilsImpl extends ClientTestData
 {
 	/**
 	 * Tests the intToStrCommas method, with a locale that uses comma separators
@@ -116,11 +120,14 @@ public final class TestTextUtilsImpl
 	public final void testReplaceFinalCommaByAnd ()
 	{
 		// Mock entry from language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("Simple", "And")).thenReturn ("and"); 
+		final Simple simpleLang = new Simple ();
+		simpleLang.getAnd ().add (createLanguageText (Language.ENGLISH, "and"));
 		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Set up object to test
 		final TextUtilsImpl utils = new TextUtilsImpl ();

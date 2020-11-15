@@ -54,7 +54,7 @@ public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMes
 		pub.setStandardPhotoID (getPhotoID ());
 		
 		// Store flag colour
-		trans.setFlagColour (getGraphicsDB ().findWizard (getPhotoID (), "ChosenStandardPhotoMessageImpl").getFlagColour ());
+		trans.setFlagColour (getClient ().getClientDB ().findWizard (getPhotoID (), "ChosenStandardPhotoMessageImpl").getFlagColour ());
 		
 		log.trace ("Exiting start");
 	}

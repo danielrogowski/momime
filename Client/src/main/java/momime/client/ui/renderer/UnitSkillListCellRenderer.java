@@ -18,16 +18,14 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemTypeGfx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitSkillLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.UnitSkillOrHeroItemSlot;
 import momime.client.utils.UnitClientUtils;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemType;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**
@@ -79,31 +77,28 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	public final Component getListCellRendererComponent (final JList<? extends UnitSkillOrHeroItemSlot> list,
 		final UnitSkillOrHeroItemSlot value, final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
-		// Items have a fixed name so are easy; slots display no text at all
-		if (value.getHeroItem () != null)
-			setText (value.getHeroItem ().getHeroItemName ());
-		else if (value.getHeroItemSlotTypeID () != null)
-			setText (null);
-		
-		// Ability to cast spells just says e.g. "Doom Bolt Spell"
-		else if (value.getSpellID () != null)
+		try
 		{
-			final SpellLang spellLang = getLanguage ().findSpell (value.getSpellID ());
-			final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
+			// Items have a fixed name so are easy; slots display no text at all
+			if (value.getHeroItem () != null)
+				setText (value.getHeroItem ().getHeroItemName ());
+			else if (value.getHeroItemSlotTypeID () != null)
+				setText (null);
 			
-			setText (getLanguage ().findCategoryEntry ("frmUnitInfo", "UnitCanCast").replaceAll
-				("SPELL_NAME", (spellName != null) ? spellName : value.getSpellID ()));
-		}
-		else
-		{
-			// Look up the name of the skill
-			final UnitSkillLang skillLang = getLanguage ().findUnitSkill (value.getUnitSkillID ());
-			if (skillLang == null)
-				setText (value.getUnitSkillID ());
+			// Ability to cast spells just says e.g. "Doom Bolt Spell"
+			else if (value.getSpellID () != null)
+			{
+				final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (value.getSpellID (), "UnitSkillListCellRenderer").getSpellName ());
+				
+				setText (getLanguageHolder ().findDescription (getLanguages ().getUnitInfoScreen ().getUnitCanCast ()).replaceAll
+					("SPELL_NAME", (spellName != null) ? spellName : value.getSpellID ()));
+			}
 			else
 			{
+				// Look up the name of the skill
 				getUnitStatsReplacer ().setUnit (getUnit ());
-				String skillText = getUnitStatsReplacer ().replaceVariables (skillLang.getUnitSkillDescription ());
+				String skillText = getUnitStatsReplacer ().replaceVariables (getLanguageHolder ().findDescription (getClient ().getClientDB ().findUnitSkill
+					(value.getUnitSkillID (), "UnitSkillListCellRenderer").getUnitSkillDescription ()));
 				
 				// Show strength of skills, e.g. Fire Breath 2
 				if ((value.getUnitSkillValue () != null) && (value.getUnitSkillValue () > 0) &&
@@ -113,18 +108,15 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 					(!value.getUnitSkillID ().startsWith ("HS")))	// This is a bit of a hack, but better than listing all hero skills out separately, and the client
 																					// doesn't have all the skill rolling data like the "maxOccurrences" value and so on
 					
-					try
-					{
-						skillText = skillText + " " + getUnit ().getModifiedSkillValue (value.getUnitSkillID ());
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
-				
-				// Trim off the annoying leading space on hero skills like "Armsmaster", which is there in case it needs to put "Super Armsmaster"
-				setText (skillText.trim ());
-			}
+					skillText = skillText + " " + getUnit ().getModifiedSkillValue (value.getUnitSkillID ());
+					
+					// Trim off the annoying leading space on hero skills like "Armsmaster", which is there in case it needs to put "Super Armsmaster"
+					setText (skillText.trim ());
+				}
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
 		}
 		
 		// Darken text?
@@ -138,13 +130,13 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 			if (value.getUnitSkillID () != null)
 				image = getUnitClientUtils ().getUnitSkillSingleIcon (getUnit (), value.getUnitSkillID ());
 			else if (value.getSpellID () != null)
-				image = getUtils ().loadImage (getGraphicsDB ().findSpell (value.getSpellID (), "UnitSkillListCellRenderer").getUnitCanCastImageFile ());
+				image = getUtils ().loadImage (getClient ().getClientDB ().findSpell (value.getSpellID (), "UnitSkillListCellRenderer").getUnitCanCastImageFile ());
 			else if (value.getHeroItemSlotTypeID () != null)
-				image = getUtils ().loadImage (getGraphicsDB ().findHeroItemSlotType (value.getHeroItemSlotTypeID (), "UnitSkillListCellRenderer").getHeroItemSlotTypeImageFileWithBackground ());
+				image = getUtils ().loadImage (getClient ().getClientDB ().findHeroItemSlotType (value.getHeroItemSlotTypeID (), "UnitSkillListCellRenderer").getHeroItemSlotTypeImageFileWithBackground ());
 			else
 			{
 				// For items, need to superimpose the item image onto a square background
-				final HeroItemTypeGfx itemType = getGraphicsDB ().findHeroItemType (value.getHeroItem ().getHeroItemTypeID (), "UnitSkillListCellRenderer");
+				final HeroItemType itemType = getClient ().getClientDB ().findHeroItemType (value.getHeroItem ().getHeroItemTypeID (), "UnitSkillListCellRenderer");
 				
 				final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/heroItems/unitSkillsHeroItemBackground.png");
 				image = new BufferedImage (background.getWidth (), background.getHeight (), BufferedImage.TYPE_INT_ARGB);
@@ -193,9 +185,9 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 	
 	/**

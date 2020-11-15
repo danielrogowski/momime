@@ -20,13 +20,11 @@ import java.util.List;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -42,9 +40,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemTypeGfx;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.ShortcutKeyLang;
+import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.draganddrop.TransferableFactory;
@@ -55,9 +51,9 @@ import momime.client.utils.TextUtils;
 import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlotType;
+import momime.common.database.HeroItemType;
 import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Shortcut;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NumberedHeroItem;
@@ -224,9 +220,8 @@ public final class HeroItemsUI extends MomClientFrameUI
 						final int manaGained = getHeroItemCalculations ().calculateCraftingCost (item, getClient ().getClientDB ()) / 2;
 
 						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("frmHeroItems");
-						msg.setTitleLanguageEntryID ("DestroyTitle");
-						msg.setText (getLanguage ().findCategoryEntry ("frmHeroItems", "Destroy").replaceAll
+						msg.setLanguageTitle (getLanguages ().getHeroItemsScreen ().getDestroyTitle ());
+						msg.setText (getLanguageHolder ().findDescription (getLanguages ().getHeroItemsScreen ().getDestroy ()).replaceAll
 							("ITEM_NAME", item.getHeroItemName ()).replaceAll
 							("MANA_GAINED", getTextUtils ().intToStrCommas (manaGained)));
 						msg.setDestroyHeroItemMessage (requestMoveHeroItemMessage);
@@ -269,7 +264,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 					final NumberedHeroItem item = bankItems.get (index);
 					
 					// Create a mouse cursor that looks like the chosen item
-					final HeroItemTypeGfx itemGfx = getGraphicsDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
+					final HeroItemType itemGfx = getClient ().getClientDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
 					final BufferedImage itemImage = getUtils ().loadImage (itemGfx.getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ()));
 					final Cursor cursor = Toolkit.getDefaultToolkit ().createCustomCursor
 						(getUtils ().doubleSize (itemImage), new Point (itemImage.getWidth (), itemImage.getHeight ()), item.getHeroItemName ());
@@ -395,7 +390,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 						if (item != null)
 						{
 							// Create a mouse cursor that looks like the chosen item
-							final HeroItemTypeGfx itemGfx = getGraphicsDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
+							final HeroItemType itemGfx = getClient ().getClientDB ().findHeroItemType (item.getHeroItemTypeID (), "HeroItemsUI");
 							final BufferedImage itemImage = getUtils ().loadImage (itemGfx.getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ()));
 							final Cursor cursor = Toolkit.getDefaultToolkit ().createCustomCursor
 								(getUtils ().doubleSize (itemImage), new Point (itemImage.getWidth (), itemImage.getHeight ()), item.getHeroItemName ());
@@ -652,16 +647,20 @@ public final class HeroItemsUI extends MomClientFrameUI
 	{
 		// Resource values get sent to us during game startup before the screen has been set up, so its possible to get here before the labels even exist
 		if (label != null)
-		{
-			String amountStored = getTextUtils ().intToStrCommas (getResourceValueUtils ().findAmountStoredForProductionType
-				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionTypeID));
-		
-			final ProductionTypeLang productionType = getLanguage ().findProductionType (productionTypeID);
-			if ((productionType != null) && (productionType.getProductionTypeSuffix () != null))
-				amountStored = amountStored + " " + productionType.getProductionTypeSuffix ();
+			try
+			{
+				final String amountStored = getTextUtils ().intToStrCommas (getResourceValueUtils ().findAmountStoredForProductionType
+					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionTypeID)) + " " + 
 			
-			label.setText (amountStored);
-		}
+					getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findProductionType (productionTypeID, "updateAmountStored").getProductionTypeSuffix ());
+				
+				label.setText (amountStored);
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
 	}
 	
 	/**
@@ -685,26 +684,15 @@ public final class HeroItemsUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmHeroItems", "Title"));
-		bankTitle.setText (getLanguage ().findCategoryEntry ("frmHeroItems", "Bank"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getHeroItemsScreen ().getTitle ()));
+		bankTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getHeroItemsScreen ().getBank ()));
 
 		// Buttons
-		alchemyAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmHeroItems", "Alchemy"));
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmHeroItems", "OK"));
+		alchemyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getHeroItemsScreen ().getAlchemy ()));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 	
 		// Shortcut keys
-		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
-		for (final Object shortcut : contentPane.getActionMap ().keys ())
-			if (shortcut instanceof Shortcut)
-			{
-				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
-				if (shortcutKey != null)
-				{
-					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
-					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
-					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
-				}
-			}
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 		
 		// GP or MP suffix may have changed
 		updateGlobalEconomyValues ();

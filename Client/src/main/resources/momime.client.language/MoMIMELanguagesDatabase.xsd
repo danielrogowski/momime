@@ -1,0 +1,1321 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nxe="http://www.ndg.com/xmleditor/1.0.0"
+	xmlns:momimecommon="http://momime/common/database"
+	xmlns:momimelangs="http://momime/client/languages/database" targetNamespace="http://momime/client/languages/database">
+	
+	<xsd:import namespace="http://momime/common/database" />
+
+	<xsd:annotation>
+		<xsd:documentation>Merged MoM IME languages file for UI components</xsd:documentation>
+		<xsd:appinfo>
+			<nxe:backuponopen>Y</nxe:backuponopen>
+			<nxe:database namespaceURI="http://momime/client/languages/database">
+				<nxe:title>MoM IME Languages</nxe:title>
+				<nxe:xmlfilename>../client/languages/Languages.momime.xml</nxe:xmlfilename>
+			</nxe:database>
+		</xsd:appinfo>
+	</xsd:annotation>
+
+	<xsd:element name="momLanguages">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="languageOption" type="momimelangs:languageOption" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="knownServer" type="momimelangs:knownServer" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="shortcutKey" type="momimelangs:shortcutKey" />
+				
+			    <xsd:element minOccurs="0" maxOccurs="1" name="simple" type="momimelangs:simple" />
+    			<xsd:element minOccurs="0" maxOccurs="unbounded" name="month" type="momimelangs:month" />
+    			
+    			<xsd:element minOccurs="0" maxOccurs="1" name="multiplayer" type="momimelangs:multiplayer" />
+    			
+    			<xsd:element minOccurs="0" maxOccurs="1" name="unitName" type="momimelangs:unitName" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="turnSystems" type="momimelangs:turnSystems" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellCasting" type="momimelangs:spellCasting" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="dispelMagic" type="momimelangs:dispelMagic" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="variableMana" type="momimelangs:variableMana" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellTargetting" type="momimelangs:spellTargetting" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="combatDamage" type="momimelangs:combatDamage" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="cityGrowthRate" type="momimelangs:cityGrowthRate" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="cityProduction" type="momimelangs:cityProduction" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="unrestCalculation" type="momimelangs:unrestCalculation" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="buyingAndSellingBuildings" type="momimelangs:buyingAndSellingBuildings" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="newTurnMessages" type="momimelangs:newTurnMessages" />
+    			
+    			<xsd:element minOccurs="0" maxOccurs="1" name="mainMenuScreen" type="momimelangs:mainMenuScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="messageBoxScreen" type="momimelangs:messageBoxScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="connectToServerScreen" type="momimelangs:connectToServerScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="newGameScreen" type="momimelangs:newGameScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="joinGameScreen" type="momimelangs:joinGameScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="loadGameScreen" type="momimelangs:loadGameScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseWizardScreen" type="momimelangs:chooseWizardScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="choosePortraitScreen" type="momimelangs:choosePortraitScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseFlagColourScreen" type="momimelangs:chooseFlagColourScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="customPicksScreen" type="momimelangs:customPicksScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseInitialSpellsScreen" type="momimelangs:chooseInitialSpellsScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseRaceScreen" type="momimelangs:chooseRaceScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="waitForPlayersToJoinScreen" type="momimelangs:waitForPlayersToJoinScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="overlandMapScreen" type="momimelangs:overlandMapScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="nameCityScreen" type="momimelangs:nameCityScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="cityScreen" type="momimelangs:cityScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="changeConstructionScreen" type="momimelangs:changeConstructionScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="unitInfoScreen" type="momimelangs:unitInfoScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="optionsScreen" type="momimelangs:optionsScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="razeCityScreen" type="momimelangs:razeCityScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="combatScreen" type="momimelangs:combatScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="combatEndedScreen" type="momimelangs:combatEndedScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="magicSlidersScreen" type="momimelangs:magicSlidersScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="alchemyScreen" type="momimelangs:alchemyScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellBookScreen" type="momimelangs:spellBookScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="selectAdvisorScreen" type="momimelangs:selectAdvisorScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="taxRateScreen" type="momimelangs:taxRateScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="unitRowDisplayScreen" type="momimelangs:unitRowDisplayScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellQueueScreen" type="momimelangs:spellQueueScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardsScreen" type="momimelangs:wizardsScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="armyListScreen" type="momimelangs:armyListScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="citiesListScreen" type="momimelangs:citiesListScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemsScreen" type="momimelangs:heroItemsScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemInfoScreen" type="momimelangs:heroItemInfoScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="treasureScreen" type="momimelangs:treasureScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardBanishedScreen" type="momimelangs:wizardBanishedScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardWonScreen" type="momimelangs:wizardWonScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="historyScreen" type="momimelangs:historyScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="helpScreen" type="momimelangs:helpScreen" />
+			</xsd:sequence>
+		</xsd:complexType>
+
+<!-- Primary keys -->
+
+		<xsd:key name="languageOptionPK">
+			<xsd:selector xpath="languageOption" />
+			<xsd:field xpath="@language" />
+		</xsd:key>
+		<xsd:key name="knownServerPK">
+			<xsd:selector xpath="knownServer" />
+			<xsd:field xpath="@knownServerID" />
+		</xsd:key>
+		<xsd:key name="shortcutKeyPK">
+			<xsd:selector xpath="shortcutKey" />
+			<xsd:field xpath="@shortcut" />
+		</xsd:key>
+		
+	</xsd:element>
+		
+<!-- Complex types -->
+	
+	<xsd:complexType name="languageOption" nxe:singular="Language option" nxe:plural="Language options">
+        <xsd:annotation>
+        	<xsd:documentation>Different languages supported by MoM IME.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="languageDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+		</xsd:sequence>
+		<xsd:attribute name="language" type="momimecommon:language" use="required" nxe:label="Code" nxe:gridwidth="150" />
+	</xsd:complexType>	
+
+	<xsd:complexType name="knownServer" nxe:singular="Known Server" nxe:plural="Known Servers">
+        <xsd:annotation>
+        	<xsd:documentation>Defines known MoM IME servers to suggest the client connects to.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="knownServerIP" type="momimelangs:ipAddress" nxe:label="IP Address" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="knownServerDescription" type="momimecommon:languageText" nxe:label="Description" nxe:gridwidth="150" />
+		</xsd:sequence>
+		<xsd:attribute name="knownServerID" type="momimelangs:knownServerID" use="required" nxe:label="Server ID" nxe:gridwidth="100" />
+	</xsd:complexType>
+
+	<xsd:complexType name="shortcutKey" nxe:singular="Shortcut Key" nxe:plural="Shortcut Keys">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="keyLang" type="momimelangs:shortcutKeyLang" />
+		</xsd:sequence>
+		<xsd:attribute name="shortcut" type="momimelangs:shortcut" use="required" nxe:label="Shortcut" nxe:gridwidth="300" />
+	</xsd:complexType>
+
+	<xsd:complexType name="shortcutKeyLang" nxe:singular="Shortcut Key" nxe:plural="Shortcut Keys">
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="shift" type="xsd:boolean" nxe:label="Shift?" nxe:gridwidth="50" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="alt" type="xsd:boolean" nxe:label="Alt?" nxe:gridwidth="50" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="ctrl" type="xsd:boolean" nxe:label="Ctrl?" nxe:gridwidth="50" />
+			<!-- <xsd:choice minOccurs="1" maxOccurs="1" > -->
+				<xsd:element minOccurs="0" maxOccurs="1" name="normalKey" type="momimelangs:normalKey" nxe:label="Key" nxe:gridwidth="50" />
+				<xsd:element minOccurs="0" maxOccurs="1" name="virtualKey" type="momimelangs:virtualKey" nxe:label="Virtual Key" nxe:gridwidth="70" />
+			<!-- </xsd:choice> -->
+		</xsd:sequence>
+		<xsd:attribute name="language" type="momimecommon:language" use="required" nxe:label="Code" nxe:gridwidth="150" />
+	</xsd:complexType>
+	
+<!-- Old language category/entry strings -->
+
+    <xsd:complexType name="simple" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ok" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancel" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="and" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="no" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="yes" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="close" />
+		</xsd:sequence>
+    </xsd:complexType>
+    
+	<xsd:complexType name="multiplayer" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deleteSavedGameTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deleteSavedGameText" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickedTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickedText" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="createAccountFailed" type="momimelangs:createAccountFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="loginFailed" type="momimelangs:loginFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="logoutFailed" type="momimelangs:logoutFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="requestSessionListFailed" type="momimelangs:requestSessionListFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="joinFailed" type="momimelangs:joinFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="leaveSessionFailed" type="momimelangs:leaveSessionFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="browseSavedGamesFailed" type="momimelangs:browseSavedGamesFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="browseSavePointsFailed" type="momimelangs:browseSavePointsFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="deleteSavedGameFailed" type="momimelangs:deleteSavedGameFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="loadGameFailed" type="momimelangs:loadGameFailed" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="connectionErrors" type="momimelangs:connectionErrors" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="createAccountFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="playerAlreadyExists" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="loginFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="yourConnectionIsAlreadyLoggedIn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="playerNameOrPasswordNotRecognized" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="anotherConnectionUsingYourPlayerID" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="logoutFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notLoggedIn" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="requestSessionListFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notLoggedIn" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="joinFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notLoggedIn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyInSession" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionIDNotFound" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionFull" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="leaveSessionFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notLoggedIn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notInSession" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="browseSavedGamesFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notLoggedIn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyInSession" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGamesNotSupported" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="browseSavePointsFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notLoggedIn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyInSession" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGameIDNotFound" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGamesNotSupported" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="deleteSavedGameFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notLoggedIn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyInSession" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGameIDNotFound" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGamesNotSupported" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="loadGameFailed" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="notLoggedIn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyInSession" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGameIDNotFound" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGameFilenameNotFound" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGamesNotSupported" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="connectionErrors" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unknownHostException" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="timedOut" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refused" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="other" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="unitName" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theUnitOfNameSingular" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theUnitOfNamePlural" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="turnSystems" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="onePlayerAtATime" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneous" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="month" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="name" />
+		</xsd:sequence>
+		<xsd:attribute name="monthNumber" use="required" type="momimelangs:monthNumber" nxe:label="Month Number" nxe:gridwidth="120" />
+    </xsd:complexType>
+	
+	<xsd:complexType name="spellCasting" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="youHaveCast" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="someoneElseHasCast" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourOverlandEnchantment" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyOverlandEnchantment" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchOffSpellTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchOffSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchOffSpellNotOurs" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="whoWillCastTitle" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="dispelMagic" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourDispelMagicHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourDispelMagicSuccess" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourDispelMagicFail" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirDispelMagicHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirDispelMagicSuccess" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirDispelMagicFail" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="variableMana" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="damage" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="resistance" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="dispel" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="spellTargetting" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidMagicRealmLifeformType" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noUnitSpellEffectIDsDefined" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enchantingEnemyUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cursingOwnUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasAllPossibleUnitSpellEffects" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noCitySpellEffectIDsDefined" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enchantingEnemyCity" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cursingOwnCity" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasAllPossibleCitySpellEffects" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasBuilding" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tooHighResistance" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="immune" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitNotInExpectedCombat" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitDead" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="undamaged" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="permanentlyDamaged" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noEnemySpellsUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotSeeLocation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotSeeCity" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="mustTargetLand" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="locationAlreadyCorrupted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotTargetNodes" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelText" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="combatDamage" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithAttackerUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithoutAttackerUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithoutEitherUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackWithUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackWithoutUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackChanceOfDeath" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackEachFigureResistOrDie" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackSingleFigureResistOrDie" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackResistOrTakeDamage" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackZeroesAmmo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackResistanceRolls" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackDisintegrate" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackFear" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStrengthReduced" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStrengthIncreased" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStatistics" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceStatisticsAutomatic" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceChanceOfDeathDies" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceChanceOfDeathSurvives" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceEachFigureResistOrDie" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceSingleFigureResistOrDieDies" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceSingleFigureResistOrDieSurvives" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceResistOrTakeDamage" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceResistanceRolls" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceDisintegrateDies" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceDisintegrateSurvives" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceFear" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="cityGrowthRate" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="currentPopulation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maximumPopulation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="baseGrowthRate" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="racialGrowthModifier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="growthBonusFromBuilding" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowthRateTotal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="housing" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="difficultyLevelMultiplier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowthRateCapped" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deathRate" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="atMaximumSize" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="cityProduction" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionMainHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSinglePopulation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMultiplePopulation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldFromTaxes" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSingleTile" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMultipleTiles" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromSingleMapFeature" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMultipleMapFeatures" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMapFeatureRaceBonus" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromMapFeatureBuildingBonus" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromBuildingWithoutReligiousRetortBonus" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromBuildingWithReligiousRetortBonus" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromFortressPicks" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionFromFortressPlane" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="roundingTotalBefore" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="roundingUp" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="roundingDown" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPercentageBonusHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageBonusFromSingleTile" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageBonusFromMultipleTiles" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageBonusFromBuilding" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusFromTileType" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusFromRoads" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusFromRace" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusUncapped" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="goldTradeBonusCapped" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPercentageBonusTotal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="difficultyLevelMultiplier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionCapped" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="consumptionMainHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rationsAteByPopulation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildingConsumption" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="netEffectBreakingEven" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="netEffectGain" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="netEffectLoss" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tradeGoods" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="unrestCalculation" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="taxPercentage" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="racialPercentage" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="totalPercentage" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="baseValue" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="racialLiteral" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildingUnrestReduction" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="retort" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitReduction" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="baseTotal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="forcePositive" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="forceAll" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="minimumFarmers" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="buyingAndSellingBuildings" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rushBuyTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rushBuyPrompt" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sellTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sellPromptNormal" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sellPromptPrerequisite" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotSellSpecialBuilding" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="onlySellOneEachTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotSellRequiredByAnother" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="newTurnMessages" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="constructionCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="constructionCompleted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="constructionAborted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nextConstruction" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="LackOfProductionCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowthCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowth" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityDeathCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityDeath" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellsCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchNotChosen" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchChosen" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="summonedUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="summonedUnitLastTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="summonedUnitBumpedSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="summonedUnitNoRoomSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="createArtifact" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="createArtifactLastTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpellChosenNamed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpellChosenUnnamed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpellCancelled" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpellChosenLastTurnNamed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpellChosenLastTurnUnnamed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpellCancelledLastTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodesCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="emptyNodeCaptured" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ownedNodeCaptured" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="emptyNodeCapturedLastTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ownedNodeCapturedLastTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodeLost" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodeLostLastTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitsCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroGainedALevel" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroGainedALevelLastTurn" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="mainMenuScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="longTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="shortTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="version" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="originalCopyrightLine1" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="originalCopyrightLine2" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="connectToServer" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="newGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="joinGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="loadGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="options" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="exit" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="messageBoxScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="errorTitle" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="connectToServerScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="pickFromList" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enterServer" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="playerName" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="password" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="createAccount" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickExistingConnection" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="newGameScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="difficulty" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="humanOpponents" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiOpponents" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="mapSize" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="landProportion" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodes" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="turnSystem" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="fogOfWar" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitSettings" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellSettings" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="debugOptions" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="gameName" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="customize" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidNumberOfPlayers" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customMapSizeTab" type="momimelangs:customMapSizeTab" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customLandProportionTab" type="momimelangs:customLandProportionTab" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customNodesTab" type="momimelangs:customNodesTab" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab1" type="momimelangs:customDifficultyTab1" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab2" type="momimelangs:customDifficultyTab2" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab3" type="momimelangs:customDifficultyTab3" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customFogOfWarTab" type="momimelangs:customFogOfWarTab" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customSpellsTab" type="momimelangs:customSpellsTab" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customUnitsTab" type="momimelangs:customUnitsTab" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customDebugTab" type="momimelangs:customDebugTab" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customMapSizeTab" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="mapSize" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="zones" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="normalLairCount" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakLairCount" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="towers" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="towersSeparation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="continental" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="citySeparation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wrapsLeftRight" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wrapsTopBottom" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customLandProportionTab" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="percentageMapIsLand" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="hillsProportion" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="mountainsProportion" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="treesProportion" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="desertProportion" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="swampProportion" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="treeAreaTileCountPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="treeAreaTileCountSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="desertAreaTileCountPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="desertAreaTileCountSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="swampAreaTileCountPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="swampAreaTileCountSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tundraPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="tundraSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rivers" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="arcanusPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="arcanusSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="myrrorPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="myrrorSuffix" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customNodesTab" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="magicPowerPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="magicPowerSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="arcanusCount" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="arcanusNodeAuraPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="arcanusNodeAuraSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="myrrorCount" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="myrrorNodeAuraPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="myrrorNodeAuraSuffix" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customDifficultyTab1" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="humanSpellPicks" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiSpellPicks" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="humanGold" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiGold" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellPicks" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="gold" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiPopulationGrowthRateMultiplier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiPopulationGrowthRateMultiplierWizards" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiPopulationGrowthRateMultiplierRaiders" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiProductionRateMultiplier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiProductionRateMultiplierWizards" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiProductionRateMultiplierRaiders" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiSpellResearchMultiplier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aiUpkeepMultiplier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wizardCitySize" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="raiderCityCount" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="raiderCitySizePrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="raiderCityGrowthPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="raiderCityGrowthSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxCitySize" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="customWizards" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eachWizardOnlyOnce" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customDifficultyTab2" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="towerMonsters" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="towerTreasure" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="normalLairs" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="normalArcanusLairMonsters" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="normalArcanusLairTreasure" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="normalMyrrorLairMonsters" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="normalMyrrorLairTreasure" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakLairs" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakArcanusLairMonsters" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakArcanusLairTreasure" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakMyrrorLairMonsters" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="weakMyrrorLairTreasure" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customDifficultyTab3" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="arcanusNodeMonsters" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="arcanusNodeTreasure" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="myrrorNodeMonsters" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="myrrorNodeTreasure" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customFogOfWarTab" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="always" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="remember" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="forget" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="terrainNodesAuras" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="citiesSpellsCombatAreaEffects" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="units" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="constructing" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customSpellsTab" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchResearch" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchResearchNo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchResearchNotStarted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchResearchLose" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchResearchFreely" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="booksToObtainFirstReduction" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eachBook" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingReductionPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingReductionSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchBonusPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchBonusSuffix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingReductionCombinationAdd" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingReductionCombinationMultiply" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchBonusCombinationAdd" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchBonusCombinationMultiply" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castingReductionCap" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchBonusCap" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="stolenFromFortress" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customUnitsTab" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxPerGridCell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="canExceedMaximumUnitsDuringCombat" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxHeroes" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rollHeroSkillsAtStartOfGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxHeroItemBonuses" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxHeroItemSpellCharges" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxHeroItemsInBank" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unlimited" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customDebugTab" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="disableFogOfWar" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="joinGameScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnGameName" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnPlayers" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnSettings" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="sessionsColumnTurnSystem" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refresh" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="join" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="loadGameScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGamesColumnGameName" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGamesColumnPlayers" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGamesColumnGameStarted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savedGamesColumnLatestSave" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savePointsColumnSavedAt" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="savePointsColumnTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deleteSavedGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="selectSavedGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="selectSavePoint" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="back" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="chooseWizardScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="custom" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="choosePortraitScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="custom" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="customTooLarge" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="chooseFlagColourScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="red" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="blue" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="green" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="customPicksScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noPicks" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="insufficientPicks" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="prerequisites" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="chooseInitialSpellsScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="chooseRaceScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="waitForPlayersToJoinScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ListColumnName" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ListColumnWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ListColumnHumanOrAI" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="human" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ai" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="custom" />
+		</xsd:sequence>
+    </xsd:complexType>
+
+	<xsd:complexType name="overlandMapScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="mapButtonBar" type="momimelangs:mapButtonBar" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="mapRightHandBar" type="momimelangs:mapRightHandBar" />
+    		<xsd:element minOccurs="0" maxOccurs="1" name="surveyorTab" type="momimelangs:surveyorTab" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="mapButtonBar" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="game" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spells" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="armies" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cities" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="magic" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="plane" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="newTurnMessages" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="chat" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="turn" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="mapRightHandBar" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="done" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="patrol" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wait" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="onePlayerAtATimeCurrentPlayer" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsLine1" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsLine2" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPerTurn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPerTurnMagicPower" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnPrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnResearch" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnNewTurnMessages" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnUnassignedHeroItems" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="nameCityScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="prompt" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="cityScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="resources" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enchantments" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="terrain" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildings" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="units" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="production" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rushBuy" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="changeConstruction" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rename" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxCitySize" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="populationMaxed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="populationAndGrowth" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="changeConstructionScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="upkeep" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cost" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="allows" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitURN" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buildingURN" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="unitInfoScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="dismiss" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="dismissTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="dismissPrompt" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rename" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="renamePrompt" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitCanCast" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="optionsScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="overlandMap" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="linearTextureFilter" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showFogOfWar" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="smoothTerrain" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="smoothFogOfWar" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showOurBorder" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showEnemyBorders" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="animateUnitsMoving" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="combatMap" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="combatUnitScale" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="debug" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showFrameRate" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showUnitURNs" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showEdgesOfMap" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="language" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="chooseLanguage" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitInfo" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showHeroPortraits" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitAttributes" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitAttributesStandard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitAttributesModifyable" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitAttributesAll" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="surveyorTab" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityResources" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cantBuildCityBecauseUnscouted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cantBuildCityBecauseOfTerrain" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cantBuildCityBecauseOfFeature" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cantBuildCityTooCloseToAnotherCity" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="canBuildCity" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="featureProvidesSpellProtection" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodeLairTowerUnscouted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodeTowerCleared" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="corrupted" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="razeCityScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="text" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="raze" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="combatScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wait" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="done" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="flee" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="auto" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="skill" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="mana" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="range" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castable" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="averagePrefix" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cancelTargetSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="oneSpellPerTurn" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="combatEndedScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeat" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="victory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="youCaptured" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="youRazed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="youGotGoldFromEnemyCity" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="youGotGoldFromRazing" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyCaptured" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyRazed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyGotGoldFromYourCity" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroItems" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="undeadCreatedSingular" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="undeadCreatedPlural" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="magicSlidersScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="powerBase" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="manaTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="skillTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="manaLabel" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchLabel" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="skillLabel" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchingNothing" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="overlandEnchantments" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alchemy" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="apply" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="alchemyScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="conversion" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="spellBookScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchResearchTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchResearchDisallowed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchResearchLose" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="castSpellTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="requestCastExistingOverlandEnchantment" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noValidTargets" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noCombatSpellEffectIDsDefined" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alreadyHasAllPossibleCombatSpellEffects" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="noDeadUnitsToBeRaised" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="selectAdvisorScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="surveyor" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cartographer" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="apprentice" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="historian" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="astrologer" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="chancellor" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="taxCollector" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="grandVizier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wizards" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="taxRateScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="entry" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="unitRowDisplayScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="titleRaiseOwn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="titleRaiseEither" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="spellQueueScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cantCancelSpellOfReturn" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="confirmCancelSpell" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="wizardsScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="armyListScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroItems" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="citiesListScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityName" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityRace" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityPopulation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityRations" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGold" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityProduction" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityConstructing" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="heroItemsScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="bank" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alchemy" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="destroyTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="destroy" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="heroItemInfoScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="itemSlotHelpTextPrefix" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="treasureScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="text" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nothing" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="retort" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="prisoner" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="prisonerBumped" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="prisonerEscaped" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="wizardBanishedScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banishedByWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="banishedByRaiders" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeatedByWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defeatedByRaiders" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="wizardWonScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line1" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line2" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line3" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line4" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="historyScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="helpScreen" nxe:submenu="Strings">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookSection" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookResearchCostNotOurs" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookResearchCostResearched" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookResearchCostNotStarted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookResearchCostPartial" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookOverlandCostFull" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookOverlandCostReduced" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookCombatCostFull" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookCombatCostReduced" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookNoSavingThrow" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookNoSavingThrowModifier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookSingleSavingThrowModifier" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellBookMultipleSavingThrowModifiers" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellUpkeepWithoutChanneler" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellUpkeepWithChanneler" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellUpkeepFixed" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="spellUpkeepRange" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="experienceLevelBoost" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="experienceForNextLevelWithoutBoost" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="experienceForNextLevelWithBoost" />
+		</xsd:sequence>
+    </xsd:complexType>
+
+<!-- Simple types -->	
+
+	<xsd:simpleType name="knownServerID">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="ipAddress">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="shortcut">
+        <xsd:annotation>
+        	<xsd:documentation>Defines the shortcut keys supported by this version.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<!-- Overland map shortcut keys -->
+			<xsd:enumeration value="ARMIES_SCREEN" />
+			<xsd:enumeration value="CENTRE_OVERLAND_ON_SELECTED_UNIT" />
+			<xsd:enumeration value="GAME_SCREEN" />
+			<xsd:enumeration value="MAGIC_SCREEN" />
+			<xsd:enumeration value="NEXT_TURN" />
+			<xsd:enumeration value="SWITCH_PLANE" />
+			<xsd:enumeration value="SPELLBOOK" />
+			<xsd:enumeration value="ZOOM_IN" />
+			<xsd:enumeration value="ZOOM_OUT" />
+
+			<!-- The latter part of these names must exactly match the enums defined in SquareMapDirection.java -->
+			<xsd:enumeration value="MOVE_OVERLAND_NORTH" />
+			<xsd:enumeration value="MOVE_OVERLAND_NORTHEAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_EAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTHEAST" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTH" />
+			<xsd:enumeration value="MOVE_OVERLAND_SOUTHWEST" />
+			<xsd:enumeration value="MOVE_OVERLAND_WEST" />
+			<xsd:enumeration value="MOVE_OVERLAND_NORTHWEST" />
+			
+			<xsd:enumeration value="OVERLAND_MOVE_DONE" />
+			<xsd:enumeration value="OVERLAND_MOVE_WAIT" />
+			<xsd:enumeration value="BUILD_ROAD_OR_CITY" />
+			
+			<xsd:enumeration value="ADVISOR_SCREEN" />
+			<xsd:enumeration value="ADVISOR_SURVEYOR" />
+			<xsd:enumeration value="ADVISOR_PARCHMENT_MAP" />
+			<xsd:enumeration value="ADVISOR_SPELL_QUEUE" />
+			<xsd:enumeration value="ADVISOR_POWER_GRAPH" />
+			<xsd:enumeration value="ADVISOR_WIZARD_STATS" />
+			<xsd:enumeration value="ADVISOR_MESSAGES" />
+			<xsd:enumeration value="ADVISOR_TAX_RATE" />
+			<xsd:enumeration value="ADVISOR_AUTO_CONTROL" />
+			<xsd:enumeration value="ADVISOR_WIZARDS" />
+			
+			<!-- Combat map shortcut keys -->
+			<xsd:enumeration value="COMBAT_TOGGLE_AUTO" />
+			<xsd:enumeration value="COMBAT_TOGGLE_DAMAGE_CALCULATIONS" />
+			<xsd:enumeration value="COMBAT_MOVE_DONE" />
+			<xsd:enumeration value="COMBAT_FLEE" />
+			<xsd:enumeration value="COMBAT_CAST_SPELL" />
+			<xsd:enumeration value="COMBAT_MOVE_WAIT" />
+			
+			<!-- Other screen shortcut keys -->
+			<xsd:enumeration value="ALCHEMY" />
+			<xsd:enumeration value="HERO_ITEMS" />
+			
+			<!-- Generic message box shortcut keys -->
+			<xsd:enumeration value="MESSAGE_BOX_CLOSE" />
+			<xsd:enumeration value="MESSAGE_BOX_YES" />
+			<xsd:enumeration value="MESSAGE_BOX_NO" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="virtualKey">
+        <xsd:annotation>
+        	<xsd:documentation>Defines virtual keys (untypeable special key values) supported by this version.</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="VK_F1" />
+			<xsd:enumeration value="VK_F2" />
+			<xsd:enumeration value="VK_F3" />
+			<xsd:enumeration value="VK_F4" />
+			<xsd:enumeration value="VK_F5" />
+			<xsd:enumeration value="VK_F6" />
+			<xsd:enumeration value="VK_F7" />
+			<xsd:enumeration value="VK_F8" />
+			<xsd:enumeration value="VK_F9" />
+
+			<xsd:enumeration value="VK_LEFT" />
+			<xsd:enumeration value="VK_RIGHT" />
+			<xsd:enumeration value="VK_UP" />
+			<xsd:enumeration value="VK_DOWN" />
+			<xsd:enumeration value="VK_HOME" />
+			<xsd:enumeration value="VK_END" />
+			<xsd:enumeration value="VK_PAGE_UP" />
+			<xsd:enumeration value="VK_PAGE_DOWN" />
+
+			<xsd:enumeration value="VK_ADD" />
+			<xsd:enumeration value="VK_SUBTRACT" />
+
+			<xsd:enumeration value="VK_ENTER" />
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="normalKey">
+		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="connectionErrorCode">
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+
+	<xsd:simpleType name="monthNumber">
+		<xsd:restriction base="xsd:unsignedShort">
+ 			<xsd:minInclusive value="1" />
+			<xsd:maxInclusive value="12" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>

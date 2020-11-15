@@ -26,7 +26,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MovementRateRule;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TileType;
+import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCanCast;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -458,10 +458,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 		// Go through each tile type
 		boolean result = true;
-		final Iterator<? extends TileType> iter = db.getTileTypes ().iterator ();
+		final Iterator<TileTypeEx> iter = db.getTileTypes ().iterator ();
 		while ((result) && (iter.hasNext ()))
 		{
-			final TileType tileType = iter.next ();
+			final TileTypeEx tileType = iter.next ();
 			if ((!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN)) &&
 				(calculateDoubleMovementToEnterTileType (unit, unitStackSkills, tileType.getTileTypeID (), db) == null))
 				

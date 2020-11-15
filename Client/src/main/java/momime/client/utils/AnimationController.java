@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.swing.JComponent;
 
+import momime.client.graphics.AnimationContainer;
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 
@@ -56,12 +57,13 @@ public interface AnimationController
 	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
 	 * @param animationID AnimationID from the graphics XML file
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param container Whether the animation is defined in the graphics or common XML
 	 * @return Appropriate image to display
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
-	public BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation)
-		throws MomException, IOException;
+	public BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation,
+		final AnimationContainer container) throws MomException, IOException;
 
 	/**
 	 * Gets the image for either a staticly named image or an animationID.  Which frame of the animation to display
@@ -74,12 +76,13 @@ public interface AnimationController
 	 * @param animationID AnimationID from the graphics XML file
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param container Whether the animation is defined in the graphics or common XML
 	 * @return Appropriate image to display
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
 	public BufferedImage loadImageOrAnimationFrameWithShading (final String imageResourceName, final String animationID,
-		final List<String> shadingColours, final boolean registeredAnimation)
+		final List<String> shadingColours, final boolean registeredAnimation, final AnimationContainer container)
 		throws MomException, IOException;
 	
 	/**
@@ -89,10 +92,12 @@ public interface AnimationController
 	 * 
 	 * @param animationID The animation that will be displayed; will be ignored and method will do nothing if this is null
 	 * @param component The component that needs to receive repaint events from the animation
+	 * @param container Whether the animation is defined in the graphics or common XML
 	 * @throws RecordNotFoundException If the animationID can't be found
 	 * @throws MomException If component is null
 	 */
-	public void registerRepaintTrigger (final String animationID, final JComponent component) throws RecordNotFoundException, MomException;
+	public void registerRepaintTrigger (final String animationID, final JComponent component, final AnimationContainer container)
+		throws RecordNotFoundException, MomException;
 	
 	/**
 	 * When an animation is no longer being displayed on a particular component, call this method so that the

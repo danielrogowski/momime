@@ -15,12 +15,12 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SpellGfx;
-import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.frames.CombatUI;
+import momime.common.database.AnimationGfx;
+import momime.common.database.Spell;
+import momime.common.database.TileSetEx;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.utils.UnitUtils;
 
@@ -64,20 +64,20 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	{
 		log.trace ("Entering start: " + getSpellID ());
 		
-		final SpellGfx spellGfx = getGraphicsDB ().findSpell (getSpellID (), "ShowSpellAnimationMessageImpl");
+		final Spell spell = getClient ().getClientDB ().findSpell (getSpellID (), "ShowSpellAnimationMessageImpl");
 		
 		anim = null;
-		if ((spellGfx.getCombatCastAnimation () != null) && (isCastInCombat ()) && ((getCombatTargetUnitURN () != null) || getCombatTargetLocation () != null))
+		if ((spell.getCombatCastAnimation () != null) && (isCastInCombat ()) && ((getCombatTargetUnitURN () != null) || getCombatTargetLocation () != null))
 		{
 			// Figure out the location to display it
 			final MapCoordinates2DEx targetPosition = (MapCoordinates2DEx) ((getCombatTargetLocation () != null) ? getCombatTargetLocation () :
 				getUnitUtils ().findUnitURN (getCombatTargetUnitURN (),
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ShowSpellAnimationMessageImpl").getCombatPosition ());
 
-			anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "ShowSpellAnimationMessageImpl");
+			anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "ShowSpellAnimationMessageImpl");
 
 			// Show anim on CombatUI
-			final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ShowSpellAnimationMessageImpl");
+			final TileSetEx combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ShowSpellAnimationMessageImpl");
 			
 			final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 			final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
@@ -92,10 +92,10 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 		}
 
 		// See if there's a sound effect defined in the graphics XML file
-		if (spellGfx.getSpellSoundFile () != null)
+		if (spell.getSpellSoundFile () != null)
 			try
 			{
-				getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+				getSoundPlayer ().playAudioFile (spell.getSpellSoundFile ());
 			}
 			catch (final Exception e)
 			{

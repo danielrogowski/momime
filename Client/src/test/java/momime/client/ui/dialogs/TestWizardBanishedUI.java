@@ -11,16 +11,20 @@ import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
+import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.WizardBanishedScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 
 /**
@@ -40,19 +44,26 @@ public final class TestWizardBanishedUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final WizardEx banishedWizardDef = new WizardEx ();
+		banishedWizardDef.setStandingImageFile ("/momime.client.graphics/wizards/WZ01-standing.png");
+		banishedWizardDef.setEvaporatingAnimation ("WIZARD_EVAPORATING_01");
+		when (db.findWizard ("WZ01", "WizardBanishedUI (A)")).thenReturn (banishedWizardDef);
+
+		final WizardEx banishingWizardDef = new WizardEx ();
+		banishingWizardDef.setBanishingImageFile ("/momime.client.graphics/wizards/WZ03-banishing.png");
+		banishingWizardDef.setBanishingHandImageFile ("/momime.client.graphics/wizards/WZ03-banishing-hand.png");
+		when (db.findWizard ("WZ03", "WizardBanishedUI (B)")).thenReturn (banishingWizardDef);
+		
+		// Client
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 
-		final WizardGfx banishedWizardGfx = new WizardGfx ();
-		banishedWizardGfx.setStandingImageFile ("/momime.client.graphics/wizards/WZ01-standing.png");
-		banishedWizardGfx.setEvaporatingAnimation ("WIZARD_EVAPORATING_01");
-		when (gfx.findWizard ("WZ01", "WizardBanishedUI (A)")).thenReturn (banishedWizardGfx);
-
-		final WizardGfx banishingWizardGfx = new WizardGfx ();
-		banishingWizardGfx.setBanishingImageFile ("/momime.client.graphics/wizards/WZ03-banishing.png");
-		banishingWizardGfx.setBanishingHandImageFile ("/momime.client.graphics/wizards/WZ03-banishing-hand.png");
-		when (gfx.findWizard ("WZ03", "WizardBanishedUI (B)")).thenReturn (banishingWizardGfx);
-		
 		// Animations
 		final AnimationGfx singleBlastAnim = new AnimationGfx ();
 		for (int n = 1; n <= 4; n++)
@@ -73,12 +84,15 @@ public final class TestWizardBanishedUI extends ClientTestData
 		when (gfx.findAnimation ("WIZARD_EVAPORATING_01", "WizardBanishedUI (E)")).thenReturn (evaporatingAnim);
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmWizardBanished", "BanishedByWizard")).thenReturn ("BANISHING_WIZARD banishes BANISHED_WIZARD");
-		when (lang.findCategoryEntry ("frmWizardBanished", "BanishedByRaiders")).thenReturn ("BANISHING_WIZARD banish BANISHED_WIZARD");
+		final WizardBanishedScreen wizardBanishedScreenLang = new WizardBanishedScreen ();
+		wizardBanishedScreenLang.getBanishedByWizard ().add (createLanguageText (Language.ENGLISH, "BANISHING_WIZARD banishes BANISHED_WIZARD"));
+		wizardBanishedScreenLang.getBanishedByRaiders ().add (createLanguageText (Language.ENGLISH, "BANISHING_WIZARD banish BANISHED_WIZARD"));
 		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getWizardBanishedScreen ()).thenReturn (wizardBanishedScreenLang);
+
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -106,6 +120,7 @@ public final class TestWizardBanishedUI extends ClientTestData
 		// Set up form
 		final WizardBanishedUI wizardBanished = new WizardBanishedUI ();
 		wizardBanished.setWizardBanishedLayout (layout);
+		wizardBanished.setClient (client);
 		wizardBanished.setGraphicsDB (gfx);
 		wizardBanished.setUtils (utils);
 		wizardBanished.setWizardClientUtils (wizardClientUtils);

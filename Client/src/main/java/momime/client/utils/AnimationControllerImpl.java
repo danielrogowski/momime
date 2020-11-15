@@ -13,16 +13,18 @@ import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.Timer;
 
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.ui.PlayerColourImageGenerator;
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.swing.NdgUIUtils;
+
+import momime.client.MomClient;
+import momime.client.graphics.AnimationContainer;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.ui.PlayerColourImageGenerator;
+import momime.common.MomException;
+import momime.common.database.AnimationGfx;
+import momime.common.database.RecordNotFoundException;
 
 /**
 * Common class to handle simple animations defined in the graphics XML file, i.e. cycle around a set of bitmap
@@ -68,6 +70,9 @@ public final class AnimationControllerImpl implements AnimationController
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 
@@ -86,11 +91,12 @@ public final class AnimationControllerImpl implements AnimationController
 	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
 	 * @param animationID AnimationID from the graphics XML file
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param container Whether the animation is defined in the graphics or common XML
 	 * @return Appropriate image to display
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
-	final String getImageOrAnimationFrameName (final String imageResourceName, final String animationID, final boolean registeredAnimation)
+	final String getImageOrAnimationFrameName (final String imageResourceName, final String animationID, final boolean registeredAnimation, final AnimationContainer container)
 		throws MomException, IOException
 	{
 		if ((imageResourceName == null) && (animationID == null))
@@ -118,7 +124,8 @@ public final class AnimationControllerImpl implements AnimationController
 		else
 		{
 			// Find the animation in the graphics XML
-			final AnimationGfx anim = getGraphicsDB ().findAnimation (animationID, "loadImageOrAnimationFrame");
+			final AnimationGfx anim = (container == AnimationContainer.GRAPHICS_XML) ? getGraphicsDB ().findAnimation (animationID, "loadImageOrAnimationFrame") :
+				getClient ().getClientDB ().findAnimation (animationID, "loadImageOrAnimationFrame");
 			
 			// Adjust system timer for the frame rate of this animation
 			final double frameNumber = System.nanoTime () / (1000000000d / anim.getAnimationSpeed ());
@@ -141,15 +148,16 @@ public final class AnimationControllerImpl implements AnimationController
 	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
 	 * @param animationID AnimationID from the graphics XML file
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param container Whether the animation is defined in the graphics or common XML
 	 * @return Appropriate image to display
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
 	@Override
-	public final BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation)
-		throws MomException, IOException
+	public final BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation,
+		final AnimationContainer container) throws MomException, IOException
 	{
-		return getUtils ().loadImage (getImageOrAnimationFrameName (imageResourceName, animationID, registeredAnimation));
+		return getUtils ().loadImage (getImageOrAnimationFrameName (imageResourceName, animationID, registeredAnimation, container));
 	}
 
 	/**
@@ -163,17 +171,18 @@ public final class AnimationControllerImpl implements AnimationController
 	 * @param animationID AnimationID from the graphics XML file
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
+	 * @param container Whether the animation is defined in the graphics or common XML
 	 * @return Appropriate image to display
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
 	@Override
 	public final BufferedImage loadImageOrAnimationFrameWithShading (final String imageResourceName, final String animationID,
-		final List<String> shadingColours, final boolean registeredAnimation)
+		final List<String> shadingColours, final boolean registeredAnimation, final AnimationContainer container)
 		throws MomException, IOException
 	{
 		return getPlayerColourImageGenerator ().getSkillShadedImage
-			(getImageOrAnimationFrameName (imageResourceName, animationID, registeredAnimation), shadingColours);
+			(getImageOrAnimationFrameName (imageResourceName, animationID, registeredAnimation, container), shadingColours);
 	}
 	
 	/**
@@ -183,11 +192,13 @@ public final class AnimationControllerImpl implements AnimationController
 	 * 
 	 * @param animationID The animation that will be displayed; will be ignored and method will do nothing if this is null
 	 * @param component The component that needs to receive repaint events from the animation
+	 * @param container Whether the animation is defined in the graphics or common XML
 	 * @throws RecordNotFoundException If the animationID can't be found
 	 * @throws MomException If component is null
 	 */
 	@Override
-	public final void registerRepaintTrigger (final String animationID, final JComponent component) throws RecordNotFoundException, MomException
+	public final void registerRepaintTrigger (final String animationID, final JComponent component, final AnimationContainer container)
+		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering registerRepaintTrigger: " + animationID + ", " + component);
 		
@@ -214,7 +225,9 @@ public final class AnimationControllerImpl implements AnimationController
 				log.debug ("registerRepaintTrigger setting up new timer for animation " + animationID + " for listener: " + component);
 				
 				final AnimationFrameCounter newCounter = new AnimationFrameCounter ();
-				newCounter.anim = getGraphicsDB ().findAnimation (animationID, "registerRepaintTrigger");
+				newCounter.anim = (container == AnimationContainer.GRAPHICS_XML) ? getGraphicsDB ().findAnimation (animationID, "registerRepaintTrigger") :
+					getClient ().getClientDB ().findAnimation (animationID, "registerRepaintTrigger");
+				
 				newCounter.repaintTriggers.add (component);
 
 				// Set off a timer to increment the frame
@@ -322,6 +335,22 @@ public final class AnimationControllerImpl implements AnimationController
 		graphicsDB = db;
 	}
 
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+	
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */

@@ -5,9 +5,9 @@ import java.util.List;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Provides a method for processing each movement code that the AI uses to decide where to send units overland.
@@ -43,7 +43,7 @@ public interface UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	public AIMovementDecision considerUnitMovement_AttackStationary (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException;
 	
 	/**
@@ -59,7 +59,7 @@ public interface UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	public AIMovementDecision considerUnitMovement_AttackWandering (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -75,7 +75,7 @@ public interface UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	public AIMovementDecision considerUnitMovement_ScoutLand (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db, final int playerID) throws RecordNotFoundException;
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db, final int playerID) throws RecordNotFoundException;
 	
 	/**
 	 * AI tries to move units to scout any unknown terrain.
@@ -107,7 +107,7 @@ public interface UnitAIMovement
 	 */
 	public AIMovementDecision considerUnitMovement_JoinStack (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -144,7 +144,7 @@ public interface UnitAIMovement
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the database
 	 */
 	public AIMovementDecision considerUnitMovement_Overdefend (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**

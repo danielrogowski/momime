@@ -14,8 +14,17 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import javax.xml.validation.SchemaFactory;
 
+import org.junit.Test;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.random.RandomUtils;
+import com.ndg.random.RandomUtilsImpl;
+
 import momime.common.MomException;
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonXsdResourceResolver;
 import momime.common.messages.FogOfWarMemory;
@@ -34,17 +43,8 @@ import momime.common.utils.CombatMapUtilsImpl;
 import momime.common.utils.MemoryBuildingUtilsImpl;
 import momime.common.utils.MemoryMaintainedSpellUtilsImpl;
 import momime.server.ServerTestData;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
 import momime.unittests.mapstorage.StoredCombatMap;
-
-import org.junit.Test;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.random.RandomUtils;
-import com.ndg.random.RandomUtilsImpl;
 
 /**
  * Tests the CombatMapGeneratorImpl class
@@ -141,7 +141,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 	@Test
 	public final void testPlaceCombatMapElements () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 		final MapAreaOfCombatTiles map = createCombatMap ();
 		
 		// Needs the overland map too, to reference the map cell for what terrain is there, and the building+spell lists
@@ -354,7 +354,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 	@Test
 	public final void testGenerateCombatMap () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		final MomSessionDescription sd = createMomSessionDescription (db, "MS03", "LP03", "NS03", "DL05", "FOW01", "US01", "SS01");
 

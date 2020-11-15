@@ -13,14 +13,14 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.AiMovementCode;
+import momime.common.database.AiUnitCategory;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
-import momime.server.database.AiUnitCategorySvr;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Methods for AI players evaluating the strength of units
@@ -44,7 +44,7 @@ public interface UnitAI
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public List<AIConstructableUnit> listAllUnitsWeCanConstruct (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final List<MemoryUnit> trueUnits, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<MemoryUnit> trueUnits, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -61,7 +61,7 @@ public interface UnitAI
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public void calculateUnitRatingsAtEveryMapCell (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
-		final int playerID, final FogOfWarMemory mem, final List<PlayerServerDetails> players, final ServerDatabaseEx db)
+		final int playerID, final FogOfWarMemory mem, final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -83,7 +83,7 @@ public interface UnitAI
 	 */
 	public List<AIDefenceLocation> evaluateCurrentDefence (final AIUnitsAndRatings [] [] [] ourUnits, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final List<AIUnitAndRatings> mobileUnits, final int playerID, final boolean isRaiders, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
-		final CoordinateSystem sys, final ServerDatabaseEx db) throws RecordNotFoundException;
+		final CoordinateSystem sys, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param mu Unit to check
@@ -95,7 +95,7 @@ public interface UnitAI
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public AiUnitCategorySvr determineUnitCategory (final MemoryUnit mu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+	public AiUnitCategory determineUnitCategory (final MemoryUnit mu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -109,7 +109,7 @@ public interface UnitAI
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public Map<String, List<AIUnitsAndRatings>> categoriseAndStackUnits (final List<AIUnitAndRatings> units,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
@@ -135,7 +135,7 @@ public interface UnitAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public Map<AIUnitType, List<MapCoordinates3DEx>> determineDesiredSpecialUnitLocations (final int playerID, final List<PlayerServerDetails> players,
-		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**
@@ -159,7 +159,7 @@ public interface UnitAI
 	public AIMovementDecision decideUnitMovement (final AIUnitsAndRatings units, final List<AiMovementCode> movementCodes, final int [] [] [] doubleMovementDistances,
 		final List<AIDefenceLocation> underdefendedLocations, final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final MapVolumeOfMemoryGridCells terrain, final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations,
-		final boolean isRaiders, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final boolean isRaiders, final CoordinateSystem sys, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 	
 	/**
@@ -180,7 +180,7 @@ public interface UnitAI
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public AIMovementResult decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategorySvr category, final List<AIDefenceLocation> underdefendedLocations,
+	public AIMovementResult decideAndExecuteUnitMovement (final AIUnitsAndRatings units, final AiUnitCategory category, final List<AIDefenceLocation> underdefendedLocations,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits,
 		final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
@@ -195,5 +195,5 @@ public interface UnitAI
 	 * @throws RecordNotFoundException If we can't find one of the tile types
 	 */
 	public List<MapCoordinates3DEx> listNodesWeDontOwnOnPlane (final int playerID, final Integer plane, final FogOfWarMemory fogOfWarMemory, final CoordinateSystem sys,
-		final ServerDatabaseEx db) throws RecordNotFoundException;
+		final CommonDatabase db) throws RecordNotFoundException;
 }

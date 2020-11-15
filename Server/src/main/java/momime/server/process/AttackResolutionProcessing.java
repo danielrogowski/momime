@@ -9,15 +9,15 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.AttackResolution;
+import momime.common.database.AttackResolutionStep;
+import momime.common.database.CommonDatabase;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.calculations.AttackDamage;
-import momime.server.database.AttackResolutionStepSvr;
-import momime.server.database.AttackResolutionSvr;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Methods for processing attack resolutions.  This would all just be part of DamageProcessor, these methods
@@ -37,15 +37,15 @@ public interface AttackResolutionProcessing
 	 * @throws RecordNotFoundException If the unit skill or so on can't be found in the XML database
 	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
 	 */
-	public AttackResolutionSvr chooseAttackResolution (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender, final String attackSkillID,
-		final ServerDatabaseEx db) throws RecordNotFoundException, MomException;
+	public AttackResolution chooseAttackResolution (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender, final String attackSkillID,
+		final CommonDatabase db) throws RecordNotFoundException, MomException;
 	
 	/**
 	 * @param steps Steps in one continuous list
 	 * @return Same list as input, but segmented into sublists where all steps share the same step number
 	 * @throws MomException If the steps in the input list aren't in stepNumber order
 	 */
-	public List<List<AttackResolutionStepSvr>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStepSvr> steps)
+	public List<List<AttackResolutionStep>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStep> steps)
 		throws MomException;
 	
 	/**
@@ -70,7 +70,7 @@ public interface AttackResolutionProcessing
 	 */
 	public List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
+		final List<AttackResolutionStep> steps, final AttackDamage commonPotentialDamageToDefenders,
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

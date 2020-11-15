@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.swing.Action;
 import javax.swing.JLabel;
@@ -23,6 +24,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.languages.database.Month;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -237,7 +239,7 @@ public final class HistoryUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		titleLabel.setText (getLanguage ().findCategoryEntry ("frmHistory", "Title"));
+		titleLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getHistoryScreen ().getTitle ()));
 		getFrame ().setTitle (titleLabel.getText ());
 	}
 	
@@ -258,8 +260,14 @@ public final class HistoryUI extends MomClientFrameUI
 				month = 12;
 	
 			// Build up description
-			final String monthText = getLanguage ().findCategoryEntry ("Months", "MNTH" + ((month < 10) ? "0" : "") + month);
-			turnLabel.setText (getLanguage ().findCategoryEntry ("frmMapButtonBar", "Turn").replaceAll ("MONTH", monthText).replaceAll ("YEAR", Integer.valueOf (year).toString ()).replaceAll ("TURN", Integer.valueOf (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
+			final int monthNumber = month;
+			final Optional<Month> monthLang = getLanguages ().getMonth ().stream ().filter (m -> m.getMonthNumber () == monthNumber).findAny ();
+			final String monthText = monthLang.isEmpty () ? Integer.valueOf (month).toString () :
+				getLanguageHolder ().findDescription (monthLang.get ().getName ());
+			
+			turnLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getTurn ()).replaceAll
+				("MONTH", monthText).replaceAll ("YEAR", Integer.valueOf (year).toString ()).replaceAll
+				("TURN", Integer.valueOf (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
 		}
 
 		log.trace ("Exiting updateTurnLabelText");

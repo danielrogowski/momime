@@ -2,6 +2,13 @@ package momime.server.calculations;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarValue;
 import momime.common.messages.FogOfWarStateID;
@@ -10,12 +17,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.server.ServerTestData;
-import momime.server.database.ServerDatabaseEx;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Tests the FogOfWarCalculations class
@@ -51,7 +52,7 @@ public final class TestFogOfWarCalculationsImpl extends ServerTestData
 	@Test
 	public final void testCanSeeMidTurnOnAnyPlaneIfTower () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
 		final MapVolumeOfMemoryGridCells map = createOverlandMap (sys);

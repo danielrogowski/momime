@@ -1,23 +1,25 @@
 package momime.client.calculations.damage;
 
 import java.io.IOException;
-
-import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.utils.TextUtils;
-import momime.client.utils.UnitClientUtils;
-import momime.client.utils.UnitNameType;
-import momime.client.utils.WizardClientUtils;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.servertoclient.DamageCalculationDefenceData;
-import momime.common.utils.UnitUtils;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.utils.TextUtils;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
+import momime.client.utils.WizardClientUtils;
+import momime.common.database.LanguageText;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.DamageCalculationDefenceData;
+import momime.common.utils.UnitUtils;
 
 /**
  * Breakdown about how damage from a number of potential hits was applied to a unit
@@ -89,52 +91,65 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 				defenceStrength = getUnmodifiedDefenceStrength ().toString ();
 			
 			else
-				defenceStrength = getLanguage ().findCategoryEntry ("CombatDamage", "DefenceStrength" + 
-					(getModifiedDefenceStrength () > getUnmodifiedDefenceStrength () ? "Increased" : "Reduced")).replaceAll
-						("UNMODIFIED_DEFENCE_STRENGTH", getUnmodifiedDefenceStrength ().toString ()).replaceAll
-						("MODIFIED_DEFENCE_STRENGTH", getModifiedDefenceStrength ().toString ());
+			{
+				final List<LanguageText> languageText = (getModifiedDefenceStrength () > getUnmodifiedDefenceStrength ()) ?
+					getLanguages ().getCombatDamage ().getDefenceStrengthIncreased () : getLanguages ().getCombatDamage ().getDefenceStrengthReduced ();
+					
+				defenceStrength = getLanguageHolder ().findDescription (languageText).replaceAll
+					("UNMODIFIED_DEFENCE_STRENGTH", getUnmodifiedDefenceStrength ().toString ()).replaceAll
+					("MODIFIED_DEFENCE_STRENGTH", getModifiedDefenceStrength ().toString ());
+			}
 		}
 		
 		// Now work out main text
-		final String languageEntryID;
+		final List<LanguageText> languageText;
 		switch (getDamageResolutionTypeID ())
 		{
 			case RESISTANCE_ROLLS:
-				languageEntryID = "DefenceResistanceRolls";
+				languageText = getLanguages ().getCombatDamage ().getDefenceResistanceRolls ();
 				break;
 			
 			case CHANCE_OF_DEATH:
-				languageEntryID = "DefenceChanceOfDeath" + ((getFinalHits () == 0) ? "Survives" : "Dies");
+				if (getFinalHits () == 0)
+					languageText = getLanguages ().getCombatDamage ().getDefenceChanceOfDeathSurvives ();
+				else
+					languageText = getLanguages ().getCombatDamage ().getDefenceChanceOfDeathDies ();
 				break;
 
 			case DISINTEGRATE:
-				languageEntryID = "DefenceDisintegrate" + ((getFinalHits () == 0) ? "Survives" : "Dies");
+				if (getFinalHits () == 0)
+					languageText = getLanguages ().getCombatDamage ().getDefenceDisintegrateSurvives ();
+				else
+					languageText = getLanguages ().getCombatDamage ().getDefenceDisintegrateDies ();
 				break;
 				
 			case EACH_FIGURE_RESIST_OR_DIE:
-				languageEntryID = "DefenceEachFigureResistOrDie";
+				languageText = getLanguages ().getCombatDamage ().getDefenceEachFigureResistOrDie ();
 				break;
 
 			case SINGLE_FIGURE_RESIST_OR_DIE:
-				languageEntryID = "DefenceSingleFigureResistOrDie" + ((getFinalHits () == 0) ? "Survives" : "Dies");
+				if (getFinalHits () == 0)
+					languageText = getLanguages ().getCombatDamage ().getDefenceSingleFigureResistOrDieSurvives ();
+				else
+					languageText = getLanguages ().getCombatDamage ().getDefenceSingleFigureResistOrDieDies ();
 				break;
 
 			case RESIST_OR_TAKE_DAMAGE:
-				languageEntryID = "DefenceResistOrTakeDamage";
+				languageText = getLanguages ().getCombatDamage ().getDefenceResistOrTakeDamage ();
 				break;
 
 			case FEAR:
-				languageEntryID = "DefenceFear";
+				languageText = getLanguages ().getCombatDamage ().getDefenceFear ();
 				break;
 				
 			default:
 				if (getModifiedDefenceStrength () == null)
-					languageEntryID = "DefenceStatisticsAutomatic";		// hits strike automatically, i.e. doom damage
+					languageText = getLanguages ().getCombatDamage ().getDefenceStatisticsAutomatic ();		// hits strike automatically, i.e. doom damage
 				else
-					languageEntryID = "DefenceStatistics";
+					languageText = getLanguages ().getCombatDamage ().getDefenceStatistics ();
 		}
 		
-		String text = "          " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
+		String text = "          " + getLanguageHolder ().findDescription (languageText).replaceAll
 			("DEFENDER_NAME", getWizardClientUtils ().getPlayerName (getDefenderPlayer ())).replaceAll
 			("DEFENDER_RACE_UNIT_NAME", getUnitClientUtils ().getUnitName (getDefenderUnit (), UnitNameType.RACE_UNIT_NAME)).replaceAll
 			("DEFENDER_FIGURES", Integer.valueOf (getDefenderFigures ()).toString ()).replaceAll
@@ -217,9 +232,9 @@ public final class DamageCalculationDefenceDataEx extends DamageCalculationDefen
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

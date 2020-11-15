@@ -18,19 +18,23 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SpellGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.CitySpellEffectLang;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.SpellCasting;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.CitySize;
+import momime.common.database.CitySpellEffect;
+import momime.common.database.CityViewElement;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -53,25 +57,35 @@ public final class TestMiniCityViewUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
-
-		// Mock entries from the graphics XML
-		final SpellGfx spellGfx = new SpellGfx ();
-		spellGfx.setSoundAndImageDelay (2);
 		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final CitySpellEffect effect = new CitySpellEffect ();
+		effect.getCitySpellEffectName ().add (createLanguageText (Language.ENGLISH, "Dark Rituals"));
+		when (db.findCitySpellEffect ("CSE001", "MiniCityViewUI")).thenReturn (effect);
+
+		final CitySize citySize = new CitySize ();
+		citySize.getCitySizeNameIncludingOwner ().add (createLanguageText (Language.ENGLISH, "PLAYER_NAME's Test City of CITY_NAME"));
+		when (db.findCitySize ("CS01", "MiniCityViewUI")).thenReturn (citySize);
+
+		final Spell spellDef = new Spell ();
+		spellDef.setSoundAndImageDelay (2);
+
+		when (db.findSpell ("SP001", "MiniCityViewUI")).thenReturn (spellDef);
+		
+		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findSpell ("SP001", "MiniCityViewUI")).thenReturn (spellGfx);
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCitySizeName ("CS01", true)).thenReturn ("PLAYER_NAME's Test City of CITY_NAME");
-		when (lang.findCategoryEntry ("SpellCasting", "YouHaveCast")).thenReturn ("You have cast SPELL_NAME");
+		final SpellCasting spellCastingLang = new SpellCasting ();
+		spellCastingLang.getYouHaveCast ().add (createLanguageText (Language.ENGLISH, "You have cast SPELL_NAME"));
 		
-		final CitySpellEffectLang effectLang = new CitySpellEffectLang ();
-		effectLang.setCitySpellEffectName ("Dark Rituals");
-		when (lang.findCitySpellEffect ("CSE001")).thenReturn (effectLang);
-
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSpellCasting ()).thenReturn (spellCastingLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -97,6 +111,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Player
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
@@ -117,23 +132,23 @@ public final class TestMiniCityViewUI extends ClientTestData
 		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
 		
 		// Display at least some landscape, plus the spell itself
-		final CityViewElementGfx landscape = new CityViewElementGfx ();
+		final CityViewElement landscape = new CityViewElement ();
 		landscape.setLocationX (0);
 		landscape.setLocationY (0);
 		landscape.setSizeMultiplier (2);
 		landscape.setCityViewImageFile ("/momime.client.graphics/cityView/landscape/arcanus.png");
 		
-		final CityViewElementGfx spellImage = new CityViewElementGfx ();
+		final CityViewElement spellImage = new CityViewElement ();
 		spellImage.setLocationX (100);
 		spellImage.setLocationY (100);
 		spellImage.setSizeMultiplier (2);
 		spellImage.setCityViewImageFile ("/momime.client.graphics/cityView/spellEffects/SE163-frame1.png");
 		spellImage.setCitySpellEffectID ("CSE001");
 		
-		final List<CityViewElementGfx> elements = new ArrayList<CityViewElementGfx> ();
+		final List<CityViewElement> elements = new ArrayList<CityViewElement> ();
 		elements.add (landscape);
 		elements.add (spellImage);
-		when (gfx.getCityViewElements ()).thenReturn (elements);
+		when (db.getCityViewElement ()).thenReturn (elements);
 		
 		// Set up spell
 		final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();

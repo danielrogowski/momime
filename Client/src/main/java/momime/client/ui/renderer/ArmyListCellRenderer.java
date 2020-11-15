@@ -19,8 +19,9 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 
+import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
+import momime.common.database.UnitEx;
 import momime.common.messages.MemoryUnit;
 
 /**
@@ -42,6 +43,9 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** Background image */
 	private BufferedImage background;
@@ -73,8 +77,8 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 		{		
 			for (final MemoryUnit unit : value.getValue ())
 			{
-				final UnitGfx unitGfx = getGraphicsDB ().findUnit (unit.getUnitID (), "ArmyListCellRenderer");
-				unitImages.add (getUtils ().loadImage (unitGfx.getUnitOverlandImageFile ()));
+				final UnitEx UnitEx = getClient ().getClientDB ().findUnit (unit.getUnitID (), "ArmyListCellRenderer");
+				unitImages.add (getUtils ().loadImage (UnitEx.getUnitOverlandImageFile ()));
 			}
 		}
 		catch (final IOException e)
@@ -139,5 +143,21 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

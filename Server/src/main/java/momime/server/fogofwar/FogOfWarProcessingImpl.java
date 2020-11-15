@@ -21,8 +21,11 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarValue;
+import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
@@ -49,10 +52,7 @@ import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
 
 /**
  * This contains the methods that recheck what areas of the map a specific player can see, and depending which areas
@@ -194,7 +194,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	final void markVisibleArea (final FogOfWarMemory trueMap, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		log.trace ("Entering markVisibleArea: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -206,7 +206,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			getMemoryMaintainedSpellUtils ().findMaintainedSpell (trueMap.getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (),
 				ServerDatabaseValues.SPELL_ID_NATURE_AWARENESS, null, null, null, null) != null)
 		{
-			for (final PlaneSvr plane : db.getPlanes ())
+			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 						canSee (priv.getFogOfWar (), trueMap.getMap (), x, y, plane.getPlaneNumber ());
@@ -218,7 +218,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				ServerDatabaseValues.SPELL_ID_AWARENESS, null, null, null, null) != null);
 
 			// Check what areas we can see because we have cities there
-			for (final PlaneSvr plane : db.getPlanes ())
+			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					{
@@ -263,7 +263,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 					if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (trueMap.getMap ().getPlane ().get (thisUnit.getUnitLocation ().getZ ()).getRow ().get
 						(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()).getTerrainData ()))
 					{
-						for (final PlaneSvr plane : db.getPlanes ())
+						for (final Plane plane : db.getPlane ())
 							canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (),
 								thisUnit.getUnitLocation ().getX (), thisUnit.getUnitLocation ().getY (), plane.getPlaneNumber (), scoutingRange);
 					}
@@ -279,7 +279,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if ((thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisSpell.getCityLocation () != null))
 				{
 					// See if this spell has a scouting range
-					final SpellSvr spellDef = db.findSpell (thisSpell.getSpellID (), "markVisibleArea");
+					final Spell spellDef = db.findSpell (thisSpell.getSpellID (), "markVisibleArea");
 					if ((spellDef.getSpellRadius () != null) && (spellDef.getTileTypeID () == null))
 						canSeeRadius (priv.getFogOfWar (), trueMap.getMap (), sd.getOverlandMapSize (), thisSpell.getCityLocation ().getX (),
 							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), spellDef.getSpellRadius ());
@@ -363,7 +363,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 	 */
 	@Override
 	public final void updateAndSendFogOfWar (final FogOfWarMemory trueMap, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final String triggeredFrom, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final String triggeredFrom, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering updateAndSendFogOfWar: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -381,7 +381,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			msg = null;
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
@@ -555,7 +555,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 				{
 					// In a tower, consider all planes
-					for (final PlaneSvr plane : db.getPlanes ())
+					for (final Plane plane : db.getPlane ())
 						states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 				}
@@ -608,7 +608,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 				{
 					// In a tower, consider all planes
-					for (final PlaneSvr plane : db.getPlanes ())
+					for (final Plane plane : db.getPlane ())
 						states.add (priv.getFogOfWar ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get
 							(thisUnit.getUnitLocation ().getY ()).getCell ().get (thisUnit.getUnitLocation ().getX ()));
 				}
@@ -784,7 +784,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 
 		// Lastly send the client details of the changes in the fog of war area itself
 		// Also sets the values on the server back normal
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{

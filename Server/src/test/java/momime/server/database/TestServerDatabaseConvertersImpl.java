@@ -1,13 +1,8 @@
 package momime.server.database;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -28,14 +23,19 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import momime.client.database.AvailableDatabase;
-import momime.client.database.ClientDatabase;
+import momime.common.database.AnimationGfx;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.CommonDatabaseFactory;
+import momime.common.database.CommonDatabaseImpl;
+import momime.common.database.CommonDatabaseObjectFactory;
 import momime.common.database.CommonXsdResourceResolver;
-import momime.common.database.RecordNotFoundException;
+import momime.common.database.MapFeatureEx;
+import momime.common.database.MomDatabase;
+import momime.common.database.SmoothedTileTypeEx;
+import momime.common.database.TileSetEx;
+import momime.common.database.WizardEx;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.server.ServerTestData;
-import momime.server.database.v0_9_9.ServerDatabase;
-import momime.server.utils.UnitSkillDirectAccess;
 
 /**
  * Tests the ServerDatabaseConverters class
@@ -50,25 +50,49 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 	public final void testBuildNewGameDatabase () throws Exception
 	{
 		// Need to set up a proper factory to create classes with spring injections
-		final ServerDatabaseObjectFactory factory = new ServerDatabaseObjectFactory ();
-		factory.setFactory (new ServerDatabaseFactory ()
+		final CommonDatabaseObjectFactory factory = new CommonDatabaseObjectFactory ();
+		factory.setFactory (new CommonDatabaseFactory ()
 		{
 			@Override
-			public final ServerDatabaseExImpl createDatabase ()
+			public final CommonDatabaseImpl createDatabase ()
 			{
-				// Make make all the consistency checks pass
-				final UnitSkillDirectAccess direct = mock (UnitSkillDirectAccess.class);
-				when (direct.getDirectSkillValue (anyList (), anyString ())).thenReturn (2);
-				
-				final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
-				db.setUnitSkillDirectAccess (direct);
-				return db;
+				return new CommonDatabaseImpl ();
+			}
+			
+			@Override
+			public final WizardEx createWizard ()
+			{
+				return new WizardEx (); 
+			}
+			
+			@Override
+			public final MapFeatureEx createMapFeature ()
+			{
+				return new MapFeatureEx ();
+			}
+
+			@Override
+			public final TileSetEx createTileSet ()
+			{
+				return new TileSetEx ();
+			}
+			
+			@Override
+			public final SmoothedTileTypeEx createSmoothedTileType ()
+			{
+				return new SmoothedTileTypeEx ();
+			}
+			
+			@Override
+			public final AnimationGfx createAnimation ()
+			{
+				return new AnimationGfx ();
 			}
 		});
 		
 		// Read XSD
-		final URL xsdResource = getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
-		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
+		final URL xsdResource = getClass ().getResource (CommonDatabaseConstants.COMMON_XSD_LOCATION);
+		assertNotNull ("MoM IME Common XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
@@ -87,7 +111,7 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 
 		// Build it
 		// Locate the server XML file, then go one level up to the folder that it is in
-		final Unmarshaller serverDatabaseUnmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();
+		final Unmarshaller serverDatabaseUnmarshaller = JAXBContext.newInstance (MomDatabase.class).createUnmarshaller ();
 		serverDatabaseUnmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {factory});
 		serverDatabaseUnmarshaller.setSchema (xsd);
 		
@@ -104,8 +128,7 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 		assertEquals ("Failed to load correct number of unit settings",			2, db.getUnitSetting ().size ());
 		assertEquals ("Failed to load correct number of spell settings",			2, db.getSpellSetting ().size ());
 
-		// This tests not only that the objects are assembled correctly, but that they are marshalled correctly when we send the message - as common not server versions,
-		// i.e. that the generated XML does not contain any descriptions, which are server-only
+		// Build new game database
 		@SuppressWarnings ("resource")
 		final ApplicationContext applicationContext = new ClassPathXmlApplicationContext ("/momime-common-test-beans.xml");
 		
@@ -114,42 +137,9 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 
 		final ByteArrayOutputStream stream = new ByteArrayOutputStream ();
 		marshaller.marshal (msg, stream);
+		
+		// Should be present as part of DB name
 		final String newGameDB = new String (stream.toByteArray ());
-		assertFalse (newGameDB.contains ("escription"));
-	}
-
-	/**
-	 * Tests the buildClientDatabase method on valid numbers of spell picks
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testBuildClientDatabase_Valid () throws Exception
-	{
-		final ServerDatabaseEx db = loadServerDatabase ();
-		final ServerDatabaseConvertersImpl conv = new ServerDatabaseConvertersImpl ();
-
-		for (int humanSpellPicks = 0; humanSpellPicks <= 20; humanSpellPicks++)
-		{
-			final ClientDatabase clientDB = conv.buildClientDatabase (db, humanSpellPicks);
-
-			assertEquals ("MF01", clientDB.getMapFeature ().get (0).getMapFeatureID ());
-			assertFalse (clientDB.getMapFeature ().get (0).isAnyMagicRealmsDefined ());
-
-			assertEquals (CommonDatabaseConstants.FEATURE_UNCLEARED_TOWER_OF_WIZARDRY, clientDB.getMapFeature ().get (11).getMapFeatureID ());
-			assertTrue (clientDB.getMapFeature ().get (11).isAnyMagicRealmsDefined ());
-		}
-	}
-
-	/**
-	 * Tests the buildClientDatabase method on a number of spell picks that doesn't exist
-	 * @throws Exception If there is a problem
-	 */
-	@Test(expected=RecordNotFoundException.class)
-	public final void testBuildClientDatabase_PickCountDoesntExist () throws Exception
-	{
-		final ServerDatabaseEx db = loadServerDatabase ();
-		final ServerDatabaseConvertersImpl conv = new ServerDatabaseConvertersImpl ();
-
-		conv.buildClientDatabase (db, 21);
+		assertTrue (newGameDB.contains ("1.31"));
 	}
 }

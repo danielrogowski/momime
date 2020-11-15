@@ -12,16 +12,15 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.random.RandomUtils;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileType;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.utils.MemoryGridCellUtils;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.TileTypeSvr;
-import momime.server.messages.ServerMemoryGridCellUtils;
 
 /**
  * Provides a method for processing each movement code that the AI uses to decide where to send units overland.
@@ -116,7 +115,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_AttackStationary (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_AttackStationary");
@@ -141,7 +140,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						final OverlandMapCityData cityData = mc.getCityData ();
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 						final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
-						if (((cityData != null) || ((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))) &&
+						if (((cityData != null) || ((!isRaiders) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))) &&
 							(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (doubleThisDistance >= 0))
 						{
 							// We can get there eventually, and stand a chance of beating them
@@ -190,7 +189,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_AttackWandering (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_AttackWandering");
@@ -210,7 +209,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 					final OverlandMapCityData cityData = mc.getCityData ();
 					final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 					final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
-					if ((cityData == null) && (!ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)) &&
+					if ((cityData == null) && (!getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)) &&
 						(enemyUnitStack != null) && (ourCurrentRating > enemyUnitStack.totalCombatUnitCurrentRatings ()) && (doubleThisDistance >= 0))
 					{
 						// We can get there eventually, and stand a chance of beating them
@@ -258,7 +257,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_ScoutLand (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db, final int playerID) throws RecordNotFoundException
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db, final int playerID) throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_ScoutLand");
 
@@ -293,7 +292,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 									
 									if ((terrainData != null) && (terrainData.getTileTypeID () != null))
 									{
-										final TileTypeSvr tileType = db.findTileType (terrainData.getTileTypeID (), "considerUnitMovement_ScoutLand");
+										final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "considerUnitMovement_ScoutLand");
 										if ((tileType.isLand () != null) && (tileType.isLand ()))
 											found = true;
 									}
@@ -421,7 +420,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	@Override
 	public final AIMovementDecision considerUnitMovement_JoinStack (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final List<AIUnitsAndRatings> ourUnitsInSameCategory, final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders,
-		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_JoinStack");
@@ -444,7 +443,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						final OverlandMapCityData cityData = mc.getCityData ();
 						final AIUnitsAndRatings enemyUnitStack = enemyUnits [z] [y] [x];
 						final int enemyUnitStackRating = (enemyUnitStack == null) ? 0 : enemyUnitStack.totalCombatUnitCurrentRatings (); 
-						if (((cityData != null) || ((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))) &&
+						if (((cityData != null) || ((!isRaiders) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))) &&
 							(enemyUnitStack != null) && (enemyUnitStackRating >= ourCurrentRating) && (doubleMovementDistances [z] [y] [x] >= 0))
 						{
 							// We don't care how far away it is - we care how strong they are, not how long it'll take us to get there
@@ -566,7 +565,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	 */
 	@Override
 	public final AIMovementDecision considerUnitMovement_Overdefend (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
-		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
 		log.trace ("Entering considerUnitMovement_Overdefend");
@@ -591,7 +590,7 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 						final OverlandMapCityData cityData = mc.getCityData ();
 						if ((theirs == null) &&
 							((cityData != null) ||
-								((!isRaiders) && (ServerMemoryGridCellUtils.isNodeLairTower (terrainData, db)))))
+								((!isRaiders) && (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db)))))
 						{
 							final int doubleThisDistance = doubleMovementDistances [z] [y] [x];
 							if (doubleThisDistance >= 0)

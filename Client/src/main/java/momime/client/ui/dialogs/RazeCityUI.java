@@ -120,10 +120,10 @@ public final class RazeCityUI extends MomClientDialogUI
 	{
 		log.trace ("Entering languageChanged: " + getCityLocation ());
 		
-		messageText.setText (getLanguage ().findCategoryEntry ("frmRazeCity", "Text"));
+		messageText.setText (getLanguageHolder ().findDescription (getLanguages ().getRazeCityScreen ().getText ()));
 		
-		razeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmRazeCity", "Raze"));
-		captureAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmRazeCity", "No"));
+		razeAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getRazeCityScreen ().getRaze ()));
+		captureAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getNo ()));
 		
 		log.trace ("Exiting languageChanged");
 	}

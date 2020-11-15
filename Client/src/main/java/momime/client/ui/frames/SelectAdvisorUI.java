@@ -8,10 +8,8 @@ import java.io.IOException;
 
 import javax.swing.Action;
 import javax.swing.ActionMap;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,12 +18,11 @@ import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
-import momime.client.language.database.ShortcutKeyLang;
+import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
-import momime.common.database.Shortcut;
 
 /**
  * Popup from clicking the Info button on the overland map.  Gives all the choices like F1=surveyor, F7=tax rate and so on.
@@ -206,32 +203,21 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 
-		title.setText (getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Title"));
+		title.setText (getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getTitle ()));
 		getFrame ().setTitle (title.getText ());
 		
-		surveyorAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Surveyor"));
-		cartographerAction.putValue	(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Cartographer"));
-		apprenticeAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Apprentice"));
-		historianAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Historian"));
-		astrologerAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Astrologer"));
-		chancellorAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Chancellor"));
-		taxCollectorAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "TaxCollector"));
-		grandVizierAction.putValue		(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "GrandVizier"));
-		wizardsAction.putValue			(Action.NAME, getLanguage ().findCategoryEntry ("frmSelectAdvisor", "Wizards"));
+		surveyorAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getSurveyor ()));
+		cartographerAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getCartographer ()));
+		apprenticeAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getApprentice ()));
+		historianAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getHistorian ()));
+		astrologerAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getAstrologer ()));
+		chancellorAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getChancellor ()));
+		taxCollectorAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getTaxCollector ()));
+		grandVizierAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getGrandVizier ()));
+		wizardsAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getWizards ()));
 		
 		// Shortcut keys
-		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
-		for (final Object shortcut : contentPane.getActionMap ().keys ())
-			if (shortcut instanceof Shortcut)
-			{
-				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
-				if (shortcutKey != null)
-				{
-					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
-					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
-					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
-				}
-			}
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 		
 		log.trace ("Exiting languageChanged");
 	}

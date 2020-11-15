@@ -4,14 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.Map;
 
-import momime.client.graphics.database.SmoothedTileGfx;
-import momime.client.graphics.database.SmoothedTileTypeGfx;
-import momime.client.graphics.database.TileSetGfx;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SmoothedTile;
+import momime.common.database.SmoothedTileTypeEx;
+import momime.common.database.TileSetEx;
 import momime.common.messages.MapAreaOfCombatTiles;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Deals with deriving combat tiles and generating the combat scenery bitmap.
@@ -50,7 +50,7 @@ public interface CombatMapBitmapGenerator
 	 * @param combatMapTileSet Combat map tile set
 	 * @return Left edge of tile in pixel coordinates
 	 */
-	public int combatCoordinatesX (final int x, final int y, final TileSetGfx combatMapTileSet);
+	public int combatCoordinatesX (final int x, final int y, final TileSetEx combatMapTileSet);
 	
 	/**
 	 * @param x Coordinates of a particular combat tile
@@ -58,15 +58,15 @@ public interface CombatMapBitmapGenerator
 	 * @param combatMapTileSet Combat map tile set
 	 * @return Top edge of tile in pixel coordinates
 	 */
-	public int combatCoordinatesY (final int x, final int y, final TileSetGfx combatMapTileSet);
+	public int combatCoordinatesY (final int x, final int y, final TileSetEx combatMapTileSet);
 
 	/**
 	 * @return Smoothed tile types to display at every map cell
 	 */
-	public Map<CombatMapLayerID, SmoothedTileTypeGfx [] []> getSmoothedTileTypes ();
+	public Map<CombatMapLayerID, SmoothedTileTypeEx [] []> getSmoothedTileTypes ();
 
 	/**
 	 * @return Smoothed tiles to display at every map cell
 	 */	
-	public Map<CombatMapLayerID, SmoothedTileGfx [] []> getSmoothedTiles ();
+	public Map<CombatMapLayerID, SmoothedTile [] []> getSmoothedTiles ();
 }

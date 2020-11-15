@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,10 +14,11 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.LanguageText;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.utils.ExpandedUnitDetails;
@@ -76,7 +78,7 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 		Image image = null;
 		try
 		{
-			final String imageName = getGraphicsDB ().findUnit (getUnitID (), "NewTurnMessageSummonUnitEx").getUnitSummonImageFile ();
+			final String imageName = getClient ().getClientDB ().findUnit (getUnitID (), "NewTurnMessageSummonUnitEx").getUnitSummonImageFile ();
 			if (imageName != null)
 			{
 				final BufferedImage fullSizeImage = getUtils ().loadImage (imageName);
@@ -100,7 +102,7 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 		String music = null;
 		try
 		{
-			music = getGraphicsDB ().findSpell (getSpellID (), "NewTurnMessageSummonUnitEx").getSpellMusicFile ();
+			music = getClient ().getClientDB ().findSpell (getSpellID (), "NewTurnMessageSummonUnitEx").getSpellMusicFile ();
 		}
 		catch (final Exception e)
 		{
@@ -143,8 +145,10 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 	public final String getText ()
 	{
 		// Get prefix
-		String text = getLanguage ().findCategoryEntry ("NewTurnMessages",
-			(getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ? "SummonedUnitLastTurn" : "SummonedUnit");
+		final List<LanguageText> languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ?
+			getLanguages ().getNewTurnMessages ().getSummonedUnitLastTurn () : getLanguages ().getNewTurnMessages ().getSummonedUnit ();
+		
+		String text = getLanguageHolder ().findDescription (languageText);
 		
 		getUnitStatsReplacer ().setUnit (xu);
 		text = getUnitStatsReplacer ().replaceVariables (text);
@@ -153,11 +157,11 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 		switch (getUnitAddBumpType ())
 		{
 			case BUMPED:
-				text = text + getLanguage ().findCategoryEntry ("NewTurnMessages", "SummonedUnitBumpedSuffix");
+				text = text + getLanguageHolder ().findDescription (getLanguages ().getNewTurnMessages ().getSummonedUnitBumpedSuffix ());
 				break;
 			
 			case NO_ROOM:
-				text = text + getLanguage ().findCategoryEntry ("NewTurnMessages", "SummonedUnitNoRoomSuffix");
+				text = text + getLanguageHolder ().findDescription (getLanguages ().getNewTurnMessages ().getSummonedUnitNoRoomSuffix ());
 				break;
 				
 			default:
@@ -239,9 +243,9 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

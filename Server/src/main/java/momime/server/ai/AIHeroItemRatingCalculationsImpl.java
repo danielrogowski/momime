@@ -3,11 +3,11 @@ package momime.server.ai;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import momime.common.database.CommonDatabase;
+import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.NumberedHeroItem;
-import momime.server.database.HeroItemBonusSvr;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Methods that the AI uses to calculate ratings about how good hero items are
@@ -21,7 +21,7 @@ public final class AIHeroItemRatingCalculationsImpl implements AIHeroItemRatingC
 	 * @param bonus Hero item bonus to evaluate
 	 * @return Value AI estimates for how good of a hero item bonus this is 
 	 */
-	final int calculateHeroItemBonusRating (final HeroItemBonusSvr bonus)
+	final int calculateHeroItemBonusRating (final HeroItemBonus bonus)
 	{
 		log.trace ("Entering calculateHeroItemBonusRating: " + bonus.getHeroItemBonusID ());
 
@@ -43,7 +43,7 @@ public final class AIHeroItemRatingCalculationsImpl implements AIHeroItemRatingC
 	 * @throws RecordNotFoundException If the item has a bonus property that we can't find in the database 
 	 */
 	@Override
-	public final int calculateHeroItemRating (final NumberedHeroItem item, final ServerDatabaseEx db) throws RecordNotFoundException
+	public final int calculateHeroItemRating (final NumberedHeroItem item, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering calculateHeroItemRating: Item URN " + item.getHeroItemURN () + ", name " + item.getHeroItemName ());
 

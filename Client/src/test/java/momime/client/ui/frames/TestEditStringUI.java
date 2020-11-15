@@ -1,18 +1,23 @@
 package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import momime.client.ClientTestData;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.fonts.CreateFontsForTests;
+
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.Language;
+import momime.common.database.LanguageText;
 
 /**
  * Tests the EditStringUI class
@@ -31,10 +36,10 @@ public final class TestEditStringUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -72,12 +77,13 @@ public final class TestEditStringUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("TitleCat", "TitleEntry")).thenReturn ("Edit box test using variable text");
-		when (lang.findCategoryEntry ("PromptCat", "PromptEntry")).thenReturn ("Variable text edit prompt");
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
+
+		final List<LanguageText> title = Arrays.asList (createLanguageText (Language.ENGLISH, "Edit box test using variable text"));
+		final List<LanguageText> prompt = Arrays.asList (createLanguageText (Language.ENGLISH, "Variable text edit prompt"));
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -92,10 +98,8 @@ public final class TestEditStringUI extends ClientTestData
 		box.setUtils (utils);
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
-		box.setTitleLanguageCategoryID ("TitleCat");
-		box.setTitleLanguageEntryID ("TitleEntry");
-		box.setPromptLanguageCategoryID ("PromptCat");
-		box.setPromptLanguageEntryID ("PromptEntry");
+		box.setLanguageTitle (title);
+		box.setLanguagePrompt (prompt);
 		box.setText ("Default value");
 		box.setLargeFont (CreateFontsForTests.getLargeFont ());
 		

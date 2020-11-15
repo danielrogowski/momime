@@ -11,42 +11,6 @@ import java.util.List;
 
 import javax.xml.bind.Unmarshaller;
 
-import momime.client.ClientTestData;
-import momime.client.MomClient;
-import momime.client.database.AvailableDatabase;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.database.NewGameDatabase;
-import momime.client.database.Wizard;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.PickGfx;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.PlaneLang;
-import momime.client.language.database.RaceLang;
-import momime.client.language.database.SpellLang;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.client.utils.TextUtilsImpl;
-import momime.client.utils.WizardClientUtils;
-import momime.common.database.DifficultyLevel;
-import momime.common.database.FogOfWarSetting;
-import momime.common.database.LandProportion;
-import momime.common.database.NodeStrength;
-import momime.common.database.OverlandMapSize;
-import momime.common.database.Pick;
-import momime.common.database.PickExclusiveFrom;
-import momime.common.database.Plane;
-import momime.common.database.Race;
-import momime.common.database.Spell;
-import momime.common.database.SpellSetting;
-import momime.common.database.UnitSetting;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
-import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
-import momime.common.utils.PlayerPickUtilsImpl;
-
 import org.junit.Test;
 
 import com.ndg.multiplayer.base.client.ClientToServerConnection;
@@ -57,6 +21,59 @@ import com.ndg.random.RandomUtilsImpl;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.database.AvailableDatabase;
+import momime.client.database.NewGameDatabase;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.ChooseFlagColourScreen;
+import momime.client.languages.database.ChooseInitialSpellsScreen;
+import momime.client.languages.database.ChoosePortraitScreen;
+import momime.client.languages.database.ChooseRaceScreen;
+import momime.client.languages.database.ChooseWizardScreen;
+import momime.client.languages.database.CustomDebugTab;
+import momime.client.languages.database.CustomDifficultyTab1;
+import momime.client.languages.database.CustomDifficultyTab2;
+import momime.client.languages.database.CustomDifficultyTab3;
+import momime.client.languages.database.CustomFogOfWarTab;
+import momime.client.languages.database.CustomLandProportionTab;
+import momime.client.languages.database.CustomMapSizeTab;
+import momime.client.languages.database.CustomNodesTab;
+import momime.client.languages.database.CustomPicksScreen;
+import momime.client.languages.database.CustomSpellsTab;
+import momime.client.languages.database.CustomUnitsTab;
+import momime.client.languages.database.NewGameScreen;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.TurnSystems;
+import momime.client.languages.database.WaitForPlayersToJoinScreen;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.TextUtilsImpl;
+import momime.client.utils.WizardClientUtils;
+import momime.common.database.CommonDatabase;
+import momime.common.database.DifficultyLevel;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.LandProportion;
+import momime.common.database.Language;
+import momime.common.database.NodeStrength;
+import momime.common.database.OverlandMapSize;
+import momime.common.database.Pick;
+import momime.common.database.PickExclusiveFrom;
+import momime.common.database.Plane;
+import momime.common.database.RaceEx;
+import momime.common.database.Spell;
+import momime.common.database.SpellRank;
+import momime.common.database.SpellSetting;
+import momime.common.database.UnitSetting;
+import momime.common.database.WizardEx;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.servertoclient.ChooseInitialSpellsNowRank;
+import momime.common.utils.PlayerPickUtilsImpl;
 
 /**
  * Tests the NewGameUI class
@@ -73,230 +90,33 @@ public final class TestNewGameUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 
-		// Mock client database
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-
-		when (lang.findCategoryEntry ("frmNewGame", "Cancel")).thenReturn ("Cancel");
-		when (lang.findCategoryEntry ("frmNewGame", "OK")).thenReturn ("OK");
-
-		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		// NEW GAME PANEL
-		when (lang.findCategoryEntry ("frmNewGame", "Title")).thenReturn ("New Game");
-		when (lang.findCategoryEntry ("frmNewGame", "HumanOpponents")).thenReturn ("Human Opponents");
-		when (lang.findCategoryEntry ("frmNewGame", "AIOpponents")).thenReturn ("AI Opponents");
-		when (lang.findCategoryEntry ("frmNewGame", "MapSize")).thenReturn ("Map Size and makeup");
-		when (lang.findCategoryEntry ("frmNewGame", "LandProportion")).thenReturn ("Land Proportion");
-		when (lang.findCategoryEntry ("frmNewGame", "Nodes")).thenReturn ("Nodes");
-		when (lang.findCategoryEntry ("frmNewGame", "Difficulty")).thenReturn ("Difficulty");
-		when (lang.findCategoryEntry ("frmNewGame", "TurnSystem")).thenReturn ("Turn System");
-		when (lang.findCategoryEntry ("frmNewGame", "FogOfWar")).thenReturn ("Fog of War");
-		when (lang.findCategoryEntry ("frmNewGame", "UnitSettings")).thenReturn ("Unit Settings");
-		when (lang.findCategoryEntry ("frmNewGame", "SpellSettings")).thenReturn ("Spell Settings");
-		when (lang.findCategoryEntry ("frmNewGame", "DebugOptions")).thenReturn ("Use any debug options?");
-		when (lang.findCategoryEntry ("frmNewGame", "GameName")).thenReturn ("Game Name");
-		when (lang.findCategoryEntry ("frmNewGame", "Customize")).thenReturn ("Customize?");
-		
-		// CUSTOM MAP SIZE PANEL
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "Title")).thenReturn ("New Game: Custom Map Size");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "MapSize")).thenReturn ("Map Size");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "WrapsLeftRight")).thenReturn ("Map wraps Left-Right?");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "WrapsTopBottom")).thenReturn ("Map wraps Top-Bottom?");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "Zones")).thenReturn ("Terrain generator splits map into zones with size approximately");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "NormalLairCount")).thenReturn ("Number of normal strength lairs");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "WeakLairCount")).thenReturn ("Number of weak strength lairs");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "Towers")).thenReturn ("Number of Towers of Wizardry");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "TowersSeparation")).thenReturn ("Minimum separation between Towers");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "Continental")).thenReturn ("Chance that raider cities are the race chosen for the continent");
-		when (lang.findCategoryEntry ("frmNewGameCustomMapSize", "CitySeparation")).thenReturn ("Minimum separation between Cities");
-		
-		// CUSTOM LAND PROPORTION PANEL
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "Title")).thenReturn ("New Game: Custom Land Proportion");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "PercentageMapIsLand")).thenReturn ("% of map is land");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "HillsProportion")).thenReturn ("% of land is hills");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "MountainsProportion")).thenReturn ("% of hills are mountains");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "TreesProportion")).thenReturn ("% of land is trees, split into areas");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "TreeAreaTileCountPrefix")).thenReturn ("each approximately");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "TreeAreaTileCountSuffix")).thenReturn ("tiles");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "DesertProportion")).thenReturn ("% of land is desert, split into areas");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "DesertAreaTileCountPrefix")).thenReturn ("each approximately");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "DesertAreaTileCountSuffix")).thenReturn ("tiles");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "SwampProportion")).thenReturn ("% of land is swamp, split into areas");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "SwampAreaTileCountPrefix")).thenReturn ("each approximately");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "SwampAreaTileCountSuffix")).thenReturn ("tiles");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "TundraPrefix")).thenReturn ("Tundra appears");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "TundraSuffix")).thenReturn ("tiles from the edge of the map");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "Rivers")).thenReturn ("Number of rivers on each plane");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "ArcanusPrefix")).thenReturn ("Tiles on Arcanus have a 1 in");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "ArcanusSuffix")).thenReturn ("chance of containing a mineral deposit");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "MyrrorPrefix")).thenReturn ("Tiles on Myrror have a 1 in");
-		when (lang.findCategoryEntry ("frmNewGameCustomLandProportion", "MyrrorSuffix")).thenReturn ("chance of containing a mineral deposit");
-		
-		// CUSTOM NODES PANEL
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "Title")).thenReturn ("New Game: Custom Nodes");
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "MagicPowerPrefix")).thenReturn ("Each square of node aura generates");
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "MagicPowerSuffix")).thenReturn ("/2 magic power");
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "ArcanusCount")).thenReturn ("Number of nodes on Arcanus");
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "ArcanusNodeAuraPrefix")).thenReturn ("Each node on Arcanus has an aura between");
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "ArcanusNodeAuraSuffix")).thenReturn ("squares");
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "MyrrorCount")).thenReturn ("Number of nodes on Myrror");
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "MyrrorNodeAuraPrefix")).thenReturn ("Each node on Myrror has an aura between");
-		when (lang.findCategoryEntry ("frmNewGameCustomNodes", "MyrrorNodeAuraSuffix")).thenReturn ("squares");
-
-		// CUSTOM DIFFICULTY PANEL (1 of 3)
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "Title")).thenReturn ("New Game: Custom Difficulty (1 of 2)");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "SpellPicks")).thenReturn ("Spell picks:");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanSpellPicks")).thenReturn ("Human");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellPicks")).thenReturn ("AI");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "Gold")).thenReturn ("Gold:");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "HumanGold")).thenReturn ("Human");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIGold")).thenReturn ("AI");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplier")).thenReturn ("AI population growth rate multiplier:");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplierWizards")).thenReturn ("Wizards");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIPopulationGrowthRateMultiplierRaiders")).thenReturn ("Raiders");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplier")).thenReturn ("AI production rate multiplier:");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplierWizards")).thenReturn ("Wizards");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIProductionRateMultiplierRaiders")).thenReturn ("Raiders");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AISpellResearchMultiplier")).thenReturn ("AI spell research multiplier:");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "AIUpkeepMultiplier")).thenReturn ("AI upkeep multiplier:");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "CustomWizards")).thenReturn ("Allow custom wizards?");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "EachWizardOnlyOnce")).thenReturn ("Each wizard can be chosen only once?");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "WizardCitySize")).thenReturn ("Wizards' cities start at size");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "MaxCitySize")).thenReturn ("Maximum city size");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityCount")).thenReturn ("Number of neutral/raider cities");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizePrefix")).thenReturn ("Neutral/raider cities start between size");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCitySizeAnd")).thenReturn ("and");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthPrefix")).thenReturn ("and can grow up to");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty1", "RaiderCityGrowthSuffix")).thenReturn ("larger than their starting size");
-		
-		// CUSTOM DIFFICULTY PANEL (2 of 3)
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "Title")).thenReturn ("New Game: Custom Difficulty (2 of 2)");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerMonsters")).thenReturn ("Towers: Monsters");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "TowerTreasure")).thenReturn ("Towers: Treasure");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalLairs")).thenReturn ("Normal strength lairs:");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalArcanusLairMonsters")).thenReturn ("On Arcanus: Monsters");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalArcanusLairTreasure")).thenReturn ("On Arcanus: Treasure");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalMyrrorLairMonsters")).thenReturn ("On Myrror: Monsters");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "NormalMyrrorLairTreasure")).thenReturn ("On Myrror: Treasure");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakLairs")).thenReturn ("Weak strength lairs:");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakArcanusLairMonsters")).thenReturn ("On Arcanus: Monsters");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakArcanusLairTreasure")).thenReturn ("On Arcanus: Treasure");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakMyrrorLairMonsters")).thenReturn ("On Myrror: Monsters");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty2", "WeakMyrrorLairTreasure")).thenReturn ("On Myrror: Treasure");
-		
-		// CUSTOM DIFFICULTY PANEL (3 of 3)
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty3", "Title")).thenReturn ("New Game: Custom Node Difficulty");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty3", "ArcanusNodeMonsters")).thenReturn ("On Arcanus: Monsters");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty3", "ArcanusNodeTreasure")).thenReturn ("On Arcanus: Treasure");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty3", "MyrrorNodeMonsters")).thenReturn ("On Myrror: Monsters");
-		when (lang.findCategoryEntry ("frmNewGameCustomDifficulty3", "MyrrorNodeTreasure")).thenReturn ("On Myrror: Treasure");
-		
-		// CUSTOM FOG OF WAR PANEL
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "Title")).thenReturn ("New Game: Custom Fog of War");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "TerrainNodesAuras")).thenReturn ("Terrain, Nodes and Auras");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "TerrainAlways")).thenReturn ("Always see once seen");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "TerrainRemember")).thenReturn ("Remember as last seen");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "TerrainForget")).thenReturn ("Forget");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "CitiesSpellsCAEs")).thenReturn ("Cities, Combat Spells and Combat Area Effects");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "CitiesAlways")).thenReturn ("Always see once seen");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "CitiesRemember")).thenReturn ("Remember as last seen");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "CitiesForget")).thenReturn ("Forget");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "Constructing")).thenReturn ("Can see what enemy cities are constructing?");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "Units")).thenReturn ("Units");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "UnitsAlways")).thenReturn ("Always see once seen");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "UnitsRemember")).thenReturn ("Remember as last seen");
-		when (lang.findCategoryEntry ("frmNewGameCustomFogOfWar", "UnitsForget")).thenReturn ("Forget");
-		
-		// CUSTOM UNIT SETTINGS PANEL
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "Title")).thenReturn ("New Game: Custom Unit Settings");
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxPerGridCell")).thenReturn ("Maximum units per grid cell");
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "CanExceedMaximumUnitsDuringCombat")).thenReturn ("Can temporarily exceed maximum during combat (e.g. with Phantom Warriors, Earth/Air/Fire Elementals)");
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroes")).thenReturn ("Maximum heroes at a time");
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "RollHeroSkillsAtStartOfGame")).thenReturn ("Hero random skills are rolled at the start of the game (so cannot reroll by reloading the game just before spell finishes casting)");
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemBonuses")).thenReturn ("Maximum bonuses on a hero item");
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemSpellCharges")).thenReturn ("Maximum spell charges on a hero item");
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "MaxHeroItemsInBank")).thenReturn ("Maximum hero items in storage");
-		when (lang.findCategoryEntry ("frmNewGameCustomUnits", "Unlimited")).thenReturn ("(blank = unlimited)");
-		
-		// CUSTOM SPELL SETTINGS PANEL
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "Title")).thenReturn ("New Game: Custom Spell Settings");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearch")).thenReturn ("Allow switching which spell is being researched?");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchNo")).thenReturn ("No - must finish current research first");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchNotStarted")).thenReturn ("Only if current spell research not started");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchLose")).thenReturn ("Yes, but lose any current research");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "SwitchResearchFreely")).thenReturn ("Yes, can switch freely with no penalty");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "BooksToObtainFirstReduction")).thenReturn ("Spell books to obtain first reduction");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "EachBook")).thenReturn ("Each book gives");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionPrefix")).thenReturn ("a");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionSuffix")).thenReturn ("% reduction in casting cost");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusPrefix")).thenReturn ("and a");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusSuffix")).thenReturn ("% bonus to research");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionCombinationAdd")).thenReturn ("Casting cost reductions are added together");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionCombinationMultiply")).thenReturn ("Casting cost reductions are multiplied together");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCombinationAdd")).thenReturn ("Research bonuses are added together");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCombinationMultiply")).thenReturn ("Research bonuses are multiplied together");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "CastingReductionCap")).thenReturn ("Casting cost reduction is capped at");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "ResearchBonusCap")).thenReturn ("Research bonus is capped at");
-		when (lang.findCategoryEntry ("frmNewGameCustomSpells", "StolenFromFortress")).thenReturn ("Spells stolen when banishing wizard");
-		
-		// DEBUG OPTIONS PANEL
-		when (lang.findCategoryEntry ("frmNewGameCustomDebug", "Title")).thenReturn ("New Game: Debug Options");
-		when (lang.findCategoryEntry ("frmNewGameCustomDebug", "DisableFogOfWar")).thenReturn ("Disable Fog of War (as if all players have Nature Awareness cast all the time)");
-		
-		// WIZARD SELECTION PANEL
-		when (lang.findCategoryEntry ("frmChooseWizard", "Title")).thenReturn ("Select Wizard");
-		when (lang.findCategoryEntry ("frmChooseWizard", "Custom")).thenReturn ("Custom");
-
-		final List<Wizard> wizards = new ArrayList<Wizard> ();
+		final List<WizardEx> wizards = new ArrayList<WizardEx> ();
 		for (int n = 1; n <= 14; n++)
 		{
-			final Wizard wizard = new Wizard ();
+			final WizardEx wizard = new WizardEx ();
 			wizard.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
+			wizard.getWizardName ().add (createLanguageText (Language.ENGLISH, "Wiz " + wizard.getWizardID ()));
+			
+			when (db.findWizard (eq (wizard.getWizardID ()), anyString ())).thenReturn (wizard);
 			wizards.add (wizard);
 		}
 		when (db.getWizards ()).thenReturn (wizards);
-		
-		for (int n = 1; n <= 14; n++)
-		{
-			final String wizardID = "WZ" + ((n < 10) ? "0" : "") + n;
-			when (lang.findWizardName (wizardID)).thenReturn ("Wiz " + wizardID);
-		}
-		
-		// PORTRAIT SELECTION PANEL (for custom wizards)
-		when (lang.findCategoryEntry ("frmChoosePortrait", "Title")).thenReturn ("Select Picture");
-		when (lang.findCategoryEntry ("frmChoosePortrait", "Custom")).thenReturn ("Custom");
-		
-		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
-		when (lang.findCategoryEntry ("frmChooseFlagColour", "Title")).thenReturn ("Select Flag Colour");
-		when (lang.findCategoryEntry ("frmChooseFlagColour", "RedLabel")).thenReturn ("Red");
-		when (lang.findCategoryEntry ("frmChooseFlagColour", "GreenLabel")).thenReturn ("Green");
-		when (lang.findCategoryEntry ("frmChooseFlagColour", "BlueLabel")).thenReturn ("Blue");
-		
-		// CUSTOM PICKS PANEL (for custom wizards)
-		when (lang.findCategoryEntry ("frmCustomPicks", "Title")).thenReturn ("Select Custom Picks");
-		
+
 		final List<Pick> picks = new ArrayList<Pick> ();
 		for (int n = 1; n <= 18; n++)
 		{
 			final Pick pick = new Pick ();
 			pick.setPickID ("RT" + ((n < 10) ? "0" : "") + n);
 			pick.setPickCost (1);
+			pick.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Retort " + pick.getPickID ()));
 			picks.add (pick);
 			when (db.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pick);
-			
-			final PickGfx pickGfx = new PickGfx ();
-			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
-
-			final PickLang pickLang = new PickLang ();
-			pickLang.setPickDescriptionSingular ("Retort " + pick.getPickID ());
-			when (lang.findPick (pick.getPickID ())).thenReturn (pickLang);
 		}
 
 		int magicRealmNo = 0;
@@ -308,23 +128,18 @@ public final class TestNewGameUI extends ClientTestData
 			final Pick pick = new Pick ();
 			pick.setPickID ("MB0" + magicRealmNo);
 			pick.setPickCost (1);
-			picks.add (pick);
-			when (db.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pick);
-			
-			final PickGfx pickGfx = new PickGfx ();
-			pickGfx.setPickBookshelfTitleColour ("FF" + colourNo + "0" + colourNo + "0");
-			when (gfx.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pickGfx);
-
-			final PickLang pickLang = new PickLang ();
-			pickLang.setBookshelfDescription (magicRealmName);
-			when (lang.findPick (pick.getPickID ())).thenReturn (pickLang);
+			pick.getBookshelfDescription ().add (createLanguageText (Language.ENGLISH, magicRealmName));
+			pick.setPickBookshelfTitleColour ("FF" + colourNo + "0" + colourNo + "0");
 			
 			for (int imageNo = 1; imageNo <= 3; imageNo++)
-				pickGfx.getBookImageFile ().add ("/momime.client.graphics/picks/" + magicRealmName.toLowerCase () + "-" + imageNo + ".png");
+				pick.getBookImageFile ().add ("/momime.client.graphics/picks/" + magicRealmName.toLowerCase () + "-" + imageNo + ".png");
+			
+			picks.add (pick);
+			when (db.findPick (eq (pick.getPickID ()), anyString ())).thenReturn (pick);
 		}
 		
-		doReturn (picks).when (db).getPicks ();
-		
+		doReturn (picks).when (db).getPick ();
+
 		// Don't allow picking both life + death books
 		for (int n = 1; n <= 2; n++)
 		{
@@ -332,12 +147,13 @@ public final class TestNewGameUI extends ClientTestData
 			ex.setPickExclusiveFromID ("MB0" + (3-n));
 			db.findPick ("MB0" + n, "createNewGameUI").getPickExclusiveFrom ().add (ex);
 		}
-		
-		// FREE SPELL SELECTION PANEL
-		when (lang.findCategoryEntry ("frmChooseInitialSpells", "Title")).thenReturn ("Select MAGIC_REALM Spells");
-		
+
 		for (int n = 1; n <= 4; n++)
-			when (lang.findSpellRankDescription ("SR0" + n)).thenReturn ("Rank " + n);
+		{
+			final SpellRank rank = new SpellRank ();
+			rank.getSpellRankDescription ().add (createLanguageText (Language.ENGLISH, "Rank " + n));
+			when (db.findSpellRank ("SR0" + n, "updateInitialSpellsCount")).thenReturn (rank);
+		}
 		
 		final List<Spell> spells = new ArrayList<Spell> ();
 		for (int rank = 1; rank <= 4; rank++)
@@ -347,18 +163,41 @@ public final class TestNewGameUI extends ClientTestData
 				spell.setSpellRealm ("MB01");
 				spell.setSpellRank ("SR0" + rank);
 				spell.setSpellID ("SP0" + rank + spellNo);
+				spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell " + spell.getSpellID ()));
 				spells.add (spell);
 				
-				final SpellLang spellLang = new SpellLang ();
-				spellLang.setSpellName ("Spell " + spell.getSpellID ());
-				when (lang.findSpell (spell.getSpellID ())).thenReturn (spellLang);
+				when (db.findSpell (eq (spell.getSpellID ()), anyString ())).thenReturn (spell); 
 			}
 		
-		doReturn (spells).when (db).getSpells ();
-		
-		// RACE SELECTION PANEL
-		when (lang.findCategoryEntry ("frmChooseRace", "Title")).thenReturn ("Choose Race");
+		doReturn (spells).when (db).getSpell ();
 
+		final List<Plane> planes = new ArrayList<Plane> ();
+		for (int n = 0; n < 2; n++)
+		{
+			final Plane plane = new Plane ();
+			plane.setPlaneNumber (n);
+			plane.getPlaneRacesTitle ().add (createLanguageText (Language.ENGLISH, "Plane " + n + " races"));
+			planes.add (plane);
+			
+			when (db.findPlane (eq (n), anyString ())).thenReturn (plane);
+		}
+		
+		doReturn (planes).when (db).getPlane ();
+		
+		final List<RaceEx> races = new ArrayList<RaceEx> ();
+		for (int plane = 0; plane < 2; plane++)
+			for (int raceNo = 0; raceNo < 5; raceNo++)
+			{
+				final RaceEx race = new RaceEx ();
+				race.setRaceID ("RC" + plane + raceNo);
+				race.setNativePlane (plane);
+				race.getRaceNameSingular ().add (createLanguageText (Language.ENGLISH, "Race " + race.getRaceID ()));
+				races.add (race);
+			}
+		
+		doReturn (races).when (db).getRaces ();
+
+		// Players
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setHuman (true);
 		pd.setPlayerName ("Mr. Blah");
@@ -376,49 +215,247 @@ public final class TestNewGameUI extends ClientTestData
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (3), anyString ())).thenReturn (ourPlayer);
 		
-		final List<Plane> planes = new ArrayList<Plane> ();
-		for (int n = 0; n < 2; n++)
-		{
-			final Plane plane = new Plane ();
-			plane.setPlaneNumber (n);
-			planes.add (plane);
-			
-			when (db.findPlane (n, "NewGameUI.showRacePanel")).thenReturn (plane);
-			
-			final PlaneLang planeLang = new PlaneLang ();
-			planeLang.setPlaneRacesTitle ("Plane " + n + " races");
-			when (lang.findPlane (n)).thenReturn (planeLang);
-		}
+		// Mock entries from the language XML
+		final Simple simpleLang = new Simple ();
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		simpleLang.getAnd ().add (createLanguageText (Language.ENGLISH, "And"));
 		
-		doReturn (planes).when (db).getPlanes ();
+		final TurnSystems turnSystemsLang = new TurnSystems ();
+		turnSystemsLang.getOnePlayerAtATime ().add (createLanguageText (Language.ENGLISH, "One player at a time"));
 		
-		final List<Race> races = new ArrayList<Race> ();
-		for (int plane = 0; plane < 2; plane++)
-			for (int raceNo = 0; raceNo < 5; raceNo++)
-			{
-				final Race race = new Race ();
-				race.setRaceID ("RC" + plane + raceNo);
-				race.setNativePlane (plane);
-				races.add (race);
-				
-				final RaceLang raceLang = new RaceLang ();
-				raceLang.setRaceName ("Race " + race.getRaceID ());
-				when (lang.findRace (race.getRaceID ())).thenReturn (raceLang);
-			}
+		// NEW GAME PANEL
+		final NewGameScreen newGameScreenLang = new NewGameScreen ();
+		newGameScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game"));
+		newGameScreenLang.getHumanOpponents ().add (createLanguageText (Language.ENGLISH, "Human Opponents"));
+		newGameScreenLang.getAiOpponents ().add (createLanguageText (Language.ENGLISH, "AI Opponents"));
+		newGameScreenLang.getMapSize ().add (createLanguageText (Language.ENGLISH, "Map Size and makeup"));
+		newGameScreenLang.getLandProportion ().add (createLanguageText (Language.ENGLISH, "Land Proportion"));
+		newGameScreenLang.getNodes ().add (createLanguageText (Language.ENGLISH, "Nodes"));
+		newGameScreenLang.getDifficulty ().add (createLanguageText (Language.ENGLISH, "Difficulty"));
+		newGameScreenLang.getTurnSystem ().add (createLanguageText (Language.ENGLISH, "Turn System"));
+		newGameScreenLang.getFogOfWar ().add (createLanguageText (Language.ENGLISH, "Fog of War"));
+		newGameScreenLang.getUnitSettings ().add (createLanguageText (Language.ENGLISH, "Unit Settings"));
+		newGameScreenLang.getSpellSettings ().add (createLanguageText (Language.ENGLISH, "Spell Settings"));
+		newGameScreenLang.getDebugOptions ().add (createLanguageText (Language.ENGLISH, "Use any debug options?"));
+		newGameScreenLang.getGameName ().add (createLanguageText (Language.ENGLISH, "Game Name"));
+		newGameScreenLang.getCustomize ().add (createLanguageText (Language.ENGLISH, "Customize?"));
 		
-		doReturn (races).when (db).getRaces ();
+		// CUSTOM MAP SIZE PANEL
+		final CustomMapSizeTab customMapSizeTabLang = new CustomMapSizeTab ();
+		customMapSizeTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Map Size"));
+		customMapSizeTabLang.getMapSize ().add (createLanguageText (Language.ENGLISH, "Map Size"));
+		customMapSizeTabLang.getWrapsLeftRight ().add (createLanguageText (Language.ENGLISH, "Map wraps Left-Right?"));
+		customMapSizeTabLang.getWrapsTopBottom ().add (createLanguageText (Language.ENGLISH, "Map wraps Top-Bottom?"));
+		customMapSizeTabLang.getZones ().add (createLanguageText (Language.ENGLISH, "Terrain generator splits map into zones with size approximately"));
+		customMapSizeTabLang.getNormalLairCount ().add (createLanguageText (Language.ENGLISH, "Number of normal strength lairs"));
+		customMapSizeTabLang.getWeakLairCount ().add (createLanguageText (Language.ENGLISH, "Number of weak strength lairs"));
+		customMapSizeTabLang.getTowers ().add (createLanguageText (Language.ENGLISH, "Number of Towers of Wizardry"));
+		customMapSizeTabLang.getTowersSeparation ().add (createLanguageText (Language.ENGLISH, "Minimum separation between Towers"));
+		customMapSizeTabLang.getContinental ().add (createLanguageText (Language.ENGLISH, "Chance that raider cities are the race chosen for the continent"));
+		customMapSizeTabLang.getCitySeparation ().add (createLanguageText (Language.ENGLISH, "Minimum separation between Cities"));
+		newGameScreenLang.setCustomMapSizeTab (customMapSizeTabLang);
+		
+		// CUSTOM LAND PROPORTION PANEL
+		final CustomLandProportionTab customLandProportionTabLang = new CustomLandProportionTab ();
+		customLandProportionTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Land Proportion"));
+		customLandProportionTabLang.getPercentageMapIsLand ().add (createLanguageText (Language.ENGLISH, "% of map is land"));
+		customLandProportionTabLang.getHillsProportion ().add (createLanguageText (Language.ENGLISH, "% of land is hills"));
+		customLandProportionTabLang.getMountainsProportion ().add (createLanguageText (Language.ENGLISH, "% of hills are mountains"));
+		customLandProportionTabLang.getTreesProportion ().add (createLanguageText (Language.ENGLISH, "% of land is trees, split into areas"));
+		customLandProportionTabLang.getTreeAreaTileCountPrefix ().add (createLanguageText (Language.ENGLISH, "each approximately"));
+		customLandProportionTabLang.getTreeAreaTileCountSuffix ().add (createLanguageText (Language.ENGLISH, "tiles"));
+		customLandProportionTabLang.getDesertProportion ().add (createLanguageText (Language.ENGLISH, "% of land is desert, split into areas"));
+		customLandProportionTabLang.getDesertAreaTileCountPrefix ().add (createLanguageText (Language.ENGLISH, "each approximately"));
+		customLandProportionTabLang.getDesertAreaTileCountSuffix ().add (createLanguageText (Language.ENGLISH, "tiles"));
+		customLandProportionTabLang.getSwampProportion ().add (createLanguageText (Language.ENGLISH, "% of land is swamp, split into areas"));
+		customLandProportionTabLang.getSwampAreaTileCountPrefix ().add (createLanguageText (Language.ENGLISH, "each approximately"));
+		customLandProportionTabLang.getSwampAreaTileCountSuffix ().add (createLanguageText (Language.ENGLISH, "tiles"));
+		customLandProportionTabLang.getTundraPrefix ().add (createLanguageText (Language.ENGLISH, "Tundra appears"));
+		customLandProportionTabLang.getTundraSuffix ().add (createLanguageText (Language.ENGLISH, "tiles from the edge of the map"));
+		customLandProportionTabLang.getRivers ().add (createLanguageText (Language.ENGLISH, "Number of rivers on each plane"));
+		customLandProportionTabLang.getArcanusPrefix ().add (createLanguageText (Language.ENGLISH, "Tiles on Arcanus have a 1 in"));
+		customLandProportionTabLang.getArcanusSuffix ().add (createLanguageText (Language.ENGLISH, "chance of containing a mineral deposit"));
+		customLandProportionTabLang.getMyrrorPrefix ().add (createLanguageText (Language.ENGLISH, "Tiles on Myrror have a 1 in"));
+		customLandProportionTabLang.getMyrrorSuffix ().add (createLanguageText (Language.ENGLISH, "chance of containing a mineral deposit"));
+		newGameScreenLang.setCustomLandProportionTab (customLandProportionTabLang);
+		
+		// CUSTOM NODES PANEL
+		final CustomNodesTab customNodesTabLang = new CustomNodesTab ();
+		customNodesTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Nodes"));
+		customNodesTabLang.getMagicPowerPrefix ().add (createLanguageText (Language.ENGLISH, "Each square of node aura generates"));
+		customNodesTabLang.getMagicPowerSuffix ().add (createLanguageText (Language.ENGLISH, "/2 magic power"));
+		customNodesTabLang.getArcanusCount ().add (createLanguageText (Language.ENGLISH, "Number of nodes on Arcanus"));
+		customNodesTabLang.getArcanusNodeAuraPrefix ().add (createLanguageText (Language.ENGLISH, "Each node on Arcanus has an aura between"));
+		customNodesTabLang.getArcanusNodeAuraSuffix ().add (createLanguageText (Language.ENGLISH, "squares"));
+		customNodesTabLang.getMyrrorCount ().add (createLanguageText (Language.ENGLISH, "Number of nodes on Myrror"));
+		customNodesTabLang.getMyrrorNodeAuraPrefix ().add (createLanguageText (Language.ENGLISH, "Each node on Myrror has an aura between"));
+		customNodesTabLang.getMyrrorNodeAuraSuffix ().add (createLanguageText (Language.ENGLISH, "squares"));
+		newGameScreenLang.setCustomNodesTab (customNodesTabLang);
+
+		// CUSTOM DIFFICULTY PANEL (1 of 3)
+		final CustomDifficultyTab1 customDifficultyTab1Lang = new CustomDifficultyTab1 ();
+		customDifficultyTab1Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Difficulty (1 of 2)"));
+		customDifficultyTab1Lang.getSpellPicks ().add (createLanguageText (Language.ENGLISH, "Spell picks:"));
+		customDifficultyTab1Lang.getHumanSpellPicks ().add (createLanguageText (Language.ENGLISH, "Human"));
+		customDifficultyTab1Lang.getAiSpellPicks ().add (createLanguageText (Language.ENGLISH, "AI"));
+		customDifficultyTab1Lang.getGold ().add (createLanguageText (Language.ENGLISH, "Gold:"));
+		customDifficultyTab1Lang.getHumanGold ().add (createLanguageText (Language.ENGLISH, "Human"));
+		customDifficultyTab1Lang.getAiGold ().add (createLanguageText (Language.ENGLISH, "AI"));
+		customDifficultyTab1Lang.getAiPopulationGrowthRateMultiplier ().add (createLanguageText (Language.ENGLISH, "AI population growth rate multiplier:"));
+		customDifficultyTab1Lang.getAiPopulationGrowthRateMultiplierWizards ().add (createLanguageText (Language.ENGLISH, "Wizards"));
+		customDifficultyTab1Lang.getAiPopulationGrowthRateMultiplierRaiders ().add (createLanguageText (Language.ENGLISH, "Raiders"));
+		customDifficultyTab1Lang.getAiProductionRateMultiplier ().add (createLanguageText (Language.ENGLISH, "AI production rate multiplier:"));
+		customDifficultyTab1Lang.getAiProductionRateMultiplierWizards ().add (createLanguageText (Language.ENGLISH, "Wizards"));
+		customDifficultyTab1Lang.getAiProductionRateMultiplierRaiders ().add (createLanguageText (Language.ENGLISH, "Raiders"));
+		customDifficultyTab1Lang.getAiSpellResearchMultiplier ().add (createLanguageText (Language.ENGLISH, "AI spell research multiplier:"));
+		customDifficultyTab1Lang.getAiUpkeepMultiplier ().add (createLanguageText (Language.ENGLISH, "AI upkeep multiplier:"));
+		customDifficultyTab1Lang.getCustomWizards ().add (createLanguageText (Language.ENGLISH, "Allow custom wizards?"));
+		customDifficultyTab1Lang.getEachWizardOnlyOnce ().add (createLanguageText (Language.ENGLISH, "Each wizard can be chosen only once?"));
+		customDifficultyTab1Lang.getWizardCitySize ().add (createLanguageText (Language.ENGLISH, "Wizards' cities start at size"));
+		customDifficultyTab1Lang.getMaxCitySize ().add (createLanguageText (Language.ENGLISH, "Maximum city size"));
+		customDifficultyTab1Lang.getRaiderCityCount ().add (createLanguageText (Language.ENGLISH, "Number of neutral/raider cities"));
+		customDifficultyTab1Lang.getRaiderCitySizePrefix ().add (createLanguageText (Language.ENGLISH, "Neutral/raider cities start between size"));
+		customDifficultyTab1Lang.getRaiderCityGrowthPrefix ().add (createLanguageText (Language.ENGLISH, "and can grow up to"));
+		customDifficultyTab1Lang.getRaiderCityGrowthSuffix ().add (createLanguageText (Language.ENGLISH, "larger than their starting size"));
+		newGameScreenLang.setCustomDifficultyTab1 (customDifficultyTab1Lang);
+		
+		// CUSTOM DIFFICULTY PANEL (2 of 3)
+		final CustomDifficultyTab2 customDifficultyTab2Lang = new CustomDifficultyTab2 ();
+		customDifficultyTab2Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Difficulty (2 of 2)"));
+		customDifficultyTab2Lang.getTowerMonsters ().add (createLanguageText (Language.ENGLISH, "Towers: Monsters"));
+		customDifficultyTab2Lang.getTowerTreasure ().add (createLanguageText (Language.ENGLISH, "Towers: Treasure"));
+		customDifficultyTab2Lang.getNormalLairs ().add (createLanguageText (Language.ENGLISH, "Normal strength lairs:"));
+		customDifficultyTab2Lang.getNormalArcanusLairMonsters ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Monsters"));
+		customDifficultyTab2Lang.getNormalArcanusLairTreasure ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Treasure"));
+		customDifficultyTab2Lang.getNormalMyrrorLairMonsters ().add (createLanguageText (Language.ENGLISH, "On Myrror: Monsters"));
+		customDifficultyTab2Lang.getNormalMyrrorLairTreasure ().add (createLanguageText (Language.ENGLISH, "On Myrror: Treasure"));
+		customDifficultyTab2Lang.getWeakLairs ().add (createLanguageText (Language.ENGLISH, "Weak strength lairs:"));
+		customDifficultyTab2Lang.getWeakArcanusLairMonsters ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Monsters"));
+		customDifficultyTab2Lang.getWeakArcanusLairTreasure ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Treasure"));
+		customDifficultyTab2Lang.getWeakMyrrorLairMonsters ().add (createLanguageText (Language.ENGLISH, "On Myrror: Monsters"));
+		customDifficultyTab2Lang.getWeakMyrrorLairTreasure ().add (createLanguageText (Language.ENGLISH, "On Myrror: Treasure"));
+		newGameScreenLang.setCustomDifficultyTab2 (customDifficultyTab2Lang);
+		
+		// CUSTOM DIFFICULTY PANEL (3 of 3)
+		final CustomDifficultyTab3 customDifficultyTab3Lang = new CustomDifficultyTab3 ();
+		customDifficultyTab3Lang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Node Difficulty"));
+		customDifficultyTab3Lang.getArcanusNodeMonsters ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Monsters"));
+		customDifficultyTab3Lang.getArcanusNodeTreasure ().add (createLanguageText (Language.ENGLISH, "On Arcanus: Treasure"));
+		customDifficultyTab3Lang.getMyrrorNodeMonsters ().add (createLanguageText (Language.ENGLISH, "On Myrror: Monsters"));
+		customDifficultyTab3Lang.getMyrrorNodeTreasure ().add (createLanguageText (Language.ENGLISH, "On Myrror: Treasure"));
+		newGameScreenLang.setCustomDifficultyTab3 (customDifficultyTab3Lang);
+		
+		// CUSTOM FOG OF WAR PANEL
+		final CustomFogOfWarTab customFogOfWarTabLang = new CustomFogOfWarTab ();
+		customFogOfWarTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Fog of War"));
+		customFogOfWarTabLang.getAlways ().add (createLanguageText (Language.ENGLISH, "Always see once seen"));
+		customFogOfWarTabLang.getRemember ().add (createLanguageText (Language.ENGLISH, "Remember as last seen"));
+		customFogOfWarTabLang.getForget ().add (createLanguageText (Language.ENGLISH, "Forget"));
+		customFogOfWarTabLang.getTerrainNodesAuras ().add (createLanguageText (Language.ENGLISH, "Terrain, Nodes and Auras"));
+		customFogOfWarTabLang.getCitiesSpellsCombatAreaEffects ().add (createLanguageText (Language.ENGLISH, "Cities, Combat Spells and Combat Area Effects"));
+		customFogOfWarTabLang.getConstructing ().add (createLanguageText (Language.ENGLISH, "Can see what enemy cities are constructing?"));
+		customFogOfWarTabLang.getUnits ().add (createLanguageText (Language.ENGLISH, "Units"));
+		newGameScreenLang.setCustomFogOfWarTab (customFogOfWarTabLang);
+		
+		// CUSTOM UNIT SETTINGS PANEL
+		final CustomUnitsTab customUnitsTabLang = new CustomUnitsTab ();
+		customUnitsTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Unit Settings"));
+		customUnitsTabLang.getMaxPerGridCell ().add (createLanguageText (Language.ENGLISH, "Maximum units per grid cell"));
+		customUnitsTabLang.getCanExceedMaximumUnitsDuringCombat ().add (createLanguageText (Language.ENGLISH, "Can temporarily exceed maximum during combat (e.g. with Phantom Warriors, Earth/Air/Fire Elementals)"));
+		customUnitsTabLang.getMaxHeroes ().add (createLanguageText (Language.ENGLISH, "Maximum heroes at a time"));
+		customUnitsTabLang.getRollHeroSkillsAtStartOfGame ().add (createLanguageText (Language.ENGLISH, "Hero random skills are rolled at the start of the game (so cannot reroll by reloading the game just before spell finishes casting)"));
+		customUnitsTabLang.getMaxHeroItemBonuses ().add (createLanguageText (Language.ENGLISH, "Maximum bonuses on a hero item"));
+		customUnitsTabLang.getMaxHeroItemSpellCharges ().add (createLanguageText (Language.ENGLISH, "Maximum spell charges on a hero item"));
+		customUnitsTabLang.getMaxHeroItemsInBank ().add (createLanguageText (Language.ENGLISH, "Maximum hero items in storage"));
+		customUnitsTabLang.getUnlimited ().add (createLanguageText (Language.ENGLISH, "(blank = unlimited)"));
+		newGameScreenLang.setCustomUnitsTab (customUnitsTabLang);
+		
+		// CUSTOM SPELL SETTINGS PANEL
+		final CustomSpellsTab customSpellsTabLang = new CustomSpellsTab ();
+		customSpellsTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Spell Settings"));
+		customSpellsTabLang.getSwitchResearch ().add (createLanguageText (Language.ENGLISH, "Allow switching which spell is being researched?"));
+		customSpellsTabLang.getSwitchResearchNo ().add (createLanguageText (Language.ENGLISH, "No - must finish current research first"));
+		customSpellsTabLang.getSwitchResearchNotStarted ().add (createLanguageText (Language.ENGLISH, "Only if current spell research not started"));
+		customSpellsTabLang.getSwitchResearchLose ().add (createLanguageText (Language.ENGLISH, "Yes, but lose any current research"));
+		customSpellsTabLang.getSwitchResearchFreely ().add (createLanguageText (Language.ENGLISH, "Yes, can switch freely with no penalty"));
+		customSpellsTabLang.getBooksToObtainFirstReduction ().add (createLanguageText (Language.ENGLISH, "Spell books to obtain first reduction"));
+		customSpellsTabLang.getEachBook ().add (createLanguageText (Language.ENGLISH, "Each book gives"));
+		customSpellsTabLang.getCastingReductionPrefix ().add (createLanguageText (Language.ENGLISH, "a"));
+		customSpellsTabLang.getCastingReductionSuffix ().add (createLanguageText (Language.ENGLISH, "% reduction in casting cost"));
+		customSpellsTabLang.getResearchBonusPrefix ().add (createLanguageText (Language.ENGLISH, "and a"));
+		customSpellsTabLang.getResearchBonusSuffix ().add (createLanguageText (Language.ENGLISH, "% bonus to research"));
+		customSpellsTabLang.getCastingReductionCombinationAdd ().add (createLanguageText (Language.ENGLISH, "Casting cost reductions are added together"));
+		customSpellsTabLang.getCastingReductionCombinationMultiply ().add (createLanguageText (Language.ENGLISH, "Casting cost reductions are multiplied together"));
+		customSpellsTabLang.getResearchBonusCombinationAdd ().add (createLanguageText (Language.ENGLISH, "Research bonuses are added together"));
+		customSpellsTabLang.getResearchBonusCombinationMultiply ().add (createLanguageText (Language.ENGLISH, "Research bonuses are multiplied together"));
+		customSpellsTabLang.getCastingReductionCap ().add (createLanguageText (Language.ENGLISH, "Casting cost reduction is capped at"));
+		customSpellsTabLang.getResearchBonusCap ().add (createLanguageText (Language.ENGLISH, "Research bonus is capped at"));
+		customSpellsTabLang.getStolenFromFortress ().add (createLanguageText (Language.ENGLISH, "Spells stolen when banishing wizard"));
+		newGameScreenLang.setCustomSpellsTab (customSpellsTabLang);
+		
+		// DEBUG OPTIONS PANEL
+		final CustomDebugTab customDebugTabLang = new CustomDebugTab ();
+		customDebugTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Debug Options"));
+		customDebugTabLang.getDisableFogOfWar ().add (createLanguageText (Language.ENGLISH, "Disable Fog of War (as if all players have Nature Awareness cast all the time)"));
+		newGameScreenLang.setCustomDebugTab (customDebugTabLang);
+		
+		// WIZARD SELECTION PANEL
+		final ChooseWizardScreen chooseWizardScreenLang = new ChooseWizardScreen ();
+		chooseWizardScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Select Wizard"));
+		chooseWizardScreenLang.getCustom ().add (createLanguageText (Language.ENGLISH, "Custom"));
+
+		// PORTRAIT SELECTION PANEL (for custom wizards)
+		final ChoosePortraitScreen choosePortraitScreenLang = new ChoosePortraitScreen ();
+		choosePortraitScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Select Picture"));
+		choosePortraitScreenLang.getCustom ().add (createLanguageText (Language.ENGLISH, "Custom"));
+		
+		// FLAG COLOUR PANEL (for custom wizards with custom portraits)
+		final ChooseFlagColourScreen chooseFlagColourScreenLang = new ChooseFlagColourScreen ();
+		chooseFlagColourScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Select Flag Colour"));
+		chooseFlagColourScreenLang.getRed ().add (createLanguageText (Language.ENGLISH, "Red"));
+		chooseFlagColourScreenLang.getGreen ().add (createLanguageText (Language.ENGLISH, "Green"));
+		chooseFlagColourScreenLang.getBlue ().add (createLanguageText (Language.ENGLISH, "Blue"));
+		
+		// CUSTOM PICKS PANEL (for custom wizards)
+		final CustomPicksScreen customPicksScreenLang = new CustomPicksScreen ();
+		customPicksScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Select Custom Picks"));
+		
+		// FREE SPELL SELECTION PANEL
+		final ChooseInitialSpellsScreen chooseInitialSpellsScreenLang = new ChooseInitialSpellsScreen ();
+		chooseInitialSpellsScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Select MAGIC_REALM Spells"));
+		
+		// RACE SELECTION PANEL
+		final ChooseRaceScreen chooseRaceScreenLang = new ChooseRaceScreen ();
+		chooseRaceScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Choose Race"));
 
 		// WAITING TO OTHER PLAYERS TO JOIN PANEL
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Title")).thenReturn ("Waiting for other Players to Join");
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "ListColumn0")).thenReturn ("Name");
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "ListColumn1")).thenReturn ("Wizard");
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "ListColumn2")).thenReturn ("Human or AI?");
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Human")).thenReturn ("Human");
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "AI")).thenReturn ("AI");
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Custom")).thenReturn ("Custom");
+		final WaitForPlayersToJoinScreen waitForPlayersToJoinScreenLang = new WaitForPlayersToJoinScreen ();
+		waitForPlayersToJoinScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Waiting for other Players to Join"));
+		waitForPlayersToJoinScreenLang.getListColumnName ().add (createLanguageText (Language.ENGLISH, "Name"));
+		waitForPlayersToJoinScreenLang.getListColumnWizard ().add (createLanguageText (Language.ENGLISH, "Wizard"));
+		waitForPlayersToJoinScreenLang.getListColumnHumanOrAI ().add (createLanguageText (Language.ENGLISH, "Human or AI?"));
+		waitForPlayersToJoinScreenLang.getHuman ().add (createLanguageText (Language.ENGLISH, "Human"));
+		waitForPlayersToJoinScreenLang.getAi ().add (createLanguageText (Language.ENGLISH, "AI"));
+		waitForPlayersToJoinScreenLang.getCustom ().add (createLanguageText (Language.ENGLISH, "Custom"));
 		
 		final WizardClientUtils wizardClientUtils = mock (WizardClientUtils.class);
 		when (wizardClientUtils.getPlayerName (ourPlayer)).thenReturn (pd.getPlayerName ());
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getTurnSystems ()).thenReturn (turnSystemsLang);
+		when (lang.getNewGameScreen ()).thenReturn (newGameScreenLang);
+		when (lang.getChooseWizardScreen ()).thenReturn (chooseWizardScreenLang);
+		when (lang.getChoosePortraitScreen ()).thenReturn (choosePortraitScreenLang);
+		when (lang.getChooseFlagColourScreen ()).thenReturn (chooseFlagColourScreenLang);
+		when (lang.getCustomPicksScreen ()).thenReturn (customPicksScreenLang);
+		when (lang.getChooseInitialSpellsScreen ()).thenReturn (chooseInitialSpellsScreenLang);
+		when (lang.getChooseRaceScreen ()).thenReturn (chooseRaceScreenLang);
+		when (lang.getWaitForPlayersToJoinScreen ()).thenReturn (waitForPlayersToJoinScreenLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

@@ -10,17 +10,26 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import momime.client.language.database.LanguageDatabaseEx;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.UnitSkillLang;
+import momime.client.language.database.MomLanguagesEx;
 
 /**
  * Renderer for drawing the name and component breakdown of a unit attribute
  */
 public final class UnitAttributeListCellRenderer extends JPanel implements ListCellRenderer<UnitAttributeWithBreakdownImage>
 {
+	/** Class logger */
+	private static final Log log = LogFactory.getLog (UnitAttributeListCellRenderer.class);
+	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** Label displaying the attribute name */
 	private JLabel textLabel;
@@ -59,9 +68,15 @@ public final class UnitAttributeListCellRenderer extends JPanel implements ListC
 		textLabel.setForeground (getForeground ());
 
 		// Look up the name of the skill
-		final UnitSkillLang skillLang = getLanguage ().findUnitSkill (value.getUnitSkillID ());
-		final String description = (skillLang == null) ? null : skillLang.getUnitSkillDescription ();
-		textLabel.setText ((description != null) ? description : value.getUnitSkillID ());
+		try
+		{
+			textLabel.setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findUnitSkill
+				(value.getUnitSkillID (), "UnitAttributeListCellRenderer").getUnitSkillDescription ()));
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}
 		
 		if (value.getUnitAttributeBreakdownImage () == null)
 			imageLabel.setIcon (null);
@@ -91,8 +106,24 @@ public final class UnitAttributeListCellRenderer extends JPanel implements ListC
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 }

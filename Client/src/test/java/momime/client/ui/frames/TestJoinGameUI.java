@@ -6,24 +6,29 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.ClientTestData;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.common.database.DifficultyLevel;
-import momime.common.database.LandProportion;
-import momime.common.database.NodeStrength;
-import momime.common.database.OverlandMapSize;
-import momime.common.messages.MomSessionDescription;
-import momime.common.messages.TurnSystem;
-
 import org.junit.Test;
 
 import com.ndg.multiplayer.sessionbase.SessionAndPlayerDescriptions;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.JoinGameScreen;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.TurnSystems;
+import momime.client.languages.database.WaitForPlayersToJoinScreen;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.DifficultyLevel;
+import momime.common.database.LandProportion;
+import momime.common.database.Language;
+import momime.common.database.NodeStrength;
+import momime.common.database.OverlandMapSize;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.TurnSystem;
 
 /**
  * Tests the JoinGameUI class
@@ -42,26 +47,33 @@ public final class TestJoinGameUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmJoinGame", "Title")).thenReturn ("Join Game");
-		when (lang.findCategoryEntry ("frmJoinGame", "Refresh")).thenReturn ("Refresh");
-		when (lang.findCategoryEntry ("frmJoinGame", "Join")).thenReturn ("Join");
-		when (lang.findCategoryEntry ("frmJoinGame", "Cancel")).thenReturn ("Cancel");
-
-		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn0")).thenReturn ("Game Name");
-		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn1")).thenReturn ("Players");
-		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn2")).thenReturn ("Map, Land, Nodes, Difficulty");
-		when (lang.findCategoryEntry ("frmJoinGame", "SessionsColumn3")).thenReturn ("Turn System");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
 		
-		when (lang.findCategoryEntry ("NewGameFormTurnSystems", TurnSystem.ONE_PLAYER_AT_A_TIME.name ())).thenReturn ("One player at a time");
-		when (lang.findOverlandMapSizeDescription ("MS03")).thenReturn ("Standard");
-		when (lang.findLandProportionDescription ("LP03")).thenReturn ("Large");
-		when (lang.findNodeStrengthDescription ("NS03")).thenReturn ("Powerful");
-		when (lang.findDifficultyLevelDescription ("DL05")).thenReturn ("Impossible");
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Custom")).thenReturn ("Custom");
+		final JoinGameScreen joinGameScreenLang = new JoinGameScreen ();
+		joinGameScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Join Game"));
+		joinGameScreenLang.getRefresh ().add (createLanguageText (Language.ENGLISH, "Refresh"));
+		joinGameScreenLang.getJoin ().add (createLanguageText (Language.ENGLISH, "Join"));
+		
+		joinGameScreenLang.getSessionsColumnGameName ().add (createLanguageText (Language.ENGLISH, "Game Name"));
+		joinGameScreenLang.getSessionsColumnPlayers ().add (createLanguageText (Language.ENGLISH, "Players"));
+		joinGameScreenLang.getSessionsColumnSettings ().add (createLanguageText (Language.ENGLISH, "Map, Land, Nodes, Difficulty"));
+		joinGameScreenLang.getSessionsColumnTurnSystem ().add (createLanguageText (Language.ENGLISH, "Turn System"));
+		
+		final TurnSystems turnSystemsLang = new TurnSystems ();
+		turnSystemsLang.getOnePlayerAtATime ().add (createLanguageText (Language.ENGLISH, "One player at a time"));
+		
+		final WaitForPlayersToJoinScreen waitForPlayersToJoinScreenLang = new WaitForPlayersToJoinScreen ();
+		waitForPlayersToJoinScreenLang.getCustom ().add (createLanguageText (Language.ENGLISH, "Custom"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getJoinGameScreen ()).thenReturn (joinGameScreenLang);
+		when (lang.getTurnSystems ()).thenReturn (turnSystemsLang);
+		when (lang.getWaitForPlayersToJoinScreen ()).thenReturn (waitForPlayersToJoinScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -69,14 +81,19 @@ public final class TestJoinGameUI extends ClientTestData
 		// Set up some dummy sessions
 		final OverlandMapSize overlandMapSize = new OverlandMapSize ();
 		overlandMapSize.setOverlandMapSizeID ("MS03");
+		overlandMapSize.getOverlandMapSizeDescription ().add (createLanguageText (Language.ENGLISH, "Standard"));
 		
 		final LandProportion landProportion = new LandProportion ();
 		landProportion.setLandProportionID ("LP03");
+		landProportion.getLandProportionDescription ().add (createLanguageText (Language.ENGLISH, "Large"));
 		
 		final NodeStrength nodeStrength = new NodeStrength ();
 		nodeStrength.setNodeStrengthID ("NS03");
+		nodeStrength.getNodeStrengthDescription ().add (createLanguageText (Language.ENGLISH, "Powerful"));
 		
 		final DifficultyLevel difficultyLevel = new DifficultyLevel ();
+		difficultyLevel.setDifficultyLevelID ("DL05");
+		difficultyLevel.getDifficultyLevelDescription ().add (createLanguageText (Language.ENGLISH, "Impossible"));
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setAiPlayerCount (4);

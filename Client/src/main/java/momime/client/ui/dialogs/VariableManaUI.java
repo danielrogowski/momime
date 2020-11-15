@@ -6,6 +6,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.BorderFactory;
@@ -26,7 +27,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.language.database.ProductionTypeLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.SpellBookUI;
@@ -35,6 +35,7 @@ import momime.common.MomException;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.LanguageText;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -189,7 +190,7 @@ public final class VariableManaUI extends MomClientDialogUI
 	{
 		log.trace ("Entering languageChanged");
 
-		getDialog ().setTitle (getLanguage ().findCategoryEntry ("VariableMana", "Title"));
+		getDialog ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getVariableMana ().getTitle ()));
 		
 		// No action text to set, because the button has OK on it as part of the image
 		
@@ -212,24 +213,23 @@ public final class VariableManaUI extends MomClientDialogUI
 				// The slider value is the resulting damage of the spell
 				// How this label appears depends on what kind of damage the spell does - for regular damage spells like fire bolt we want this
 				// to say e.g. "15 damage" but for Banish and Life Drain we want it to say e.g. "-4 resistance"
-				final String languageEntryID;
+				final List<LanguageText> languageText;
 				if (getSpellBeingTargetted ().getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
-					languageEntryID = "Dispel";
+					languageText = getLanguages ().getVariableMana ().getDispel ();
 				else
-					languageEntryID = ((getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE) ||
+					languageText = ((getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE) ||
 						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE) ||
 						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.RESISTANCE_ROLLS) ||
 						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE) ||
-						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.DISINTEGRATE)) ? "Resistance" : "Damage";
+						(getSpellBeingTargetted ().getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.DISINTEGRATE)) ?
+								
+						getLanguages ().getVariableMana ().getResistance () : getLanguages ().getVariableMana ().getDamage ();
 				
-				leftLabel.setText (getLanguage ().findCategoryEntry ("VariableMana", languageEntryID).replaceAll
+				leftLabel.setText (getLanguageHolder ().findDescription (languageText).replaceAll
 					("VALUE", getTextUtils ().intToStrCommas (getVariableDamage ())));
 
 				// Lookup the "MP" suffix
-				final ProductionTypeLang manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-				String manaSuffix = (manaProduction == null) ? null : manaProduction.getProductionTypeSuffix ();
-				if (manaSuffix == null)
-					manaSuffix = CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA;
+				final String manaSuffix = getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "sliderPositionChanged").getProductionTypeSuffix ());
 
 				// Work out the unmodified MP cost
 				final int unmodifiedCost;

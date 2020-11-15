@@ -267,6 +267,14 @@ public final class CommonDatabaseConstants
 	
 	/** Spell of Return has a lot of special rules - we are always blocked from casting it even when banished (server auto casts it for us), and can never cancel casting it */
 	public static final String SPELL_ID_SPELL_OF_RETURN = "SP214";
+
+	// client graphics
+
+	/** Tile set for the overland map */
+	public static final String TILE_SET_OVERLAND_MAP = "TS01";
+	
+	/** Special bitmask for when smoothing is turned off */
+	public static final String TILE_BITMASK_NO_SMOOTHING = "NoSmooth";
 	
 	/**
 	 * Prevent instatiation of this class

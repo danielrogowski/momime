@@ -27,16 +27,16 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SpellGfx;
-import momime.client.language.database.SpellLang;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
+import momime.common.database.AnimationGfx;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
@@ -130,7 +130,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		if (pub.getCustomPhoto () != null)
 			unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
 		else if (pub.getStandardPhotoID () != null)
-			unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "OverlandEnchantmentsUI").getPortraitImageFile ());
+			unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (pub.getStandardPhotoID (), "OverlandEnchantmentsUI").getPortraitImageFile ());
 		else
 			throw new MomException ("Player ID " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () + " has neither a custom or standard photo");
 		
@@ -142,8 +142,8 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 			(fadeAnim.getFrame ().size () - 1)), 0, -5*2);
 		
 		// Get the pic of the spell
-		final SpellGfx spellGfx = getGraphicsDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI");
-		final BufferedImage unscaledSpellPic = getUtils ().loadImage (spellGfx.getOverlandEnchantmentImageFile ());
+		final Spell spell = getClient ().getClientDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI");
+		final BufferedImage unscaledSpellPic = getUtils ().loadImage (spell.getOverlandEnchantmentImageFile ());
 		final Image spellPic = unscaledSpellPic.getScaledInstance (unscaledSpellPic.getWidth () * 2, unscaledSpellPic.getHeight () * 2, Image.SCALE_SMOOTH);
 
 		// Initialize the dialog
@@ -239,8 +239,8 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		// Any music to play?
 		try
 		{
-			if (spellGfx.getSpellMusicFile () != null)
-				getMusicPlayer ().playThenResume (spellGfx.getSpellMusicFile ());
+			if (spell.getSpellMusicFile () != null)
+				getMusicPlayer ().playThenResume (spell.getSpellMusicFile ());
 		}
 		catch (final Exception e)
 		{
@@ -313,21 +313,27 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		// Spell name
 		if (animationFrame >= fadeAnim.getFrame ().size () + PAUSE_FRAMES)
 		{
-			final SpellLang spellLang = getLanguage ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID ());
-			final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-			spellText.setText ((spellName != null) ? spellName : getAddSpellMessage ().getMaintainedSpell ().getSpellID ());			
+			try
+			{
+				spellText.setText (getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findSpell (getAddSpellMessage ().getMaintainedSpell ().getSpellID (), "OverlandEnchantmentsUI").getSpellName ()));
+			}
+			catch (final RecordNotFoundException e)
+			{
+				log.error (e, e);
+			}
 		}
 		
 		// Us casting
 		else if (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ())
-			spellText.setText (getLanguage ().findCategoryEntry ("SpellCasting", "OurOverlandEnchantment"));
+			spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getOurOverlandEnchantment ()));
 		
 		// Someone else casting
 		else
 		{
 			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
 			final String playerName = (player != null) ? getWizardClientUtils ().getPlayerName (player) : null;
-			spellText.setText (getLanguage ().findCategoryEntry ("SpellCasting", "EnemyOverlandEnchantment").replaceAll
+			spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getEnemyOverlandEnchantment ()).replaceAll
 				("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
 		}
 		

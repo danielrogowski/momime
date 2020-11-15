@@ -17,19 +17,21 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.MagicSlidersScreen;
+import momime.client.languages.database.Simple;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.calculations.SpellCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
@@ -59,46 +61,46 @@ public final class TestMagicSlidersUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx manaProduction = new ProductionTypeEx ();
+		manaProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "updateProductionLabels")).thenReturn (manaProduction);
+		
+		final ProductionTypeEx researchProduction = new ProductionTypeEx ();
+		researchProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "RP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "updateProductionLabels")).thenReturn (researchProduction);
+		
+		final ProductionTypeEx skillProduction = new ProductionTypeEx ();
+		skillProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "SP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, "updateProductionLabels")).thenReturn (skillProduction);
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-
-		when (lang.findCategoryEntry ("frmMagicSliders", "Title")).thenReturn ("Magic");
-		when (lang.findCategoryEntry ("frmMagicSliders", "PowerBase")).thenReturn ("Power Base: AMOUNT_PER_TURN");
-		when (lang.findCategoryEntry ("frmMagicSliders", "ManaTitle")).thenReturn ("Mana");
-		when (lang.findCategoryEntry ("frmMagicSliders", "ResearchTitle")).thenReturn ("Research");
-		when (lang.findCategoryEntry ("frmMagicSliders", "SkillTitle")).thenReturn ("Skill");
-		when (lang.findCategoryEntry ("frmMagicSliders", "ManaLabel")).thenReturn ("Casting");
-		when (lang.findCategoryEntry ("frmMagicSliders", "ResearchLabel")).thenReturn ("Researching");
-		when (lang.findCategoryEntry ("frmMagicSliders", "SkillLabel")).thenReturn ("Casting Skill");
-		when (lang.findCategoryEntry ("frmMagicSliders", "ResearchingNothing")).thenReturn ("None");
-		when (lang.findCategoryEntry ("frmMagicSliders", "OverlandEnchantments")).thenReturn ("Overland Enchantments");
-		when (lang.findCategoryEntry ("frmMagicSliders", "Alchemy")).thenReturn ("Alchemy");
-		when (lang.findCategoryEntry ("frmMagicSliders", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("frmMagicSliders", "Apply")).thenReturn ("Apply");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
 		
-		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
-		manaProduction.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		final MagicSlidersScreen magicSlidersScreenLang = new MagicSlidersScreen ();
+		magicSlidersScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Magic"));
+		magicSlidersScreenLang.getPowerBase ().add (createLanguageText (Language.ENGLISH, "Power Base: AMOUNT_PER_TURN"));
+		magicSlidersScreenLang.getManaTitle ().add (createLanguageText (Language.ENGLISH, "Mana"));
+		magicSlidersScreenLang.getResearchTitle ().add (createLanguageText (Language.ENGLISH, "Research"));
+		magicSlidersScreenLang.getSkillTitle ().add (createLanguageText (Language.ENGLISH, "Skill"));
+		magicSlidersScreenLang.getManaLabel ().add (createLanguageText (Language.ENGLISH, "Casting"));
+		magicSlidersScreenLang.getResearchLabel ().add (createLanguageText (Language.ENGLISH, "Researching"));
+		magicSlidersScreenLang.getSkillLabel ().add (createLanguageText (Language.ENGLISH, "Casting Skill"));
+		magicSlidersScreenLang.getResearchingNothing ().add (createLanguageText (Language.ENGLISH, "None"));
+		magicSlidersScreenLang.getOverlandEnchantments ().add (createLanguageText (Language.ENGLISH, "Overland Enchantments"));
+		magicSlidersScreenLang.getAlchemy ().add (createLanguageText (Language.ENGLISH, "Alchemy"));
+		magicSlidersScreenLang.getApply ().add (createLanguageText (Language.ENGLISH, "Apply"));
 		
-		final ProductionTypeLang researchProduction = new ProductionTypeLang ();
-		researchProduction.setProductionTypeSuffix ("RP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (researchProduction);
-		
-		final ProductionTypeLang skillProduction = new ProductionTypeLang ();
-		skillProduction.setProductionTypeSuffix ("SP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT)).thenReturn (skillProduction);
-		
-		final SpellLang spellLang1 = new SpellLang ();
-		spellLang1.setSpellName ("Great Unsummoning");		// This was the longest spell name I could find!
-		when (lang.findSpell ("SP001")).thenReturn (spellLang1);
-		
-		final SpellLang spellLang2 = new SpellLang ();
-		spellLang2.setSpellName ("Spell Binding");
-		when (lang.findSpell ("SP002")).thenReturn (spellLang2);
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getMagicSlidersScreen ()).thenReturn (magicSlidersScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -123,13 +125,14 @@ public final class TestMagicSlidersUI extends ClientTestData
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "updatePerTurnLabels")).thenReturn (player);
 		
-		// Mock client database
+		// Spell
 		final Spell spell1 = new Spell ();
+		spell1.getSpellName ().add (createLanguageText (Language.ENGLISH, "Great Unsummoning"));		// This was the longest spell name I could find!
 		spell1.setResearchCost (50);
 		
 		final Spell spell2 = new Spell ();
+		spell2.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell Binding"));
 		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		when (db.findSpell ("SP001", "updateProductionLabels (r)")).thenReturn (spell1);
 		when (db.findSpell ("SP002", "updateProductionLabels (c)")).thenReturn (spell2);
 		when (client.getClientDB ()).thenReturn (db);

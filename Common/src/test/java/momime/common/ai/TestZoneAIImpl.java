@@ -19,7 +19,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.GenerateTestData;
-import momime.common.database.TileType;
+import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
@@ -55,11 +55,11 @@ public final class TestZoneAIImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileType grass = new TileType ();
+		final TileTypeEx grass = new TileTypeEx ();
 		grass.setLand (true);
 		when (db.findTileType ("TT01", "calculateFriendlyZone")).thenReturn (grass);
 
-		final TileType water = new TileType ();
+		final TileTypeEx water = new TileTypeEx ();
 		water.setLand (false);
 		when (db.findTileType ("TT02", "calculateFriendlyZone")).thenReturn (water);
 		

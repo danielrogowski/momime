@@ -1,12 +1,12 @@
 package momime.server.mapgenerator;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
-import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 
 /**
@@ -26,7 +26,7 @@ public interface CombatMapGenerator
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
 	public MapAreaOfCombatTiles generateCombatMap (final CombatMapSize combatMapCoordinateSystem,
-		final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+		final CommonDatabase db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException;
 	
 	
@@ -41,6 +41,6 @@ public interface CombatMapGenerator
 	 * @param combatMapLocation The location that the map is being regenerated for (we need this in order to look for buildings, etc)
 	 * @throws RecordNotFoundException If one of the elements that meets the conditions specifies a combatTileTypeID that doesn't exist in the database
 	 */
-	public void regenerateCombatTileBorders (final MapAreaOfCombatTiles map, final ServerDatabaseEx db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
+	public void regenerateCombatTileBorders (final MapAreaOfCombatTiles map, final CommonDatabase db, final FogOfWarMemory trueTerrain, final MapCoordinates3DEx combatMapLocation)
 		throws RecordNotFoundException;
 }

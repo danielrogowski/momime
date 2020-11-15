@@ -22,10 +22,13 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SummonedUnit;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -54,9 +57,6 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
@@ -85,7 +85,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final PlayerServerDetails player3 = new PlayerServerDetails (pd3, null, priv3, null, null);
 
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
 		// Isn't researched yet
@@ -112,7 +112,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastOverlandNow_OverlandEnchantment () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -162,7 +162,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (mom.getSessionDescription ()).thenReturn (sd);
 
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
 		// It grants one of 5 possible effects
@@ -218,7 +218,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastOverlandNow_OverlandEnchantment_AlreadyExists () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -268,7 +268,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
 		// We know the spell
@@ -313,11 +313,11 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastOverlandNow_Summon_Creature () throws Exception
 	{
 		// Mock database
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitID ("UN001");
 		unitDef.setUnitMagicRealm ("LT01");
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -358,7 +358,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
 		// It only summons 1 kind of unit
@@ -426,13 +426,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastOverlandNow_Summon_Hero () throws Exception
 	{
 		// Mock database; also lets say there's 9 possible heroes but 1 we've already summoned, and another we've already summoned and got them killed
-		final List<UnitSvr> possibleSummons = new ArrayList<UnitSvr> ();
+		final List<UnitEx> possibleSummons = new ArrayList<UnitEx> ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		for (int n = 1; n <= 9; n++)
 			if ((n != 3) && (n != 6))		// See alive + dead heroes below 
 			{
-				final UnitSvr unitDef = new UnitSvr ();
+				final UnitEx unitDef = new UnitEx ();
 				unitDef.setUnitID ("UN00" + n);
 				unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 				possibleSummons.add (unitDef);
@@ -477,7 +477,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
 		// List of units that the spell may summon is built already above  
@@ -562,10 +562,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastOverlandNow_Summoning_NoCircle () throws Exception
 	{
 		// Mock database
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LT01");
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findUnit ("UN001", "castOverlandNow")).thenReturn (unitDef);
 		
 		// Session description
@@ -602,7 +602,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
 		// It only summons 1 kind of unit
@@ -638,7 +638,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastOverlandNow_UnitEnchantment () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -671,7 +671,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
 		// We know the spell
@@ -721,7 +721,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		gsk.setTrueMap (trueMap);
 
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		
 		// Combat location
@@ -756,7 +756,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastCombatNow_CombatEnchantment () throws Exception
 	{
 		// Database, session description and so on
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -772,7 +772,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		gsk.setTrueMap (trueMap);
 		
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		
@@ -855,7 +855,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastCombatNow_UnitEnchantment () throws Exception
 	{
 		// Database, session description and so on
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -875,7 +875,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		targetUnit.setUnitURN (101);
 		
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
@@ -958,7 +958,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testCastCombatNow_Summoning () throws Exception
 	{
 		// Empty mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -974,7 +974,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		gsk.setTrueMap (trueMap);
 		
 		// Spell to cast
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
@@ -1087,9 +1087,9 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testSwitchOffSpell_UnitEnchantment () throws Exception
 	{
 		// Mock database
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP001", "switchOffSpell")).thenReturn (spell);
 		
 		// Other setup
@@ -1152,7 +1152,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 	public final void testSwitchOffSpell_OverlandEnchantment () throws Exception
 	{
 		// Mock database - spell grants 5 effects
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		for (int n = 1; n <= 5; n++)
 		{
 			final SpellHasCombatEffect effect = new SpellHasCombatEffect ();
@@ -1160,7 +1160,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 			spell.getSpellHasCombatEffect ().add (effect);
 		}
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP001", "switchOffSpell")).thenReturn (spell);
 		
 		// Other setup

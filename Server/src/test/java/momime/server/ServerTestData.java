@@ -1,7 +1,6 @@
 package momime.server;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,11 +17,27 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
 
+import momime.common.database.AnimationGfx;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.CommonDatabaseFactory;
+import momime.common.database.CommonDatabaseImpl;
+import momime.common.database.CommonDatabaseObjectFactory;
 import momime.common.database.CommonXsdResourceResolver;
+import momime.common.database.DifficultyLevel;
 import momime.common.database.DifficultyLevelNodeStrength;
+import momime.common.database.FogOfWarSetting;
+import momime.common.database.LandProportion;
+import momime.common.database.MapFeatureEx;
+import momime.common.database.MomDatabase;
+import momime.common.database.NodeStrength;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SmoothedTileTypeEx;
+import momime.common.database.SpellSetting;
+import momime.common.database.TileSetEx;
+import momime.common.database.UnitSetting;
+import momime.common.database.WizardEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -38,21 +53,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfStrings;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomSessionDescription;
-import momime.server.database.DifficultyLevelSvr;
-import momime.server.database.FogOfWarSettingSvr;
-import momime.server.database.LandProportionSvr;
-import momime.server.database.NodeStrengthSvr;
-import momime.server.database.OverlandMapSizeSvr;
-import momime.server.database.ServerDatabaseConstants;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.ServerDatabaseExImpl;
-import momime.server.database.ServerDatabaseFactory;
-import momime.server.database.ServerDatabaseObjectFactory;
-import momime.server.database.SpellSettingSvr;
-import momime.server.database.UnitSettingSvr;
-import momime.server.database.v0_9_9.ServerDatabase;
 import momime.server.knowledge.ServerGridCellEx;
-import momime.server.utils.UnitSkillDirectAccess;
 
 /**
  * Common constants for server test cases
@@ -63,40 +64,71 @@ public class ServerTestData
 	 * @return Parsed server database with all the hash maps built, needed by those tests that require too much data to mock out, but generally avoid using this if at all possible 
 	 * @throws Exception If there is a problem
 	 */
-	public final ServerDatabaseEx loadServerDatabase () throws Exception
+	public final CommonDatabase loadServerDatabase () throws Exception
 	{
 		// Need to set up a proper factory to create classes with spring injections
-		final ServerDatabaseObjectFactory factory = new ServerDatabaseObjectFactory ();
-		factory.setFactory (new ServerDatabaseFactory ()
+		final CommonDatabaseObjectFactory factory = new CommonDatabaseObjectFactory ();
+		factory.setFactory (new CommonDatabaseFactory ()
 		{
 			@Override
-			public final ServerDatabaseExImpl createDatabase ()
+			public final CommonDatabaseImpl createDatabase ()
 			{
-				final ServerDatabaseExImpl db = new ServerDatabaseExImpl ();
-				db.setUnitSkillDirectAccess (mock (UnitSkillDirectAccess.class));
-				return db;
+				return new CommonDatabaseImpl ();
+			}
+			
+			@Override
+			public final WizardEx createWizard ()
+			{
+				return new WizardEx (); 
+			}
+			
+			@Override
+			public final MapFeatureEx createMapFeature ()
+			{
+				return new MapFeatureEx ();
+			}
+			
+			@Override
+			public final TileSetEx createTileSet ()
+			{
+				return new TileSetEx ();
+			}
+			
+			@Override
+			public final SmoothedTileTypeEx createSmoothedTileType ()
+			{
+				return new SmoothedTileTypeEx ();
+			}
+			
+			@Override
+			public final AnimationGfx createAnimation ()
+			{
+				return new AnimationGfx ();
 			}
 		});
 
 		// XSD
-		final URL xsdResource = getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
-		assertNotNull ("MoM IME Server XSD could not be found on classpath", xsdResource);
+		final URL xsdResource = getClass ().getResource (CommonDatabaseConstants.COMMON_XSD_LOCATION);
+		assertNotNull ("MoM IME Common XSD could not be found on classpath", xsdResource);
 
 		final SchemaFactory schemaFactory = SchemaFactory.newInstance (XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		schemaFactory.setResourceResolver (new CommonXsdResourceResolver (DOMImplementationRegistry.newInstance ()));
 		
 		final Schema schema = schemaFactory.newSchema (xsdResource);
 
-		final Unmarshaller unmarshaller = JAXBContext.newInstance (ServerDatabase.class).createUnmarshaller ();		
+		final Unmarshaller unmarshaller = JAXBContext.newInstance (MomDatabase.class).createUnmarshaller ();		
 		unmarshaller.setProperty ("com.sun.xml.bind.ObjectFactory", new Object [] {factory});
 		unmarshaller.setSchema (schema);
 		
 		// XML - not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEServer project, then modify that location
-		final File serverXsdFile = new File (xsdResource.getFile ());
-		final File serverXmlFile = new File (serverXsdFile, "../../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
+		final URL exampleResource = getClass ().getResource ("/MoMIMEServerVersion.properties");
+		assertNotNull ("MoMIMEServerVersion.properties could not be found on classpath", exampleResource);
 		
-		final ServerDatabaseExImpl serverDB = (ServerDatabaseExImpl) unmarshaller.unmarshal (serverXmlFile);
+		final File exampleResourceFile = new File (exampleResource.getFile ());
+		final File serverXmlFile = new File (exampleResourceFile, "../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.momime.xml");
+		
+		final CommonDatabaseImpl serverDB = (CommonDatabaseImpl) unmarshaller.unmarshal (serverXmlFile);
 		serverDB.buildMaps ();
 		return serverDB;
 	}
@@ -109,9 +141,11 @@ public class ServerTestData
 	{
 		// Not straightforward to find this, because its in src/external/resources so isn't on the classpath
 		// So instead find something that is on the classpath of the MoMIMEServer project, then modify that location
-		final URL serverXSD = getClass ().getResource (ServerDatabaseConstants.SERVER_XSD_LOCATION);
-		final File serverXsdFile = new File (serverXSD.getFile ());
-		return new File (serverXsdFile, "../../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.Master of Magic Server.xml");
+		final URL exampleResource = getClass ().getResource ("/MoMIMEServerVersion.properties");
+		assertNotNull ("MoMIMEServerVersion.properties could not be found on classpath", exampleResource);
+		
+		final File exampleResourceFile = new File (exampleResource.getFile ());
+		return new File (exampleResourceFile, "../../../src/external/resources/momime.server.database/Original Master of Magic 1.31 rules.momime.xml");
 	}
 	
 	/**
@@ -126,38 +160,38 @@ public class ServerTestData
 	 * @return Session description, built from selecting the specified parts from the server database
 	 * @throws RecordNotFoundException If we request an entry that can't be found in the database
 	 */
-	public final MomSessionDescription createMomSessionDescription (final ServerDatabaseEx db,
+	public final MomSessionDescription createMomSessionDescription (final CommonDatabase db,
 		final String overlandMapSizeID, final String landProportionID, final String nodeStrengthID, final String difficultyLevelID,
 		final String fogOfWarSettingID, final String unitSettingID, final String spellSettingID)
 		throws RecordNotFoundException
 	{
 		final MomSessionDescription sd = new MomSessionDescription ();
 
-		for (final OverlandMapSizeSvr mapSize : db.getOverlandMapSizes ())
+		for (final OverlandMapSize mapSize : db.getOverlandMapSize ())
 			if (mapSize.getOverlandMapSizeID ().equals (overlandMapSizeID))
 				sd.setOverlandMapSize (mapSize);
 		if (sd.getOverlandMapSize () == null)
-			throw new RecordNotFoundException (OverlandMapSizeSvr.class.getName (), overlandMapSizeID, "createMomSessionDescription");
+			throw new RecordNotFoundException (OverlandMapSize.class.getName (), overlandMapSizeID, "createMomSessionDescription");
 
 		sd.setCombatMapSize (createCombatMapSize ());
 		
-		for (final LandProportionSvr landProportion : db.getLandProportions ())
+		for (final LandProportion landProportion : db.getLandProportion ())
 			if (landProportion.getLandProportionID ().equals (landProportionID))
 				sd.setLandProportion (landProportion);
 		if (sd.getLandProportion () == null)
-			throw new RecordNotFoundException (LandProportionSvr.class.getName (), landProportionID, "createMomSessionDescription");
+			throw new RecordNotFoundException (LandProportion.class.getName (), landProportionID, "createMomSessionDescription");
 
-		for (final NodeStrengthSvr nodeStrength : db.getNodeStrengths ())
+		for (final NodeStrength nodeStrength : db.getNodeStrength ())
 			if (nodeStrength.getNodeStrengthID ().equals (nodeStrengthID))
 				sd.setNodeStrength (nodeStrength);
 		if (sd.getNodeStrength () == null)
-			throw new RecordNotFoundException (NodeStrengthSvr.class.getName (), nodeStrengthID, "createMomSessionDescription");
+			throw new RecordNotFoundException (NodeStrength.class.getName (), nodeStrengthID, "createMomSessionDescription");
 
-		for (final DifficultyLevelSvr src : db.getDifficultyLevels ())
+		for (final DifficultyLevel src : db.getDifficultyLevel ())
 			if (src.getDifficultyLevelID ().equals (difficultyLevelID))
 			{
 				// Copy the difficulty level, so we can reduce the difficulty level-node strength records to only those matching the requested node strength
-				final DifficultyLevelSvr dest = new DifficultyLevelSvr ();
+				final DifficultyLevel dest = new DifficultyLevel ();
 			    dest.setHumanSpellPicks				(src.getHumanSpellPicks ());
 			    dest.setAiSpellPicks					(src.getAiSpellPicks ());
 			    dest.setHumanStartingGold			(src.getHumanStartingGold ());
@@ -174,8 +208,8 @@ public class ServerTestData
 			    dest.setWizardCityStartSize			(src.getWizardCityStartSize ());
 			    dest.setCityMaxSize					(src.getCityMaxSize ());
 			    dest.setDifficultyLevelID				(src.getDifficultyLevelID ());
-			    dest.setDifficultyLevelDescription	(src.getDifficultyLevelDescription ());
-				
+
+			    dest.getDifficultyLevelDescription	().addAll (src.getDifficultyLevelDescription ());
 			    dest.getDifficultyLevelPlane ().addAll (src.getDifficultyLevelPlane ());
 				sd.setDifficultyLevel (dest);
 				
@@ -186,25 +220,25 @@ public class ServerTestData
 			}
 		
 		if (sd.getDifficultyLevel () == null)
-			throw new RecordNotFoundException (DifficultyLevelSvr.class.getName (), difficultyLevelID, "createMomSessionDescription");
+			throw new RecordNotFoundException (DifficultyLevel.class.getName (), difficultyLevelID, "createMomSessionDescription");
 
-		for (final FogOfWarSettingSvr fogOfWarSetting : db.getFogOfWarSettings ())
+		for (final FogOfWarSetting fogOfWarSetting : db.getFogOfWarSetting ())
 			if (fogOfWarSetting.getFogOfWarSettingID ().equals (fogOfWarSettingID))
 				sd.setFogOfWarSetting (fogOfWarSetting);
 		if (sd.getFogOfWarSetting () == null)
-			throw new RecordNotFoundException (FogOfWarSettingSvr.class.getName (), fogOfWarSettingID, "createMomSessionDescription");
+			throw new RecordNotFoundException (FogOfWarSetting.class.getName (), fogOfWarSettingID, "createMomSessionDescription");
 
-		for (final UnitSettingSvr unitSetting : db.getUnitSettings ())
+		for (final UnitSetting unitSetting : db.getUnitSetting ())
 			if (unitSetting.getUnitSettingID ().equals (unitSettingID))
 				sd.setUnitSetting (unitSetting);
 		if (sd.getUnitSetting () == null)
-			throw new RecordNotFoundException (UnitSettingSvr.class.getName (), unitSettingID, "createMomSessionDescription");
+			throw new RecordNotFoundException (UnitSetting.class.getName (), unitSettingID, "createMomSessionDescription");
 
-		for (final SpellSettingSvr spellSetting : db.getSpellSettings ())
+		for (final SpellSetting spellSetting : db.getSpellSetting ())
 			if (spellSetting.getSpellSettingID ().equals (spellSettingID))
 				sd.setSpellSetting (spellSetting);
 		if (sd.getSpellSetting () == null)
-			throw new RecordNotFoundException (SpellSettingSvr.class.getName (), spellSettingID, "createMomSessionDescription");
+			throw new RecordNotFoundException (SpellSetting.class.getName (), spellSettingID, "createMomSessionDescription");
 
 		return sd;
 	}

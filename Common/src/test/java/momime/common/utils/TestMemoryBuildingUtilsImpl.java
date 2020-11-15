@@ -27,6 +27,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitPrerequisite;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -622,13 +623,13 @@ public final class TestMemoryBuildingUtilsImpl
 	public final void testIsBuildingAPrerequisiteForUnit () throws RecordNotFoundException
 	{
 		// Set up dummy XML definitions for couple of unit types
-		final Unit dbUnitOne = new Unit ();
+		final UnitEx dbUnitOne = new UnitEx ();
 		dbUnitOne.setUnitID ("UN001");
 		final UnitPrerequisite prerequ = new UnitPrerequisite ();
 		prerequ.setPrerequisiteID ("BL01");
 		dbUnitOne.getUnitPrerequisite ().add (prerequ);
 
-		final Unit dbUnitTwo = new Unit ();
+		final UnitEx dbUnitTwo = new UnitEx ();
 		dbUnitTwo.setUnitID ("UN002");
 
 		final CommonDatabase db = mock (CommonDatabase.class);

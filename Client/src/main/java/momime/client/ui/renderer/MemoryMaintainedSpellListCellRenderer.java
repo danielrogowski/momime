@@ -7,22 +7,27 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
-import momime.client.MomClient;
-import momime.client.language.database.CitySpellEffectLang;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.MomUIConstants;
-import momime.common.messages.MemoryMaintainedSpell;
-import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.ui.MomUIConstants;
+import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
 /**
  * Renderer for writing city spell effect names onto the city screen, and colouring city spell effect names according to the wizard who cast them
  */
 public final class MemoryMaintainedSpellListCellRenderer extends JLabel implements ListCellRenderer<MemoryMaintainedSpell>
 {
+	/** Class logger */
+	private static final Log log = LogFactory.getLog (MemoryMaintainedSpellListCellRenderer.class);
+	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 
@@ -40,16 +45,22 @@ public final class MemoryMaintainedSpellListCellRenderer extends JLabel implemen
 	public final Component getListCellRendererComponent (final JList<? extends MemoryMaintainedSpell> list, final MemoryMaintainedSpell spell,
 		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
-		// Get city spell effect name
-		final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (spell.getCitySpellEffectID ());
-		final String effectName = (effect != null) ? effect.getCitySpellEffectName () : null;
-		setText ((effectName != null) ? effectName : spell.getCitySpellEffectID ());
-		
-		// Get wizard colour
-		final PlayerPublicDetails pub = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID ());
-		final MomTransientPlayerPublicKnowledge trans = (pub == null) ? null : (MomTransientPlayerPublicKnowledge) pub.getTransientPlayerPublicKnowledge ();
-		final String flagColour = (trans == null) ? null : trans.getFlagColour ();
-		setForeground ((flagColour == null) ? MomUIConstants.SILVER : new Color (Integer.parseInt (flagColour, 16)));
+		try
+		{
+			// Get city spell effect name
+			final String effectName = getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "MemoryMaintainedSpellListCellRenderer").getCitySpellEffectName ());
+			
+			// Get wizard colour
+			final PlayerPublicDetails pub = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID ());
+			final MomTransientPlayerPublicKnowledge trans = (pub == null) ? null : (MomTransientPlayerPublicKnowledge) pub.getTransientPlayerPublicKnowledge ();
+			final String flagColour = (trans == null) ? null : trans.getFlagColour ();
+			setForeground ((flagColour == null) ? MomUIConstants.SILVER : new Color (Integer.parseInt (flagColour, 16)));
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}		
 		
 		return this;
 	}
@@ -74,9 +85,9 @@ public final class MemoryMaintainedSpellListCellRenderer extends JLabel implemen
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 	
 	/**

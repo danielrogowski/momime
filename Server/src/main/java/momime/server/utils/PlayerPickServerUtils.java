@@ -5,13 +5,13 @@ import java.util.List;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.WizardEx;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.WizardSvr;
 
 /**
  * Server side only helper methods for dealing with picks
@@ -24,7 +24,7 @@ public interface PlayerPickServerUtils
 	 * @return Initial skill wizard will start game with - 2 per book +10 if they chose Archmage
 	 * @throws RecordNotFoundException If we have a pick in our list which can't be found in the db
 	 */
-	public int getTotalInitialSkill (final List<PlayerPick> picks, final ServerDatabaseEx db) throws RecordNotFoundException;
+	public int getTotalInitialSkill (final List<PlayerPick> picks, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * @param players List of players
@@ -49,7 +49,7 @@ public interface PlayerPickServerUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 */
-	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final ServerDatabaseEx db);
+	public String validateCustomPicks (final PlayerServerDetails player, final List<PickAndQuantity> picks, final int humanSpellPicks, final CommonDatabase db);
 
 	/**
 	 * Checks each type of book this player has to see if it can find a type of book for which the player gets free spells, but has not yet chosen those free spells
@@ -67,7 +67,7 @@ public interface PlayerPickServerUtils
 	 * @throws MomException If an AI player has enough books that they should get some free spells, but we can't find any suitable free spells to give them
 	 * @throws RecordNotFoundException If the player has picks which we can't find in the cache, or the AI player chooses a spell which we can't then find in their list
 	 */
-	public ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final ServerDatabaseEx db)
+	public ChooseInitialSpellsNowMessage findRealmIDWhereWeNeedToChooseFreeSpells (final PlayerServerDetails player, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -80,7 +80,7 @@ public interface PlayerPickServerUtils
 	 * @return null if choices are acceptable; message to send back to client if choices aren't acceptable
 	 * @throws RecordNotFoundException If the pick ID can't be found in the database, or refers to a pick type ID that can't be found; or the player has a spell research status that isn't found
 	 */
-	public String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final ServerDatabaseEx db)
+	public String validateInitialSpellSelection (final PlayerServerDetails player, final String pickID, final List<String> spellIDs, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -90,7 +90,7 @@ public interface PlayerPickServerUtils
 	 * @return null if choice is acceptable; message to send back to client if choice isn't acceptable
 	 * @throws RecordNotFoundException If we choose a race whose native plane can't be found
 	 */
-	public String validateRaceChoice (final PlayerServerDetails player, final String raceID, final ServerDatabaseEx db)
+	public String validateRaceChoice (final PlayerServerDetails player, final String raceID, final CommonDatabase db)
 		throws RecordNotFoundException;
 
 	/**
@@ -113,7 +113,7 @@ public interface PlayerPickServerUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return List of wizards not used by human players - AI players will then pick randomly from this list
 	 */
-	public List<WizardSvr> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final ServerDatabaseEx db);
+	public List<WizardEx> listWizardsForAIPlayers (final List<PlayerServerDetails> players, final CommonDatabase db);
 
 	/**
 	 * Checks which plane a wizard with a certain selection of picks should start on
@@ -121,7 +121,7 @@ public interface PlayerPickServerUtils
 	 * @param db Lookup lists built over the XML database
 	 * @return Plane the wizard should start on
 	 */
-	public int startingPlaneForWizard (final List<PlayerPick> picks, final ServerDatabaseEx db);
+	public int startingPlaneForWizard (final List<PlayerPick> picks, final CommonDatabase db);
 
 	/**
 	 * @param planeNumber Plane we want to look for races for
@@ -129,6 +129,6 @@ public interface PlayerPickServerUtils
 	 * @return Random race ID that inhabits this plane
 	 * @throws MomException If there are no races defined in the database that inhabit this plane
 	 */
-	public String chooseRandomRaceForPlane (final int planeNumber, final ServerDatabaseEx db)
+	public String chooseRandomRaceForPlane (final int planeNumber, final CommonDatabase db)
 		throws MomException;
 }

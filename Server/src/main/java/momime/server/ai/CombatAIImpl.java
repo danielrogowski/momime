@@ -21,6 +21,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.CombatMapSize;
@@ -34,7 +35,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CombatProcessing;
 
@@ -175,7 +175,7 @@ public final class CombatAIImpl implements CombatAI
 	 */
 	final MemoryUnit selectBestTarget (final ExpandedUnitDetails attacker, final MapCoordinates3DEx combatLocation,
 		final int [] [] movementDirections, final int [] [] doubleMovementDistances, final CombatMoveType [] [] movementTypes,
-		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CoordinateSystem sys, final ServerDatabaseEx db)
+		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering selectBestTarget: Unit URN " + attacker.getUnitURN ());

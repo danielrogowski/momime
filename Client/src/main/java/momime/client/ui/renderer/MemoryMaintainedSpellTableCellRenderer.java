@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.PlayerColourImageGenerator;
@@ -30,6 +31,9 @@ public final class MemoryMaintainedSpellTableCellRenderer extends JLabel impleme
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
@@ -49,7 +53,7 @@ public final class MemoryMaintainedSpellTableCellRenderer extends JLabel impleme
 			try
 			{
 				final MemoryMaintainedSpell spell = (MemoryMaintainedSpell) value;	
-				final String imageName = getGraphicsDB ().findSpell (spell.getSpellID (), "MemoryMaintainedSpellTableCellRenderer").getOverlandEnchantmentImageFile ();
+				final String imageName = getClient ().getClientDB ().findSpell (spell.getSpellID (), "MemoryMaintainedSpellTableCellRenderer").getOverlandEnchantmentImageFile ();
 				if (imageName != null)
 				{
 					final BufferedImage spellImage = getUtils ().loadImage (imageName);
@@ -95,6 +99,22 @@ public final class MemoryMaintainedSpellTableCellRenderer extends JLabel impleme
 		graphicsDB = db;
 	}
 
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+	
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */

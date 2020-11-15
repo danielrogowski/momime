@@ -5,16 +5,16 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.UnitCombatSideID;
-import momime.common.messages.MemoryUnit;
-import momime.server.MomSessionVariables;
-import momime.server.database.SpellSvr;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.UnitCombatSideID;
+import momime.common.messages.MemoryUnit;
+import momime.server.MomSessionVariables;
 
 /**
  * Routines dealing with applying combat damage
@@ -46,7 +46,7 @@ public interface DamageProcessor
 	 */
 	public boolean resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer attackerDirection, final String attackSkillID,
-		final SpellSvr spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
+		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 	

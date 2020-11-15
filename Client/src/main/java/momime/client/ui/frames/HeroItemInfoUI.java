@@ -23,11 +23,11 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemTypeGfx;
-import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.NumberedHeroItem;
 
 /**
@@ -121,7 +121,7 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 		itemName.setText (getItem ().getHeroItemName ());
 		getFrame ().setTitle (getItem ().getHeroItemName ());
 		
-		final HeroItemTypeGfx itemType = getGraphicsDB ().findHeroItemType (getItem ().getHeroItemTypeID (), "HeroItemInfoUI");
+		final HeroItemType itemType = getClient ().getClientDB ().findHeroItemType (getItem ().getHeroItemTypeID (), "HeroItemInfoUI");
 		final BufferedImage image = getUtils ().loadImage (itemType.getHeroItemTypeImageFile ().get (getItem ().getHeroItemImageNumber ()));
 		itemImage.setIcon (new ImageIcon (getUtils ().doubleSize (image)));
 		
@@ -141,7 +141,7 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 		log.trace ("Entering languageChanged");
 		
 		// Button
-		closeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmHeroItemInfo", "Close"));
+		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
 		
 		// Bonus descriptions
 		final StringBuilder text = new StringBuilder ();
@@ -153,15 +153,19 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 			// Bullet point
 			text.append ("\u2022 ");
 			
-			if (bonus.getHeroItemBonusID ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
+			try
 			{
-				final SpellLang spell = getLanguage ().findSpell (item.getSpellID ());
-				final String spellName = (spell == null) ? null : spell.getSpellName ();
-				
-				text.append (item.getSpellChargeCount () + "x " + ((spellName != null) ? spellName : item.getSpellID ()));
+				if (bonus.getHeroItemBonusID ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
+					text.append (item.getSpellChargeCount () + "x " + getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findSpell (item.getSpellID (), "HeroItemInfoUI").getSpellName ()));
+				else
+					text.append (getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findHeroItemBonus (bonus.getHeroItemBonusID (), "HeroItemInfoUI").getHeroItemBonusDescription ()));
 			}
-			else
-				text.append (getLanguage ().findHeroItemBonusDescription (bonus.getHeroItemBonusID ()));
+			catch (final RecordNotFoundException e)
+			{
+				log.error (e, e);
+			}
 		}
 		
 		bonuses.setText (text.toString ());

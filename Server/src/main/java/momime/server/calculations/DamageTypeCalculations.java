@@ -1,10 +1,10 @@
 package momime.server.calculations;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
+import momime.common.database.DamageType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.database.DamageTypeSvr;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Methods dealing with deciding the damage type of attacks, and dealing with immunities to damage types
@@ -19,7 +19,7 @@ public interface DamageTypeCalculations
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If there is an error in the game logic
 	 */
-	public DamageTypeSvr determineSkillDamageType (final ExpandedUnitDetails attacker, final String attackSkillID, final ServerDatabaseEx db)
+	public DamageType determineSkillDamageType (final ExpandedUnitDetails attacker, final String attackSkillID, final CommonDatabase db)
 		throws RecordNotFoundException, MomException;
 	
 	/**

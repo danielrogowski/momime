@@ -21,7 +21,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.renderer.QueuedSpellListCellRenderer;
@@ -120,26 +119,16 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 				try
 				{
 					final MessageBoxUI messageBox = getPrototypeFrameCreator ().createMessageBox ();
-					messageBox.setTitleLanguageCategoryID ("frmSpellQueue");
-					messageBox.setTitleLanguageEntryID ("Title");
+					messageBox.setLanguageTitle (getLanguages ().getSpellQueueScreen ().getTitle ());
 
 					final String spellID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().get (spellsList.getSelectedIndex ()).getQueuedSpellID ();
 					if (spellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN))
-					{
-						messageBox.setTextLanguageCategoryID ("frmSpellQueue");
-						messageBox.setTextLanguageEntryID ("CantCancelSpellOfReturn");
-					}
+						messageBox.setLanguageTitle (getLanguages ().getSpellQueueScreen ().getCantCancelSpellOfReturn ());
 					else
 					{
-						final SpellLang spellLang = getLanguage ().findSpell (spellID);
-						
-						if ((spellLang != null) && (spellLang.getSpellName () != null))
-							messageBox.setText (getLanguage ().findCategoryEntry ("frmSpellQueue", "ConfirmCancelSpell").replaceAll ("SPELL_NAME", spellLang.getSpellName ()));
-						else
-						{
-							messageBox.setTextLanguageCategoryID ("frmSpellQueue");
-							messageBox.setTextLanguageEntryID ("ConfirmCancelUnknownSpell");
-						}
+						final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (spellID, "QueuedSpellUI").getSpellName ());
+						messageBox.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellQueueScreen ().getConfirmCancelSpell ()).replaceAll
+							("SPELL_NAME", spellName));
 						
 						// Don't actually tell the server to cancel the spell until the player clicks Yes
 						messageBox.setRemoveQueuedSpellIndex (spellsList.getSelectedIndex ());
@@ -187,10 +176,10 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmSpellQueue", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getSpellQueueScreen ().getTitle ()));
 		title.setText (getFrame ().getTitle ());
 		
-		closeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmSpellQueue", "Close"));
+		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
 		
 		updateQueuedSpells ();
 		

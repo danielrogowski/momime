@@ -21,9 +21,10 @@ import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
+import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemTypeGfx;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.HeroItemType;
 import momime.common.messages.NumberedHeroItem;
 
 /**
@@ -43,6 +44,9 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/** Medium font */
 	private Font mediumFont;
 
@@ -83,7 +87,7 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 		Image doubleSizeImage = null;
 		try
 		{
-			final HeroItemTypeGfx itemType = getGraphicsDB ().findHeroItemType (value.getHeroItemTypeID (), "UnassignedHeroItemCellRenderer");
+			final HeroItemType itemType = getClient ().getClientDB ().findHeroItemType (value.getHeroItemTypeID (), "UnassignedHeroItemCellRenderer");
 			final BufferedImage image = getUtils ().loadImage (itemType.getHeroItemTypeImageFile ().get (value.getHeroItemImageNumber ()));
 			doubleSizeImage = getUtils ().doubleSize (image);
 		}
@@ -139,6 +143,22 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 		graphicsDB = db;
 	}
 
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+	
 	/**
 	 * @return Helper methods and constants for creating and laying out Swing components
 	 */

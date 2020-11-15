@@ -539,7 +539,7 @@ public final class SpellUtilsImpl implements SpellUtils
 	 * @return List of Spell Rank IDs for which there are spells in this list in the specified magic realm
 	 */
 	@Override
-	public final List<String> getSpellRanksForMagicRealm (final List<? extends Spell> spells, final String magicRealmID)
+	public final List<String> getSpellRanksForMagicRealm (final List<Spell> spells, final String magicRealmID)
 	{
 		log.trace ("Entering getSpellRanksForMagicRealm: " + magicRealmID);
 

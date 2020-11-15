@@ -27,10 +27,15 @@ import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.AiBuildingTypeID;
+import momime.common.database.Building;
 import momime.common.database.BuildingPrerequisite;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
+import momime.common.database.Unit;
+import momime.common.database.Wizard;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -47,11 +52,6 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerCityCalculations;
-import momime.server.database.BuildingSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSvr;
-import momime.server.database.WizardSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.process.CityProcessing;
 import momime.server.utils.CityServerUtils;
@@ -108,7 +108,7 @@ public final class CityAIImpl implements CityAI
 	 */
 	@Override
 	public final Integer evaluateCityQuality (final MapCoordinates3DEx cityLocation, final boolean avoidOtherCities, final boolean enforceMinimumQuality,
-		final MapVolumeOfMemoryGridCells knownMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MapVolumeOfMemoryGridCells knownMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering evaluateCityQuality: " + cityLocation);
@@ -182,7 +182,7 @@ public final class CityAIImpl implements CityAI
 	 */
 	@Override
 	public final MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells knownMap, final MapVolumeOfMemoryGridCells trueMap,
-		final int plane, final boolean avoidOtherCities, final MomSessionDescription sd, final ServerDatabaseEx db, final String purpose)
+		final int plane, final boolean avoidOtherCities, final MomSessionDescription sd, final CommonDatabase db, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering chooseCityLocation: " + plane);
@@ -242,7 +242,7 @@ public final class CityAIImpl implements CityAI
 	 * @throws MomException If a city's race has no farmers defined or those farmers have no ration production defined
 	 */
 	final int findWorkersToConvertToFarmers (final int doubleRationsNeeded, final boolean tradeGoods, final FogOfWarMemory trueMap,
-		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering findWorkersToConvertToFarmers: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + tradeGoods);
@@ -251,7 +251,7 @@ public final class CityAIImpl implements CityAI
 		// of times for how many workers there are in the city that we could convert to farmers
 		final List<MapCoordinates3DEx> workerCoordinates = new ArrayList<MapCoordinates3DEx> ();
 
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
@@ -307,7 +307,7 @@ public final class CityAIImpl implements CityAI
 	 */
 	@Override
 	public final void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering setOptionalFarmersInAllCities: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -328,7 +328,7 @@ public final class CityAIImpl implements CityAI
 		// Then take off how many rations cities are producing even if they have zero optional farmers set
 		// e.g. a size 1 city with a granary next to a wild game resource will produce +3 rations even with no farmers,
 		// or a size 1 city with no resources must be a farmer, but he only eats 1 of the 2 rations he produces so this also gives +1
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
@@ -363,7 +363,7 @@ public final class CityAIImpl implements CityAI
 		log.debug ("setOptionalFarmersInAllCities: Armies require " + doubleRationsNeeded + "/2 after using up other production cities");
 
 		// Update each player's memorised view of this city with the new number of optional farmers, if they can see it
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
@@ -397,10 +397,10 @@ public final class CityAIImpl implements CityAI
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
 	@Override
-	public final void decideWhatToBuild (final WizardSvr wizard, final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
+	public final void decideWhatToBuild (final Wizard wizard, final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
 		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnitsMod, Map<AIUnitType, List<AIConstructableUnit>> constructableHere,
 		final List<AIUnitType> wantedUnitTypes, final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
-		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
+		final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering decideWhatToBuild: " + cityLocation);
 		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " deciding what to construct in " + (isUnitFactory ? "unit factory " : "city ") + cityLocation +
@@ -415,10 +415,10 @@ public final class CityAIImpl implements CityAI
 			choices.setRandomUtils (getRandomUtils ());
 			
 			boolean anyBuildingsLeftToBuild = false;
-			final Iterator<BuildingSvr> iter = db.getBuildings ().iterator ();
+			final Iterator<Building> iter = db.getBuilding ().iterator ();
 			while ((!anyBuildingsLeftToBuild) && (iter.hasNext ()))
 			{
-				final BuildingSvr building = iter.next ();
+				final Building building = iter.next ();
 				
 				if ((!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_HOUSING)) && (!building.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_TRADE_GOODS)) &&
 					(getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, building.getBuildingID ()) == null) &&
@@ -573,7 +573,7 @@ public final class CityAIImpl implements CityAI
 	 */
 	final boolean tryToConstructBuildingOfType (final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData, final AiBuildingTypeID buildingType,
 		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
-		 final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException
+		 final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering tryToConstructBuildingOfType: " + cityLocation + ", " + buildingType);
 		
@@ -584,8 +584,8 @@ public final class CityAIImpl implements CityAI
 		// b) we already have, or
 		// c) our race cannot build
 		// Keep buildings in the list even if we don't yet have the pre-requisites necessary to build them
-		final List<BuildingSvr> buildingOptions = new ArrayList<BuildingSvr> ();
-		for (final BuildingSvr building : db.getBuildings ())
+		final List<Building> buildingOptions = new ArrayList<Building> ();
+		for (final Building building : db.getBuilding ())
 			if ((building.getAiBuildingTypeID () == buildingType) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, building.getBuildingID ()) == null) &&
 				(getServerCityCalculations ().canEventuallyConstructBuilding (knownTerrain, knownBuildings, cityLocation, building, sd.getOverlandMapSize (), db)))
 
@@ -599,7 +599,7 @@ public final class CityAIImpl implements CityAI
 		int buildingIndex = 0;
 		while ((!decided) && (buildingIndex < buildingOptions.size ()))
 		{
-			final BuildingSvr thisBuilding = buildingOptions.get (buildingIndex);
+			final Building thisBuilding = buildingOptions.get (buildingIndex);
 
 			if (getMemoryBuildingUtils ().meetsBuildingRequirements (knownBuildings, cityLocation, thisBuilding))
 			{
@@ -615,7 +615,7 @@ public final class CityAIImpl implements CityAI
 				// canEventuallyConstructBuilding () above already checked all this over the entire prerequisite tree, so all we need to do is add them
 				for (final BuildingPrerequisite prereq : thisBuilding.getBuildingPrerequisite ())
 				{
-					final BuildingSvr buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
+					final Building buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
 					if ((!buildingOptions.contains (buildingPrereq)) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, buildingPrereq.getBuildingID ()) == null))
 						buildingOptions.add (buildingPrereq);
 				}
@@ -728,12 +728,12 @@ public final class CityAIImpl implements CityAI
 							final Integer productionCost;
 							if (cityData.getCurrentlyConstructingBuildingID () != null)
 							{
-								final BuildingSvr buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "checkForRushBuying");
+								final Building buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "checkForRushBuying");
 								productionCost = buildingDef.getProductionCost ();
 							}
 							else if (cityData.getCurrentlyConstructingUnitID () != null)
 							{
-								final UnitSvr unitDef = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "checkForRushBuying");
+								final Unit unitDef = mom.getServerDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "checkForRushBuying");
 								productionCost = unitDef.getProductionCost ();
 							}
 							else

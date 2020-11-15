@@ -39,12 +39,8 @@ import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.graphics.database.CityViewElementGfx;
+import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.UnitSkillGfx;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.HelpUI;
@@ -62,12 +58,14 @@ import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlot;
 import momime.common.database.ProductionTypeAndUndoubledValue;
-import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitCanCast;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
@@ -275,10 +273,10 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					// Draw building
 					if (building != null)
 					{
-						final CityViewElementGfx buildingImage = getGraphicsDB ().findCityViewElementBuilding (building.getBuildingID (), "currentlyConstructingBuilding");
+						final CityViewElement buildingImage = getClient ().getClientDB ().findCityViewElementBuilding (building.getBuildingID (), "currentlyConstructingBuilding");
 						final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 							((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-							buildingImage.getCityViewAnimation (), true);
+							buildingImage.getCityViewAnimation (), true, AnimationContainer.COMMON_XML);
 					
 						g.drawImage (image, (getSize ().width - image.getWidth ()) / 2, (getSize ().height - image.getHeight ()) / 2, null);
 					}
@@ -286,14 +284,14 @@ public final class UnitInfoPanel extends MomClientPanelUI
 					// Draw unit
 					if (getUnit () != null)
 					{
-						final UnitGfx unitGfx = getGraphicsDB ().findUnit (getUnit ().getUnitID (), "heroPortrait");
-						if ((unitGfx.getHeroPortraitImageFile () != null) && (getClientConfig ().isShowHeroPortraits ()))
+						final UnitEx UnitEx = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "heroPortrait");
+						if ((UnitEx.getHeroPortraitImageFile () != null) && (getClientConfig ().isShowHeroPortraits ()))
 						{
 							// Show static hero portrait
 							int x = (getSize ().width - heroPortraitFrame.getWidth ()) / 2;
 							int y = (getSize ().height - heroPortraitFrame.getHeight ()) / 2;
 							g.drawImage (heroPortraitFrame, x, y, null);
-							g.drawImage (getUtils ().loadImage (unitGfx.getHeroPortraitImageFile ()), x+1, y+1,
+							g.drawImage (getUtils ().loadImage (UnitEx.getHeroPortraitImageFile ()), x+1, y+1,
 								heroPortraitFrame.getWidth () - 2, heroPortraitFrame.getHeight () - 2, null);
 						}
 						else
@@ -419,18 +417,16 @@ public final class UnitInfoPanel extends MomClientPanelUI
 							{
 								// All looks ok - check they are really sure
 								final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-								msg.setTitleLanguageCategoryID ("SpellCasting");
-								msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
+								msg.setLanguageTitle (getLanguages ().getSpellCasting ().getSwitchOffSpellTitle ());
 		
-								final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-								final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+								final String spellName = getLanguageHolder ().findDescription (spellDef.getSpellName ());
 								
 								if (spell.getCastingPlayerID () != getClient ().getOurPlayerID ())
-									msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpellNotOurs").replaceAll
+									msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpellNotOurs ()).replaceAll
 										("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
 								else
 								{
-									msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
+									msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll
 										("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
 									msg.setSwitchOffSpell (spell);
 								}
@@ -584,7 +580,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 		// Show the image of the selected building
 		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
-		getAnim ().registerRepaintTrigger (getGraphicsDB ().findCityViewElementBuilding (building.getBuildingID (), "showBuilding").getCityViewAnimation (), currentlyConstructingImage);
+		getAnim ().registerRepaintTrigger (getClient ().getClientDB ().findCityViewElementBuilding
+			(building.getBuildingID (), "showBuilding").getCityViewAnimation (), currentlyConstructingImage, AnimationContainer.COMMON_XML);
 		
 		// Show URN?
 		if ((showBuilding.getBuildingURN () > 0) && (getClientConfig ().isDebugShowURNs ()))
@@ -701,7 +698,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		for (final String unitSkillID : basicAndModifiedSkillIDs.stream ().sorted ().collect (Collectors.toList ()))
 		{
 			// Which list do we display it in?
-			final UnitSkillGfx unitSkillGfx = getGraphicsDB ().findUnitSkill (unitSkillID, "UnitInfoPanel");
+			final UnitSkillEx unitSkillGfx = getClient ().getClientDB ().findUnitSkill (unitSkillID, "UnitInfoPanel");
 			
 			if ((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE) ||
 				((unitSkillGfx.getUnitSkillTypeID () == UnitSkillTypeID.MODIFYABLE) && ((getClientConfig ().getDisplayUnitSkillsAsAttributes () == UnitSkillTypeID.MODIFYABLE) ||
@@ -718,7 +715,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			// Only add skills with images - some don't have, e.g. Flying, since this shows up on the movement section of the form.
 			// Experience is an exception since its images are derived differently.
 			else if ((unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE)) ||
-				(getGraphicsDB ().findUnitSkill (unitSkillID, "showUnit").getUnitSkillImageFile () != null))
+				(getClient ().getClientDB ().findUnitSkill (unitSkillID, "showUnit").getUnitSkillImageFile () != null))
 			{
 				final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
 				skill.setUnitSkillID (unitSkillID);
@@ -821,8 +818,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		log.trace ("Entering languageChanged");
 		
 		// Fixed labels
-		upkeepLabel.setText	(getLanguage ().findCategoryEntry ("frmChangeConstruction", "Upkeep"));
-		costLabel.setText		(getLanguage ().findCategoryEntry ("frmChangeConstruction", "Cost"));
+		upkeepLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getUpkeep ()));
+		costLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getCost ()));
 
 		// Update text about unit or building being displayed
 		currentConstructionChanged ();
@@ -837,33 +834,30 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private final void currentConstructionChanged ()
 	{
 		log.trace ("Entering currentConstructionChanged");
-		
-		// Labels if showing a building
-		if (building != null)
+
+		try
 		{
-			final BuildingLang buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
-			currentlyConstructingName.setText ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
-			currentlyConstructingDescription.setText ((buildingLang != null) ? buildingLang.getBuildingHelpText () : null);
-			currentlyConstructingAllows.setText (getClientCityCalculations ().describeWhatBuildingAllows (building.getBuildingID (), (MapCoordinates3DEx) building.getCityLocation ()));
-			urnLabel.setText (getLanguage ().findCategoryEntry ("frmChangeConstruction", "BuildingURN"));
-		}
-		
-		// Labels if showing a unit
-		else if (getUnit () != null)
-		{
-			String unitName = null;
-			try
+			// Labels if showing a building
+			if (building != null)
 			{
-				unitName = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.RACE_UNIT_NAME);
-			}
-			catch (final RecordNotFoundException e)
-			{
-				// Log the error, but its only in generating the name, so keep going
-				log.error (e, e);
+				final Building buildingDef = getClient ().getClientDB ().findBuilding (getBuilding ().getBuildingID (), "currentConstructionChanged");
+				
+				currentlyConstructingName.setText (getLanguageHolder ().findDescription (buildingDef.getBuildingName ()));
+				currentlyConstructingDescription.setText (getLanguageHolder ().findDescription (buildingDef.getBuildingHelpText ()));
+				currentlyConstructingAllows.setText (getClientCityCalculations ().describeWhatBuildingAllows (building.getBuildingID (), (MapCoordinates3DEx) getBuilding ().getCityLocation ()));
+				urnLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getBuildingURN ()));
 			}
 			
-			currentlyConstructingName.setText (unitName);
-			urnLabel.setText (getLanguage ().findCategoryEntry ("frmChangeConstruction", "UnitURN"));
+			// Labels if showing a unit
+			else if (getUnit () != null)
+			{
+				currentlyConstructingName.setText (getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.RACE_UNIT_NAME));
+				urnLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getUnitURN ()));
+			}
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
 		}
 		
 		log.trace ("Exiting currentConstructionChanged");

@@ -2,10 +2,11 @@ package momime.client.language;
 
 import java.io.IOException;
 
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-
 import com.ndg.swing.NdgUIUtils;
+
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.common.database.Language;
 
 /**
  * Implements standard portions of LanguageVariableUI that don't depend on the type of UI component being created.
@@ -46,13 +47,22 @@ public abstract class LanguageVariableUIImpl implements LanguageVariableUI
 	}
 
 	/**
-	 * Convenience shortcut for accessing the Language XML database
-	 * @return Language database
+	 * @return Currently chosen language
 	 */
 	@Override
-	public final LanguageDatabaseEx getLanguage ()
+	public final Language getLanguage ()
 	{
-		return languageHolder.getLanguage ();
+		return getLanguageHolder ().getLanguage ();
+	}
+	
+	/**
+	 * Convenience shortcut for accessing the Language XML database
+	 * @return New singular language XML
+	 */
+	@Override
+	public final MomLanguagesEx getLanguages ()
+	{
+		return getLanguageHolder ().getLanguages ();
 	}
 
 	/**

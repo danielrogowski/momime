@@ -21,7 +21,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TileType;
+import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
@@ -94,7 +94,7 @@ public final class UnitMovementImpl implements UnitMovement
 
 		// Go through each tile type
 		final Map<String, Integer> movementRates = new HashMap<String, Integer> ();
-		for (final TileType tileType : db.getTileTypes ())
+		for (final TileTypeEx tileType : db.getTileTypes ())
 			if (!tileType.getTileTypeID ().equals (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN))
 			{
 				Integer worstMovementRate = 0;
@@ -458,7 +458,7 @@ public final class UnitMovementImpl implements UnitMovement
 		final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (startPlane).getRow ().get (startY).getCell ().get (startX).getTerrainData ();
 		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 		{
-			for (final Plane plane : db.getPlanes ())
+			for (final Plane plane : db.getPlane ())
 				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (),
 					doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 					doubleMovementToEnterTile, sd.getOverlandMapSize ());

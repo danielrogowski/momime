@@ -21,25 +21,25 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.components.UnitRowDisplayButton;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.UnitSkill;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
@@ -68,52 +68,53 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		final BufferedImage meleeIcon = utils.loadImage ("/momime.client.graphics/unitSkills/meleeNormal.png");
 		final BufferedImage hpIcon = utils.loadImage ("/momime.client.graphics/unitSkills/hitPoints.png");
 		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
+		when (db.findUnit ("UN176", "UnitRowDisplayButton")).thenReturn (unitDef);
+		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final UnitGfx unitGfx = new UnitGfx ();
-		unitGfx.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
-		when (gfx.findUnit ("UN176", "UnitRowDisplayButton")).thenReturn (unitGfx);
-		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmUnitRowDisplay", "Cancel")).thenReturn ("Cancel");
-		
-		final SpellBookSectionLang section = new SpellBookSectionLang ();
-		section.setSpellTargetPrompt ("Select a friendly unit as the target for your SPELL_NAME spell.");
-		when (lang.findSpellBookSection (SpellBookSectionID.UNIT_ENCHANTMENTS)).thenReturn (section);
-		
-		final SpellLang spellLang = new SpellLang ();
-		spellLang.setSpellName ("Endurance");
-		when (lang.findSpell ("SP001")).thenReturn (spellLang);
+		final Simple simpleLang = new Simple ();
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Spell being targetted
 		final Spell spell = new Spell ();
+		spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Endurance"));
 		spell.setSpellBookSectionID (SpellBookSectionID.UNIT_ENCHANTMENTS);
 		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		when (db.findSpell ("SP001", "UnitRowDisplayUI")).thenReturn (spell);
+		
+		final SpellBookSection section = new SpellBookSection ();
+		section.getSpellTargetPrompt ().add (createLanguageText (Language.ENGLISH, "Select a friendly unit as the target for your SPELL_NAME spell."));
+		when (db.findSpellBookSection (SpellBookSectionID.UNIT_ENCHANTMENTS, "UnitRowDisplayUI")).thenReturn (section);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Unit attributes
-		final List<UnitSkill> unitSkills = new ArrayList<UnitSkill> ();
+		final List<UnitSkillEx> unitSkills = new ArrayList<UnitSkillEx> ();
 		for (int attrNo = 1; attrNo <= 6; attrNo++)
 		{
-			final UnitSkill attrDef = new UnitSkill ();
+			final UnitSkillEx attrDef = new UnitSkillEx ();
 			attrDef.setUnitSkillID ("UA0" + attrNo);
-			unitSkills.add (attrDef);
+			attrDef.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
 			
-			final UnitSkillGfx attrGfx = new UnitSkillGfx ();
-			attrGfx.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
-			when (gfx.findUnitSkill (attrDef.getUnitSkillID (), "UnitRowDisplayUI")).thenReturn (attrGfx);
+			when (db.findUnitSkill (attrDef.getUnitSkillID (), "UnitRowDisplayUI")).thenReturn (attrDef);
+			unitSkills.add (attrDef);
 		}
 		
 		doReturn (unitSkills).when (db).getUnitSkills ();
@@ -165,9 +166,9 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 
 			when (unitClientUtils.getUnitSkillSingleIcon (xu, "US03" + skillNo)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US03" + skillNo + "-icon.png"));
 			
-			final UnitSkillGfx skillGfx = new UnitSkillGfx ();
+			final UnitSkillEx skillGfx = new UnitSkillEx ();
 			skillGfx.setUnitSkillTypeID (UnitSkillTypeID.NO_VALUE);
-			when (gfx.findUnitSkill ("US03" + skillNo, "UnitRowDisplayUI")).thenReturn (skillGfx);
+			when (db.findUnitSkill ("US03" + skillNo, "UnitRowDisplayUI")).thenReturn (skillGfx);
 		}
 		when (xu.listModifiedSkillIDs ()).thenReturn (unitSkillIDs);
 
@@ -195,6 +196,7 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 			final UnitRowDisplayButton button = new UnitRowDisplayButton ();
 			button.setUtils (utils);
 			button.setGraphicsDB (gfx);
+			button.setClient (client);
 			button.setPlayerColourImageGenerator (gen);
 			return button;
 		});

@@ -10,11 +10,14 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
+import momime.common.database.UnitEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -23,9 +26,6 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 
 /**
  * Methods that the AI uses to calculate stats about types of spells it might want to cast
@@ -63,8 +63,8 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final SpellSvr spell,
-		final List<MemoryUnit> trueUnits, final SpellSetting spellSettings, final ServerDatabaseEx db)
+	public boolean canAffordSpellMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final Spell spell,
+		final List<MemoryUnit> trueUnits, final SpellSetting spellSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering canAffordSpellMaintenance: Player ID " + player.getPlayerDescription ().getPlayerID () + ", spell ID " + spell.getSpellID ());
@@ -100,10 +100,10 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 		// Use proper method for this that will ignore heroes we already have.
 		if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 		{
-			final Iterator<UnitSvr> summonedIter = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db).iterator ();
+			final Iterator<UnitEx> summonedIter = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db).iterator ();
 			while ((ok) && (summonedIter.hasNext ()))
 			{
-				final UnitSvr unitDef = summonedIter.next ();
+				final UnitEx unitDef = summonedIter.next ();
 	
 				final AvailableUnit unit = new AvailableUnit ();
 				unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());

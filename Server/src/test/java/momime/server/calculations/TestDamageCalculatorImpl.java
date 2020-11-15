@@ -17,10 +17,14 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamagePerFigureID;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.DamageType;
+import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
@@ -31,11 +35,7 @@ import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
-import momime.server.database.DamageTypeSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSkillSvr;
 import momime.server.process.AttackResolutionUnit;
 import momime.server.utils.UnitServerUtils;
 
@@ -129,10 +129,10 @@ public final class TestDamageCalculatorImpl
 	public final void testAttackFromUnitSkill_PerFigure () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// The kind of damage inflicted by this skill
-		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
+		final UnitSkillEx unitSkill = new UnitSkillEx ();
 		unitSkill.setDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_FIGURE_COMBINED);
 		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
@@ -192,7 +192,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		when (damageTypeCalculations.determineSkillDamageType (xuAttacker, "US001", db)).thenReturn (damageType);
 		
 		// Set up object to test
@@ -235,10 +235,10 @@ public final class TestDamageCalculatorImpl
 	public final void testAttackFromUnitSkill_PerUnit () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// The kind of damage inflicted by this skill
-		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
+		final UnitSkillEx unitSkill = new UnitSkillEx ();
 		unitSkill.setDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_UNIT);
 		when (db.findUnitSkill ("US001", "attackFromUnitSkill")).thenReturn (unitSkill);
@@ -298,7 +298,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		when (damageTypeCalculations.determineSkillDamageType (xuAttacker, "US001", db)).thenReturn (damageType);
 		
 		// Set up object to test
@@ -341,7 +341,7 @@ public final class TestDamageCalculatorImpl
 	public final void testAttackFromUnitSkill_DontHaveSkill () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Set up other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -392,7 +392,7 @@ public final class TestDamageCalculatorImpl
 	public final void testAttackFromUnitSkill_FrozenInFear () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Set up other lists
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -443,10 +443,10 @@ public final class TestDamageCalculatorImpl
 	public final void testAttackFromUnitSkill_IllusionaryAttack () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// The kind of damage inflicted by this skill
-		final UnitSkillSvr unitSkill = new UnitSkillSvr ();
+		final UnitSkillEx unitSkill = new UnitSkillEx ();
 		unitSkill.setDamageResolutionTypeID (DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE);
 		unitSkill.setDamagePerFigure (DamagePerFigureID.PER_FIGURE_COMBINED);
 		unitSkill.setDamageResolutionTypeUpgradeable (true);
@@ -509,7 +509,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Damage type
 		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		when (damageTypeCalculations.determineSkillDamageType (xuAttacker,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, db)).thenReturn (damageType);
 		
@@ -553,7 +553,7 @@ public final class TestDamageCalculatorImpl
 	public final void testAttackFromSpell_FixedDamage () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
@@ -572,11 +572,11 @@ public final class TestDamageCalculatorImpl
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
 		// Spell details
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.setStoredDamageTypeID (StoredDamageTypeID.HEALABLE);
 		when (db.findDamageType ("DT01", "attackFromSpell")).thenReturn (damageType);
 
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setCombatBaseDamage (12);
 		spell.setAttackSpellDamageTypeID ("DT01");
@@ -623,7 +623,7 @@ public final class TestDamageCalculatorImpl
 	public final void testAttackFromSpell_VariableDamage () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Set up players
 		final PlayerDescription attackingPD = new PlayerDescription ();
@@ -642,11 +642,11 @@ public final class TestDamageCalculatorImpl
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (defendingPD, null, null, null, null);
 		
 		// Spell details
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.setStoredDamageTypeID (StoredDamageTypeID.HEALABLE);
 		when (db.findDamageType ("DT01", "attackFromSpell")).thenReturn (damageType);
 		
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setCombatBaseDamage (12);
 		spell.setAttackSpellDamageTypeID ("DT01");
@@ -716,7 +716,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
 		// Set up attack damage
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		final AttackDamage attackDamage = new AttackDamage (18, 1, damageType, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		
 		// Set up defender stats
@@ -804,7 +804,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
 		// Set up attack damage
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		final AttackDamage attackDamage = new AttackDamage (18, 1, damageType, DamageResolutionTypeID.ARMOUR_PIERCING, null, null, null, 1);
 		
 		// Set up defender stats
@@ -905,7 +905,7 @@ public final class TestDamageCalculatorImpl
 		when (random.nextInt (10)).thenReturn (0, 2, 6, 7, 3, 6, 7, 4, 2, 5, 7, 9, 2, 4, 3, 6, 6, 8);		// Attack rolls, 6 of them are <4
 
 		// Mock the damage being applied (NB. now 0 instead of 4 defence)
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, 6, 0, 5)).thenReturn (6);		// Take 6 hits, each figure has defence 0, with 50% block chance
@@ -975,7 +975,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
 		// Set up attack damage
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		final AttackDamage attackDamage = new AttackDamage (4, 1, damageType, DamageResolutionTypeID.MULTI_FIGURE, null, null, null, 1);
 		
 		// Set up defender stats
@@ -1070,7 +1070,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 
 		// Mock the damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, 6, 0, 0)).thenReturn (6);				// Automatically takes full dmg of 6 hits
@@ -1146,7 +1146,7 @@ public final class TestDamageCalculatorImpl
 		when (random.nextInt (100)).thenReturn (20);		// Dies
 		
 		// Mock the damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
@@ -1223,7 +1223,7 @@ public final class TestDamageCalculatorImpl
 		when (random.nextInt (100)).thenReturn (80);		// Lives
 		
 		// Mock the damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
@@ -1310,7 +1310,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		assertEquals (5, calc.calculateEachFigureResistOrDieDamage (xuDefender, attackingPlayer, defendingPlayer,
 			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1)));
@@ -1388,7 +1388,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		assertEquals (11, calc.calculateEachFigureResistOrDieDamage (xuDefender, attackingPlayer, defendingPlayer,
 			new AttackDamage (2, 0, damageType, DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE, null, null, null, 1)));
@@ -1466,7 +1466,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		assertEquals (0, calc.calculateSingleFigureResistOrDieDamage (xuDefender, attackingPlayer, defendingPlayer,
 			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1)));
@@ -1544,7 +1544,7 @@ public final class TestDamageCalculatorImpl
 		calc.setUnitUtils (unitUtils);
 		
 		// Run test
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		assertEquals (3, calc.calculateSingleFigureResistOrDieDamage (xuDefender, attackingPlayer, defendingPlayer,
 			new AttackDamage (null, 0, damageType, DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE, null, null, null, 1)));
@@ -1615,7 +1615,7 @@ public final class TestDamageCalculatorImpl
 		when (random.nextInt (10)).thenReturn (5);		// So takes 6 - 4 = 2 damage
 		
 		// Mock the damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, 2, 0, 0)).thenReturn (2);		// Take 2 hits, with no defence and no blocks
@@ -1698,7 +1698,7 @@ public final class TestDamageCalculatorImpl
 		when (random.nextInt (10)).thenReturn (5);		// So takes 6 - 4 + 3 = 5 damage
 		
 		// Mock the damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, 5, 0, 0)).thenReturn (5);		// Take 5 hits, with no defence and no blocks
@@ -1776,7 +1776,7 @@ public final class TestDamageCalculatorImpl
 		when (random.nextInt (10)).thenReturn (0, 1, 2, 3, 4, 5);		// so 2 die
 		
 		// Mock the damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, 2, 0, 0)).thenReturn (2);		// Take 5 hits, with no defence and no blocks
@@ -1850,7 +1850,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (4);	// ..and 4 resistance...
 		
 		// Mock the damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
@@ -1923,7 +1923,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE)).thenReturn (12);	// ..and 12 resistance...
 		
 		// Mock the damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, Integer.MAX_VALUE, 0, 0)).thenReturn (6);		// Takes full dmg of 6 hits
@@ -2008,7 +2008,7 @@ public final class TestDamageCalculatorImpl
 		calc.setRandomUtils (random);
 	
 		// Run test
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		calc.calculateFearDamage (defenderWrapper, xuDefender, attackingPlayer, defendingPlayer,
 			new AttackDamage (2, 0, damageType, DamageResolutionTypeID.FEAR, null, null, null, 1));

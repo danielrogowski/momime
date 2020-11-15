@@ -19,9 +19,9 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageType;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
-import momime.common.database.RangedAttackType;
+import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillComponent;
@@ -47,7 +47,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	private final AvailableUnit unit;
 	
 	/** Definition for this unit from the XML database */
-	private final Unit unitDefinition;
+	private final UnitEx unitDefinition;
 
 	/** Unit type (normal, hero or summoned) */
 	private final UnitType unitType;
@@ -62,7 +62,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	private final WeaponGrade weaponGrade;
 	
 	/** Ranged attack type this unit has, or null if it has none */
-	private final RangedAttackType rangedAttackType;
+	private final RangedAttackTypeEx rangedAttackType;
 
 	/** Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; for units that don't gain experience (e.g. summoned), returns null */
 	private final ExperienceLevel basicExperienceLevel;
@@ -112,8 +112,8 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	 * @param aModifiedUpkeepValues Upkeep values, modified by reductions such as the Summoner retort reducing upkeep for summoned units; cannot have null values in here
 	 * @param aUnitUtils Unit utils
 	 */
-	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final Unit aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
-		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackType aRangedAttackType,
+	public ExpandedUnitDetailsImpl (final AvailableUnit aUnit, final UnitEx aUnitDefinition, final UnitType aUnitType, final PlayerPublicDetails anOwningPlayer,
+		final Pick aModifiedUnitMagicRealmLifeformType, final WeaponGrade aWeaponGrade, final RangedAttackTypeEx aRangedAttackType,
 		final ExperienceLevel aBasicExpLvl, final ExperienceLevel aModifiedExpLvl,
 		final Map<String, Integer> aBasicSkillValues, final Map<String, Map<UnitSkillComponent, Integer>> aModifiedSkillValues,
 		final Map<String, Integer> aBasicUpkeepValues, final Map<String, Integer> aModifiedUpkeepValues, final UnitUtils aUnitUtils)
@@ -169,7 +169,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	 * @return Definition for this unit from the XML database
 	 */
 	@Override
-	public final Unit getUnitDefinition ()
+	public final UnitEx getUnitDefinition ()
 	{
 		return unitDefinition;
 	}
@@ -232,7 +232,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	 * @return Ranged attack type this unit has, or null if it has none
 	 */
 	@Override
-	public final RangedAttackType getRangedAttackType ()
+	public final RangedAttackTypeEx getRangedAttackType ()
 	{
 		return rangedAttackType;
 	}

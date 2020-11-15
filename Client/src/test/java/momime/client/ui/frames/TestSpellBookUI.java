@@ -7,21 +7,30 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+
+import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.SpellBookScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.Pick;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -32,17 +41,10 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 
-import org.junit.Test;
-
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-
 /**
  * Tests the SpellBookUI class
  */
-public final class TestSpellBookUI
+public final class TestSpellBookUI extends ClientTestData
 {
 	/**
 	 * Tests the SpellBookUI form
@@ -55,49 +57,49 @@ public final class TestSpellBookUI
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmSpellBook", "Title")).thenReturn ("Spells");
-		
-		final ProductionTypeLang research = new ProductionTypeLang ();
-		research.setProductionTypeSuffix ("RP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH)).thenReturn (research);
-		
-		final ProductionTypeLang mana = new ProductionTypeLang ();
-		mana.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (mana);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n < 8; n++)
 		{
-			final SpellBookSectionLang section = new SpellBookSectionLang ();
-			section.setSpellBookSectionName ("Spell book section " + (n+1));
-			when (lang.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + n))).thenReturn (section);
+			final SpellBookSection section = new SpellBookSection ();
+			section.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Spell book section " + (n+1)));
+			when (db.findSpellBookSection (SpellBookSectionID.fromValue ("SC0" + n), "SpellBookUI")).thenReturn (section);
 		}
 
-		final SpellBookSectionLang sectionResearch = new SpellBookSectionLang ();
-		sectionResearch.setSpellBookSectionName ("Researchable spells");
-		when (lang.findSpellBookSection (SpellBookSectionID.RESEARCHABLE_NOW)).thenReturn (sectionResearch);
+		final SpellBookSection sectionResearch = new SpellBookSection ();
+		sectionResearch.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Researchable spells"));
+		when (db.findSpellBookSection (SpellBookSectionID.RESEARCHABLE_NOW, "SpellBookUI")).thenReturn (sectionResearch);
 		
-		final SpellBookSectionLang sectionUnknown = new SpellBookSectionLang ();
-		sectionUnknown.setSpellBookSectionName ("Unknown spells");
-		when (lang.findSpellBookSection (SpellBookSectionID.RESEARCHABLE)).thenReturn (sectionUnknown);
+		final SpellBookSection sectionUnknown = new SpellBookSection ();
+		sectionUnknown.getSpellBookSectionName ().add (createLanguageText (Language.ENGLISH, "Unknown spells"));
+		when (db.findSpellBookSection (SpellBookSectionID.RESEARCHABLE, "SpellBookUI")).thenReturn (sectionUnknown);
 		
-		for (int n = 0; n < 100; n++)
-		{
-			final SpellLang spell = new SpellLang ();
-			String spellID = Integer.valueOf (n).toString ();
-			if (n < 10)
-				spellID = "0" + spellID;
-			spell.setSpellID ("SP0" + spellID);
-			
-			spell.setSpellName ("Spell " + spell.getSpellID ());
-			spell.setSpellDescription ("This is the long description of what spell " + spell.getSpellID () + " does that appears in the spell book");
-			
-			when (lang.findSpell (spell.getSpellID ())).thenReturn (spell);
-		}
+		final ProductionTypeEx research = new ProductionTypeEx ();
+		research.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "RP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "SpellBookUI")).thenReturn (research);
+		
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "SpellBookUI")).thenReturn (mana);
+
+		final Pick redPick = new Pick ();
+		redPick.setPickBookshelfTitleColour ("FF0000");
+		when (db.findPick ("MB01", "languageOrPageChanged")).thenReturn (redPick);
+		
+		final Pick greenPick = new Pick ();
+		greenPick.setPickBookshelfTitleColour ("00FF00");
+		when (db.findPick ("MB02", "languageOrPageChanged")).thenReturn (greenPick);
+		
+		// Mock entries from the language XML
+		final SpellBookScreen spellBookScreenLang = new SpellBookScreen ();
+		spellBookScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Spells"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSpellBookScreen ()).thenReturn (spellBookScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -111,14 +113,6 @@ public final class TestSpellBookUI
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation (SpellBookUI.ANIM_PAGE_TURN, "SpellBookUI")).thenReturn (pageTurn);
 		
-		final PickGfx redPick = new PickGfx ();
-		redPick.setPickBookshelfTitleColour ("FF0000");
-		when (gfx.findPick ("MB01", "languageOrPageChanged")).thenReturn (redPick);
-		
-		final PickGfx greenPick = new PickGfx ();
-		greenPick.setPickBookshelfTitleColour ("00FF00");
-		when (gfx.findPick ("MB02", "languageOrPageChanged")).thenReturn (greenPick);
-		
 		// Session description
 		final SpellSetting spellSettings = new SpellSetting ();
 		final MomSessionDescription sd = new MomSessionDescription ();
@@ -130,7 +124,6 @@ public final class TestSpellBookUI
 		// and so on
 		// SP080 - SP089 are in section SC98 (researchable now)
 		// SP090 - SP099 are in section SC99 (in book, can research in future)
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		final List<Spell> spells = new ArrayList<Spell> ();
 		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
 		final SpellUtils spellUtils = mock (SpellUtils.class);
@@ -142,6 +135,9 @@ public final class TestSpellBookUI
 			if (n < 10)
 				spellID = "0" + spellID;
 			spell.setSpellID ("SP0" + spellID);
+			
+			spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell " + spell.getSpellID ()));
+			spell.getSpellDescription ().add (createLanguageText (Language.ENGLISH, "This is the long description of what spell " + spell.getSpellID () + " does that appears in the spell book"));
 			
 			// Cycle colours
 			final int realm = n % 3;
@@ -156,7 +152,7 @@ public final class TestSpellBookUI
 			when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
 			when (spellUtils.getReducedCombatCastingCost (spell, pub.getPick (), spellSettings, db)).thenReturn (n * 2);
 		}
-		doReturn (spells).when (db).getSpells ();
+		doReturn (spells).when (db).getSpell ();
 		
 		// Research statuses - we know 0 of SP000 - SP009, 1 of SP010 - SP019 and so on
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();

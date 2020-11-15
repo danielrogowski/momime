@@ -29,6 +29,7 @@ import javax.swing.Timer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.StringUtils;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -43,13 +44,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
-import momime.client.database.MapFeature;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.MapFeatureLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.TileTypeLang;
 import momime.client.newturnmessages.NewTurnMessageMustBeAnswered;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
@@ -67,10 +62,13 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
-import momime.common.database.ProductionType;
+import momime.common.database.LanguageText;
+import momime.common.database.MapFeature;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeAndDoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSection;
 import momime.common.database.TileType;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.internal.CityProductionBreakdown;
@@ -384,10 +382,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					
 				case TARGET_SPELL:
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("SpellTargetting");
-					msg.setTitleLanguageEntryID ("CancelTitle");
-					msg.setTextLanguageCategoryID ("SpellTargetting");
-					msg.setTextLanguageEntryID ("CancelText");
+					msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getCancelTitle ());
+					msg.setLanguageText (getLanguages ().getSpellTargetting ().getCancelText ());
 					msg.setCancelTargettingSpell (getTargetSpell ());
 					msg.setVisible (true);
 					break;
@@ -758,9 +754,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					if (text != null)
 					{
 						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("frmMapRightHandBar");
-						msg.setTitleLanguageEntryID ("CannotEndTurnTitle");
-						msg.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnPrefix") + System.lineSeparator () + text);
+						msg.setLanguageTitle (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnTitle ());
+						msg.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnPrefix ()) +
+							System.lineSeparator () + text);
 						msg.setVisible (true);
 					}
 				}
@@ -831,29 +827,27 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Cancel"));
-		doneAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Done"));
-		patrolAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Patrol"));
-		waitAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMapRightHandBar", "Wait"));
+		cancelAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
+		doneAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getDone ()));
+		patrolAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getPatrol ()));
+		waitAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getWait ()));
 
-		surveyorTitle.setText (getLanguage ().findCategoryEntry ("frmSurveyor", "Title"));
-		surveyorCityTitle.setText (getLanguage ().findCategoryEntry ("frmSurveyor", "CityResources"));
+		surveyorTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getTitle ()));
+		surveyorCityTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCityResources ()));
 		
-		targetSpellTitle.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", "TargetSpell"));
+		targetSpellTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getTargetSpell ()));
 		
 		// A bit more involved to set the spell targetting text correctly
 		if (getTargetSpell () != null)
 			try
 			{
-				final SpellLang spellLang = getLanguage ().findSpell (getTargetSpell ().getSpellID ());
-				final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-				
 				final Spell spell = getClient ().getClientDB ().findSpell (getTargetSpell ().getSpellID (), "OverlandMapRightHandPanel");
-				final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
-				final String target = (section != null) ? section.getSpellTargetPrompt () : null;
+				final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 				
-				targetSpellText.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :
-					(target.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getTargetSpell ().getSpellID ())));
+				final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "OverlandMapRightHandPanel");
+				final String target = getLanguageHolder ().findDescription (section.getSpellTargetPrompt ());
+				
+				targetSpellText.setText (target.replaceAll ("SPELL_NAME", spellName));
 			}
 			catch (final Exception e)
 			{
@@ -879,8 +873,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 * 
 	 * @param label Label to update
 	 * @param productionTypeID Production type to display in this label
+	 * @throws RecordNotFoundException If the production type can't be found
 	 */
-	private final void updateAmountStored (final JLabel label, final String productionTypeID)
+	private final void updateAmountStored (final JLabel label, final String productionTypeID) throws RecordNotFoundException
 	{
 		// Resource values get sent to us during game startup before the screen has been set up, so its possible to get here before the labels even exist
 		if (label != null)
@@ -888,9 +883,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			String amountStored = getTextUtils ().intToStrCommas (getResourceValueUtils ().findAmountStoredForProductionType
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), productionTypeID));
 		
-			final ProductionTypeLang productionType = getLanguage ().findProductionType (productionTypeID);
-			if ((productionType != null) && (productionType.getProductionTypeSuffix () != null))
-				amountStored = amountStored + " " + productionType.getProductionTypeSuffix ();
+			amountStored = amountStored + " " + getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findProductionType (productionTypeID, "updateAmountStored").getProductionTypeSuffix ());
 			
 			label.setText (amountStored);
 		}
@@ -901,13 +895,13 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 * 
 	 * @param label Label to update
 	 * @param productionTypeID Production type to display in this label
-	 * @param languageEntryID Language entry to use to format the text
+	 * @param languageText Text to display
 	 * @param positiveColour The colour to display this value if it is positive
 	 * @throws PlayerNotFoundException If our player isn't in the list
 	 * @throws RecordNotFoundException If we look for a particular record that we expect to be present in the XML file and we can't find it
 	 * @throws MomException If we find an invalid casting reduction type
 	 */
-	private final void updateAmountPerTurn (final JLabel label, final String productionTypeID, final String languageEntryID, final Color positiveColour)
+	private final void updateAmountPerTurn (final JLabel label, final String productionTypeID, final List<LanguageText> languageText, final Color positiveColour)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		// Resource values get sent to us during game startup before the screen has been set up, so its possible to get here before the labels even exist
@@ -916,13 +910,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateAmountPerTurn");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 			
-			final ProductionTypeLang productionType = getLanguage ().findProductionType (productionTypeID);
+			final String productionTypeDescription = getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findProductionType (productionTypeID, "updateAmountPerTurn").getProductionTypeDescription ());
 			final int amountPerTurn = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
 				pub.getPick (), productionTypeID, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
-			label.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", languageEntryID).replaceAll
+			label.setText (getLanguageHolder ().findDescription (languageText).replaceAll
 				("AMOUNT_PER_TURN", getTextUtils ().intToStrCommas (amountPerTurn)).replaceAll
-				("PRODUCTION_TYPE", (productionType != null) ? productionType.getProductionTypeDescription () : productionTypeID));
+				("PRODUCTION_TYPE", productionTypeDescription));
 		
 			label.setForeground ((amountPerTurn >= 0) ? positiveColour : Color.RED);
 		}
@@ -943,10 +938,17 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		updateAmountStored (manaAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		
 		// Amounts per turn
-		updateAmountPerTurn (goldAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "ProductionPerTurn", MomUIConstants.GOLD);
-		updateAmountPerTurn (manaAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "ProductionPerTurn", MomUIConstants.GOLD);
-		updateAmountPerTurn (rationsAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "ProductionPerTurn", MomUIConstants.GOLD);
-		updateAmountPerTurn (magicPowerAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, "ProductionPerTurnMagicPower", MomUIConstants.SILVER);
+		updateAmountPerTurn (goldAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD,
+			getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getProductionPerTurn (), MomUIConstants.GOLD);
+		
+		updateAmountPerTurn (manaAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA,
+			getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getProductionPerTurn (), MomUIConstants.GOLD);
+		
+		updateAmountPerTurn (rationsAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS,
+			getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getProductionPerTurn (), MomUIConstants.GOLD);
+		
+		updateAmountPerTurn (magicPowerAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER,
+			getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getProductionPerTurnMagicPower (), MomUIConstants.SILVER);
 		
 		log.trace ("Exiting updateGlobalEconomyValues");
 	}
@@ -962,7 +964,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		switch (getClient ().getSessionDescription ().getTurnSystem ())
 		{
 			case ONE_PLAYER_AT_A_TIME:
-				playerLine1.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", "OnePlayerAtATimeCurrentPlayer"));
+				playerLine1.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getOnePlayerAtATimeCurrentPlayer ()));
 				playerLine2.setForeground (MomUIConstants.SILVER);
 				
 				// This gets called, via languageChanged (), as the UI is setting up prior to the first turn starting,
@@ -979,8 +981,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				break;
 				
 			case SIMULTANEOUS:
-				playerLine1.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", "SimultaneousTurnsLine1"));
-				playerLine2.setText (getLanguage ().findCategoryEntry ("frmMapRightHandBar", "SimultaneousTurnsLine2"));
+				playerLine1.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsLine1 ()));
+				playerLine2.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getSimultaneousTurnsLine2 ()));
 				playerLine2.setForeground (MomUIConstants.GOLD);
 				break;
 		}
@@ -1004,7 +1006,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		// Note terrainData can be null here if surveying an area that we've never seen or that is totally off the map
 		final OverlandMapTerrainData terrainData = (mc == null) ? null : mc.getTerrainData ();
 		final String tileTypeID = getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false);
-		final TileTypeLang tileTypeLang = getLanguage ().findTileType (tileTypeID);
+		final TileType tileType = getClient ().getClientDB ().findTileType (tileTypeID, "surveyorLocationOrLanguageChanged");
 
 		// Text about building a city can be set in a bunch of places
 		String cityInfo = null;
@@ -1019,14 +1021,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		}
 		else
 		{
-			// Tile type, note this also outputs a description of Unknown for terrain that we haven't scouted
-			final String tileTypeDescription = (tileTypeLang == null) ? null : tileTypeLang.getTileTypeDescription ();
-
-			surveyorTileType.setText ((tileTypeDescription != null) ? tileTypeDescription : tileTypeID);
-			
-			// Show nodes in the map feature slot, since that's really what they look like
-			if ((tileTypeLang != null) && (tileTypeLang.getTileTypeShowAsFeature () != null))
-				surveyorMapFeature.setText (tileTypeLang.getTileTypeShowAsFeature ());
+			// Tile type - sShow nodes in the map feature slot, since that's really what they look like
+			final String showAsFeature = getLanguageHolder ().findDescription (tileType.getTileTypeShowAsFeature ());
+			if (StringUtils.isEmpty (showAsFeature))
+				
+				// Note this also outputs a description of Unknown for terrain that we haven't scouted
+				surveyorTileType.setText (getLanguageHolder ().findDescription (tileType.getTileTypeDescription ()));
+			else
+				surveyorMapFeature.setText (showAsFeature);
 		}
 			
 		// When looking at areas of the map we haven't seen, that "unknown" is all that is displayed, so blank everything else
@@ -1039,12 +1041,12 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			surveyorMapFeatureSecond.setText	(null);
 
 			if (cityInfo == null)
-				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityBecauseUnscouted");
+				cityInfo = getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCantBuildCityBecauseUnscouted ());
 		}
 		else if (terrainData.getCorrupted () != null)
 		{
 			// For corrupted tiles, show the tile type name, "Corrupted", and nothing else
-			surveyorTileTypeFood.setText (getLanguage ().findCategoryEntry ("frmSurveyor", "Corrupted"));
+			surveyorTileTypeFood.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCorrupted ()));
 
 			surveyorTileTypeProduction.setText	(null);
 			surveyorTileTypeGold.setText			(null);
@@ -1055,47 +1057,41 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		else
 		{
 			// Details about the tile type
-			final TileType tileType = getClient ().getClientDB ().findTileType (tileTypeID, "surveyorLocationOrLanguageChanged");
-			
 			if ((tileType.getDoubleFood () == null) || (tileType.getDoubleFood () <= 0))
 				surveyorTileTypeFood.setText (null);
 			else
 			{
-				final ProductionTypeLang productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD);
-				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
-				
-				surveyorTileTypeFood.setText (getTextUtils ().halfIntToStr (tileType.getDoubleFood ()) + " " +
-					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD));
+				final String productionTypeDescription = getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+					(CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "surveyorLocationOrLanguageChanged (F)").getProductionTypeDescription ());
+				surveyorTileTypeFood.setText (getTextUtils ().halfIntToStr (tileType.getDoubleFood ()) + " " + productionTypeDescription);
 			}
 
 			if ((tileType.getProductionBonus () == null) || (tileType.getProductionBonus () <= 0))
 				surveyorTileTypeProduction.setText (null);
 			else
 			{
-				final ProductionTypeLang productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION);
-				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
+				final String productionTypeDescription = getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+					(CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION, "surveyorLocationOrLanguageChanged (P)").getProductionTypeDescription ());
 				
-				surveyorTileTypeProduction.setText ("+" + tileType.getProductionBonus ().toString () + "% " +
-					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION));
+				surveyorTileTypeProduction.setText ("+" + tileType.getProductionBonus ().toString () + "% " + productionTypeDescription);
 			}
 
 			if ((tileType.getGoldBonus () == null) || (tileType.getGoldBonus () <= 0))
 				surveyorTileTypeGold.setText (null);
 			else
 			{
-				final ProductionTypeLang productionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-				final String productionTypeDescription = (productionType != null) ? productionType.getProductionTypeDescription () : null;
+				final String productionTypeDescription = getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+					(CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "surveyorLocationOrLanguageChanged (P)").getProductionTypeDescription ());
 				
-				surveyorTileTypeGold.setText ("+" + tileType.getGoldBonus ().toString () + "% " +
-					((productionTypeDescription != null) ? productionTypeDescription : CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD));
+				surveyorTileTypeGold.setText ("+" + tileType.getGoldBonus ().toString () + "% " + productionTypeDescription);
 			}
 			
 			// Does the tile type stop us from building a city?
 			if ((tileType.isCanBuildCity () == null) || (!tileType.isCanBuildCity ()))
 			{
-				final String tileTypeDescription = (tileTypeLang == null) ? null : tileTypeLang.getTileTypeCannotBuildCityDescription ();
-				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityBecauseOfTerrain").replaceAll
-					("TILE_TYPE", (tileTypeDescription != null) ? tileTypeDescription : tileTypeID);
+				final String tileTypeDescription = getLanguageHolder ().findDescription (tileType.getTileTypeCannotBuildCityDescription ());
+				cityInfo = getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCantBuildCityBecauseOfTerrain ()).replaceAll
+					("TILE_TYPE", tileTypeDescription);
 			}
 			
 			// Effects of the map feature
@@ -1103,38 +1099,34 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			
 			if (terrainData.getMapFeatureID () != null)
 			{
-				final MapFeatureLang mapFeatureLang = getLanguage ().findMapFeature (terrainData.getMapFeatureID ());
-				final String mapFeatureDescription = (mapFeatureLang != null) ? mapFeatureLang.getMapFeatureDescription () : null;
-				surveyorMapFeature.setText ((mapFeatureDescription != null) ? mapFeatureDescription : terrainData.getMapFeatureID ());
+				final MapFeature mapFeature = getClient ().getClientDB ().findMapFeature (terrainData.getMapFeatureID (), "surveyorLocationOrLanguageChanged");
+				surveyorMapFeature.setText (getLanguageHolder ().findDescription (mapFeature.getMapFeatureDescription ()));
 				
 				// Production bonuses from feature (e.g. +5 gold, +2 mana)
-				final MapFeature mapFeature = getClient ().getClientDB ().findMapFeature (terrainData.getMapFeatureID (), "surveyorLocationOrLanguageChanged");
 				for (final ProductionTypeAndDoubledValue mapFeatureProduction : mapFeature.getMapFeatureProduction ())
 					if (mapFeatureProduction.getDoubledProductionValue () != 0)
 					{
-						final ProductionType productionType = getClient ().getClientDB ().findProductionType (mapFeatureProduction.getProductionTypeID (), "surveyorLocationOrLanguageChanged");
-						
-						final ProductionTypeLang productionTypeLang = getLanguage ().findProductionType (mapFeatureProduction.getProductionTypeID ());
-						final String productionTypeDescription = (productionTypeLang != null) ? productionTypeLang.getProductionTypeDescription () : null;
+						final ProductionTypeEx productionType = getClient ().getClientDB ().findProductionType (mapFeatureProduction.getProductionTypeID (), "surveyorLocationOrLanguageChanged");
+						final String productionTypeDescription = getLanguageHolder ().findDescription (productionType.getProductionTypeDescription ());
 						
 						effects.add (getTextUtils ().halfIntToStrPlusMinus (mapFeatureProduction.getDoubledProductionValue ()) +
-							(productionType.isPercentage () ? "% " : " ") +
-							((productionTypeDescription != null) ? productionTypeDescription : mapFeatureProduction.getProductionTypeID ()));
+							(productionType.isPercentage () ? "% " : " ") + (productionTypeDescription));
 					}
 				
 				// Fixed effects of feature
 				if ((mapFeature.isFeatureSpellProtection () != null) && (mapFeature.isFeatureSpellProtection ()))
-					effects.add (getLanguage ().findCategoryEntry ("frmSurveyor", "FeatureProvidesSpellProtection"));
+					effects.add (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getFeatureProvidesSpellProtection ()));
 				
-				if ((mapFeatureLang != null) && (mapFeatureLang.getMapFeatureMagicWeaponsDescription () != null))
-					effects.add (mapFeatureLang.getMapFeatureMagicWeaponsDescription ());
+				final String magicWeapons = getLanguageHolder ().findDescription (mapFeature.getMapFeatureMagicWeaponsDescription ());
+				if (!StringUtils.isEmpty (magicWeapons));
+					effects.add (magicWeapons);
 				
 				// Does the tile type stop us from building a city?
 				if ((cityInfo == null) && (!mapFeature.isCanBuildCity ()))
 				{
-					final String mapFeatureCityDescription = (mapFeatureLang != null) ? mapFeatureLang.getMapFeatureCannotBuildCityDescription () : null;
-					cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityBecauseOfFeature").replaceAll
-						("MAP_FEATURE", (mapFeatureCityDescription != null) ? mapFeatureCityDescription : terrainData.getMapFeatureID ());
+					final String mapFeatureCityDescription = getLanguageHolder ().findDescription (mapFeature.getMapFeatureCannotBuildCityDescription ());
+					cityInfo = getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCantBuildCityBecauseOfFeature ()).replaceAll
+						("MAP_FEATURE", mapFeatureCityDescription);
 				}
 			}
 
@@ -1151,7 +1143,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			if (getCityCalculations ().markWithinExistingCityRadius (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), null,
 				getSurveyorLocation ().getZ (), getClient ().getSessionDescription ().getOverlandMapSize ()).get (getSurveyorLocation ().getX (), getSurveyorLocation ().getY ()))
 			{
-				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity").replaceAll
+				cityInfo = getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCantBuildCityTooCloseToAnotherCity ()).replaceAll
 					("CITY_SEPARATION", Integer.valueOf (getClient ().getSessionDescription ().getOverlandMapSize ().getCitySeparation ()).toString ());
 			}
 			else
@@ -1161,7 +1153,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (), null,
 					getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ());
 				
-				cityInfo = getLanguage ().findCategoryEntry ("frmSurveyor", "CanBuildCity").replaceAll
+				cityInfo = getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getCanBuildCity ()).replaceAll
 					("MAXIMUM_POPULATION", Integer.valueOf (getCityCalculations ().listCityFoodProductionFromTerrainTiles
 						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), getSurveyorLocation (),
 						getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getClientDB ()).getDoubleProductionAmount ()).toString () + ",000").replaceAll
@@ -1211,7 +1203,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "updateProductionTypesStoppingUsFromEndingTurn");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
-			for (final ProductionType productionType : getClient ().getClientDB ().getProductionTypes ())
+			for (final ProductionTypeEx productionType : getClient ().getClientDB ().getProductionTypes ())
 				if (productionType.getEnforceProduction () != null)
 				{
 					int valueToCheck = getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
@@ -1244,12 +1236,11 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	                // Do we have a problem?
 					if (valueToCheck < 0)
 					{
-						resourceIconFilenames.add (getGraphicsDB ().findProductionType
+						resourceIconFilenames.add (getClient ().getClientDB ().findProductionType
 							(productionType.getProductionTypeID (), "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));
 						
-						final ProductionTypeLang productionTypeLang = getLanguage ().findProductionType (productionType.getProductionTypeID ());
-						final String msg = (productionTypeLang == null) ? null : productionTypeLang.getCannotEndTurnDueToLackOfProduction ();
-						text.append (BULLET_POINT + ((msg != null) ? msg : productionType.getProductionTypeID ()) + System.lineSeparator ()); 
+						final String msg = getLanguageHolder ().findDescription (productionType.getCannotEndTurnDueToLackOfProduction ());
+						text.append (BULLET_POINT + msg + System.lineSeparator ()); 
 					}
 				}
 			
@@ -1260,10 +1251,11 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				(getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
 					pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()) > 0))
 			{
-				resourceIconFilenames.add (getGraphicsDB ().findProductionType
+				resourceIconFilenames.add (getClient ().getClientDB ().findProductionType
 					(CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));
 				
-				text.append (BULLET_POINT + getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnResearch") + System.lineSeparator ());
+				text.append (BULLET_POINT + getLanguageHolder ().findDescription
+					(getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnResearch ()) + System.lineSeparator ());
 			}
 			
 			// Do we have unanswered new turn messages?
@@ -1282,7 +1274,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			if (found)
 			{
 				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToNTMs.png");
-				text.append (BULLET_POINT + getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnNTMs") + System.lineSeparator ());
+				text.append (BULLET_POINT + getLanguageHolder ().findDescription
+					(getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnNewTurnMessages ()) + System.lineSeparator ());
 			}
 			
 			// Is our bank of unassigned hero items overfull?
@@ -1290,7 +1283,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				(getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ().size () > getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank ()))
 			{
 				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToUnassignedHeroItems.png");
-				text.append (BULLET_POINT + getLanguage ().findCategoryEntry ("frmMapRightHandBar", "CannotEndTurnUnassignedHeroItems") + System.lineSeparator ());
+				text.append (BULLET_POINT + getLanguageHolder ().findDescription
+					(getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnUnassignedHeroItems ()) + System.lineSeparator ());
 			}
 	
 			// Regenerate disabled button?

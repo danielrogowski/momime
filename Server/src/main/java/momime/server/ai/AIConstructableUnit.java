@@ -2,8 +2,8 @@ package momime.server.ai;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
+import momime.common.database.Spell;
+import momime.common.database.Unit;
 
 /**
  * Holds details about a unit an AI player could build
@@ -11,13 +11,13 @@ import momime.server.database.UnitSvr;
 final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 {
 	/** The type of unit we can construct */
-	private final UnitSvr unit;
+	private final Unit unit;
 	
 	/** The city where the unit can be constructed, or null if its a summoning spell */
 	private final MapCoordinates3DEx cityLocation;
 	
 	/** The spell that summons the unit, or null if its a unit we're constructing in a city */
-	private final SpellSvr spell;
+	private final Spell spell;
 	
 	/** The average rating calculated for the unit if we construct it */
 	private final int averageRating;
@@ -36,7 +36,7 @@ final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	 * @param anAiUnitType Type of unit the AI classifies this unit to be
 	 * @param aCanAffordMaintenance Whether we could afford the maintenance cost if we added another one of these units to our army
 	 */
-	AIConstructableUnit (final UnitSvr aUnit, final MapCoordinates3DEx aCityLocation, final SpellSvr aSpell, final int anAverageRating,
+	AIConstructableUnit (final Unit aUnit, final MapCoordinates3DEx aCityLocation, final Spell aSpell, final int anAverageRating,
 		final AIUnitType anAiUnitType, final boolean aCanAffordMaintenance)
 	{
 		unit = aUnit;
@@ -70,7 +70,7 @@ final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	/**
 	 * @return The type of unit we can construct
 	 */
-	public final UnitSvr getUnit ()
+	public final Unit getUnit ()
 	{
 		return unit;
 	}
@@ -86,7 +86,7 @@ final class AIConstructableUnit implements Comparable<AIConstructableUnit>
 	/**
 	 * @return The spell that summons the unit, or null if its a unit we're constructing in a city
 	 */
-	public final SpellSvr getSpell ()
+	public final Spell getSpell ()
 	{
 		return spell;
 	}

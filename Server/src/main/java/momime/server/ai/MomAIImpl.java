@@ -21,8 +21,10 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.database.AiUnitCategory;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Wizard;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapCityData;
@@ -33,8 +35,6 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.AiUnitCategorySvr;
-import momime.server.database.WizardSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.utils.CityServerUtils;
 
@@ -163,10 +163,10 @@ public final class MomAIImpl implements MomAI
 					final Map<String, List<AIUnitsAndRatings>> categories = getUnitAI ().categoriseAndStackUnits (mobileUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());				
 					
 					// Now move units in the order their categories are listed in the database
-					final Iterator<AiUnitCategorySvr> categoriesIter = mom.getServerDB ().getAiUnitCategories ().iterator ();
+					final Iterator<AiUnitCategory> categoriesIter = mom.getServerDB ().getAiUnitCategory ().iterator ();
 					while ((!restart) && (!combatStarted) && (categoriesIter.hasNext ()))
 					{
-						final AiUnitCategorySvr category = categoriesIter.next ();
+						final AiUnitCategory category = categoriesIter.next ();
 							
 						final List<AIUnitsAndRatings> ourUnitStacksInThisCategory = categories.get (category.getAiUnitCategoryID ());
 						if (ourUnitStacksInThisCategory != null)
@@ -264,7 +264,7 @@ public final class MomAIImpl implements MomAI
 				// or making a building that means we'll make better units in future, that we won't reverse that decision after its been made.
 				if (numberOfCities > 0)
 				{
-					final WizardSvr wizard = mom.getServerDB ().findWizard (pub.getWizardID (), "aiPlayerTurn");
+					final Wizard wizard = mom.getServerDB ().findWizard (pub.getWizardID (), "aiPlayerTurn");
 					
 					for (int z = 0; z < mom.getSessionDescription ().getOverlandMapSize ().getDepth (); z++)
 					{

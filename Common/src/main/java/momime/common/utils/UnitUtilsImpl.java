@@ -31,12 +31,12 @@ import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.HeroItemTypeAttackType;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.Pick;
-import momime.common.database.RangedAttackType;
+import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
-import momime.common.database.Unit;
-import momime.common.database.UnitSkill;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSpecialOrder;
@@ -170,11 +170,11 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * @return Unit definition
 	 */
 	@Override
-	public final Unit initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException
+	public final UnitEx initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException
 	{
 		log.trace ("Entering initializeUnitSkills: " + unit.getUnitID ());
 
-		final Unit unitDefinition = db.findUnit (unit.getUnitID (), "initializeUnitSkills");
+		final UnitEx unitDefinition = db.findUnit (unit.getUnitID (), "initializeUnitSkills");
 
 		// Check whether this type of unit gains experience (summoned units do not)
 		// Also when sending heroes from the server to the client, experience is sent in amongst the rest of the skill list, so we don't need to
@@ -336,7 +336,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		final List<String> skillsLeftToCheck = basicSkillValues.keySet ().stream ().collect (Collectors.toList ());
 		while (skillsLeftToCheck.size () > 0)
 		{
-			final UnitSkill skillDef = db.findUnitSkill (skillsLeftToCheck.get (0), "expandUnitDetails");
+			final UnitSkillEx skillDef = db.findUnitSkill (skillsLeftToCheck.get (0), "expandUnitDetails");
 			skillsLeftToCheck.remove (0);
 			
 			skillDef.getGrantsSkill ().stream ().map (s -> s.getGrantsSkillID ()).forEach (s ->
@@ -354,7 +354,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		for (final Entry<String, Integer> skill : basicSkillValues.entrySet ())
 		{
 			boolean negated = false;
-			final UnitSkill skillDef = db.findUnitSkill (skill.getKey (), "expandUnitDetails");
+			final UnitSkillEx skillDef = db.findUnitSkill (skill.getKey (), "expandUnitDetails");
 			final Iterator<NegatedBySkill> iter = skillDef.getNegatedBySkill ().iterator ();
 			while ((!negated) && (iter.hasNext ()))
 			{
@@ -388,12 +388,12 @@ public final class UnitUtilsImpl implements UnitUtils
 		}
 		
 		// STEP 7 - Do simple lookups
-		final Unit unitDef = db.findUnit (unit.getUnitID (), "expandUnitDetails");
+		final UnitEx unitDef = db.findUnit (unit.getUnitID (), "expandUnitDetails");
 		final PlayerPublicDetails owningPlayer = (unit.getOwningPlayerID () == 0) ? null : getMultiplayerSessionUtils ().findPlayerWithID (players, unit.getOwningPlayerID (), "expandUnitDetails");
 		final List<PlayerPick> picks = (owningPlayer == null) ? null : ((MomPersistentPlayerPublicKnowledge) owningPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
 		
 		final WeaponGrade weaponGrade = (unit.getWeaponGrade () == null) ? null : db.findWeaponGrade (unit.getWeaponGrade (), "expandUnitDetails");
-		final RangedAttackType rangedAttackType = (unitDef.getRangedAttackType () == null) ? null : db.findRangedAttackType (unitDef.getRangedAttackType (), "expandUnitDetails");
+		final RangedAttackTypeEx rangedAttackType = (unitDef.getRangedAttackType () == null) ? null : db.findRangedAttackType (unitDef.getRangedAttackType (), "expandUnitDetails");
 		
 		final String unitTypeID = db.findPick (unitDef.getUnitMagicRealm (), "expandUnitDetails").getUnitTypeID ();
 		final UnitType unitType = db.findUnitType (unitTypeID, "expandUnitDetails");
@@ -413,7 +413,7 @@ public final class UnitUtilsImpl implements UnitUtils
 		// Multiple - look for a magic realm whose merge list matches our list (i.e. unit is Undead AND Chaos Channeled)
 		else
 		{
-			final Iterator<? extends Pick> iter = db.getPicks ().iterator ();
+			final Iterator<Pick> iter = db.getPick ().iterator ();
 			Pick match = null;
 			while ((match == null) && (iter.hasNext ()))
 			{
@@ -574,7 +574,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			}
 		
 		// STEP 15 - Skills that add to other skills (hero skills, and skills like Large Shield adding +2 defence, and bonuses to the whole stack like Resistance to All)
-		for (final UnitSkill skillDef : db.getUnitSkills ())
+		for (final UnitSkillEx skillDef : db.getUnitSkills ())
 			for (final AddsToSkill addsToSkill : skillDef.getAddsToSkill ())
 			{
 				final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (addsToSkill.getAddsToSkillID ());

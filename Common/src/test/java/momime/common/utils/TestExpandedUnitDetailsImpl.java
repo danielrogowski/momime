@@ -16,8 +16,8 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.Unit;
-import momime.common.database.UnitSkill;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
@@ -165,7 +165,7 @@ public final class TestExpandedUnitDetailsImpl
 	public final void testGetFullFigureCount ()
 	{
 		// Mock database
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		
 		// Set up object to test
 		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, unitDef, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -190,7 +190,7 @@ public final class TestExpandedUnitDetailsImpl
 	public final void testCalculateHitPointsRemaining () throws Exception
 	{
 		// Mock database
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 
 		// Damage taken
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -231,7 +231,7 @@ public final class TestExpandedUnitDetailsImpl
 	public final void testCalculateAliveFigureCount () throws Exception
 	{
 		// Mock database
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 
 		// Damage taken
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -288,7 +288,7 @@ public final class TestExpandedUnitDetailsImpl
 	public final void testCalculateHitPointsRemainingOfFirstFigure () throws Exception
 	{
 		// Mock database
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 
 		// Damage taken
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -343,14 +343,14 @@ public final class TestExpandedUnitDetailsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSkill skillA = new UnitSkill ();
+		final UnitSkillEx skillA = new UnitSkillEx ();
 		when (db.findUnitSkill ("A", "unitIgnoresCombatTerrain")).thenReturn (skillA);
 
-		final UnitSkill skillB = new UnitSkill ();
+		final UnitSkillEx skillB = new UnitSkillEx ();
 		skillB.setIgnoreCombatTerrain (false);
 		when (db.findUnitSkill ("B", "unitIgnoresCombatTerrain")).thenReturn (skillB);
 
-		final UnitSkill skillC = new UnitSkill ();
+		final UnitSkillEx skillC = new UnitSkillEx ();
 		skillC.setIgnoreCombatTerrain (true);
 		when (db.findUnitSkill ("C", "unitIgnoresCombatTerrain")).thenReturn (skillC);
 		

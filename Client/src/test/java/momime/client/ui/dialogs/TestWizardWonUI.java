@@ -11,15 +11,19 @@ import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
+import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.WizardWonScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 
 /**
@@ -39,13 +43,20 @@ public final class TestWizardWonUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Client
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 
-		final WizardGfx winningWizardGfx = new WizardGfx ();
-		winningWizardGfx.setWorldHandsImageFile ("/momime.client.graphics/animations/worlds/hands-male-mid.png");
-		winningWizardGfx.setTalkingAnimation ("WIZARD_TALKING_01");
-		when (gfx.findWizard ("WZ01", "WizardWonUI")).thenReturn (winningWizardGfx);
+		final WizardEx winningWizardDef = new WizardEx ();
+		winningWizardDef.setWorldHandsImageFile ("/momime.client.graphics/animations/worlds/hands-male-mid.png");
+		winningWizardDef.setTalkingAnimation ("WIZARD_TALKING_01");
+		when (db.findWizard ("WZ01", "WizardWonUI")).thenReturn (winningWizardDef);
 		
 		// Animations
 		final AnimationGfx worldsAnim = new AnimationGfx ();
@@ -85,15 +96,18 @@ public final class TestWizardWonUI extends ClientTestData
 		when (gfx.findAnimation ("WIZARD_TALKING_01", "WizardWonUI (T)")).thenReturn (talkingAnim);
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmWizardWon", "Title")).thenReturn ("You have won");
-		when (lang.findCategoryEntry ("frmWizardWon", "Line1")).thenReturn ("Having conquered both the");
-		when (lang.findCategoryEntry ("frmWizardWon", "Line2")).thenReturn ("worlds of Arcanus and Myrror");
-		when (lang.findCategoryEntry ("frmWizardWon", "Line3")).thenReturn ("I and only I remain the one");
-		when (lang.findCategoryEntry ("frmWizardWon", "Line4")).thenReturn ("and true Master of Magic");
+		final WizardWonScreen wizardWonScreenLang = new WizardWonScreen ();
+		wizardWonScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "You have won"));
+		wizardWonScreenLang.getLine1 ().add (createLanguageText (Language.ENGLISH, "Having conquered both the"));
+		wizardWonScreenLang.getLine2 ().add (createLanguageText (Language.ENGLISH, "worlds of Arcanus and Myrror"));
+		wizardWonScreenLang.getLine3 ().add (createLanguageText (Language.ENGLISH, "I and only I remain the one"));
+		wizardWonScreenLang.getLine4 ().add (createLanguageText (Language.ENGLISH, "and true Master of Magic"));
 
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getWizardWonScreen ()).thenReturn (wizardWonScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -111,6 +125,7 @@ public final class TestWizardWonUI extends ClientTestData
 		// Set up form
 		final WizardWonUI wizardWon = new WizardWonUI ();
 		wizardWon.setWizardWonLayout (layout);
+		wizardWon.setClient (client);
 		wizardWon.setGraphicsDB (gfx);
 		wizardWon.setUtils (utils);
 		wizardWon.setLanguageHolder (langHolder);

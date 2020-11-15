@@ -1,8 +1,8 @@
 package momime.server.ai;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.NumberedHeroItem;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Methods that the AI uses to calculate ratings about how good hero items are
@@ -15,5 +15,5 @@ public interface AIHeroItemRatingCalculations
 	 * @return Value AI estimates for how good of a hero item this is
 	 * @throws RecordNotFoundException If the item has a bonus property that we can't find in the database 
 	 */
-	public int calculateHeroItemRating (final NumberedHeroItem item, final ServerDatabaseEx db) throws RecordNotFoundException;
+	public int calculateHeroItemRating (final NumberedHeroItem item, final CommonDatabase db) throws RecordNotFoundException;
 }

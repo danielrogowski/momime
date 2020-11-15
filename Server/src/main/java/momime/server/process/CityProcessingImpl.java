@@ -22,10 +22,15 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
+import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
@@ -60,11 +65,7 @@ import momime.server.ai.CityAI;
 import momime.server.calculations.ServerCityCalculations;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.BuildingSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -165,7 +166,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering createStartingCities");
@@ -196,7 +197,7 @@ public final class CityProcessingImpl implements CityProcessing
 					plane = getPlayerPickServerUtils ().startingPlaneForWizard (ppk.getPick (), db);
 				else
 					// Raiders just pick a random plane
-					plane = db.getPlanes ().get (getRandomUtils ().nextInt (db.getPlanes ().size ())).getPlaneNumber ();
+					plane = db.getPlane ().get (getRandomUtils ().nextInt (db.getPlane ().size ())).getPlaneNumber ();
 
 				// Pick location
 				final MapCoordinates3DEx cityLocation = getCityAI ().chooseCityLocation (gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getMap (), plane, true, sd, db,
@@ -247,7 +248,7 @@ public final class CityProcessingImpl implements CityProcessing
 				city.setCityName (getOverlandMapServerUtils ().generateCityName (gsk, db.findRace (city.getCityRaceID (), "createStartingCities")));
 
 				// Cities get a free road, even if it isn't connected to anything yet
-				final PlaneSvr roadPlane = (PlaneSvr) db.findPlane (cityLocation.getZ (), "createStartingCities");
+				final Plane roadPlane = db.findPlane (cityLocation.getZ (), "createStartingCities");
 				final String roadTileTypeID = ((roadPlane.isRoadsEnchanted () != null) && (roadPlane.isRoadsEnchanted ())) ?
 					CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
 				
@@ -270,14 +271,14 @@ public final class CityProcessingImpl implements CityProcessing
 				if (PlayerKnowledgeUtils.isWizard (ppk.getWizardID ()))
 				{
 					// Wizards always get the same buildings (this also adds their Fortress & Summoning Circle)
-					for (final BuildingSvr thisBuilding : db.getBuildings ())
+					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.isInWizardsStartingCities () != null) && (thisBuilding.isInWizardsStartingCities ()))
 							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, thisBuilding.getBuildingID (), null, null, null, sd, db);
 				}
 				else
 				{
 					// Raiders buildings' depend on the city size
-					for (final BuildingSvr thisBuilding : db.getBuildings ())
+					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
 							
@@ -285,7 +286,7 @@ public final class CityProcessingImpl implements CityProcessing
 				}
 
 				// Add starting units
-				for (final UnitSvr thisUnit : db.getUnits ())
+				for (final UnitEx thisUnit : db.getUnits ())
 					if ((thisUnit.getUnitRaceID () != null) && (thisUnit.getFreeAtStartCount () != null) && (thisUnit.getUnitRaceID ().equals (city.getCityRaceID ())))
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
@@ -296,7 +297,7 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			// Connect roads between starter cities owned by this player
 			if (numberOfCities > 1)
-				for (final PlaneSvr plane : db.getPlanes ())
+				for (final Plane plane : db.getPlane ())
 					createStartingRoads (thisPlayer.getPlayerDescription ().getPlayerID (), plane.getPlaneNumber (), players, gsk.getTrueMap (), sd, db);
 		}
 
@@ -320,7 +321,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final List<MapCoordinates3DEx> listMissingRoadCells (final int playerID, final int plane, final Integer maximumSeparation,
-		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final List<MapCoordinates3DEx> citiesOnThisPlane = new ArrayList<MapCoordinates3DEx> ();
@@ -370,7 +371,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws MomException If the list includes something other than MemoryUnits or ExpandedUnitDetails
 	 */
 	private final void createStartingRoads (final int playerID, final int plane,
-		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering createStartingRoads");
@@ -379,7 +380,7 @@ public final class CityProcessingImpl implements CityProcessing
 			players, trueMap, sd, db);
 		if (missingRoadCells.size () > 0)
 		{
-			final PlaneSvr planeDef = (PlaneSvr) db.findPlane (plane, "createStartingRoads");
+			final Plane planeDef = db.findPlane (plane, "createStartingRoads");
 			final String roadTileTypeID = ((planeDef.isRoadsEnchanted () != null) && (planeDef.isRoadsEnchanted ())) ?
 				CommonDatabaseConstants.TILE_TYPE_ENCHANTED_ROAD : CommonDatabaseConstants.TILE_TYPE_NORMAL_ROAD;
 			
@@ -408,12 +409,12 @@ public final class CityProcessingImpl implements CityProcessing
 	@Override
 	public final void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering growCitiesAndProgressConstructionProjects: Player ID " + onlyOnePlayerID);
 
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				{
@@ -434,7 +435,7 @@ public final class CityProcessingImpl implements CityProcessing
 						if ((cityData.getCurrentlyConstructingBuildingID () != null) || (cityData.getCurrentlyConstructingUnitID () != null))
 						{
 							// Check if we're constructing a building or a unit
-							BuildingSvr building = null;
+							Building building = null;
 							Integer productionCost = null;
 							if (cityData.getCurrentlyConstructingBuildingID () != null)
 							{
@@ -442,7 +443,7 @@ public final class CityProcessingImpl implements CityProcessing
 								productionCost = building.getProductionCost ();
 							}
 
-							UnitSvr unit = null;
+							Unit unit = null;
 							if (cityData.getCurrentlyConstructingUnitID () != null)
 							{
 								unit = db.findUnit (cityData.getCurrentlyConstructingUnitID (), "growCitiesAndProgressConstructionProjects");
@@ -597,7 +598,7 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void sellBuilding (final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final MapCoordinates3DEx cityLocation, final Integer buildingURN,
 		final boolean pendingSale, final boolean voluntarySale,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering sellBuilding: " + cityLocation + ", building URN " + buildingURN);
@@ -648,7 +649,7 @@ public final class CityProcessingImpl implements CityProcessing
 			getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, buildingURN, voluntarySale, sd, db);
 
 			// Give gold from selling it
-			final BuildingSvr building = db.findBuilding (buildingID, "sellBuilding");
+			final Building building = db.findBuilding (buildingID, "sellBuilding");
 			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD,
 				getMemoryBuildingUtils ().goldFromSellingBuilding (building));
 
@@ -721,7 +722,7 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			// Recalc stats for all cities based on the new tax rate
 			final FogOfWarMemory trueMap = mom.getGeneralServerKnowledge ().getTrueMap ();
-			for (final PlaneSvr plane : mom.getServerDB ().getPlanes ())
+			for (final Plane plane : mom.getServerDB ().getPlane ())
 				for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 					{
@@ -764,7 +765,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void captureCity (final MapCoordinates3DEx cityLocation, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering captureCity: " + cityLocation + " was owned by player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () +
@@ -839,7 +840,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void razeCity (final MapCoordinates3DEx cityLocation,
-		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering razeCity: " + cityLocation);				
@@ -1043,7 +1044,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledgeEx gsk, final List<PlayerServerDetails> players,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering moveSummoningCircleToWizardsFortress: Player ID " + playerID);

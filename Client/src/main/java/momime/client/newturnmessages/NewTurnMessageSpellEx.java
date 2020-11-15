@@ -4,11 +4,16 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.SpellBookUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
@@ -16,16 +21,12 @@ import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.common.database.LanguageText;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.UnitUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * NTM about a spell, either one we've researched or need to pick a target for
@@ -109,75 +110,84 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	@Override
 	public final String getText ()
 	{
-		final SpellLang spellLang = getLanguage ().findSpell (getSpellID ());
-		final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
-		
 		// Text varies according to the message type
 		String text = null;
 		try
 		{
+			final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getSpellID (), "NewTurnMessageSpellEx (O)").getSpellName ());
+			
 			switch (getMsgType ())
 			{
 				// Finished researching a spell, so need to pick another one
 				case RESEARCHED_SPELL:
-					final String languageEntryID;
+				{
+					final List<LanguageText> languageText;
 					if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null)
-						languageEntryID = "ResearchNotChosen";
+						languageText = getLanguages ().getNewTurnMessages ().getResearchNotChosen ();
 					else
-						languageEntryID = "ResearchChosen";
+						languageText = getLanguages ().getNewTurnMessages ().getResearchChosen ();
 					
 					final String newSpellID = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null) ? "" : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ();
-					final SpellLang newSpell = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null) ? null : getLanguage ().findSpell
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
-					final String newSpellName = (newSpell != null) ? newSpell.getSpellName () : null;
+					final String newSpellName = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null) ? null : getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched (), "NewTurnMessageSpellEx (N)").getSpellName ());
 					
-					text = getLanguage ().findCategoryEntry ("NewTurnMessages", languageEntryID).replaceAll
+					text = getLanguageHolder ().findDescription (languageText).replaceAll
 						("OLD_SPELL_NAME", (spellName != null) ? spellName : getSpellID ()).replaceAll
 						("NEW_SPELL_NAME", (newSpellName != null) ? newSpellName : newSpellID);
 					break;
+				}
 					
 				// Cast a city/unit enchantment/curse, so need to pick a target for it
 				case TARGET_SPELL:
-					String targetLanguageEntryID = "TargetSpell";
-					boolean includeTarget = false;
-					if (isTargettingCancelled ())
-						targetLanguageEntryID = targetLanguageEntryID + "Cancelled";
-					else if ((getTargettedCity () != null) || (getTargettedUnitURN () != null))
-					{
-						targetLanguageEntryID = targetLanguageEntryID + "Chosen";
-						includeTarget = true;
-					}
-					
-					if (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN)
-						targetLanguageEntryID = targetLanguageEntryID + "LastTurn";
-					
-					// Does the target have a name, or is it a nameless location?
+				{
+					final List<LanguageText> languageText;;
 					String target = null;
-					if (getTargettedCity () != null)
+					
+					// Cancelled spell
+					if (isTargettingCancelled ())
+						languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ?
+							getLanguages ().getNewTurnMessages ().getTargetSpellCancelledLastTurn () : getLanguages ().getNewTurnMessages ().getTargetSpellCancelled ();
+							
+					// Still need to choose a target
+					else if ((getTargettedCity () == null) && (getTargettedUnitURN () == null))
+						languageText = getLanguages ().getNewTurnMessages ().getTargetSpell ();
+						
+					// Target chosen
+					else
 					{
-						final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-							(getTargettedCity ().getZ ()).getRow ().get (getTargettedCity ().getY ()).getCell ().get (getTargettedCity ().getX ()).getCityData ();
-						if (cityData != null)
-							target = cityData.getCityName ();
-					}
-					else if (getTargettedUnitURN () != null)
-					{
-						final MemoryUnit unit = getUnitUtils ().findUnitURN (getTargettedUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
-						if (unit != null)
-							target = getUnitClientUtils ().getUnitName (unit, UnitNameType.A_UNIT_NAME);
-					}
+						// Does the target have a name, or is it a nameless location?
+						if (getTargettedCity () != null)
+						{
+							final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+								(getTargettedCity ().getZ ()).getRow ().get (getTargettedCity ().getY ()).getCell ().get (getTargettedCity ().getX ()).getCityData ();
+							if (cityData != null)
+								target = cityData.getCityName ();
+						}
+						else if (getTargettedUnitURN () != null)
+						{
+							final MemoryUnit unit = getUnitUtils ().findUnitURN (getTargettedUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
+							if (unit != null)
+								target = getUnitClientUtils ().getUnitName (unit, UnitNameType.A_UNIT_NAME);
+						}
 
-					if (includeTarget)
-						targetLanguageEntryID = targetLanguageEntryID + ((target != null) ? "Named" : "Unnamed");
+						// Do we know name for the target?
+						if (target == null)
+							languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ?
+								getLanguages ().getNewTurnMessages ().getTargetSpellChosenLastTurnUnnamed () : getLanguages ().getNewTurnMessages ().getTargetSpellChosenUnnamed ();
+						else
+							languageText = (getStatus () == NewTurnMessageStatus.BEFORE_OUR_TURN_BEGAN) ?
+								getLanguages ().getNewTurnMessages ().getTargetSpellChosenLastTurnNamed () : getLanguages ().getNewTurnMessages ().getTargetSpellChosenNamed ();
+					}
 					
 					// Finally know which language entry to look up
-					text = getLanguage ().findCategoryEntry ("NewTurnMessages", targetLanguageEntryID).replaceAll
+					text = getLanguageHolder ().findDescription (languageText).replaceAll
 						("SPELL_NAME", (spellName != null) ? spellName : getSpellID ());
 					
-					if ((includeTarget) && (target != null))
+					if (target != null)
 						text = text.replaceAll ("TARGET", target);
 					
 					break;
+				}
 					
 				default:
 					text = null;
@@ -307,9 +317,9 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

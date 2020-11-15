@@ -2,8 +2,8 @@ package momime.client.utils;
 
 import java.text.DecimalFormat;
 
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 
 /**
  * Utils for manipulating text strings, typically related to formatting text for display in the UI
@@ -104,7 +104,7 @@ public final class TextUtilsImpl implements TextUtils
 			if (pos < 0)
 				result = s;
 			else
-				result = s.substring (0, pos) + " " + getLanguage ().findCategoryEntry ("Simple", "And") + s.substring (pos + 1);
+				result = s.substring (0, pos) + " " + getLanguageHolder ().findDescription (getLanguages ().getSimple ().getAnd ()) + s.substring (pos + 1);
 		}
 		
 		return result;
@@ -130,8 +130,8 @@ public final class TextUtilsImpl implements TextUtils
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 }

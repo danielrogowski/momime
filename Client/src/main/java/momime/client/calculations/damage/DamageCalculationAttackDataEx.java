@@ -1,26 +1,26 @@
 package momime.client.calculations.damage;
 
 import java.io.IOException;
-
-import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitSkillLang;
-import momime.client.utils.UnitClientUtils;
-import momime.client.utils.UnitNameType;
-import momime.client.utils.WizardClientUtils;
-import momime.common.calculations.UnitCalculations;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.MemoryUnit;
-import momime.common.messages.servertoclient.DamageCalculationAttackData;
-import momime.common.utils.UnitUtils;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.utils.UnitClientUtils;
+import momime.client.utils.UnitNameType;
+import momime.client.utils.WizardClientUtils;
+import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.LanguageText;
+import momime.common.messages.MemoryUnit;
+import momime.common.messages.servertoclient.DamageCalculationAttackData;
+import momime.common.utils.UnitUtils;
 
 /**
  * Breakdown about how a number of potential hits was calculated
@@ -98,72 +98,64 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 		// Either a unit skill ID or a unit attribute ID
 		final String attackType;
 		if (getAttackSpellID () != null)
-		{
-			final SpellLang spell = getLanguage ().findSpell (getAttackSpellID ());
-			final String spellName = (spell == null) ? null : spell.getSpellName ();
-			attackType = (spellName != null) ? spellName : getAttackSpellID ();
-		}
+			attackType = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getAttackSpellID (), "getText").getSpellName ());
 		else
-		{
-			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (getAttackSkillID ());
-			final String unitSkillDescription = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
-			attackType = (unitSkillDescription != null) ? unitSkillDescription : getAttackSkillID ();
-		}
+			attackType = getLanguageHolder ().findDescription (getClient ().getClientDB ().findUnitSkill (getAttackSkillID (), "getText").getUnitSkillDescription ());
 
 		// Now work out the rest of the text
-		final String languageEntryID;
+		final List<LanguageText> languageText;
 		switch (getDamageResolutionTypeID ())
 		{
 			case CHANCE_OF_DEATH:
-				languageEntryID = "AttackChanceOfDeath";
+				languageText = getLanguages ().getCombatDamage ().getAttackChanceOfDeath ();
 				break;
 
 			case ZEROES_AMMO:
-				languageEntryID = "AttackZeroesAmmo";
+				languageText = getLanguages ().getCombatDamage ().getAttackZeroesAmmo ();
 				break;
 
 			// Leave saving throw modifier as positive on here, so the text can say "destroys any with resistance 9 + 2 or less"
 			case DISINTEGRATE:
-				languageEntryID = "AttackDisintegrate";
+				languageText = getLanguages ().getCombatDamage ().getAttackDisintegrate ();
 				break;
 
 			// Potential hits here is the number of rolls, not a saving throw modifier, so leave positive
 			case RESISTANCE_ROLLS:
-				languageEntryID = "AttackResistanceRolls";
+				languageText = getLanguages ().getCombatDamage ().getAttackResistanceRolls ();
 				break;
 
 			case FEAR:
-				languageEntryID = "AttackFear";
+				languageText = getLanguages ().getCombatDamage ().getAttackFear ();
 				if (getPotentialHits () != null)
 					setPotentialHits (-getPotentialHits ());
 				break;
 				
 			case EACH_FIGURE_RESIST_OR_DIE:
-				languageEntryID = "AttackEachFigureResistOrDie";
+				languageText = getLanguages ().getCombatDamage ().getAttackEachFigureResistOrDie ();
 				if (getPotentialHits () != null)
 					setPotentialHits (-getPotentialHits ());
 				break;
 
 			case SINGLE_FIGURE_RESIST_OR_DIE:
-				languageEntryID = "AttackSingleFigureResistOrDie";
+				languageText = getLanguages ().getCombatDamage ().getAttackSingleFigureResistOrDie ();
 				if (getPotentialHits () != null)
 					setPotentialHits (-getPotentialHits ());
 				break;
 
 			case RESIST_OR_TAKE_DAMAGE:
-				languageEntryID = "AttackResistOrTakeDamage";
+				languageText = getLanguages ().getCombatDamage ().getAttackResistOrTakeDamage ();
 				if (getPotentialHits () != null)
 					setPotentialHits (-getPotentialHits ());
 				break;
 				
 			default:
 				if ((getAttackerUnitURN () != null) && (getAttackerFigures () != null))
-					languageEntryID = "AttackWithUnit";
+					languageText = getLanguages ().getCombatDamage ().getAttackWithUnit ();
 				else
-					languageEntryID = "AttackWithoutUnit";
+					languageText = getLanguages ().getCombatDamage ().getAttackWithoutUnit ();
 		}
 		
-		String text = "     " + getLanguage ().findCategoryEntry ("CombatDamage", languageEntryID).replaceAll
+		String text = "     " + getLanguageHolder ().findDescription (languageText).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll
 			("ATTACK_TYPE", attackType).replaceAll
 			("POTENTIAL_HITS", (getPotentialHits () == null) ? "0" : Integer.valueOf (getPotentialHits ()).toString ());
@@ -178,7 +170,8 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 			text = text.replaceAll ("ATTACK_STRENGTH", getAttackStrength ().toString ());
 
 		if (getDamageTypeID () != null)
-			text = text.replaceAll ("DAMAGE_TYPE", getLanguage ().findDamageTypeName (getDamageTypeID ()));
+			text = text.replaceAll ("DAMAGE_TYPE", getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findDamageType (getDamageTypeID (), "DamageCalculationAttackDataEx").getDamageTypeName ()));
 		
 		return text;
 	}
@@ -235,9 +228,9 @@ public final class DamageCalculationAttackDataEx extends DamageCalculationAttack
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

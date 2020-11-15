@@ -15,6 +15,7 @@ import org.junit.Test;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.SpellSetting;
 import momime.common.messages.AvailableUnit;
@@ -25,7 +26,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Tests the AIUnitCalculationsImpl class
@@ -40,7 +40,7 @@ public final class TestAIUnitCalculationsImpl
 	public final void testCanAffordUnitMaintenance_Constructed () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Player
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -101,7 +101,7 @@ public final class TestAIUnitCalculationsImpl
 	public final void testCanAffordUnitMaintenance_Summoned () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Player
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();

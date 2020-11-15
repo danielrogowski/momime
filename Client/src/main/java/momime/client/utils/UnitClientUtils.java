@@ -122,8 +122,6 @@ public interface UnitClientUtils
 	 * NB. The resulting array may not have aliveFigureCount elements; it may be x1, x4 or x5 depending on combat scale.
 	 * The calling routine should just iterate over the resulting array and make no assumptions about how many elements will contain. 
 	 * 
-	 * @param unitID The unit to draw
-	 * @param unitTypeID The type of unit it is (can pass in null - the only value it cares about is if this is 'S' for summoned units)
 	 * @param totalFigureCount The number of figures the unit had when fully healed
 	 * @param aliveFigureCount The number of figures the unit has now
 	 * @param offsetX The x offset into the graphics context to draw the unit at
@@ -131,15 +129,13 @@ public interface UnitClientUtils
 	 * @return Array of all figure positions in pixels; see CALC_UNIT_FIGURE_POSITIONS_COLUMN_ constants for what's stored in each column of the array
 	 * @throws IOException If there is a problem
 	 */
-	public int [] [] calcUnitFigurePositions (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount,
-		final int offsetX, final int offsetY) throws IOException;
+	public int [] [] calcUnitFigurePositions (final int totalFigureCount, final int aliveFigureCount, final int offsetX, final int offsetY) throws IOException;
 	
 	/**
 	 * Draws the figures of a unit.
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
 	 * 
 	 * @param unitID The unit to draw
-	 * @param unitTypeID The type of unit it is (can pass in null - the only value it cares about is if this is 'S' for summoned units)
 	 * @param totalFigureCount The number of figures the unit had when fully healed
 	 * @param aliveFigureCount The number of figures the unit has now
 	 * @param combatActionID The action to show the unit doing
@@ -153,7 +149,7 @@ public interface UnitClientUtils
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @throws IOException If there is a problem
 	 */
-	public void drawUnitFigures (final String unitID, final String unitTypeID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
+	public void drawUnitFigures (final String unitID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
 		final int baseZOrder, final List<String> shadingColours) throws IOException;
 

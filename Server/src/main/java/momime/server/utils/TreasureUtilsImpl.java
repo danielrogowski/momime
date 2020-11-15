@@ -20,13 +20,23 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MapFeature;
+import momime.common.database.MapFeatureTreasureBookReward;
+import momime.common.database.Pick;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.PickExclusiveFrom;
+import momime.common.database.PickFreeSpell;
 import momime.common.database.PickPrerequisite;
+import momime.common.database.PickType;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.SpellRank;
 import momime.common.database.SummonedUnit;
+import momime.common.database.TileType;
+import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -47,16 +57,6 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
-import momime.server.database.MapFeatureSvr;
-import momime.server.database.MapFeatureTreasureBookRewardSvr;
-import momime.server.database.PickFreeSpellSvr;
-import momime.server.database.PickSvr;
-import momime.server.database.PickTypeSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellRankSvr;
-import momime.server.database.SpellSvr;
-import momime.server.database.TileTypeSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 
@@ -211,7 +211,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	@Override
 	public final TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
 		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering rollTreasureReward: Value " + treasureValue + " for player " + player.getPlayerDescription ().getPlayerID ());
@@ -219,7 +219,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
-		final SpellSvr summonHero = db.findSpell (CommonDatabaseConstants.SPELL_ID_SUMMON_HERO, "rollTreasureReward");
+		final Spell summonHero = db.findSpell (CommonDatabaseConstants.SPELL_ID_SUMMON_HERO, "rollTreasureReward");
 
 		// Initialize message
 		final TreasureRewardMessage reward = new TreasureRewardMessage ();
@@ -241,17 +241,17 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					availableHeroItems.add (item);
 			
 			// Do we have any spells missing of each rank, within cost limits?
-			final List<SpellRankSvr> availableSpellRanks = new ArrayList<SpellRankSvr> ();
-			for (final SpellRankSvr spellRank : db.getSpellRanks ())
+			final List<SpellRank> availableSpellRanks = new ArrayList<SpellRank> ();
+			for (final SpellRank spellRank : db.getSpellRank ())
 				if ((spellRank.getTreasureRewardCost () != null) && (remainingTreasureValue >= spellRank.getTreasureRewardCost ()))
 				{
 					// Maybe we have all spells of this rank already, or maybe we can't them because we don't have enough books in this realm.
 					// To get spells as treasure rewards, need 1 pick for common/uncommon, 2 picks for rare, 3 picks for very rare.
 					boolean found = false;
-					final Iterator<SpellSvr> spells = db.getSpells ().iterator ();
+					final Iterator<Spell> spells = db.getSpell ().iterator ();
 					while ((!found) && (spells.hasNext ()))
 					{
-						final SpellSvr spell = spells.next ();
+						final Spell spell = spells.next ();
 						if (spell.getSpellRank ().equals (spellRank.getSpellRankID ()))
 						{
 							final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
@@ -271,7 +271,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			if (remainingTreasureValue >= PRISONER_REWARD_COST)
 				for (final SummonedUnit summoned : summonHero.getSummonedUnit ())
 				{
-					final UnitSvr possibleUnit = db.findUnit (summoned.getSummonedUnitID (), "rollTreasureReward");
+					final Unit possibleUnit = db.findUnit (summoned.getSummonedUnitID (), "rollTreasureReward");
 					
 					final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID
 						(gsk.getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summoned.getSummonedUnitID ());
@@ -346,9 +346,9 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					
 				// Choose the actual spell granted
 				case SPELL:
-					final SpellRankSvr spellRank = availableSpellRanks.get (getRandomUtils ().nextInt (availableSpellRanks.size ()));
+					final SpellRank spellRank = availableSpellRanks.get (getRandomUtils ().nextInt (availableSpellRanks.size ()));
 					final List<SpellResearchStatus> availableSpells = new ArrayList<SpellResearchStatus> ();
-					for (final SpellSvr spell : db.getSpells ())
+					for (final Spell spell : db.getSpell ())
 						if (spell.getSpellRank ().equals (spellRank.getSpellRankID ()))
 						{
 							final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
@@ -451,15 +451,15 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			
 			if (mapFeatureID != null)
 			{
-				final MapFeatureSvr mapFeature = db.findMapFeature (mapFeatureID, "rollTreasureReward");
-				for (final MapFeatureTreasureBookRewardSvr book : mapFeature.getMapFeatureTreasureBookRewards ())
+				final MapFeature mapFeature = db.findMapFeature (mapFeatureID, "rollTreasureReward");
+				for (final MapFeatureTreasureBookReward book : mapFeature.getMapFeatureTreasureBookReward ())
 					availableSpellBookIDs.add (book.getPickID ());
 			}
 			
 			// If we got none, then either there was no map feature there, or its not a lair type of feature, e.g. gold
 			if (availableSpellBookIDs.size () == 0)
 			{
-				final TileTypeSvr tileType = db.findTileType (tileTypeID, "rollTreasureReward");
+				final TileType tileType = db.findTileType (tileTypeID, "rollTreasureReward");
 				if (tileType.getMagicRealmID () != null)
 					availableSpellBookIDs.add (tileType.getMagicRealmID ());
 			}
@@ -486,10 +486,10 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			while (specialRewardCount > 0)
 			{
 				// Get a list of all books and all retorts that we could obtain
-				final Map<String, List<PickSvr>> availablePickTypes = new HashMap<String, List<PickSvr>> (); 
-				for (final PickSvr pick : db.getPicks ())
+				final Map<String, List<Pick>> availablePickTypes = new HashMap<String, List<Pick>> (); 
+				for (final Pick pick : db.getPick ())
 				{					
-					final PickTypeSvr pickType = db.findPickType (pick.getPickType (), "rollTreasureReward");
+					final PickType pickType = db.findPickType (pick.getPickType (), "rollTreasureReward");
 					
 					// Can't pick Myrran, or spend more points than we have
 					if ((pick.getPickCost () != null) && (pick.getPickCost () <= 2) && (pick.getPickCost () <= specialRewardCount) &&
@@ -509,7 +509,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 							for (final PickPrerequisite prereq : pick.getPickPrerequisite ())
 								if (prereq.getPrerequisiteID () != null)
 								{
-									final PickSvr prereqPick = db.findPick (prereq.getPrerequisiteID (), "rollTreasureReward");
+									final Pick prereqPick = db.findPick (prereq.getPrerequisiteID (), "rollTreasureReward");
 									
 									// Sneaky way to identify Divine Power and Infernal Power without hard coding them
 									if ((prereqPick.getPickExclusiveFrom ().size () > 0) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPrerequisiteID ()) == 0))
@@ -526,10 +526,10 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						if (ok)
 						{
 							// Add to available choices
-							List<PickSvr> availablePicks = availablePickTypes.get (pick.getPickType ());
+							List<Pick> availablePicks = availablePickTypes.get (pick.getPickType ());
 							if (availablePicks == null)
 							{
-								availablePicks = new ArrayList<PickSvr> ();
+								availablePicks = new ArrayList<Pick> ();
 								availablePickTypes.put (pick.getPickType (), availablePicks);
 							}
 							availablePicks.add (pick);
@@ -546,12 +546,12 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					{
 						debug.append (" " + pickTypeID + " (");
 						boolean first = true;
-						for (final PickSvr pick : availablePicks)
+						for (final Pick pick : availablePicks)
 						{
 							if (!first)
 								debug.append (", ");
 							
-							debug.append (pick.getPickDescription ());
+							debug.append (pick.getPickID ());
 							first = false;
 						}
 						debug.append (")");
@@ -600,14 +600,14 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					final String pickTypeID = availablePickTypesList.get (getRandomUtils ().nextInt (availablePickTypesList.size ()));
 					
 					// Choose pick to award
-					final List<PickSvr> availablePicks = availablePickTypes.get (pickTypeID);
-					final PickSvr pick = availablePicks.get (getRandomUtils ().nextInt (availablePicks.size ()));
+					final List<Pick> availablePicks = availablePickTypes.get (pickTypeID);
+					final Pick pick = availablePicks.get (getRandomUtils ().nextInt (availablePicks.size ()));
 					
 					getPlayerPickUtils ().updatePickQuantity (pub.getPick (), pick.getPickID (), 1);
 					specialRewardCount = specialRewardCount - pick.getPickCost ();
 
 					log.debug ("Treasure reward for player " + player.getPlayerDescription ().getPlayerID () + " at location " + lairNodeTowerLocation + " awarded special " +
-						pickTypeID + " - " + pick.getPickDescription () + " with cost " + pick.getPickCost ());
+						pickTypeID + " - " + pick.getPickID () + " with cost " + pick.getPickCost ());
 					
 					// It may already be listed in rewards
 					boolean found = false;
@@ -627,7 +627,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					}
 					
 					// If the pick grants any spells (Artificer) then learn them
-					for (final PickFreeSpellSvr freeSpell : pick.getPickFreeSpells ())
+					for (final PickFreeSpell freeSpell : pick.getPickFreeSpell ())
 						getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), freeSpell.getFreeSpellID ()).setStatus (SpellResearchStatusID.AVAILABLE);
 				}
 			}
@@ -663,7 +663,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	 */
 	@Override
 	public final void sendTreasureReward (final TreasureRewardMessage reward, final PlayerServerDetails player,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		log.trace ("Entering sendTreasureReward: Player " + player.getPlayerDescription ().getPlayerID ());

@@ -7,17 +7,17 @@ import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.random.RandomUtils;
+
+import momime.common.database.CommonDatabase;
+import momime.common.database.Spell;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.SpellUtilsImpl;
 import momime.server.ServerTestData;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-
-import org.junit.Test;
-
-import com.ndg.random.RandomUtils;
 
 /**
  * Tests the ServerSpellCalculations class
@@ -31,11 +31,11 @@ public final class TestServerSpellCalculationsImpl extends ServerTestData
 	@Test
 	public final void testRandomizeResearchableSpells () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		// Every spell is initially unavailbale
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
-		for (final SpellSvr spell : db.getSpells ())
+		for (final Spell spell : db.getSpell ())
 		{
 			final SpellResearchStatus status = new SpellResearchStatus ();
 			status.setSpellID (spell.getSpellID ());
@@ -160,11 +160,11 @@ public final class TestServerSpellCalculationsImpl extends ServerTestData
 	@Test
 	public final void testRandomizeSpellsResearchableNow () throws Exception
 	{
-		final ServerDatabaseEx db = loadServerDatabase ();
+		final CommonDatabase db = loadServerDatabase ();
 
 		// Every spell is initially unavailbale
 		final List<SpellResearchStatus> spells = new ArrayList<SpellResearchStatus> ();
-		for (final SpellSvr spell : db.getSpells ())
+		for (final Spell spell : db.getSpell ())
 		{
 			final SpellResearchStatus status = new SpellResearchStatus ();
 			status.setSpellID (spell.getSpellID ());

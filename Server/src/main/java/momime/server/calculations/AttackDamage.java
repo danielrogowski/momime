@@ -1,9 +1,9 @@
 package momime.server.calculations;
 
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.DamageType;
+import momime.common.database.Spell;
 import momime.common.utils.CompareUtils;
-import momime.server.database.DamageTypeSvr;
-import momime.server.database.SpellSvr;
 
 /**
  * When passing data from the attack damage calc routines into the defence damage calc routines, we need
@@ -22,13 +22,13 @@ public final class AttackDamage
 	private int chanceToHit;
 	
 	/** Type of damage dealt, for purposes of immunities */
-	private final DamageTypeSvr damageType;
+	private final DamageType damageType;
 	
 	/** Rules by which the damage will be applied */
 	private final DamageResolutionTypeID damageResolutionTypeID;
 	
 	/** The spell that's causing the damage; or null if the attack isn't coming from a spell */
-	private final SpellSvr spell;
+	private final Spell spell;
 
 	/** The skill ID of the incoming attack, e.g. bonus from Long Range only activates vs ranged attacks */
 	private final String attackFromSkillID;
@@ -54,8 +54,8 @@ public final class AttackDamage
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against; ignored for spells
 	 * @param aRepetitions The number of times this damage is dealt
 	 */
-	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit, final DamageTypeSvr aDamageType, final DamageResolutionTypeID aDamageResolutionTypeID,
-		final SpellSvr aSpell, final String anAttackFromSkillID, final String anAttackFromMagicRealmID, final int aRepetitions)
+	public AttackDamage (final Integer aPotentialHits, final int aPlusToHit, final DamageType aDamageType, final DamageResolutionTypeID aDamageResolutionTypeID,
+		final Spell aSpell, final String anAttackFromSkillID, final String anAttackFromMagicRealmID, final int aRepetitions)
 	{
 		super ();
 		potentialHits = aPotentialHits;
@@ -145,7 +145,7 @@ public final class AttackDamage
 	/**
 	 * @return Type of damage dealt, for purposes of immunities
 	 */
-	public final DamageTypeSvr getDamageType ()
+	public final DamageType getDamageType ()
 	{
 		return damageType;
 	}
@@ -161,7 +161,7 @@ public final class AttackDamage
 	/**
 	 * @return The spell that's causing the damage; or null if the attack isn't coming from a spell
 	 */
-	public final SpellSvr getSpell ()
+	public final Spell getSpell ()
 	{
 		return spell;
 	}

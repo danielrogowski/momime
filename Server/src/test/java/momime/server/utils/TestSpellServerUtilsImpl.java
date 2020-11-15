@@ -4,18 +4,19 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import momime.common.database.SwitchResearch;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-import momime.common.messages.SpellResearchStatus;
-import momime.common.messages.SpellResearchStatusID;
-import momime.common.utils.SpellUtils;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 
 import org.junit.Test;
 
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
+import momime.common.database.CommonDatabase;
+import momime.common.database.Spell;
+import momime.common.database.SwitchResearch;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.SpellResearchStatus;
+import momime.common.messages.SpellResearchStatusID;
+import momime.common.utils.SpellUtils;
 
 /**
  * Tests the SpellServerUtilsImpl class
@@ -30,7 +31,7 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch () throws Exception
 	{
 		// Spell details
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -62,7 +63,7 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_NotAvailable () throws Exception
 	{
 		// Spell details
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -94,9 +95,9 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_ResearchingSame () throws Exception
 	{
 		// Spell details
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP001", "validateResearch")).thenReturn (spell);
 		
 		// Player
@@ -131,10 +132,10 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchDisallowed () throws Exception
 	{
 		// Spell details
-		final SpellSvr oldSpell = new SpellSvr ();
+		final Spell oldSpell = new Spell ();
 		oldSpell.setResearchCost (80);
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
 		
 		// Player
@@ -174,10 +175,10 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchFreely () throws Exception
 	{
 		// Spell details
-		final SpellSvr oldSpell = new SpellSvr ();
+		final Spell oldSpell = new Spell ();
 		oldSpell.setResearchCost (80);
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
 		
 		// Player
@@ -217,10 +218,10 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchButLose () throws Exception
 	{
 		// Spell details
-		final SpellSvr oldSpell = new SpellSvr ();
+		final Spell oldSpell = new Spell ();
 		oldSpell.setResearchCost (80);
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
 		
 		// Player
@@ -260,10 +261,10 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchAfterStarted () throws Exception
 	{
 		// Spell details
-		final SpellSvr oldSpell = new SpellSvr ();
+		final Spell oldSpell = new Spell ();
 		oldSpell.setResearchCost (80);
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
 		
 		// Player
@@ -303,10 +304,10 @@ public final class TestSpellServerUtilsImpl
 	public final void testValidateResearch_SwitchBeforeStarted () throws Exception
 	{
 		// Spell details
-		final SpellSvr oldSpell = new SpellSvr ();
+		final Spell oldSpell = new Spell ();
 		oldSpell.setResearchCost (80);
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP002", "validateResearch")).thenReturn (oldSpell);
 		
 		// Player

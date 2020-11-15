@@ -16,10 +16,13 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.utils.Holder;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
+import momime.common.database.UnitEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -28,9 +31,6 @@ import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 
 /**
  * Tests the AISpellCalculationsImpl class
@@ -45,7 +45,7 @@ public final class TestAISpellCalculationsImpl
 	public final void testCanAffordSpellMaintenance_Normal () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -61,7 +61,7 @@ public final class TestAISpellCalculationsImpl
 		spellUpkeep.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		spellUpkeep.setUndoubledProductionValue (6);
 		
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
 		spell.getSpellUpkeep ().add (spellUpkeep);		
 		
@@ -98,7 +98,7 @@ public final class TestAISpellCalculationsImpl
 	public final void testCanAffordSpellMaintenance_Summoning () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Player
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
@@ -112,13 +112,13 @@ public final class TestAISpellCalculationsImpl
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 
 		// Test spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		
-		final List<UnitSvr> unitDefs = new ArrayList<UnitSvr> ();
+		final List<UnitEx> unitDefs = new ArrayList<UnitEx> ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitSvr unitDef = new UnitSvr ();
+			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitID ("UN00" + n);
 			unitDefs.add (unitDef);
 		}

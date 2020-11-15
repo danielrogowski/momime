@@ -2,6 +2,14 @@ package momime.server.fogofwar;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
@@ -14,14 +22,6 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.FogOfWarCalculations;
-import momime.server.database.ServerDatabaseEx;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Contains methods for whether each player can see certain game items during a turn;
@@ -52,7 +52,7 @@ public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisib
 	 */
 	@Override
 	public final boolean canSeeUnitMidTurn (final MemoryUnit unit, final MapVolumeOfMemoryGridCells trueTerrain, final PlayerServerDetails player,
-		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		log.trace ("Entering canSeeUnitMidTurn: Unit URN " + unit.getUnitURN () + ", Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -95,7 +95,7 @@ public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisib
 	@Override
 	public final boolean canSeeSpellMidTurn (final MemoryMaintainedSpell spell,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final PlayerServerDetails player,
-		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
 		log.trace ("Entering canSeeSpellMidTurn: Spell URN " + spell.getSpellURN () + ", Player ID " + player.getPlayerDescription ().getPlayerID ());

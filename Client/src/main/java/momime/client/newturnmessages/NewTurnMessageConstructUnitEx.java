@@ -14,27 +14,27 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import momime.client.MomClient;
-import momime.client.graphics.database.CityViewElementGfx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.UnitLang;
-import momime.client.ui.MomUIConstants;
-import momime.client.ui.frames.ChangeConstructionUI;
-import momime.client.ui.frames.NewTurnMessagesUI;
-import momime.client.ui.frames.PrototypeFrameCreator;
-import momime.client.utils.AnimationController;
-import momime.common.messages.NewTurnMessageConstructUnit;
-import momime.common.messages.OverlandMapCityData;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.NdgUIUtils;
+
+import momime.client.MomClient;
+import momime.client.graphics.AnimationContainer;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.ChangeConstructionUI;
+import momime.client.ui.frames.NewTurnMessagesUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
+import momime.client.utils.AnimationController;
+import momime.common.database.CityViewElement;
+import momime.common.database.UnitEx;
+import momime.common.messages.NewTurnMessageConstructUnit;
+import momime.common.messages.OverlandMapCityData;
 
 /**
  * NTM describing a unit that completed construction
@@ -107,8 +107,8 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 		{
 			// How much space do we have for the text?
 			final Dimension labelSize = new Dimension
-				((NewTurnMessagesUI.SCROLL_WIDTH - (getGraphicsDB ().getLargestBuildingSize ().width * 2) - (INSET * 5)) / 2,
-					getGraphicsDB ().getLargestBuildingSize ().height);
+				((NewTurnMessagesUI.SCROLL_WIDTH - (getClient ().getClientDB ().getLargestBuildingSize ().width * 2) - (INSET * 5)) / 2,
+					getClient ().getClientDB ().getLargestBuildingSize ().height);
 			
 			// Now set up the panel
 			panel = new JPanel ();
@@ -122,9 +122,9 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			panel.add (constructionCompletedLabel, getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, INSET, 0, INSET), GridBagConstraintsNoFill.CENTRE));
 
 			constructionCompletedImage = new JLabel ();
-			constructionCompletedImage.setMinimumSize (getGraphicsDB ().getLargestBuildingSize ());
-			constructionCompletedImage.setMaximumSize (getGraphicsDB ().getLargestBuildingSize ());
-			constructionCompletedImage.setPreferredSize (getGraphicsDB ().getLargestBuildingSize ());
+			constructionCompletedImage.setMinimumSize (getClient ().getClientDB ().getLargestBuildingSize ());
+			constructionCompletedImage.setMaximumSize (getClient ().getClientDB ().getLargestBuildingSize ());
+			constructionCompletedImage.setPreferredSize (getClient ().getClientDB ().getLargestBuildingSize ());
 			panel.add (constructionCompletedImage, getUtils ().createConstraintsNoFill (1, 0, 1, 1, INSET, GridBagConstraintsNoFill.CENTRE));
 
 			nextConstructionLabel = getUtils ().createWrappingLabel (MomUIConstants.SILVER, getSmallFont ());
@@ -134,9 +134,9 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			panel.add (nextConstructionLabel, getUtils ().createConstraintsNoFill (2, 0, 1, 1, new Insets (0, INSET, 0, INSET), GridBagConstraintsNoFill.CENTRE));
 
 			nextConstructionImage = new JLabel ();
-			nextConstructionImage.setMinimumSize (getGraphicsDB ().getLargestBuildingSize ());
-			nextConstructionImage.setMaximumSize (getGraphicsDB ().getLargestBuildingSize ());
-			nextConstructionImage.setPreferredSize (getGraphicsDB ().getLargestBuildingSize ());
+			nextConstructionImage.setMinimumSize (getClient ().getClientDB ().getLargestBuildingSize ());
+			nextConstructionImage.setMaximumSize (getClient ().getClientDB ().getLargestBuildingSize ());
+			nextConstructionImage.setPreferredSize (getClient ().getClientDB ().getLargestBuildingSize ());
 			panel.add (nextConstructionImage, getUtils ().createConstraintsNoFill (3, 0, 1, 1, new Insets (0, 0, 0, INSET), GridBagConstraintsNoFill.CENTRE));
 		}
 		
@@ -144,34 +144,28 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 
-		final UnitLang oldUnit = getLanguage ().findUnit (getUnitID ());
-		constructionCompletedLabel.setText (getLanguage ().findCategoryEntry ("NewTurnMessages", "ConstructionCompleted").replaceAll
-			("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
-			("OLD_CONSTRUCTION", (oldUnit != null) ? oldUnit.getUnitName () : getUnitID ()));
-		
-		String text = getLanguage ().findCategoryEntry ("NewTurnMessages", "NextConstruction");
-		
-		if (cityData.getCurrentlyConstructingBuildingID () != null)
-		{
-			final BuildingLang newBuilding = getLanguage ().findBuilding (cityData.getCurrentlyConstructingBuildingID ());
-			text = text.replaceAll ("NEW_CONSTRUCTION", (newBuilding != null) ? newBuilding.getBuildingName () : cityData.getCurrentlyConstructingBuildingID ());
-		}
-
-		if (cityData.getCurrentlyConstructingUnitID () != null)
-		{
-			final UnitLang newUnit = getLanguage ().findUnit (cityData.getCurrentlyConstructingUnitID ());
-			text = text.replaceAll ("NEW_CONSTRUCTION", (newUnit != null) ? newUnit.getUnitName () : cityData.getCurrentlyConstructingUnitID ());
-		}
-		
-		nextConstructionLabel.setText (text);
-
-		// Look up the image for the old unit
-		constructionCompletedImage.setIcon (null);
 		try
 		{
-			final BufferedImage image = getUtils ().loadImage (getGraphicsDB ().findUnit
-				(getUnitID (), "getComponent-Old").getUnitOverlandImageFile ());
+			final UnitEx oldUnit = getClient ().getClientDB ().findUnit (getUnitID (), "NewTurnMessageConstructUnitEx");
 			
+			constructionCompletedLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getNewTurnMessages ().getConstructionCompleted ()).replaceAll
+				("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
+				("OLD_CONSTRUCTION", getLanguageHolder ().findDescription (oldUnit.getUnitName ())));
+			
+			String text = getLanguageHolder ().findDescription (getLanguages ().getNewTurnMessages ().getNextConstruction ());
+
+			if (cityData.getCurrentlyConstructingBuildingID () != null)
+				text = text.replaceAll ("NEW_CONSTRUCTION", getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent").getBuildingName ()));
+	
+			if (cityData.getCurrentlyConstructingUnitID () != null)
+				text = text.replaceAll ("NEW_CONSTRUCTION", getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "NewTurnMessageConstructUnitEx").getUnitName ()));
+
+			nextConstructionLabel.setText (text);
+
+			// Look up the image for the old unit
+			final BufferedImage image = getUtils ().loadImage (oldUnit.getUnitOverlandImageFile ());			
 			constructionCompletedImage.setIcon (new ImageIcon (image));
 		}
 		catch (final Exception e)
@@ -186,10 +180,10 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			// Building image
 			if (cityData.getCurrentlyConstructingBuildingID () != null)
 			{
-				final CityViewElementGfx buildingImage = getGraphicsDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
+				final CityViewElement buildingImage = getClient ().getClientDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "getComponent-New");
 				final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 					((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-					buildingImage.getCityViewAnimation (), true);
+					buildingImage.getCityViewAnimation (), true, AnimationContainer.COMMON_XML);
 
 				nextConstructionImage.setIcon (new ImageIcon (image));
 			}
@@ -197,7 +191,7 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			// Unit image
 			if (cityData.getCurrentlyConstructingUnitID () != null)
 			{
-				final BufferedImage image = getUtils ().loadImage (getGraphicsDB ().findUnit
+				final BufferedImage image = getUtils ().loadImage (getClient ().getClientDB ().findUnit
 					(cityData.getCurrentlyConstructingUnitID (), "getComponent-New").getUnitOverlandImageFile ());
 
 				nextConstructionImage.setIcon (new ImageIcon (image));
@@ -225,8 +219,8 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 		// Look up the image for the new construction, if it is a building
 		if (cityData.getCurrentlyConstructingBuildingID () != null)
 		{
-			final CityViewElementGfx newBuilding = getGraphicsDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
-			getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList);
+			final CityViewElement newBuilding = getClient ().getClientDB ().findCityViewElementBuilding (cityData.getCurrentlyConstructingBuildingID (), "registerRepaintTriggers-New");
+			getAnim ().registerRepaintTrigger (newBuilding.getCityViewAnimation (), newTurnMessagesList, AnimationContainer.COMMON_XML);
 		}
 		
 		// Units are displayed with their overland icon rather than the full combat tile and all the figures, so are never animated
@@ -305,9 +299,9 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

@@ -12,10 +12,12 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitSpecialOrder;
+import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -25,8 +27,6 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitTypeSvr;
 
 /**
  * Server side only helper methods for dealing with units
@@ -50,7 +50,7 @@ public interface UnitServerUtils
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 */
 	public MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final Integer startingExperience,
-		final ServerDatabaseEx db) throws RecordNotFoundException;
+		final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * Chooses a name for this hero (out of 5 possibilities) and rolls their random skills
@@ -59,7 +59,7 @@ public interface UnitServerUtils
 	 * @throws MomException If we find a hero who has no possible names defined, or who needs a random skill and we can't find a suitable one
 	 * @throws RecordNotFoundException If we can't find the definition for the unit
 	 */
-	public void generateHeroNameAndRandomSkills (final MemoryUnit unit, final ServerDatabaseEx db)
+	public void generateHeroNameAndRandomSkills (final MemoryUnit unit, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 	
 	/**
@@ -85,7 +85,7 @@ public interface UnitServerUtils
 	 * @throws MomException If the player's unit doesn't have the experience skill
 	 */
 	public void setAndSendSpecialOrder (final MemoryUnit trueUnit, final UnitSpecialOrder specialOrder, final PlayerServerDetails player,
-		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException;
 
 	/**
@@ -133,7 +133,7 @@ public interface UnitServerUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	public UnitAddLocation findNearestLocationWhereUnitCanBeAdded (final MapCoordinates3DEx desiredLocation, final String unitID, final int playerID,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -198,7 +198,7 @@ public interface UnitServerUtils
 	 * @param owningPlayer Who owns the unit
 	 * @param experienceSkillValue The number of experience points the unit now has
 	 */
-	public void checkIfHeroGainedALevel (final int unitURN, final UnitTypeSvr unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue);
+	public void checkIfHeroGainedALevel (final int unitURN, final UnitType unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue);
 
 	/**
 	 * @param combatLocation Location of combat to check
@@ -211,6 +211,6 @@ public interface UnitServerUtils
 	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
 	 */
 	public MapCoordinates2DEx findFreeCombatPositionClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
-		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final ServerDatabaseEx db)
+		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException;
 }

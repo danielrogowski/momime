@@ -19,12 +19,10 @@ import java.util.Map.Entry;
 import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
@@ -45,7 +43,7 @@ import com.ndg.utils.Holder;
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.ShortcutKeyLang;
+import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -55,7 +53,6 @@ import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
-import momime.common.database.Shortcut;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -167,7 +164,7 @@ public final class ArmyListUI extends MomClientDialogUI
 		
 		// We need any overland unit image to know the size of it
 		final String firstUnitID = getClient ().getClientDB ().getUnits ().get (0).getUnitID ();
-		final BufferedImage firstUnitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (firstUnitID, "ArmyListUI").getUnitOverlandImageFile ());
+		final BufferedImage firstUnitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (firstUnitID, "ArmyListUI").getUnitOverlandImageFile ());
 		
 		// Actions
 		heroItemsAction = new LoggingAction ((ev) -> getHeroItemsUI ().setVisible (true));
@@ -479,7 +476,7 @@ public final class ArmyListUI extends MomClientDialogUI
 		log.trace ("Entering languageChanged");
 
 		// Title containing player name
-		String titleText = getLanguage ().findCategoryEntry ("frmArmyList", "Title");
+		String titleText = getLanguageHolder ().findDescription (getLanguages ().getArmyListScreen ().getTitle ());
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID ());
 		if (ourPlayer != null)
 			titleText = titleText.replaceAll ("PLAYER_NAME", getWizardClientUtils ().getPlayerName (ourPlayer));
@@ -488,22 +485,11 @@ public final class ArmyListUI extends MomClientDialogUI
 		getDialog ().setTitle (titleText);
 		
 		// Buttons
-		heroItemsAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmArmyList", "HeroItems"));
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmArmyList", "OK"));
+		heroItemsAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getArmyListScreen ().getHeroItems ()));
+		okAction.putValue				(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 		
 		// Shortcut keys
-		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
-		for (final Object shortcut : contentPane.getActionMap ().keys ())
-			if (shortcut instanceof Shortcut)
-			{
-				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
-				if (shortcutKey != null)
-				{
-					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
-					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
-					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
-				}
-			}
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 		
 		log.trace ("Exiting languageChanged");
 	}

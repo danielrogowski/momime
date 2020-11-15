@@ -29,19 +29,12 @@ import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeGfx;
-import momime.client.graphics.database.ProductionTypeImageGfx;
-import momime.client.graphics.database.UnitGfx;
-import momime.client.graphics.database.UnitSkillGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.UnitSkillLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.languages.database.ChangeConstructionScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.UnitAttributeListCellRenderer;
 import momime.client.ui.renderer.UnitSkillListCellRenderer;
@@ -53,10 +46,16 @@ import momime.client.utils.UnitNameType;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.CityViewElement;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
 import momime.common.database.ProductionTypeAndUndoubledValue;
-import momime.common.database.Unit;
+import momime.common.database.ProductionTypeEx;
+import momime.common.database.ProductionTypeImage;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
@@ -85,19 +84,16 @@ public final class TestUnitInfoPanel extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		
-		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
-		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
-		when (lang.findCategoryEntry ("frmChangeConstruction", "BuildingURN")).thenReturn ("Building URN");
+		final ChangeConstructionScreen changeConstructionScreenLang = new ChangeConstructionScreen ();
+		changeConstructionScreenLang.getUpkeep ().add (createLanguageText (Language.ENGLISH, "Upkeep"));
+		changeConstructionScreenLang.getCost ().add (createLanguageText (Language.ENGLISH, "Cost"));
+		changeConstructionScreenLang.getBuildingURN ().add (createLanguageText (Language.ENGLISH, "Building URN"));
 
-		final BuildingLang granaryName = new BuildingLang ();
-		granaryName.setBuildingName ("Granary");
-		granaryName.setBuildingHelpText ("This is the long description of what a Granary does");
-		when (lang.findBuilding ("BL01")).thenReturn (granaryName);
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getChangeConstructionScreen ()).thenReturn (changeConstructionScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Client city calculations derive language strings
 		final ClientCityCalculations clientCityCalc = mock (ClientCityCalculations.class);
@@ -107,26 +103,16 @@ public final class TestUnitInfoPanel extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock entries from the graphics XML
-		final CityViewElementGfx granaryImage = new CityViewElementGfx ();
-		granaryImage.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
-		
-		final ProductionTypeImageGfx goldImageContainer = new ProductionTypeImageGfx ();
-		goldImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
-		goldImageContainer.setProductionValue ("1");
-		
-		final ProductionTypeGfx goldImages = new ProductionTypeGfx ();
-		goldImages.getProductionTypeImage ().add (goldImageContainer);
-		goldImages.buildMap ();
-		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		when (gfx.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryImage);
-		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (goldImages);
-		
+
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final Building granary = new Building ();
+		granary.getBuildingName ().add (createLanguageText (Language.ENGLISH, "Granary"));
+		granary.getBuildingHelpText ().add (createLanguageText (Language.ENGLISH, "This is the long description of what a Granary does"));
 		granary.setProductionCost (60);
+		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
 
 		final BuildingPopulationProductionModifier upkeep = new BuildingPopulationProductionModifier ();
 		upkeep.setProductionTypeID ("RE01");
@@ -134,13 +120,28 @@ public final class TestUnitInfoPanel extends ClientTestData
 		granary.getBuildingPopulationProductionModifier ().add (upkeep);
 		
 		when (db.findBuilding ("BL01", "showBuilding")).thenReturn (granary);
+
+		final ProductionTypeImage goldImageContainer = new ProductionTypeImage ();
+		goldImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
+		goldImageContainer.setProductionValue ("1");
+		
+		final ProductionTypeEx goldImages = new ProductionTypeEx ();
+		goldImages.getProductionTypeImage ().add (goldImageContainer);
+		goldImages.buildMap ();
+		
+		when (db.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (goldImages);
+
+		final CityViewElement granaryImage = new CityViewElement ();
+		granaryImage.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
+		
+		when (db.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryImage);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
-		resourceValueClientUtils.setGraphicsDB (gfx);
+		resourceValueClientUtils.setClient (client);
 		resourceValueClientUtils.setUtils (utils);
 		
 		// Animation controller
@@ -159,6 +160,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 
 		final UnitSkillListCellRenderer skillRenderer = new UnitSkillListCellRenderer ();
 		skillRenderer.setLanguageHolder (langHolder);
+		skillRenderer.setClient (client);
 		skillRenderer.setGraphicsDB (gfx);
 		skillRenderer.setUtils (utils);
 		
@@ -215,14 +217,16 @@ public final class TestUnitInfoPanel extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		final ChangeConstructionScreen changeConstructionScreenLang = new ChangeConstructionScreen ();
+		changeConstructionScreenLang.getUpkeep ().add (createLanguageText (Language.ENGLISH, "Upkeep"));
+		changeConstructionScreenLang.getCost ().add (createLanguageText (Language.ENGLISH, "Cost"));
+		changeConstructionScreenLang.getUnitURN ().add (createLanguageText (Language.ENGLISH, "Unit URN"));
 
-		when (lang.findCategoryEntry ("frmChangeConstruction", "Upkeep")).thenReturn ("Upkeep");
-		when (lang.findCategoryEntry ("frmChangeConstruction", "Cost")).thenReturn ("Cost");
-		when (lang.findCategoryEntry ("frmChangeConstruction", "UnitURN")).thenReturn ("Unit URN");
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getChangeConstructionScreen ()).thenReturn (changeConstructionScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -230,31 +234,10 @@ public final class TestUnitInfoPanel extends ClientTestData
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final ProductionTypeImageGfx goldImageContainer = new ProductionTypeImageGfx ();
-		goldImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
-		goldImageContainer.setProductionValue ("1");
-		
-		final ProductionTypeGfx goldImages = new ProductionTypeGfx ();
-		goldImages.getProductionTypeImage ().add (goldImageContainer);
-		goldImages.buildMap ();
-		when (gfx.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (goldImages);
-
-		final ProductionTypeImageGfx rationsImageContainer = new ProductionTypeImageGfx ();
-		rationsImageContainer.setProductionImageFile ("/momime.client.graphics/production/rations/1.png");
-		rationsImageContainer.setProductionValue ("1");
-
-		final ProductionTypeGfx rationsImages = new ProductionTypeGfx ();
-		rationsImages.getProductionTypeImage ().add (rationsImageContainer);
-		rationsImages.buildMap ();
-		when (gfx.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (rationsImages);
-		
-		final UnitGfx unitGfx = new UnitGfx ();
-		when (gfx.findUnit (eq ("UN001"), anyString ())).thenReturn (unitGfx);
-		
 		// Mock entries from client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit longbowmen = new Unit ();
+		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setProductionCost (80);
 		longbowmen.setRangedAttackType ("RAT01");
 
@@ -267,6 +250,24 @@ public final class TestUnitInfoPanel extends ClientTestData
 		longbowmen.getUnitUpkeep ().add (rationsUpkeep);
 		
 		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (longbowmen);
+
+		final ProductionTypeImage goldImageContainer = new ProductionTypeImage ();
+		goldImageContainer.setProductionImageFile ("/momime.client.graphics/production/gold/1.png");
+		goldImageContainer.setProductionValue ("1");
+		
+		final ProductionTypeEx goldImages = new ProductionTypeEx ();
+		goldImages.getProductionTypeImage ().add (goldImageContainer);
+		goldImages.buildMap ();
+		when (db.findProductionType ("RE01", "generateUpkeepImage")).thenReturn (goldImages);
+
+		final ProductionTypeImage rationsImageContainer = new ProductionTypeImage ();
+		rationsImageContainer.setProductionImageFile ("/momime.client.graphics/production/rations/1.png");
+		rationsImageContainer.setProductionValue ("1");
+
+		final ProductionTypeEx rationsImages = new ProductionTypeEx ();
+		rationsImages.getProductionTypeImage ().add (rationsImageContainer);
+		rationsImages.buildMap ();
+		when (db.findProductionType ("RE02", "generateUpkeepImage")).thenReturn (rationsImages);
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
@@ -293,7 +294,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
-		resourceValueClientUtils.setGraphicsDB (gfx);
+		resourceValueClientUtils.setClient (client);
 		resourceValueClientUtils.setUtils (utils);
 
 		// Animation controller
@@ -323,18 +324,12 @@ public final class TestUnitInfoPanel extends ClientTestData
 		{
 			final String skillID = "US0" + n;
 			
-			// Lang
-			final UnitSkillLang skillLang = new UnitSkillLang ();
-			skillLang.setUnitSkillDescription ("Name of skill " + skillID);
-			when (lang.findUnitSkill (skillID)).thenReturn (skillLang);
+			final UnitSkillEx skillDef = new UnitSkillEx ();
+			skillDef.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Name of skill " + skillID));
+			skillDef.setUnitSkillTypeID (UnitSkillTypeID.NO_VALUE);
+			skillDef.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png");
+			when (db.findUnitSkill (eq (skillID), anyString ())).thenReturn (skillDef);
 
-			// Gfx
-			final UnitSkillGfx skillGfx = new UnitSkillGfx ();
-			skillGfx.setUnitSkillTypeID (UnitSkillTypeID.NO_VALUE);
-			skillGfx.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png");
-			
-			when (gfx.findUnitSkill (eq (skillID), anyString ())).thenReturn (skillGfx);
-			
 			// Unit stat
 			final UnitSkillAndValue skill = new UnitSkillAndValue ();
 			skill.setUnitSkillID (skillID);
@@ -357,15 +352,12 @@ public final class TestUnitInfoPanel extends ClientTestData
 			final String attrID = "UA0" + unitAttrNo;
 
 			// Lang
-			final UnitSkillLang unitAttrLang = new UnitSkillLang ();
-			unitAttrLang.setUnitSkillDescription (unitAttributeDesc);
-			when (lang.findUnitSkill (attrID)).thenReturn (unitAttrLang);
+			final UnitSkillEx skillDef = new UnitSkillEx ();
+			skillDef.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, unitAttributeDesc));
+			skillDef.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
+			when (db.findUnitSkill (eq (attrID), anyString ())).thenReturn (skillDef);
 
 			// Gfx
-			final UnitSkillGfx unitAttrGfx = new UnitSkillGfx ();
-			unitAttrGfx.setUnitSkillTypeID (UnitSkillTypeID.ATTRIBUTE);
-			when (gfx.findUnitSkill (eq (attrID), anyString ())).thenReturn (unitAttrGfx);
-			
 			when (unitClientUtils.generateAttributeImage (xu, attrID)).thenReturn (createSolidImage (289, 15, unitAttrNo * 35));
 			
 			// Unit stat
@@ -413,6 +405,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		final UnitSkillListCellRenderer skillRenderer = new UnitSkillListCellRenderer ();
 		skillRenderer.setUnitStatsReplacer (replacer);
 		skillRenderer.setLanguageHolder (langHolder);
+		skillRenderer.setClient (client);
 		skillRenderer.setGraphicsDB (gfx);
 		skillRenderer.setUtils (utils);
 		skillRenderer.setUnitClientUtils (unitClientUtils);

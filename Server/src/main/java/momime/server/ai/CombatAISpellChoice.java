@@ -1,8 +1,8 @@
 package momime.server.ai;
 
+import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.database.SpellSvr;
 
 /**
  * One possible spell and target that the AI could potentially cast in combat.  These all get put in a list so it can then pick from the list.
@@ -10,7 +10,7 @@ import momime.server.database.SpellSvr;
 final class CombatAISpellChoice
 {
 	/** The spell to cast */
-	private final SpellSvr spell;
+	private final Spell spell;
 	
 	/** The unit to target the spell on, if it is aimed at a unit - could be ours or theirs, depending on the type of spell */
 	private final ExpandedUnitDetails targetUnit;
@@ -23,7 +23,7 @@ final class CombatAISpellChoice
 	 * @param aTargetUnit The unit to target the spell on, if it is aimed at a unit - could be ours or theirs, depending on the type of spell
 	 * @param aTargetCount For spells that his multiple targets (e.g. Flame Strike or Mass Healing), how many suitable targets will be hit
 	 */
-	CombatAISpellChoice (final SpellSvr aSpell, final ExpandedUnitDetails aTargetUnit, final Integer aTargetCount)
+	CombatAISpellChoice (final Spell aSpell, final ExpandedUnitDetails aTargetUnit, final Integer aTargetCount)
 	{
 		spell = aSpell;
 		targetUnit = aTargetUnit;
@@ -65,7 +65,7 @@ final class CombatAISpellChoice
 	/**
 	 * @return The spell to cast
 	 */
-	public final SpellSvr getSpell ()
+	public final Spell getSpell ()
 	{
 		return spell;
 	}

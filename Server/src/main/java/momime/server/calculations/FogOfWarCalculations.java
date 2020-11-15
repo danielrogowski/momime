@@ -1,12 +1,12 @@
 package momime.server.calculations;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarValue;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Isolated methods used in fog of war routines by MomTrueMap
@@ -42,5 +42,5 @@ public interface FogOfWarCalculations
 	 * @return If a tower, returns true if we can see the location on either plane; if not a tower, does a regular check
 	 */
 	public boolean canSeeMidTurnOnAnyPlaneIfTower (final MapCoordinates3DEx location, final FogOfWarValue setting,
-		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea, final ServerDatabaseEx db);
+		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea, final CommonDatabase db);
 }

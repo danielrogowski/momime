@@ -6,20 +6,6 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.ClientTestData;
-import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.WizardGfx;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.PlayerColourImageGeneratorImpl;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.WizardState;
-
 import org.junit.Test;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -28,6 +14,23 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.WizardsScreen;
+import momime.client.ui.PlayerColourImageGeneratorImpl;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.WizardEx;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.WizardState;
 
 /**
  * Tests the WizardsUI class
@@ -46,25 +49,32 @@ public final class TestWizardsUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmWizards", "Title")).thenReturn ("Wizards");
-		when (lang.findCategoryEntry ("frmWizards", "Close")).thenReturn ("Close");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getClose ().add (createLanguageText (Language.ENGLISH, "Close"));
+		
+		final WizardsScreen wizardsScreenLang = new WizardsScreen ();
+		wizardsScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Wizards"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getWizardsScreen ()).thenReturn (wizardsScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Mock graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		for (int n = 1; n <= 14; n++)
 		{
-			final WizardGfx wizard = new WizardGfx ();
+			final WizardEx wizard = new WizardEx ();
 			wizard.setWizardID ("WZ" + ((n < 10) ? "0" : "") + n);
 			wizard.setPortraitImageFile ("/momime.client.graphics/wizards/" + wizard.getWizardID () + ".png");
 			
-			when (gfx.findWizard (wizard.getWizardID (), "WizardsUI")).thenReturn (wizard);
+			when (db.findWizard (wizard.getWizardID (), "WizardsUI")).thenReturn (wizard);
 		}
 		
 		// Players
@@ -103,6 +113,7 @@ public final class TestWizardsUI extends ClientTestData
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
@@ -122,7 +133,6 @@ public final class TestWizardsUI extends ClientTestData
 		wizards.setLanguageChangeMaster (langMaster);
 		wizards.setClient (client);
 		wizards.setPlayerColourImageGenerator (gen);
-		wizards.setGraphicsDB (gfx);
 		wizards.setSmallFont (CreateFontsForTests.getSmallFont ());
 
 		// Display form		

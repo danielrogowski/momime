@@ -15,10 +15,14 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
+import momime.common.database.DamageType;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SpellValidUnitTarget;
+import momime.common.database.UnitSkill;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationData;
@@ -28,11 +32,7 @@ import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.database.DamageTypeSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSkillSvr;
 import momime.server.process.AttackResolutionUnit;
 import momime.server.utils.UnitServerUtils;
 
@@ -114,7 +114,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	@Override
 	public final AttackDamage attackFromUnitSkill (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering attackFromUnitSkill: Unit URN " + attacker.getUnit ().getUnitURN () + ", " + attackSkillID);
@@ -148,7 +148,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			else
 			{			
 				// Certain types of damage resolution must do at least one point of attack in order to even stand a chance
-				final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
+				final UnitSkill unitSkill = db.findUnitSkill (attackSkillID, "attackFromUnitSkill");
 				if (unitSkill.getDamageResolutionTypeID () == null)
 					throw new MomException ("attackFromUnitSkill tried to attack with skill " + attackSkillID + ", but it has no damageResolutionTypeID defined");
 				
@@ -181,7 +181,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 					// Figure out the type of damage, and check whether the defender is immune to it.
 					// Firstly if the unit has the "create undead" skill, then force all damage to "life stealing" as long as the defender isn't immune to it -
 					// if they are immune to it, leave it as regular melee damage (tested in the original MoM that Ghouls can hurt Zombies).
-					DamageTypeSvr damageType = null;
+					DamageType damageType = null;
 					if (xuAttacker.hasModifiedSkill (ServerDatabaseValues.UNIT_SKILL_ID_CREATE_UNDEAD))
 					{
 						damageType = db.findDamageType (ServerDatabaseValues.DAMAGE_TYPE_ID_LIFE_STEALING, "attackFromUnitSkill");
@@ -281,15 +281,15 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 */
 	@Override
-	public final AttackDamage attackFromSpell (final SpellSvr spell, final Integer variableDamage,
-		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final ServerDatabaseEx db)
+	public final AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage,
+		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		log.trace ("Entering attackFromSpell: Unit URN " + spell.getSpellID () + ", " + variableDamage);
 		
 		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
 		final Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
-		final DamageTypeSvr damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "attackFromSpell");
+		final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "attackFromSpell");
 		
 		// Start breakdown message
 		final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();

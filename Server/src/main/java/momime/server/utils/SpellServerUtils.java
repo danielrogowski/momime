@@ -1,10 +1,10 @@
 package momime.server.utils;
 
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SwitchResearch;
-import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 /**
  * Server side methods dealing with researching and casting spells
@@ -20,5 +20,5 @@ public interface SpellServerUtils
 	 * @throws RecordNotFoundException If either the spell we want to research now, or the spell previously being researched, can't be found
 	 */
 	public String validateResearch (final PlayerServerDetails player, final String spellID,
-		final SwitchResearch switchResearch, final ServerDatabaseEx db) throws RecordNotFoundException;
+		final SwitchResearch switchResearch, final CommonDatabase db) throws RecordNotFoundException;
 }

@@ -3,9 +3,10 @@ package momime.client.newturnmessages;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.io.IOException;
 
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 
 /**
@@ -50,11 +51,12 @@ public final class NewTurnMessageCategory implements NewTurnMessageSimpleUI
 	
 	/**
 	 * @return Text to display for this NTM
+	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final String getText ()
+	public final String getText () throws IOException
 	{
-		return getLanguage ().findCategoryEntry ("NewTurnMessages", getSortOrder ().getLanguageEntryID ());
+		return getLanguageHolder ().findDescription (getSortOrder ().getLanguageText (getLanguages ().getNewTurnMessages ()));
 	}
 	
 	/**
@@ -111,8 +113,8 @@ public final class NewTurnMessageCategory implements NewTurnMessageSimpleUI
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 }

@@ -24,6 +24,7 @@ import com.ndg.random.WeightedChoicesImpl;
 import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -50,8 +51,6 @@ import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.SpellProcessing;
 import momime.server.process.SpellQueueing;
@@ -126,7 +125,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @return ID of chosen spell to research
 	 * @throws MomException If the list was empty
 	 */
-	final SpellSvr chooseSpellToResearchAI (final List<SpellSvr> spells, final int aiPlayerID)
+	final Spell chooseSpellToResearchAI (final List<Spell> spells, final int aiPlayerID)
 		throws MomException
 	{
 		log.trace ("Entering chooseSpellToResearchAI: Player ID " + aiPlayerID);
@@ -135,9 +134,9 @@ public final class SpellAIImpl implements SpellAI
 
 		// Check each spell in the list to find the the best research order, 1 being the best, 9 being the worst, and make a list of spells with this research order
 		int bestResearchOrder = Integer.MAX_VALUE;
-		final List<SpellSvr> spellsWithBestResearchOrder = new ArrayList<SpellSvr> ();
+		final List<Spell> spellsWithBestResearchOrder = new ArrayList<Spell> ();
 
-		for (final SpellSvr spell : spells)
+		for (final Spell spell : spells)
 		{
 			if (spell.getAiResearchOrder () != null)
 			{
@@ -163,7 +162,7 @@ public final class SpellAIImpl implements SpellAI
 			throw new MomException ("chooseSpellToResearchAI: No appropriate spells to pick from list of " + spells.size ());
 
 		// Pick one at random
-		final SpellSvr chosenSpell = spellsWithBestResearchOrder.get (getRandomUtils ().nextInt (spellsWithBestResearchOrder.size ()));
+		final Spell chosenSpell = spellsWithBestResearchOrder.get (getRandomUtils ().nextInt (spellsWithBestResearchOrder.size ()));
 
 		log.trace ("Exiting chooseSpellToResearchAI = " + chosenSpell.getSpellID ());
 		return chosenSpell;
@@ -176,7 +175,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws MomException If there is an error in the logic
 	 */
 	@Override
-	public final void decideWhatToResearch (final PlayerServerDetails player, final ServerDatabaseEx db)
+	public final void decideWhatToResearch (final PlayerServerDetails player, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering decideWhatToResearch: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -188,11 +187,7 @@ public final class SpellAIImpl implements SpellAI
 
 		if (!researchableSpells.isEmpty ())
 		{
-			final List<SpellSvr> researchableServerSpells = new ArrayList<SpellSvr> ();
-			for (final Spell spell : researchableSpells)
-				researchableServerSpells.add ((SpellSvr) spell);
-
-			final SpellSvr chosenSpell = chooseSpellToResearchAI (researchableServerSpells, player.getPlayerDescription ().getPlayerID ());
+			final Spell chosenSpell = chooseSpellToResearchAI (researchableSpells, player.getPlayerDescription ().getPlayerID ());
 			priv.setSpellIDBeingResearched (chosenSpell.getSpellID ());
 		}
 
@@ -212,19 +207,16 @@ public final class SpellAIImpl implements SpellAI
 	 */
 	@Override
 	public final SpellResearchStatus chooseFreeSpellAI (final List<SpellResearchStatus> spells, final String magicRealmID, final String spellRankID,
-		final int aiPlayerID, final ServerDatabaseEx db)
+		final int aiPlayerID, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering chooseFreeSpellAI: Player ID " + aiPlayerID + ", " + magicRealmID + ", " + spellRankID);
 
 		// Get candidate spells
-		final List<Spell> commonSpellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
-		final List<SpellSvr> spellList = new ArrayList<SpellSvr> ();
-		for (final Spell thisSpell : commonSpellList)
-			spellList.add ((SpellSvr) thisSpell);
+		final List<Spell> spellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
 
 		// Choose a spell
-		final SpellSvr chosenSpell = chooseSpellToResearchAI (spellList, aiPlayerID);
+		final Spell chosenSpell = chooseSpellToResearchAI (spellList, aiPlayerID);
 
 		// Return spell research status; calling routine sets it to available
 		final SpellResearchStatus chosenSpellStatus = getSpellUtils ().findSpellResearchStatus (spells, chosenSpell.getSpellID ());
@@ -267,7 +259,7 @@ public final class SpellAIImpl implements SpellAI
 			
 			// Do we need a magic/guardian spirit in order to capture a node on the same plane as our summoning circle?
 			// If so then that's important enough to just do it, with no randomness.
-			final WeightedChoicesImpl<SpellSvr> considerSpells = new WeightedChoicesImpl<SpellSvr> ();
+			final WeightedChoicesImpl<Spell> considerSpells = new WeightedChoicesImpl<Spell> ();
 			considerSpells.setRandomUtils (getRandomUtils ());
 			
 			if (wantedUnitTypesOnEachPlane.get (summoningCirclePlane).contains (AIUnitType.MELD_WITH_NODE))
@@ -323,7 +315,7 @@ public final class SpellAIImpl implements SpellAI
 					summonableUnitsForThisMagicRealm.sort ((s1, s2) -> s2.getSpell ().getOverlandCastingCost () - s1.getSpell ().getOverlandCastingCost ());
 				
 				// Consider every possible spell we could cast overland and can afford maintainence of
-				for (final SpellSvr spell : mom.getServerDB ().getSpells ())
+				for (final Spell spell : mom.getServerDB ().getSpell ())
 					if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)) &&
 						(getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ()).getStatus () == SpellResearchStatusID.AVAILABLE) &&
 						(getAiSpellCalculations ().canAffordSpellMaintenance (player, mom.getPlayers (), spell, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
@@ -419,7 +411,7 @@ public final class SpellAIImpl implements SpellAI
 			}
 						
 			// If we found any, then pick one randomly
-			final SpellSvr spell = considerSpells.nextWeightedValue ();
+			final Spell spell = considerSpells.nextWeightedValue ();
 			if (spell != null)
 			{
 				log.debug ("AI player ID " + player.getPlayerDescription ().getPlayerID () + " casting overland spell " + spell.getSpellID ());
@@ -447,7 +439,7 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void decideSpellTarget (final PlayerServerDetails player, final SpellSvr spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
+	public final void decideSpellTarget (final PlayerServerDetails player, final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering decideSpellTarget: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spell + ", Spell URN " + maintainedSpell.getSpellURN ());
@@ -624,7 +616,7 @@ public final class SpellAIImpl implements SpellAI
 		final WeightedChoicesImpl<CombatAISpellChoice> choices = new WeightedChoicesImpl<CombatAISpellChoice> ();
 		choices.setRandomUtils (getRandomUtils ());
 		
-		for (final SpellSvr spell : mom.getServerDB ().getSpells ())
+		for (final Spell spell : mom.getServerDB ().getSpell ())
 			if ((spell.getSpellBookSectionID () != null) && (getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) &&
 					
 				// Ignore "recall" spells then the AI would then have to understand its likelehood of losing a combat, and there's nothing like this yet

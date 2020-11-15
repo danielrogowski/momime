@@ -11,19 +11,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<context:property-placeholder location="classpath:MoMIMEServerVersion.properties" />
 	
-	<!-- General XSD objects (may move these into common project at some stage) -->
-	
-	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
-	
-	<bean id="commonXsdResourceResolver" class="momime.common.database.CommonXsdResourceResolver">
-		<constructor-arg ref="domImplementationRegistry" />
-	</bean>
-	
-	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
-		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
-		<property name="resourceResolver" ref="commonXsdResourceResolver" />
-	</bean>
-	
 	<!-- Server config XML -->
 	
 	<bean id="serverConfigSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
@@ -44,49 +31,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="serverConfig" class="momime.server.config.v0_9_9.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
 		<constructor-arg value="${configDir}MoMIMEServerConfig.xml" />
-	</bean>
-	
-	<!-- Server database XMLs -->
-
-	<bean id="serverDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg type="java.net.URL" value="/momime.server.database/MoMIMEServerDatabase.xsd" />
-	</bean>
-	
-	<bean id="serverDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
-		<constructor-arg>
-    		<list>
-    			<value>momime.server.database.v0_9_9.ServerDatabase</value>
-    		</list>
-   		</constructor-arg>
-	</bean>
-
-	<bean id="serverDatabaseFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
-		<property name="serviceLocatorInterface" value="momime.server.database.ServerDatabaseFactory" />
-	</bean>			
-	
-	<bean id="serverDatabaseObjectFactory" class="momime.server.database.ServerDatabaseObjectFactory">	<!-- Creates ServerDatabaseExImpl instead of ServerDatabase -->
-		<property name="factory" ref="serverDatabaseFactory" />
-	</bean>	
-	
-	<bean id="serverDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="serverDatabaseJaxbContext" factory-method="createUnmarshaller">
-		<property name="schema" ref="serverDatabaseSchema" />
-	</bean>
-	
-	<bean id="configureServerDatabaseUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject" ref="serverDatabaseUnmarshaller" />
-		<property name="targetMethod" value="setProperty" />
-		<property name="arguments">
-			<list>
-				<value>com.sun.xml.bind.ObjectFactory</value>
-				<array>
-					<ref bean="serverDatabaseObjectFactory" />
-				</array>
-			</list>
-		</property>
-	</bean>
-	
-	<bean id="serverDatabase" class="momime.server.database.ServerDatabaseExImpl" scope="prototype">
-		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 	</bean>
 	
 	<!-- Create extended versions of client to server messages which include message implementations -->
@@ -304,7 +248,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="newGameDatabaseMessage" class="momime.common.messages.servertoclient.NewGameDatabaseMessage" factory-bean="serverDatabaseConverters" factory-method="buildNewGameDatabase">
 		<constructor-arg value="#{serverConfig.pathToServerXmlDatabases}" />
-		<constructor-arg ref="serverDatabaseUnmarshaller" />
+		<constructor-arg ref="commonDatabaseUnmarshaller" />
 	</bean>
 	
 	<bean id="momServer" class="momime.server.MomServer" init-method="start">
@@ -683,6 +627,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">
@@ -917,7 +862,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapGenerator" ref="overlandMapGenerator" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="serverDatabaseConverters" ref="serverDatabaseConverters" />
-		<property name="serverDatabaseUnmarshaller" ref="serverDatabaseUnmarshaller" />
+		<property name="commonDatabaseUnmarshaller" ref="commonDatabaseUnmarshaller" />
 		<property name="pathToServerXmlDatabases" value="#{serverConfig.pathToServerXmlDatabases}" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />

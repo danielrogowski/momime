@@ -28,7 +28,6 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
-import momime.client.language.database.ProductionTypeLang;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -281,10 +280,10 @@ public final class AlchemyUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmAlchemy", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getAlchemyScreen ().getTitle ()));
 		
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmAlchemy", "OK"));
-		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmAlchemy", "Cancel"));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
+		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		
 		directionChanged ();
 
@@ -298,12 +297,21 @@ public final class AlchemyUI extends MomClientFrameUI
 	{
 		log.trace ("Entering directionChanged: " + fromProductionTypeID + " -> " + toProductionTypeID);
 		
-		final ProductionTypeLang fromProductionType	= getLanguage ().findProductionType (fromProductionTypeID);
-		final ProductionTypeLang toProductionType		= getLanguage ().findProductionType (toProductionTypeID);
-		
-		conversionLabel.setText (getLanguage ().findCategoryEntry ("frmAlchemy", "Conversion").replaceAll
-			("FROM_PRODUCTION_TYPE", (fromProductionType != null) ? fromProductionType.getProductionTypeDescription () : fromProductionTypeID).replaceAll
-			("TO_PRODUCTION_TYPE", (toProductionType != null) ? toProductionType.getProductionTypeDescription () : toProductionTypeID));
+		try
+		{
+			final String fromProductionType = getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findProductionType (fromProductionTypeID, "directionChanged").getProductionTypeDescription ());
+			final String toProductionType = getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findProductionType (toProductionTypeID, "directionChanged").getProductionTypeDescription ());
+			
+			conversionLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getAlchemyScreen ().getConversion ()).replaceAll
+				("FROM_PRODUCTION_TYPE", fromProductionType).replaceAll
+				("TO_PRODUCTION_TYPE", toProductionType));
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}
 
 		updateSliderMaximum ();
 
@@ -394,14 +402,12 @@ public final class AlchemyUI extends MomClientFrameUI
 			String goldText = Integer.valueOf (goldValue).toString ();
 			String manaText = Integer.valueOf (manaValue).toString ();
 
-			final ProductionTypeLang goldProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
-			if ((goldProduction != null) && (goldProduction.getProductionTypeSuffix () != null))
-				goldText = goldText + " " + goldProduction.getProductionTypeSuffix ();
+			goldText = goldText + " " + getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "sliderPositionChanged").getProductionTypeSuffix ());
 
-			final ProductionTypeLang manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-			if ((manaProduction != null) && (manaProduction.getProductionTypeSuffix () != null))
-				manaText = manaText + " " + manaProduction.getProductionTypeSuffix ();
-		
+			manaText = manaText + " " + getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "sliderPositionChanged").getProductionTypeSuffix ());
+					
 			goldLabel.setText (goldText);
 			manaLabel.setText (manaText);
 		}

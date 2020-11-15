@@ -7,17 +7,15 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.client.MomClient;
-import momime.client.language.database.CombatAreaEffectLang;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.UnitSkillLang;
-import momime.client.language.database.UnitTypeLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitSkill;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
@@ -111,7 +109,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				if (getUnit ().getRangedAttackType () == null)
 					text = null;
 				else
-					text = getLanguage ().findRangedAttackTypeDescription (getUnit ().getRangedAttackType ().getRangedAttackTypeID ());
+					text = getLanguageHolder ().findDescription (getUnit ().getRangedAttackType ().getRangedAttackTypeDescription ());
 				break;
 				
 			// This outputs the actual level of the unit, including or excluding (a.k.a. natural) any bonuses from Warlord and Crusade,
@@ -123,13 +121,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				if (expLvl == null)
 					text = null;
 				else
-				{
-					final UnitTypeLang unitType = getLanguage ().findUnitType (getUnit ().getUnitType ().getUnitTypeID ());
-					if (unitType == null)
-						text = null;
-					else
-						text = unitType.findExperienceLevelName (expLvl.getLevelNumber ());
-				}
+					text = getLanguageHolder ().findDescription (expLvl.getExperienceLevelName ());
 				break;
 			}
 			
@@ -142,39 +134,34 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				final ExperienceLevel expLvl = getUnit ().getModifiedExperienceLevel ();
 				if (expLvl == null)
 					text = null;
+				else if (expLvl.getLevelNumber () == 0)
+					text = getLanguageHolder ().findDescription (getUnit ().getUnitType ().getUnitTypeInexperienced ());
 				else
 				{
-					final UnitTypeLang unitType = getLanguage ().findUnitType (getUnit ().getUnitType ().getUnitTypeID ());
-					if (unitType == null)
-						text = null;
-					else if (expLvl.getLevelNumber () == 0)
-						text = unitType.getUnitTypeInexperienced ();
-					else
-					{
-						final StringBuilder bonuses = new StringBuilder ();
+					final StringBuilder bonuses = new StringBuilder ();
+					
+					// List out all the bonuses this exp level gives
+					for (final UnitSkillAndValue bonus : expLvl.getExperienceSkillBonus ())
 						
-						// List out all the bonuses this exp level gives
-						for (final UnitSkillAndValue bonus : expLvl.getExperienceSkillBonus ())
+						// Don't mention skills that the unit does not have
+						if ((bonus.getUnitSkillValue () != null) && (getUnit ().hasModifiedSkill (bonus.getUnitSkillID ())))
+						{
+							if (bonuses.length () > 0)
+								bonuses.append (", ");
+
+							bonuses.append ("+");
+							bonuses.append (bonus.getUnitSkillValue ());
+							bonuses.append (" ");
 							
-							// Don't mention skills that the unit does not have
-							if ((bonus.getUnitSkillValue () != null) && (getUnit ().hasModifiedSkill (bonus.getUnitSkillID ())))
-							{
-								if (bonuses.length () > 0)
-									bonuses.append (", ");
+							final UnitSkill attr = getClient ().getClientDB ().findUnitSkill (bonus.getUnitSkillID (), "determineVariableValue");
+							final String attrDescription = getLanguageHolder ().findDescription (attr.getUnitSkillDescription ());
+							
+							// Strip off the "+ " prefix from "+ to Hit" and "+ to Block" otherwise we end up with "+2 + to Hit" which looks silly
+							bonuses.append ((attrDescription != null) ? attrDescription.replaceAll ("\\+ ", "") : bonus.getUnitSkillID ());
+						}
 
-								bonuses.append ("+");
-								bonuses.append (bonus.getUnitSkillValue ());
-								bonuses.append (" ");
-								
-								final UnitSkillLang attr = getLanguage ().findUnitSkill (bonus.getUnitSkillID ());
-								final String attrDescription = (attr == null) ? null : attr.getUnitSkillDescription ();
-								
-								// Strip off the "+ " prefix from "+ to Hit" and "+ to Block" otherwise we end up with "+2 + to Hit" which looks silly
-								bonuses.append ((attrDescription != null) ? attrDescription.replaceAll ("\\+ ", "") : bonus.getUnitSkillID ());
-							}
-
-						text = unitType.getUnitTypeExperienced () + " " + getTextUtils ().replaceFinalCommaByAnd (bonuses.toString ()) + ".";
-					}
+					text = getLanguageHolder ().findDescription (getUnit ().getUnitType ().getUnitTypeExperienced ()) + " " +
+						getTextUtils ().replaceFinalCommaByAnd (bonuses.toString ()) + ".";
 				}
 
 				break;
@@ -189,7 +176,7 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				if ((modifiedExpLvl == null) || (modifiedExpLvl == getUnit ().getBasicExperienceLevel ()))					
 					text = null;
 				else
-					text = getLanguage ().findCategoryEntry ("frmHelp", "ExperienceLevelBoost").replaceAll
+					text = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getExperienceLevelBoost ()).replaceAll
 						("BONUS_LIST", describeLevelBoosters ());
 
 				break;
@@ -204,18 +191,14 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				else
 				{
 					final ExperienceLevel nextExpLevel = UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), naturalExpLvl.getLevelNumber () + 1);
-					final UnitTypeLang unitTypeLang = getLanguage ().findUnitType (getUnit ().getUnitType ().getUnitTypeID ());
-					
-					if (unitTypeLang == null)
-						text = null;
 
 					// See if there's a higher level we can reach at all, either by gaining more experience or by warlord/crusade
-					else if (nextExpLevel == null)
-						text = unitTypeLang.getUnitTypeMaxExperience ();
+					if (nextExpLevel == null)
+						text = getLanguageHolder ().findDescription (getUnit ().getUnitType ().getUnitTypeMaxExperience ());
 					
 					// Can the higher level only be attained by warlord/crusade?
 					else if (nextExpLevel.getExperienceRequired () == null)
-						text = unitTypeLang.getUnitTypeMaxNaturalExperience ();
+						text = getLanguageHolder ().findDescription (getUnit ().getUnitType ().getUnitTypeMaxNaturalExperience ());
 						
 					else
 					{
@@ -231,19 +214,23 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 							// We've only proved that some higher level exists - we don't know if the actual level boost will be +1 or +2, if they have both Warlord and Crusade
 							// Equally if they DO have both Warlord and Crusade, we have to make sure we don't raise up to a level that doesn't exist
 							int modifiedLevelNumber = modifiedExpLvl.getLevelNumber () + 1;
-							while (UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), modifiedLevelNumber) == null)
+							ExperienceLevel modifiedLevel = UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), modifiedLevelNumber);
+							while (modifiedLevel == null)
+							{
 								modifiedLevelNumber--;
+								modifiedLevel = UnitTypeUtils.findExperienceLevel (getUnit ().getUnitType (), modifiedLevelNumber);
+							}
 							
-							text = getLanguage ().findCategoryEntry ("frmHelp", "ExperienceForNextLevelWithBoost").replaceAll
+							text = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getExperienceForNextLevelWithBoost ()).replaceAll
 								("EXPERIENCE_REQUIRED", Integer.valueOf (expRequired).toString ()).replaceAll
-								("NEXT_EXPERIENCE_NATURAL_LEVEL_NAME", unitTypeLang.findExperienceLevelName (naturalExpLvl.getLevelNumber () + 1)).replaceAll
+								("NEXT_EXPERIENCE_NATURAL_LEVEL_NAME", getLanguageHolder ().findDescription (nextExpLevel.getExperienceLevelName ())).replaceAll
 								("BONUS_LIST", describeLevelBoosters ()).replaceAll
-								("NEXT_EXPERIENCE_LEVEL_NAME", unitTypeLang.findExperienceLevelName (modifiedLevelNumber));
+								("NEXT_EXPERIENCE_LEVEL_NAME", getLanguageHolder ().findDescription (modifiedLevel.getExperienceLevelName ()));
 						}
 						else
-							text = getLanguage ().findCategoryEntry ("frmHelp", "ExperienceForNextLevelWithoutBoost").replaceAll
+							text = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getExperienceForNextLevelWithoutBoost ()).replaceAll
 								("EXPERIENCE_REQUIRED", Integer.valueOf (expRequired).toString ()).replaceAll
-								("NEXT_EXPERIENCE_NATURAL_LEVEL_NAME", unitTypeLang.findExperienceLevelName (naturalExpLvl.getLevelNumber () + 1));
+								("NEXT_EXPERIENCE_NATURAL_LEVEL_NAME", getLanguageHolder ().findDescription (nextExpLevel.getExperienceLevelName ()));
 					}
 				}
 				break;
@@ -267,8 +254,9 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	/**
 	 * @return List of things the wizard have that increase the level of their units, i.e. "", "Warlord", "Crusade" or "Warlord and Crusade"
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
+	 * @throws RecordNotFoundException If we can't find one of the text strings
 	 */
-	private final String describeLevelBoosters () throws PlayerNotFoundException
+	private final String describeLevelBoosters () throws PlayerNotFoundException, RecordNotFoundException
 	{
 		final StringBuilder s = new StringBuilder ();
 		
@@ -280,9 +268,8 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			if (s.length () > 0)
 				s.append (", ");
 			
-			final PickLang pick = getLanguage ().findPick (CommonDatabaseConstants.RETORT_ID_WARLORD);
-			final String pickDescription = (pick == null) ? null : pick.getPickDescriptionSingular ();
-			s.append ((pickDescription != null) ? pickDescription : CommonDatabaseConstants.RETORT_ID_WARLORD);
+			s.append (getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findPick (CommonDatabaseConstants.RETORT_ID_WARLORD, "describeLevelBoosters").getPickDescriptionSingular ()));
 		}
 
 		// Does the player have the Crusade CAE?
@@ -292,9 +279,8 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 			if (s.length () > 0)
 				s.append (", ");
 
-			final CombatAreaEffectLang cae = getLanguage ().findCombatAreaEffect (CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE);
-			final String caeDescription = (cae == null) ? null : cae.getCombatAreaEffectDescription ();
-			s.append ((caeDescription != null) ? caeDescription : CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE);
+			s.append (getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findCombatAreaEffect (CommonDatabaseConstants.COMBAT_AREA_EFFECT_CRUSADE, "describeLevelBoosters").getCombatAreaEffectDescription ()));
 		}
 		
 		return getTextUtils ().replaceFinalCommaByAnd (s.toString ());
@@ -336,9 +322,9 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

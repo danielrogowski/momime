@@ -13,6 +13,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
@@ -24,7 +25,6 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Routines dealing with initiating and progressing combats, as well as moving and attacking
@@ -101,7 +101,7 @@ public interface CombatProcessing
 	 */
 	public List<MemoryUnit> createUndead (final MapCoordinates3DEx combatLocation, final MapCoordinates3DEx newLocation,
 		final PlayerServerDetails winningPlayer, final PlayerServerDetails losingPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException;
 
 	/**
@@ -122,7 +122,7 @@ public interface CombatProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void killUnitsIfTooManyInMapCell (final MapCoordinates3DEx unitLocation, final List<MemoryUnit> unitsToRemove,
-		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 	
 	/**
@@ -149,7 +149,7 @@ public interface CombatProcessing
 	 */
 	public void purgeDeadUnitsAndCombatSummonsFromCombat (final MapCoordinates3DEx combatLocation,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final ServerDatabaseEx db)
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 	
 	/**
@@ -178,7 +178,7 @@ public interface CombatProcessing
 	 */
 	public void setUnitIntoOrTakeUnitOutOfCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapVolumeOfMemoryGridCells trueTerrain,
 		final MemoryUnit trueUnit, final MapCoordinates3DEx terrainLocation, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
-		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final ServerDatabaseEx db)
+		final Integer combatHeading, final UnitCombatSideID combatSide, final String summonedBySpellID, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**
@@ -194,7 +194,7 @@ public interface CombatProcessing
 	 * @throws RecordNotFoundException If an expected item cannot be found in the db
 	 */
 	public void removeUnitsFromCombat (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final FogOfWarMemory trueMap,
-		final MapCoordinates3DEx combatLocation, final ServerDatabaseEx db)
+		final MapCoordinates3DEx combatLocation, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException;
 	
 	/**

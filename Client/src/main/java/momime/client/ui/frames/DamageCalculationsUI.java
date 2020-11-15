@@ -121,7 +121,7 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 	public final void languageChanged ()
 	{
 		// Title
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("CombatDamage", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getCombatDamage ().getTitle ()));
 		
 		// Messages
 		messagesItems.clear ();
@@ -138,7 +138,7 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 		messagesList.ensureIndexIsVisible (messagesItems.size () - 1);
 		
 		// Button
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "OK"));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 	}
 	
 	/**

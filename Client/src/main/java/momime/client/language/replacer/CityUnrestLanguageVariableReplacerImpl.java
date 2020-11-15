@@ -1,6 +1,6 @@
 package momime.client.language.replacer;
 
-import momime.client.language.database.BuildingLang;
+import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
 
@@ -15,9 +15,10 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 	/**
 	 * @param code Code to replace
 	 * @return Replacement value; or null if the code is not recognized
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
-	public final String determineVariableValue (final String code)
+	public final String determineVariableValue (final String code) throws RecordNotFoundException
 	{
 		final String text;
 		switch (code)
@@ -84,8 +85,7 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 				
 			// Dependant on current building
 			case "BUILDING_NAME":
-				final BuildingLang building = getLanguage ().findBuilding (getCurrentBuilding ().getBuildingID ());
-				text = (building == null) ? getCurrentBuilding ().getBuildingID () : building.getBuildingName ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (getCurrentBuilding ().getBuildingID (), "determineVariableValue").getBuildingName ());
 				break;
 
 			case "BUILDING_REDUCTION":

@@ -10,6 +10,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellSetting;
@@ -21,7 +22,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
-import momime.server.database.ServerDatabaseEx;
 
 /**
  * Methods that the AI uses to calculate stats about types of units and rating how good units are
@@ -88,7 +88,7 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final int calculateUnitAverageRating (final AvailableUnit unit, final ExpandedUnitDetails xu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final ServerDatabaseEx db)
+	public final int calculateUnitAverageRating (final AvailableUnit unit, final ExpandedUnitDetails xu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering calculateUnitAverageRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
@@ -112,7 +112,7 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	 */
 	@Override
 	public final boolean canAffordUnitMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final AvailableUnit unit,
-		final SpellSetting spellSettings, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final SpellSetting spellSettings, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering canAffordUnitMaintenance: " + unit.getUnitID () + " owned by player ID " + player.getPlayerDescription ().getPlayerID ());
 

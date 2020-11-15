@@ -1,10 +1,13 @@
 package momime.client.ui.frames;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -20,19 +23,28 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.TileSetGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.MapButtonBar;
+import momime.client.languages.database.MapRightHandBar;
+import momime.client.languages.database.Month;
+import momime.client.languages.database.OverlandMapScreen;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.SurveyorTab;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.ProductionTypeEx;
+import momime.common.database.TileSetEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -60,37 +72,75 @@ public final class TestOverlandMapUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final ProductionTypeEx goldProduction = new ProductionTypeEx ();
+		goldProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Gold"));
+		goldProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "GP"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD), anyString ())).thenReturn (goldProduction);
+
+		final ProductionTypeEx manaProduction = new ProductionTypeEx ();
+		manaProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Mana"));
+		manaProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA), anyString ())).thenReturn (manaProduction);
+		
+		final ProductionTypeEx rationsProduction = new ProductionTypeEx ();
+		rationsProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Rations"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS), anyString ())).thenReturn (rationsProduction);
+
+		final ProductionTypeEx magicPowerProduction = new ProductionTypeEx ();
+		magicPowerProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Magic Power"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER), anyString ())).thenReturn (magicPowerProduction);
+		
+		final TileSetEx overlandMapTileSet = new TileSetEx ();
+		overlandMapTileSet.setAnimationSpeed (2.0);
+		overlandMapTileSet.setAnimationFrameCount (3);
+		when (db.findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
+	
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final TileSetGfx overlandMapTileSet = new TileSetGfx ();
-		overlandMapTileSet.setAnimationSpeed (2.0);
-		overlandMapTileSet.setAnimationFrameCount (3);
-		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
-	
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Game")).thenReturn ("Game");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Spells")).thenReturn ("Spells");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Armies")).thenReturn ("Armies");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Cities")).thenReturn ("Cities");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Magic")).thenReturn ("Magic");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Plane")).thenReturn ("Plane");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "NewTurnMessages")).thenReturn ("Msgs");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Chat")).thenReturn ("Chat");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
+		
+		final MapButtonBar mapButtonBarLang = new MapButtonBar ();
+		mapButtonBarLang.getGame ().add (createLanguageText (Language.ENGLISH, "Game"));
+		mapButtonBarLang.getSpells ().add (createLanguageText (Language.ENGLISH, "Spells"));
+		mapButtonBarLang.getArmies ().add (createLanguageText (Language.ENGLISH, "Armies"));
+		mapButtonBarLang.getCities ().add (createLanguageText (Language.ENGLISH, "Cities"));
+		mapButtonBarLang.getMagic ().add (createLanguageText (Language.ENGLISH, "Magic"));
+		mapButtonBarLang.getPlane ().add (createLanguageText (Language.ENGLISH, "Plane"));
+		mapButtonBarLang.getNewTurnMessages ().add (createLanguageText (Language.ENGLISH, "Msgs"));
+		mapButtonBarLang.getChat ().add (createLanguageText (Language.ENGLISH, "Chat"));
+		mapButtonBarLang.getTurn ().add (createLanguageText (Language.ENGLISH, "MONTH YEAR (Turn TURN)"));
 
-		when (lang.findCategoryEntry ("Months", "MNTH01")).thenReturn ("January");
-		when (lang.findCategoryEntry ("frmMapButtonBar", "Turn")).thenReturn ("MONTH YEAR (Turn TURN)");
+		final Month month = new Month ();
+		month.setMonthNumber (1);
+		month.getName ().add (createLanguageText (Language.ENGLISH, "January"));
+		
+		final SurveyorTab surveyorTabLang = new SurveyorTab ();
+		surveyorTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Surveyor"));
+
+		// Language entries needed by the right hand panel
+		final MapRightHandBar mapRightHandBarLang = new MapRightHandBar ();
+		mapRightHandBarLang.getProductionPerTurn ().add (createLanguageText (Language.ENGLISH, "AMOUNT_PER_TURN PRODUCTION_TYPE per turn"));
+		mapRightHandBarLang.getProductionPerTurnMagicPower ().add (createLanguageText (Language.ENGLISH, "Power Base AMOUNT_PER_TURN"));
+		
+		final OverlandMapScreen overlandMapScreenLang = new OverlandMapScreen ();
+		overlandMapScreenLang.setMapButtonBar (mapButtonBarLang);
+		overlandMapScreenLang.setMapRightHandBar (mapRightHandBarLang);
+		overlandMapScreenLang.setSurveyorTab (surveyorTabLang);
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getOverlandMapScreen ()).thenReturn (overlandMapScreenLang);
+		when (lang.getMonth ()).thenReturn (Arrays.asList (month));
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
-		
-		// Language entries needed by the right hand panel
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurn")).thenReturn ("AMOUNT_PER_TURN PRODUCTION_TYPE per turn");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurnMagicPower")).thenReturn ("Power Base AMOUNT_PER_TURN");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "GoldStored")).thenReturn ("AMOUNT_STORED GP");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "ManaStored")).thenReturn ("AMOUNT_STORED MP");
-		
+		langHolder.setLanguages (lang);
+
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
@@ -103,6 +153,7 @@ public final class TestOverlandMapUI extends ClientTestData
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getSessionDescription ()).thenReturn (sd);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// Set up FOW memory
 		final FogOfWarMemory fow = new FogOfWarMemory ();

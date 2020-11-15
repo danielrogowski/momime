@@ -26,13 +26,17 @@ import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.StoredDamageTypeID;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
@@ -79,11 +83,7 @@ import momime.server.ai.SpellAI;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.BuildingSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
@@ -202,7 +202,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castOverlandNow (final PlayerServerDetails player, final SpellSvr spell, final HeroItem heroItem, final MomSessionVariables mom)
+	public final void castOverlandNow (final PlayerServerDetails player, final Spell spell, final HeroItem heroItem, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering castOverlandNow: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID ());
@@ -269,12 +269,12 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (summoningCircleLocation != null)
 			{
 				// List out all the Unit IDs that this spell can summon
-				final List<UnitSvr> possibleUnits = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
+				final List<UnitEx> possibleUnits = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getServerDB ());
 
 				// Pick one at random
 				if (possibleUnits.size () > 0)
 				{
-					final UnitSvr summonedUnit = possibleUnits.get (getRandomUtils ().nextInt (possibleUnits.size ()));
+					final UnitEx summonedUnit = possibleUnits.get (getRandomUtils ().nextInt (possibleUnits.size ()));
 
 					log.debug ("Player " + player.getPlayerDescription ().getPlayerName () + " had " + possibleUnits.size () + " possible units to summon from spell " +
 						spell.getSpellID () + ", randomly picked unit ID " + summonedUnit.getUnitID ());
@@ -386,7 +386,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 */
 	@Override
 	public final boolean castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final Integer combatCastingFixedSpellNumber,
-		final Integer combatCastingSlotNumber, final SpellSvr spell, final int reducedCombatCastingCost, final int multipliedManaCost,
+		final Integer combatCastingSlotNumber, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
@@ -706,7 +706,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					for (final MemoryMaintainedSpell spellToDispel : spellsToDispel)
 					{
 						// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
-						final SpellSvr spellToDispelDef = mom.getServerDB ().findSpell (spellToDispel.getSpellID (), "castCombatNow (D)");
+						final Spell spellToDispelDef = mom.getServerDB ().findSpell (spellToDispel.getSpellID (), "castCombatNow (D)");
 						
 						final DispelMagicResult result = new DispelMagicResult ();
 						result.setOwningPlayerID (spellToDispel.getCastingPlayerID ());
@@ -859,7 +859,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 */
 	@Override
 	public final void switchOffSpell (final FogOfWarMemory trueMap, final int spellURN,
-		final List<PlayerServerDetails> players, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering switchOffSpell: Spell URN " + spellURN);
@@ -869,7 +869,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		// Any secondary effects we also need to switch off?
 		final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffSpell");
-		final SpellSvr spell = db.findSpell (trueSpell.getSpellID (), "switchOffSpell");
+		final Spell spell = db.findSpell (trueSpell.getSpellID (), "switchOffSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), trueSpell.getSpellID ());
 		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
@@ -915,7 +915,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void targetOverlandSpell (final SpellSvr spell, final MemoryMaintainedSpell maintainedSpell,
+	public final void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell,
 		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit,
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
@@ -983,7 +983,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 					if (cityData.getCurrentlyConstructingBuildingID () != null)
 					{
-						final BuildingSvr buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "targetCorruption");
+						final Building buildingDef = mom.getServerDB ().findBuilding (cityData.getCurrentlyConstructingBuildingID (), "targetCorruption");
 						if (!getCityCalculations ().buildingPassesTileTypeRequirements (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), cityLocation,
 							buildingDef, mom.getSessionDescription ().getOverlandMapSize ()))
 						{
@@ -1201,7 +1201,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 */
 	@Override
-	public final List<String> stealSpells (final PlayerServerDetails stealFrom, final PlayerServerDetails giveTo, final int spellsStolenFromFortress, final ServerDatabaseEx db)
+	public final List<String> stealSpells (final PlayerServerDetails stealFrom, final PlayerServerDetails giveTo, final int spellsStolenFromFortress, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
 		log.trace ("Entering stealSpells: Player ID " + giveTo.getPlayerDescription ().getPlayerID () + " stealing from " + stealFrom.getPlayerDescription ().getPlayerID ());

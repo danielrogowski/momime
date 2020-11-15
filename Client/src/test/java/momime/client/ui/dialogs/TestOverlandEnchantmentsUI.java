@@ -21,19 +21,21 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SpellGfx;
-import momime.client.graphics.database.WizardGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.SpellCasting;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.Spell;
+import momime.common.database.WizardEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -55,6 +57,18 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final WizardEx wizard = new WizardEx ();
+		wizard.setPortraitImageFile ("/momime.client.graphics/wizards/WZ12.png");
+		when (db.findWizard ("WZ01", "OverlandEnchantmentsUI")).thenReturn (wizard);		
+		
+		final Spell spellDef = new Spell ();
+		spellDef.getSpellName ().add (createLanguageText (Language.ENGLISH, "Just Cause"));
+		spellDef.setOverlandEnchantmentImageFile ("/momime.client.graphics/spells/SP127/overlandEnchantment.png");
+		when (db.findSpell ("SP001", "OverlandEnchantmentsUI")).thenReturn (spellDef);		
 		
 		// Mock entries from the graphics XML
 		final AnimationGfx fade = new AnimationGfx ();
@@ -62,28 +76,19 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		for (int n = 1; n <= 15; n++)
 			fade.getFrame ().add ("/momime.client.graphics/ui/mirror/mirror-fade-frame" + ((n < 10) ? "0" : "") + n + ".png");
 		
-		final WizardGfx wizard = new WizardGfx ();
-		wizard.setPortraitImageFile ("/momime.client.graphics/wizards/WZ12.png");
-		
-		final SpellGfx spellGfx = new SpellGfx ();
-		spellGfx.setOverlandEnchantmentImageFile ("/momime.client.graphics/spells/SP127/overlandEnchantment.png");
-		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation (OverlandEnchantmentsUI.MIRROR_ANIM, "OverlandEnchantmentsUI")).thenReturn (fade);
-		when (gfx.findWizard ("WZ01", "OverlandEnchantmentsUI")).thenReturn (wizard);
-		when (gfx.findSpell ("SP001", "OverlandEnchantmentsUI")).thenReturn (spellGfx);
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("SpellCasting", "OurOverlandEnchantment")).thenReturn ("You have completed casting...");
-		when (lang.findCategoryEntry ("SpellCasting", "EnemyOverlandEnchantment")).thenReturn ("PLAYER_NAME has completed casting...");
+		final SpellCasting spellCastingLang = new SpellCasting ();
+		spellCastingLang.getOurOverlandEnchantment ().add (createLanguageText (Language.ENGLISH, "You have completed casting..."));
+		spellCastingLang.getEnemyOverlandEnchantment ().add (createLanguageText (Language.ENGLISH, "PLAYER_NAME has completed casting..."));
 		
-		final SpellLang spellLang = new SpellLang ();
-		spellLang.setSpellName ("Just Cause");
-		when (lang.findSpell ("SP001")).thenReturn (spellLang);
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSpellCasting ()).thenReturn (spellCastingLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -122,6 +127,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		final MomClient client = mock (MomClient.class);
 		when (client.getPlayers ()).thenReturn (players);
 		when (client.getOurPlayerID ()).thenReturn (pd1.getPlayerID ());
+		when (client.getClientDB ()).thenReturn (db);
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
 		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd1.getPlayerID ()), anyString ())).thenReturn (player1);

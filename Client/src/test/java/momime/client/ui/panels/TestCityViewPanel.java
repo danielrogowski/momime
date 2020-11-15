@@ -17,9 +17,10 @@ import com.ndg.swing.NdgUIUtilsImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.utils.AnimationControllerImpl;
+import momime.common.database.CityViewElement;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -44,51 +45,54 @@ public final class TestCityViewPanel extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
-		final CityViewElementGfx landscape = new CityViewElementGfx ();
+		final CityViewElement landscape = new CityViewElement ();
 		landscape.setLocationX (0);
 		landscape.setLocationY (0);
 		landscape.setCityViewImageFile ("/momime.client.graphics/cityView/landscape/arcanus.png");
 		landscape.setSizeMultiplier (2);
 
-		final CityViewElementGfx sky = new CityViewElementGfx ();
+		final CityViewElement sky = new CityViewElement ();
 		sky.setLocationX (0);
 		sky.setLocationY (0);
 		sky.setCityViewImageFile ("/momime.client.graphics/cityView/sky/arcanus-hills.png");
 		sky.setSizeMultiplier (2);
 		sky.setTileTypeID ("TT02");
 
-		final CityViewElementGfx summoningCircle = new CityViewElementGfx ();
+		final CityViewElement summoningCircle = new CityViewElement ();
 		summoningCircle.setLocationX (122);
 		summoningCircle.setLocationY (52);
 		summoningCircle.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL98.png");
 		summoningCircle.setSizeMultiplier (1);
 		summoningCircle.setBuildingID (CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE);
 		
-		final CityViewElementGfx fortress = new CityViewElementGfx ();
+		final CityViewElement fortress = new CityViewElement ();
 		fortress.setLocationX (202);
 		fortress.setLocationY (67);
 		fortress.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL99-frame1.png");
 		fortress.setSizeMultiplier (1);
 		fortress.setBuildingID (CommonDatabaseConstants.BUILDING_FORTRESS);
 
-		final CityViewElementGfx evil = new CityViewElementGfx ();
+		final CityViewElement evil = new CityViewElement ();
 		evil.setLocationX (21);
 		evil.setLocationY (31);
 		evil.setCityViewImageFile ("/momime.client.graphics/cityView/spellEffects/SE183.png");
 		evil.setSizeMultiplier (1);
 		evil.setCitySpellEffectID ("SE183");
 		
-		final CityViewElementGfx altar = new CityViewElementGfx ();
+		final CityViewElement altar = new CityViewElement ();
 		altar.setLocationX (293);
 		altar.setLocationY (111);
 		altar.setCityViewImageFile ("/momime.client.graphics/cityView/spellEffects/SE146-frame1.png");
 		altar.setSizeMultiplier (1);
 		altar.setCitySpellEffectID ("SE146");
 
-		final CityViewElementGfx ocean = new CityViewElementGfx ();
+		final CityViewElement ocean = new CityViewElement ();
 		ocean.setLocationX (2);
 		ocean.setLocationY (0);
 		ocean.setCityViewImageFile ("/momime.client.graphics/cityView/water/arcanus-ocean-frame1.png");
@@ -96,14 +100,14 @@ public final class TestCityViewPanel extends ClientTestData
 		ocean.setPlaneNumber (0);
 		ocean.setCityViewElementSetID ("X");
 		
-		final CityViewElementGfx river = new CityViewElementGfx ();
+		final CityViewElement river = new CityViewElement ();
 		river.setLocationX (70);
 		river.setLocationY (0);
 		river.setCityViewImageFile ("/momime.client.graphics/cityView/water/arcanus-river-frame1.png");
 		river.setSizeMultiplier (2);
 		river.setPlaneNumber (1);
 		
-		final CityViewElementGfx setElement = new CityViewElementGfx ();
+		final CityViewElement setElement = new CityViewElement ();
 		setElement.setLocationX (140);
 		setElement.setLocationY (0);
 		setElement.setCityViewImageFile ("/momime.client.graphics/cityView/water/myrror-ocean-frame1.png");
@@ -111,7 +115,7 @@ public final class TestCityViewPanel extends ClientTestData
 		setElement.setPlaneNumber (0);
 		setElement.setCityViewElementSetID ("X");		// Matches criteria, but we matched an earlier "X" already so this doesn't get displayed
 		
-		final List<CityViewElementGfx> elements = new ArrayList<CityViewElementGfx> ();
+		final List<CityViewElement> elements = new ArrayList<CityViewElement> ();
 		elements.add (landscape);
 		elements.add (sky);
 		elements.add (summoningCircle);
@@ -121,7 +125,7 @@ public final class TestCityViewPanel extends ClientTestData
 		elements.add (ocean);
 		elements.add (river);
 		elements.add (setElement);
-		when (gfx.getCityViewElements ()).thenReturn (elements);
+		when (db.getCityViewElement ()).thenReturn (elements);
 		
 		// Mock what is in this city
 		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
@@ -140,6 +144,7 @@ public final class TestCityViewPanel extends ClientTestData
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		when (client.getSessionDescription ()).thenReturn (sd);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		// City data
 		final RenderCityData renderCityData = new RenderCityData ();

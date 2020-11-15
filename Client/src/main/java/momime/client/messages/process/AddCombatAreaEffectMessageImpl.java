@@ -6,19 +6,19 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.PickGfx;
-import momime.client.ui.frames.CombatUI;
-import momime.client.ui.frames.UnitInfoUI;
-import momime.common.database.Spell;
-import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
-import momime.common.utils.UnitUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
+
+import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.UnitInfoUI;
+import momime.common.database.Pick;
+import momime.common.database.Spell;
+import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
+import momime.common.utils.UnitUtils;
 
 /**
  * Server sends this to notify clients of new CAEs, or those that have newly come into view.
@@ -72,7 +72,7 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 			if (spell.getSpellRealm () != null)
 			{
 				// Now look up the magic realm in the graphics XML file
-				final PickGfx magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "AddCombatAreaEffectMessageImpl");
+				final Pick magicRealm = getClient ().getClientDB ().findPick (spell.getSpellRealm (), "AddCombatAreaEffectMessageImpl");
 				flashColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
 			}
 		}

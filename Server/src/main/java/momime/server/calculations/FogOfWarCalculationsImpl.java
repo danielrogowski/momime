@@ -2,15 +2,15 @@ package momime.server.calculations;
 
 import java.util.Iterator;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarValue;
+import momime.common.database.Plane;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfFogOfWarStates;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.utils.MemoryGridCellUtils;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * Isolated methods used in fog of war routines by MomTrueMap
@@ -68,7 +68,7 @@ public final class FogOfWarCalculationsImpl implements FogOfWarCalculations
 	 */
 	@Override
 	public final boolean canSeeMidTurnOnAnyPlaneIfTower (final MapCoordinates3DEx location, final FogOfWarValue setting,
-		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea, final ServerDatabaseEx db)
+		final MapVolumeOfMemoryGridCells trueTerrain, final MapVolumeOfFogOfWarStates fogOfWarArea, final CommonDatabase db)
 	{
 		boolean canSee;
 
@@ -76,7 +76,7 @@ public final class FogOfWarCalculationsImpl implements FogOfWarCalculations
 			(trueTerrain.getPlane ().get (location.getZ ()).getRow ().get (location.getY ()).getCell ().get (location.getX ()).getTerrainData ()))
 		{
 			canSee = false;
-			final Iterator<PlaneSvr> planeIter = db.getPlanes ().iterator ();
+			final Iterator<Plane> planeIter = db.getPlane ().iterator ();
 			while ((!canSee) && (planeIter.hasNext ()))
 			{
 				final int thisPlane = planeIter.next ().getPlaneNumber ();

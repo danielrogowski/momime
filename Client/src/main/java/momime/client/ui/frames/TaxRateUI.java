@@ -162,9 +162,9 @@ public final class TaxRateUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 
-		title.setText (getLanguage ().findCategoryEntry ("frmSetTaxRate", "Title"));
+		title.setText (getLanguageHolder ().findDescription (getLanguages ().getTaxRateScreen ().getTitle ()));
 		
-		final String text = getLanguage ().findCategoryEntry ("frmSetTaxRate", "Entry");
+		final String text = getLanguageHolder ().findDescription (getLanguages ().getTaxRateScreen ().getEntry ());
 		if (text != null)
 			for (final Entry<TaxRate, Action> taxRateAction : taxRateActions.entrySet ())
 			{

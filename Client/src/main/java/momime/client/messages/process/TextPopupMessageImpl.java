@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.TextPopupMessage;
@@ -25,6 +27,9 @@ public final class TextPopupMessageImpl extends TextPopupMessage implements Base
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
+	/** Language database holder */
+	private LanguageDatabaseHolder languageHolder;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -36,8 +41,7 @@ public final class TextPopupMessageImpl extends TextPopupMessage implements Base
 		log.trace ("Entering start");
 		
 		final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-		msg.setTitleLanguageCategoryID ("frmMessageBox");
-		msg.setTitleLanguageEntryID ("ErrorTitle");
+		msg.setLanguageTitle (getLanguages ().getMessageBoxScreen ().getErrorTitle ());
 		msg.setText (getText ());
 		msg.setVisible (true);
 		
@@ -58,5 +62,30 @@ public final class TextPopupMessageImpl extends TextPopupMessage implements Base
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Language database holder
+	 */
+	public final LanguageDatabaseHolder getLanguageHolder ()
+	{
+		return languageHolder;
+	}
+	
+	/**
+	 * @param holder Language database holder
+	 */
+	public final void setLanguageHolder (final LanguageDatabaseHolder holder)
+	{
+		languageHolder = holder;
+	}
+
+	/**
+	 * Convenience shortcut for accessing the Language XML database
+	 * @return Language database
+	 */
+	public final MomLanguagesEx getLanguages ()
+	{
+		return languageHolder.getLanguages ();
 	}
 }

@@ -1,5 +1,7 @@
 package momime.client.ui.panels;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,16 +24,13 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.database.MapFeature;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.MapFeatureLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.TileTypeLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.MapRightHandBar;
+import momime.client.languages.database.OverlandMapScreen;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.SurveyorTab;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.components.UIComponentFactory;
@@ -39,11 +38,16 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSection;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.TileType;
+import momime.common.database.TileTypeEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -72,87 +76,101 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final ProductionTypeEx goldProduction = new ProductionTypeEx ();
+		goldProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Gold"));
+		goldProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "GP"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD), anyString ())).thenReturn (goldProduction);
+		
+		final ProductionTypeEx rationsProduction = new ProductionTypeEx ();
+		rationsProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Rations"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS), anyString ())).thenReturn (rationsProduction);
+		
+		final ProductionTypeEx foodProduction = new ProductionTypeEx ();
+		foodProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Food"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD), anyString ())).thenReturn (foodProduction);
+		
+		final ProductionTypeEx productionProduction = new ProductionTypeEx ();
+		productionProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Production"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION), anyString ())).thenReturn (productionProduction);
+		
+		final ProductionTypeEx manaProduction = new ProductionTypeEx ();
+		manaProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Mana"));
+		manaProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA), anyString ())).thenReturn (manaProduction);
+		
+		final ProductionTypeEx magicPowerProduction = new ProductionTypeEx ();
+		magicPowerProduction.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Magic Power"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER), anyString ())).thenReturn (magicPowerProduction);
+		
+		final TileTypeEx tileTypeLang = new TileTypeEx ();
+		tileTypeLang.getTileTypeDescription ().add (createLanguageText (Language.ENGLISH, "The tile type"));
+		tileTypeLang.getTileTypeCannotBuildCityDescription ().add (createLanguageText (Language.ENGLISH, "Can't build city (tile)"));
+		when (db.findTileType (eq ("TT01"), anyString ())).thenReturn (tileTypeLang);
+		
+		final MapFeatureEx mapFeatureLang = new MapFeatureEx ();
+		mapFeatureLang.getMapFeatureDescription ().add (createLanguageText (Language.ENGLISH, "The map feature"));
+		mapFeatureLang.getMapFeatureMagicWeaponsDescription ().add (createLanguageText (Language.ENGLISH, "Builds +1 Magic Weapons"));
+		when (db.findMapFeature (eq ("MF01"), anyString ())).thenReturn (mapFeatureLang);
+
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "Cancel")).thenReturn ("Cancel");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "Done")).thenReturn ("Done");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "Patrol")).thenReturn ("Patrol");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "Wait")).thenReturn ("Wait");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "OnePlayerAtATimeCurrentPlayer")).thenReturn ("Current player:");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "SimultaneousTurnsLine1")).thenReturn ("Waiting for");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "SimultaneousTurnsLine2")).thenReturn ("other players");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurn")).thenReturn ("AMOUNT_PER_TURN PRODUCTION_TYPE per turn");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "ProductionPerTurnMagicPower")).thenReturn ("Power Base AMOUNT_PER_TURN");
-		when (lang.findCategoryEntry ("frmMapRightHandBar", "TargetSpell")).thenReturn ("Target Spell");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
 		
-		when (lang.findCategoryEntry ("frmSurveyor", "Title")).thenReturn ("Surveyor");
-		when (lang.findCategoryEntry ("frmSurveyor", "CityResources")).thenReturn ("City Resources");
-		when (lang.findCategoryEntry ("frmSurveyor", "FeatureProvidesSpellProtection")).thenReturn ("Protects against spells");
-		when (lang.findCategoryEntry ("frmSurveyor", "CantBuildCityTooCloseToAnotherCity")).thenReturn ("Cities cannot be built" + System.lineSeparator () + "within CITY_SEPARATION squares" + System.lineSeparator () + "of another city");
-		when (lang.findCategoryEntry ("frmSurveyor", "Corrupted")).thenReturn ("Corrupted");
+		final MapRightHandBar mapRightHandBarLang = new MapRightHandBar ();
+		mapRightHandBarLang.getDone ().add (createLanguageText (Language.ENGLISH, "Done"));
+		mapRightHandBarLang.getPatrol ().add (createLanguageText (Language.ENGLISH, "Patrol"));
+		mapRightHandBarLang.getWait ().add (createLanguageText (Language.ENGLISH, "Wait"));
+		mapRightHandBarLang.getOnePlayerAtATimeCurrentPlayer ().add (createLanguageText (Language.ENGLISH, "Current player:"));
+		mapRightHandBarLang.getSimultaneousTurnsLine1 ().add (createLanguageText (Language.ENGLISH, "Waiting for"));
+		mapRightHandBarLang.getSimultaneousTurnsLine2 ().add (createLanguageText (Language.ENGLISH, "other players"));
+		mapRightHandBarLang.getProductionPerTurn ().add (createLanguageText (Language.ENGLISH, "AMOUNT_PER_TURN PRODUCTION_TYPE per turn"));
+		mapRightHandBarLang.getProductionPerTurnMagicPower ().add (createLanguageText (Language.ENGLISH, "Power Base AMOUNT_PER_TURN"));
+		mapRightHandBarLang.getTargetSpell ().add (createLanguageText (Language.ENGLISH, "Target Spell"));
 		
-		final ProductionTypeLang goldProduction = new ProductionTypeLang ();
-		goldProduction.setProductionTypeDescription ("Gold");
-		goldProduction.setProductionTypeSuffix ("GP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (goldProduction);
+		final SurveyorTab surveyorTabLang = new SurveyorTab ();
+		surveyorTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Surveyor"));
+		surveyorTabLang.getCityResources ().add (createLanguageText (Language.ENGLISH, "City Resources"));
+		surveyorTabLang.getFeatureProvidesSpellProtection ().add (createLanguageText (Language.ENGLISH, "Protects against spells"));
+		surveyorTabLang.getCorrupted ().add (createLanguageText (Language.ENGLISH, "Corrupted"));
+		surveyorTabLang.getCantBuildCityTooCloseToAnotherCity ().add (createLanguageText (Language.ENGLISH,
+			"Cities cannot be built" + System.lineSeparator () + "within CITY_SEPARATION squares" + System.lineSeparator () + "of another city"));
+
+		final OverlandMapScreen overlandMapScreenLang = new OverlandMapScreen ();
+		overlandMapScreenLang.setMapRightHandBar (mapRightHandBarLang);
+		overlandMapScreenLang.setSurveyorTab (surveyorTabLang);
 		
-		final ProductionTypeLang rationsProduction = new ProductionTypeLang ();
-		rationsProduction.setProductionTypeDescription ("Rations");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (rationsProduction);
-		
-		final ProductionTypeLang foodProduction = new ProductionTypeLang ();
-		foodProduction.setProductionTypeDescription ("Food");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)).thenReturn (foodProduction);
-		
-		final ProductionTypeLang productionProduction = new ProductionTypeLang ();
-		productionProduction.setProductionTypeDescription ("Production");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_PRODUCTION)).thenReturn (productionProduction);
-		
-		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
-		manaProduction.setProductionTypeDescription ("Mana");
-		manaProduction.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
-		
-		final SpellBookSectionLang section = new SpellBookSectionLang ();
-		section.setSpellTargetPrompt ("Select a friendly city to cast your SPELL_NAME spell on");
-		when (lang.findSpellBookSection (SpellBookSectionID.CITY_ENCHANTMENTS)).thenReturn (section);
-		
-		final SpellLang spellLang = new SpellLang ();
-		spellLang.setSpellName ("Heavenly Light");
-		when (lang.findSpell ("SP001")).thenReturn (spellLang);
-		
-		final TileTypeLang tileTypeLang = new TileTypeLang ();
-		tileTypeLang.setTileTypeDescription ("The tile type");
-		tileTypeLang.setTileTypeCannotBuildCityDescription ("Can't build city (tile)");
-		when (lang.findTileType ("TT01")).thenReturn (tileTypeLang);
-		
-		final MapFeatureLang mapFeatureLang = new MapFeatureLang ();
-		mapFeatureLang.setMapFeatureDescription ("The map feature");
-		mapFeatureLang.setMapFeatureMagicWeaponsDescription ("Builds +1 Magic Weapons");
-		when (lang.findMapFeature ("MF01")).thenReturn (mapFeatureLang);
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getOverlandMapScreen ()).thenReturn (overlandMapScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Mock entries from client DB
+		final SpellBookSection section = new SpellBookSection ();
+		section.getSpellTargetPrompt ().add (createLanguageText (Language.ENGLISH, "Select a friendly city to cast your SPELL_NAME spell on"));
+		when (db.findSpellBookSection (SpellBookSectionID.CITY_ENCHANTMENTS, "OverlandMapRightHandPanel")).thenReturn (section);
+		
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
+		spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Heavenly Light"));
 		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		when (db.findSpell ("SP001", "OverlandMapRightHandPanel")).thenReturn (spell);
 
-		final TileType tileType = new TileType ();
+		final TileTypeEx tileType = new TileTypeEx ();
 		tileType.setCanBuildCity (true);
 		tileType.setDoubleFood (3);
 		tileType.setProductionBonus (4);
 		tileType.setGoldBonus (10);		
 		when (db.findTileType ("TT01", "surveyorLocationOrLanguageChanged")).thenReturn (tileType);
 		
-		final MapFeature mapFeature = new MapFeature ();
+		final MapFeatureEx mapFeature = new MapFeatureEx ();
 		mapFeature.setCanBuildCity (true);
 		mapFeature.setFeatureMagicWeapons (3);
 		mapFeature.setFeatureSpellProtection (true);

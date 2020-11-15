@@ -9,18 +9,6 @@ import java.util.List;
 
 import javax.xml.datatype.DatatypeFactory;
 
-import momime.client.ClientTestData;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.common.database.DifficultyLevel;
-import momime.common.database.LandProportion;
-import momime.common.database.NodeStrength;
-import momime.common.database.OverlandMapSize;
-import momime.common.messages.MomSessionDescription;
-import momime.common.messages.TurnSystem;
-
 import org.junit.Test;
 
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -29,6 +17,23 @@ import com.ndg.multiplayer.sessionbase.SavedGameSession;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.LoadGameScreen;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.TurnSystems;
+import momime.client.languages.database.WaitForPlayersToJoinScreen;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.DifficultyLevel;
+import momime.common.database.LandProportion;
+import momime.common.database.Language;
+import momime.common.database.NodeStrength;
+import momime.common.database.OverlandMapSize;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.TurnSystem;
 
 /**
  * Tests the LoadGameUI class
@@ -46,31 +51,38 @@ public final class TestLoadGameUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmLoadGame", "Title")).thenReturn ("Load Game");
-		when (lang.findCategoryEntry ("frmLoadGame", "DeleteSavedGame")).thenReturn ("Delete");
-		when (lang.findCategoryEntry ("frmLoadGame", "SelectSavedGame")).thenReturn ("Select");
-		when (lang.findCategoryEntry ("frmLoadGame", "SelectSavePoint")).thenReturn ("Load");
-		when (lang.findCategoryEntry ("frmLoadGame", "Back")).thenReturn ("Back");
-		when (lang.findCategoryEntry ("frmLoadGame", "Cancel")).thenReturn ("Cancel");
-
-		when (lang.findCategoryEntry ("frmLoadGame", "SavedGamesColumn0")).thenReturn ("Game Name");
-		when (lang.findCategoryEntry ("frmLoadGame", "SavedGamesColumn1")).thenReturn ("Players");
-		when (lang.findCategoryEntry ("frmLoadGame", "SavedGamesColumn2")).thenReturn ("Game Started");
-		when (lang.findCategoryEntry ("frmLoadGame", "SavedGamesColumn3")).thenReturn ("Latest Save");
-
-		when (lang.findCategoryEntry ("frmLoadGame", "SavePointsColumn0")).thenReturn ("Saved At");
-		when (lang.findCategoryEntry ("frmLoadGame", "SavePointsColumn1")).thenReturn ("Turn");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
 		
-		when (lang.findCategoryEntry ("NewGameFormTurnSystems", TurnSystem.ONE_PLAYER_AT_A_TIME.name ())).thenReturn ("One player at a time");
-		when (lang.findOverlandMapSizeDescription ("MS03")).thenReturn ("Standard");
-		when (lang.findLandProportionDescription ("LP03")).thenReturn ("Large");
-		when (lang.findNodeStrengthDescription ("NS03")).thenReturn ("Powerful");
-		when (lang.findDifficultyLevelDescription ("DL05")).thenReturn ("Impossible");
-		when (lang.findCategoryEntry ("frmWaitForPlayersToJoin", "Custom")).thenReturn ("Custom");
+		final LoadGameScreen loadGameScreenLang = new LoadGameScreen ();
+		loadGameScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Load Game"));
+		loadGameScreenLang.getDeleteSavedGame ().add (createLanguageText (Language.ENGLISH, "Delete"));
+		loadGameScreenLang.getSelectSavedGame ().add (createLanguageText (Language.ENGLISH, "Select"));
+		loadGameScreenLang.getSelectSavePoint ().add (createLanguageText (Language.ENGLISH, "Load"));
+		loadGameScreenLang.getBack ().add (createLanguageText (Language.ENGLISH, "Back"));
+		
+		loadGameScreenLang.getSavedGamesColumnGameName ().add (createLanguageText (Language.ENGLISH, "Game Name"));
+		loadGameScreenLang.getSavedGamesColumnPlayers ().add (createLanguageText (Language.ENGLISH, "Players"));
+		loadGameScreenLang.getSavedGamesColumnGameStarted ().add (createLanguageText (Language.ENGLISH, "Game Started"));
+		loadGameScreenLang.getSavedGamesColumnLatestSave ().add (createLanguageText (Language.ENGLISH, "Latest Save"));
+		
+		loadGameScreenLang.getSavePointsColumnSavedAt ().add (createLanguageText (Language.ENGLISH, "Saved At"));
+		loadGameScreenLang.getSavePointsColumnTurn ().add (createLanguageText (Language.ENGLISH, "Turn"));
+		
+		final TurnSystems turnSystemsLang = new TurnSystems ();
+		turnSystemsLang.getOnePlayerAtATime ().add (createLanguageText (Language.ENGLISH, "One player at a time"));
+		
+		final WaitForPlayersToJoinScreen waitForPlayersToJoinScreenLang = new WaitForPlayersToJoinScreen ();
+		waitForPlayersToJoinScreenLang.getCustom ().add (createLanguageText (Language.ENGLISH, "Custom"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getLoadGameScreen ()).thenReturn (loadGameScreenLang);
+		when (lang.getTurnSystems ()).thenReturn (turnSystemsLang);
+		when (lang.getWaitForPlayersToJoinScreen ()).thenReturn (waitForPlayersToJoinScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

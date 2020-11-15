@@ -14,7 +14,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityUnrestBreakdown;
@@ -213,7 +213,7 @@ public interface CityCalculations
 	 * @param db Lookup lists built over the XML database
 	 * @return List of all units that the player can choose between to construct at the city
 	 */
-	public List<Unit> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation,
+	public List<UnitEx> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CommonDatabase db);
 	
 	/**

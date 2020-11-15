@@ -25,9 +25,13 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Plane;
+import momime.common.database.TileTypeEx;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -47,10 +51,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.TileTypeSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -108,7 +108,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	public final void testFindAndProcessOneCellPendingMovement_NoneApplicable () throws Exception
 	{
 		// Mock empty database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
@@ -234,7 +234,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	public final void testFindAndProcessOneCellPendingMovement_Step () throws Exception
 	{
 		// Mock empty database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
@@ -378,7 +378,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	public final void testFindAndProcessOneCellPendingMovement_Reach () throws Exception
 	{
 		// Mock empty database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
@@ -553,7 +553,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	public final void testFindAndProcessOneCombat_Unreachable () throws Exception
 	{
 		// Mock empty database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
@@ -625,7 +625,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	public final void testFindAndProcessOneCombat_Move () throws Exception
 	{
 		// Mock empty database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
@@ -697,7 +697,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	public final void testFindAndProcessOneCombat_Normal () throws Exception
 	{
 		// Mock empty database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
@@ -844,7 +844,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	public final void testFindAndProcessOneCombat_BorderConflict () throws Exception
 	{
 		// Mock empty database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Players
 		final MomPersistentPlayerPrivateKnowledge priv1 = new MomPersistentPlayerPrivateKnowledge ();
@@ -996,27 +996,27 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 	public final void testProcessSpecialOrders () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr normalUnitDef = new UnitSvr ();
+		final UnitEx normalUnitDef = new UnitEx ();
 		normalUnitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		when (db.findUnit ("UN001", "processSpecialOrders-d")).thenReturn (normalUnitDef);
 		
-		final UnitSvr heroUnitDef = new UnitSvr ();
+		final UnitEx heroUnitDef = new UnitEx ();
 		heroUnitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		when (db.findUnit ("UN002", "processSpecialOrders-d")).thenReturn (heroUnitDef);
 
-		final PlaneSvr arcanus = new PlaneSvr ();
-		final PlaneSvr myrror = new PlaneSvr ();
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
 		
-		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
+		final List<Plane> planes = new ArrayList<Plane> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlanes ()).thenReturn (planes);
+		when (db.getPlane ()).thenReturn (planes);
 		
-		final TileTypeSvr tt = new TileTypeSvr ();
+		final TileTypeEx tt = new TileTypeEx ();
 		tt.setCanBuildCity (true);
 		when (db.findTileType ("TT01", "processSpecialOrders-t")).thenReturn (tt);
 		

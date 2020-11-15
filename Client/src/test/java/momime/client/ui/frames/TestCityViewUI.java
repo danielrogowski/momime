@@ -22,19 +22,12 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.graphics.database.CityViewElementGfx;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeGfx;
-import momime.client.graphics.database.ProductionTypeImageGfx;
-import momime.client.graphics.database.RaceGfx;
-import momime.client.graphics.database.RacePopulationTaskGfx;
-import momime.client.graphics.database.TileSetGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.RaceLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.CityScreen;
+import momime.client.languages.database.Simple;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.ui.renderer.MemoryMaintainedSpellListCellRenderer;
@@ -45,10 +38,19 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.Building;
+import momime.common.database.CitySize;
+import momime.common.database.CityViewElement;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DifficultyLevel;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.Language;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.ProductionTypeEx;
+import momime.common.database.ProductionTypeImage;
+import momime.common.database.RaceEx;
+import momime.common.database.RacePopulationTask;
+import momime.common.database.TileSetEx;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
@@ -75,78 +77,83 @@ public final class TestCityViewUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
-		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
-		final RaceGfx race = new RaceGfx ();
-		when (gfx.findRace ("RC01", "cityDataChanged")).thenReturn (race);
-		
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final RaceEx race = new RaceEx ();
+		race.getRaceNameSingular ().add (createLanguageText (Language.ENGLISH, "Barbarian"));
 		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, "/momime.client.graphics/races/barbarian/farmer.png"));
 		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.POPULATION_TASK_ID_WORKER, "/momime.client.graphics/races/barbarian/worker.png"));
 		race.getRacePopulationTask ().add (createRacePopulationTaskImage (CommonDatabaseConstants.POPULATION_TASK_ID_REBEL, "/momime.client.graphics/races/barbarian/rebel.png"));
 		race.buildMap ();
-		
-		final TileSetGfx overlandMapTileSet = new TileSetGfx ();
-		overlandMapTileSet.setTileWidth (20);
-		overlandMapTileSet.setTileHeight (18);
-		when (gfx.findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
-		
-		final ProductionTypeGfx rations = new ProductionTypeGfx ();
+		when (db.findRace (eq ("RC01"), anyString ())).thenReturn (race);
+				
+		final CitySize citySize = new CitySize ();
+		citySize.getCitySizeNameIncludingOwner ().add (createLanguageText (Language.ENGLISH, "PLAYER_NAME's Test City of CITY_NAME"));
+		when (db.findCitySize (eq ("CS01"), anyString ())).thenReturn (citySize);
+
+		final ProductionTypeEx rations = new ProductionTypeEx ();
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("1", "/momime.client.graphics/production/rations/1.png"));
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("10", "/momime.client.graphics/production/rations/10.png"));
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("-1", "/momime.client.graphics/production/rations/-1.png"));
 		rations.getProductionTypeImage ().add (createProductionTypeImage ("-10", "/momime.client.graphics/production/rations/-10.png"));
 		rations.buildMap ();
-		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "generateProductionImage")).thenReturn (rations);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, "generateProductionImage")).thenReturn (rations);
 		
-		final ProductionTypeGfx gold = new ProductionTypeGfx ();
+		final ProductionTypeEx gold = new ProductionTypeEx ();
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("1", "/momime.client.graphics/production/gold/1.png"));
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("10", "/momime.client.graphics/production/gold/10.png"));
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("-1", "/momime.client.graphics/production/gold/-1.png"));
 		gold.getProductionTypeImage ().add (createProductionTypeImage ("-10", "/momime.client.graphics/production/gold/-10.png"));
 		gold.buildMap ();
-		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "generateProductionImage")).thenReturn (gold);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, "generateProductionImage")).thenReturn (gold);
 
-		final ProductionTypeGfx food = new ProductionTypeGfx ();
+		final ProductionTypeEx food = new ProductionTypeEx ();
 		food.buildMap ();
-		when (gfx.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "generateProductionImage")).thenReturn (food);
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD, "generateProductionImage")).thenReturn (food);
 		
-		final CityViewElementGfx granaryGfx = new CityViewElementGfx ();
+		final CityViewElement granaryGfx = new CityViewElement ();
 		granaryGfx.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
-		when (gfx.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
+		when (db.findCityViewElementBuilding (eq ("BL01"), anyString ())).thenReturn (granaryGfx);
+		
+		final TileSetEx overlandMapTileSet = new TileSetEx ();
+		overlandMapTileSet.setTileWidth (20);
+		overlandMapTileSet.setTileHeight (18);
+		when (db.findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
+		
+		// Mock entries from the graphics XML
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmCity", "Resources")).thenReturn ("Resources");
-		when (lang.findCategoryEntry ("frmCity", "Enchantments")).thenReturn ("Enchantments/Curses");
-		when (lang.findCategoryEntry ("frmCity", "Terrain")).thenReturn ("Surrounding Terrain");
-		when (lang.findCategoryEntry ("frmCity", "Buildings")).thenReturn ("Buildings");
-		when (lang.findCategoryEntry ("frmCity", "Units")).thenReturn ("Units");
-		when (lang.findCategoryEntry ("frmCity", "Production")).thenReturn ("Producing");
-
-		when (lang.findCategoryEntry ("frmCity", "RushBuy")).thenReturn ("Buy");
-		when (lang.findCategoryEntry ("frmCity", "ChangeConstruction")).thenReturn ("Change");
-		when (lang.findCategoryEntry ("frmCity", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("frmCity", "Rename")).thenReturn ("Rename");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
 		
-		when (lang.findCitySizeName ("CS01", true)).thenReturn ("PLAYER_NAME's Test City of CITY_NAME");
-		when (lang.findCategoryEntry ("frmCity", "MaxCitySize")).thenReturn ("maximum MAX_CITY_SIZE");
-		when (lang.findCategoryEntry ("frmCity", "PopulationAndGrowth")).thenReturn ("Population: POPULATION (GROWTH_RATE)");
+		final CityScreen cityScreenLang = new CityScreen ();
+		cityScreenLang.getResources ().add (createLanguageText (Language.ENGLISH, "Resources"));
+		cityScreenLang.getEnchantments ().add (createLanguageText (Language.ENGLISH, "Enchantments/Curses"));
+		cityScreenLang.getTerrain ().add (createLanguageText (Language.ENGLISH, "Surrounding Terrain"));
+		cityScreenLang.getBuildings ().add (createLanguageText (Language.ENGLISH, "Buildings"));
+		cityScreenLang.getUnits ().add (createLanguageText (Language.ENGLISH, "Units"));
+		cityScreenLang.getProduction ().add (createLanguageText (Language.ENGLISH, "Producing"));
+		
+		cityScreenLang.getRushBuy ().add (createLanguageText (Language.ENGLISH, "Buy"));
+		cityScreenLang.getChangeConstruction ().add (createLanguageText (Language.ENGLISH, "Change"));
+		cityScreenLang.getRename ().add (createLanguageText (Language.ENGLISH, "Rename"));
+		cityScreenLang.getMaxCitySize ().add (createLanguageText (Language.ENGLISH, "maximum MAX_CITY_SIZE"));
+		cityScreenLang.getPopulationAndGrowth ().add (createLanguageText (Language.ENGLISH, "Population: POPULATION (GROWTH_RATE)"));
 
-		final RaceLang raceName = new RaceLang ();
-		raceName.setRaceName ("Barbarian");
-		when (lang.findRace ("RC01")).thenReturn (raceName);
-				
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getCityScreen ()).thenReturn (cityScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Client DB
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
 		final Building granary = new Building ();
 		granary.setProductionCost (200);
 		when (db.findBuilding (eq ("BL01"), anyString ())).thenReturn (granary);
@@ -243,15 +250,15 @@ public final class TestCityViewUI extends ClientTestData
 		when (calc.calculateCityGrowthRate (players, terrain, fow.getBuilding (), new MapCoordinates3DEx (20, 10, 0), maxCitySize, difficultyLevel, db)).thenReturn (cityGrowthBreakdown);
 		
 		// Display at least some landscape
-		final CityViewElementGfx landscape = new CityViewElementGfx ();
+		final CityViewElement landscape = new CityViewElement ();
 		landscape.setLocationX (0);
 		landscape.setLocationY (0);
 		landscape.setSizeMultiplier (2);
 		landscape.setCityViewImageFile ("/momime.client.graphics/cityView/landscape/arcanus.png");
 		
-		final List<CityViewElementGfx> elements = new ArrayList<CityViewElementGfx> ();
+		final List<CityViewElement> elements = new ArrayList<CityViewElement> ();
 		elements.add (landscape);
-		when (gfx.getCityViewElements ()).thenReturn (elements);
+		when (db.getCityViewElement ()).thenReturn (elements);
 
 		// Set up animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
@@ -267,7 +274,7 @@ public final class TestCityViewUI extends ClientTestData
 		
 		// Set up production image generator
 		final ResourceValueClientUtilsImpl resourceValueClientUtils = new ResourceValueClientUtilsImpl ();
-		resourceValueClientUtils.setGraphicsDB (gfx);
+		resourceValueClientUtils.setClient (client);
 		resourceValueClientUtils.setUtils (utils);
 		
 		// Set up spells list renderer
@@ -321,9 +328,9 @@ public final class TestCityViewUI extends ClientTestData
 	 * @param filename Filename to locate the image
 	 * @return New RacePopulationTask object
 	 */
-	private final RacePopulationTaskGfx createRacePopulationTaskImage (final String populationTaskID, final String filename)
+	private final RacePopulationTask createRacePopulationTaskImage (final String populationTaskID, final String filename)
 	{
-		final RacePopulationTaskGfx image = new RacePopulationTaskGfx ();
+		final RacePopulationTask image = new RacePopulationTask ();
 		image.setPopulationTaskID (populationTaskID);
 		image.setCivilianImageFile (filename);
 		return image;
@@ -336,9 +343,9 @@ public final class TestCityViewUI extends ClientTestData
 	 * @param filename Filename to locate the image
 	 * @return New ProductionTypeImage object
 	 */
-	private final ProductionTypeImageGfx createProductionTypeImage (final String value, final String filename)
+	private final ProductionTypeImage createProductionTypeImage (final String value, final String filename)
 	{
-		final ProductionTypeImageGfx image = new ProductionTypeImageGfx ();
+		final ProductionTypeImage image = new ProductionTypeImage ();
 		image.setProductionValue (value);
 		image.setProductionImageFile (filename);
 		return image;

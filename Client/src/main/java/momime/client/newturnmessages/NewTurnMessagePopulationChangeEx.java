@@ -3,18 +3,20 @@ package momime.client.newturnmessages;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.util.List;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
+import momime.common.database.LanguageText;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.OverlandMapCityData;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 /**
  * NTM about the population of a city either growing or dying over a 1,000 boundary
@@ -70,16 +72,13 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	@Override
 	public final String getText ()
 	{
-		final String languageEntryID;
-		if (getNewPopulation () > getOldPopulation ())
-			languageEntryID = "CityGrowth";
-		else
-			languageEntryID = "CityDeath";
+		final List<LanguageText> languageText = (getNewPopulation () > getOldPopulation ()) ?
+			getLanguages ().getNewTurnMessages ().getCityGrowth () : getLanguages ().getNewTurnMessages ().getCityDeath ();
 		
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 		
-		return getLanguage ().findCategoryEntry ("NewTurnMessages", languageEntryID).replaceAll
+		return getLanguageHolder ().findDescription (languageText).replaceAll
 			("CITY_NAME", (cityData == null) ? "" : cityData.getCityName ()).replaceAll
 			("OLD_POPULATION", getTextUtils ().intToStrCommas (getOldPopulation ())).replaceAll
 			("NEW_POPULATION", getTextUtils ().intToStrCommas (getNewPopulation ()));
@@ -176,9 +175,9 @@ public final class NewTurnMessagePopulationChangeEx extends NewTurnMessagePopula
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

@@ -40,13 +40,13 @@ import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeAndUndoubledValue;
-import momime.common.database.RangedAttackType;
+import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
-import momime.common.database.Unit;
 import momime.common.database.UnitCombatSideID;
-import momime.common.database.UnitSkill;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitType;
@@ -158,7 +158,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
 		// Set up test unit
@@ -185,7 +185,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
@@ -220,7 +220,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
 		
@@ -262,7 +262,7 @@ public final class TestUnitUtilsImpl
 		unitDefSkill.setUnitSkillID ("US001");
 		unitDefSkill.setUnitSkillValue (5);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("MB01");
 		unitDef.getUnitHasSkill ().add (unitDefSkill);
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
@@ -304,7 +304,7 @@ public final class TestUnitUtilsImpl
 		unitDefSkill.setUnitSkillID ("US001");
 		unitDefSkill.setUnitSkillValue (5);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("MB01");
 		unitDef.getUnitHasSkill ().add (unitDefSkill);
 		when (db.findUnit ("UN001", "initializeUnitSkills")).thenReturn (unitDef);
@@ -348,7 +348,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
@@ -360,9 +360,9 @@ public final class TestUnitUtilsImpl
 		when (db.findUnitType ("S", "expandUnitDetails")).thenReturn (unitType);
 		
 		for (int n = 1; n <= 3; n++)
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 			
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -445,7 +445,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("MB01");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
@@ -457,9 +457,9 @@ public final class TestUnitUtilsImpl
 		when (db.findUnitType ("S", "expandUnitDetails")).thenReturn (unitType);
 		
 		for (int n = 1; n <= 3; n++)
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 			
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -528,7 +528,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
@@ -563,9 +563,9 @@ public final class TestUnitUtilsImpl
 		}
 		
 		for (int n = 1; n <= 6; n++)
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
 		final UnitSpellEffect spellEffect1 = new UnitSpellEffect ();
 		spellEffect1.setUnitSkillID ("US004");
@@ -701,7 +701,7 @@ public final class TestUnitUtilsImpl
 		// US001 grants US002, US003 & US004, but US003 gets cancelled by us having US005 and US004 gets cancelled by enemy having US006
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
@@ -715,11 +715,11 @@ public final class TestUnitUtilsImpl
 		
 		// Skill defintions
 		for (final int n : new int [] {2, 5, 6})
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
-		final UnitSkill skillThatGrantsOthers = new UnitSkill ();
+		final UnitSkillEx skillThatGrantsOthers = new UnitSkillEx ();
 		for (int n = 2; n <= 4; n++)
 		{
 			final GrantsSkill grantsSkill = new GrantsSkill ();
@@ -732,7 +732,7 @@ public final class TestUnitUtilsImpl
 		negatedByOurs.setNegatedBySkillID ("US005");
 		negatedByOurs.setNegatedByUnitID (NegatedByUnitID.OUR_UNIT);
 		
-		final UnitSkill skillCancelledByOurs = new UnitSkill ();
+		final UnitSkillEx skillCancelledByOurs = new UnitSkillEx ();
 		skillCancelledByOurs.getNegatedBySkill ().add (negatedByOurs);
 		when (db.findUnitSkill ("US003", "expandUnitDetails")).thenReturn (skillCancelledByOurs);
 
@@ -740,12 +740,12 @@ public final class TestUnitUtilsImpl
 		negatedByEnemys.setNegatedBySkillID ("US006");
 		negatedByEnemys.setNegatedByUnitID (NegatedByUnitID.ENEMY_UNIT);
 		
-		final UnitSkill skillCancelledByEnemys = new UnitSkill ();
+		final UnitSkillEx skillCancelledByEnemys = new UnitSkillEx ();
 		skillCancelledByEnemys.getNegatedBySkill ().add (negatedByEnemys);
 		when (db.findUnitSkill ("US004", "expandUnitDetails")).thenReturn (skillCancelledByEnemys);
 		
 		// RAT definition
-		final RangedAttackType rat = new RangedAttackType ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setMithrilAndAdamantiumVersions (true);
 		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat);
 		
@@ -869,7 +869,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
@@ -887,15 +887,15 @@ public final class TestUnitUtilsImpl
 		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
 		
 		// Skill defintions
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, "expandUnitDetails")).thenReturn (new UnitSkill ());
-		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (new UnitSkill ());
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 
-		final UnitSkill chaosChannels = new UnitSkill ();
+		final UnitSkillEx chaosChannels = new UnitSkillEx ();
 		chaosChannels.setChangesUnitToMagicRealm ("LTC");
 		when (db.findUnitSkill ("US002", "expandUnitDetails")).thenReturn (chaosChannels);
 		
 		// RAT definition
-		final RangedAttackType rat = new RangedAttackType ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setMithrilAndAdamantiumVersions (false);		// <---
 		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat);
 		
@@ -1021,7 +1021,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
@@ -1045,7 +1045,7 @@ public final class TestUnitUtilsImpl
 		final List<Pick> picks = new ArrayList<Pick> ();
 		picks.add (unitMagicRealm);
 		picks.add (mergedMagicRealm);
-		doReturn (picks).when (db).getPicks ();
+		doReturn (picks).when (db).getPick ();
 		
 		// Unit type and experience definition
 		final UnitType unitType = new UnitType ();
@@ -1073,18 +1073,18 @@ public final class TestUnitUtilsImpl
 		}
 		
 		// Skill definitions
-		final UnitSkill chaosChannels = new UnitSkill ();
+		final UnitSkillEx chaosChannels = new UnitSkillEx ();
 		chaosChannels.setChangesUnitToMagicRealm ("LTC");
 		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (chaosChannels);
 
-		final UnitSkill undead = new UnitSkill ();
+		final UnitSkillEx undead = new UnitSkillEx ();
 		undead.setChangesUnitToMagicRealm ("LTU");
 		when (db.findUnitSkill ("US002", "expandUnitDetails")).thenReturn (undead);
 		
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
 		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT})
-			when (db.findUnitSkill (unitSkillID, "expandUnitDetails")).thenReturn (new UnitSkill ());
+			when (db.findUnitSkill (unitSkillID, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1186,7 +1186,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
@@ -1206,15 +1206,15 @@ public final class TestUnitUtilsImpl
 		}
 		
 		// The skills that the bonuses add to
-		final List<UnitSkill> unitSkillDefs = new ArrayList<UnitSkill> ();
+		final List<UnitSkillEx> unitSkillDefs = new ArrayList<UnitSkillEx> ();
 		for (int n = 1; n <= 4; n++)
 		{
-			final UnitSkill skillDef = new UnitSkill ();
+			final UnitSkillEx skillDef = new UnitSkillEx ();
 			skillDef.setUnitSkillID ("US00" + n);
 			unitSkillDefs.add (skillDef);
 		}
 		
-		final UnitSkill expDef = new UnitSkill ();
+		final UnitSkillEx expDef = new UnitSkillEx ();
 		expDef.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		unitSkillDefs.add (expDef);
 		
@@ -1225,14 +1225,14 @@ public final class TestUnitUtilsImpl
 			heroSkillBonus.setAddsToSkillID ("US00" + n);
 			heroSkillBonus.setAddsToSkillDivisor ((n <= 2) ? 1 : 2);
 			
-			final UnitSkill heroSkill = new UnitSkill ();
+			final UnitSkillEx heroSkill = new UnitSkillEx ();
 			heroSkill.setUnitSkillID ("HS0" + n);
 			heroSkill.getAddsToSkill ().add (heroSkillBonus);
 			
 			unitSkillDefs.add (heroSkill);
 		}
 
-		for (final UnitSkill skillDef : unitSkillDefs)
+		for (final UnitSkillEx skillDef : unitSkillDefs)
 			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
 		
 		doReturn (unitSkillDefs).when (db).getUnitSkills ();
@@ -1350,7 +1350,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
@@ -1362,10 +1362,10 @@ public final class TestUnitUtilsImpl
 		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
 
 		// The skills that the bonuses add to
-		final List<UnitSkill> unitSkillDefs = new ArrayList<UnitSkill> ();
+		final List<UnitSkillEx> unitSkillDefs = new ArrayList<UnitSkillEx> ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final UnitSkill skillDef = new UnitSkill ();
+			final UnitSkillEx skillDef = new UnitSkillEx ();
 			skillDef.setUnitSkillID ("US00" + n);
 			unitSkillDefs.add (skillDef);
 		}
@@ -1382,14 +1382,14 @@ public final class TestUnitUtilsImpl
 			if (n == 3)
 				bonusSkillBonus.setAffectsEntireStack (true);
 			
-			final UnitSkill bonusSkill = new UnitSkill ();
+			final UnitSkillEx bonusSkill = new UnitSkillEx ();
 			bonusSkill.setUnitSkillID ("US00" + (n+3));
 			bonusSkill.getAddsToSkill ().add (bonusSkillBonus);
 			
 			unitSkillDefs.add (bonusSkill);
 		}
 
-		for (final UnitSkill skillDef : unitSkillDefs)
+		for (final UnitSkillEx skillDef : unitSkillDefs)
 			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
 		
 		doReturn (unitSkillDefs).when (db).getUnitSkills ();
@@ -1505,7 +1505,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
@@ -1518,12 +1518,12 @@ public final class TestUnitUtilsImpl
 
 		// Skill definitions
 		for (int n = 1; n <= 9; n++)
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkill ());
+			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 
 		final GrantsSkill grantsWepImmunity = new GrantsSkill ();
 		grantsWepImmunity.setGrantsSkillID ("US005");
 		
-		final UnitSkill invulnerabilityDef = new UnitSkill ();
+		final UnitSkillEx invulnerabilityDef = new UnitSkillEx ();
 		invulnerabilityDef.getGrantsSkill ().add (grantsWepImmunity);
 		when (db.findUnitSkill ("US010", "expandUnitDetails")).thenReturn (invulnerabilityDef);
 		
@@ -1701,7 +1701,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
@@ -1714,10 +1714,10 @@ public final class TestUnitUtilsImpl
 		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
 
 		// The skills that the bonuses add to
-		final List<UnitSkill> unitSkillDefs = new ArrayList<UnitSkill> ();
+		final List<UnitSkillEx> unitSkillDefs = new ArrayList<UnitSkillEx> ();
 		for (int n = 1; n <= 4; n++)
 		{
-			final UnitSkill skillDef = new UnitSkill ();
+			final UnitSkillEx skillDef = new UnitSkillEx ();
 			skillDef.setUnitSkillID ("US00" + n);
 			unitSkillDefs.add (skillDef);
 		}
@@ -1749,23 +1749,23 @@ public final class TestUnitUtilsImpl
 					break;
 			}
 			
-			final UnitSkill bonusSkill = new UnitSkill ();
+			final UnitSkillEx bonusSkill = new UnitSkillEx ();
 			bonusSkill.setUnitSkillID ("US00" + (n+4));
 			bonusSkill.getAddsToSkill ().add (bonusSkillBonus);
 			
 			unitSkillDefs.add (bonusSkill);
 		}
 
-		for (final UnitSkill skillDef : unitSkillDefs)
+		for (final UnitSkillEx skillDef : unitSkillDefs)
 			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
 		
 		doReturn (unitSkillDefs).when (db).getUnitSkills ();
 		
 		// RAT definitions
-		final RangedAttackType rat1 = new RangedAttackType ();
+		final RangedAttackTypeEx rat1 = new RangedAttackTypeEx ();
 		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat1);
 		
-		final RangedAttackType rat2 = new RangedAttackType ();
+		final RangedAttackTypeEx rat2 = new RangedAttackTypeEx ();
 		when (db.findRangedAttackType ("RAT02", "expandUnitDetails")).thenReturn (rat2);
 		
 		// Create other lists
@@ -1995,7 +1995,7 @@ public final class TestUnitUtilsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
 		
@@ -2007,7 +2007,7 @@ public final class TestUnitUtilsImpl
 		unitType.setUnitTypeID ("N");
 		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
 
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD, "expandUnitDetails")).thenReturn (new UnitSkill ());
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 		
 		// Unit upkeeps
 		final ProductionTypeAndUndoubledValue upkeep1 = new ProductionTypeAndUndoubledValue ();

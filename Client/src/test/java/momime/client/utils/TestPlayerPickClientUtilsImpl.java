@@ -4,25 +4,31 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.PickTypeLang;
-import momime.common.database.Pick;
-import momime.common.database.PickPrerequisite;
 
 import org.junit.Test;
+
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.Pick;
+import momime.common.database.PickPrerequisite;
+import momime.common.database.PickType;
 
 /**
  * Tests the PlayerPickClientUtilsImpl class
  */
-public final class TestPlayerPickClientUtilsImpl
+public final class TestPlayerPickClientUtilsImpl extends ClientTestData
 {
 	/**
 	 * Tests the describePickPreRequisites method on a pick with no prerequisites
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDescribePickPreRequisites_None ()
+	public final void testDescribePickPreRequisites_None () throws Exception
 	{
 		// Pick to test
 		final Pick pick = new Pick ();
@@ -36,94 +42,114 @@ public final class TestPlayerPickClientUtilsImpl
 
 	/**
 	 * Tests the describePickPreRequisites method on a pick which requires a single specific book
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDescribePickPreRequisites_SingleSpecific ()
+	public final void testDescribePickPreRequisites_SingleSpecific () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-
-		final PickLang pickLang = new PickLang ();
-		pickLang.setPickDescriptionSingular ("Life Book");
-		when (lang.findPick ("MB01")).thenReturn (pickLang);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final Pick pick = new Pick ();
+		pick.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Life Book"));
+		when (db.findPick ("MB01", "describePickPreRequisites")).thenReturn (pick);		
+
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
 		
 		// Pick to test
 		final PickPrerequisite req = new PickPrerequisite ();
 		req.setPrerequisiteID ("MB01");
 		req.setPrerequisiteCount (1);
 		
-		final Pick pick = new Pick ();
-		pick.getPickPrerequisite ().add (req);
+		final Pick mainPick = new Pick ();
+		mainPick.getPickPrerequisite ().add (req);
 		
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
-		assertEquals ("1 Life Book", utils.describePickPreRequisites (pick));
+		assertEquals ("1 Life Book", utils.describePickPreRequisites (mainPick));
 	}
 
 	/**
 	 * Tests the describePickPreRequisites method on a pick which requires a number of a specific book (e.g. Divine Power)
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDescribePickPreRequisites_MultipleSpecific ()
+	public final void testDescribePickPreRequisites_MultipleSpecific () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PickLang pickLang = new PickLang ();
-		pickLang.setPickDescriptionPlural ("Life Books");
-		when (lang.findPick ("MB01")).thenReturn (pickLang);
+		final Pick pick = new Pick ();
+		pick.getPickDescriptionPlural ().add (createLanguageText (Language.ENGLISH, "Life Books"));
+		when (db.findPick ("MB01", "describePickPreRequisites")).thenReturn (pick);
 		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
 		
 		// Pick to test
 		final PickPrerequisite req = new PickPrerequisite ();
 		req.setPrerequisiteID ("MB01");
 		req.setPrerequisiteCount (4);
 		
-		final Pick pick = new Pick ();
-		pick.getPickPrerequisite ().add (req);
+		final Pick mainPick = new Pick ();
+		mainPick.getPickPrerequisite ().add (req);
 		
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
-		assertEquals ("4 Life Books", utils.describePickPreRequisites (pick));
+		assertEquals ("4 Life Books", utils.describePickPreRequisites (mainPick));
 	}
 
 	/**
 	 * Tests the describePickPreRequisites method on a pick which requires a number of multiple types of specific book (e.g. Node Mastery)
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDescribePickPreRequisites_SpecificList ()
+	public final void testDescribePickPreRequisites_SpecificList () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("Simple", "And")).thenReturn ("and"); 
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PickLang chaos = new PickLang ();
-		chaos.setPickDescriptionSingular ("Chaos Book");
-		when (lang.findPick ("MB03")).thenReturn (chaos);
+		final Pick chaos = new Pick ();
+		chaos.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Chaos Book"));
+		when (db.findPick ("MB03", "describePickPreRequisites")).thenReturn (chaos);
 		
-		final PickLang nature = new PickLang ();
-		nature.setPickDescriptionSingular ("Nature Book");
-		when (lang.findPick ("MB04")).thenReturn (nature);
+		final Pick nature = new Pick ();
+		nature.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Nature Book"));
+		when (db.findPick ("MB04", "describePickPreRequisites")).thenReturn (nature);
 		
-		final PickLang sorcery = new PickLang ();
-		sorcery.setPickDescriptionSingular ("Sorcery Book");
-		when (lang.findPick ("MB05")).thenReturn (sorcery);
+		final Pick sorcery = new Pick ();
+		sorcery.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Sorcery Book"));
+		when (db.findPick ("MB05", "describePickPreRequisites")).thenReturn (sorcery);
 		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
+		final Simple simpleLang = new Simple ();
+		simpleLang.getAnd ().add (createLanguageText (Language.ENGLISH, "and"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Pick to test
 		final Pick pick = new Pick ();
@@ -142,6 +168,7 @@ public final class TestPlayerPickClientUtilsImpl
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
 		utils.setTextUtils (textUtils);
+		utils.setClient (client);
 
 		// Run method
 		assertEquals ("1 Chaos Book, 1 Nature Book and 1 Sorcery Book", utils.describePickPreRequisites (pick));
@@ -149,20 +176,24 @@ public final class TestPlayerPickClientUtilsImpl
 
 	/**
 	 * Tests the describePickPreRequisites method on a pick which requires a single book
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDescribePickPreRequisites_SingleGeneric ()
+	public final void testDescribePickPreRequisites_SingleGeneric () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PickTypeLang pickTypeLang = new PickTypeLang ();
-		pickTypeLang.setPickTypeDescriptionSingular ("Spell Book");
-		pickTypeLang.setPickTypePrerequisiteSingular ("PICK_TYPE in any Realm of Magic");
-		when (lang.findPickType ("B")).thenReturn (pickTypeLang);
+		final PickType pickType = new PickType ();
+		pickType.getPickTypeDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Spell Book"));
+		pickType.getPickTypePrerequisiteSingular ().add (createLanguageText (Language.ENGLISH, "PICK_TYPE in any Realm of Magic"));
+		when (db.findPickType ("B", "describePickPreRequisites")).thenReturn (pickType);
 		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
 		
 		// Pick to test
 		final PickPrerequisite req = new PickPrerequisite ();
@@ -175,6 +206,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
@@ -184,20 +216,24 @@ public final class TestPlayerPickClientUtilsImpl
 	/**
 	 * Tests the describePickPreRequisites method on a pick which requires multiple of a single book
 	 * (so 4 life books is OK, 2 life books + 2 chaos books is not, e.g. Archmage)
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDescribePickPreRequisites_MultipleGeneric ()
+	public final void testDescribePickPreRequisites_MultipleGeneric () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-
-		final PickTypeLang pickTypeLang = new PickTypeLang ();
-		pickTypeLang.setPickTypeDescriptionPlural ("Spell Books");
-		pickTypeLang.setPickTypePrerequisiteSingular ("PICK_TYPE in any Realm of Magic");
-		when (lang.findPickType ("B")).thenReturn (pickTypeLang);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final PickType pickType = new PickType ();
+		pickType.getPickTypeDescriptionPlural ().add (createLanguageText (Language.ENGLISH, "Spell Books"));
+		pickType.getPickTypePrerequisiteSingular ().add (createLanguageText (Language.ENGLISH, "PICK_TYPE in any Realm of Magic"));
+		when (db.findPickType ("B", "describePickPreRequisites")).thenReturn (pickType);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
 		
 		// Pick to test
 		final PickPrerequisite req = new PickPrerequisite ();
@@ -210,6 +246,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
@@ -219,20 +256,24 @@ public final class TestPlayerPickClientUtilsImpl
 	/**
 	 * Tests the describePickPreRequisites method on a pick which requires more than one single book
 	 * (so 2 life books doesn't count, it has to be 1 life book + 1 chaos book, e.g. Sage Master) 
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDescribePickPreRequisites_ManySingleGenerics ()
+	public final void testDescribePickPreRequisites_ManySingleGenerics () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-
-		final PickTypeLang pickTypeLang = new PickTypeLang ();
-		pickTypeLang.setPickTypeDescriptionSingular ("Spell Book");
-		pickTypeLang.setPickTypePrerequisitePlural ("PICK_TYPE in any REPETITIONS Realms of Magic");
-		when (lang.findPickType ("B")).thenReturn (pickTypeLang);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final PickType pickType = new PickType ();
+		pickType.getPickTypeDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Spell Book"));
+		pickType.getPickTypePrerequisitePlural ().add (createLanguageText (Language.ENGLISH, "PICK_TYPE in any REPETITIONS Realms of Magic"));
+		when (db.findPickType ("B", "describePickPreRequisites")).thenReturn (pickType);
+		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
 		
 		// Pick to test
 		final Pick pick = new Pick ();
@@ -247,6 +288,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method
@@ -255,20 +297,24 @@ public final class TestPlayerPickClientUtilsImpl
 
 	/**
 	 * Tests the describePickPreRequisites method on a pick which requires more than one single book (e.g. Runemaster)
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testDescribePickPreRequisites_ManyMultipleGenerics ()
+	public final void testDescribePickPreRequisites_ManyMultipleGenerics () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final PickTypeLang pickTypeLang = new PickTypeLang ();
-		pickTypeLang.setPickTypeDescriptionPlural ("Spell Books");
-		pickTypeLang.setPickTypePrerequisitePlural ("PICK_TYPE in any REPETITIONS Realms of Magic");
-		when (lang.findPickType ("B")).thenReturn (pickTypeLang);
+		final PickType pickType = new PickType ();
+		pickType.getPickTypeDescriptionPlural ().add (createLanguageText (Language.ENGLISH, "Spell Books"));
+		pickType.getPickTypePrerequisitePlural ().add (createLanguageText (Language.ENGLISH, "PICK_TYPE in any REPETITIONS Realms of Magic"));
+		when (db.findPickType ("B", "describePickPreRequisites")).thenReturn (pickType);
 		
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
 		
 		// Pick to test
 		final Pick pick = new Pick ();
@@ -283,6 +329,7 @@ public final class TestPlayerPickClientUtilsImpl
 		// Set up object to test
 		final PlayerPickClientUtilsImpl utils = new PlayerPickClientUtilsImpl ();
 		utils.setLanguageHolder (langHolder);
+		utils.setClient (client);
 		utils.setTextUtils (new TextUtilsImpl ());
 
 		// Run method

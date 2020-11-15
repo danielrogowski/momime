@@ -14,17 +14,19 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.SpellCasting;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.CastCombatSpellFrom;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.common.database.Unit;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.Spell;
 import momime.common.database.UnitCanCast;
+import momime.common.database.UnitEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.NumberedHeroItem;
@@ -46,19 +48,14 @@ public final class TestCastCombatSpellFromUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("SpellCasting", "WhoWillCastTitle")).thenReturn ("Select who, or which item, will cast a spell");
-		
-		final SpellLang firstSpell = new SpellLang ();
-		firstSpell.setSpellName ("High Prayer");
-		when (lang.findSpell ("SP001")).thenReturn (firstSpell);
+		final SpellCasting spellCastingLang = new SpellCasting ();
+		spellCastingLang.getWhoWillCastTitle ().add (createLanguageText (Language.ENGLISH, "Select who, or which item, will cast a spell"));
 
-		final SpellLang secondSpell = new SpellLang ();
-		secondSpell.setSpellName ("Web");
-		when (lang.findSpell ("SP002")).thenReturn (secondSpell);
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSpellCasting ()).thenReturn (spellCastingLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -68,15 +65,23 @@ public final class TestCastCombatSpellFromUI extends ClientTestData
 		when (client.getOurPlayerName ()).thenReturn ("Ariel");
 		
 		// Unit definition
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (client.getClientDB ()).thenReturn (db);
 		
 		final UnitCanCast unitCanCast = new UnitCanCast ();
 		unitCanCast.setUnitSpellID ("SP002");
 		
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.getUnitCanCast ().add (unitCanCast);
 		when (db.findUnit ("UN001", "CastCombatSpellFromUI")).thenReturn (unitDef);
+
+		final Spell firstSpell = new Spell ();
+		firstSpell.getSpellName ().add (createLanguageText (Language.ENGLISH, "High Prayer"));
+		when (db.findSpell ("SP001", "CastCombatSpellFromUI")).thenReturn (firstSpell);
+
+		final Spell secondSpell = new Spell ();
+		secondSpell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Web"));
+		when (db.findSpell ("SP002", "CastCombatSpellFromUI")).thenReturn (secondSpell);
 		
 		// Mock casting unit
 		final MemoryUnit unit = new MemoryUnit ();

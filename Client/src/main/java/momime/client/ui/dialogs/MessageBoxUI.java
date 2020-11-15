@@ -5,12 +5,11 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
 import org.apache.commons.logging.Log;
@@ -23,12 +22,12 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.language.database.ShortcutKeyLang;
+import momime.client.languages.database.Shortcut;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.NewTurnMessagesUI;
-import momime.common.database.Shortcut;
+import momime.common.database.LanguageText;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.CancelTargetSpellMessage;
@@ -64,7 +63,7 @@ public final class MessageBoxUI extends MomClientDialogUI
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
-	
+
 	/** OK action */
 	private Action okAction;
 
@@ -77,18 +76,12 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/** Message text */
 	private JTextArea messageText;
 
-	/** Language category ID to use for the title; null if title is not language-variable */
-	private String titleLanguageCategoryID;
-	
-	/** Language entry ID to use for the title; null if title is not language-variable */
-	private String titleLanguageEntryID;
+	/** Language options to use for the title; null if title is not language-variable */
+	private List<LanguageText> languageTitle;
 	
 	/** Language category ID to use for the message; null if message is not language-variable */
-	private String textLanguageCategoryID;
+	private List<LanguageText> languageText;
 	
-	/** Language entry ID to use for the message; null if message is not language-variable */
-	private String textLanguageEntryID;
-
 	/** Fixed title that isn't lanuage variant; null if title is language variable */
 	private String title;	
 	
@@ -316,40 +309,29 @@ public final class MessageBoxUI extends MomClientDialogUI
 		log.trace ("Entering languageChanged");
 
 		// Title
-		String useTitle;
+		final String useTitle;
 		if (getTitle () != null)
 			useTitle = getTitle ();
 		else
-			useTitle = getLanguage ().findCategoryEntry (getTitleLanguageCategoryID (), getTitleLanguageEntryID ());
+			useTitle = getLanguageHolder ().findDescription (getLanguageTitle ());
 		
 		// Text
-		String useText;
+		final String useText;
 		if (getText () != null)
 			useText = getText ();
 		else
-			useText = getLanguage ().findCategoryEntry (getTextLanguageCategoryID (), getTextLanguageEntryID ());
+			useText = getLanguageHolder ().findDescription (getLanguageText ());
 		
 		getDialog ().setTitle (useTitle);
 		messageText.setText (useText);
 		
 		// Button
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "OK"));
-		noAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "No"));
-		yesAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMessageBox", "Yes"));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
+		noAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getNo ()));
+		yesAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getYes ()));
 
 		// Shortcut keys
-		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
-		for (final Object shortcut : contentPane.getActionMap ().keys ())
-			if (shortcut instanceof Shortcut)
-			{
-				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
-				if (shortcutKey != null)
-				{
-					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
-					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
-					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
-				}
-			}
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 
 		log.trace ("Exiting languageChanged");
 	}
@@ -435,67 +417,35 @@ public final class MessageBoxUI extends MomClientDialogUI
 	}
 	
 	/**
-	 * @return Language category ID to use for the title; null if title is not language-variable
+	 * @return Language options to use for the title; null if title is not language-variable
 	 */
-	public final String getTitleLanguageCategoryID ()
+	public final List<LanguageText> getLanguageTitle ()
 	{
-		return titleLanguageCategoryID;
+		return languageTitle;
 	}
 
 	/**
-	 * @param cat Language category ID to use for the title; null if title is not language-variable
+	 * @param t Language options to use for the title; null if title is not language-variable
 	 */
-	public final void setTitleLanguageCategoryID (final String cat)
+	public final void setLanguageTitle (final List<LanguageText> t)
 	{
-		titleLanguageCategoryID = cat;
-	}
-	
-	/**
-	 * @return Language entry ID to use for the title; null if title is not language-variable
-	 */
-	public final String getTitleLanguageEntryID ()
-	{
-		return titleLanguageEntryID;
-	}
-
-	/**
-	 * @param entry Language entry ID to use for the title; null if title is not language-variable
-	 */
-	public final void setTitleLanguageEntryID (final String entry)
-	{
-		titleLanguageEntryID = entry;
+		languageTitle = t;
 	}
 	
 	/**
 	 * @return Language category ID to use for the message; null if message is not language-variable
 	 */
-	public final String getTextLanguageCategoryID ()
+	public final List<LanguageText> getLanguageText ()
 	{
-		return textLanguageCategoryID;
-	}
-
-	/**
-	 * @param cat Language category ID to use for the message; null if message is not language-variable
-	 */
-	public final void setTextLanguageCategoryID (final String cat)
-	{
-		textLanguageCategoryID = cat;
+		return languageText;
 	}
 	
 	/**
-	 * @return Language entry ID to use for the message; null if message is not language-variable
+	 * @param t Language category ID to use for the message; null if message is not language-variable
 	 */
-	public final String getTextLanguageEntryID ()
+	public final void setLanguageText (final List<LanguageText> t)
 	{
-		return textLanguageEntryID;
-	}
-
-	/**
-	 * @param entry Language entry ID to use for the message; null if message is not language-variable
-	 */
-	public final void setTextLanguageEntryID (final String entry)
-	{
-		textLanguageEntryID = entry;
+		languageText = t;
 	}
 	
 	/**

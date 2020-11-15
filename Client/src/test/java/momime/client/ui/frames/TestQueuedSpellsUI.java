@@ -1,5 +1,7 @@
 package momime.client.ui.frames;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,15 +19,17 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.SpellQueueScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.QueuedSpellListCellRenderer;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -49,26 +53,27 @@ public final class TestQueuedSpellsUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx manaProduction = new ProductionTypeEx ();
+		manaProduction.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (eq (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA), anyString ())).thenReturn (manaProduction);
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmSpellQueue", "Title")).thenReturn ("Queued Overland Spells");
-		when (lang.findCategoryEntry ("frmSpellQueue", "Close")).thenReturn ("Close");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getClose ().add (createLanguageText (Language.ENGLISH, "Close"));
+		
+		final SpellQueueScreen spellQueueScreenLang = new SpellQueueScreen ();
+		spellQueueScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Queued Overland Spells"));
 
-		for (int n = 1; n <= 5; n++)
-		{
-			final SpellLang spellLang = new SpellLang ();
-			spellLang.setSpellName ("Spell SP00" + n);
-			when (lang.findSpell ("SP00" + n)).thenReturn (spellLang);
-		}
-		
-		final ProductionTypeLang manaProduction = new ProductionTypeLang ();
-		manaProduction.setProductionTypeSuffix ("MP");
-		
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaProduction);
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getSpellQueueScreen ()).thenReturn (spellQueueScreenLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -95,11 +100,12 @@ public final class TestQueuedSpellsUI extends ClientTestData
 		
 		// Mock spell definitions
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		for (int n = 1; n <= 5; n++)
 		{
 			final Spell spell = new Spell ();
-			when (db.findSpell ("SP00" + n, "QueuedSpellListCellRenderer")).thenReturn (spell);
+			spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell SP00" + n));
+
+			when (db.findSpell (eq ("SP00" + n), anyString ())).thenReturn (spell);
 			when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 100);
 		}
 		

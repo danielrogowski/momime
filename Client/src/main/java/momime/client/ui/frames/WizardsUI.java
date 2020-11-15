@@ -32,13 +32,13 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.PickGfx;
-import momime.client.language.database.PickLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
@@ -85,6 +85,9 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Text utils */
 	private TextUtils textUtils;
+	
+	/** Client-side pick utils */
+	private PlayerPickClientUtils playerPickClientUtils;
 	
 	/** List of gem images */
 	private List<JLabel> gems;
@@ -261,7 +264,7 @@ public final class WizardsUI extends MomClientFrameUI
 						if (pub.getCustomPhoto () != null)
 							unscaledPortrait = ImageIO.read (new ByteArrayInputStream (pub.getCustomPhoto ()));
 						else if (pub.getStandardPhotoID () != null)
-							unscaledPortrait = getUtils ().loadImage (getGraphicsDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
+							unscaledPortrait = getUtils ().loadImage (getClient ().getClientDB ().findWizard (pub.getStandardPhotoID (), "WizardsUI").getPortraitImageFile ());
 						else
 							throw new MomException ("Player ID " + player.getPlayerDescription ().getPlayerID () + " has neither a custom or standard photo");
 	
@@ -295,12 +298,12 @@ public final class WizardsUI extends MomClientFrameUI
 		for (final PlayerPick pick : pub.getPick ())
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			final PickGfx pickGfx = getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks");
-			if (pickGfx.getBookImageFile ().size () > 0)
+			final Pick pickDef = getClient ().getClientDB ().findPick (pick.getPickID (), "WizardsUI.updateBookshelfFromPicks");
+			if (pickDef.getBookImageFile ().size () > 0)
 				for (int n = 0; n < pick.getQuantity (); n++)
 				{
 					// Choose random image for the pick
-					final BufferedImage bookImage = getUtils ().loadImage (pickGfx.chooseRandomBookImageFilename ());
+					final BufferedImage bookImage = getUtils ().loadImage (getPlayerPickClientUtils ().chooseRandomBookImageFilename (pickDef));
 					
 					// Add on merged bookshelf
 					mergedBookshelfGridx++;
@@ -336,7 +339,7 @@ public final class WizardsUI extends MomClientFrameUI
 		for (final PlayerPick pick : pub.getPick ())
 		{
 			// Pick must exist in the graphics XML file, but may not have any image(s)
-			if (getGraphicsDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImageFile ().size () == 0)
+			if (getClient ().getClientDB ().findPick (pick.getPickID (), "WizardsUI.updateRetortsFromPicks").getBookImageFile ().size () == 0)
 			{
 				if (desc.length () > 0)
 					desc.append (", ");
@@ -344,12 +347,7 @@ public final class WizardsUI extends MomClientFrameUI
 				if (pick.getQuantity () > 1)
 					desc.append (pick.getQuantity () + "x");
 				
-				final PickLang pickDesc = getLanguage ().findPick (pick.getPickID ());
-				final String thisPickText;
-				if (pickDesc == null)
-					thisPickText = pick.getPickID ();
-				else
-					thisPickText = pickDesc.getPickDescriptionSingular ();
+				final String thisPickText = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPick (pick.getPickID (), "updateRetortsFromPicks").getPickDescriptionSingular ());
 
 				// Does the required index fall within the text for this pick?
 				if ((charIndex >= desc.length ()) && (charIndex < desc.length () + thisPickText.length ()))
@@ -388,8 +386,8 @@ public final class WizardsUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmWizards", "Title"));
-		closeAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmWizards", "Close"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ()));
+		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
 		
 		updateWizardName ();
 		
@@ -554,5 +552,21 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Client-side pick utils
+	 */
+	public final PlayerPickClientUtils getPlayerPickClientUtils ()
+	{
+		return playerPickClientUtils;
+	}
+
+	/**
+	 * @param util Client-side pick utils
+	 */
+	public final void setPlayerPickClientUtils (final PlayerPickClientUtils util)
+	{
+		playerPickClientUtils = util;
 	}
 }

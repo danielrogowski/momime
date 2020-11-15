@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.JLabel;
@@ -26,6 +27,7 @@ import momime.client.MomClient;
 import momime.client.messages.process.CombatEndedMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
+import momime.common.database.LanguageText;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapCityData;
@@ -174,29 +176,37 @@ public final class CombatEndedUI extends MomClientDialogUI
 		// Work out the text to display
 		final boolean weWon = (getMessage ().getWinningPlayerID () == getClient ().getOurPlayerID ());
 		
-		final String languageEntryID;
+		final List<LanguageText> languageText;
 		final StringBuilder bottomText = new StringBuilder ();
 		if (getMessage ().getCaptureCityDecisionID () == null)
 		{
 			// Not a city combat, or a city combat where the defender won
-			languageEntryID = weWon ? "Victory" : "Defeat";
+			languageText = weWon ? getLanguages ().getCombatEndedScreen ().getVictory () : getLanguages ().getCombatEndedScreen ().getDefeat ();
 		}
 		else
 		{
 			// Was a city combat
-			languageEntryID = (weWon ? "You" : "Enemy") + (getMessage ().getCaptureCityDecisionID () == CaptureCityDecisionID.CAPTURE ? "Captured" : "Razed");
+			if (getMessage ().getCaptureCityDecisionID () == CaptureCityDecisionID.CAPTURE)
+				languageText = weWon ? getLanguages ().getCombatEndedScreen ().getYouCaptured () : getLanguages ().getCombatEndedScreen ().getEnemyCaptured ();
+			else
+				languageText = weWon ? getLanguages ().getCombatEndedScreen ().getYouRazed () : getLanguages ().getCombatEndedScreen ().getEnemyRazed ();
 			
 			// Gold looted from the city
 			if (getMessage ().getGoldSwiped () != null)
-				bottomText.append (getLanguage ().findCategoryEntry ("frmCombatEnded", weWon ? "YouGotGoldFromEnemyCity" : "EnemyGotGoldFromYourCity").replaceAll
+			{
+				final List<LanguageText> goldText = weWon ? getLanguages ().getCombatEndedScreen ().getYouGotGoldFromEnemyCity () :
+					getLanguages ().getCombatEndedScreen ().getEnemyGotGoldFromYourCity ();
+				
+				bottomText.append (getLanguageHolder ().findDescription (goldText).replaceAll
 					("GOLD_FROM_CITY", getTextUtils ().intToStrCommas (getMessage ().getGoldSwiped ())));
+			}
 			
 			if ((getMessage ().getGoldFromRazing () != null) && (weWon))
 			{
 				if (bottomText.length () > 0)
 					bottomText.append (System.lineSeparator ());
 				
-				bottomText.append (getLanguage ().findCategoryEntry ("frmCombatEnded", "YouGotGoldFromRazing").replaceAll
+				bottomText.append (getLanguageHolder ().findDescription (getLanguages ().getCombatEndedScreen ().getYouGotGoldFromRazing ()).replaceAll
 					("GOLD_FROM_RAZING", getTextUtils ().intToStrCommas (getMessage ().getGoldFromRazing ())));
 			}
 		}
@@ -207,7 +217,7 @@ public final class CombatEndedUI extends MomClientDialogUI
 			if (bottomText.length () > 0)
 				bottomText.append (System.lineSeparator ());
 			
-			bottomText.append (getLanguage ().findCategoryEntry ("frmCombatEnded", "HeroItems").replaceAll
+			bottomText.append (getLanguageHolder ().findDescription (getLanguages ().getCombatEndedScreen ().getHeroItems ()).replaceAll
 				("ITEM_COUNT", Integer.valueOf (getMessage ().getHeroItemCount ()).toString ()));
 		}
 		
@@ -217,12 +227,14 @@ public final class CombatEndedUI extends MomClientDialogUI
 			if (bottomText.length () > 0)
 				bottomText.append (System.lineSeparator ());
 			
-			bottomText.append (getLanguage ().findCategoryEntry ("frmCombatEnded", "UndeadCreated" +
-				((getMessage ().getUndeadCreated () == 1) ? "Singular" : "Plural")).replaceAll
+			final List<LanguageText> undeadText = (getMessage ().getUndeadCreated () == 1) ?
+				getLanguages ().getCombatEndedScreen ().getUndeadCreatedSingular () : getLanguages ().getCombatEndedScreen ().getUndeadCreatedPlural ();
+			
+			bottomText.append (getLanguageHolder ().findDescription (undeadText).replaceAll
 				("UNDEAD_COUNT", Integer.valueOf (getMessage ().getUndeadCreated ()).toString ()));
 		}
 		
-		headingText.setText (getLanguage ().findCategoryEntry ("frmCombatEnded", languageEntryID).replaceAll ("CITY_NAME", cityName));
+		headingText.setText (getLanguageHolder ().findDescription (languageText).replaceAll ("CITY_NAME", cityName));
 		mainText.setText (bottomText.toString ());
 		
 		log.trace ("Exiting languageChanged");

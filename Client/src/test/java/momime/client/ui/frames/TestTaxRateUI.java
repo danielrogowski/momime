@@ -6,22 +6,24 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.ClientTestData;
-import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.fonts.CreateFontsForTests;
-import momime.client.utils.TextUtilsImpl;
-import momime.common.database.TaxRate;
-import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
-
 import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.TaxRateScreen;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.client.utils.TextUtilsImpl;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.TaxRate;
+import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 
 /**
  * Tests the TaxRateUI class
@@ -40,12 +42,15 @@ public final class TestTaxRateUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmSetTaxRate", "Title")).thenReturn ("Set Tax Rate per Population");
-		when (lang.findCategoryEntry ("frmSetTaxRate", "Entry")).thenReturn ("GOLD_PER_POPULATION gold, UNREST_PERCENTAGE% unrest");
+		final TaxRateScreen taxRateScreenLang = new TaxRateScreen ();
+		taxRateScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Set Tax Rate per Population"));
+		taxRateScreenLang.getEntry ().add (createLanguageText (Language.ENGLISH, "GOLD_PER_POPULATION gold, UNREST_PERCENTAGE% unrest"));
 
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getTaxRateScreen ()).thenReturn (taxRateScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -62,7 +67,7 @@ public final class TestTaxRateUI extends ClientTestData
 			taxRates.add (taxRate);
 		}
 		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.getTaxRate ()).thenReturn (taxRates);
 		
 		final MomClient client = mock (MomClient.class);

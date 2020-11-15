@@ -42,12 +42,7 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.PickGfx;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.dialogs.MessageBoxUI;
@@ -56,8 +51,11 @@ import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.utils.SpellSorter;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
+import momime.common.database.AnimationGfx;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.LanguageText;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -571,14 +569,16 @@ public final class SpellBookUI extends MomClientFrameUI
 												{
 													// We've either just not allowed to switch at all, or can switch but will lose research towards the old spell, so either way
 													// we've got to display a message about it, and won't be sending any message now
-													final SpellLang oldSpellLang = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
-													final String oldSpellName = (oldSpellLang != null) ? oldSpellLang.getSpellName () : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ();
+													final String oldSpellName = getLanguageHolder ().findDescription (oldSpell.getSpellName ());
 													final boolean lose = getClient ().getSessionDescription ().getSpellSetting ().getSwitchResearch () == SwitchResearch.LOSE_CURRENT_RESEARCH;
 	
 													final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-													msg.setTitleLanguageCategoryID ("frmSpellBook");
-													msg.setTitleLanguageEntryID ("SwitchResearchTitle");
-													msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", lose ? "SwitchResearchLose" : "SwitchResearchDisallowed").replaceAll
+													msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getSwitchResearchTitle ());
+													
+													final List<LanguageText> languageText = lose ?
+														getLanguages ().getSpellBookScreen ().getSwitchResearchLose () : getLanguages ().getSpellBookScreen ().getSwitchResearchDisallowed ();													
+													
+													msg.setText (getLanguageHolder ().findDescription (languageText).replaceAll
 														("OLD_SPELL_NAME", oldSpellName).replaceAll
 														("NEW_SPELL_NAME", spellNames [spellX] [spellY].getText ()).replaceAll
 														("RESEARCH_SO_FAR", getTextUtils ().intToStrCommas (oldSpell.getResearchCost () - oldResearchStatus.getRemainingResearchCost ())).replaceAll
@@ -698,10 +698,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			(getCombatUI ().getCastingSource ().getCastingUnit () != null);
 		
 		// Look up name
-		final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-		String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
-		if (spellName == null)
-			spellName = spell.getSpellID ();
+		final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 		
 		// Ignore trying to cast spells in combat when it isn't our turn
 		final boolean proceed;
@@ -736,9 +733,8 @@ public final class SpellBookUI extends MomClientFrameUI
 				if (!proceed)
 				{
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("frmSpellBook");
-					msg.setTitleLanguageEntryID ("CastSpellTitle");
-					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "RequestCastExistingOverlandEnchantment").replaceAll
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getRequestCastExistingOverlandEnchantment ()).replaceAll
 						("SPELL_NAME", spellName));
 
 					msg.setCastSpellID (spell.getSpellID ());
@@ -773,9 +769,8 @@ public final class SpellBookUI extends MomClientFrameUI
 				if (!proceed)
 				{
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("frmSpellBook");
-					msg.setTitleLanguageEntryID ("CastSpellTitle");
-					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "NoValidTargets").replaceAll
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getNoValidTargets ()).replaceAll
 						("SPELL_NAME", spellName));
 
 					msg.setVisible (true);
@@ -804,9 +799,8 @@ public final class SpellBookUI extends MomClientFrameUI
 				if (!proceed)
 				{
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("frmSpellBook");
-					msg.setTitleLanguageEntryID ("CastSpellTitle");
-					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "NoValidTargets").replaceAll
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getNoValidTargets ()).replaceAll
 						("SPELL_NAME", spellName));
 
 					msg.setVisible (true);
@@ -823,11 +817,12 @@ public final class SpellBookUI extends MomClientFrameUI
 				proceed = ((combatAreaEffectIDs != null) && (combatAreaEffectIDs.size () > 0));
 				if (!proceed)
 				{
+					final List<LanguageText> languageText = (combatAreaEffectIDs == null) ?
+						getLanguages ().getSpellBookScreen ().getNoCombatSpellEffectIDsDefined () : getLanguages ().getSpellBookScreen ().getAlreadyHasAllPossibleCombatSpellEffects ();
+					
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("frmSpellBook");
-					msg.setTitleLanguageEntryID ("CastSpellTitle");
-					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook",
-						(combatAreaEffectIDs == null) ? "NoCombatSpellEffectIDsDefined" : "AlreadyHasAllPossibleCombatSpellEffects").replaceAll
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (languageText).replaceAll
 						("SPELL_NAME", spellName));
 
 					msg.setVisible (true);
@@ -856,9 +851,8 @@ public final class SpellBookUI extends MomClientFrameUI
 				if (!proceed)
 				{
 					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-					msg.setTitleLanguageCategoryID ("frmSpellBook");
-					msg.setTitleLanguageEntryID ("CastSpellTitle");
-					msg.setText (getLanguage ().findCategoryEntry ("frmSpellBook", "NoDeadUnitsToBeRaised").replaceAll
+					msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+					msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getNoDeadUnitsToBeRaised ()).replaceAll
 						("SPELL_NAME", spellName));
 
 					msg.setVisible (true);
@@ -872,10 +866,8 @@ public final class SpellBookUI extends MomClientFrameUI
 		if ((proceed) && (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
 		{
 			final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-			msg.setTitleLanguageCategoryID ("frmSpellBook");
-			msg.setTitleLanguageEntryID ("CastSpellTitle");
-			msg.setTextLanguageCategoryID ("frmCombat");
-			msg.setTextLanguageEntryID ("OneSpellPerTurn");
+			msg.setLanguageTitle (getLanguages ().getSpellBookScreen ().getCastSpellTitle ());
+			msg.setLanguageText (getLanguages ().getCombatScreen ().getOneSpellPerTurn ());
 			msg.setVisible (true);
 		}
 		
@@ -995,7 +987,7 @@ public final class SpellBookUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmSpellBook", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getTitle ()));
 		languageOrPageChanged ();
 		
 		log.trace ("Exiting languageChanged");
@@ -1053,7 +1045,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			
 		// Get a list of all spells we know, and all spells we can research now; grouped by section
 		final Map<SpellBookSectionID, List<Spell>> sections = new HashMap<SpellBookSectionID, List<Spell>> ();
-		for (final Spell spell : getClient ().getClientDB ().getSpells ())
+		for (final Spell spell : getClient ().getClientDB ().getSpell ())
 		{
 			final SpellResearchStatusID researchStatus;
 			
@@ -1133,18 +1125,14 @@ public final class SpellBookUI extends MomClientFrameUI
 		// This can be called before we've ever opened the spell book, so none of the components exist
 		if (contentPane != null)
 		{
-			final ProductionTypeLang manaProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-			String manaSuffix = (manaProductionType == null) ? null : manaProductionType.getProductionTypeSuffix ();
-			if (manaSuffix == null)
-				manaSuffix = "";
-			
-			final ProductionTypeLang researchProductionType = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
-			String researchSuffix = (researchProductionType == null) ? null : researchProductionType.getProductionTypeSuffix ();
-			if (researchSuffix == null)
-				researchSuffix = "";
-			
 			try
 			{
+				final String manaSuffix = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "SpellBookUI").getProductionTypeSuffix ());
+
+				final String researchSuffix = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "SpellBookUI").getProductionTypeSuffix ());
+			
 				final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "languageOrPageChanged");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 				
@@ -1160,14 +1148,18 @@ public final class SpellBookUI extends MomClientFrameUI
 						final SpellBookPage page = pages.get (pageNumber);
 						
 						// Write section heading?
-						if (page.isFirstPageOfSection ())
+						try
 						{
-							final SpellBookSectionLang spellBookSection = getLanguage ().findSpellBookSection (page.getSectionID ());
-							final String sectionHeading = (spellBookSection == null) ? null : spellBookSection.getSpellBookSectionName ();
-							sectionHeadings [x].setText ((sectionHeading == null) ? page.getSectionID ().toString () : sectionHeading);
+							if (page.isFirstPageOfSection ())
+								sectionHeadings [x].setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpellBookSection
+									(page.getSectionID (), "SpellBookUI").getSpellBookSectionName ()));
+							else
+								sectionHeadings [x].setText (null);
 						}
-						else
-							sectionHeadings [x].setText (null);
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
 						
 						// Spell names
 						for (int y = 0; y < SPELLS_PER_PAGE; y++)
@@ -1201,7 +1193,7 @@ public final class SpellBookUI extends MomClientFrameUI
 									if (spell.getSpellRealm () != null)
 										try
 										{
-											final PickGfx magicRealm = getGraphicsDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
+											final Pick magicRealm = getClient ().getClientDB ().findPick (spell.getSpellRealm (), "languageOrPageChanged");
 											if (magicRealm.getPickBookshelfTitleColour () != null)
 											{
 												final Color spellColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
@@ -1226,9 +1218,8 @@ public final class SpellBookUI extends MomClientFrameUI
 								}
 								else
 								{
-									final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-									final String spellName = (spellLang == null) ? null : spellLang.getSpellName ();
-									final String spellDescription = (spellLang == null) ? null : spellLang.getSpellDescription ();
+									final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
+									final String spellDescription = getLanguageHolder ().findDescription (spell.getSpellDescription ());
 									
 									spellNames [x] [y].setText ((spellName == null) ? spell.getSpellID () : spellName);
 									spellDescriptions [x] [y].setText ((spellDescription == null) ? spell.getSpellID () : spellDescription);
@@ -1338,7 +1329,7 @@ public final class SpellBookUI extends MomClientFrameUI
 					}
 				}
 			}
-			catch (final PlayerNotFoundException e)
+			catch (final Exception e)
 			{
 				log.error (e, e);
 			}

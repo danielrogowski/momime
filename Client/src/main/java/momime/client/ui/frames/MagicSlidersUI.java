@@ -10,14 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTable;
-import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -35,9 +33,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.ShortcutKeyLang;
-import momime.client.language.database.SpellLang;
+import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.MagicSlider;
 import momime.client.ui.components.UIComponentFactory;
@@ -47,7 +43,7 @@ import momime.client.ui.renderer.MemoryMaintainedSpellTableCellRenderer;
 import momime.client.utils.TextUtils;
 import momime.common.calculations.SkillCalculations;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.Shortcut;
+import momime.common.database.ProductionType;
 import momime.common.database.Spell;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -496,14 +492,11 @@ public final class MagicSlidersUI extends MomClientFrameUI
 						}
 						else if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
 						{
-							final SpellLang spellLang = getLanguage ().findSpell (spell.getSpellID ());
-							final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+							final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (spell.getSpellID (), "MagicSlidersUI").getSpellName ());
 							
 							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-							msg.setTitleLanguageCategoryID ("SpellCasting");
-							msg.setTitleLanguageEntryID ("SwitchOffSpellTitle");
-							msg.setText (getLanguage ().findCategoryEntry ("SpellCasting", "SwitchOffSpell").replaceAll
-								("SPELL_NAME", (spellName != null) ? spellName : spell.getSpellID ()));
+							msg.setLanguageTitle (getLanguages ().getSpellCasting ().getSwitchOffSpellTitle ());
+							msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", spellName));
 							msg.setSwitchOffSpell (spell);
 							msg.setVisible (true);
 						}
@@ -534,35 +527,24 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmMagicSliders", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getTitle ()));
 		
-		manaTitle.setText		(getLanguage ().findCategoryEntry ("frmMagicSliders", "ManaTitle"));
-		researchTitle.setText	(getLanguage ().findCategoryEntry ("frmMagicSliders", "ResearchTitle"));
-		skillTitle.setText			(getLanguage ().findCategoryEntry ("frmMagicSliders", "SkillTitle"));
-		manaLabel.setText		(getLanguage ().findCategoryEntry ("frmMagicSliders", "ManaLabel") + ":");
-		researchLabel.setText	(getLanguage ().findCategoryEntry ("frmMagicSliders", "ResearchLabel") + ":");
-		skillLabel.setText		(getLanguage ().findCategoryEntry ("frmMagicSliders", "SkillLabel") + ":");
+		manaTitle.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getManaTitle ()));
+		researchTitle.setText	(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchTitle ()));
+		skillTitle.setText			(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getSkillTitle ()));
+		manaLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getManaLabel ()) + ":");
+		researchLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchLabel ()) + ":");
+		skillLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getSkillLabel ()) + ":");
 		
-		overlandEnchantmentsTitle.setText (getLanguage ().findCategoryEntry ("frmMagicSliders", "OverlandEnchantments"));
-		alchemyAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMagicSliders", "Alchemy"));
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMagicSliders", "OK"));
-		applyAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmMagicSliders", "Apply"));
+		overlandEnchantmentsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getOverlandEnchantments ()));
+		alchemyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getAlchemy ()));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
+		applyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getApply ()));
 		
 		updateProductionLabels ();
 		
 		// Shortcut keys
-		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
-		for (final Object shortcut : contentPane.getActionMap ().keys ())
-			if (shortcut instanceof Shortcut)
-			{
-				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
-				if (shortcutKey != null)
-				{
-					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
-					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
-					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
-				}
-			}
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 		
 		log.trace ("Exiting languageChanged");
 	}
@@ -597,19 +579,16 @@ public final class MagicSlidersUI extends MomClientFrameUI
 					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
 				// Update the per turn labels
-				final ProductionTypeLang manaProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-				manaPerTurn.setString (getTextUtils ().intToStrCommas (manaPerTurnValue) + " " +
-					((manaProduction != null) ? manaProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA));
+				final ProductionType manaProduction = getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "updateProductionLabels");
+				manaPerTurn.setString (getTextUtils ().intToStrCommas (manaPerTurnValue) + " " + getLanguageHolder ().findDescription (manaProduction.getProductionTypeSuffix ()));
 		
-				final ProductionTypeLang researchProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
-				researchPerTurn.setString (getTextUtils ().intToStrCommas (researchPerTurnValue) + " " +
-					((researchProduction != null) ? researchProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH));
+				final ProductionType researchProduction = getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "updateProductionLabels");
+				researchPerTurn.setString (getTextUtils ().intToStrCommas (researchPerTurnValue) + " " + getLanguageHolder ().findDescription (researchProduction.getProductionTypeSuffix ()));
 		
-				final ProductionTypeLang skillProduction = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
-				skillPerTurn.setString (getTextUtils ().intToStrCommas (skillPerTurnValue) + " " +
-					((skillProduction != null) ? skillProduction.getProductionTypeSuffix () : CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT));
+				final ProductionType skillProduction = getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, "updateProductionLabels");
+				skillPerTurn.setString (getTextUtils ().intToStrCommas (skillPerTurnValue) + " " + getLanguageHolder ().findDescription (skillProduction.getProductionTypeSuffix ()));
 
-				magicPowerPerTurn.setText (getLanguage ().findCategoryEntry ("frmMagicSliders", "PowerBase").replaceAll
+				magicPowerPerTurn.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getPowerBase ()).replaceAll
 					("AMOUNT_PER_TURN", getTextUtils ().intToStrCommas (magicPowerPerTurnValue)));				
 			
 				// Update casting skill label
@@ -627,18 +606,18 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				{
 					researchPerTurn.setMaximum (100);
 					researchPerTurn.setValue (0);
-					currentlyResearching.setText (getLanguage ().findCategoryEntry ("frmMagicSliders", "ResearchingNothing"));
+					currentlyResearching.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchingNothing ()));
 				}
 				else
 				{
-					final SpellLang spell = getLanguage ().findSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
-					final String spellName = (spell != null) ? spell.getSpellName () : null;
-					currentlyResearching.setText ((spellName != null) ? spellName : getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
+					final Spell spell = getClient ().getClientDB ().findSpell
+						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched (), "updateProductionLabels (r)");
+					final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
+					currentlyResearching.setText (spellName);
 				
 					final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched ());
-					final int totalResearchCost = getClient ().getClientDB ().findSpell
-						(getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched (), "updateProductionLabels (r)").getResearchCost ();
+					final int totalResearchCost = spell.getResearchCost ();
 				
 					researchPerTurn.setMaximum (totalResearchCost);
 					researchPerTurn.setValue (totalResearchCost - researchStatus.getRemainingResearchCost ());
@@ -649,22 +628,18 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				{
 					manaPerTurn.setMaximum (100);
 					manaPerTurn.setValue (0);
-					currentlyCasting.setText (getLanguage ().findCategoryEntry ("frmMagicSliders", "ResearchingNothing"));
+					currentlyCasting.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchingNothing ()));
 				}
 				else
 				{
 					final QueuedSpell queued = getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().get (0);
+					final Spell spellBeingCast = getClient ().getClientDB ().findSpell (queued.getQueuedSpellID (), "updateProductionLabels (c)");
 					
 					if (queued.getHeroItem () != null)
 						currentlyCasting.setText (queued.getHeroItem ().getHeroItemName ());
 					else
-					{
-						final SpellLang spell = getLanguage ().findSpell (queued.getQueuedSpellID ());
-						final String spellName = (spell != null) ? spell.getSpellName () : null;
-						currentlyCasting.setText ((spellName != null) ? spellName : queued.getQueuedSpellID ());
-					}
+						currentlyCasting.setText (getLanguageHolder ().findDescription (spellBeingCast.getSpellName ()));
 
-					final Spell spellBeingCast = getClient ().getClientDB ().findSpell (queued.getQueuedSpellID (), "updateProductionLabels (c)");
 					manaPerTurn.setMaximum (getSpellUtils ().getReducedOverlandCastingCost
 						(spellBeingCast, queued.getHeroItem (), pub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()));
 					manaPerTurn.setValue (getClient ().getOurPersistentPlayerPrivateKnowledge ().getManaSpentOnCastingCurrentSpell ());					

@@ -11,6 +11,7 @@ import java.awt.Insets;
 import java.awt.Polygon;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -34,29 +35,25 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.CityViewElementGfx;
-import momime.client.graphics.database.CombatAreaEffectGfx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemSlotTypeGfx;
-import momime.client.graphics.database.PickGfx;
-import momime.client.language.database.CitySpellEffectLang;
-import momime.client.language.database.CombatAreaEffectLang;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.UnitSkillLang;
 import momime.client.language.replacer.SpringExpressionReplacer;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CitySpellEffect;
+import momime.common.database.CityViewElement;
+import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroSlotAllowedItemType;
+import momime.common.database.LanguageText;
+import momime.common.database.Pick;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
+import momime.common.database.UnitSkill;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.SpellResearchStatus;
@@ -309,37 +306,37 @@ public final class HelpUI extends MomClientFrameUI
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle (getLanguage ().findCategoryEntry ("frmHelp", "Title"));
+		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getTitle ()));
 		
 		String text = null;		// unindentedText
-		
-		if (pickID != null)
+		try
 		{
-			final PickLang pick = getLanguage ().findPick (pickID);
-			final String pickTitle = (pick == null) ? null : pick.getPickDescriptionSingular ();
-			final String pickHelpText = (pick == null) ? null : pick.getPickHelpText ();
-			title.setText ((pickTitle != null) ? pickTitle : pickID);
-			indentedText.setText ((pickHelpText != null) ? pickHelpText : pickID);
-		}
-		else if (unitSkillID != null)
-		{
-			getUnitStatsReplacer ().setUnit (unit);
-			
-			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (unitSkillID);
-			final String unitSkillTitle = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
-			final String unitSkillHelpText = (unitSkill == null) ? null : unitSkill.getUnitSkillHelpText ();
-			title.setText ((unitSkillTitle != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillTitle) : unitSkillID);
-			
-			// If the icons are included in the help text, then don't indent it as well (for unit attributes)
-			if ((unitSkillHelpText != null) && (unitSkillHelpText.contains ("#{")))
-				text = unitSkillHelpText;
-			else
+			if (pickID != null)
 			{
-				indentedText.setText ((unitSkillHelpText != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillHelpText) : unitSkillID);
-			
-				// If this unit skill is the result of a spell, show how much upkeep it is costing
-				if (unit.isMemoryUnit ())
-					try
+				final Pick pick = getClient ().getClientDB ().findPick (pickID, "HelpUI");
+				final String pickTitle = getLanguageHolder ().findDescription (pick.getPickDescriptionSingular ());
+				final String pickHelpText = getLanguageHolder ().findDescription (pick.getPickHelpText ());
+				title.setText (pickTitle);
+				indentedText.setText (pickHelpText);
+			}
+			else if (unitSkillID != null)
+			{
+				getUnitStatsReplacer ().setUnit (unit);
+				
+				final UnitSkill unitSkill = getClient ().getClientDB ().findUnitSkill (unitSkillID, "HelpUI");
+				final String unitSkillTitle = getLanguageHolder ().findDescription (unitSkill.getUnitSkillDescription ());
+				final String unitSkillHelpText = getLanguageHolder ().findDescription (unitSkill.getUnitSkillHelpText ());
+				title.setText ((unitSkillTitle != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillTitle) : unitSkillID);
+				
+				// If the icons are included in the help text, then don't indent it as well (for unit attributes)
+				if ((unitSkillHelpText != null) && (unitSkillHelpText.contains ("#{")))
+					text = unitSkillHelpText;
+				else
+				{
+					indentedText.setText ((unitSkillHelpText != null) ? getUnitStatsReplacer ().replaceVariables (unitSkillHelpText) : unitSkillID);
+				
+					// If this unit skill is the result of a spell, show how much upkeep it is costing
+					if (unit.isMemoryUnit ())
 					{
 						final MemoryMaintainedSpell spell = getMemoryMaintainedSpellUtils ().findMaintainedSpell
 							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
@@ -354,107 +351,90 @@ public final class HelpUI extends MomClientFrameUI
 							indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, pub.getPick ()));
 						}
 					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+				}
 			}
-		}
-		else if (citySpellEffectID != null)
-		{
-			final CitySpellEffectLang effect = getLanguage ().findCitySpellEffect (citySpellEffectID);
-			final String effectTitle = (effect == null) ? null : effect.getCitySpellEffectName ();
-			final String effectHelpText = (effect == null) ? null : effect.getCitySpellEffectHelpText ();
-			title.setText ((effectTitle != null) ? effectTitle : citySpellEffectID);
-			text = (effectHelpText != null) ? effectHelpText : citySpellEffectID;
-			
-			// City spell effects *must* be the result of a spell, so we should already know the spellID and who cast it
-			try
+			else if (citySpellEffectID != null)
 			{
+				final CitySpellEffect effect = getClient ().getClientDB ().findCitySpellEffect (citySpellEffectID, "HelpUI");
+				final String effectTitle = getLanguageHolder ().findDescription (effect.getCitySpellEffectName ());
+				final String effectHelpText = getLanguageHolder ().findDescription (effect.getCitySpellEffectHelpText ());
+				title.setText (effectTitle);
+				text = effectHelpText;
+				
+				// City spell effects *must* be the result of a spell, so we should already know the spellID and who cast it
 				final Spell spellDef = getClient ().getClientDB ().findSpell (spellID, "HelpUI");
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
 				indentedText.setText (getSpellClientUtils ().listUpkeepsOfSpell (spellDef, pub.getPick ()));
 			}
-			catch (final Exception e)
+			else if (combatAreaEffectID != null)
 			{
-				log.error (e, e);
+				final CombatAreaEffect cae = getClient ().getClientDB ().findCombatAreaEffect (combatAreaEffectID, "HelpUI");
+				final String caeTitle = getLanguageHolder ().findDescription (cae.getCombatAreaEffectDescription ());
+				final String caeHelpText = getLanguageHolder ().findDescription (cae.getCombatAreaEffectHelpText ());
+				title.setText (caeTitle);
+				indentedText.setText (caeHelpText);
 			}
-		}
-		else if (combatAreaEffectID != null)
-		{
-			final CombatAreaEffectLang cae = getLanguage ().findCombatAreaEffect (combatAreaEffectID);
-			final String caeTitle = (cae == null) ? null : cae.getCombatAreaEffectDescription ();
-			final String caeHelpText = (cae == null) ? null : cae.getCombatAreaEffectHelpText ();
-			title.setText ((caeTitle != null) ? caeTitle : combatAreaEffectID);
-			indentedText.setText ((caeHelpText != null) ? caeHelpText : combatAreaEffectID);
-		}
-		else if (heroItemSlotTypeID != null)
-		{
-			title.setText (getLanguage ().findHeroItemSlotTypeDescription (heroItemSlotTypeID));
-			
-			final StringBuilder description = new StringBuilder ();
-			description.append (getLanguage ().findCategoryEntry ("frmHeroItemInfo", "ItemSlotHelpTextPrefix"));
-			
-			// List all the item types that can go into this slot
-			try
+			else if (heroItemSlotTypeID != null)
 			{
-				for (final HeroSlotAllowedItemType allowed : getClient ().getClientDB ().findHeroItemSlotType (heroItemSlotTypeID, "HelpUI").getHeroSlotAllowedItemType ())
-					description.append (System.lineSeparator () + "\u2022 " + getLanguage ().findHeroItemTypeDescription (allowed.getHeroItemTypeID ()));
+				final StringBuilder description = new StringBuilder ();
+				description.append (getLanguageHolder ().findDescription (getLanguages ().getHeroItemInfoScreen ().getItemSlotHelpTextPrefix ()));
+				
+				// List all the item types that can go into this slot
+				final HeroItemSlotType heroItemSlotType = getClient ().getClientDB ().findHeroItemSlotType (heroItemSlotTypeID, "HelpUI");
+				title.setText (getLanguageHolder ().findDescription (heroItemSlotType.getSlotTypeDescription ()));
+
+				for (final HeroSlotAllowedItemType allowed : heroItemSlotType.getHeroSlotAllowedItemType ())
+					description.append (System.lineSeparator () + "\u2022 " + getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findHeroItemType (allowed.getHeroItemTypeID (), "HelpUI").getHeroItemTypeDescription ()));
+				
+				indentedText.setText (description.toString ());
 			}
-			catch (final Exception e)
+			else if (spellID != null)
 			{
-				log.error (e, e);
-			}
-			
-			indentedText.setText (description.toString ());
-		}
-		else if (spellID != null)
-		{
-			final SpellLang spell = getLanguage ().findSpell (spellID);
-			final String spellTitle = (spell == null) ? null : spell.getSpellName ();
-			final String spellHelpText = (spell == null) ? null : spell.getSpellHelpText ();
-			title.setText ((spellTitle != null) ? spellTitle : spellID);
-			text = (spellHelpText != null) ? spellHelpText : spellID;
-			
-			// Show all the spell stats (research and casting cost and so on) at the top
-			try
-			{
+				final Spell spell = getClient ().getClientDB ().findSpell (spellID, "HelpUI");
+				final String spellTitle = getLanguageHolder ().findDescription (spell.getSpellName ());
+				final String spellHelpText = getLanguageHolder ().findDescription (spell.getSpellHelpText ());
+				title.setText (spellTitle);
+				text = spellHelpText;
+				
+				// Show all the spell stats (research and casting cost and so on) at the top
 				final Spell spellDef = getClient ().getClientDB ().findSpell (spellID, "HelpUI");
 				final StringBuilder spellStats = new StringBuilder ();
 				
 				// Spell book section
 				if (spellDef.getSpellBookSectionID () != null)
 				{
-					final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spellDef.getSpellBookSectionID ());
-					final String sectionName = (section == null) ? null : section.getSpellBookSectionName ();
-					spellStats.append (getLanguage ().findCategoryEntry ("frmHelp", "SpellBookSection").replaceAll
-						("SPELL_BOOK_SECTION", (sectionName != null) ? sectionName : spellDef.getSpellBookSectionID ().toString ()));
+					final String sectionName = getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findSpellBookSection (spellDef.getSpellBookSectionID (), "HelpUI").getSpellBookSectionName ());
+					
+					spellStats.append (getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookSection ()).replaceAll
+						("SPELL_BOOK_SECTION", sectionName));
 				}
 				
 				// Research cost
 				if (spellDef.getResearchCost () != null)
 				{
-					final ProductionTypeLang research = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH);
-					final String researchSuffix = (research == null) ? null : research.getProductionTypeSuffix ();
+					final String researchSuffix = getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "HelpUI").getProductionTypeSuffix ());
 					if ((castingPlayer == null) || (!castingPlayer.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())))
 						
 						// Someone else's spell, so don't show any details about research status
-						spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp", "SpellBookResearchCostNotOurs").replaceAll
+						spellStats.append (System.lineSeparator () + getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookResearchCostNotOurs ()).replaceAll
 							("RESEARCH_TOTAL", getTextUtils ().intToStrCommas (spellDef.getResearchCost ())).replaceAll
-							("PRODUCTION_TYPE", (researchSuffix != null) ? researchSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH));
+							("PRODUCTION_TYPE", researchSuffix));
 					else
 					{
 						// Our spell - find research status
 						final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (), spellID);
-						final String languageEntryID;
+						final List<LanguageText> languageText;
 						if (researchStatus.getStatus () == SpellResearchStatusID.AVAILABLE)
-							languageEntryID = "SpellBookResearchCostResearched";
+							languageText = getLanguages ().getHelpScreen ().getSpellBookResearchCostResearched ();
 						else if (researchStatus.getRemainingResearchCost () == spellDef.getResearchCost ())
-							languageEntryID = "SpellBookResearchCostNotStarted";
+							languageText = getLanguages ().getHelpScreen ().getSpellBookResearchCostNotStarted ();
 						else
-							languageEntryID = "SpellBookResearchCostPartial";
+							languageText = getLanguages ().getHelpScreen ().getSpellBookResearchCostPartial ();
 
-						spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp", languageEntryID).replaceAll
+						spellStats.append (System.lineSeparator () + getLanguageHolder ().findDescription (languageText).replaceAll
 							("RESEARCH_TOTAL", getTextUtils ().intToStrCommas (spellDef.getResearchCost ())).replaceAll
 							("PRODUCTION_TYPE", (researchSuffix != null) ? researchSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH).replaceAll
 							("RESEARCH_SO_FAR", getTextUtils ().intToStrCommas (spellDef.getResearchCost () - researchStatus.getRemainingResearchCost ())));
@@ -465,9 +445,9 @@ public final class HelpUI extends MomClientFrameUI
 				final MomPersistentPlayerPublicKnowledge castingPub = (castingPlayer == null) ? null :
 					(MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
 
-				final ProductionTypeLang mana = getLanguage ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-				final String manaSuffix = (mana == null) ? null : mana.getProductionTypeSuffix ();
-				
+				final String manaSuffix = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "HelpUI").getProductionTypeSuffix ());
+								
 				// Item creation spells can be cast overland but have no defined cost - so don't use "spellCanBeCastIn" for this
 				if (spellDef.getOverlandCastingCost () != null)
 				{
@@ -477,8 +457,10 @@ public final class HelpUI extends MomClientFrameUI
 					else
 						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, null, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
-					spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp",
-						(spellDef.getOverlandCastingCost () == reducedCastingCost) ? "SpellBookOverlandCostFull" : "SpellBookOverlandCostReduced").replaceAll
+					final List<LanguageText> languageText = (spellDef.getOverlandCastingCost () == reducedCastingCost) ?
+						getLanguages ().getHelpScreen ().getSpellBookOverlandCostFull () : getLanguages ().getHelpScreen ().getSpellBookOverlandCostReduced ();
+					
+					spellStats.append (System.lineSeparator () + getLanguageHolder ().findDescription (languageText).replaceAll
 						("PRODUCTION_TYPE", (manaSuffix != null) ? manaSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA).replaceAll
 						("FULL_CASTING_COST", getTextUtils ().intToStrCommas (spellDef.getOverlandCastingCost ())).replaceAll
 						("REDUCED_CASTING_COST", getTextUtils ().intToStrCommas (reducedCastingCost)));
@@ -493,8 +475,10 @@ public final class HelpUI extends MomClientFrameUI
 					else
 						reducedCastingCost = getSpellUtils ().getReducedCombatCastingCost (spellDef, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
-					spellStats.append (System.lineSeparator () + getLanguage ().findCategoryEntry ("frmHelp",
-						(spellDef.getCombatCastingCost () == reducedCastingCost) ? "SpellBookCombatCostFull" : "SpellBookCombatCostReduced").replaceAll
+					final List<LanguageText> languageText = (spellDef.getCombatCastingCost () == reducedCastingCost) ?
+						getLanguages ().getHelpScreen ().getSpellBookCombatCostFull () : getLanguages ().getHelpScreen ().getSpellBookCombatCostReduced ();
+					
+					spellStats.append (System.lineSeparator () + getLanguageHolder ().findDescription (languageText).replaceAll
 						("PRODUCTION_TYPE", (manaSuffix != null) ? manaSuffix : CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA).replaceAll
 						("FULL_CASTING_COST", getTextUtils ().intToStrCommas (spellDef.getCombatCastingCost ())).replaceAll
 						("REDUCED_CASTING_COST", getTextUtils ().intToStrCommas (reducedCastingCost)));
@@ -511,10 +495,10 @@ public final class HelpUI extends MomClientFrameUI
 				
 				indentedText.setText (spellStats.toString ());
 			}
-			catch (final IOException e)
-			{
-				log.error (e, e);
-			}
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
 		}
 		
 		// Only show the indentedText if it has some text in it, otherwise it takes up space on help pages like
@@ -583,7 +567,7 @@ public final class HelpUI extends MomClientFrameUI
 		pickID = id;
 		
 		// Look for any images for this pickID
-		final PickGfx pick = getGraphicsDB ().findPick (pickID, "showPickID");
+		final Pick pick = getClient ().getClientDB ().findPick (pickID, "showPickID");
 		if (pick.getBookImageFile ().size () > 0)
 		{
 			// Merge the images into one
@@ -660,7 +644,7 @@ public final class HelpUI extends MomClientFrameUI
 		clear ();
 		combatAreaEffectID = id;
 
-		final CombatAreaEffectGfx cae = getGraphicsDB ().findCombatAreaEffect (combatAreaEffectID, "showCombatAreaEffectID");
+		final CombatAreaEffect cae = getClient ().getClientDB ().findCombatAreaEffect (combatAreaEffectID, "showCombatAreaEffectID");
 		imageLabel.setIcon (new ImageIcon (getUtils ().loadImage (cae.getCombatAreaEffectImageFile ())));
 		imageLabel.setVisible (true);
 		
@@ -685,7 +669,7 @@ public final class HelpUI extends MomClientFrameUI
 		spellID = aSpellID;
 		castingPlayer = player;
 
-		final CityViewElementGfx cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffectID);
+		final CityViewElement cityViewElement = getClient ().getClientDB ().findCityViewElementSpellEffect (citySpellEffectID);
 		if (cityViewElement != null)
 		{
 			String imageFilename = null;
@@ -699,7 +683,7 @@ public final class HelpUI extends MomClientFrameUI
 				// the help scrolls and anywhere else this is used, but it complicates things enormously having to
 				// set up repaint timers, and there's only a handful of effects this actually affects
 				// e.g. Dark Rituals, Altar of Battle
-				final AnimationGfx anim = getGraphicsDB ().findAnimation (cityViewElement.getCityViewAnimation (), "showCitySpellEffectID");
+				final AnimationGfx anim = getClient ().getClientDB ().findAnimation (cityViewElement.getCityViewAnimation (), "showCitySpellEffectID");
 				if (anim.getFrame ().size () > 0)
 					imageFilename = anim.getFrame ().get (0);
 			}
@@ -754,7 +738,7 @@ public final class HelpUI extends MomClientFrameUI
 		clear ();
 		heroItemSlotTypeID = id;
 
-		final HeroItemSlotTypeGfx slotType = getGraphicsDB ().findHeroItemSlotType (heroItemSlotTypeID, "showHeroItemSlotTypeID");
+		final HeroItemSlotType slotType = getClient ().getClientDB ().findHeroItemSlotType (heroItemSlotTypeID, "showHeroItemSlotTypeID");
 		imageLabel.setIcon (new ImageIcon (getUtils ().loadImage (slotType.getHeroItemSlotTypeImageFileWithBackground ())));
 		imageLabel.setVisible (true);
 		

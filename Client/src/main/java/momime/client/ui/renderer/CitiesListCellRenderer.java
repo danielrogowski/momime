@@ -11,15 +11,16 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.LanguageDatabaseEx;
+import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.RaceLang;
-import momime.client.language.database.UnitLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 
 /**
@@ -27,8 +28,14 @@ import momime.client.ui.MomUIConstants;
  */
 public final class CitiesListCellRenderer extends JPanel implements ListCellRenderer<CitiesListEntry>
 {
+	/** Class logger */
+	private static final Log log = LogFactory.getLog (CitiesListCellRenderer.class);
+	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** XML layout */
 	private XmlLayoutContainerEx citiesListEntryLayout;
@@ -109,21 +116,20 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 		cityGold.setText (Integer.valueOf (city.getGold ()).toString ());
 		cityProduction.setText (Integer.valueOf (city.getProduction ()).toString ());
 		
-		final RaceLang race = getLanguage ().findRace (city.getCityRaceID ());
-		final String raceName = (race != null) ? race.getRaceName () : null;
-		cityRace.setText ((raceName != null) ? raceName : city.getCityRaceID ());
-		
-		if (city.getCurrentlyConstructingBuildingID () != null)
+		try
 		{
-			final BuildingLang building = getLanguage ().findBuilding (city.getCurrentlyConstructingBuildingID ());
-			final String buildingName = (building != null) ? building.getBuildingName () : null;
-			cityCurrentlyConstructing.setText ((buildingName != null) ? buildingName : city.getCurrentlyConstructingBuildingID ());
+			cityRace.setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findRace (city.getCityRaceID (), "CitiesListCellRenderer").getRaceNameSingular ()));
+			
+			if (city.getCurrentlyConstructingBuildingID () != null)
+				cityCurrentlyConstructing.setText (getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findBuilding (city.getCurrentlyConstructingBuildingID (), "CitiesListCellRenderer").getBuildingName ()));
+			else
+				cityCurrentlyConstructing.setText (getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findUnit (city.getCurrentlyConstructingUnitID (), "CitiesListCellRenderer").getUnitName ()));
 		}
-		else
+		catch (final Exception e)
 		{
-			final UnitLang unit = getLanguage ().findUnit (city.getCurrentlyConstructingUnitID ());
-			final String unitName = (unit != null) ? unit.getUnitName () : null;
-			cityCurrentlyConstructing.setText ((unitName != null) ? unitName : city.getCurrentlyConstructingUnitID ());
+			log.error (e, e);
 		}
 		
 		return this;
@@ -155,12 +161,28 @@ public final class CitiesListCellRenderer extends JPanel implements ListCellRend
 	}
 
 	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+	
+	/**
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 	
 	/**

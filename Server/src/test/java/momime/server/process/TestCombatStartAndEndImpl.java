@@ -24,9 +24,11 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.Plane;
 import momime.common.database.UnitCombatSideID;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.CaptureCityDecisionID;
@@ -57,8 +59,6 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
@@ -144,7 +144,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testStartCombat_OnePlayerAtATime () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -291,7 +291,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testStartCombat_SimultaneousTurns_BorderConflict () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -443,7 +443,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testStartCombat_EmptyCity () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -654,7 +654,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testCombatEnded_DefenderWon () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -771,7 +771,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testCombatEnded_AttackerWon () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -913,17 +913,17 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testCombatEnded_CaptureTowerFromMyrror () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final PlaneSvr arcanus = new PlaneSvr ();
-		final PlaneSvr myrror = new PlaneSvr ();
+		final Plane arcanus = new Plane ();
+		final Plane myrror = new Plane ();
 		myrror.setPlaneNumber (1);
 		
-		final List<PlaneSvr> planes = new ArrayList<PlaneSvr> ();
+		final List<Plane> planes = new ArrayList<Plane> ();
 		planes.add (arcanus);
 		planes.add (myrror);
 
-		when (db.getPlanes ()).thenReturn (planes);
+		when (db.getPlane ()).thenReturn (planes);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1068,7 +1068,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testCombatEnded_CaptureCity () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final OverlandMapSize sys = createOverlandMapSize ();
@@ -1258,7 +1258,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testCombatEnded_RazeCity () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final OverlandMapSize sys = createOverlandMapSize ();
@@ -1452,7 +1452,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testCombatEnded_Simultaneous () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1599,7 +1599,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 	public final void testCombatEnded_BorderConflcit () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();

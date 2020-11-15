@@ -3,17 +3,19 @@ package momime.client.ui.frames;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import momime.client.ClientTestData;
-import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.ui.fonts.CreateFontsForTests;
-
 import org.junit.Test;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
+import momime.client.ClientTestData;
+import momime.client.language.LanguageChangeMaster;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.SelectAdvisorScreen;
+import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.Language;
 
 /**
  * Tests the SelectAdvisorUI class
@@ -32,20 +34,23 @@ public final class TestSelectAdvisorUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "Title")).thenReturn ("Select an Advisor");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "Surveyor")).thenReturn ("F1 - Surveyor");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "Cartographer")).thenReturn ("F2 - Cartographer");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "Apprentice")).thenReturn ("F3 - Apprentice");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "Historian")).thenReturn ("F4 - Historian");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "Astrologer")).thenReturn ("F5 - Astrologer");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "Chancellor")).thenReturn ("F6 - Chancellor");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "TaxCollector")).thenReturn ("F7 - Tax Collector");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "GrandVizier")).thenReturn ("F8 - Grand Vizier");
-		when (lang.findCategoryEntry ("frmSelectAdvisor", "Wizards")).thenReturn ("F9 - Wizards");
+		final SelectAdvisorScreen selectAdvisorScreenLang = new SelectAdvisorScreen ();
+		selectAdvisorScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Select an Advisor"));
+		selectAdvisorScreenLang.getSurveyor ().add (createLanguageText (Language.ENGLISH, "F1 - Surveyor"));
+		selectAdvisorScreenLang.getCartographer ().add (createLanguageText (Language.ENGLISH, "F2 - Cartographer"));
+		selectAdvisorScreenLang.getApprentice ().add (createLanguageText (Language.ENGLISH, "F3 - Apprentice"));
+		selectAdvisorScreenLang.getHistorian ().add (createLanguageText (Language.ENGLISH, "F4 - Historian"));
+		selectAdvisorScreenLang.getAstrologer ().add (createLanguageText (Language.ENGLISH, "F5 - Astrologer"));
+		selectAdvisorScreenLang.getChancellor ().add (createLanguageText (Language.ENGLISH, "F6 - Chancellor"));
+		selectAdvisorScreenLang.getTaxCollector ().add (createLanguageText (Language.ENGLISH, "F7 - Tax Collector"));
+		selectAdvisorScreenLang.getGrandVizier ().add (createLanguageText (Language.ENGLISH, "F8 - Grand Vizier"));
+		selectAdvisorScreenLang.getWizards ().add (createLanguageText (Language.ENGLISH, "F9 - Wizards"));
 
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSelectAdvisorScreen ()).thenReturn (selectAdvisorScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

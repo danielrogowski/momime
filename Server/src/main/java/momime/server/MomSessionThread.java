@@ -20,8 +20,11 @@ import com.ndg.multiplayer.sessionbase.SessionDescription;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPrivateKnowledge;
 import com.ndg.multiplayer.sessionbase.TransientPlayerPublicKnowledge;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.CommonDatabaseImpl;
 import momime.common.database.HeroItem;
+import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MagicPowerDistribution;
@@ -43,10 +46,7 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.WizardState;
 import momime.server.database.ServerDatabaseConverters;
 import momime.server.database.ServerDatabaseConvertersImpl;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.ServerDatabaseExImpl;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
 import momime.server.mapgenerator.OverlandMapGeneratorImpl;
@@ -61,9 +61,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (MomSessionThread.class);
 
-	/** Lookup lists built over the XML database */
-	private ServerDatabaseEx db;
-
 	/** Overland map generator for this session */
 	private OverlandMapGenerator overlandMapGenerator;	
 	
@@ -73,8 +70,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	/** Path to where all the server database XMLs are - from config file */
 	private String pathToServerXmlDatabases;
 	
-	/** JAXB unmarshaller for reading server databases */
-	private Unmarshaller serverDatabaseUnmarshaller;
+	/** JAXB Unmarshaller for loading database XML files */
+	private Unmarshaller commonDatabaseUnmarshaller;
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
@@ -98,18 +95,13 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		log.info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
 			ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
-		final ServerDatabaseExImpl sdb = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
+		final CommonDatabaseImpl sdb = (CommonDatabaseImpl) getCommonDatabaseUnmarshaller ().unmarshal (fullFilename); 
 
 		// Create hash maps to look up all the values from the DB
 		log.info ("Building maps and running checks over XML data...");
 		sdb.buildMaps ();
 		sdb.consistencyChecks ();
-		setServerDB (sdb); 
-		
-		// Create client database
-		log.info ("Generating client XML...");
-		getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
-			(getServerDB (), getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ()));
+		getGeneralPublicKnowledge ().setMomDatabase (sdb);
 		
 		// Generate the overland map
 		log.info ("Generating overland map...");
@@ -144,19 +136,14 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		log.info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
 			ServerDatabaseConvertersImpl.SERVER_XML_FILE_EXTENSION);
-		final ServerDatabaseExImpl sdb = (ServerDatabaseExImpl) getServerDatabaseUnmarshaller ().unmarshal (fullFilename); 
+		final CommonDatabaseImpl sdb = (CommonDatabaseImpl) getCommonDatabaseUnmarshaller ().unmarshal (fullFilename); 
 		
 		// Create hash maps to look up all the values from the DB
 		log.info ("Building maps and running checks over XML data...");
 		sdb.buildMaps ();
 		sdb.consistencyChecks ();
-		setServerDB (sdb); 
+		getGeneralPublicKnowledge ().setMomDatabase (sdb);
 
-		// Create client database
-		log.info ("Generating client XML...");
-		getGeneralPublicKnowledge ().setClientDatabase (getServerDatabaseConverters ().buildClientDatabase
-			(getServerDB (), getSessionDescription ().getDifficultyLevel ().getHumanSpellPicks ()));
-		
 		log.trace ("Exiting preInitializeLoadedGame");
 	}
 	
@@ -231,19 +218,12 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @return Server XML in use for this session
 	 */
 	@Override
-	public final ServerDatabaseEx getServerDB ()
+	public final CommonDatabase getServerDB ()
 	{
-		return db;
+		return (CommonDatabase) getGeneralPublicKnowledge ().getMomDatabase ();
 	}
 
 	/**
-	 * @param ex Server XML in use for this session
-	 */
-	public final void setServerDB (final ServerDatabaseEx ex)
-	{
-		db = ex;
-	}
-	
 	/**
 	 * @return Public knowledge structure, typecasted to MoM specific type
 	 */
@@ -291,7 +271,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
 		// Initialize all spell research statuses
-		for (final SpellSvr spell : getServerDB ().getSpells ())
+		for (final Spell spell : getServerDB ().getSpell ())
 		{
 			final SpellResearchStatus status = new SpellResearchStatus ();
 			status.setSpellID (spell.getSpellID ());
@@ -329,7 +309,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 
 		// Create and initialize fog of war area
 		final MapVolumeOfFogOfWarStates fogOfWar = new MapVolumeOfFogOfWarStates ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < getServerDB ().getPlane ().size (); plane++)
 		{
 			final MapAreaOfFogOfWarStates fogOfWarPlane = new MapAreaOfFogOfWarStates ();
 			for (int y = 0; y < getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
@@ -351,7 +331,7 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		// but the terrain and city data elements will remain null until we actually see it.
 		// This is just because it would make the code overly complex to have null checks everywhere this gets accessed.
 		final MapVolumeOfMemoryGridCells fogOfWarMap = new MapVolumeOfMemoryGridCells ();
-		for (int plane = 0; plane < db.getPlanes ().size (); plane++)
+		for (int plane = 0; plane < getServerDB ().getPlane ().size (); plane++)
 		{
 			final MapAreaOfMemoryGridCells fogOfWarPlane = new MapAreaOfMemoryGridCells ();
 			for (int y = 0; y < getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
@@ -448,19 +428,19 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	}
 
 	/**
-	 * @return JAXB unmarshaller for reading server databases
+	 * @return JAXB Unmarshaller for loading database XML files
 	 */
-	public final Unmarshaller getServerDatabaseUnmarshaller ()
+	public final Unmarshaller getCommonDatabaseUnmarshaller ()
 	{
-		return serverDatabaseUnmarshaller;
+		return commonDatabaseUnmarshaller;
 	}
 
 	/**
-	 * @param unmarshaller JAXB unmarshaller for reading server databases
+	 * @param unmarshaller JAXB Unmarshaller for loading database XML files
 	 */
-	public final void setServerDatabaseUnmarshaller (final Unmarshaller unmarshaller)
+	public final void setCommonDatabaseUnmarshaller (final Unmarshaller unmarshaller)
 	{
-		serverDatabaseUnmarshaller = unmarshaller;
+		commonDatabaseUnmarshaller = unmarshaller;
 	}
 
 	/**

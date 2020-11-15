@@ -13,15 +13,15 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Wizard;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.WizardSvr;
 
 /**
  * Methods for AI players making decisions about where to place cities and what to build in them
@@ -41,7 +41,7 @@ public interface CityAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public Integer evaluateCityQuality (final MapCoordinates3DEx cityLocation, final boolean avoidOtherCities, final boolean enforceMinimumQuality,
-		final MapVolumeOfMemoryGridCells knownMap, final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MapVolumeOfMemoryGridCells knownMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 	
 	/**
@@ -61,7 +61,7 @@ public interface CityAI
 	 * @throws MomException If we find a consumption value that is not an exact multiple of 2, or we find a production value that is not an exact multiple of 2 that should be
 	 */
 	public MapCoordinates3DEx chooseCityLocation (final MapVolumeOfMemoryGridCells knownMap, final MapVolumeOfMemoryGridCells trueMap,
-		final int plane, final boolean avoidOtherCities, final MomSessionDescription sd, final ServerDatabaseEx db, final String purpose)
+		final int plane, final boolean avoidOtherCities, final MomSessionDescription sd, final CommonDatabase db, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException;
 
 	/**
@@ -79,7 +79,7 @@ public interface CityAI
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 */
 	public void setOptionalFarmersInAllCities (final FogOfWarMemory trueMap, final List<PlayerServerDetails> players,
-		final PlayerServerDetails player, final ServerDatabaseEx db, final MomSessionDescription sd)
+		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**
@@ -99,10 +99,10 @@ public interface CityAI
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or various buildings
 	 */
-	public void decideWhatToBuild (final WizardSvr wizard, final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
+	public void decideWhatToBuild (final Wizard wizard, final MapCoordinates3DEx cityLocation, final OverlandMapCityData cityData,
 		final int numberOfCities, final boolean isUnitFactory, final int needForNewUnitsMod, Map<AIUnitType, List<AIConstructableUnit>> constructableHere,
 		final List<AIUnitType> wantedUnitTypes, final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
-		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException;
+		final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * AI player tests every tax rate and chooses the best one

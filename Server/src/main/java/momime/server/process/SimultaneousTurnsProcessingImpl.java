@@ -19,7 +19,10 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MapFeature;
+import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.TileType;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
@@ -33,9 +36,6 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.MapFeatureSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.TileTypeSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -466,7 +466,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 		
 		// Sell buildings
-		for (final PlaneSvr plane : mom.getServerDB ().getPlanes ())
+		for (final Plane plane : mom.getServerDB ().getPlane ())
 			for (int x = 0; x < mom.getSessionDescription ().getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < mom.getSessionDescription ().getOverlandMapSize ().getHeight (); y++)
 				{
@@ -503,8 +503,8 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			// Find where the settler is
 			final MemoryGridCell tc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(settler.getUnitLocation ().getZ ()).getRow ().get (settler.getUnitLocation ().getY ()).getCell ().get (settler.getUnitLocation ().getX ());
-			final TileTypeSvr tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "processSpecialOrders-t");
-			final MapFeatureSvr mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
+			final TileType tileType = mom.getServerDB ().findTileType (tc.getTerrainData ().getTileTypeID (), "processSpecialOrders-t");
+			final MapFeature mapFeature = (tc.getTerrainData ().getMapFeatureID () == null) ? null : mom.getServerDB ().findMapFeature
 				(tc.getTerrainData ().getMapFeatureID (), "processSpecialOrders-f");
 			
 			final PlayerServerDetails settlerOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), settler.getOwningPlayerID (), "processSpecialOrders-s");

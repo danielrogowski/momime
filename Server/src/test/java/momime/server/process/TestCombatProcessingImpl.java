@@ -1,9 +1,9 @@
 package momime.server.process;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -27,8 +27,11 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
+import momime.common.database.TileTypeEx;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -50,6 +53,7 @@ import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.DummyServerToClientConnection;
@@ -57,9 +61,6 @@ import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.ai.CombatAI;
 import momime.server.ai.CombatAIMovementResult;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.TileTypeSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.knowledge.MomGeneralServerKnowledgeEx;
@@ -79,7 +80,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testDetermineMaxUnitsInRow () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Combat map
 		final CoordinateSystem combatMapCoordinateSystem = createCombatMapCoordinateSystem ();
@@ -358,7 +359,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testPlaceCombatUnits_Attackers () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Message to populate
 		final StartCombatMessage msg = new StartCombatMessage ();
@@ -527,7 +528,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testProgressCombat_AIAttackingHuman_Starting () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -616,7 +617,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testProgressCombat_AIAttackingHuman_Continuing () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -723,7 +724,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testProgressCombat_AIAttackingHuman_Auto () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -834,7 +835,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testProgressCombat_AIOnly () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -930,15 +931,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_AttackingOtherPlayer () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr longbowmen = new UnitSvr ();
+		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final UnitSvr hero = new UnitSvr ();
+		final UnitEx hero = new UnitEx ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final UnitSvr phantomWarriors = new UnitSvr ();
+		final UnitEx phantomWarriors = new UnitEx ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1129,18 +1130,18 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_AttackingRampagingMonsters () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeSvr tt = new TileTypeSvr ();
+		final TileTypeEx tt = new TileTypeEx ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
-		final UnitSvr longbowmen = new UnitSvr ();
+		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final UnitSvr hero = new UnitSvr ();
+		final UnitEx hero = new UnitEx ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final UnitSvr phantomWarriors = new UnitSvr ();
+		final UnitEx phantomWarriors = new UnitEx ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1322,19 +1323,19 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_AttackingNode () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeSvr tt = new TileTypeSvr ();
+		final TileTypeEx tt = new TileTypeEx ();
 		tt.setMagicRealmID ("X");
 		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
 		
-		final UnitSvr longbowmen = new UnitSvr ();
+		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final UnitSvr hero = new UnitSvr ();
+		final UnitEx hero = new UnitEx ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final UnitSvr phantomWarriors = new UnitSvr ();
+		final UnitEx phantomWarriors = new UnitEx ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1515,15 +1516,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_AttackingEmptyNode () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr longbowmen = new UnitSvr ();
+		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final UnitSvr hero = new UnitSvr ();
+		final UnitEx hero = new UnitEx ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final UnitSvr phantomWarriors = new UnitSvr ();
+		final UnitEx phantomWarriors = new UnitEx ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1666,15 +1667,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testPurgeDeadUnitsAndCombatSummonsFromCombat_WalkInWithoutAFight () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr longbowmen = new UnitSvr ();
+		final UnitEx longbowmen = new UnitEx ();
 		longbowmen.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
 		
-		final UnitSvr hero = new UnitSvr ();
+		final UnitEx hero = new UnitEx ();
 		hero.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 		
-		final UnitSvr phantomWarriors = new UnitSvr ();
+		final UnitEx phantomWarriors = new UnitEx ();
 		phantomWarriors.setUnitMagicRealm ("MB01");
 		
 		when (db.findUnit ("UN102", "purgeDeadUnitsAndCombatSummonsFromCombat")).thenReturn (longbowmen);
@@ -1815,7 +1816,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_TwoHumanPlayers () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1974,7 +1975,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_AgainstRampagingMonsters () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -2123,7 +2124,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_RampagingMonstersAgainstUs () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -2272,7 +2273,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_AgainstNode () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -2421,7 +2422,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Summoning_NodeAgainstUs () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -2562,7 +2563,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_TwoHumanPlayers () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Overland map
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -2721,9 +2722,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_AgainstRampagingMonsters () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeSvr tt = new TileTypeSvr ();
+		final TileTypeEx tt = new TileTypeEx ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Overland map
@@ -2824,10 +2825,11 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 			priv.getFogOfWarMemory ().getUnit ().add (playerUnit);
 		}
-		
+
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
@@ -2872,9 +2874,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_RampagingMonstersAgainstUs () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeSvr tt = new TileTypeSvr ();
+		final TileTypeEx tt = new TileTypeEx ();
 		when (db.findTileType ("TT01", "isNodeLairTower")).thenReturn (tt);
 		
 		// Overland map
@@ -2979,6 +2981,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
@@ -3023,9 +3026,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_AgainstNode () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeSvr tt = new TileTypeSvr ();
+		final TileTypeEx tt = new TileTypeEx ();
 		tt.setMagicRealmID ("X");
 		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
 		
@@ -3132,6 +3135,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
@@ -3176,9 +3180,9 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testSetUnitIntoOrTakeUnitOutOfCombat_Removing_NodeAgainstUs () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final TileTypeSvr tt = new TileTypeSvr ();
+		final TileTypeEx tt = new TileTypeEx ();
 		tt.setMagicRealmID ("X");
 		when (db.findTileType ("TT12", "isNodeLairTower")).thenReturn (tt);
 		
@@ -3283,6 +3287,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Set up object to test
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setUnitUtils (new UnitUtilsImpl ());	// only using it for searching, easier to just use real one
+		proc.setMemoryGridCellUtils (mock (MemoryGridCellUtils.class));
 		
 		// Run test
 		proc.setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, trueUnit, combatLocation, null, null, null, null, null, db);
@@ -3342,7 +3347,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testOkToMoveUnitInCombat_Move () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem overlandMapCoordinateSystem = createOverlandMapCoordinateSystem ();
@@ -3525,7 +3530,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testOkToMoveUnitInCombat_Ranged () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem overlandMapCoordinateSystem = createOverlandMapCoordinateSystem ();
@@ -3703,7 +3708,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 	public final void testOkToMoveUnitInCombat_Melee () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// General server knowledge
 		final CoordinateSystem overlandMapCoordinateSystem = createOverlandMapCoordinateSystem ();

@@ -6,8 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,14 +31,14 @@ import momime.common.database.CombatTileType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.GenerateTestData;
-import momime.common.database.MapFeature;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.MovementRateRule;
-import momime.common.database.RangedAttackType;
+import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TileType;
-import momime.common.database.Unit;
+import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -182,7 +182,7 @@ public final class TestUnitCalculationsImpl
 		wepGradeBuilding.setBuildingMagicWeapons (1);
 		when (db.findBuilding ("BL02", "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort")).thenReturn (wepGradeBuilding);
 		
-		final MapFeature adamantium = new MapFeature ();
+		final MapFeatureEx adamantium = new MapFeatureEx ();
 		adamantium.setFeatureMagicWeapons (3);
 		when (db.findMapFeature ("MF01", "calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort")).thenReturn (adamantium);
 		
@@ -340,7 +340,7 @@ public final class TestUnitCalculationsImpl
 	public final void testGiveUnitFullRangedAmmoAndMana () throws Exception
 	{
 		// Unit definition
-		final Unit unitDef = new Unit ();
+		final UnitEx unitDef = new UnitEx ();
 		for (final int count : new int [] {4, 6})
 		{
 			final UnitCanCast fixedSpell = new UnitCanCast ();
@@ -456,7 +456,7 @@ public final class TestUnitCalculationsImpl
 		assertFalse (calc.canMakeRangedAttack (unit));
 
 		// Phys ranged attack with mana
-		final RangedAttackType rat = new RangedAttackType ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		when (unit.getRangedAttackType ()).thenReturn (rat);
 		assertFalse (calc.canMakeRangedAttack (unit));
 		
@@ -601,10 +601,10 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// There are 3 tile types, first two a land tiles, third is a sea tile
-		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		final List<TileTypeEx> tileTypes = new ArrayList<TileTypeEx> ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final TileType tileType = new TileType ();
+			final TileTypeEx tileType = new TileTypeEx ();
 			tileType.setTileTypeID ("TT0" + n);
 			tileTypes.add (tileType);
 		}
@@ -686,7 +686,7 @@ public final class TestUnitCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit spearmenDef = new Unit ();
+		final UnitEx spearmenDef = new UnitEx ();
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
@@ -734,7 +734,7 @@ public final class TestUnitCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit spearmenDef = new Unit ();
+		final UnitEx spearmenDef = new UnitEx ();
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
@@ -782,7 +782,7 @@ public final class TestUnitCalculationsImpl
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final Unit spearmenDef = new Unit ();
+		final UnitEx spearmenDef = new UnitEx ();
 		
 		// Player's memory
 		final FogOfWarMemory fogOfWarMemory = new FogOfWarMemory ();
@@ -837,19 +837,19 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
-		final TileType tileType = new TileType ();
+		final TileTypeEx tileType = new TileTypeEx ();
 		tileType.setTileTypeID ("TT01");
 
-		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		final List<TileTypeEx> tileTypes = new ArrayList<TileTypeEx> ();
 		tileTypes.add (tileType);
 		
 		doReturn (tileTypes).when (db).getTileTypes ();
 		
 		// Unit definitions
-		final Unit spearmenDef = new Unit ();
+		final UnitEx spearmenDef = new UnitEx ();
 		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 
-		final Unit triremeDef = new Unit ();
+		final UnitEx triremeDef = new UnitEx ();
 		triremeDef.setTransportCapacity (2);
 		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 		
@@ -932,19 +932,19 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
-		final TileType tileType = new TileType ();
+		final TileTypeEx tileType = new TileTypeEx ();
 		tileType.setTileTypeID ("TT01");
 
-		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		final List<TileTypeEx> tileTypes = new ArrayList<TileTypeEx> ();
 		tileTypes.add (tileType);
 		
 		doReturn (tileTypes).when (db).getTileTypes ();
 		
 		// Unit defintions
-		final Unit spearmenDef = new Unit ();
+		final UnitEx spearmenDef = new UnitEx ();
 		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 
-		final Unit triremeDef = new Unit ();
+		final UnitEx triremeDef = new UnitEx ();
 		triremeDef.setTransportCapacity (2);
 		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 		
@@ -1026,23 +1026,23 @@ public final class TestUnitCalculationsImpl
 		final CommonDatabase db = mock (CommonDatabase.class);
 
 		// Have to have a tile type, otherwise all units are treated as being all-terrain and so stay outside transports
-		final TileType tileType = new TileType ();
+		final TileTypeEx tileType = new TileTypeEx ();
 		tileType.setTileTypeID ("TT01");
 
-		final List<TileType> tileTypes = new ArrayList<TileType> ();
+		final List<TileTypeEx> tileTypes = new ArrayList<TileTypeEx> ();
 		tileTypes.add (tileType);
 		
 		doReturn (tileTypes).when (db).getTileTypes ();
 		
 		// Unit definitions
-		final Unit spearmenDef = new Unit ();
+		final UnitEx spearmenDef = new UnitEx ();
 		when (db.findUnit ("UN001", "createUnitStack")).thenReturn (spearmenDef);
 
-		final Unit triremeDef = new Unit ();
+		final UnitEx triremeDef = new UnitEx ();
 		triremeDef.setTransportCapacity (2);
 		when (db.findUnit ("UN002", "createUnitStack")).thenReturn (triremeDef);
 
-		final Unit drakeDef = new Unit ();
+		final UnitEx drakeDef = new UnitEx ();
 		when (db.findUnit ("UN003", "createUnitStack")).thenReturn (drakeDef);
 
 		// Movement rate rules, so that the tile type is passable to the flying units but not the spearmen

@@ -202,7 +202,7 @@ public interface SpellUtils
 	 * @param magicRealmID Filters list to items in this magic realm; arcane spells have null magic realm so null searches for Arcane spells
 	 * @return List of Spell Rank IDs for which there are spells in this list in the specified magic realm
 	 */
-	public List<String> getSpellRanksForMagicRealm (final List<? extends Spell> spells, final String magicRealmID);
+	public List<String> getSpellRanksForMagicRealm (final List<Spell> spells, final String magicRealmID);
 
 	/**
 	 * Depending on the sectionID requested, lists spells either sorted by Remaining Research Cost, or Casting Cost

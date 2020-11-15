@@ -6,13 +6,11 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -26,19 +24,16 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
-import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.LanguageVariableUI;
-import momime.client.language.database.LanguageDatabaseExImpl;
+import momime.client.language.database.LanguageOptionEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.UnitCombatScale;
+import momime.common.database.LanguageText;
 import momime.common.database.UnitSkillTypeID;
 
 /**
@@ -50,32 +45,8 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	private static final Log log = LogFactory.getLog (OptionsUI.class);
 	
 	/** Suffix we expect language files to have */
-	private static final String FILE_SUFFIX = ".Master of Magic Language.xml";
+	public final static String FILE_SUFFIX = ".Master of Magic Language.xml";
 	
-	/** First sample unit to demonstrate combat scale setting */
-	private final static String SAMPLE_UNIT_1_ID = "UN106";
-	
-	/** Second sample unit to demonstrate combat scale setting */
-	private final static String SAMPLE_UNIT_2_ID = "UN194";
-
-	/** Number of figures to draw for first sample unit */
-	private final static int SAMPLE_UNIT_1_FIGURE_COUNT = 6;
-	
-	/** Number of figures to draw for second sample unit  */
-	private final static int SAMPLE_UNIT_2_FIGURE_COUNT = 1;
-	
-	/** Unit type ID of first sample unit (just anything other than 'summoned') */
-	private final static String SAMPLE_UNIT_1_UNIT_TYPE_ID = null;
-	
-	/** Unit type ID of second sample unit */
-	private final static String SAMPLE_UNIT_2_UNIT_TYPE_ID = CommonDatabaseConstants.UNIT_TYPE_ID_SUMMONED;
-	
-	/** Direction to show sample units facing */
-	private final static int SAMPLE_UNIT_DIRECTION = 4;
-	
-	/** Sample grass tile to display underneath units */
-	private final static String SAMPLE_TILE_FILENAME = "/momime.client.graphics/combat/terrain/arcanus/default/standard/00000000a.png";
-
 	/** XML layout */
 	private XmlLayoutContainerEx optionsLayout;
 	
@@ -108,7 +79,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	
 	/** For reading in different language XML files when selection is changed */
 	private Unmarshaller languageDatabaseUnmarshaller;
-
+	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
 	
@@ -214,26 +185,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		// Actions
 		okAction = new LoggingAction ((ev) -> getFrame ().setVisible (false));
 		
-		final Action changeUnitCombatScaleAction = new LoggingAction ((ev) ->
-		{
-			switch (getClientConfig ().getUnitCombatScale ())
-			{
-				case DOUBLE_SIZE_UNITS:
-					getClientConfig ().setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES);
-					break;
-					
-				case FOUR_TIMES_FIGURES:
-					getClientConfig ().setUnitCombatScale (UnitCombatScale.FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED);
-					break;
-					
-				case FOUR_TIMES_FIGURES_EXCEPT_SINGLE_SUMMONED:
-					getClientConfig ().setUnitCombatScale (UnitCombatScale.DOUBLE_SIZE_UNITS);
-					break;
-			}
-			
-			saveConfigFile ();
-		});			
-		
 		// Initialize the content pane
 		final JPanel contentPane = new JPanel ()
 		{
@@ -317,51 +268,13 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		unitAttributesChoice.setFont (getSmallFont ());
 		contentPane.add (unitAttributesChoice, "frmOptionsUnitInfoAttributesList");
 		
-		final ZOrderGraphicsImmediateImpl zOrderGraphics = new ZOrderGraphicsImmediateImpl ();
-		final JButton changeUnitCombatScaleButton = new JButton (changeUnitCombatScaleAction)
-		{
-			@Override
-			protected final void paintComponent (final Graphics g)
-			{
-				// Draw the sample units
-				try
-				{
-					zOrderGraphics.setGraphics (g);
-					
-					getUnitClientUtils ().drawUnitFigures (SAMPLE_UNIT_1_ID, SAMPLE_UNIT_1_UNIT_TYPE_ID, SAMPLE_UNIT_1_FIGURE_COUNT, SAMPLE_UNIT_1_FIGURE_COUNT,
-						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, zOrderGraphics, 0, 26, SAMPLE_TILE_FILENAME, true, 0, null);
-
-					getUnitClientUtils ().drawUnitFigures (SAMPLE_UNIT_2_ID, SAMPLE_UNIT_2_UNIT_TYPE_ID, SAMPLE_UNIT_2_FIGURE_COUNT, SAMPLE_UNIT_2_FIGURE_COUNT,
-						GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, zOrderGraphics, 65, 26, SAMPLE_TILE_FILENAME, true, 0, null);
-				}
-				catch (final Exception e)
-				{
-					log.error (e, e);
-				}
-			}
-		};
-		contentPane.add (changeUnitCombatScaleButton, "frmOptionsCombatSampleUnits");
-		
 		// Set up languages drop down list
-		final FilenameFilter filter = new FilenameFilter ()
-		{
-			@Override
-			public final boolean accept (@SuppressWarnings ("unused") final File dir, final String name)
-			{
-				return name.toLowerCase ().endsWith (FILE_SUFFIX.toLowerCase ());
-			}
-		};
-
 		Integer currentLanguageIndex = null;
-		final String [] files = new File (getClientConfig ().getPathToLanguageXmlFiles ()).list (filter);
-		for (int n = 0; n < files.length; n++)
-		{
-			files [n] = files [n].substring (0, files [n].length () - FILE_SUFFIX.length ());
-			if (files [n].equals (getClientConfig ().getChosenLanguage ()))
+		for (int n = 0; n < getLanguages ().getLanguageOptions ().size (); n++)
+			if (getLanguages ().getLanguageOptions ().get (n).getLanguage () == getClientConfig ().getChosenLanguage ())
 				currentLanguageIndex = n;
-		}
-		
-		final JComboBox<String> chooseLanguage = new JComboBox<String> (files);
+	
+		final JComboBox<LanguageOptionEx> chooseLanguage = new JComboBox<LanguageOptionEx> (getLanguages ().getLanguageOptions ().toArray (new LanguageOptionEx [0]));
 		chooseLanguage.setFont (getSmallFont ());
 		
 		contentPane.add (chooseLanguage, "frmOptionsChooseLanguageList");
@@ -390,21 +303,17 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		    {
 				try
 				{
-					final String langName = chooseLanguage.getSelectedItem ().toString ();
+					final LanguageOptionEx newChosenLanguage = (LanguageOptionEx) chooseLanguage.getSelectedItem ();
 					
-					// Load the new langauge XML
-					final LanguageDatabaseExImpl lang = (LanguageDatabaseExImpl) getLanguageDatabaseUnmarshaller ().unmarshal (new File
-						(getPathToLanguageXmlFiles () + "/" + langName + FILE_SUFFIX));
-					
-					lang.buildMaps ();
-					getLanguageHolder ().setLanguage (lang);
+					// Switch to the new langauge
+					getLanguageHolder ().setLanguage (newChosenLanguage.getLanguage ());
 					
 					// Notify all the forms
 					for (final LanguageVariableUI ui : languageChangeListeners)
 						ui.languageChanged ();
 					
 					// Update selected language in the config XML
-					getClientConfig ().setChosenLanguage (langName);
+					getClientConfig ().setChosenLanguage (newChosenLanguage.getLanguage ());
 					saveConfigFile ();
 				}
 				catch (final Exception e)
@@ -587,24 +496,23 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 			@Override
 		    public final void itemStateChanged (@SuppressWarnings ("unused") final ItemEvent ev)
 		    {
-				getClientConfig ().setDisplayUnitSkillsAsAttributes (UnitSkillTypeID.values () [unitAttributesChoice.getSelectedIndex ()]);
-				saveConfigFile ();
-
-				for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
-					try
-					{
-						unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
-					}
-					catch (final Exception e)
-					{
-						log.error (e, e);
-					}
+				if (unitAttributesChoice.getSelectedIndex () >= 0)
+				{
+					getClientConfig ().setDisplayUnitSkillsAsAttributes (UnitSkillTypeID.values () [unitAttributesChoice.getSelectedIndex ()]);
+					saveConfigFile ();
+	
+					for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
+						try
+						{
+							unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
+						}
+						catch (final Exception e)
+						{
+							log.error (e, e);
+						}
+				}
 		    }
 		});
-		
-		// Set up unit animations
-		getUnitClientUtils ().registerUnitFiguresAnimation (SAMPLE_UNIT_1_ID, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, contentPane);
-		getUnitClientUtils ().registerUnitFiguresAnimation (SAMPLE_UNIT_2_ID, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, SAMPLE_UNIT_DIRECTION, contentPane);
 		
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
@@ -621,32 +529,32 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	{
 		log.trace ("Entering languageChanged");
 		
-		getFrame ().setTitle							(getLanguage ().findCategoryEntry ("frmOptions", "Title"));
-		shortTitleLabel.setText						(getLanguage ().findCategoryEntry ("frmMainMenu", "ShortTitle"));
-		versionLabel.setText							(getLanguage ().findCategoryEntry ("frmMainMenu", "Version").replaceAll ("VERSION", getVersion ()));
+		getFrame ().setTitle							(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getTitle ()));
+		shortTitleLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getShortTitle ()));
+		versionLabel.setText							(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getVersion ()).replaceAll ("VERSION", getVersion ()));
 		
-		debugSection.setText							(getLanguage ().findCategoryEntry ("frmOptions", "DebugSection"));
-		overlandMapSection.setText				(getLanguage ().findCategoryEntry ("frmOptions", "OverlandMapSection"));
-		combatMapSection.setText					(getLanguage ().findCategoryEntry ("frmOptions", "CombatMapSection"));
-		languageSection.setText						(getLanguage ().findCategoryEntry ("frmOptions", "LanguageSection"));
-		unitInfoSection.setText						(getLanguage ().findCategoryEntry ("frmOptions", "UnitInfoSection"));
+		debugSection.setText							(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getDebug ()));
+		overlandMapSection.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getOverlandMap ()));
+		combatMapSection.setText					(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getCombatMap ()));
+		languageSection.setText						(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getLanguage ()));
+		unitInfoSection.setText						(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getUnitInfo ()));
 		
-		overlandSmoothTerrain.setText			(getLanguage ().findCategoryEntry ("frmOptions", "SmoothTerrain"));
-		overlandSmoothTextures.setText			(getLanguage ().findCategoryEntry ("frmOptions", "LinearTextureFilter"));
-		overlandShowPartialFogOfWar.setText	(getLanguage ().findCategoryEntry ("frmOptions", "ShowFogOfWar"));
-		overlandSmoothFogOfWar.setText		(getLanguage ().findCategoryEntry ("frmOptions", "SmoothFogOfWar"));
-		overlandShowOurBorder.setText			(getLanguage ().findCategoryEntry ("frmOptions", "ShowOurBorder"));
-		overlandShowEnemyBorders.setText	(getLanguage ().findCategoryEntry ("frmOptions", "ShowEnemyBorders"));
-		overlandAnimateUnitsMoving.setText	(getLanguage ().findCategoryEntry ("frmOptions", "AnimateUnitsMoving"));
-		combatSmoothTerrain.setText				(getLanguage ().findCategoryEntry ("frmOptions", "SmoothTerrain"));
-		debugShowURNs.setText						(getLanguage ().findCategoryEntry ("frmOptions", "ShowUnitURNs"));
-		debugShowEdgesOfMap.setText			(getLanguage ().findCategoryEntry ("frmOptions", "ShowEdgesOfMap"));
-		combatScaleLabel.setText					(getLanguage ().findCategoryEntry ("frmOptions", "CombatUnitScale"));
-		chooseLanguageLabel.setText				(getLanguage ().findCategoryEntry ("frmOptions", "ChooseLanguage"));
-		showHeroPortraits.setText					(getLanguage ().findCategoryEntry ("frmOptions", "ShowHeroPortraits"));
-		unitAttributesLabel.setText					(getLanguage ().findCategoryEntry ("frmOptions", "UnitAttributes"));
+		overlandSmoothTerrain.setText			(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getSmoothTerrain ()));
+		overlandSmoothTextures.setText			(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getLinearTextureFilter ()));
+		overlandShowPartialFogOfWar.setText	(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowFogOfWar ()));
+		overlandSmoothFogOfWar.setText		(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getSmoothFogOfWar ()));
+		overlandShowOurBorder.setText			(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowOurBorder ()));
+		overlandShowEnemyBorders.setText	(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowEnemyBorders ()));
+		overlandAnimateUnitsMoving.setText	(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getAnimateUnitsMoving ()));
+		combatSmoothTerrain.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getSmoothTerrain ()));
+		debugShowURNs.setText						(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowUnitURNs ()));
+		debugShowEdgesOfMap.setText			(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowEdgesOfMap ()));
+		combatScaleLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getCombatUnitScale ()));
+		chooseLanguageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getChooseLanguage ()));
+		showHeroPortraits.setText					(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowHeroPortraits ()));
+		unitAttributesLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getUnitAttributes ()));
 		
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmOptions", "OK"));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 		
 		// Load the enum list for unit attribute choices
 		final UnitSkillTypeID selectedSkillType = getClientConfig ().getDisplayUnitSkillsAsAttributes ();
@@ -654,14 +562,35 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		Integer selectedIndex = null;
 		int n = 0;
 		for (final UnitSkillTypeID unitSkillType : UnitSkillTypeID.values ())
-			if (unitSkillType != UnitSkillTypeID.NO_VALUE)
+		{
+			final List<LanguageText> languageText;
+			switch (unitSkillType)
 			{
-				unitAttributesChoice.addItem (getLanguage ().findCategoryEntry ("frmOptions", "UnitAttributes" + unitSkillType.value ()));
+				case ATTRIBUTE:
+					languageText = getLanguages ().getOptionsScreen ().getUnitAttributesStandard ();
+					break;
+					
+				case MODIFYABLE:
+					languageText = getLanguages ().getOptionsScreen ().getUnitAttributesModifyable ();
+					break;
+					
+				case FIXED:
+					languageText = getLanguages ().getOptionsScreen ().getUnitAttributesAll ();
+					break;
+					
+				default:
+					languageText = null;
+			}
+			
+			if (languageText != null)
+			{
+				unitAttributesChoice.addItem (getLanguageHolder ().findDescription (languageText));				
 				if (selectedSkillType == unitSkillType)
 					selectedIndex = n;
 				
 				n++;
 			}
+		}
 		
 		if (selectedIndex != null)
 			unitAttributesChoice.setSelectedIndex (selectedIndex);

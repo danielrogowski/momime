@@ -22,10 +22,15 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.random.RandomUtils;
 
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.PickAndQuantity;
+import momime.common.database.RangedAttackTypeEx;
+import momime.common.database.Spell;
 import momime.common.database.SummonedUnit;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -38,12 +43,7 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
-import momime.server.database.RangedAttackTypeSvr;
-import momime.server.database.ServerDatabaseEx;
 import momime.server.database.ServerDatabaseValues;
-import momime.server.database.SpellSvr;
-import momime.server.database.UnitSkillSvr;
-import momime.server.database.UnitSvr;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
 import momime.server.utils.UnitServerUtils;
@@ -61,15 +61,15 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testCalculateUnitScoutingRange () throws Exception
 	{
 		// Mock database
-		final UnitSkillSvr flightSkill = new UnitSkillSvr ();
+		final UnitSkillEx flightSkill = new UnitSkillEx ();
 		flightSkill.setUnitSkillScoutingRange (2);
 		
-		final UnitSkillSvr otherSkill = new UnitSkillSvr ();
+		final UnitSkillEx otherSkill = new UnitSkillEx ();
 
-		final UnitSkillSvr longSightSkill = new UnitSkillSvr ();
+		final UnitSkillEx longSightSkill = new UnitSkillEx ();
 		longSightSkill.setUnitSkillScoutingRange (4);
 		
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findUnitSkill ("US001", "calculateUnitScoutingRange")).thenReturn (flightSkill);
 		when (db.findUnitSkill ("US002", "calculateUnitScoutingRange")).thenReturn (otherSkill);
 		when (db.findUnitSkill ("US003", "calculateUnitScoutingRange")).thenReturn (longSightSkill);
@@ -107,13 +107,13 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testRecheckTransportCapacity () throws Exception
 	{
 		// Server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr triremeDef = new UnitSvr ();
+		final UnitEx triremeDef = new UnitEx ();
 		triremeDef.setTransportCapacity (2);
 		when (db.findUnit ("UN001", "recheckTransportCapacity")).thenReturn (triremeDef);
 		
-		final UnitSvr spearmenDef = new UnitSvr ();
+		final UnitEx spearmenDef = new UnitEx ();
 		when (db.findUnit ("UN002", "recheckTransportCapacity")).thenReturn (spearmenDef);
 		
 		// Session description
@@ -209,7 +209,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testCalculateRangedAttackDistancePenalty_Magic () throws Exception
 	{
 		// RAT
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setMagicRealmID ("A");
 
 		// Coordinate system
@@ -236,7 +236,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testCalculateRangedAttackDistancePenalty_Close () throws Exception
 	{
 		// RAT
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 
 		// Coordinate system
 		final CombatMapSize sys = createCombatMapSize ();
@@ -265,7 +265,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testCalculateRangedAttackDistancePenalty_Short () throws Exception
 	{
 		// RAT
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 
 		// Coordinate system
 		final CombatMapSize sys = createCombatMapSize ();
@@ -294,7 +294,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testCalculateRangedAttackDistancePenalty_Long () throws Exception
 	{
 		// RAT
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 
 		// Coordinate system
 		final CombatMapSize sys = createCombatMapSize ();
@@ -323,7 +323,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testCalculateRangedAttackDistancePenalty_LongRange () throws Exception
 	{
 		// RAT
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 
 		// Coordinate system
 		final CombatMapSize sys = createCombatMapSize ();
@@ -355,9 +355,9 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testListUnitsSpellMightSummon_Normal () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LT01");
 		when (db.findUnit ("UN001", "listUnitsSpellMightSummon")).thenReturn (unitDef);
 		
@@ -371,14 +371,14 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		final SummonedUnit summonedUnit = new SummonedUnit ();
 		summonedUnit.setSummonedUnitID ("UN001");
 		
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		spell.getSummonedUnit ().add (summonedUnit);
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
 		
 		// Run method
-		final List<UnitSvr> list = calc.listUnitsSpellMightSummon (spell, player, trueUnits, db);
+		final List<UnitEx> list = calc.listUnitsSpellMightSummon (spell, player, trueUnits, db);
 		
 		// Check results
 		assertEquals (1, list.size ());
@@ -393,11 +393,11 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 	public final void testListUnitsSpellMightSummon_Heroes () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		for (int n = 1; n <= 9; n++)
 		{
-			final UnitSvr unitDef = new UnitSvr ();
+			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
 			unitDef.setUnitID ("UN00" + n);
 			when (db.findUnit (unitDef.getUnitID (), "listUnitsSpellMightSummon")).thenReturn (unitDef);
@@ -442,7 +442,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		when (playerPickUtils.getQuantityOfPick (pub.getPick (), "MB08")).thenReturn (1);
 		
 		// Spell
-		final SpellSvr spell = new SpellSvr ();
+		final Spell spell = new Spell ();
 		for (int n = 1; n <= 9; n++)
 		{
 			final SummonedUnit summonedUnit = new SummonedUnit ();
@@ -456,7 +456,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		calc.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		final List<UnitSvr> list = calc.listUnitsSpellMightSummon (spell, player, trueUnits, db);
+		final List<UnitEx> list = calc.listUnitsSpellMightSummon (spell, player, trueUnits, db);
 		
 		// Check results
 		assertEquals (6, list.size ());

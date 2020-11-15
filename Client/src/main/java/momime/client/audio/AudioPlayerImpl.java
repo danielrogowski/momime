@@ -3,16 +3,18 @@ package momime.client.audio;
 import java.util.ArrayList;
 import java.util.List;
 
-import javazoom.jl.decoder.JavaLayerException;
-import javazoom.jl.player.advanced.PlaybackListener;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.PlayListGfx;
-import momime.common.database.RecordNotFoundException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.random.RandomUtils;
+
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.advanced.PlaybackListener;
+import momime.client.MomClient;
+import momime.client.graphics.AnimationContainer;
+import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.common.database.PlayList;
+import momime.common.database.RecordNotFoundException;
 
 /**
  * Wrapper around JavaZoom's MP3 player.  The player blocks the thread is running in, so we need a thread-based class to play audio from. 
@@ -22,6 +24,9 @@ public final class AudioPlayerImpl implements AudioPlayer
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (AudioPlayerImpl.class);
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** Random utils */
 	private RandomUtils randomUtils;
@@ -76,17 +81,18 @@ public final class AudioPlayerImpl implements AudioPlayer
 	}
 	
 	/**
-	 * 
 	 * @param playListID Play list from the graphics XML file to play
+	 * @param container Whether the playlist is defined in the graphics or common XML
 	 * @throws JavaLayerException If there is a problem playing the audio file
 	 * @throws RecordNotFoundException If the play list can't be found
 	 */
 	@Override
-	public final void playPlayList (final String playListID) throws JavaLayerException, RecordNotFoundException
+	public final void playPlayList (final String playListID, final AnimationContainer container) throws JavaLayerException, RecordNotFoundException
 	{
 		log.trace ("Entering playPlayList: " + playListID);
 		
-		final PlayListGfx playList = getGraphicsDB ().findPlayList (playListID, "playPlayList");
+		final PlayList playList = (container == AnimationContainer.GRAPHICS_XML) ? getGraphicsDB ().findPlayList (playListID, "playPlayList") :
+			getClient ().getClientDB ().findPlayList (playListID, "playPlayList");
 		
 		// Copy the playlist, so that removing entries if loop=false doesn't change the actual XML file
 		final List<String> audioFiles = new ArrayList<String> ();
@@ -185,6 +191,22 @@ public final class AudioPlayerImpl implements AudioPlayer
 		}.start ();
 		
 		log.trace ("Exiting playThenResume");
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 	
 	/**

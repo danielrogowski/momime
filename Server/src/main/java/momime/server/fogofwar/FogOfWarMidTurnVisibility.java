@@ -2,6 +2,10 @@ package momime.server.fogofwar;
 
 import java.util.List;
 
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
@@ -10,10 +14,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Contains methods for whether each player can see certain game items during a turn;
@@ -34,7 +34,7 @@ public interface FogOfWarMidTurnVisibility
 	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
 	 */
 	public boolean canSeeUnitMidTurn (final MemoryUnit unit, final MapVolumeOfMemoryGridCells trueTerrain, final PlayerServerDetails player,
-		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException;
 
 	/**
@@ -50,7 +50,7 @@ public interface FogOfWarMidTurnVisibility
 	 */
 	public boolean canSeeSpellMidTurn (final MemoryMaintainedSpell spell,
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<MemoryUnit> trueUnits, final PlayerServerDetails player,
-		final ServerDatabaseEx db, final FogOfWarSetting fogOfWarSettings)
+		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException;
 
 	/**

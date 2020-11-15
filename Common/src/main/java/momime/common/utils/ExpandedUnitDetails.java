@@ -12,9 +12,9 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.DamageType;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
-import momime.common.database.RangedAttackType;
+import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
@@ -51,7 +51,7 @@ public interface ExpandedUnitDetails
 	/**
 	 * @return Definition for this unit from the XML database
 	 */
-	public Unit getUnitDefinition ();
+	public UnitEx getUnitDefinition ();
 	
 	/**
 	 * @return Unit type (normal, hero or summoned)
@@ -86,7 +86,7 @@ public interface ExpandedUnitDetails
 	/**
 	 * @return Ranged attack type this unit has, or null if it has none
 	 */
-	public RangedAttackType getRangedAttackType ();
+	public RangedAttackTypeEx getRangedAttackType ();
 	
 	/**
 	 * @return Experience level of this unit (0-5 for regular units, 0-8 for heroes) excluding bonuses from Warlord/Crusade; for units that don't gain experience (e.g. summoned), returns null

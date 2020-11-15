@@ -5,11 +5,10 @@ import java.awt.Font;
 import java.awt.Image;
 
 import momime.client.MomClient;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.messages.NewTurnMessageBuildingSoldFromLackOfProduction;
 import momime.common.messages.OverlandMapCityData;
 
@@ -51,28 +50,23 @@ public final class NewTurnMessageBuildingSoldFromLackOfProductionEx extends NewT
 	
 	/**
 	 * @return Text to display for this NTM
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
-	public final String getText ()
+	public final String getText () throws RecordNotFoundException
 	{
-		final ProductionTypeLang productionType = getLanguage ().findProductionType (getProductionTypeID ());
-		String text = (productionType != null) ? productionType.getBuildingSoldFromLackOfProduction () : null;
-		if (text == null)
-			text = "Building lost from lack of " + getProductionTypeID ();
+		String text = getLanguageHolder ().findDescription
+			(getClient ().getClientDB ().findProductionType (getProductionTypeID (), "NewTurnMessageBuildingSoldFromLackOfProductionEx").getBuildingSoldFromLackOfProduction ());
 		
-		final BuildingLang building = getLanguage ().findBuilding (getBuildingID ());
-		final String buildingName = (building != null) ? building.getBuildingName () : null;
-
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 		
 		if ((cityData != null) && (cityData.getCitySizeID () != null))
-		{
-			final String cityName = getLanguage ().findCitySizeName (cityData.getCitySizeID (), false).replaceAll ("CITY_NAME", cityData.getCityName ());
-			text = text.replaceAll ("CITY_SIZE_AND_NAME", cityName);
-		}
+			text = text.replaceAll ("CITY_SIZE_AND_NAME", getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findCitySize (cityData.getCitySizeID (), "NewTurnMessageBuildingSoldFromLackOfProductionEx").getCitySizeName ()));
 		
-		return text.replaceAll ("BUILDING_NAME", (buildingName != null) ? buildingName : getBuildingID ());
+		return text.replaceAll ("BUILDING_NAME", getLanguageHolder ().findDescription
+			(getClient ().getClientDB ().findBuilding (getBuildingID (), "NewTurnMessageBuildingSoldFromLackOfProductionEx").getBuildingName ()));
 	}
 	
 	/**
@@ -147,9 +141,9 @@ public final class NewTurnMessageBuildingSoldFromLackOfProductionEx extends NewT
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

@@ -6,18 +6,18 @@ import java.util.Map;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Methods for AI players making decisions about spells
@@ -30,7 +30,7 @@ public interface SpellAI
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
 	 * @throws MomException If there is an error in the logic
 	 */
-	public void decideWhatToResearch (final PlayerServerDetails player, final ServerDatabaseEx db)
+	public void decideWhatToResearch (final PlayerServerDetails player, final CommonDatabase db)
 		throws RecordNotFoundException, MomException;
 
 	/**
@@ -45,7 +45,7 @@ public interface SpellAI
 	 * @throws RecordNotFoundException If the spell chosen couldn't be found in the player's spell list
 	 */
 	public SpellResearchStatus chooseFreeSpellAI (final List<SpellResearchStatus> spells, final String magicRealmID, final String spellRankID,
-		final int aiPlayerID, final ServerDatabaseEx db)
+		final int aiPlayerID, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -81,7 +81,7 @@ public interface SpellAI
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void decideSpellTarget (final PlayerServerDetails player, final SpellSvr spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
+	public void decideSpellTarget (final PlayerServerDetails player, final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 
 	/**

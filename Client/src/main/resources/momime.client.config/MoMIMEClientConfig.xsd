@@ -11,8 +11,8 @@
 				<xsd:element minOccurs="1" maxOccurs="1" name="compressDataSentToServer" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="decompressDataReceivedFromServer" type="xsd:boolean" />
 				<xsd:element minOccurs="1" maxOccurs="1" name="graphicsXmlFilename" type="momimecltconfig:filename" />
-				<xsd:element minOccurs="1" maxOccurs="1" name="pathToLanguageXmlFiles" type="momimecltconfig:path" />
-				<xsd:element minOccurs="1" maxOccurs="1" name="chosenLanguage" type="xsd:normalizedString" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="languagesXmlFilename" type="momimecltconfig:filename" />
+				<xsd:element minOccurs="1" maxOccurs="1" name="chosenLanguage" type="momimecommon:language" />
 				
 				<!-- Overland map options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="overlandSmoothTerrain" type="xsd:boolean">
@@ -45,7 +45,6 @@
 						<xsd:documentation>True to use the full terrain tileset so e.g. ridges and dark areas run together; false to use only "blocky" combat tiles.</xsd:documentation>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element minOccurs="1" maxOccurs="1" name="unitCombatScale" type="momimecommon:unitCombatScale" />
 				
 				<!-- Unit info display options -->
 				<xsd:element minOccurs="1" maxOccurs="1" name="showHeroPortraits" type="xsd:boolean" />

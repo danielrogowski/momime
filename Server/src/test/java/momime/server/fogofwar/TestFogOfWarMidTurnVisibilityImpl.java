@@ -8,6 +8,14 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
+import momime.common.database.CommonDatabase;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.messages.FogOfWarStateID;
@@ -21,14 +29,6 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.calculations.FogOfWarCalculations;
-import momime.server.database.ServerDatabaseEx;
-
-import org.junit.Test;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 /**
  * Tests the FogOfWarMidTurnVisibilityImpl class
@@ -43,7 +43,7 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 	public final void testCanSeeUnitMidTurn () throws Exception
 	{
 		// Mock server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -93,7 +93,7 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 	public final void testCanSeeSpellMidTurn_UnitEnchantment () throws Exception
 	{
 		// Mock server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();
@@ -149,7 +149,7 @@ public final class TestFogOfWarMidTurnVisibilityImpl extends ServerTestData
 	public final void testCanSeeSpellMidTurn_CityEnchantment () throws Exception
 	{
 		// Mock server database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
 		final FogOfWarSetting settings = new FogOfWarSetting ();

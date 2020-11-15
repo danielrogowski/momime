@@ -10,17 +10,18 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import momime.client.graphics.database.CityViewElementGfx;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import momime.client.MomClient;
+import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.AnimationController;
 import momime.common.database.Building;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import momime.common.database.CityViewElement;
 
 /**
  * Renderer for drawing the name and image of a building in a list cell
@@ -33,6 +34,9 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 
+	/** Multiplayer client */
+	private MomClient client;
+	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
 
@@ -70,8 +74,15 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 		final int index, final boolean isSelected, final boolean cellHasFocus)
 	{
 		// Look up the name of the building
-		final BuildingLang buildingLang = getLanguage ().findBuilding (building.getBuildingID ());
-		textLabel.setText ((buildingLang != null) ? buildingLang.getBuildingName () : building.getBuildingID ());
+		try
+		{
+			textLabel.setText (getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (building.getBuildingID (), "BuildingListCellRenderer").getBuildingName ()));
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}
+		
 		textLabel.setFont (getFont ());
 		
 		if (isSelected)
@@ -83,10 +94,10 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 		imageLabel.setIcon (null);
 		try
 		{
-			final CityViewElementGfx buildingImage = getGraphicsDB ().findCityViewElementBuilding (building.getBuildingID (), "BuildingListCellRenderer");
+			final CityViewElement buildingImage = getClient ().getClientDB ().findCityViewElementBuilding (building.getBuildingID (), "BuildingListCellRenderer");
 			final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 				((buildingImage.getCityViewAlternativeImageFile () != null) ? buildingImage.getCityViewAlternativeImageFile () : buildingImage.getCityViewImageFile (),
-				buildingImage.getCityViewAnimation (), true);
+				buildingImage.getCityViewAnimation (), true, AnimationContainer.COMMON_XML);
 
 			imageLabel.setIcon (new ImageIcon (image));
 		}
@@ -115,12 +126,28 @@ public final class BuildingListCellRenderer extends JPanel implements ListCellRe
 	}
 
 	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
+	}
+	
+	/**
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 	
 	/**

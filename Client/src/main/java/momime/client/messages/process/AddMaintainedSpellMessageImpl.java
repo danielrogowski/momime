@@ -15,11 +15,8 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.SpellGfx;
-import momime.client.graphics.database.TileSetGfx;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
 import momime.client.ui.frames.CityViewUI;
@@ -30,7 +27,10 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
+import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
@@ -157,22 +157,20 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				// Is there an animation to display for it?
 				if ((getMaintainedSpell ().getUnitURN () != null) && (isNewlyCast ()))
 				{
-					final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
-					
 					anim = null;
-					if (spellGfx.getCombatCastAnimation () != null)
+					if (spell.getCombatCastAnimation () != null)
 					{
 						final MemoryUnit spellTargetUnit = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl");
 						
-						anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
+						anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
 		
 						if (getMaintainedSpell ().isCastInCombat ())
 						{
 							if ((getCombatUI ().isVisible ()) && (spellTargetUnit.getCombatPosition () != null))
 							{
 								// Show anim on CombatUI
-								final TileSetGfx combatMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
+								final TileSetEx combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "AddMaintainedSpellMessageImpl");
 								
 								final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
 								final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
@@ -192,7 +190,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 						else
 						{
 							// Show anim on OverlandMapUI
-							final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
+							final TileSetEx overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
 		
 							final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
 							final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
@@ -206,10 +204,10 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 					}
 					
 					// See if there's a sound effect defined in the graphics XML file
-					if (spellGfx.getSpellSoundFile () != null)
+					if (spell.getSpellSoundFile () != null)
 						try
 						{
-							getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+							getSoundPlayer ().playAudioFile (spell.getSpellSoundFile ());
 						}
 						catch (final Exception e)
 						{
@@ -230,17 +228,15 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				}
 				
 				// Is there an animation to display for it?
-				final SpellGfx spellGfx = getGraphicsDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
-				
 				anim = null;
-				if ((spellGfx.getCombatCastAnimation () != null) && (getMaintainedSpell ().getCityLocation () != null) && (isNewlyCast ()))
+				if ((spell.getCombatCastAnimation () != null) && (getMaintainedSpell ().getCityLocation () != null) && (isNewlyCast ()))
 				{
-					anim = getGraphicsDB ().findAnimation (spellGfx.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
+					anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "AddMaintainedSpellMessageImpl");
 	
 					if (!getMaintainedSpell ().isCastInCombat ())
 					{
 						// Show anim on OverlandMapUI
-						final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
+						final TileSetEx overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
 	
 						final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
 						final int adjustY = (anim.getOverlandCastOffsetY () == null) ? 0 : anim.getOverlandCastOffsetY ();
@@ -253,10 +249,10 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 					}
 				
 					// See if there's a sound effect defined in the graphics XML file
-					if (spellGfx.getSpellSoundFile () != null)
+					if (spell.getSpellSoundFile () != null)
 						try
 						{
-							getSoundPlayer ().playAudioFile (spellGfx.getSpellSoundFile ());
+							getSoundPlayer ().playAudioFile (spell.getSpellSoundFile ());
 						}
 						catch (final Exception e)
 						{

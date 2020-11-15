@@ -2,7 +2,7 @@ package momime.client.ui.frames;
 
 import java.util.List;
 
-import momime.client.graphics.database.AnimationGfx;
+import momime.common.database.AnimationGfx;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**

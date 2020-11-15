@@ -2,11 +2,18 @@ package momime.client.ui.frames;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+
 import momime.client.ClientTestData;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.ui.fonts.CreateFontsForTests;
+import momime.common.database.Language;
+import momime.common.database.LanguageText;
 
 import org.junit.Test;
 
@@ -31,11 +38,14 @@ public final class TestCalculationBoxUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmMessageBox", "OK")).thenReturn ("OK");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -72,13 +82,18 @@ public final class TestCalculationBoxUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmMessageBox", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("TitleCat", "TitleEntry")).thenReturn ("Message box test using variable text");
-		when (lang.findCategoryEntry ("TextCat", "TextEntry")).thenReturn ("Here's some variable text for the message box which is long enough to have to split over a couple of lines.");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
+
+		final List<LanguageText> title = Arrays.asList (createLanguageText (Language.ENGLISH, "Message box test using variable text"));
+		final List<LanguageText> text = Arrays.asList (createLanguageText (Language.ENGLISH,
+			"Here's some variable text for the message box which is long enough to have to split over a couple of lines."));
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -93,10 +108,8 @@ public final class TestCalculationBoxUI extends ClientTestData
 		box.setUtils (utils);
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
-		box.setTitleLanguageCategoryID ("TitleCat");
-		box.setTitleLanguageEntryID ("TitleEntry");
-		box.setTextLanguageCategoryID ("TextCat");
-		box.setTextLanguageEntryID ("TextEntry");
+		box.setLanguageTitle (title);
+		box.setLanguageText (text);
 		box.setSmallFont (CreateFontsForTests.getSmallFont ());
 		
 		// Display form		
@@ -117,11 +130,14 @@ public final class TestCalculationBoxUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmMessageBox", "OK")).thenReturn ("OK");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

@@ -2,19 +2,19 @@ package momime.server.calculations;
 
 import java.util.List;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
-import momime.server.database.BuildingSvr;
-import momime.server.database.ServerDatabaseEx;
-
-import com.ndg.map.CoordinateSystem;
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Server only calculations pertaining to cities, e.g. calculating resources gathered from within the city radius
@@ -31,7 +31,7 @@ public interface ServerCityCalculations
 	 * @throws MomException If the city's race has no farmers defined or those farmers have no ration production defined
 	 */
 	public int calculateDoubleFarmingRate (final MapVolumeOfMemoryGridCells map,
-		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final ServerDatabaseEx db)
+		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**
@@ -59,7 +59,7 @@ public interface ServerCityCalculations
 	 */
 	public void calculateCitySizeIDAndMinimumFarmers (final List<PlayerServerDetails> players,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation,
-		final MomSessionDescription sd, final ServerDatabaseEx db)
+		final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**
@@ -89,7 +89,7 @@ public interface ServerCityCalculations
 	 * @throws RecordNotFoundException If there is a building in the list that cannot be found in the DB
 	 */
 	public int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
-		final MapCoordinates3DEx cityLocation, final ServerDatabaseEx db) throws RecordNotFoundException;
+		final MapCoordinates3DEx cityLocation, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * Checks whether we will eventually (possibly after constructing various other buildings first) be able to construct the specified building
@@ -107,7 +107,7 @@ public interface ServerCityCalculations
 	 * @throws RecordNotFoundException If we can't find the race inhabiting the city, or one of the buildings involved
 	 */
 	public boolean canEventuallyConstructBuilding (final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings,
-		final MapCoordinates3DEx cityLocation, final BuildingSvr building,
-		final CoordinateSystem overlandMapCoordinateSystem, final ServerDatabaseEx db)
+		final MapCoordinates3DEx cityLocation, final Building building,
+		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException;
 }

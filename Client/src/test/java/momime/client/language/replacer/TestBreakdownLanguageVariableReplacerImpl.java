@@ -7,38 +7,53 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.client.language.database.LanguageDatabaseEx;
-import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.PickLang;
-import momime.client.utils.TextUtilsImpl;
-
 import org.junit.Test;
+
+import momime.client.ClientTestData;
+import momime.client.MomClient;
+import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
+import momime.client.utils.TextUtilsImpl;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.Pick;
 
 /**
  * Tests the BreakdownLanguageVariableReplacerImpl class
  */
-public final class TestBreakdownLanguageVariableReplacerImpl
+public final class TestBreakdownLanguageVariableReplacerImpl extends ClientTestData
 {
 	/**
 	 * Tests the listPickDescriptions method
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testListPickDescriptions ()
+	public final void testListPickDescriptions () throws Exception
 	{
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("Simple", "And")).thenReturn ("and");
-		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		for (int n = 1; n <= 3; n++)
 		{
-			final PickLang pick = new PickLang ();
-			pick.setPickDescriptionSingular ("Retort " + n);
+			final Pick pick = new Pick ();
+			pick.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Retort " + n));
 			
-			when (lang.findPick ("RT0" + n)).thenReturn (pick);
+			when (db.findPick ("RT0" + n, "listPickDescriptions")).thenReturn (pick);
 		}
 
+		final MomClient client = mock (MomClient.class);
+		when (client.getClientDB ()).thenReturn (db);
+		
+		// Mock entries from the language XML
+		final Simple simpleLang = new Simple ();
+		simpleLang.getAnd ().add (createLanguageText (Language.ENGLISH, "and"));
+		
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Set up object to test
 		final TextUtilsImpl textUtils = new TextUtilsImpl ();
@@ -47,6 +62,7 @@ public final class TestBreakdownLanguageVariableReplacerImpl
 		final DummyLanguageVariableReplacer replacer = new DummyLanguageVariableReplacer ();
 		replacer.setLanguageHolder (langHolder);
 		replacer.setTextUtils (textUtils);
+		replacer.setClient (client);
 		
 		// Set up some sample lists of pick IDs
 		final List<String> singlePickID = new ArrayList<String> ();

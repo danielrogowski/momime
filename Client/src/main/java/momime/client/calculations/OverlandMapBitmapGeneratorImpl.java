@@ -17,20 +17,19 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.CityImageGfx;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.MapFeatureGfx;
-import momime.client.graphics.database.SmoothedTileGfx;
-import momime.client.graphics.database.SmoothedTileTypeGfx;
-import momime.client.graphics.database.TileSetGfx;
-import momime.client.graphics.database.TileTypeGfx;
-import momime.client.graphics.database.TileTypeRoadGfx;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CityImage;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.MapFeatureEx;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.SmoothedTile;
+import momime.common.database.SmoothedTileTypeEx;
+import momime.common.database.TileSetEx;
+import momime.common.database.TileTypeEx;
+import momime.common.database.TileTypeRoad;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MemoryGridCell;
 
@@ -66,8 +65,11 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	/** Client config, containing various overland map settings */
 	private MomImeClientConfigEx clientConfig;
 	
+	/** Bitmask generator */
+	private TileSetBitmaskGenerator tileSetBitmaskGenerator;
+	
 	/** Smoothed tiles to display at every map cell */
-	private SmoothedTileGfx [] [] [] smoothedTiles;
+	private SmoothedTile [] [] [] smoothedTiles;
 
 	/**
 	 * Creates the smoothedTiles array as the correct size
@@ -80,7 +82,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		log.trace ("Entering afterJoinedSession");
 
 		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
-		smoothedTiles = new SmoothedTileGfx [overlandMapSize.getDepth ()] [overlandMapSize.getHeight ()] [overlandMapSize.getWidth ()];
+		smoothedTiles = new SmoothedTile [overlandMapSize.getDepth ()] [overlandMapSize.getHeight ()] [overlandMapSize.getWidth ()];
 
 		log.trace ("Exiting afterJoinedSession");
 	}	
@@ -96,10 +98,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		log.trace ("Entering smoothMapTerrain: " + areaToSmooth);
 
 		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
-		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (overlandMapSize.getCoordinateSystemType ());
 		
 		// Choose the appropriate tile set
-		final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "smoothMapTerrain");
+		final TileSetEx overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "smoothMapTerrain");
 		
 		// Now check each map cell
 		for (int planeNo = 0; planeNo < overlandMapSize.getDepth (); planeNo++) 
@@ -116,77 +117,8 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							smoothedTiles [planeNo] [y] [x] = null;
 						else
 						{
-							final SmoothedTileTypeGfx smoothedTileType = overlandMapTileSet.findSmoothedTileType (tileTypeID, planeNo, null);
-							
-							// If this is ticked then fix the bitmask
-							// If a land based tile, want to assume grass in every direction (e.g. for mountains, draw a single mountain), so want 11111111
-							
-							// But for a sea tile, this looks really daft - you get a 'sea' of lakes surrounded by grass!  So we have to force these to 00000000 instead
-							// to make it look remotely sensible
-							
-							// Rather than hard coding which tile types need 00000000 and which need 11111111, the graphics XML file has a special
-							// entry under every tile for the image to use for 'NoSmooth' = No Smoothing
-							final StringBuffer bitmask = new StringBuffer ();
-							if (!getClientConfig ().isOverlandSmoothTerrain ())
-								bitmask.append (GraphicsDatabaseConstants.TILE_BITMASK_NO_SMOOTHING);
-							else							
-							{
-								// 3 possibilities for how we create the bitmask
-								// 0 = force 00000000
-								// 1 = use 0 for this type of tile, 1 for anything else (assume grass)
-								// 2 = use 0 for this type of tile, 1 for anything else (assume grass), 2 for rivers (in a joining direction)
-								final int maxValueInEachDirection = overlandMapTileSet.findSmoothingSystem
-									(smoothedTileType.getSmoothingSystemID (), "smoothMapTerrain").getMaxValueEachDirection ();
-								
-								if (maxValueInEachDirection == 0)
-								{
-									for (int d = 1; d <= maxDirection; d++)
-										bitmask.append ("0");
-								}
-								
-								// If a river tile, decide whether to treat this direction as a river based on the RiverDirections FROM this tile, not by looking at adjoining tiles
-								// NB. This is only inland rivers - oceanside river mouths are just special shore/ocean tiles
-								else if ((maxValueInEachDirection == 1) && (gc.getTerrainData ().getRiverDirections () != null))
-								{
-									for (int d = 1; d <= maxDirection; d++)
-										if (gc.getTerrainData ().getRiverDirections ().contains (Integer.valueOf (d).toString ()))
-											bitmask.append ("0");
-										else
-											bitmask.append ("1");
-								}
-								
-								// Normal type of smoothing
-								else
-								{
-									for (int d = 1; d <= maxDirection; d++)
-										
-										// Want rivers? i.e. is this an ocean tile
-										if ((maxValueInEachDirection == 2) && (gc.getTerrainData ().getRiverDirections () != null) &&
-											(gc.getTerrainData ().getRiverDirections ().contains (Integer.valueOf (d).toString ())))
-											
-											bitmask.append ("2");
-										else
-										{
-											final MapCoordinates3DEx coords = new MapCoordinates3DEx (x, y, planeNo);
-											if (getCoordinateSystemUtils ().move3DCoordinates (overlandMapSize, coords, d))
-											{
-												final MemoryGridCell otherGc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
-													(coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ());
-												final String otherTileTypeID = (otherGc.getTerrainData () == null) ? null : otherGc.getTerrainData ().getTileTypeID ();
-												
-												if ((otherTileTypeID == null) || (otherTileTypeID.equals (tileTypeID)) ||
-													(otherTileTypeID.equals (smoothedTileType.getSecondaryTileTypeID ())) ||
-													(otherTileTypeID.equals (smoothedTileType.getTertiaryTileTypeID ())))
-													
-													bitmask.append ("0");
-												else
-													bitmask.append ("1");
-											}
-											else
-												bitmask.append ("0");
-										}
-								}
-							}
+							final SmoothedTileTypeEx smoothedTileType = overlandMapTileSet.findSmoothedTileType (tileTypeID, planeNo, null);
+							final String bitmask = getTileSetBitmaskGenerator ().generateOverlandMapBitmask (smoothedTileType, gc.getTerrainData ().getRiverDirections (), x, y, planeNo);
 
 							// The cache works directly on unsmoothed bitmasks so no reduction to do
 							smoothedTiles [planeNo] [y] [x] = smoothedTileType.getRandomImage (bitmask.toString ());
@@ -219,7 +151,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (overlandMapSize.getCoordinateSystemType ());
 		
 		// We need the tile set so we know how many animation frames there are
-		final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateOverlandMapBitmaps");
+		final TileSetEx overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateOverlandMapBitmaps");
 		
 		// Create the set of empty bitmaps
 		final BufferedImage [] overlandMapBitmaps = new BufferedImage [overlandMapTileSet.getAnimationFrameCount ()];
@@ -245,7 +177,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 				if (getCoordinateSystemUtils ().are2DCoordinatesWithinRange (overlandMapSize, mapCoords))
 				{
 					// Terrain
-					final SmoothedTileGfx tile = smoothedTiles [mapViewPlane] [mapCoords.getY ()] [mapCoords.getX ()];
+					final SmoothedTile tile = smoothedTiles [mapViewPlane] [mapCoords.getY ()] [mapCoords.getX ()];
 					if (tile != null)
 					{
 						if (tile.getTileFile () != null)
@@ -258,7 +190,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						else if (tile.getTileAnimation () != null)
 						{
 							// Copy each animation frame over to each bitmap
-							final AnimationGfx anim = getGraphicsDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
+							final AnimationGfx anim = getClient ().getClientDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
 							for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
 								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
@@ -273,7 +205,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 					final String mapFeatureID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getMapFeatureID ();
 					if (mapFeatureID != null)
 					{
-						final MapFeatureGfx mapFeature = getGraphicsDB ().findMapFeature (mapFeatureID, "generateOverlandMapBitmaps");
+						final MapFeatureEx mapFeature = getClient ().getClientDB ().findMapFeature (mapFeatureID, "generateOverlandMapBitmaps");
 						final BufferedImage image = getUtils ().loadImage (mapFeature.getOverlandMapImageFile ());
 	
 						// Use same image for all frames
@@ -285,7 +217,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 					final String roadTileTypeID = (gc.getTerrainData () == null) ? null : gc.getTerrainData ().getRoadTileTypeID ();
 					if (roadTileTypeID != null)
 					{
-						final TileTypeGfx roadTileType = getGraphicsDB ().findTileType (roadTileTypeID, "generateOverlandMapBitmaps");
+						final TileTypeEx roadTileType = getClient ().getClientDB ().findTileType (roadTileTypeID, "generateOverlandMapBitmaps");
 						boolean drawnRoad = false;
 						
 						// Check every adjacent tile, and draw a road only towards tiles that also contain road
@@ -300,7 +232,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 								{
 									drawnRoad = true;
 
-									final TileTypeRoadGfx road = roadTileType.findRoadDirection (d, "generateOverlandMapBitmaps");
+									final TileTypeRoad road = roadTileType.findRoadDirection (d, "generateOverlandMapBitmaps");
 									if (road.getRoadImageFile () != null)
 									{
 										// Use same image for all frames
@@ -325,7 +257,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						// If there's a road here, but in no adjacent tiles, then just draw a dot
 						if (!drawnRoad)
 						{
-							final TileTypeRoadGfx road = roadTileType.findRoadDirection (0, "generateOverlandMapBitmaps");
+							final TileTypeRoad road = roadTileType.findRoadDirection (0, "generateOverlandMapBitmaps");
 							if (road.getRoadImageFile () != null)
 							{
 								// Use same image for all frames
@@ -374,7 +306,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 					{
 						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (mapCoords.getX (), mapCoords.getY (), mapViewPlane);
 						
-						final CityImageGfx cityImage = getGraphicsDB ().findBestCityImage (citySizeID, cityLocation,
+						final CityImage cityImage = getClient ().getClientDB ().findBestCityImage (citySizeID, cityLocation,
 							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "generateOverlandMapBitmaps");
 						final BufferedImage image = getUtils ().loadImage (cityImage.getCityImageFile ());
 						
@@ -461,9 +393,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (overlandMapSize.getCoordinateSystemType ());
 
 			// Choose the appropriate tile sets
-			final TileSetGfx overlandMapTileSet = getGraphicsDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateFogOfWarBitmap");
-			final SmoothedTileTypeGfx fullFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, null, null);
-			final SmoothedTileTypeGfx partialFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN, null, null);
+			final TileSetEx overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "generateFogOfWarBitmap");
+			final SmoothedTileTypeEx fullFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR, null, null);
+			final SmoothedTileTypeEx partialFogOfWar = overlandMapTileSet.findSmoothedTileType (CommonDatabaseConstants.TILE_TYPE_FOG_OF_WAR_HAVE_SEEN, null, null);
 
 			// Create the empty bitmap
 			fogOfWarBitmap = new BufferedImage
@@ -663,5 +595,29 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	public final void setClientConfig (final MomImeClientConfigEx config)
 	{
 		clientConfig = config;
+	}
+
+	/**
+	 * @return Bitmask generator
+	 */
+	public final TileSetBitmaskGenerator getTileSetBitmaskGenerator ()
+	{
+		return tileSetBitmaskGenerator;
+	}
+
+	/**
+	 * @param g Bitmask generator
+	 */
+	public final void setTileSetBitmaskGenerator (final TileSetBitmaskGenerator g)
+	{
+		tileSetBitmaskGenerator = g;
+	}
+
+	/**
+	 * @return Smoothed tiles to display at every map cell
+	 */
+	public final SmoothedTile [] [] [] getSmoothedTiles ()
+	{
+		return smoothedTiles;
 	}
 }

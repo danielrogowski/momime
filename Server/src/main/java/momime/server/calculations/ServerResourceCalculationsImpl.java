@@ -17,10 +17,15 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
+import momime.common.database.Plane;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
@@ -50,11 +55,6 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.database.BuildingSvr;
-import momime.server.database.PlaneSvr;
-import momime.server.database.ProductionTypeSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.SpellSvr;
 import momime.server.process.SpellQueueing;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
@@ -119,7 +119,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	final void recalculateAmountsPerTurn (final PlayerServerDetails player, final List<PlayerServerDetails> players, final FogOfWarMemory trueMap,
-		final MomSessionDescription sd, final ServerDatabaseEx db) throws RecordNotFoundException, PlayerNotFoundException, MomException
+		final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		log.trace ("Entering recalculateAmountsPerTurn: Player ID " + player.getPlayerDescription ().getPlayerID ());
 
@@ -129,7 +129,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		// If wizard is banished then they do not get several production types
 		final List<String> zeroedProductionTypes = new ArrayList<String> ();
 		if (pub.getWizardState () != WizardState.ACTIVE)
-			for (final ProductionTypeSvr productionType : db.getProductionTypes ())
+			for (final ProductionTypeEx productionType : db.getProductionTypes ())
 				if ((productionType.isZeroWhenBanished () != null) && (productionType.isZeroWhenBanished ()))
 					zeroedProductionTypes.add (productionType.getProductionTypeID ());
 		
@@ -149,7 +149,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
 			if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
 			{
-				final SpellSvr spellDetails = db.findSpell (thisSpell.getSpellID (), "recalculateAmountsPerTurn");
+				final Spell spellDetails = db.findSpell (thisSpell.getSpellID (), "recalculateAmountsPerTurn");
 
 				// Note we deal with Channeler retort halving spell maintenance below, so there is no
 				// getModifiedUpkeepValue method for spells, we can just use the values right out of the database
@@ -173,7 +173,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		// In practice this is mostly irrelevant since *nothing* actually generates mana directly - it only generates magic power that can be converted into mana
 
 		// Calculates production and consumption from all cities on the map
-		for (final PlaneSvr plane : db.getPlanes ())
+		for (final Plane plane : db.getPlane ())
 			for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 				for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				{
@@ -199,7 +199,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		{
 			// Counts up how many node aura squares each player gets
 			int nodeAuraSquares = 0;
-			for (final PlaneSvr plane : db.getPlanes ())
+			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					{
@@ -262,7 +262,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws MomException If we find a building consumption that isn't a multiple of 2
 	 */
 	final List<MomResourceConsumer> listConsumersOfProductionType (final PlayerServerDetails player, final List<PlayerServerDetails> players,
-		final String productionTypeID, final FogOfWarMemory trueMap, final ServerDatabaseEx db) throws PlayerNotFoundException, RecordNotFoundException, MomException
+		final String productionTypeID, final FogOfWarMemory trueMap, final CommonDatabase db) throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
 		log.trace ("Entering listConsumersOfProductionType: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + productionTypeID);
 
@@ -292,7 +292,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 			if ((cityData != null) && (cityData.getCityOwnerID () == player.getPlayerDescription ().getPlayerID ()))
 			{
-				final BuildingSvr building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
+				final Building building = db.findBuilding (thisBuilding.getBuildingID (), "listConsumersOfProductionType");
 				final int consumptionAmount = getMemoryBuildingUtils ().findBuildingConsumption (building, productionTypeID);
 				if (consumptionAmount > 0)
 				{
@@ -310,7 +310,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryMaintainedSpell thisSpell : trueMap.getMaintainedSpell ())
 			if (thisSpell.getCastingPlayerID () == player.getPlayerDescription ().getPlayerID ())
 			{
-				final SpellSvr spell = db.findSpell (thisSpell.getSpellID (), "listConsumersOfProductionType");
+				final Spell spell = db.findSpell (thisSpell.getSpellID (), "listConsumersOfProductionType");
 
 				boolean found = false;
 				final Iterator<ProductionTypeAndUndoubledValue> upkeepIter = spell.getSpellUpkeep ().iterator ();
@@ -360,10 +360,10 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 		// Search through different types of production looking for ones matching the required enforce type
 		boolean found = false;
-		final Iterator<ProductionTypeSvr> productionTypeIter = mom.getServerDB ().getProductionTypes ().iterator ();
+		final Iterator<ProductionTypeEx> productionTypeIter = mom.getServerDB ().getProductionTypes ().iterator ();
 		while ((!found) && (productionTypeIter.hasNext ()))
 		{
-			final ProductionTypeSvr productionType = productionTypeIter.next ();
+			final ProductionTypeEx productionType = productionTypeIter.next ();
 			if (enforceType.equals (productionType.getEnforceProduction ()))
 			{
 				// Check how much of this type of production the player has
@@ -426,7 +426,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws RecordNotFoundException If one of the production types in our resource list can't be found in the db
 	 * @throws MomException If we encounter an unknown rounding direction, or a value that should be an exact multiple of 2 isn't
 	 */
-	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSetting spellSettings, final ServerDatabaseEx db)
+	final void accumulateGlobalProductionValues (final PlayerServerDetails player, final SpellSetting spellSettings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering accumulateGlobalProductionValues: Player ID " + player.getPlayerDescription ().getPlayerID ());
@@ -434,7 +434,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		// Note that we can't simply go down the list of production types in the resource list because of the way Magic Power splits into
 		// Mana/Research/Skill Improvement - so its entirely possible that we're supposed to accumulate some Mana even though there is
 		// no pre-existing entry for Mana in this player's resource list
-		for (final ProductionTypeSvr productionType : db.getProductionTypes ())
+		for (final ProductionTypeEx productionType : db.getProductionTypes ())
 			if (productionType.getAccumulatesInto () != null)
 			{
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -486,7 +486,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 * @throws MomException If we find an invalid casting reduction type
 	 */
-	final void progressResearch (final PlayerServerDetails player, final MomSessionDescription sd, final ServerDatabaseEx db)
+	final void progressResearch (final PlayerServerDetails player, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		log.trace ("Entering progressResearch");

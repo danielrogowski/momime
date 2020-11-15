@@ -8,6 +8,7 @@ import java.io.IOException;
 
 import javax.swing.JButton;
 
+import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.messages.MemoryUnit;
@@ -28,6 +29,9 @@ public final class UnitRowDisplayButton extends JButton
 
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
@@ -83,7 +87,7 @@ public final class UnitRowDisplayButton extends JButton
 				g.drawImage (playerColour, offset, offset, null);
 			
 				// Draw the unit itself
-				final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (getUnit ().getUnitID (), "UnitRowDisplayButton").getUnitOverlandImageFile ());
+				final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitRowDisplayButton").getUnitOverlandImageFile ());
 				g.drawImage (unitImage, offset, offset, null);
 			}
 			catch (final IOException e)
@@ -106,6 +110,22 @@ public final class UnitRowDisplayButton extends JButton
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 	
 	/**

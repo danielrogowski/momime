@@ -10,7 +10,7 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
@@ -58,7 +58,7 @@ public interface UnitUtils
 	 * @throws RecordNotFoundException If we can't find the unit, unit type or magic realm
 	 * @return Unit definition
 	 */
-	public Unit initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException;
+	public UnitEx initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * Calculates and stores all derived skill, upkeep and other values for a particular unit and stores them for easy and quick lookup.

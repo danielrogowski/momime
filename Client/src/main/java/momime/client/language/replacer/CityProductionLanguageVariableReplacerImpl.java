@@ -1,13 +1,7 @@
 package momime.client.language.replacer;
 
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.MapFeatureLang;
-import momime.client.language.database.PickTypeLang;
-import momime.client.language.database.PlaneLang;
-import momime.client.language.database.PopulationTaskLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.TileTypeLang;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.internal.CityProductionBreakdownBuilding;
 import momime.common.internal.CityProductionBreakdownMapFeature;
@@ -38,16 +32,17 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 	/**
 	 * @param code Code to replace
 	 * @return Replacement value; or null if the code is not recognized
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
-	public final String determineVariableValue (final String code)
+	public final String determineVariableValue (final String code) throws RecordNotFoundException
 	{
 		final String text;
 		switch (code)
 		{
 			case "PRODUCTION_TYPE":
-				final ProductionTypeLang productionType = getLanguage ().findProductionType (getBreakdown ().getProductionTypeID ());
-				text = (productionType == null) ? getBreakdown ().getProductionTypeID () : productionType.getProductionTypeDescription ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+					(getBreakdown ().getProductionTypeID (), "determineVariableValue").getProductionTypeDescription ());
 				break;
 
 			case "APPLICABLE_POPULATION":
@@ -71,13 +66,13 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 				
 			case "FORTRESS_NAME":
-				final BuildingLang fortress = getLanguage ().findBuilding (CommonDatabaseConstants.BUILDING_FORTRESS);
-				text = (fortress == null) ? CommonDatabaseConstants.BUILDING_FORTRESS : fortress.getBuildingName ();
+				text = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findBuilding (CommonDatabaseConstants.BUILDING_FORTRESS, "determineVariableValue").getBuildingName ());
 				break;
 				
 			case "PLANE_NAME":
-				final PlaneLang plane = getLanguage ().findPlane (getBreakdown ().getFortressPlane ());
-				text = (plane == null) ? Integer.valueOf (getBreakdown ().getFortressPlane ()).toString () : plane.getPlaneDescription ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPlane
+					(getBreakdown ().getFortressPlane (), "determineVariableValue").getPlaneDescription ());
 				break;
 				
 			case "FORTRESS_PLANE_PRODUCTION":
@@ -154,8 +149,8 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				break;
 
 			case "CONVERT_PRODUCTION_FROM_TYPE":
-				final ProductionTypeLang convertProductionType = getLanguage ().findProductionType (getBreakdown ().getConvertFromProductionTypeID ());
-				text = (convertProductionType == null) ? getBreakdown ().getConvertFromProductionTypeID () : convertProductionType.getProductionTypeDescription ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findProductionType
+					(getBreakdown ().getConvertFromProductionTypeID (), "determineVariableValue").getProductionTypeDescription ());
 				break;
 				
 			case "CONVERT_PRODUCTION_FROM_AMOUNT":
@@ -168,13 +163,13 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				
 			// Dependant on current population task
 			case "TASK_NAME_SINGULAR":
-				final PopulationTaskLang populationTaskSingular = getLanguage ().findPopulationTask (getCurrentPopulationTask ().getPopulationTaskID ());
-				text = (populationTaskSingular == null) ? getCurrentPopulationTask ().getPopulationTaskID () : populationTaskSingular.getPopulationTaskSingular ();
+				text = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findPopulationTask (getCurrentPopulationTask ().getPopulationTaskID (), "determineVariableValue").getPopulationTaskSingular ());
 				break;
 				
 			case "TASK_NAME_PLURAL":
-				final PopulationTaskLang populationTaskPlural = getLanguage ().findPopulationTask (getCurrentPopulationTask ().getPopulationTaskID ());
-				text = (populationTaskPlural == null) ? getCurrentPopulationTask ().getPopulationTaskID () : populationTaskPlural.getPopulationTaskPlural ();
+				text = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findPopulationTask (getCurrentPopulationTask ().getPopulationTaskID (), "determineVariableValue").getPopulationTaskPlural ());
 				break;
 
 			case "NUMBER_DOING_TASK":
@@ -191,8 +186,8 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				
 			// Dependant on current tile type
 			case "TILE_TYPE":
-				final TileTypeLang tileType = getLanguage ().findTileType (getCurrentTileType ().getTileTypeID ());
-				text = (tileType == null) ? getCurrentTileType ().getTileTypeID () : tileType.getTileTypeDescription ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findTileType
+					(getCurrentTileType ().getTileTypeID (), "determineVariableValue").getTileTypeDescription ());
 				break;
 
 			case "TILE_COUNT":
@@ -217,8 +212,8 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 
 			// Dependant on current map feature
 			case "MAP_FEATURE":
-				final MapFeatureLang mapFeature = getLanguage ().findMapFeature (getCurrentMapFeature ().getMapFeatureID ());
-				text = (mapFeature == null) ? getCurrentMapFeature ().getMapFeatureID () : mapFeature.getMapFeatureDescription ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findMapFeature
+					(getCurrentMapFeature ().getMapFeatureID (), "determineVariableValue").getMapFeatureDescription ());
 				break;
 
 			case "MAP_FEATURE_COUNT":
@@ -251,8 +246,7 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 				
 			// Dependant on current building
 			case "BUILDING_NAME":
-				final BuildingLang building = getLanguage ().findBuilding (getCurrentBuilding ().getBuildingID ());
-				text = (building == null) ? getCurrentBuilding ().getBuildingID () : building.getBuildingName ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (getCurrentBuilding ().getBuildingID (), "determineVariableValue").getBuildingName ());
 				break;
 
 			case "BUILDING_UNMODIFIED_PRODUCTION":
@@ -281,9 +275,8 @@ public final class CityProductionLanguageVariableReplacerImpl extends BreakdownL
 
 			// Dependant on current pick type
 			case "PICK_TYPE":
-				final PickTypeLang pickType = getLanguage ().findPickType (getCurrentPickType ().getPickTypeID ());
-				final String pickTypeDescription = (pickType == null) ? null : pickType.getPickTypeDescriptionSingular ();
-				text = (pickTypeDescription != null) ? pickTypeDescription : getCurrentPickType ().getPickTypeID ();
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findPickType
+					(getCurrentPickType ().getPickTypeID (), "determineVariableValue").getPickTypeDescriptionSingular ());
 				break;
 
 			case "PICK_COUNT":

@@ -7,16 +7,16 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.DamageType;
 import momime.common.database.DamageTypeImmunity;
+import momime.common.database.Pick;
+import momime.common.database.RangedAttackTypeEx;
+import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
+import momime.common.database.WeaponGrade;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.database.DamageTypeSvr;
-import momime.server.database.PickSvr;
-import momime.server.database.RangedAttackTypeSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSkillSvr;
-import momime.server.database.UnitSvr;
-import momime.server.database.WeaponGradeSvr;
 
 /**
  * Tests the DamageTypeCalculationsImpl class
@@ -31,29 +31,29 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testDetermineSkillDamageType_Melee_BasicWeapons () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
-		final UnitSkillSvr melee = new UnitSkillSvr ();
+		final UnitSkillEx melee = new UnitSkillEx ();
 		melee.setDamageTypeID ("DT01");
 		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "determineSkillDamageType")).thenReturn (melee);
 		
-		final WeaponGradeSvr weaponGrade = new WeaponGradeSvr ();
+		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (false);
 		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageTypeSvr enhanced = new DamageTypeSvr ();
+		final DamageType enhanced = new DamageType ();
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
@@ -76,30 +76,30 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testDetermineSkillDamageType_Melee_Hero () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTH");
 		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		magicRealm.setEnhancesDamageType (true);
 		when (db.findPick ("LTH", "determineSkillDamageType")).thenReturn (magicRealm);
 		
-		final UnitSkillSvr melee = new UnitSkillSvr ();
+		final UnitSkillEx melee = new UnitSkillEx ();
 		melee.setDamageTypeID ("DT01");
 		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "determineSkillDamageType")).thenReturn (melee);
 		
-		final WeaponGradeSvr weaponGrade = new WeaponGradeSvr ();
+		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (false);
 		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageTypeSvr enhanced = new DamageTypeSvr ();
+		final DamageType enhanced = new DamageType ();
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
@@ -122,29 +122,29 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testDetermineSkillDamageType_Melee_WeaponGrade () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
-		final UnitSkillSvr melee = new UnitSkillSvr ();
+		final UnitSkillEx melee = new UnitSkillEx ();
 		melee.setDamageTypeID ("DT01");
 		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "determineSkillDamageType")).thenReturn (melee);
 		
-		final WeaponGradeSvr weaponGrade = new WeaponGradeSvr ();
+		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (true);
 		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageTypeSvr enhanced = new DamageTypeSvr ();
+		final DamageType enhanced = new DamageType ();
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
@@ -167,28 +167,28 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testDetermineSkillDamageType_Special_WeaponGrade () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
-		final UnitSkillSvr melee = new UnitSkillSvr ();
+		final UnitSkillEx melee = new UnitSkillEx ();
 		melee.setDamageTypeID ("DT01");
 		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "determineSkillDamageType")).thenReturn (melee);
 		
-		final WeaponGradeSvr weaponGrade = new WeaponGradeSvr ();
+		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (true);
 		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageTypeSvr enhanced = new DamageTypeSvr ();
+		final DamageType enhanced = new DamageType ();
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
@@ -211,30 +211,30 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testDetermineSkillDamageType_Ranged_BasicWeapons () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setDamageTypeID ("DT01");
 		when (db.findRangedAttackType ("RAT01", "determineSkillDamageType")).thenReturn (rat);
 		
-		final WeaponGradeSvr weaponGrade = new WeaponGradeSvr ();
+		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (false);
 		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageTypeSvr enhanced = new DamageTypeSvr ();
+		final DamageType enhanced = new DamageType ();
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
@@ -258,31 +258,31 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testDetermineSkillDamageType_Ranged_Hero () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTH");
 		unitDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		magicRealm.setEnhancesDamageType (true);
 		when (db.findPick ("LTH", "determineSkillDamageType")).thenReturn (magicRealm);
 		
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setDamageTypeID ("DT01");
 		when (db.findRangedAttackType ("RAT01", "determineSkillDamageType")).thenReturn (rat);
 		
-		final WeaponGradeSvr weaponGrade = new WeaponGradeSvr ();
+		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (false);
 		when (db.findWeaponGrade (0, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageTypeSvr enhanced = new DamageTypeSvr ();
+		final DamageType enhanced = new DamageType ();
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
@@ -306,30 +306,30 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testDetermineSkillDamageType_Ranged_WeaponGrade () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setDamageTypeID ("DT01");
 		when (db.findRangedAttackType ("RAT01", "determineSkillDamageType")).thenReturn (rat);
 		
-		final WeaponGradeSvr weaponGrade = new WeaponGradeSvr ();
+		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (true);
 		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.setEnhancedVersion ("DT02");
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageTypeSvr enhanced = new DamageTypeSvr ();
+		final DamageType enhanced = new DamageType ();
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
@@ -353,29 +353,29 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testDetermineSkillDamageType_Ranged_Magic () throws Exception
 	{
 		// Mock database
-		final ServerDatabaseEx db = mock (ServerDatabaseEx.class);
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
-		final UnitSvr unitDef = new UnitSvr ();
+		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
 		when (db.findUnit ("UN001", "determineSkillDamageType")).thenReturn (unitDef);
 		
-		final PickSvr magicRealm = new PickSvr ();
+		final Pick magicRealm = new Pick ();
 		when (db.findPick ("LTN", "determineSkillDamageType")).thenReturn (magicRealm);
 		
-		final RangedAttackTypeSvr rat = new RangedAttackTypeSvr ();
+		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setDamageTypeID ("DT01");
 		when (db.findRangedAttackType ("RAT01", "determineSkillDamageType")).thenReturn (rat);
 		
-		final WeaponGradeSvr weaponGrade = new WeaponGradeSvr ();
+		final WeaponGrade weaponGrade = new WeaponGrade ();
 		weaponGrade.setEnhancesDamageType (true);
 		when (db.findWeaponGrade (1, "determineSkillDamageType")).thenReturn (weaponGrade);
 
 		// Damage types
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		when (db.findDamageType ("DT01", "determineSkillDamageType")).thenReturn (damageType);
 		
-		final DamageTypeSvr enhanced = new DamageTypeSvr ();
+		final DamageType enhanced = new DamageType ();
 		when (db.findDamageType ("DT02", "determineSkillDamageType-E")).thenReturn (enhanced);
 		
 		// Unit making the attack
@@ -399,7 +399,7 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testGetDefenderDefenceStrength_NoImmunities () throws Exception
 	{
 		// Damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
 		
@@ -423,7 +423,7 @@ public final class TestDamageTypeCalculationsImpl
 	public final void testGetDefenderDefenceStrength_ArmourPiercing () throws Exception
 	{
 		// Damage being applied
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
 		
@@ -451,7 +451,7 @@ public final class TestDamageTypeCalculationsImpl
 		imm.setBoostsDefenceTo (50);
 		imm.setUnitSkillID ("US001");
 		
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.getDamageTypeImmunity ().add (imm);
 		
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
@@ -480,7 +480,7 @@ public final class TestDamageTypeCalculationsImpl
 		imm.setBoostsDefenceTo (50);
 		imm.setUnitSkillID ("US001");
 		
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.getDamageTypeImmunity ().add (imm);
 		
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);
@@ -509,7 +509,7 @@ public final class TestDamageTypeCalculationsImpl
 		imm.setBoostsDefenceTo (50);
 		imm.setUnitSkillID ("US001");
 		
-		final DamageTypeSvr damageType = new DamageTypeSvr ();
+		final DamageType damageType = new DamageType ();
 		damageType.getDamageTypeImmunity ().add (imm);
 		
 		final AttackDamage attackDamage = new AttackDamage (0, 0, damageType, null, null, null, null, 1);

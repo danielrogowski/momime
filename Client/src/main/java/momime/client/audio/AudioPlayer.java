@@ -3,6 +3,7 @@ package momime.client.audio;
 import java.util.List;
 
 import javazoom.jl.decoder.JavaLayerException;
+import momime.client.graphics.AnimationContainer;
 import momime.common.database.RecordNotFoundException;
 
 /**
@@ -20,10 +21,11 @@ public interface AudioPlayer
 	/**
 	 * 
 	 * @param playListID Play list from the graphics XML file to play
+	 * @param container Whether the playlist is defined in the graphics or common XML
 	 * @throws JavaLayerException If there is a problem playing the audio file
 	 * @throws RecordNotFoundException If the play list can't be found
 	 */
-	public void playPlayList (final String playListID) throws JavaLayerException, RecordNotFoundException;
+	public void playPlayList (final String playListID, final AnimationContainer container) throws JavaLayerException, RecordNotFoundException;
 
 	/**
 	 * @param aResourceNames Names of audio resources on classpath, e.g. /music/blah.mp3 

@@ -164,6 +164,87 @@
    		</constructor-arg>
 	</bean>
 
+	<!-- General XSD objects -->
+	
+	<bean id="domImplementationRegistry" class="org.w3c.dom.bootstrap.DOMImplementationRegistry" factory-method="newInstance" />
+	
+	<bean id="commonXsdResourceResolver" class="momime.common.database.CommonXsdResourceResolver">
+		<constructor-arg ref="domImplementationRegistry" />
+	</bean>
+	
+	<bean id="schemaFactory" class="javax.xml.validation.SchemaFactory" factory-method="newInstance">
+		<constructor-arg value="http://www.w3.org/2001/XMLSchema" />
+		<property name="resourceResolver" ref="commonXsdResourceResolver" />
+	</bean>
+
+	<!-- Common database XMLs -->
+
+	<bean id="commonDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
+		<constructor-arg type="java.net.URL" value="/momime.common.database/MoMIMECommonDatabase.xsd" />
+	</bean>
+	
+	<bean id="commonDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
+		<constructor-arg>
+    		<list>
+    			<value>momime.common.database.MomDatabase</value>
+    		</list>
+   		</constructor-arg>
+	</bean>
+
+	<bean id="commonDatabaseFactory" class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean" >
+		<property name="serviceLocatorInterface" value="momime.common.database.CommonDatabaseFactory" />
+	</bean>			
+
+	<bean id="commonDatabaseObjectFactory" class="momime.common.database.CommonDatabaseObjectFactory">
+		<property name="factory" ref="commonDatabaseFactory" />
+	</bean>
+	
+	<bean id="commonDatabaseUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="commonDatabaseJaxbContext" factory-method="createUnmarshaller">
+		<property name="schema" ref="commonDatabaseSchema" />
+	</bean>
+	
+	<bean id="configureCommonDatabaseUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetObject" ref="commonDatabaseUnmarshaller" />
+		<property name="targetMethod" value="setProperty" />
+		<property name="arguments">
+			<list>
+				<value>com.sun.xml.bind.ObjectFactory</value>
+				<array>
+					<ref bean="commonDatabaseObjectFactory" />
+				</array>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="commonDatabase" class="momime.common.database.CommonDatabaseImpl" scope="prototype">
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="utils" ref="uiUtils" />
+	</bean>
+	
+	<bean id="wizardEx" class="momime.common.database.WizardEx" scope="prototype">
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="mapFeatureEx" class="momime.common.database.MapFeatureEx" scope="prototype">
+		<property name="utils" ref="uiUtils" />
+	</bean>
+
+	<bean id="tileSetEx" class="momime.common.database.TileSetEx" scope="prototype">
+		<property name="utils" ref="uiUtils" />
+	</bean>
+
+	<bean id="smoothedTileTypeEx" class="momime.common.database.SmoothedTileTypeEx" scope="prototype">
+		<property name="randomUtils" ref="randomUtils" />
+	</bean>
+
+	<bean id="animation" class="momime.common.database.AnimationGfx" scope="prototype">
+		<property name="utils" ref="uiUtils" />
+	</bean>
+	
+	<!-- Common beans -->	
+
+	<bean id="uiUtils" class="com.ndg.swing.NdgUIUtilsImpl" />
+
 	<bean id="objectFactoryMap" class="com.ndg.map.coordinates.ObjectFactoryMap" />	<!-- Creates Ex versions of coordinates -->
 
 	<bean id="booleanMapAreaOperations2D" class="com.ndg.map.areas.operations.BooleanMapAreaOperations2DImpl">

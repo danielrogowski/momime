@@ -21,6 +21,7 @@ import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitCanCast;
 import momime.common.messages.MemoryUnit;
@@ -48,7 +49,6 @@ import momime.common.utils.TargetSpellResult;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.SpellSvr;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.HeroItemServerUtils;
 
@@ -139,7 +139,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 		
 		// Find the spell in the player's search list
-		final SpellSvr spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
+		final Spell spell = mom.getServerDB ().findSpell (spellID, "requestCastSpell");
 		
 		// Validation checks on the type of spell and whether it needs a target
 		String msg;
@@ -600,7 +600,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		{
 			// How much to put towards this spell?
 			final QueuedSpell queued = priv.getQueuedSpell ().get (0);
-			final SpellSvr spell = mom.getServerDB ().findSpell (queued.getQueuedSpellID (), "progressOverlandCasting");
+			final Spell spell = mom.getServerDB ().findSpell (queued.getQueuedSpellID (), "progressOverlandCasting");
 			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), pub.getPick (),
 				mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			final int leftToCast = Math.max (0, reducedCastingCost - priv.getManaSpentOnCastingCurrentSpell ());

@@ -13,13 +13,13 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.database.SpellSvr;
 import momime.server.process.SpellProcessing;
 
 /**
@@ -61,7 +61,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (getSpellURN (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
 
-		final SpellSvr spellDef = (trueSpell == null) ? null : mom.getServerDB ().findSpell (trueSpell.getSpellID (), "RequestSwitchOffMaintainedSpellMessageImpl");
+		final Spell spellDef = (trueSpell == null) ? null : mom.getServerDB ().findSpell (trueSpell.getSpellID (), "RequestSwitchOffMaintainedSpellMessageImpl");
 		
 		// Do some checks
 		final String error;

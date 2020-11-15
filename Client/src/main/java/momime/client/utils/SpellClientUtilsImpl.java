@@ -14,19 +14,17 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.AnimationGfx;
-import momime.client.graphics.database.CityViewElementGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.UnitSkillLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
+import momime.common.database.AnimationGfx;
+import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellHasCityEffect;
 import momime.common.database.SpellHasCombatEffect;
@@ -72,9 +70,10 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	 * @param spell Spell to list upkeeps of
 	 * @param picks Picks owned by the player who is casting the spell
 	 * @return Descriptive list of all the upkeeps of the specified spell; null if the spell has no upkeep
+	 * @throws RecordNotFoundException If one of the upkeeps can't be found
 	 */
 	@Override
-	public final String listUpkeepsOfSpell (final Spell spell, final List<PlayerPick> picks)
+	public final String listUpkeepsOfSpell (final Spell spell, final List<PlayerPick> picks) throws RecordNotFoundException
 	{
 		log.trace ("Entering listUpkeepsOfSpell: " + spell.getSpellID ());
 		
@@ -86,15 +85,15 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 			else
 				upkeepList = upkeepList + ", ";
 			
-			final ProductionTypeLang productionType = getLanguage ().findProductionType (upkeep.getProductionTypeID ());
-			final String productionTypeDescription = (productionType == null) ? null : productionType.getProductionTypeDescription ();
-			
+			final String productionTypeDescription = getLanguageHolder ().findDescription
+				(getClient ().getClientDB ().findProductionType (upkeep.getProductionTypeID (), "listUpkeepsOfSpell").getProductionTypeDescription ());
+
 			// Channeler?
 			final String thisUpkeep;
 			if ((picks != null) && (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
-				thisUpkeep = getLanguage ().findCategoryEntry ("frmHelp", "SpellUpkeepWithChanneler");
+				thisUpkeep = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellUpkeepWithChanneler ());
 			else
-				thisUpkeep = getLanguage ().findCategoryEntry ("frmHelp", "SpellUpkeepWithoutChanneler");
+				thisUpkeep = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellUpkeepWithoutChanneler ());
 				
 			upkeepList = upkeepList + thisUpkeep.replaceAll
 				("PRODUCTION_TYPE", (productionTypeDescription != null) ? productionTypeDescription : upkeep.getProductionTypeID ()).replaceAll
@@ -104,7 +103,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		
 		// Did we find any?
 		final String result = (upkeepList == null) ? null :
-			getLanguage ().findCategoryEntry ("frmHelp", "SpellUpkeepFixed").replaceAll ("UPKEEP_LIST", upkeepList);
+			getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellUpkeepFixed ()).replaceAll ("UPKEEP_LIST", upkeepList);
 		
 		log.trace ("Exiting listUpkeepsOfSpell = \"" + result + "\"");
 		return result;
@@ -113,9 +112,10 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	/**
 	 * @param spell Spell to list valid Magic realm/Lifeform type targets of
 	 * @return Descriptive list of all the valid Magic realm/Lifeform types for this spell; always returns some text, never null
+	 * @throws RecordNotFoundException If one of the magic realms can't be found
 	 */
 	@Override
-	public final String listValidMagicRealmLifeformTypeTargetsOfSpell (final Spell spell)
+	public final String listValidMagicRealmLifeformTypeTargetsOfSpell (final Spell spell) throws RecordNotFoundException
 	{
 		log.trace ("Entering listValidMagicRealmLifeformTypeTargetsOfSpell: " + spell.getSpellID ());
 
@@ -123,11 +123,10 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
 			if (target.getTargetMagicRealmID () != null)
 			{
-				final PickLang magicRealm = getLanguage ().findPick (target.getTargetMagicRealmID ());
-				final String magicRealmPlural = (magicRealm == null) ? null : magicRealm.getUnitMagicRealmPlural ();
+				final String magicRealmPlural = getLanguageHolder ().findDescription
+					(getClient ().getClientDB ().findPick (target.getTargetMagicRealmID (), "listValidMagicRealmLifeformTypeTargetsOfSpell").getUnitMagicRealmPlural ());
 				
-				magicRealms.append (System.lineSeparator () +
-					((magicRealmPlural != null) ? magicRealmPlural : target.getTargetMagicRealmID ()));
+				magicRealms.append (System.lineSeparator () + magicRealmPlural);
 			}
 		
 		final String result = magicRealms.toString ();
@@ -140,9 +139,10 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	 * @param spell Spell to list saving throws of
 	 * @return Descriptive list of all the saving throws of the specified curse spell; always returns some text, never null
 	 * @throws MomException If there are multiple saving throws listed, but against different unit skills
+	 * @throws RecordNotFoundException If an expected data item can't be found
 	 */
 	@Override
-	public final String listSavingThrowsOfSpell (final Spell spell) throws MomException
+	public final String listSavingThrowsOfSpell (final Spell spell) throws MomException, RecordNotFoundException
 	{
 		log.trace ("Entering listSavingThrowsOfSpell: " + spell.getSpellID ());
 		
@@ -166,22 +166,21 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		
 		final String result;
 		if (unitSkillID == null)
-			result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookNoSavingThrow");
+			result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookNoSavingThrow ());
 		else
 		{
-			final UnitSkillLang unitSkill = getLanguage ().findUnitSkill (unitSkillID);
-			final String unitSkillDescription = (unitSkill == null) ? null : unitSkill.getUnitSkillDescription ();
+			final String unitSkillDescription = getLanguageHolder ().findDescription (getClient ().getClientDB ().findUnitSkill (unitSkillID, "listSavingThrowsOfSpell").getUnitSkillDescription ());
 			if (savingThrowModifiers.size () == 0)
-				result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookNoSavingThrowModifier").replaceAll
+				result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookNoSavingThrowModifier ()).replaceAll
 					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID);
 			else if (savingThrowModifiers.size () == 1)
-				result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookSingleSavingThrowModifier").replaceAll
+				result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookSingleSavingThrowModifier ()).replaceAll
 					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID).replaceAll
 					("SAVING_THROW_MODIFIER", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (0)));
 			else
 			{
 				Collections.sort (savingThrowModifiers);
-				result = getLanguage ().findCategoryEntry ("frmHelp", "SpellBookMultipleSavingThrowModifiers").replaceAll
+				result = getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellBookMultipleSavingThrowModifiers ()).replaceAll
 					("UNIT_SKILL", (unitSkillDescription != null) ? unitSkillDescription : unitSkillID).replaceAll
 					("SAVING_THROW_MODIFIER_MINIMUM", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (0))).replaceAll
 					("SAVING_THROW_MODIFIER_MAXIMUM", getTextUtils ().intToStrPlusMinus (savingThrowModifiers.get (savingThrowModifiers.size () - 1)));
@@ -224,7 +223,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				// Overland enchantments
 				case OVERLAND_ENCHANTMENTS:
 				{
-					final String imageName = getGraphicsDB ().findSpell (spellID, "findImageForSpell").getOverlandEnchantmentImageFile ();
+					final String imageName = spell.getOverlandEnchantmentImageFile ();
 					if (imageName != null)
 					{
 						final BufferedImage spellImage = getUtils ().loadImage (imageName);
@@ -258,7 +257,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				{
 					for (final SummonedUnit summonedUnit : spell.getSummonedUnit ())
 					{
-						final String imageName = getGraphicsDB ().findUnit (summonedUnit.getSummonedUnitID (), "findImageForSpell").getUnitSummonImageFile ();
+						final String imageName = getClient ().getClientDB ().findUnit (summonedUnit.getSummonedUnitID (), "findImageForSpell").getUnitSummonImageFile ();
 						if ((imageName != null) && (!imageFilenames.contains (imageName)))
 							imageFilenames.add (imageName);
 					}
@@ -274,7 +273,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				{
 					for (final UnitSkillAndValue unitSpellEffect : spell.getUnitSpellEffect ())
 					{
-						final String imageName = getGraphicsDB ().findUnitSkill (unitSpellEffect.getUnitSkillID (), "findImageForSpell").getUnitSkillImageFile ();
+						final String imageName = getClient ().getClientDB ().findUnitSkill (unitSpellEffect.getUnitSkillID (), "findImageForSpell").getUnitSkillImageFile ();
 						if (!imageFilenames.contains (imageName))
 							imageFilenames.add (imageName);
 					}
@@ -285,22 +284,22 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				case CITY_ENCHANTMENTS:
 				case CITY_CURSES:
 				{
-					final List<CityViewElementGfx> cityViewElements = new ArrayList<CityViewElementGfx> ();
+					final List<CityViewElement> cityViewElements = new ArrayList<CityViewElement> ();
 					
 					// Spells that create city effects, like Altar of Battle
 					for (final SpellHasCityEffect citySpellEffect : spell.getSpellHasCityEffect ())
 					{
-						final CityViewElementGfx cityViewElement = getGraphicsDB ().findCitySpellEffect (citySpellEffect.getCitySpellEffectID ());
+						final CityViewElement cityViewElement = getClient ().getClientDB ().findCityViewElementSpellEffect (citySpellEffect.getCitySpellEffectID ());
 						if (cityViewElement != null)
 							cityViewElements.add (cityViewElement);
 					}
 					
 					// Spells that create buildings, like Wall of Stone
 					if (spell.getBuildingID () != null)
-						cityViewElements.add (getGraphicsDB ().findCityViewElementBuilding (spell.getBuildingID (), "findImageForSpell"));
+						cityViewElements.add (getClient ().getClientDB ().findCityViewElementBuilding (spell.getBuildingID (), "findImageForSpell"));
 					
 					// Find the image for each
-					for (final CityViewElementGfx cityViewElement : cityViewElements)
+					for (final CityViewElement cityViewElement : cityViewElements)
 						if (cityViewElement.getCityViewAlternativeImageFile () != null)
 							imageFilenames.add (cityViewElement.getCityViewAlternativeImageFile ());
 						else if (cityViewElement.getCityViewImageFile () != null)
@@ -311,7 +310,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 							// the help scrolls and anywhere else this is used, but it complicates things enormously having to
 							// set up repaint timers, and there's only a handful of spells this actually affects
 							// e.g. Dark Rituals, Altar of Battle, Move Fortress
-							final AnimationGfx anim = getGraphicsDB ().findAnimation (cityViewElement.getCityViewAnimation (), "findImageForSpell");
+							final AnimationGfx anim = getClient ().getClientDB ().findAnimation (cityViewElement.getCityViewAnimation (), "findImageForSpell");
 							if (anim.getFrame ().size () > 0)
 								imageFilenames.add (anim.getFrame ().get (0));
 						}
@@ -324,7 +323,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				{
 					for (final SpellHasCombatEffect combatSpellEffect : spell.getSpellHasCombatEffect ())
 					{
-						final String imageName = getGraphicsDB ().findCombatAreaEffect (combatSpellEffect.getCombatAreaEffectID (), "findImageForSpell").getCombatAreaEffectImageFile ();
+						final String imageName = getClient ().getClientDB ().findCombatAreaEffect (combatSpellEffect.getCombatAreaEffectID (), "findImageForSpell").getCombatAreaEffectImageFile ();
 						if (!imageFilenames.contains (imageName))
 							imageFilenames.add (imageName);
 					}
@@ -402,9 +401,9 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

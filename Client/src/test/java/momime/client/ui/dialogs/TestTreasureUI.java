@@ -12,20 +12,22 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.MapFeatureGfx;
-import momime.client.graphics.database.PickGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.MapFeatureLang;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.languages.database.Simple;
+import momime.client.languages.database.TreasureScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
+import momime.common.database.CommonDatabase;
+import momime.common.database.Language;
+import momime.common.database.MapFeatureEx;
+import momime.common.database.Pick;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.ProductionTypeEx;
+import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -50,55 +52,63 @@ public final class TestTreasureUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
+		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 
+		final Spell spellDef = new Spell ();
+		spellDef.getSpellName ().add (createLanguageText (Language.ENGLISH, "Great Wasting"));
+		when (db.findSpell ("SP001", "TreasureUI")).thenReturn (spellDef);
+		
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmTreasure", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("frmTreasure", "Title")).thenReturn ("Treasure");
-		when (lang.findCategoryEntry ("frmTreasure", "Text")).thenReturn ("Inside the LOCATION_DESCRIPTION you find:");
-		when (lang.findCategoryEntry ("frmTreasure", "Nothing")).thenReturn ("Absolutely nothing!");
-		when (lang.findCategoryEntry ("frmTreasure", "Spell")).thenReturn ("SPELL_NAME spell");
-		when (lang.findCategoryEntry ("frmTreasure", "Retort")).thenReturn ("Retort of PICK_NAME_SINGULAR");
-		when (lang.findCategoryEntry ("frmTreasure", "PrisonerC")).thenReturn ("A_UNIT_NAME");
-		when (lang.findCategoryEntry ("frmTreasure", "PrisonerB")).thenReturn ("A_UNIT_NAME, who would not fit here so was moved to an adjacent tile");
-		when (lang.findCategoryEntry ("frmTreasure", "PrisonerN")).thenReturn ("A_UNIT_NAME, who would not fit anywhere so escaped");
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+
+		final TreasureScreen treasureScreenLang = new TreasureScreen ();
+		treasureScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Treasure"));
+		treasureScreenLang.getText ().add (createLanguageText (Language.ENGLISH, "Inside the LOCATION_DESCRIPTION you find:"));
+		treasureScreenLang.getNothing ().add (createLanguageText (Language.ENGLISH, "Absolutely nothing!"));
+		treasureScreenLang.getSpell ().add (createLanguageText (Language.ENGLISH, "SPELL_NAME spell"));
+		treasureScreenLang.getRetort ().add (createLanguageText (Language.ENGLISH, "Retort of PICK_NAME_SINGULAR"));
+		treasureScreenLang.getPrisoner ().add (createLanguageText (Language.ENGLISH, "A_UNIT_NAME"));
+		treasureScreenLang.getPrisonerBumped ().add (createLanguageText (Language.ENGLISH, "A_UNIT_NAME, who would not fit here so was moved to an adjacent tile"));
+		treasureScreenLang.getPrisonerEscaped ().add (createLanguageText (Language.ENGLISH, "A_UNIT_NAME, who would not fit anywhere so escaped"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getTreasureScreen ()).thenReturn (treasureScreenLang);
 		
-		final MapFeatureLang mapFeatureLang = new MapFeatureLang ();
-		mapFeatureLang.setMapFeatureDescription ("Mysterious Cave");
-		when (lang.findMapFeature ("MF01")).thenReturn (mapFeatureLang);
+		final MapFeatureEx mapFeatureLang = new MapFeatureEx ();
+		mapFeatureLang.getMapFeatureDescription ().add (createLanguageText (Language.ENGLISH, "Mysterious Cave"));
+		mapFeatureLang.setMonsterFoundImageFile ("/momime.client.graphics/overland/mapFeatures/cave-scouting.png");
+		when (db.findMapFeature ("MF01", "TreasureUI")).thenReturn (mapFeatureLang);		
 		
-		final ProductionTypeLang productionTypeLang = new ProductionTypeLang ();
-		productionTypeLang.setProductionTypeDescription ("Gold");
-		when (lang.findProductionType ("PT01")).thenReturn (productionTypeLang);
+		final ProductionTypeEx productionTypeLang = new ProductionTypeEx ();
+		productionTypeLang.getProductionTypeDescription ().add (createLanguageText (Language.ENGLISH, "Gold"));
+		when (db.findProductionType ("PT01", "TreasureUI")).thenReturn (productionTypeLang);
 		
-		final SpellLang spellLang = new SpellLang ();
-		spellLang.setSpellName ("Great Wasting");
-		when (lang.findSpell ("SP001")).thenReturn (spellLang);
+		final Pick retortLang = new Pick ();
+		retortLang.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Runemaster"));
+		when (db.findPick ("RT01", "TreasureUI")).thenReturn (retortLang);
 		
-		final PickLang retortLang = new PickLang ();
-		retortLang.setPickDescriptionSingular ("Runemaster");
-		when (lang.findPick ("RT01")).thenReturn (retortLang);
+		final Pick singleBookLang = new Pick ();
+		singleBookLang.getPickDescriptionSingular ().add (createLanguageText (Language.ENGLISH, "Chaos book"));
+		singleBookLang.getBookImageFile ().add (null);
+		when (db.findPick ("MB01", "TreasureUI")).thenReturn (singleBookLang);
 		
-		final PickLang singleBookLang = new PickLang ();
-		singleBookLang.setPickDescriptionSingular ("Chaos book");
-		when (lang.findPick ("MB01")).thenReturn (singleBookLang);
-		
-		final PickLang multiBooksLang = new PickLang ();
-		multiBooksLang.setPickDescriptionPlural ("Sorcery books");
-		when (lang.findPick ("MB02")).thenReturn (multiBooksLang);
+		final Pick multiBooksLang = new Pick ();
+		multiBooksLang.getPickDescriptionPlural ().add (createLanguageText (Language.ENGLISH, "Sorcery books"));
+		multiBooksLang.getBookImageFile ().add (null);
+		when (db.findPick ("MB02", "TreasureUI")).thenReturn (multiBooksLang);
 		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 		
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Mock entries from the graphics XML
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
-		final MapFeatureGfx mapFeatureGfx = new MapFeatureGfx ();
-		mapFeatureGfx.setMonsterFoundImageFile ("/momime.client.graphics/overland/mapFeatures/cave-scouting.png");
-		when (gfx.findMapFeature ("MF01", "TreasureUI")).thenReturn (mapFeatureGfx);
 		
 		// Units
 		final FogOfWarMemory fow = new FogOfWarMemory ();
@@ -108,6 +118,7 @@ public final class TestTreasureUI extends ClientTestData
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
+		when (client.getClientDB ()).thenReturn (db);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		for (int n = 1; n <= 2; n++)
@@ -159,16 +170,6 @@ public final class TestTreasureUI extends ClientTestData
 		multiBooks.setPickID ("MB02");
 		multiBooks.setQuantity (2);
 		reward.getPick ().add (multiBooks);
-		
-		// Differentiate books and retorts
-		for (final PickAndQuantity pick : reward.getPick ())
-		{
-			final PickGfx pickGfx = new PickGfx ();
-			if (pick.getPickID ().startsWith ("MB"))
-				pickGfx.getBookImageFile ().add (null);
-			
-			when (gfx.findPick (pick.getPickID (), "TreasureUI")).thenReturn (pickGfx);
-		}
 		
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.dialogs/TreasureUI.xml"));

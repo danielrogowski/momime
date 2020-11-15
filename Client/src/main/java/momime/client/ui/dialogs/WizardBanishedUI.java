@@ -7,6 +7,7 @@ import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -23,13 +24,14 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.AnimationGfx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.WizardGfx;
 import momime.client.messages.process.UpdateWizardStateMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.AnimationGfx;
+import momime.common.database.LanguageText;
+import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.utils.PlayerKnowledgeUtils;
 
@@ -81,10 +83,10 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	private MomClient client;
 	
 	/** Graphics data stored about banished wizard */
-	private WizardGfx banishedWizardGfx;
+	private WizardEx banishedWizardDef;
 	
 	/** Graphics data stored about banishing wizard; null if raiders */
-	private WizardGfx banishingWizardGfx;
+	private WizardEx banishingWizardDef;
 	
 	/** Title */
 	private JLabel titleLabel;
@@ -114,26 +116,26 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		// Having a pic and sound effect for the banished wizard is mandatory or we cannot draw anything sensible.
 		// Having a pic for the banishing wizard is optional, as there's some mobs shown too so can just show them like raiders if nothing else.
 		final MomPersistentPlayerPublicKnowledge banishedWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishedWizard ().getPersistentPlayerPublicKnowledge ();
-		banishedWizardGfx = getGraphicsDB ().findWizard (banishedWizardPub.getStandardPhotoID (), "WizardBanishedUI (A)");
+		banishedWizardDef = getClient ().getClientDB ().findWizard (banishedWizardPub.getStandardPhotoID (), "WizardBanishedUI (A)");
 		
 		final MomPersistentPlayerPublicKnowledge banishingWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishingWizard ().getPersistentPlayerPublicKnowledge ();
-		banishingWizardGfx = (banishingWizardPub.getStandardPhotoID () == null) ? null :
-			getGraphicsDB ().findWizard (banishingWizardPub.getStandardPhotoID (), "WizardBanishedUI (B)");
+		banishingWizardDef = (banishingWizardPub.getStandardPhotoID () == null) ? null :
+			getClient ().getClientDB ().findWizard (banishingWizardPub.getStandardPhotoID (), "WizardBanishedUI (B)");
 		
 		// Raiders do have a standardPhotoID, but no images
-		if ((banishingWizardGfx != null) && (banishingWizardGfx.getBanishingImageFile () == null))
-			banishingWizardGfx = null;
+		if ((banishingWizardDef != null) && (banishingWizardDef.getBanishingImageFile () == null))
+			banishingWizardDef = null;
 		
 		final XmlLayoutComponent banishedWizardLayout = getWizardBanishedLayout ().findComponent ("frmWizardBanishedStanding");
-		final Image banishedWizardImage = getUtils ().loadImage (banishedWizardGfx.getStandingImageFile ()).getScaledInstance
+		final Image banishedWizardImage = getUtils ().loadImage (banishedWizardDef.getStandingImageFile ()).getScaledInstance
 			(banishedWizardLayout.getWidth (), banishedWizardLayout.getHeight (), Image.SCALE_SMOOTH);
 
 		final XmlLayoutComponent banishingWizardLayout = getWizardBanishedLayout ().findComponent ("frmWizardBanishedBanisher");
-		final Image banishingWizardImage = (banishingWizardGfx == null) ? null : getUtils ().loadImage (banishingWizardGfx.getBanishingImageFile ()).getScaledInstance
+		final Image banishingWizardImage = (banishingWizardDef == null) ? null : getUtils ().loadImage (banishingWizardDef.getBanishingImageFile ()).getScaledInstance
 			(banishingWizardLayout.getWidth (), banishingWizardLayout.getHeight (), Image.SCALE_SMOOTH);
 
 		final XmlLayoutComponent banishingWizardsHandLayout = getWizardBanishedLayout ().findComponent ("frmWizardBanishedBanishersHand");
-		final Image banishingWizardsHandImage = (banishingWizardGfx == null) ? null : getUtils ().loadImage (banishingWizardGfx.getBanishingHandImageFile ()).getScaledInstance
+		final Image banishingWizardsHandImage = (banishingWizardDef == null) ? null : getUtils ().loadImage (banishingWizardDef.getBanishingHandImageFile ()).getScaledInstance
 			(banishingWizardsHandLayout.getWidth (), banishingWizardsHandLayout.getHeight (), Image.SCALE_SMOOTH);
 		
 		// Static images
@@ -156,7 +158,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		final AnimationGfx doubleBlastAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_BANISHED_DOUBLE_BLAST, "WizardBanishedUI (D)");
 
 		final XmlLayoutComponent evaporatingLayout = getWizardBanishedLayout ().findComponent ("frmWizardBanishedEvaporating");
-		final AnimationGfx evaporatingAnim = getGraphicsDB ().findAnimation (banishedWizardGfx.getEvaporatingAnimation (), "WizardBanishedUI (E)");
+		final AnimationGfx evaporatingAnim = getClient ().getClientDB ().findAnimation (banishedWizardDef.getEvaporatingAnimation (), "WizardBanishedUI (E)");
 		
 		// Initialize the frame
 		final WizardBanishedUI ui = this;
@@ -292,10 +294,10 @@ public final class WizardBanishedUI extends MomClientDialogUI
 			tickNumber++;
 			contentPane.repaint ();
 			
-			if ((tickNumber == 15) && (banishedWizardGfx != null) && (banishedWizardGfx.getScreamSoundFile () != null))
+			if ((tickNumber == 15) && (banishedWizardDef != null) && (banishedWizardDef.getScreamSoundFile () != null))
 				try
 				{
-					getSoundPlayer ().playAudioFile (banishedWizardGfx.getScreamSoundFile ());
+					getSoundPlayer ().playAudioFile (banishedWizardDef.getScreamSoundFile ());
 				}
 				catch (final Exception e)
 				{
@@ -320,9 +322,13 @@ public final class WizardBanishedUI extends MomClientDialogUI
 
 		final MomPersistentPlayerPublicKnowledge banishingWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishingWizard ().getPersistentPlayerPublicKnowledge ();
 		
-		final String languageEntryID = (isDefeated () ? "Defeated" : "Banished") + "By" + (PlayerKnowledgeUtils.isWizard (banishingWizardPub.getWizardID ()) ? "Wizard" : "Raiders"); 
+		final List<LanguageText> languageText;
+		if (PlayerKnowledgeUtils.isWizard (banishingWizardPub.getWizardID ()))
+			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
+		else
+			languageText = isDefeated () ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
 		
-		final String title = getLanguage ().findCategoryEntry ("frmWizardBanished", languageEntryID).replaceAll
+		final String title = getLanguageHolder ().findDescription (languageText).replaceAll
 			("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
 			("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
 		

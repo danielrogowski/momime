@@ -12,6 +12,10 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.Action;
 import javax.swing.Box;
@@ -34,9 +38,10 @@ import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
-import momime.client.language.database.KnownServerLang;
+import momime.client.languages.database.KnownServer;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
+import momime.common.database.LanguageText;
 
 /**
  * Screen for choosing a server to connect to
@@ -97,6 +102,9 @@ public final class ConnectToServerUI extends MomClientFrameUI
 	/** OK action */
 	private Action okAction;
 	
+	/** Map of known server IDs to the actions for each */
+	private Map<String, Action> serverActions;
+	
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 3;
 	
@@ -137,28 +145,26 @@ public final class ConnectToServerUI extends MomClientFrameUI
 			{
 				// Get the key for the message in the langauge XML
 				// This still uses the old Delphi numeric codes, but didn't see much point in changing them, they're just keys
-				final String entryID;
+				final List<LanguageText> languageText;
 				if (e instanceof UnknownHostException)
-					entryID = "10049";
+					languageText = getLanguages ().getMultiplayer ().getConnectionErrors ().getUnknownHostException ();
 				else if (e instanceof ConnectException)
 				{
 					if (e.getMessage ().contains ("timed"))
-						entryID = "10060";
+						languageText = getLanguages ().getMultiplayer ().getConnectionErrors ().getTimedOut ();
 					else
-						entryID = "10061";
+						languageText = getLanguages ().getMultiplayer ().getConnectionErrors ().getRefused ();
 				}
 				else
 				{
-					entryID = "Other";
+					languageText = getLanguages ().getMultiplayer ().getConnectionErrors ().getOther ();
 					log.error (e, e);
 				}
 
 				// Display in window
 				final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-				msg.setTitleLanguageCategoryID ("ConnectionErrors");
-				msg.setTitleLanguageEntryID ("Title");
-				msg.setTextLanguageCategoryID ("ConnectionErrors");
-				msg.setTextLanguageEntryID (entryID);
+				msg.setLanguageTitle (getLanguages ().getMultiplayer ().getConnectionErrors ().getTitle ());
+				msg.setLanguageText (languageText);
 				try
 				{
 					msg.setVisible (true);
@@ -214,10 +220,11 @@ public final class ConnectToServerUI extends MomClientFrameUI
 		
 		// Server list
 		int gridy = 3;
-		for (final KnownServerLang server : getLanguage ().getKnownServers ())
+		serverActions = new HashMap<String, Action> ();
+		for (final KnownServer server : getLanguages ().getKnownServer ())
 		{
-			final Action serverAction = new LoggingAction (server.getKnownServerDescription () + " (" + server.getKnownServerIP () + ")",
-				(ev) -> ipAddress.setText (server.getKnownServerIP ()));
+			final Action serverAction = new LoggingAction (server.getKnownServerIP (), (ev) -> ipAddress.setText (server.getKnownServerIP ()));
+			serverActions.put (server.getKnownServerID (), serverAction);
 			
 			// There's no "disabled" image for the wide button
 			contentPane.add (getUtils ().createImageButton (serverAction, MomUIConstants.LIGHT_BROWN, MomUIConstants.DARK_BROWN, getSmallFont (),
@@ -328,20 +335,28 @@ public final class ConnectToServerUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		final String text = getLanguage ().findCategoryEntry ("frmConnectToServer", "Title");
+		final String text = getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getTitle ());
 		getFrame ().setTitle (text);
 		title.setText (text);
 
-		selectServer.setText (getLanguage ().findCategoryEntry ("frmConnectToServer", "PickFromList"));
-		ipAddressLabel.setText (getLanguage ().findCategoryEntry ("frmConnectToServer", "EnterServer"));
-		playerNameLabel.setText (getLanguage ().findCategoryEntry ("frmConnectToServer", "PlayerName"));
-		passwordLabel.setText (getLanguage ().findCategoryEntry ("frmConnectToServer", "Password"));
+		selectServer.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getPickFromList ()));
+		ipAddressLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getEnterServer ()));
+		playerNameLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getPlayerName ()));
+		passwordLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getPassword ()));
 		
-		newAccount.setText (getLanguage ().findCategoryEntry ("frmConnectToServer", "CreateAccount"));
-		kickAccount.setText (getLanguage ().findCategoryEntry ("frmConnectToServer", "KickExistingConnection"));
+		newAccount.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getCreateAccount ()));
+		kickAccount.setText (getLanguageHolder ().findDescription (getLanguages ().getConnectToServerScreen ().getKickExistingConnection ()));
 		
-		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmConnectToServer", "Cancel"));
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmConnectToServer", "OK"));
+		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
+		
+		// Update all the known server buttons
+		for (final Entry<String, Action> entry : serverActions.entrySet ())
+		{
+			final KnownServer server = getLanguages ().findKnownServer (entry.getKey ());
+			if (server != null)
+				entry.getValue ().putValue (Action.NAME, getLanguageHolder ().findDescription (server.getKnownServerDescription ()) + " (" + server.getKnownServerIP () + ")");
+		}
 	}
 	
 	/**

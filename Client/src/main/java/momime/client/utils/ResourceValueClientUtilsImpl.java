@@ -11,10 +11,11 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.swing.NdgUIUtils;
 
+import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.ProductionTypeGfx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.ProductionTypeEx;
 
 /**
  * Utils for dealing with graphics of resource values/production icons
@@ -23,6 +24,9 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (ResourceValueClientUtilsImpl.class);
+	
+	/** Multiplayer client */
+	private MomClient client;
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;
@@ -72,7 +76,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 
 		if ((productionValue > 0) || (consumptionValue > 0))
 		{
-			final ProductionTypeGfx productionTypeImages = getGraphicsDB ().findProductionType (productionTypeID, "generateProductionImage");
+			final ProductionTypeEx productionTypeImages = getClient ().getClientDB ().findProductionType (productionTypeID, "generateProductionImage");
 
 			// Get a list of all the images we need to draw, so we know how big to create the merged image
 			final List<BufferedImage> consumptionImages = new ArrayList<BufferedImage> ();
@@ -112,7 +116,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 			
 			for (final ProductionTypeAndUndoubledValue upkeep : upkeeps)
 			{
-				final ProductionTypeGfx productionTypeImages = getGraphicsDB ().findProductionType (upkeep.getProductionTypeID (), "generateUpkeepImage");
+				final ProductionTypeEx productionTypeImages = getClient ().getClientDB ().findProductionType (upkeep.getProductionTypeID (), "generateUpkeepImage");
 
 				// Halve value or not?  This is so summoned units display half upkeep if we have the Channeler retort
 				int value = upkeep.getUndoubledProductionValue ();
@@ -146,7 +150,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	 * @param amount The amount to represent with images
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	final void addProductionImages (final ProductionTypeGfx productionTypeImages,
+	final void addProductionImages (final ProductionTypeEx productionTypeImages,
 		final List<BufferedImage> productionTypeButtonImages, final int amount) throws IOException
 	{
 		if (amount != 0)
@@ -195,7 +199,7 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	 * @param productionTypeButtonImages The list to add to
 	 * @throws IOException If there is a problem loading any of the images
 	 */
-	final void addProductionHalfImage (final ProductionTypeGfx productionTypeImages, final List<BufferedImage> productionTypeButtonImages) throws IOException
+	final void addProductionHalfImage (final ProductionTypeEx productionTypeImages, final List<BufferedImage> productionTypeButtonImages) throws IOException
 	{
 		final String halfImageFilename = productionTypeImages.findProductionValueImageFile ("½");
 		if (halfImageFilename != null)
@@ -272,6 +276,22 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 		}
 		
 		return image;
+	}
+
+	/**
+	 * @return Multiplayer client
+	 */
+	public final MomClient getClient ()
+	{
+		return client;
+	}
+	
+	/**
+	 * @param obj Multiplayer client
+	 */
+	public final void setClient (final MomClient obj)
+	{
+		client = obj;
 	}
 	
 	/**

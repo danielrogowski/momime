@@ -21,23 +21,23 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.HeroItemTypeGfx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.SpellLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.Simple;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.HeroItemClientUtils;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.HeroItemCalculations;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemType;
 import momime.common.database.HeroItemTypeAllowedBonus;
+import momime.common.database.Language;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
 import momime.common.database.UnitSetting;
@@ -60,75 +60,41 @@ public final class TestCreateArtifactUI extends ClientTestData
 		// Set look and feel
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
+
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
+		final ProductionTypeEx mana = new ProductionTypeEx ();
+		mana.getProductionTypeSuffix ().add (createLanguageText (Language.ENGLISH, "MP"));
+		when (db.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "updateCraftingCost")).thenReturn (mana);
 		
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("frmCreateArtifact", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("frmCreateArtifact", "Cancel")).thenReturn ("Cancel");
-		
-		final SpellLang spellLang = new SpellLang ();
-		spellLang.setSpellName ("Create Artifact");
-		
-		when (lang.findSpell ("SP001")).thenReturn (spellLang);
-		
-		final ProductionTypeLang manaLang = new ProductionTypeLang ();
-		manaLang.setProductionTypeSuffix ("MP");
-		when (lang.findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (manaLang);
-		
+		final List<HeroItemType> itemTypes = new ArrayList<HeroItemType> ();
 		int itemTypeNumber = 0;
 		for (final String itemTypeName : new String [] {"Sword", "Mace", "Axe", "Bow", "Staff", "Wand", "Misc", "Shield", "Chain", "Plate"})
 		{
 			itemTypeNumber++;
-			when (lang.findHeroItemTypeDescription ("IT" + ((itemTypeNumber < 10) ? "0" : "") + itemTypeNumber)).thenReturn (itemTypeName);
-		}
-
-		for (int n = 1; n <= 37; n++)
-		{
-			final String bonusID = "IB" + ((n < 10) ? "0" : "") + n;
-			when (lang.findHeroItemBonusDescription (bonusID)).thenReturn ("Name of " + bonusID);
-		}
-		
-		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
-
-		// Mock dummy language change master, since the language won't be changing
-		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
-		
-		// Mock graphics
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-
-		itemTypeNumber = 0;
-		for (final String itemImagePrefix : new String [] {"sword", "mace", "axe", "bow", "staff", "wand", "misc", "shield", "chain", "plate"})
-		{
-			itemTypeNumber++;
 			
-			final HeroItemTypeGfx itemTypeGfx = new HeroItemTypeGfx ();
-			for (int i = 1; i <= 7; i++)		// There's at least 7 images for every item type.. some have more.. but that doesn't matter for a test
-				itemTypeGfx.getHeroItemTypeImageFile ().add ("/momime.client.graphics/heroItems/items/" + itemImagePrefix + "-0" + i + ".png");
-			
-			when (gfx.findHeroItemType ("IT" + ((itemTypeNumber < 10) ? "0" : "") + itemTypeNumber, "selectItemType")).thenReturn (itemTypeGfx);
-		}
-		
-		// Mock database
-		final List<HeroItemType> itemTypes = new ArrayList<HeroItemType> ();
-		for (int n = 1; n <= 10; n++)
-		{
 			final HeroItemType itemType = new HeroItemType ();
-			itemType.setHeroItemTypeID ("IT" + ((n < 10) ? "0" : "") + n);
-			itemType.setBaseCraftingCost (n * 50);
+			itemType.setHeroItemTypeID ("IT" + ((itemTypeNumber < 10) ? "0" : "") + itemTypeNumber);
+			itemType.setBaseCraftingCost (itemTypeNumber * 50);
+			itemType.getHeroItemTypeDescription ().add (createLanguageText (Language.ENGLISH, itemTypeName));
 			itemTypes.add (itemType);
+			
+			// There's at least 7 images for every item type.. some have more.. but that doesn't matter for a test
+			for (int i = 1; i <= 7; i++)
+				itemType.getHeroItemTypeImageFile ().add ("/momime.client.graphics/heroItems/items/" + itemTypeName.toLowerCase () + "-0" + i + ".png");
+			
+			when (db.findHeroItemType (eq (itemType.getHeroItemTypeID ()), anyString ())).thenReturn (itemType);
 			
 			// Which bonuses does this item type allow
 			for (int m = 1; m <= 10; m++)
 			{
 				final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-				int bonusID = ((n-1) * 3) + m;		// So they are staggered a bit... item type 1 has bonuses 1..10; item type 2 has bonuses 4..14 and so on
+				int bonusID = ((itemTypeNumber-1) * 3) + m;		// So they are staggered a bit... item type 1 has bonuses 1..10; item type 2 has bonuses 4..14 and so on
 				bonus.setHeroItemBonusID ("IB" + ((bonusID < 10) ? "0" : "") + bonusID);
 				itemType.getHeroItemTypeAllowedBonus ().add (bonus);
 			}
 		}
-		
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
 		doReturn (itemTypes).when (db).getHeroItemType ();
 		
 		for (int n = 1; n <= 37; n++)
@@ -136,8 +102,26 @@ public final class TestCreateArtifactUI extends ClientTestData
 			final HeroItemBonus bonus = new HeroItemBonus ();
 			bonus.setHeroItemBonusID ("IB" + ((n < 10) ? "0" : "") + n);
 			bonus.setCraftingCostMultiplierApplies ((n % 2) == 0);
+			bonus.getHeroItemBonusDescription ().add (createLanguageText (Language.ENGLISH, "Name of " + bonus.getHeroItemBonusID ()));
 			when (db.findHeroItemBonus (eq (bonus.getHeroItemBonusID ()), anyString ())).thenReturn (bonus);
 		}
+		
+		// Mock entries from the language XML
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		simpleLang.getCancel ().add (createLanguageText (Language.ENGLISH, "Cancel"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		
+		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
+		langHolder.setLanguages (lang);
+
+		// Mock dummy language change master, since the language won't be changing
+		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
+		
+		// Mock graphics
+		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -178,6 +162,7 @@ public final class TestCreateArtifactUI extends ClientTestData
 
 		// The spell being cast
 		final Spell spellDef = new Spell ();
+		spellDef.getSpellName ().add (createLanguageText (Language.ENGLISH, "Create Artifact"));
 		spellDef.setSpellID ("SP001");
 		spellDef.setHeroItemBonusMaximumCraftingCost (0);
 

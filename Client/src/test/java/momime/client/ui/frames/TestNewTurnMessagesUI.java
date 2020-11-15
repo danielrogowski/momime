@@ -6,11 +6,19 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
+
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.swing.NdgUIUtils;
+import com.ndg.swing.NdgUIUtilsImpl;
+import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
+
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.NewTurnMessages;
 import momime.client.newturnmessages.NewTurnMessageCategory;
 import momime.client.newturnmessages.NewTurnMessagePopulationChangeEx;
 import momime.client.newturnmessages.NewTurnMessageSortOrder;
@@ -18,17 +26,11 @@ import momime.client.newturnmessages.NewTurnMessageUI;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.AnimationController;
 import momime.client.utils.TextUtilsImpl;
+import momime.common.database.Language;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.OverlandMapCityData;
-
-import org.junit.Test;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.swing.NdgUIUtils;
-import com.ndg.swing.NdgUIUtilsImpl;
-import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 /**
  * Tests the NewTurnMessagesUI class
@@ -47,15 +49,18 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("NewTurnMessages", "Title")).thenReturn ("Messages");
-		when (lang.findCategoryEntry ("NewTurnMessages", "CityGrowthCategory")).thenReturn ("City Growth");
-		when (lang.findCategoryEntry ("NewTurnMessages", "CityDeathCategory")).thenReturn ("City Death");
-		when (lang.findCategoryEntry ("NewTurnMessages", "CityGrowth")).thenReturn ("CITY_NAME population has grown from OLD_POPULATION to NEW_POPULATION");
-		when (lang.findCategoryEntry ("NewTurnMessages", "CityDeath")).thenReturn ("CITY_NAME population has dropped from OLD_POPULATION to NEW_POPULATION");
+		final NewTurnMessages newTurnMessagesLang = new NewTurnMessages ();
+		newTurnMessagesLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Messages"));
+		newTurnMessagesLang.getCityGrowthCategory ().add (createLanguageText (Language.ENGLISH, "City Growth"));
+		newTurnMessagesLang.getCityDeathCategory ().add (createLanguageText (Language.ENGLISH, "City Death"));
+		newTurnMessagesLang.getCityGrowth ().add (createLanguageText (Language.ENGLISH, "CITY_NAME population has grown from OLD_POPULATION to NEW_POPULATION"));
+		newTurnMessagesLang.getCityDeath ().add (createLanguageText (Language.ENGLISH,"CITY_NAME population has dropped from OLD_POPULATION to NEW_POPULATION"));
 
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getNewTurnMessages ()).thenReturn (newTurnMessagesLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -162,15 +167,18 @@ public final class TestNewTurnMessagesUI extends ClientTestData
 		utils.useNimbusLookAndFeel ();
 
 		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		when (lang.findCategoryEntry ("NewTurnMessages", "Title")).thenReturn ("Messages");
-		when (lang.findCategoryEntry ("NewTurnMessages", "CityGrowthCategory")).thenReturn ("City Growth");
-		when (lang.findCategoryEntry ("NewTurnMessages", "CityDeathCategory")).thenReturn ("City Death");
-		when (lang.findCategoryEntry ("NewTurnMessages", "CityGrowth")).thenReturn ("CITY_NAME population has grown from OLD_POPULATION to NEW_POPULATION");
-		when (lang.findCategoryEntry ("NewTurnMessages", "CityDeath")).thenReturn ("CITY_NAME population has dropped from OLD_POPULATION to NEW_POPULATION");
+		final NewTurnMessages newTurnMessagesLang = new NewTurnMessages ();
+		newTurnMessagesLang.getTitle ().add (createLanguageText (Language.ENGLISH, "Messages"));
+		newTurnMessagesLang.getCityGrowthCategory ().add (createLanguageText (Language.ENGLISH, "City Growth"));
+		newTurnMessagesLang.getCityDeathCategory ().add (createLanguageText (Language.ENGLISH, "City Death"));
+		newTurnMessagesLang.getCityGrowth ().add (createLanguageText (Language.ENGLISH, "CITY_NAME population has grown from OLD_POPULATION to NEW_POPULATION"));
+		newTurnMessagesLang.getCityDeath ().add (createLanguageText (Language.ENGLISH,"CITY_NAME population has dropped from OLD_POPULATION to NEW_POPULATION"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getNewTurnMessages ()).thenReturn (newTurnMessagesLang);
 
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);

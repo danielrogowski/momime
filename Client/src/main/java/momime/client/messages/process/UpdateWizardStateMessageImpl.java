@@ -1,6 +1,7 @@
 package momime.client.messages.process;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -13,14 +14,15 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
+import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.WizardBanishedUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.WizardsUI;
 import momime.client.utils.WizardClientUtils;
+import momime.common.database.LanguageText;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
@@ -100,9 +102,13 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 			else
 			{
 				// Custom portrait, so cannot show animation, just a message box
-				final String languageEntryID = (isDefeated ? "Defeated" : "Banished") + "By" + (PlayerKnowledgeUtils.isWizard (banishingPub.getWizardID ()) ? "Wizard" : "Raiders");
+				final List<LanguageText> languageText;
+				if (PlayerKnowledgeUtils.isWizard (banishingPub.getWizardID ()))
+					languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByWizard () : getLanguages ().getWizardBanishedScreen ().getBanishedByWizard ();
+				else
+					languageText = isDefeated ? getLanguages ().getWizardBanishedScreen ().getDefeatedByRaiders () : getLanguages ().getWizardBanishedScreen ().getBanishedByRaiders ();
 				
-				final String title = getLanguage ().findCategoryEntry ("frmWizardBanished", languageEntryID).replaceAll
+				final String title = getLanguageHolder ().findDescription (languageText).replaceAll
 					("BANISHED_WIZARD", getWizardClientUtils ().getPlayerName (banishedWizard)).replaceAll
 					("BANISHING_WIZARD", getWizardClientUtils ().getPlayerName (banishingWizard));
 				
@@ -210,9 +216,9 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	 * Convenience shortcut for accessing the Language XML database
 	 * @return Language database
 	 */
-	public final LanguageDatabaseEx getLanguage ()
+	public final MomLanguagesEx getLanguages ()
 	{
-		return languageHolder.getLanguage ();
+		return languageHolder.getLanguages ();
 	}
 
 	/**

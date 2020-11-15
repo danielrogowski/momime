@@ -24,8 +24,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.SpellBookSectionLang;
-import momime.client.language.database.SpellLang;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.UIComponentFactory;
@@ -35,9 +33,11 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
+import momime.common.database.LanguageText;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.UnitSkill;
+import momime.common.database.SpellBookSection;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.TargetSpellMessage;
@@ -213,12 +213,11 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 						getOverlandMapProcessing ().updateMovementRemaining ();
 						getDialog ().dispose ();
 					}
-					else if (validTarget.getUnitLanguageEntryID () != null)
+					else
 					{
-						final SpellLang spellLang = getLanguage ().findSpell (getTargetSpellID ());
-						final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+						final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 						
-						String text = getLanguage ().findCategoryEntry ("SpellTargetting", validTarget.getUnitLanguageEntryID ()).replaceAll
+						String text = getLanguageHolder ().findDescription (getLanguages ().getSpellTargetting ().getUnitLanguageText (validTarget)).replaceAll
 							("SPELL_NAME", (spellName != null) ? spellName : getTargetSpellID ());
 						
 						// If spell can only be targetted on specific magic realm/lifeform types, the list them
@@ -226,8 +225,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 							text = text + getSpellClientUtils ().listValidMagicRealmLifeformTypeTargetsOfSpell (spell);
 						
 						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setTitleLanguageCategoryID ("SpellTargetting");
-						msg.setTitleLanguageEntryID ("Title");
+						msg.setLanguageTitle (getLanguages ().getSpellTargetting ().getTitle ());
 						msg.setText (text);
 						msg.setVisible (true);												
 					}
@@ -247,8 +245,8 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			
 			// There's space on the form for up to 6 unit attributes
 			final List<String> unitAttributeIDs = new ArrayList<String> ();
-			for (final UnitSkill thisSkill : getClient ().getClientDB ().getUnitSkills ())
-				if (getGraphicsDB ().findUnitSkill (thisSkill.getUnitSkillID (), "UnitRowDisplayUI").getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
+			for (final UnitSkillEx thisSkill : getClient ().getClientDB ().getUnitSkills ())
+				if (thisSkill.getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
 					unitAttributeIDs.add (thisSkill.getUnitSkillID ());
 
 			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
@@ -275,7 +273,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			int skillNo = 0;
 			
 			for (final String thisSkillID : xu.listModifiedSkillIDs ())
-				if (getGraphicsDB ().findUnitSkill (thisSkillID, "UnitRowDisplayUI").getUnitSkillTypeID () != UnitSkillTypeID.ATTRIBUTE)
+				if (getClient ().getClientDB ().findUnitSkill (thisSkillID, "UnitRowDisplayUI").getUnitSkillTypeID () != UnitSkillTypeID.ATTRIBUTE)
 					if (skillNo < 12)
 					{
 						final BufferedImage skillImage = getUnitClientUtils ().getUnitSkillSingleIcon (xu, thisSkillID);
@@ -302,7 +300,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	{
 		log.trace ("Entering languageChanged: " + getUnits ().size ());
 		
-		cancelAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmUnitRowDisplay", "Cancel"));
+		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		
 		try
 		{
@@ -311,20 +309,20 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 			if (spell.getResurrectedHealthPercentage () != null)
 			{
 				// Its a raise dead-type spell being cast in combat
-				final String languageEntryID = "TitleRaise" + (((spell.isResurrectEnemyUnits () != null) && (spell.isResurrectEnemyUnits ())) ? "Either" : "Own");
-				title.setText (getLanguage ().findCategoryEntry ("frmUnitRowDisplay", languageEntryID));
+				final List<LanguageText> languageText = ((spell.isResurrectEnemyUnits () != null) && (spell.isResurrectEnemyUnits ())) ?
+					getLanguages ().getUnitRowDisplayScreen ().getTitleRaiseEither () : getLanguages ().getUnitRowDisplayScreen ().getTitleRaiseOwn ();
+				
+				title.setText (getLanguageHolder ().findDescription (languageText));
 			}
 			else
 			{
 				// Its a normal unit enchantment being cast on the overland map
-				final SpellLang spellLang = getLanguage ().findSpell (getTargetSpellID ());
-				final String spellName = (spellLang != null) ? spellLang.getSpellName () : null;
+				final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 				
-				final SpellBookSectionLang section = getLanguage ().findSpellBookSection (spell.getSpellBookSectionID ());
-				final String target = (section != null) ? section.getSpellTargetPrompt () : null;
+				final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "UnitRowDisplayUI");
+				final String target = getLanguageHolder ().findDescription (section.getSpellTargetPrompt ());
 				
-				title.setText ((target == null) ? ("Select target of type " + spell.getSpellBookSectionID ()) :
-					(target.replaceAll ("SPELL_NAME", (spellName != null) ? spellName : getTargetSpellID ())));
+				title.setText (target.replaceAll ("SPELL_NAME", spellName));
 			}
 		
 			// Unit names

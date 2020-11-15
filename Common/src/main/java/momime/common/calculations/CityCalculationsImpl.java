@@ -41,7 +41,7 @@ import momime.common.database.RaceUnrest;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.TileType;
-import momime.common.database.Unit;
+import momime.common.database.UnitEx;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
@@ -1105,7 +1105,7 @@ public final class CityCalculationsImpl implements CityCalculations
 		}
 
 		// Production from and Maintenance of buildings
-		for (final Building thisBuilding : db.getBuildings ())
+		for (final Building thisBuilding : db.getBuilding ())
 			
 			// If calculatePotential is true, assume we've built everything
 			// We only really need to count the granary and farmers' market, but easier just to include everything than to specifically discount these
@@ -1115,7 +1115,7 @@ public final class CityCalculationsImpl implements CityCalculations
 				if (thisBuilding.getBuildingID ().equals (CommonDatabaseConstants.BUILDING_FORTRESS))
 				{
 					// Wizard's fortress produces mana according to how many books were chosen at the start of the game...
-					for (final PickType thisPickType : db.getPickTypes ())
+					for (final PickType thisPickType : db.getPickType ())
 						addProductionFromFortressPickType (productionValues, thisPickType, getPlayerPickUtils ().countPicksOfType (cityOwnerPicks, thisPickType.getPickTypeID (), true, db));
 
 					// ...and according to which plane it is on
@@ -1380,15 +1380,15 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @return List of all units that the player can choose between to construct at the city
 	 */
 	@Override
-	public final List<Unit> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation,
+	public final List<UnitEx> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CommonDatabase db)
 	{
 		log.trace ("Entering listUnitsCityCanConstruct: " + cityLocation);
 
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		
-		final List<Unit> buildList = new ArrayList<Unit> ();
-		for (final Unit thisUnit : db.getUnits ())
+		final List<UnitEx> buildList = new ArrayList<UnitEx> ();
+		for (final UnitEx thisUnit : db.getUnits ())
 			
 			// If its a regular unit
 			if ((CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL.equals (thisUnit.getUnitMagicRealm ())) &&

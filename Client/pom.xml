@@ -100,7 +100,10 @@
 						<goals><goal>generate</goal></goals>
 						<configuration>
 							<schemaDirectory>src/main/resources/momime.client.language</schemaDirectory>
-							<schemaIncludes><include>MoMIMELanguageDatabase_NoServerXsdLink.xsd</include></schemaIncludes>
+							<schemaIncludes>
+								<include>MoMIMELanguageDatabase_NoServerXsdLink.xsd</include>
+								<include>MoMIMELanguagesDatabase.xsd</include>
+							</schemaIncludes>
 							<generateDirectory>target/generated-sources/xjc-momime-languagedb</generateDirectory>
 							<episodeFile>target/generated-sources/xjc-momime-languagedb/META-INF/momime-languagedb.episode</episodeFile>
 							<extension>true</extension>

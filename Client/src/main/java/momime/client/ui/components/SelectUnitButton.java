@@ -15,7 +15,6 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.WeaponGradeGfx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -109,7 +108,7 @@ public final class SelectUnitButton extends JToggleButton
 				}
 			
 				// Draw the unit itself
-				final BufferedImage unitImage = getUtils ().loadImage (getGraphicsDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton").getUnitOverlandImageFile ());
+				final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton").getUnitOverlandImageFile ());
 				g.drawImage (unitImage, 6 + offset, 3 + offset, null);
 
 				// Experience rings
@@ -127,15 +126,11 @@ public final class SelectUnitButton extends JToggleButton
 				}
 				
 				// Weapon grade
-				if (getUnit ().getWeaponGrade () != null)
+				if ((getUnit ().getWeaponGrade () != null) && (getUnit ().getWeaponGrade ().getWeaponGradeMiniImageFile () != null))
 				{
-					final WeaponGradeGfx wepGrade = getGraphicsDB ().findWeaponGrade (getUnit ().getWeaponGrade ().getWeaponGradeNumber (), "SelectUnitButton");
-					if (wepGrade.getWeaponGradeMiniImageFile () != null)
-					{
-						final BufferedImage wepGradeImage = getUtils ().loadImage (wepGrade.getWeaponGradeMiniImageFile ());
-						g.drawImage (wepGradeImage, unitButtonNormal.getWidth () - wepGradeImage.getWidth () - 3 + offset,
-							unitButtonNormal.getHeight () - wepGradeImage.getHeight () - 3 + offset, null);
-					}
+					final BufferedImage wepGradeImage = getUtils ().loadImage (getUnit ().getWeaponGrade ().getWeaponGradeMiniImageFile ());
+					g.drawImage (wepGradeImage, unitButtonNormal.getWidth () - wepGradeImage.getWidth () - 3 + offset,
+						unitButtonNormal.getHeight () - wepGradeImage.getHeight () - 3 + offset, null);
 				}
 				
 				// Health bar

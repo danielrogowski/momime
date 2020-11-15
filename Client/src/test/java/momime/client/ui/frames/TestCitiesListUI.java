@@ -1,6 +1,7 @@
 package momime.client.ui.frames;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -20,20 +21,23 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
-import momime.client.database.ClientDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.LanguageDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
-import momime.client.language.database.RaceLang;
-import momime.client.language.database.UnitLang;
+import momime.client.language.database.MomLanguagesEx;
+import momime.client.languages.database.CitiesListScreen;
+import momime.client.languages.database.Simple;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.CitiesListCellRenderer;
 import momime.client.utils.WizardClientUtils;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.database.Building;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Language;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.RaceEx;
+import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -43,7 +47,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
 
 /**
- * Tests the TestCitiesListUI class
+ * Tests the CitiesListUI class
  */
 public final class TestCitiesListUI extends ClientTestData
 {
@@ -58,45 +62,50 @@ public final class TestCitiesListUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 		
-		// Mock entries from the client database
-		final ClientDatabaseEx db = mock (ClientDatabaseEx.class);
-		
-		// Mock entries from the language XML
-		final LanguageDatabaseEx lang = mock (LanguageDatabaseEx.class);
-		
-		when (lang.findCategoryEntry ("frmCitiesList", "Title")).thenReturn ("The Cities of PLAYER_NAME");
-		when (lang.findCategoryEntry ("frmCitiesList", "OK")).thenReturn ("OK");
-		when (lang.findCategoryEntry ("frmCitiesList", "CityName")).thenReturn ("Name");
-		when (lang.findCategoryEntry ("frmCitiesList", "CityRace")).thenReturn ("Race");
-		when (lang.findCategoryEntry ("frmCitiesList", "CityPopulation")).thenReturn ("Pop.");
-		when (lang.findCategoryEntry ("frmCitiesList", "CityRations")).thenReturn ("Rat.");
-		when (lang.findCategoryEntry ("frmCitiesList", "CityGold")).thenReturn ("Gold");
-		when (lang.findCategoryEntry ("frmCitiesList", "CityProduction")).thenReturn ("Prod.");
-		when (lang.findCategoryEntry ("frmCitiesList", "CityConstructing")).thenReturn ("Constructing");
-		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		for (int n = 1; n <= 3; n++)
 		{
-			final RaceLang race = new RaceLang ();
-			race.setRaceName ("Race " + n);
-			when (lang.findRace ("RC0" + n)).thenReturn (race);
+			final RaceEx race = new RaceEx ();
+			race.getRaceNameSingular ().add (createLanguageText (Language.ENGLISH, "Race " + n));
+			when (db.findRace (eq ("RC0" + n), anyString ())).thenReturn (race);
 		}
 		
 		for (int n = 1; n <= 2; n++)
 		{
-			final BuildingLang building = new BuildingLang ();
-			building.setBuildingName ("Building " + n);
-			when (lang.findBuilding ("BL0" + n)).thenReturn (building);
+			final Building building = new Building ();
+			building.getBuildingName ().add (createLanguageText (Language.ENGLISH, "Building " + n));
+			when (db.findBuilding (eq ("BL0" + n), anyString ())).thenReturn (building);
 		}
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final UnitLang unit = new UnitLang ();
-			unit.setUnitName ("Unit " + n);
-			when (lang.findUnit ("UN00" + n)).thenReturn (unit);
+			final UnitEx unitDef = new UnitEx ();
+			unitDef.getUnitName ().add (createLanguageText (Language.ENGLISH, "Unit " + n));
+			when (db.findUnit (eq ("UN00" + n), anyString ())).thenReturn (unitDef);
 		}
 		
+		// Mock entries from the language XML
+		final Simple simpleLang = new Simple ();
+		simpleLang.getOk ().add (createLanguageText (Language.ENGLISH, "OK"));
+		
+		final CitiesListScreen citiesListScreenLang = new CitiesListScreen ();
+		citiesListScreenLang.getTitle ().add (createLanguageText (Language.ENGLISH, "The Cities of PLAYER_NAME"));
+		citiesListScreenLang.getCityName ().add (createLanguageText (Language.ENGLISH, "Name"));
+		citiesListScreenLang.getCityRace ().add (createLanguageText (Language.ENGLISH, "Race"));
+		citiesListScreenLang.getCityPopulation ().add (createLanguageText (Language.ENGLISH, "Pop."));
+		citiesListScreenLang.getCityRations ().add (createLanguageText (Language.ENGLISH, "Rat."));
+		citiesListScreenLang.getCityGold ().add (createLanguageText (Language.ENGLISH, "Gold"));
+		citiesListScreenLang.getCityProduction ().add (createLanguageText (Language.ENGLISH, "Prod."));
+		citiesListScreenLang.getCityConstructing ().add (createLanguageText (Language.ENGLISH, "Constructing"));
+
+		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
+		when (lang.getSimple ()).thenReturn (simpleLang);
+		when (lang.getCitiesListScreen ()).thenReturn (citiesListScreenLang);
+		
 		final LanguageDatabaseHolder langHolder = new LanguageDatabaseHolder ();
-		langHolder.setLanguage (lang);
+		langHolder.setLanguages (lang);
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
@@ -209,6 +218,7 @@ public final class TestCitiesListUI extends ClientTestData
 		// Renderer
 		final CitiesListCellRenderer renderer = new CitiesListCellRenderer ();
 		renderer.setLanguageHolder (langHolder);
+		renderer.setClient (client);
 		renderer.setUtils (utils);
 		renderer.setCitiesListEntryLayout (rowLayout);
 		renderer.setSmallFont (CreateFontsForTests.getSmallFont ());

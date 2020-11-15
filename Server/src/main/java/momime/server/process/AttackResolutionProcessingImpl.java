@@ -15,10 +15,15 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AttackResolution;
+import momime.common.database.AttackResolutionCondition;
+import momime.common.database.AttackResolutionStep;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitSkill;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.UnitDamage;
@@ -27,11 +32,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
-import momime.server.database.AttackResolutionConditionSvr;
-import momime.server.database.AttackResolutionStepSvr;
-import momime.server.database.AttackResolutionSvr;
-import momime.server.database.ServerDatabaseEx;
-import momime.server.database.UnitSkillSvr;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -71,26 +71,26 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @throws MomException If no attack resolutions are appropriate, or if there are errors checking unit skills
 	 */
 	@Override
-	public AttackResolutionSvr chooseAttackResolution (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender, final String attackSkillID,
-		final ServerDatabaseEx db) throws RecordNotFoundException, MomException
+	public AttackResolution chooseAttackResolution (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender, final String attackSkillID,
+		final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
 		log.trace ("Entering chooseAttackResolution: Attacker " + attacker.getDebugIdentifier () + ", defender " + defender.getDebugIdentifier () + ", skillID " + attackSkillID);
 	
-		final UnitSkillSvr unitSkill = db.findUnitSkill (attackSkillID, "chooseAttackResolution");
+		final UnitSkill unitSkill = db.findUnitSkill (attackSkillID, "chooseAttackResolution");
 		
 		// Check all possible attack resolutions to select the most appropriate one
-		AttackResolutionSvr match = null;
-		final Iterator<AttackResolutionSvr> iter = unitSkill.getAttackResolutions ().iterator ();
+		AttackResolution match = null;
+		final Iterator<AttackResolution> iter = unitSkill.getAttackResolution ().iterator ();
 		while ((match == null) && (iter.hasNext ()))
 		{
-			final AttackResolutionSvr attackResolution = iter.next ();
+			final AttackResolution attackResolution = iter.next ();
 			
 			// Check all the conditions
 			boolean conditionsMatch = true;
-			final Iterator<AttackResolutionConditionSvr> conditions = attackResolution.getAttackResolutionConditions ().iterator ();
+			final Iterator<AttackResolutionCondition> conditions = attackResolution.getAttackResolutionCondition ().iterator ();
 			while ((conditionsMatch) && (conditions.hasNext ()))
 			{
-				final AttackResolutionConditionSvr condition = conditions.next ();
+				final AttackResolutionCondition condition = conditions.next ();
 				
 				// Check this condition; these are things like haste + first strike, so its ok to pass in nulls here - we don't know the actual attack steps yet
 				final ExpandedUnitDetails unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
@@ -117,16 +117,16 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @throws MomException If the steps in the input list aren't in stepNumber order
 	 */
 	@Override
-	public final List<List<AttackResolutionStepSvr>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStepSvr> steps)
+	public final List<List<AttackResolutionStep>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStep> steps)
 		throws MomException
 	{
 		log.trace ("Entering splitAttackResolutionStepsByStepNumber: " + steps.size () + " steps");
 		
-		final List<List<AttackResolutionStepSvr>> result = new ArrayList<List<AttackResolutionStepSvr>> ();
+		final List<List<AttackResolutionStep>> result = new ArrayList<List<AttackResolutionStep>> ();
 		
 		int currentStepNumber = 0;
-		List<AttackResolutionStepSvr> currentList = null;
-		for (final AttackResolutionStepSvr step : steps)
+		List<AttackResolutionStep> currentList = null;
+		for (final AttackResolutionStep step : steps)
 		{
 			// Only acceptable values are currentStepNumber, or currentStepNumber+1
 			if (step.getStepNumber () <= 0)
@@ -138,7 +138,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			else if (step.getStepNumber () == currentStepNumber + 1)
 			{
 				currentStepNumber = currentStepNumber + 1;
-				currentList = new ArrayList<AttackResolutionStepSvr> ();
+				currentList = new ArrayList<AttackResolutionStep> ();
 				currentList.add (step);
 				result.add (currentList);
 			}
@@ -174,8 +174,8 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	@Override
 	public final List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final List<AttackResolutionStepSvr> steps, final AttackDamage commonPotentialDamageToDefenders,
-		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final ServerDatabaseEx db)
+		final List<AttackResolutionStep> steps, final AttackDamage commonPotentialDamageToDefenders,
+		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering processAttackResolutionStep: Attacking unit URN " + ((attacker != null) ? Integer.valueOf (attacker.getUnit ().getUnitURN ()).toString () : "N/A") +
@@ -190,7 +190,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		
 		// Calculate and total up all the damage before we apply any of it
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
-		for (final AttackResolutionStepSvr step : steps)
+		for (final AttackResolutionStep step : steps)
 		{
 			// Which unit is being attacked?
 			final AttackResolutionUnit unitBeingAttacked = ((step == null) || (step.getCombatSide () == UnitCombatSideID.ATTACKER)) ? defender : attacker;

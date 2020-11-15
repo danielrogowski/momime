@@ -5,12 +5,11 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import javax.swing.Action;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,19 +21,14 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.language.database.BuildingLang;
-import momime.client.language.database.MapFeatureLang;
-import momime.client.language.database.PickLang;
-import momime.client.language.database.ProductionTypeLang;
-import momime.client.language.database.ShortcutKeyLang;
-import momime.client.language.database.SpellLang;
-import momime.client.language.database.TileTypeLang;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
+import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
+import momime.common.database.LanguageText;
+import momime.common.database.Pick;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.ProductionTypeAndUndoubledValue;
-import momime.common.database.Shortcut;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.servertoclient.TreasureRewardMessage;
@@ -129,11 +123,11 @@ public final class TreasureUI extends MomClientDialogUI
 		
 		final String filename;
 		if (getTreasureReward ().getMapFeatureID () != null)
-			filename = getGraphicsDB ().findMapFeature (getTreasureReward ().getMapFeatureID (), "TreasureUI").getMonsterFoundImageFile ();
+			filename = getClient ().getClientDB ().findMapFeature (getTreasureReward ().getMapFeatureID (), "TreasureUI").getMonsterFoundImageFile ();
 		else if (getTreasureReward ().getTileTypeID () != null)
-			filename = getGraphicsDB ().findTileType (getTreasureReward ().getTileTypeID (), "TreasureUI").getMonsterFoundImageFile ();
+			filename = getClient ().getClientDB ().findTileType (getTreasureReward ().getTileTypeID (), "TreasureUI").getMonsterFoundImageFile ();
 		else
-			filename = getGraphicsDB ().findBuilding (getTreasureReward ().getBuildingID (), "TreasureUI").getMonsterFoundImageFile ();
+			filename = getClient ().getClientDB ().findBuilding (getTreasureReward ().getBuildingID (), "TreasureUI").getMonsterFoundImageFile ();
 		
 		final BufferedImage lairImage = getUtils ().loadImage (filename);
 		contentPane.add (getUtils ().createImage (lairImage.getScaledInstance (imageSize.getWidth (), imageSize.getHeight (), Image.SCALE_SMOOTH)), "frmTreasureLair");
@@ -156,58 +150,48 @@ public final class TreasureUI extends MomClientDialogUI
 	{
 		log.trace ("Entering languageChanged");
 
-		getDialog ().setTitle (getLanguage ().findCategoryEntry ("frmTreasure", "Title"));
-		okAction.putValue (Action.NAME, getLanguage ().findCategoryEntry ("frmTreasure", "OK"));
+		getDialog ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getTreasureScreen ().getTitle ()));
+		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 
 		// Work out text
-		final String locationDescription;
-		if (getTreasureReward ().getMapFeatureID () != null)
+		try
 		{
-			final MapFeatureLang mapFeature = getLanguage ().findMapFeature (getTreasureReward ().getMapFeatureID ());
-			final String mapFeatureDescription = (mapFeature == null) ? null : mapFeature.getMapFeatureDescription ();
-			locationDescription = (mapFeatureDescription != null) ? mapFeatureDescription : getTreasureReward ().getMapFeatureID ();
-		}
-		else if (getTreasureReward ().getTileTypeID () != null)
-		{
-			final TileTypeLang tileType = getLanguage ().findTileType (getTreasureReward ().getTileTypeID ());
-			final String tileTypeDescription = (tileType == null) ? null : tileType.getTileTypeDescription ();
-			locationDescription = (tileTypeDescription != null) ? tileTypeDescription : getTreasureReward ().getTileTypeID ();
-		}
-		else
-		{
-			final BuildingLang building = getLanguage ().findBuilding (getTreasureReward ().getBuildingID ());
-			final String buildingName = (building == null) ? null : building.getBuildingName ();
-			locationDescription = (buildingName != null) ? buildingName : getTreasureReward ().getBuildingID ();
-		}
-		
-		final StringBuilder text = new StringBuilder (getLanguage ().findCategoryEntry ("frmTreasure", "Text").replaceAll ("LOCATION_DESCRIPTION", locationDescription));
-		
-		if ((getTreasureReward ().getHeroItem ().size () == 0) && (getTreasureReward ().getPick ().size () == 0) && (getTreasureReward ().getResource ().size () == 0) &&
-			(getTreasureReward ().getSpellID ().size () == 0) && (getTreasureReward ().getPrisoner ().size () == 0))
+			final String locationDescription;
+			if (getTreasureReward ().getMapFeatureID () != null)
+				locationDescription = getLanguageHolder ().findDescription (getClient ().getClientDB ().findMapFeature (getTreasureReward ().getMapFeatureID (), "TreasureUI").getMapFeatureDescription ());
+			else if (getTreasureReward ().getTileTypeID () != null)
+				locationDescription = getLanguageHolder ().findDescription (getClient ().getClientDB ().findTileType (getTreasureReward ().getTileTypeID (), "TreasureUI").getTileTypeDescription ());
+			else
+				locationDescription = getLanguageHolder ().findDescription (getClient ().getClientDB ().findBuilding (getTreasureReward ().getBuildingID (), "TreasureUI").getBuildingName ());
 			
-			text.append (System.lineSeparator () + BULLET_POINT + getLanguage ().findCategoryEntry ("frmTreasure", "Nothing"));
-		else
-			try
+			final StringBuilder text = new StringBuilder (getLanguageHolder ().findDescription
+				(getLanguages ().getTreasureScreen ().getText ()).replaceAll ("LOCATION_DESCRIPTION", locationDescription));
+			
+			if ((getTreasureReward ().getHeroItem ().size () == 0) && (getTreasureReward ().getPick ().size () == 0) && (getTreasureReward ().getResource ().size () == 0) &&
+				(getTreasureReward ().getSpellID ().size () == 0) && (getTreasureReward ().getPrisoner ().size () == 0))
+				
+				text.append (System.lineSeparator () + BULLET_POINT + getLanguageHolder ().findDescription (getLanguages ().getTreasureScreen ().getNothing ()));
+			else
 			{
 				// Books and retorts
 				for (final PickAndQuantity pick : getTreasureReward ().getPick ())
 				{
-					final PickLang pickLang = getLanguage ().findPick (pick.getPickID ());
+					final Pick pickDef = getClient ().getClientDB ().findPick (pick.getPickID (), "TreasureUI");
 					
-					if (getGraphicsDB ().findPick (pick.getPickID (), "TreasureUI").getBookImageFile ().size () == 0)
+					if (pickDef.getBookImageFile ().size () == 0)
 					{
-						final String pickDescription = (pickLang == null) ? null : pickLang.getPickDescriptionSingular ();
-						text.append (System.lineSeparator () + BULLET_POINT + getLanguage ().findCategoryEntry ("frmTreasure", "Retort").replaceAll
+						final String pickDescription = getLanguageHolder ().findDescription (pickDef.getPickDescriptionSingular ());
+						text.append (System.lineSeparator () + BULLET_POINT + getLanguageHolder ().findDescription (getLanguages ().getTreasureScreen ().getRetort ()).replaceAll
 							("PICK_NAME_SINGULAR", (pickDescription != null) ? pickDescription : pick.getPickID ()) + ";");
 					}
 					else if (pick.getQuantity () == 1)
 					{
-						final String pickDescription = (pickLang == null) ? null : pickLang.getPickDescriptionSingular ();
+						final String pickDescription = getLanguageHolder ().findDescription (pickDef.getPickDescriptionSingular ());
 						text.append (System.lineSeparator () + BULLET_POINT + "1 " + ((pickDescription != null) ? pickDescription : pick.getPickID ()) + ";");
 					}
 					else
 					{
-						final String pickDescription = (pickLang == null) ? null : pickLang.getPickDescriptionPlural ();
+						final String pickDescription = getLanguageHolder ().findDescription (pickDef.getPickDescriptionPlural ());
 						text.append (System.lineSeparator () + BULLET_POINT + pick.getQuantity () + " " + ((pickDescription != null) ? pickDescription : pick.getPickID ()) + ";");
 					}
 				}
@@ -215,7 +199,20 @@ public final class TreasureUI extends MomClientDialogUI
 				// Prisoners - mention whether they fit or got bumped outside or lost completely
 				for (final TreasureRewardPrisoner prisoner : getTreasureReward ().getPrisoner ())
 				{
-					String prisonerText = getLanguage ().findCategoryEntry ("frmTreasure", "Prisoner" + prisoner.getUnitAddBumpType ().value ()) + ";";
+					final List<LanguageText> languageText;
+					switch (prisoner.getUnitAddBumpType ())
+					{
+						case BUMPED:
+							languageText = getLanguages ().getTreasureScreen ().getPrisonerBumped ();
+							break;
+						case NO_ROOM:
+							languageText = getLanguages ().getTreasureScreen ().getPrisonerEscaped ();
+							break;
+						default:
+							languageText = getLanguages ().getTreasureScreen ().getPrisoner ();
+					}
+					
+					String prisonerText = getLanguageHolder ().findDescription (languageText) + ";";
 					
 					final MemoryUnit mu = getUnitUtils ().findUnitURN (prisoner.getPrisonerUnitURN (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
@@ -239,47 +236,37 @@ public final class TreasureUI extends MomClientDialogUI
 				// Learn spells
 				for (final String spellID : getTreasureReward ().getSpellID ())
 				{
-					final SpellLang spell = getLanguage ().findSpell (spellID);
-					final String spellName = (spell == null) ? null : spell.getSpellName ();
-					text.append (System.lineSeparator () + BULLET_POINT + getLanguage ().findCategoryEntry ("frmTreasure", "Spell").replaceAll
+					final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (spellID, "TreasureUI").getSpellName ());
+					
+					text.append (System.lineSeparator () + BULLET_POINT + getLanguageHolder ().findDescription (getLanguages ().getTreasureScreen ().getSpell ()).replaceAll
 						("SPELL_NAME", (spellName != null) ? spellName : spellID) + ";");
 				}
 				
 				// Gold and mana
 				for (final ProductionTypeAndUndoubledValue resource : getTreasureReward ().getResource ())
 				{
-					final ProductionTypeLang productionType = getLanguage ().findProductionType (resource.getProductionTypeID ());
-					final String productionTypeDescription = (productionType == null) ? null : productionType.getProductionTypeDescription ();
+					final String productionTypeDescription = getLanguageHolder ().findDescription
+						(getClient ().getClientDB ().findProductionType (resource.getProductionTypeID (), "TreasureUI").getProductionTypeDescription ());
 					text.append (System.lineSeparator () + BULLET_POINT + getTextUtils ().intToStrCommas (resource.getUndoubledProductionValue ()) + " " +
 						((productionTypeDescription != null) ? productionTypeDescription : resource.getProductionTypeID ()) + ";");
 				}
 			}
-			catch (final Exception e)
-			{
-				log.error (e, e);
-			}
-		
-		// Replace final semicolon with a .
-		String textString = text.toString ();
-		int semicolon = textString.lastIndexOf (';');
-		if (semicolon == textString.length () - 1)
-			textString = textString.substring (0, textString.length () - 1) + ".";
 			
-		messageText.setText (textString);
+			// Replace final semicolon with a .
+			String textString = text.toString ();
+			int semicolon = textString.lastIndexOf (';');
+			if (semicolon == textString.length () - 1)
+				textString = textString.substring (0, textString.length () - 1) + ".";
+				
+			messageText.setText (textString);
+		}
+		catch (final Exception e)
+		{
+			log.error (e, e);
+		}
 		
 		// Shortcut keys
-		contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).clear ();
-		for (final Object shortcut : contentPane.getActionMap ().keys ())
-			if (shortcut instanceof Shortcut)
-			{
-				final ShortcutKeyLang shortcutKey = getLanguage ().findShortcutKey ((Shortcut) shortcut);
-				if (shortcutKey != null)
-				{
-					final String keyCode = (shortcutKey.getNormalKey () != null) ? shortcutKey.getNormalKey () : shortcutKey.getVirtualKey ().value ().substring (3);
-					log.debug ("Binding \"" + keyCode + "\" to action " + shortcut);
-					contentPane.getInputMap (JComponent.WHEN_IN_FOCUSED_WINDOW).put (KeyStroke.getKeyStroke (keyCode), shortcut);
-				}
-			}
+		getLanguageHolder ().configureShortcutKeys (contentPane);
 
 		log.trace ("Exiting languageChanged");
 	}

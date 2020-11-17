@@ -12,7 +12,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.zorder.ZOrderGraphics;
@@ -166,7 +166,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					case A_UNIT_NAME:
 					{
 						final String prefix = getLanguageHolder ().findDescription (unitDef.getUnitNamePrefix ());
-						if (!StringUtils.isEmpty (prefix))
+						if (!ObjectUtils.isEmpty (prefix))
 							unitName = prefix + " " + unitName;
 						break;
 					}
@@ -174,7 +174,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					case THE_UNIT_OF_NAME:
 					{
 						final String prefix = getLanguageHolder ().findDescription (unitDef.getUnitNamePrefix ());
-						final List<LanguageText> languageText = StringUtils.isEmpty (prefix) ? getLanguages ().getUnitName ().getTheUnitOfNamePlural () : getLanguages ().getUnitName ().getTheUnitOfNameSingular ();
+						final List<LanguageText> languageText = ObjectUtils.isEmpty (prefix) ? getLanguages ().getUnitName ().getTheUnitOfNamePlural () : getLanguages ().getUnitName ().getTheUnitOfNameSingular ();
 						
 						unitName = getLanguageHolder ().findDescription (languageText).replaceAll ("RACE_UNIT_NAME", unitName);
 						break;

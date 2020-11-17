@@ -1,7 +1,6 @@
 package momime.common.database;
 
 import static org.junit.Assert.assertEquals;
-import momime.common.database.RecordNotFoundException;
 
 import org.junit.Test;
 

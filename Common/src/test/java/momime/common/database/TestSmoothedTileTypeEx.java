@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import momime.common.database.RecordNotFoundException;
-
 import org.junit.Test;
 
 import com.ndg.random.RandomUtils;

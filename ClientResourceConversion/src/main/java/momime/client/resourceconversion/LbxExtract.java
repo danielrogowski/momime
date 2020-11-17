@@ -71,11 +71,28 @@ public final class LbxExtract
 			}
 		};
 		
-		// Extract from an LBX
-		//for (int n = 0; n < 20; n++)
-		// convertImage ("MAINSCRN.LBX", 0, n, "ui\\mainMenu\\title-frame" + (n < 9 ? "0" : "") + (n+1));
-
-		convertImage ("NEWGAME.LBX", 54, 0, "ui\\newGame\\divider");
+/*		for (int w = 0; w <= 13; w++)
+		{
+			String t = Integer.valueOf (w+1).toString ();
+			while (t.length () < 2)
+				t = "0" + t;
+			
+			final int maxFrame = ((w == 0) || (w == 7)) ? 19 : 24;
+			
+			for (int n = 0; n <= maxFrame ; n++)
+			{
+				String s = Integer.valueOf (n+1).toString ();
+				while (s.length () < 2)
+					s = "0" + s;
+				
+				convertImage ("WIN.LBX", 3+w, n, "wizards\\WZ" + t + "-talk-frame-" + s);
+			}
+		} */
+		
+		for (int n = 0; n <= 5 ; n++)
+		{
+			convertImage ("WIN.LBX", 17+n, 0, "animations\\worlds\\hands-" + (n+1));
+		}
 		
 		System.out.println ("All done!");
 	}

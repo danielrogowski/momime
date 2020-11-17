@@ -4,9 +4,6 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
 
-import momime.client.ui.fonts.FontFactory;
-import momime.client.ui.fonts.FontFactoryImpl;
-
 /**
  * Creates fonts that match those defined in the Spring XML.
  * These are declared here rather than in the individual unit tests so that if the fonts defined in

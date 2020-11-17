@@ -14,8 +14,6 @@ import org.junit.Test;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.common.MomException;
-import momime.common.database.AnimationGfx;
-import momime.common.database.RecordNotFoundException;
 
 /**
  * Tests the TileSetEx class

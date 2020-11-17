@@ -29,7 +29,7 @@ import javax.swing.Timer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -64,8 +64,8 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
 import momime.common.database.LanguageText;
 import momime.common.database.MapFeature;
-import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeAndDoubledValue;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSection;
@@ -1023,7 +1023,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		{
 			// Tile type - sShow nodes in the map feature slot, since that's really what they look like
 			final String showAsFeature = getLanguageHolder ().findDescription (tileType.getTileTypeShowAsFeature ());
-			if (StringUtils.isEmpty (showAsFeature))
+			if (ObjectUtils.isEmpty (showAsFeature))
 				
 				// Note this also outputs a description of Unknown for terrain that we haven't scouted
 				surveyorTileType.setText (getLanguageHolder ().findDescription (tileType.getTileTypeDescription ()));
@@ -1118,7 +1118,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 					effects.add (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getSurveyorTab ().getFeatureProvidesSpellProtection ()));
 				
 				final String magicWeapons = getLanguageHolder ().findDescription (mapFeature.getMapFeatureMagicWeaponsDescription ());
-				if (!StringUtils.isEmpty (magicWeapons));
+				if (!ObjectUtils.isEmpty (magicWeapons));
 					effects.add (magicWeapons);
 				
 				// Does the tile type stop us from building a city?

@@ -22,7 +22,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.HeroItemType;
 import momime.common.messages.NumberedHeroItem;
@@ -41,9 +40,6 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -125,22 +121,6 @@ public final class UnassignedHeroItemCellRenderer extends JPanel implements List
 	public final void setUnassignedHeroItemLayout (final XmlLayoutContainerEx layout)
 	{
 		unassignedHeroItemLayout = layout;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

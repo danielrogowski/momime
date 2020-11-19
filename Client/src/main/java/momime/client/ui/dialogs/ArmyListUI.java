@@ -42,7 +42,6 @@ import com.ndg.utils.Holder;
 
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.HeroItemsUI;
@@ -99,9 +98,6 @@ public final class ArmyListUI extends MomClientDialogUI
 
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
@@ -668,22 +664,6 @@ public final class ArmyListUI extends MomClientDialogUI
 	public final void setArmyListCellRenderer (final ArmyListCellRenderer rend)
 	{
 		armyListCellRenderer = rend;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

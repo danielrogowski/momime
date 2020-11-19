@@ -35,7 +35,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.replacer.SpringExpressionReplacer;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
@@ -82,9 +81,6 @@ public final class HelpUI extends MomClientFrameUI
 
 	/** Small font */
 	private Font smallFont;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Variable replacer for outputting skill descriptions */
 	private UnitStatsLanguageVariableReplacer unitStatsReplacer;
@@ -795,22 +791,6 @@ public final class HelpUI extends MomClientFrameUI
 	public final void setSmallFont (final Font font)
 	{
 		smallFont = font;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

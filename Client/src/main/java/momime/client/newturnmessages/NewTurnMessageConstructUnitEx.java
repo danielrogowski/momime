@@ -23,7 +23,6 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.AnimationContainer;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
@@ -57,9 +56,6 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-
 	/** Animation controller */
 	private AnimationController anim;
 	
@@ -302,22 +298,6 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 	public final MomLanguagesEx getLanguages ()
 	{
 		return languageHolder.getLanguages ();
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

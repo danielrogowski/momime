@@ -26,7 +26,6 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.database.AvailableDatabase;
 import momime.client.database.NewGameDatabase;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -90,9 +89,6 @@ public final class TestNewGameUI extends ClientTestData
 		final NdgUIUtils utils = new NdgUIUtilsImpl ();
 		utils.useNimbusLookAndFeel ();
 
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
@@ -555,7 +551,6 @@ public final class TestNewGameUI extends ClientTestData
 		game.setLanguageHolder (langHolder);
 		game.setLanguageChangeMaster (langMaster);
 		game.setClient (client);
-		game.setGraphicsDB (gfx);
 		game.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		game.setWizardClientUtils (wizardClientUtils);
 		game.setPlayerPickUtils (new PlayerPickUtilsImpl ());

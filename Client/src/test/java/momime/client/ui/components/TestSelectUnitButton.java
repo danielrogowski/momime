@@ -21,7 +21,6 @@ import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -189,9 +188,6 @@ public final class TestSelectUnitButton
 		wepGradeDef.setWeaponGradeNumber (2);
 		wepGradeDef.setWeaponGradeMiniImageFile ("/momime.client.graphics/weaponGrades/weaponGradeMiniImageMithril.png");
 		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();
 		pd1.setPlayerID (3);
@@ -251,7 +247,6 @@ public final class TestSelectUnitButton
 		final SelectUnitButton button = new SelectUnitButton ();
 		button.setUtils (utils);
 		button.setClient (client);
-		button.setGraphicsDB (gfx);
 		button.setPlayerColourImageGenerator (gen);
 		button.init ();
 		

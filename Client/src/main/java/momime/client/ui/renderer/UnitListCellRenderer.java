@@ -19,7 +19,6 @@ import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
@@ -42,9 +41,6 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
-
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
@@ -159,22 +155,6 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 	public final MomLanguagesEx getLanguages ()
 	{
 		return languageHolder.getLanguages ();
-	}
-	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 	
 	/**

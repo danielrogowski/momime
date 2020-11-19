@@ -16,7 +16,6 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.frames.CombatUI;
 import momime.common.database.AnimationGfx;
 import momime.common.database.Spell;
@@ -36,9 +35,6 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-
 	/** Combat UI */
 	private CombatUI combatUI;
 
@@ -175,22 +171,6 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 		client = obj;
 	}
 	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-
 	/**
 	 * @return Combat UI
 	 */

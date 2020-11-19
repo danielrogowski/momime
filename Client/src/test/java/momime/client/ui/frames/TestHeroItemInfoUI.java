@@ -11,7 +11,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -79,9 +78,6 @@ public final class TestHeroItemInfoUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Mock graphics
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// The item to display
 		final NumberedHeroItem item = new NumberedHeroItem ();
 		item.setHeroItemTypeID ("IT01");
@@ -107,7 +103,6 @@ public final class TestHeroItemInfoUI extends ClientTestData
 		itemInfo.setUtils (utils);
 		itemInfo.setLanguageHolder (langHolder);
 		itemInfo.setLanguageChangeMaster (langMaster);
-		itemInfo.setGraphicsDB (gfx);
 		itemInfo.setClient (client);
 		itemInfo.setSmallFont (CreateFontsForTests.getSmallFont ());
 		itemInfo.setMediumFont (CreateFontsForTests.getMediumFont ());

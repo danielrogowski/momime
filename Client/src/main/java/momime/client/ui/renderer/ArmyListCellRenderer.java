@@ -20,7 +20,6 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.database.UnitEx;
 import momime.common.messages.MemoryUnit;
 
@@ -38,9 +37,6 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 	/** Border between the left of the image and the first unit icon */
 	public static final int LEFT_BORDER = 4;
 	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
@@ -111,22 +107,6 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 		panel.setPreferredSize (panelSize);
 		
 		return panel;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

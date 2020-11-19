@@ -20,7 +20,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
@@ -52,9 +51,6 @@ public final class TreasureUI extends MomClientDialogUI
 
 	/** Small font */
 	private Font smallFont;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Text utils */
 	private TextUtils textUtils;
@@ -303,22 +299,6 @@ public final class TreasureUI extends MomClientDialogUI
 		smallFont = font;
 	}
 
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-	
 	/**
 	 * @return Details of what was awarded
 	 */

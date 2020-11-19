@@ -14,7 +14,6 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.UnitInfoUI;
@@ -45,9 +44,6 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -327,22 +323,6 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	public final void setOverlandMapUI (final OverlandMapUI ui)
 	{
 		overlandMapUI = ui;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

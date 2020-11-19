@@ -25,7 +25,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.AddBuildingMessageImpl;
 import momime.client.messages.process.AddMaintainedSpellMessageImpl;
 import momime.client.messages.process.UpdateWizardStateMessageImpl;
@@ -71,9 +70,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** The city being viewed, note this is optional and will be null when displaying Spell of Return animation */
 	private MapCoordinates3DEx cityLocation;
@@ -518,22 +514,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	public final void setWizardClientUtils (final WizardClientUtils util)
 	{
 		wizardClientUtils = util;
-	}
-	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 	
 	/**

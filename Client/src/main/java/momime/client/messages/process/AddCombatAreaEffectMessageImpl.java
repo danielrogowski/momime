@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.database.Pick;
@@ -34,9 +33,6 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	
 	/** Combat UI */
 	private CombatUI combatUI;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
@@ -179,22 +175,6 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

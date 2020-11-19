@@ -81,7 +81,7 @@ public final class TestWizardBanishedUI extends ClientTestData
 		for (int n = 1; n <= 4; n++)
 			evaporatingAnim.getFrame ().add ("/momime.client.graphics/wizards/WZ01-evaporating-frame" + n + ".png");
 		
-		when (gfx.findAnimation ("WIZARD_EVAPORATING_01", "WizardBanishedUI (E)")).thenReturn (evaporatingAnim);
+		when (db.findAnimation ("WIZARD_EVAPORATING_01", "WizardBanishedUI (E)")).thenReturn (evaporatingAnim);
 		
 		// Mock entries from the language XML
 		final WizardBanishedScreen wizardBanishedScreenLang = new WizardBanishedScreen ();

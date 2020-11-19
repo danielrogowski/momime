@@ -35,7 +35,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.HeroItemClientUtils;
 import momime.client.utils.TextUtils;
@@ -68,9 +67,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	/** XML layout */
 	private XmlLayoutContainerEx createArtifactLayout;
 
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-	
 	/** Small font */
 	private Font smallFont;
 	
@@ -694,22 +690,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		createArtifactLayout = layout;
 	}
 
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-	
 	/**
 	 * @return Small font
 	 */

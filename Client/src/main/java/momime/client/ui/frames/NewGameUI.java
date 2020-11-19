@@ -74,7 +74,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.MomClient;
 import momime.client.database.AvailableDatabase;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.actions.CycleAction;
 import momime.client.ui.actions.ToggleAction;
@@ -196,9 +195,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Multiplayer client */
 	private MomClient client;
 	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
@@ -4640,22 +4636,6 @@ public final class NewGameUI extends MomClientFrameUI
 		client = obj;
 	}
 	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-
 	/**
 	 * @return Player pick utils
 	 */

@@ -44,7 +44,6 @@ import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.languages.database.Shortcut;
 import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
@@ -156,9 +155,6 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Music player */
 	private AudioPlayer musicPlayer;
@@ -1890,7 +1886,7 @@ public final class CombatUI extends MomClientFrameUI
 			{
 				final UnitSkillEx UnitSkillEx = getClient ().getClientDB ().findUnitSkill (unitSkillID, "setUnitToDrawAtLocation");
 				if (UnitSkillEx.getUnitSkillCombatAnimation () != null)
-					animations.add (getGraphicsDB ().findAnimation (UnitSkillEx.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
+					animations.add (getClient ().getClientDB ().findAnimation (UnitSkillEx.getUnitSkillCombatAnimation (), "setUnitToDrawAtLocation"));
 				
 				if (UnitSkillEx.getUnitSkillCombatColour () != null)
 					shadingColours.add (UnitSkillEx.getUnitSkillCombatColour ());
@@ -2067,22 +2063,6 @@ public final class CombatUI extends MomClientFrameUI
 	public final void setCombatMapUtils (final CombatMapUtils util)
 	{
 		combatMapUtils = util;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 	
 	/**

@@ -9,16 +9,15 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseConstants;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.ui.PlayerColourImageGenerator;
-import momime.common.messages.MemoryMaintainedSpell;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.swing.NdgUIUtils;
+
+import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
+import momime.client.ui.PlayerColourImageGenerator;
+import momime.common.messages.MemoryMaintainedSpell;
 
 /**
  * Renderer for drawing overland enchantments spell onto the magic sliders screen
@@ -28,9 +27,6 @@ public final class MemoryMaintainedSpellTableCellRenderer extends JLabel impleme
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (MemoryMaintainedSpellTableCellRenderer.class);
 	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -81,22 +77,6 @@ public final class MemoryMaintainedSpellTableCellRenderer extends JLabel impleme
 			}
 		
 		return this;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

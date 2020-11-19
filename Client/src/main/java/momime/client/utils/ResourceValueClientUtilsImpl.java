@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.ProductionTypeEx;
@@ -27,9 +26,6 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
@@ -292,22 +288,6 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

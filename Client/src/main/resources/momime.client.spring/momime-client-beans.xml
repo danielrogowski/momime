@@ -216,7 +216,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="chosenStandardPhotoMessage" class="momime.client.messages.process.ChosenStandardPhotoMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
@@ -309,7 +308,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientConfig" ref="clientConfig" />
@@ -372,7 +370,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="combatUI" ref="combatUI" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
@@ -387,7 +384,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="anim" ref="anim" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
@@ -406,7 +402,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="setUnitIntoOrTakeUnitOutOfCombatMessage" class="momime.client.messages.process.SetUnitIntoOrTakeUnitOutOfCombatMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
@@ -478,7 +473,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
@@ -498,7 +492,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
@@ -550,7 +543,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="showSpellAnimationMessage" class="momime.client.messages.process.ShowSpellAnimationMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="soundPlayer" ref="soundPlayer" />
@@ -596,7 +588,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="newTurnMessageConstructBuilding" class="momime.client.newturnmessages.NewTurnMessageConstructBuildingEx" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="anim" ref="anim" />
 		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -606,7 +597,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="newTurnMessageConstructUnit" class="momime.client.newturnmessages.NewTurnMessageConstructUnitEx" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="anim" ref="anim" />
 		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
@@ -627,7 +617,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
@@ -636,7 +625,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="newTurnMessageCreateArtifact" class="momime.client.newturnmessages.NewTurnMessageCreateArtifactEx" scope="prototype">
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
@@ -673,7 +661,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
@@ -767,7 +754,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="utils" ref="uiUtils" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
 		<property name="musicPlayer" ref="musicPlayer" />
 	</bean>
@@ -829,7 +815,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="resourceValueClientUtils" class="momime.client.utils.ResourceValueClientUtilsImpl">
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 	</bean>
 	
 	<bean id="clientCityCalculations" class="momime.client.calculations.ClientCityCalculationsImpl">
@@ -844,7 +829,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="clientUnitCalculations" class="momime.client.calculations.ClientUnitCalculationsImpl">
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
@@ -858,7 +842,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="overlandMapBitmapGenerator" class="momime.client.calculations.OverlandMapBitmapGeneratorImpl">
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="utils" ref="uiUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
@@ -868,7 +851,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="miniMapBitmapGenerator" class="momime.client.calculations.MiniMapBitmapGeneratorImpl">
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 	
@@ -921,7 +903,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
@@ -1140,7 +1121,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
@@ -1204,7 +1184,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="spellUtils" ref="spellUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
@@ -1323,7 +1302,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="mediumFont" ref="mediumFont" />
@@ -1432,7 +1410,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="largeFont" ref="largeFont" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="helpUI" ref="helpUI" />
@@ -1470,7 +1447,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="largeFont" ref="largeFont" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="spellClientUtils" ref="spellClientUtils" />
@@ -1525,7 +1501,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="smallFont" ref="smallFont" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 		<property name="heroItemClientUtils" ref="heroItemClientUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
@@ -1571,7 +1546,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="transferableFactory" ref="transferableFactory" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="alchemyUI" ref="alchemyUI" />
 		<property name="heroItemFlavour" ref="heroItemFlavour" />
 		<property name="unassignedHeroItemCellRenderer" ref="unassignedHeroItemCellRenderer" />
@@ -1602,14 +1576,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="buildingListCellRenderer" class="momime.client.ui.renderer.BuildingListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="anim" ref="anim" />
 	</bean>
 
 	<bean id="unitListCellRenderer" class="momime.client.ui.renderer.UnitListCellRenderer" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 	</bean>
@@ -1621,7 +1593,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="unitSkillListCellRenderer" class="momime.client.ui.renderer.UnitSkillListCellRenderer" scope="prototype">
 		<property name="languageHolder" ref="languageHolder" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
@@ -1635,7 +1606,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="memoryMaintainedSpellTableCellRenderer" class="momime.client.ui.renderer.MemoryMaintainedSpellTableCellRenderer" scope="prototype">
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
@@ -1650,7 +1620,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="armyListCellRenderer" class="momime.client.ui.renderer.ArmyListCellRenderer" scope="prototype">
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 	</bean>
 
@@ -1660,7 +1629,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="unassignedHeroItemCellRenderer" class="momime.client.ui.renderer.UnassignedHeroItemCellRenderer" scope="prototype">
 		<property name="unassignedHeroItemLayout" ref="unassignedHeroItemLayout" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="mediumFont" ref="mediumFont" />
@@ -1684,7 +1652,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="heroTableCellRenderer" class="momime.client.ui.renderer.HeroTableCellRenderer" scope="prototype">
 		<property name="heroLayout" ref="heroLayout" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
@@ -1698,13 +1665,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="selectUnitButton" class="momime.client.ui.components.SelectUnitButton" scope="prototype">
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="unitRowDisplayButton" class="momime.client.ui.components.UnitRowDisplayButton" scope="prototype">
 		<property name="utils" ref="uiUtils" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
@@ -1761,7 +1726,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="cityViewPanel" class="momime.client.ui.panels.CityViewPanel" scope="prototype">	
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="utils" ref="uiUtils" />
 		<property name="anim" ref="anim" />
 	</bean>
@@ -1773,7 +1737,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="cityViewUI" class="momime.client.ui.frames.CityViewUI" scope="prototype">
 		<property name="cityViewLayout" ref="cityViewLayout" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="smallFont" ref="smallFont" />
@@ -1811,7 +1774,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="miniCityViewUI" class="momime.client.ui.dialogs.MiniCityViewUI" scope="prototype">
 		<property name="miniCityViewLayout" ref="miniCityViewLayout" />
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="largeFont" ref="largeFont" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
@@ -1829,7 +1791,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="unitInfoPanel" class="momime.client.ui.panels.UnitInfoPanel" scope="prototype">
 		<property name="unitInfoLayout" ref="unitInfoLayout" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
@@ -1855,7 +1816,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="changeConstructionUI" class="momime.client.ui.frames.ChangeConstructionUI" scope="prototype">
 		<property name="client" ref="client" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
@@ -1933,7 +1893,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="uiComponentFactory" ref="uiComponentFactory" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -1956,7 +1915,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 	</bean>
 	
 	<bean id="treasureLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
@@ -1966,7 +1924,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="treasureUI" class="momime.client.ui.dialogs.TreasureUI" scope="prototype">
 		<property name="treasureLayout" ref="treasureLayout" />
 		<property name="smallFont" ref="smallFont" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
@@ -2027,7 +1984,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
-		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="armyListCellRenderer" ref="armyListCellRenderer" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
 	</bean>

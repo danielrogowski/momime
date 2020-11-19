@@ -15,7 +15,6 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.PlayerColourImageGenerator;
@@ -56,9 +55,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
@@ -468,22 +464,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

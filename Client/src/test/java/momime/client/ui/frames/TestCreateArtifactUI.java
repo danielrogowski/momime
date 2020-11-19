@@ -21,7 +21,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -120,9 +119,6 @@ public final class TestCreateArtifactUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Mock graphics
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
 		pd.setPlayerID (3);
@@ -181,7 +177,6 @@ public final class TestCreateArtifactUI extends ClientTestData
 		createArtifact.setHeroItemCalculations (heroItemCalculations);
 		createArtifact.setHeroItemClientUtils (mock (HeroItemClientUtils.class));
 		createArtifact.setSpellUtils (spellUtils);
-		createArtifact.setGraphicsDB (gfx);
 		createArtifact.setSmallFont (CreateFontsForTests.getSmallFont ());
 		createArtifact.setLargeFont (CreateFontsForTests.getLargeFont ());
 		createArtifact.setSpell (spellDef);

@@ -19,7 +19,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -175,9 +174,6 @@ public final class TestChangeConstructionUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// City data
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityRaceID ("RC01");
@@ -223,19 +219,16 @@ public final class TestChangeConstructionUI extends ClientTestData
 		
 		// Animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
-		anim.setGraphicsDB (gfx);
 		anim.setClient (client);
 		anim.setUtils (utils);
 
 		// Cell renderers
 		final BuildingListCellRenderer buildingRenderer = new BuildingListCellRenderer ();
-		buildingRenderer.setGraphicsDB (gfx);
 		buildingRenderer.setLanguageHolder (langHolder);
 		buildingRenderer.setClient (client);
 		buildingRenderer.setAnim (anim);
 		
 		final UnitListCellRenderer unitRenderer = new UnitListCellRenderer ();
-		unitRenderer.setGraphicsDB (gfx);
 		unitRenderer.setLanguageHolder (langHolder);
 
 		final UnitAttributeListCellRenderer attributeRenderer = new UnitAttributeListCellRenderer ();
@@ -244,7 +237,6 @@ public final class TestChangeConstructionUI extends ClientTestData
 		final UnitSkillListCellRenderer renderer = new UnitSkillListCellRenderer ();
 		renderer.setLanguageHolder (langHolder);
 		renderer.setClient (client);
-		renderer.setGraphicsDB (gfx);
 		renderer.setUtils (utils);
 		
 		// Layout
@@ -260,7 +252,6 @@ public final class TestChangeConstructionUI extends ClientTestData
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
-		panel.setGraphicsDB (gfx);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setClientCityCalculations (clientCityCalc);
 		panel.setUnitSkillListCellRenderer (renderer);
@@ -276,7 +267,6 @@ public final class TestChangeConstructionUI extends ClientTestData
 		changeConstruction.setLanguageHolder (langHolder);
 		changeConstruction.setLanguageChangeMaster (langMaster);
 		changeConstruction.setClient (client);
-		changeConstruction.setGraphicsDB (gfx);
 		changeConstruction.setCityCalculations (cityCalc);
 		changeConstruction.setClientCityCalculations (clientCityCalculations);
 		changeConstruction.setUnitInfoPanel (panel);

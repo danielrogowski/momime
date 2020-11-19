@@ -22,7 +22,6 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.HelpScreen;
@@ -558,9 +557,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("SP001.png")).thenReturn (image);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
@@ -576,7 +572,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -615,9 +610,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("SP001.png")).thenReturn (image);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Mock border from mirror
 		final BufferedImage mirror = new BufferedImage (6, 6, BufferedImage.TYPE_INT_ARGB);
 		for (int x = 0; x < 6; x++)
@@ -642,7 +634,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		utils.setPlayerColourImageGenerator (gen);
 		
@@ -941,9 +932,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("CSE050.png")).thenReturn (effect1Image);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);
 
@@ -967,7 +955,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -994,9 +981,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("CSE050.png")).thenReturn (effect1Image);
 		when (uiUtils.loadImage ("CSE051.png")).thenReturn (effect2Image);
-		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1035,7 +1019,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -1077,9 +1060,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		when (uiUtils.loadImage ("BL15-frame2.png")).thenReturn (buildingFrame2);
 		when (uiUtils.loadImage ("BL15-frame3.png")).thenReturn (buildingFrame3);
 		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);
 
@@ -1105,7 +1085,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -1127,9 +1106,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("CAE050.png")).thenReturn (effect1Image);
-		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1154,7 +1130,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method
@@ -1181,9 +1156,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final NdgUIUtils uiUtils = mock (NdgUIUtils.class);
 		when (uiUtils.loadImage ("CAE050.png")).thenReturn (effect1Image);
 		when (uiUtils.loadImage ("CAE051.png")).thenReturn (effect2Image);
-		
-		// Mock entries from graphics DB
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -1213,7 +1185,6 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Set up object to test
 		final SpellClientUtilsImpl utils = new SpellClientUtilsImpl ();
 		utils.setClient (client);
-		utils.setGraphicsDB (gfx);
 		utils.setUtils (uiUtils);
 		
 		// Run method

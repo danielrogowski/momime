@@ -40,7 +40,6 @@ import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.AnimationContainer;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.HelpUI;
@@ -113,9 +112,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	
 	/** Animation controller */
 	private AnimationController anim;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Client city calculations */
 	private ClientCityCalculations clientCityCalculations;
@@ -969,22 +965,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setAnim (final AnimationController controller)
 	{
 		anim = controller;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

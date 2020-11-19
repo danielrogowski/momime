@@ -17,7 +17,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
@@ -41,9 +40,6 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
-
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
@@ -188,22 +184,6 @@ public final class UnitSkillListCellRenderer extends JLabel implements ListCellR
 	public final MomLanguagesEx getLanguages ()
 	{
 		return languageHolder.getLanguages ();
-	}
-	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

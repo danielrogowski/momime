@@ -11,7 +11,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -107,9 +106,6 @@ public final class TestTreasureUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Units
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
@@ -180,7 +176,6 @@ public final class TestTreasureUI extends ClientTestData
 		box.setUtils (utils);
 		box.setLanguageHolder (langHolder);
 		box.setLanguageChangeMaster (langMaster);
-		box.setGraphicsDB (gfx);
 		box.setClient (client);
 		box.setUnitUtils (unitUtils);
 		box.setUnitStatsReplacer (unitStatsReplacer);

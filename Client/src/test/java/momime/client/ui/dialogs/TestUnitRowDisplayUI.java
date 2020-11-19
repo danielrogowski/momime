@@ -21,7 +21,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -74,9 +73,6 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
 		when (db.findUnit ("UN176", "UnitRowDisplayButton")).thenReturn (unitDef);
-		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
@@ -195,7 +191,6 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		{
 			final UnitRowDisplayButton button = new UnitRowDisplayButton ();
 			button.setUtils (utils);
-			button.setGraphicsDB (gfx);
 			button.setClient (client);
 			button.setPlayerColourImageGenerator (gen);
 			return button;
@@ -210,7 +205,6 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		display.setUtils (utils);
 		display.setLanguageHolder (langHolder);
 		display.setLanguageChangeMaster (langMaster);
-		display.setGraphicsDB (gfx);
 		display.setUnits (units);
 		display.setTargetSpellID ("SP001");
 		display.setClient (client);

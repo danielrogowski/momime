@@ -35,7 +35,6 @@ import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.AnimationContainer;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.CompositeShape;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.panels.UnitInfoPanel;
@@ -73,9 +72,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 
 	/** Small font */
 	private Font smallFont;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -475,22 +471,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	public final void setSmallFont (final Font font)
 	{
 		smallFont = font;
-	}
-	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 	
 	/**

@@ -22,7 +22,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemType;
@@ -49,9 +48,6 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 	
 	/** Medium font */
 	private Font mediumFont;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Close action */
 	private Action closeAction;
@@ -247,22 +243,6 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 	public final void setMediumFont (final Font font)
 	{
 		mediumFont = font;
-	}
-	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 	
 	/**

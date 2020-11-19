@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.MomException;
 import momime.common.database.UnitSkillEx;
 import momime.common.utils.ExpandedUnitDetails;
@@ -18,9 +17,6 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (ClientUnitCalculationsImpl.class);
 	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
@@ -94,22 +90,6 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		return combatActionID;
 	}
 	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-
 	/**
 	 * @return Unit utils
 	 */

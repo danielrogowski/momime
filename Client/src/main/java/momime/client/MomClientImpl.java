@@ -37,7 +37,6 @@ import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.database.NewGameDatabase;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.dialogs.CastCombatSpellFromUI;
@@ -85,9 +84,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 {
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (MomClientImpl.class);
-
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Name that we logged in using */
 	private String ourPlayerName;
@@ -794,22 +790,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final MomTransientPlayerPrivateKnowledge getOurTransientPlayerPrivateKnowledge ()
 	{
 		return (MomTransientPlayerPrivateKnowledge) super.getOurTransientPlayerPrivateKnowledge ();
-	}
-	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 	
 	/**

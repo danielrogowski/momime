@@ -31,7 +31,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.utils.PlayerPickClientUtils;
@@ -64,9 +63,6 @@ public final class WizardsUI extends MomClientFrameUI
 
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Small font */
 	private Font smallFont;
@@ -440,22 +436,6 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
 	{
 		playerColourImageGenerator = gen;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

@@ -18,7 +18,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -73,9 +72,6 @@ public final class TestMiniCityViewUI extends ClientTestData
 		spellDef.setSoundAndImageDelay (2);
 
 		when (db.findSpell ("SP001", "MiniCityViewUI")).thenReturn (spellDef);
-		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Mock entries from the language XML
 		final SpellCasting spellCastingLang = new SpellCasting ();
@@ -162,14 +158,12 @@ public final class TestMiniCityViewUI extends ClientTestData
 		
 		// Set up animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
-		anim.setGraphicsDB (gfx);
 		anim.setUtils (utils);
 		
 		// Set up terrain panel
 		final CityViewPanel panel = new CityViewPanel ();
 		panel.setClient (client);
 		panel.setUtils (utils);
-		panel.setGraphicsDB (gfx);
 		panel.setAnim (anim);
 
 		// Layout
@@ -184,7 +178,6 @@ public final class TestMiniCityViewUI extends ClientTestData
 		cityView.setLanguageChangeMaster (langMaster);
 		cityView.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		cityView.setWizardClientUtils (wizardClientUtils);
-		cityView.setGraphicsDB (gfx);
 		cityView.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		cityView.setCityViewPanel (panel);
 		cityView.setLargeFont (CreateFontsForTests.getLargeFont ());

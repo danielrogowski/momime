@@ -50,7 +50,6 @@ import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.graphics.AnimationContainer;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
@@ -117,9 +116,6 @@ public final class CityViewUI extends MomClientFrameUI
 	
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** City calculations */
 	private CityCalculations cityCalculations;
@@ -1430,22 +1426,6 @@ public final class CityViewUI extends MomClientFrameUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 	
 	/**

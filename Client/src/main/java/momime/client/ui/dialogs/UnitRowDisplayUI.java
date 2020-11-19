@@ -23,7 +23,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.components.UIComponentFactory;
@@ -75,9 +74,6 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 
 	/** Unit utils */
 	private UnitUtils unitUtils;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
@@ -454,22 +450,6 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 		unitUtils = utils;
 	}
 
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-	
 	/**
 	 * @return Turn sequence and movement helper methods
 	 */

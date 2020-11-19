@@ -5,18 +5,17 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomTransientPlayerPublicKnowledge;
-import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
+import momime.client.MomClient;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
 
 /**
  * Message server sends to players to tell them that a player is using a standard photo
@@ -29,9 +28,6 @@ public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMes
 
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
@@ -74,23 +70,7 @@ public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMes
 	{
 		client = obj;
 	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-
+	
 	/**
 	 * @return Session utils
 	 */

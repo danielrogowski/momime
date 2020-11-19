@@ -44,7 +44,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.newturnmessages.NewTurnMessageMustBeAnswered;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
@@ -166,9 +165,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 	/** City calculations */
 	private CityCalculations cityCalculations;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
@@ -1716,22 +1712,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

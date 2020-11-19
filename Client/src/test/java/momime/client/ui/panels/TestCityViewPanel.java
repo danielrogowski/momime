@@ -17,7 +17,6 @@ import com.ndg.swing.NdgUIUtilsImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.utils.AnimationControllerImpl;
 import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabase;
@@ -47,9 +46,6 @@ public final class TestCityViewPanel extends ClientTestData
 		
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		final CityViewElement landscape = new CityViewElement ();
 		landscape.setLocationX (0);
@@ -156,13 +152,11 @@ public final class TestCityViewPanel extends ClientTestData
 		
 		// Animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
-		anim.setGraphicsDB (gfx);
 		anim.setUtils (utils);
 		
 		// Set up panel
 		final CityViewPanel panel = new CityViewPanel ();
 		panel.setUtils (utils);
-		panel.setGraphicsDB (gfx);
 		panel.setClient (client);
 		panel.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		panel.setRenderCityData (renderCityData);

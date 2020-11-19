@@ -10,7 +10,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileTypeEx;
 import momime.common.messages.MemoryGridCell;
@@ -26,9 +25,6 @@ public final class MiniMapBitmapGeneratorImpl implements MiniMapBitmapGenerator
 
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
@@ -96,22 +92,6 @@ public final class MiniMapBitmapGeneratorImpl implements MiniMapBitmapGenerator
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

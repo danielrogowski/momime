@@ -302,7 +302,6 @@ public final class TestHelpUI extends ClientTestData
 		help.setUtils (utils);
 		help.setLanguageHolder (langHolder);
 		help.setLanguageChangeMaster (langMaster);
-		help.setGraphicsDB (gfx);
 		help.setUnitClientUtils (unitClientUtils);
 		help.setUnitStatsReplacer (unitStatsReplacer);
 		help.setSpellClientUtils (spellClientUtils);

@@ -28,7 +28,6 @@ import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -112,9 +111,6 @@ public final class TestCombatUI extends ClientTestData
 
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
-
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
@@ -333,7 +329,6 @@ public final class TestCombatUI extends ClientTestData
 		combat.setCombatMapBitmapGenerator (gen);
 		combat.setCombatMapUtils (combatMapUtils);
 		combat.setClient (client);
-		combat.setGraphicsDB (gfx);
 		combat.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		combat.setResourceValueUtils (resourceValueUtils);
 		combat.setWizardClientUtils (wizardClientUtils);

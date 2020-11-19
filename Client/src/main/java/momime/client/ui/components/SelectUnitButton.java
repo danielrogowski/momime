@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -46,9 +45,6 @@ public final class SelectUnitButton extends JToggleButton
 	
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Player colour image generator */
 	private PlayerColourImageGenerator playerColourImageGenerator;
@@ -190,22 +186,6 @@ public final class SelectUnitButton extends JToggleButton
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 	
 	/**

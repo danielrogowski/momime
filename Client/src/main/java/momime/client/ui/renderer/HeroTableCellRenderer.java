@@ -24,7 +24,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
@@ -48,9 +47,6 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -236,14 +232,6 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 	}
 
 	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
 	 * @return Multiplayer client
 	 */
 	public final MomClient getClient ()
@@ -259,14 +247,6 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 		client = obj;
 	}
 	
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-
 	/**
 	 * @return Client-side unit utils
 	 */

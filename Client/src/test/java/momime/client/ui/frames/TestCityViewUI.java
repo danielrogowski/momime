@@ -22,7 +22,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -121,9 +120,6 @@ public final class TestCityViewUI extends ClientTestData
 		overlandMapTileSet.setTileWidth (20);
 		overlandMapTileSet.setTileHeight (18);
 		when (db.findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "OverlandMapUI.init")).thenReturn (overlandMapTileSet);
-		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Mock entries from the language XML
 		final Simple simpleLang = new Simple ();
@@ -262,13 +258,11 @@ public final class TestCityViewUI extends ClientTestData
 
 		// Set up animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
-		anim.setGraphicsDB (gfx);
 		anim.setUtils (utils);
 		
 		// Set up terrain panel
 		final CityViewPanel panel = new CityViewPanel ();
 		panel.setUtils (utils);
-		panel.setGraphicsDB (gfx);
 		panel.setAnim (anim);
 		panel.setClient (client);
 		
@@ -296,7 +290,6 @@ public final class TestCityViewUI extends ClientTestData
 		cityView.setUtils (utils);
 		cityView.setLanguageHolder (langHolder);
 		cityView.setLanguageChangeMaster (langMaster);
-		cityView.setGraphicsDB (gfx);
 		cityView.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		cityView.setCityViewPanel (panel);
 		cityView.setClient (client);

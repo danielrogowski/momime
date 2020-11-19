@@ -39,7 +39,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.languages.database.Shortcut;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
@@ -90,9 +89,6 @@ public final class HeroItemsUI extends MomClientFrameUI
 	
 	/** Drag and drop factory */
 	private TransferableFactory transferableFactory;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Alchemy UI */
 	private AlchemyUI alchemyUI;
@@ -810,22 +806,6 @@ public final class HeroItemsUI extends MomClientFrameUI
 	public final void setTransferableFactory (final TransferableFactory fac)
 	{
 		transferableFactory = fac;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

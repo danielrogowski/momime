@@ -21,7 +21,6 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.AnimationContainer;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.utils.AnimationController;
 import momime.common.MomException;
 import momime.common.database.CityViewElement;
@@ -37,9 +36,6 @@ public final class CityViewPanel extends JPanel
 
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** The city being viewed, note this is optional and will be null when displaying Spell of Return animation */
 	private MapCoordinates3DEx cityLocation;
@@ -310,22 +306,6 @@ public final class CityViewPanel extends JPanel
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

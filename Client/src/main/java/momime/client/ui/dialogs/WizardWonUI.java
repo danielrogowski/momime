@@ -99,7 +99,7 @@ public final class WizardWonUI extends MomClientDialogUI
 			(handsLayout.getWidth (), handsLayout.getHeight (), Image.SCALE_SMOOTH);
 		
 		final XmlLayoutComponent talkingLayout = getWizardWonLayout ().findComponent ("frmWizardWonTalking");
-		final AnimationGfx talkingAnim = (winningWizardDef == null) ? null : getGraphicsDB ().findAnimation (winningWizardDef.getTalkingAnimation (), "WizardWonUI (T)");
+		final AnimationGfx talkingAnim = (winningWizardDef == null) ? null : getClient ().getClientDB ().findAnimation (winningWizardDef.getTalkingAnimation (), "WizardWonUI (T)");
 		
 		// Static images
 		final Image background = getUtils ().loadImage ("/momime.client.graphics/animations/worlds/background.png").getScaledInstance

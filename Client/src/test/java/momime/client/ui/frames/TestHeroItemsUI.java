@@ -15,7 +15,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -123,9 +122,6 @@ public final class TestHeroItemsUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Mock graphics
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Unassigned items
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge (); 
 		
@@ -199,7 +195,6 @@ public final class TestHeroItemsUI extends ClientTestData
 		final UnassignedHeroItemCellRenderer cellRenderer = new UnassignedHeroItemCellRenderer ();
 		cellRenderer.setUnassignedHeroItemLayout (cellLayout);
 		cellRenderer.setUtils (utils);
-		cellRenderer.setGraphicsDB (gfx);
 		cellRenderer.setClient (client);
 		cellRenderer.setMediumFont (CreateFontsForTests.getMediumFont ());
 		
@@ -207,7 +202,6 @@ public final class TestHeroItemsUI extends ClientTestData
 		final HeroTableCellRenderer tableRenderer = new HeroTableCellRenderer ();
 		tableRenderer.setHeroLayout (tableLayout);
 		tableRenderer.setUtils (utils);
-		tableRenderer.setGraphicsDB (gfx);
 		tableRenderer.setMediumFont (CreateFontsForTests.getMediumFont ());
 		tableRenderer.setUnitClientUtils (unitClientUtils);
 		tableRenderer.setClient (client);
@@ -220,7 +214,6 @@ public final class TestHeroItemsUI extends ClientTestData
 		items.setUtils (utils);
 		items.setLanguageHolder (langHolder);
 		items.setLanguageChangeMaster (langMaster);
-		items.setGraphicsDB (gfx);
 		items.setSmallFont (CreateFontsForTests.getSmallFont ());
 		items.setMediumFont (CreateFontsForTests.getMediumFont ());
 		items.setLargeFont (CreateFontsForTests.getLargeFont ());

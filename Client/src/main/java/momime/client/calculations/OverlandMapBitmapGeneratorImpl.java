@@ -17,7 +17,6 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfigEx;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.AnimationGfx;
 import momime.common.database.CityImage;
@@ -49,9 +48,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	
 	/** Multiplayer client */
 	private MomClient client;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
@@ -243,7 +239,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 									else if (road.getRoadAnimation () != null)
 									{
 										// Copy each animation frame over to each bitmap
-										final AnimationGfx anim = getGraphicsDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
+										final AnimationGfx anim = getClient ().getClientDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
 										for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 										{
 											final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
@@ -268,7 +264,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							else if (road.getRoadAnimation () != null)
 							{
 								// Copy each animation frame over to each bitmap
-								final AnimationGfx anim = getGraphicsDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
+								final AnimationGfx anim = getClient ().getClientDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
 								for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 								{
 									final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
@@ -515,22 +511,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

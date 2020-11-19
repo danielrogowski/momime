@@ -15,7 +15,6 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.database.CommonDatabase;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.TileTypeEx;
@@ -58,9 +57,6 @@ public final class TestMiniMapBitmapGeneratorImpl extends ClientTestData
 			
 			tileType.buildMap ();
 		}
-		
-		// Mock graphics database
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Map size
 		final OverlandMapSize mapSize = new OverlandMapSize ();
@@ -124,7 +120,6 @@ public final class TestMiniMapBitmapGeneratorImpl extends ClientTestData
 		// Set up object to test
 		final MiniMapBitmapGeneratorImpl gen = new MiniMapBitmapGeneratorImpl ();
 		gen.setClient (client);
-		gen.setGraphicsDB (gfx);
 		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Run method

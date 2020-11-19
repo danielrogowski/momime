@@ -18,7 +18,6 @@ import momime.client.MomClient;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
@@ -52,9 +51,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	
 	/** Combat UI */
 	private CombatUI combatUI;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
@@ -122,12 +118,12 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		for (final String unitSkillID : unit.listModifiedSkillIDs ())
 		{
-			final UnitSkillEx UnitSkillEx = getClient ().getClientDB ().findUnitSkill (unitSkillID, "MoveUnitInCombatMessageImpl.start");
-			if (UnitSkillEx.getUnitSkillCombatAnimation () != null)
-				animations.add (getGraphicsDB ().findAnimation (UnitSkillEx.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
+			final UnitSkillEx unitSkillDef = getClient ().getClientDB ().findUnitSkill (unitSkillID, "MoveUnitInCombatMessageImpl.start");
+			if (unitSkillDef.getUnitSkillCombatAnimation () != null)
+				animations.add (getClient ().getClientDB ().findAnimation (unitSkillDef.getUnitSkillCombatAnimation (), "MoveUnitInCombatMessageImpl.start"));
 			
-			if (UnitSkillEx.getUnitSkillCombatColour () != null)
-				shadingColours.add (UnitSkillEx.getUnitSkillCombatColour ());
+			if (unitSkillDef.getUnitSkillCombatColour () != null)
+				shadingColours.add (unitSkillDef.getUnitSkillCombatColour ());
 		}
 		
 		// Remove the unit from the map cell it is leaving so the regular drawing routine stops drawing this unit
@@ -314,22 +310,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

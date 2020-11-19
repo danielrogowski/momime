@@ -21,7 +21,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.MiniMapBitmapGenerator;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -88,9 +87,6 @@ public final class TestArmyListUI extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Graphics database
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-		
 		// Session description
 		final OverlandMapSize mapSize = createOverlandMapSize ();
 		
@@ -142,7 +138,6 @@ public final class TestArmyListUI extends ClientTestData
 		// Renderer
 		final ArmyListCellRenderer renderer = new ArmyListCellRenderer ();
 		renderer.setUtils (utils);
-		renderer.setGraphicsDB (gfx);
 		renderer.setClient (client);
 		
 		// Mock the minimap bitmaps provided by the RHP
@@ -164,7 +159,6 @@ public final class TestArmyListUI extends ClientTestData
 		army.setLargeFont (CreateFontsForTests.getLargeFont ());
 		army.setMediumFont (CreateFontsForTests.getMediumFont ());
 		army.setClient (client);
-		army.setGraphicsDB (gfx);
 		army.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		army.setWizardClientUtils (wizardClientUtils);
 		army.setMiniMapBitmapGenerator (gen);

@@ -102,9 +102,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		// Mock dummy language change master, since the language won't be changing
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
-		// Mock entries from the graphics XML
-		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
-
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
@@ -146,7 +143,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		
 		// Animation controller
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
-		anim.setGraphicsDB (gfx);
 		anim.setUtils (utils);
 		
 		// Set up building to display
@@ -161,7 +157,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		final UnitSkillListCellRenderer skillRenderer = new UnitSkillListCellRenderer ();
 		skillRenderer.setLanguageHolder (langHolder);
 		skillRenderer.setClient (client);
-		skillRenderer.setGraphicsDB (gfx);
 		skillRenderer.setUtils (utils);
 		
 		// Create some dummy actions for buttons
@@ -179,7 +174,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
-		panel.setGraphicsDB (gfx);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setAnim (anim);
 		panel.setClientCityCalculations (clientCityCalc);
@@ -406,7 +400,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		skillRenderer.setUnitStatsReplacer (replacer);
 		skillRenderer.setLanguageHolder (langHolder);
 		skillRenderer.setClient (client);
-		skillRenderer.setGraphicsDB (gfx);
 		skillRenderer.setUtils (utils);
 		skillRenderer.setUnitClientUtils (unitClientUtils);
 
@@ -424,7 +417,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		panel.setLanguageHolder (langHolder);
 		panel.setLanguageChangeMaster (langMaster);
 		panel.setClient (client);
-		panel.setGraphicsDB (gfx);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setAnim (anim);
 		panel.setUnitCalculations (unitCalc);

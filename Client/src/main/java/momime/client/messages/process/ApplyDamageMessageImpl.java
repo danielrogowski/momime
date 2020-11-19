@@ -18,7 +18,6 @@ import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
@@ -94,9 +93,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 
 	/** Bitmap generator includes routines for calculating pixel coords */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
-	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
 	
 	/** Sound effects player */
 	private AudioPlayer soundPlayer;
@@ -682,22 +678,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final void setCombatMapBitmapGenerator (final CombatMapBitmapGenerator gen)
 	{
 		combatMapBitmapGenerator = gen;
-	}
-
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
 	}
 
 	/**

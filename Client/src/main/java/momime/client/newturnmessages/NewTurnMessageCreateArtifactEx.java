@@ -12,7 +12,6 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
-import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
@@ -38,9 +37,6 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
-	/** Graphics database */
-	private GraphicsDatabaseEx graphicsDB;
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -203,22 +199,6 @@ public final class NewTurnMessageCreateArtifactEx extends NewTurnMessageCreateAr
 		return languageHolder.getLanguages ();
 	}
 	
-	/**
-	 * @return Graphics database
-	 */
-	public final GraphicsDatabaseEx getGraphicsDB ()
-	{
-		return graphicsDB;
-	}
-
-	/**
-	 * @param db Graphics database
-	 */
-	public final void setGraphicsDB (final GraphicsDatabaseEx db)
-	{
-		graphicsDB = db;
-	}
-
 	/**
 	 * @return Multiplayer client
 	 */

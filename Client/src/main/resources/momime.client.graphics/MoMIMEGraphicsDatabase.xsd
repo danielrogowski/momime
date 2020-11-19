@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:nxe="http://www.ndg.com/xmleditor/1.0.0"
 	xmlns:momimecommon="http://momime/common/database"
-	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:momimesvr="http://momime/server/database/v0_9_9" xmlns:map="http://www.ndg.com/map" 
+	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map" 
 	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_9" targetNamespace="http://momime/client/graphics/database/v0_9_9"
 	jaxb:version="2.0">
 	
 	<xsd:import namespace="http://www.ndg.com/map" />
 	<xsd:import namespace="http://www.ndg.com/multiplayer/sessionbase" />
 	<xsd:import namespace="http://momime/common/database" />
-	<xsd:import namespace="http://momime/server/database/v0_9_9" />
 
     <xsd:annotation>
 		<xsd:appinfo>
@@ -17,27 +16,20 @@
 				<nxe:title>Master of Magic Graphics File</nxe:title>
 				<nxe:xmlfilename>../client/graphics/Default.Master of Magic Graphics.xml</nxe:xmlfilename>
 			</nxe:database>
-			<nxe:database namespaceURI="http://momime/server/database/v0_9_9">
-				<nxe:title>Master of Magic Server Database</nxe:title>
-				<nxe:xmlfilename>../server/databases/Original Master of Magic 1.31 rules.Master of Magic Server.xml</nxe:xmlfilename>
-			</nxe:database>
 		</xsd:appinfo>
 	</xsd:annotation>
 
 	<xsd:element name="graphicsDatabase">
-	<xsd:complexType>
-		<xsd:sequence>
-			<!-- Placeholder to insert server DB -->
-			<xsd:element ref="momimesvr:serverDatabase" />
-			
-			<!-- Graphics DB entities -->
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillComponentImage" type="momimegfx:unitSkillComponentImage" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpecialOrderImage" type="momimegfx:unitSpecialOrderImage" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileUnitRelativeScale" type="momimegfx:combatTileUnitRelativeScale" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimecommon:playList" />
-		</xsd:sequence>
-	</xsd:complexType>
+		<xsd:complexType>
+			<xsd:sequence>
+				<!-- Graphics DB entities -->
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillComponentImage" type="momimegfx:unitSkillComponentImage" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpecialOrderImage" type="momimegfx:unitSpecialOrderImage" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileUnitRelativeScale" type="momimegfx:combatTileUnitRelativeScale" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimecommon:playList" />
+			</xsd:sequence>
+		</xsd:complexType>
 
 <!-- Primary keys -->
 

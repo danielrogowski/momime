@@ -29,7 +29,7 @@ public final class TestGraphicsDatabase extends ClientTestData
 	@Test
 	public final void testDatabaseConformToXSD () throws Exception
 	{
-		final URL xsdResource = getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION_NO_SERVER_LINK);
+		final URL xsdResource = getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION);
 		assertNotNull ("MoM IME Graphics XSD could not be found on classpath", xsdResource);
 
 		// Load XSD

@@ -62,7 +62,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<!-- Graphics XML -->
 	
 	<bean id="graphicsDatabaseSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">
-		<constructor-arg type="java.net.URL" value="/momime.client.graphics/MoMIMEGraphicsDatabase_NoServerXsdLink.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in graphics XML -->
+		<constructor-arg type="java.net.URL" value="/momime.client.graphics/MoMIMEGraphicsDatabase.xsd" />		<!-- Otherwise XSD validation expects to find serverDatabase element in graphics XML -->
 	</bean>
 	
 	<bean id="graphicsDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">

@@ -28,7 +28,7 @@ import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -429,7 +429,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		panel.setSmallFont (CreateFontsForTests.getSmallFont ());
 		panel.setPlayerPickUtils (playerPickUtils);
 		panel.setUnitUtils (unitUtils);
-		panel.setClientConfig (new MomImeClientConfigEx ());
+		panel.setClientConfig (new MomImeClientConfig ());
 		
 		if (actions != null)
 			for (final Action action : actions)

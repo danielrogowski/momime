@@ -32,10 +32,9 @@ import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitSkillComponentImageGfx;
+import momime.client.graphics.database.UnitSkillComponentImage;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.UnitName;
@@ -461,16 +460,12 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		anim.setUtils (utils);
 		anim.setPlayerColourImageGenerator (gen);
 		
-		// Config
-		final MomImeClientConfigEx config = new MomImeClientConfigEx (); 
-		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
 		unitUtils.setAnim (anim);
 		unitUtils.setGraphicsDB (gfx);
 		unitUtils.setClient (client);
 		unitUtils.setUtils (utils);
-		unitUtils.setClientConfig (config);
 		
 		// Set up a dummy panel
 		final Dimension panelSize = new Dimension (600, 400);
@@ -543,12 +538,8 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		when (summonedSingle.isSummoned ()).thenReturn (true);
 		when (summonedSingle.getFullFigureCount ()).thenReturn (1);
 		
-		// Config
-		final MomImeClientConfigEx config = new MomImeClientConfigEx ();
-
 		// Set up object to test
 		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
-		obj.setClientConfig (config);
 		
 		// Test double size units scale
 		assertEquals (1, obj.calculateWalkTiming (regularUnit), 0.0001);
@@ -667,27 +658,27 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		
 		// Attribute component backgrounds
-		final UnitSkillComponentImageGfx basicComponentBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage basicComponentBackground = new UnitSkillComponentImage ();
 		basicComponentBackground.setUnitSkillComponentImageFile ("b.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.BASIC, "generateAttributeImage")).thenReturn (basicComponentBackground);
 		when (utils.loadImage ("b.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_BASIC));
 
-		final UnitSkillComponentImageGfx weaponGradeComponentBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage weaponGradeComponentBackground = new UnitSkillComponentImage ();
 		weaponGradeComponentBackground.setUnitSkillComponentImageFile ("w.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.WEAPON_GRADE, "generateAttributeImage")).thenReturn (weaponGradeComponentBackground);
 		when (utils.loadImage ("w.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_WEAPON_GRADE));
 
-		final UnitSkillComponentImageGfx experienceComponentBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage experienceComponentBackground = new UnitSkillComponentImage ();
 		experienceComponentBackground.setUnitSkillComponentImageFile ("e.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.EXPERIENCE, "generateAttributeImage")).thenReturn (experienceComponentBackground);
 		when (utils.loadImage ("e.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_EXPERIENCE));
 
-		final UnitSkillComponentImageGfx heroSkillsComponentBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage heroSkillsComponentBackground = new UnitSkillComponentImage ();
 		heroSkillsComponentBackground.setUnitSkillComponentImageFile ("h.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "generateAttributeImage")).thenReturn (heroSkillsComponentBackground);
 		when (utils.loadImage ("h.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_HERO_SKILLS));
 
-		final UnitSkillComponentImageGfx caeComponentBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage caeComponentBackground = new UnitSkillComponentImage ();
 		caeComponentBackground.setUnitSkillComponentImageFile ("c.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "generateAttributeImage")).thenReturn (caeComponentBackground);
 		when (utils.loadImage ("c.png")).thenReturn (createSolidImage (2, 1, BACKGROUND_CAE));

@@ -20,7 +20,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.PendingMovement;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.OneCellPendingMovement;
 
 /**
@@ -181,7 +181,7 @@ public interface FogOfWarMidTurnMultiChanges
 	 */
 	public void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 
 	/**

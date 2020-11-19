@@ -31,8 +31,8 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.TileTypeEx;
-import momime.common.database.UnitEx;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
@@ -63,8 +63,8 @@ import momime.server.ai.CombatAI;
 import momime.server.ai.CombatAIMovementResult;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the CombatProcessingImpl class
@@ -537,7 +537,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Attacking player
@@ -626,7 +626,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Attacking player
@@ -733,7 +733,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Attacking player
@@ -844,7 +844,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Attacking player
@@ -3356,7 +3356,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Human attacker
@@ -3539,7 +3539,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Human attacker
@@ -3717,7 +3717,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Human attacker

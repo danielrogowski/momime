@@ -27,7 +27,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.LanguageVariableUI;
 import momime.client.language.database.LanguageOptionEx;
@@ -66,7 +66,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	private UnitClientUtils unitClientUtils;
 	
 	/** Complete client config, so we can edit various settings */
-	private MomImeClientConfigEx clientConfig;
+	private MomImeClientConfig clientConfig;
 	
 	/** Marshaller for saving client config */
 	private Marshaller clientConfigMarshaller;
@@ -736,7 +736,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/**
 	 * @return Complete client config, so we can edit various settings
 	 */
-	public final MomImeClientConfigEx getClientConfig ()
+	public final MomImeClientConfig getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -744,7 +744,7 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/**
 	 * @param cfg Complete client config, so we can edit various settings
 	 */
-	public final void setClientConfig (final MomImeClientConfigEx cfg)
+	public final void setClientConfig (final MomImeClientConfig cfg)
 	{
 		clientConfig = cfg;
 	}

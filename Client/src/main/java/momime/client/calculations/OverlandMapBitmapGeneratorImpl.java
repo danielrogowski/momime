@@ -16,7 +16,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.AnimationGfx;
 import momime.common.database.CityImage;
@@ -59,7 +59,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** Client config, containing various overland map settings */
-	private MomImeClientConfigEx clientConfig;
+	private MomImeClientConfig clientConfig;
 	
 	/** Bitmask generator */
 	private TileSetBitmaskGenerator tileSetBitmaskGenerator;
@@ -564,7 +564,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	/**
 	 * @return Client config, containing various overland map settings
 	 */	
-	public final MomImeClientConfigEx getClientConfig ()
+	public final MomImeClientConfig getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -572,7 +572,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	/**
 	 * @param config Client config, containing various overland map settings
 	 */
-	public final void setClientConfig (final MomImeClientConfigEx config)
+	public final void setClientConfig (final MomImeClientConfig config)
 	{
 		clientConfig = config;
 	}

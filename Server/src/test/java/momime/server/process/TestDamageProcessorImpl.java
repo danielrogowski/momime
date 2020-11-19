@@ -59,7 +59,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -128,7 +128,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
@@ -309,7 +309,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Coordinate system
@@ -479,7 +479,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Session variables
@@ -637,7 +637,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Expanded unit detalis

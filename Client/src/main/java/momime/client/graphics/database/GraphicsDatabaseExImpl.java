@@ -8,10 +8,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import momime.client.graphics.database.v0_9_9.CombatTileUnitRelativeScale;
-import momime.client.graphics.database.v0_9_9.GraphicsDatabase;
-import momime.client.graphics.database.v0_9_9.UnitSkillComponentImage;
-import momime.client.graphics.database.v0_9_9.UnitSpecialOrderImage;
 import momime.common.database.Animation;
 import momime.common.database.AnimationGfx;
 import momime.common.database.PlayList;
@@ -28,10 +24,10 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	private static final Log log = LogFactory.getLog (GraphicsDatabaseExImpl.class);
 	
 	/** Map of unit attribute component IDs to unit attribute component objects */
-	private Map<UnitSkillComponent, UnitSkillComponentImageGfx> UnitSkillComponentsMap;
+	private Map<UnitSkillComponent, UnitSkillComponentImage> UnitSkillComponentsMap;
 	
 	/** Map of unit special order IDs to unit special order objects */
-	private Map<UnitSpecialOrder, UnitSpecialOrderImageGfx> unitSpecialOrdersMap;
+	private Map<UnitSpecialOrder, UnitSpecialOrderImage> unitSpecialOrdersMap;
 	
 	/** Map of scales to coordinates for each figure count */
 	private Map<Integer, CombatTileUnitRelativeScaleGfx> combatTileUnitRelativeScalesMap;
@@ -50,14 +46,14 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		log.trace ("Entering buildMaps");
 		
 		// Create unit attribute components map
-		UnitSkillComponentsMap = new HashMap<UnitSkillComponent, UnitSkillComponentImageGfx> ();
+		UnitSkillComponentsMap = new HashMap<UnitSkillComponent, UnitSkillComponentImage> ();
 		for (final UnitSkillComponentImage thisComponent : getUnitSkillComponentImage ())
-			UnitSkillComponentsMap.put (thisComponent.getUnitSkillComponentID (), (UnitSkillComponentImageGfx) thisComponent);
+			UnitSkillComponentsMap.put (thisComponent.getUnitSkillComponentID (), thisComponent);
 
 		// Create unit special orders map
-		unitSpecialOrdersMap = new HashMap<UnitSpecialOrder, UnitSpecialOrderImageGfx> ();
+		unitSpecialOrdersMap = new HashMap<UnitSpecialOrder, UnitSpecialOrderImage> ();
 		for (final UnitSpecialOrderImage thisSpecialOrder : getUnitSpecialOrderImage ())
-			unitSpecialOrdersMap.put (thisSpecialOrder.getUnitSpecialOrderID (), (UnitSpecialOrderImageGfx) thisSpecialOrder);
+			unitSpecialOrdersMap.put (thisSpecialOrder.getUnitSpecialOrderID (), thisSpecialOrder);
 		
 		// Create combat tile unit relative scales map
 		combatTileUnitRelativeScalesMap = new HashMap<Integer, CombatTileUnitRelativeScaleGfx> ();
@@ -116,10 +112,10 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the UnitSkillComponentID doesn't exist
 	 */
 	@Override
-	public final UnitSkillComponentImageGfx findUnitSkillComponent (final UnitSkillComponent UnitSkillComponentID, final String caller)
+	public final UnitSkillComponentImage findUnitSkillComponent (final UnitSkillComponent UnitSkillComponentID, final String caller)
 		throws RecordNotFoundException
 	{
-		final UnitSkillComponentImageGfx found = UnitSkillComponentsMap.get (UnitSkillComponentID);
+		final UnitSkillComponentImage found = UnitSkillComponentsMap.get (UnitSkillComponentID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitSkillComponentImage.class, UnitSkillComponentID.toString (), caller);
 
@@ -133,9 +129,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the unitSpecialOrderID doesn't exist
 	 */
 	@Override
-	public final UnitSpecialOrderImageGfx findUnitSpecialOrder (final UnitSpecialOrder unitSpecialOrderID, final String caller) throws RecordNotFoundException
+	public final UnitSpecialOrderImage findUnitSpecialOrder (final UnitSpecialOrder unitSpecialOrderID, final String caller) throws RecordNotFoundException
 	{
-		final UnitSpecialOrderImageGfx found = unitSpecialOrdersMap.get (unitSpecialOrderID);
+		final UnitSpecialOrderImage found = unitSpecialOrdersMap.get (unitSpecialOrderID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitSpecialOrderImage.class, unitSpecialOrderID.toString (), caller);
 

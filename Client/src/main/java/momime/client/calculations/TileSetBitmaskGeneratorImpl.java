@@ -5,7 +5,7 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
 import momime.client.MomClient;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabaseConstants;
@@ -34,7 +34,7 @@ public final class TileSetBitmaskGeneratorImpl implements TileSetBitmaskGenerato
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/** Client config, containing various combat map settings */
-	private MomImeClientConfigEx clientConfig;
+	private MomImeClientConfig clientConfig;
 	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
@@ -232,7 +232,7 @@ public final class TileSetBitmaskGeneratorImpl implements TileSetBitmaskGenerato
 	/**
 	 * @return Client config, containing various combat map settings
 	 */	
-	public final MomImeClientConfigEx getClientConfig ()
+	public final MomImeClientConfig getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -240,7 +240,7 @@ public final class TileSetBitmaskGeneratorImpl implements TileSetBitmaskGenerato
 	/**
 	 * @param config Client config, containing various combat map settings
 	 */
-	public final void setClientConfig (final MomImeClientConfigEx config)
+	public final void setClientConfig (final MomImeClientConfig config)
 	{
 		clientConfig = config;
 	}

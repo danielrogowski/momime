@@ -27,7 +27,7 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Server only helper methods for dealing with hero items
@@ -49,7 +49,7 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 	 * @return Hero item with allocated URN
 	 */
 	@Override
-	public final NumberedHeroItem createNumberedHeroItem (final HeroItem item, final MomGeneralServerKnowledgeEx gsk)
+	public final NumberedHeroItem createNumberedHeroItem (final HeroItem item, final MomGeneralServerKnowledge gsk)
 	{
 		log.trace ("Entering createNumberedHeroItem: " + item.getHeroItemName ());
 		

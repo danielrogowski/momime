@@ -54,7 +54,7 @@ import momime.server.ServerTestData;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.UnitServerUtils;
@@ -130,7 +130,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		// Session variables
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -256,7 +256,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		// Session variables
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -400,7 +400,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		// Session variables
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -575,7 +575,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		// Session variables
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -647,7 +647,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		// Session variables
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -719,7 +719,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		// Session variables
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -870,7 +870,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (map);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -1032,7 +1032,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Players

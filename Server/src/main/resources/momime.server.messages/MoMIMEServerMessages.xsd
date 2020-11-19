@@ -2,7 +2,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
 	xmlns:mp="http://www.ndg.com/multiplayer/base" xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map"
 	xmlns:momimecommon="http://momime/common/database" xmlns:momimemsgs="http://momime/common/messages"
-	xmlns:momimesvrmsgs="http://momime/server/messages/v0_9_9" targetNamespace="http://momime/server/messages/v0_9_9"
+	xmlns:momimesvrmsgs="http://momime/server/messages" targetNamespace="http://momime/server/messages"
 	jaxb:version="2.0">
 
 	<xsd:import namespace="http://www.ndg.com/map" />

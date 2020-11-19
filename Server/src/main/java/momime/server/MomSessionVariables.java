@@ -15,8 +15,8 @@ import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import momime.common.database.CommonDatabase;
 import momime.common.messages.MomGeneralPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.mapgenerator.OverlandMapGenerator;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Container for all the values held against a session
@@ -36,7 +36,7 @@ public interface MomSessionVariables
 	/**
 	 * @return Server general knowledge, typecasted to MoM specific type
 	 */
-	public MomGeneralServerKnowledgeEx getGeneralServerKnowledge ();
+	public MomGeneralServerKnowledge getGeneralServerKnowledge ();
 	
 	/**
 	 * @return Public knowledge structure, typecasted to MoM specific type

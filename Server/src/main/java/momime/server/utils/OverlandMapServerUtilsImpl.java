@@ -45,8 +45,8 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Server side only helper methods for dealing with the overland map
@@ -159,7 +159,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	 * @return Auto generated city name
 	 */
 	@Override
-	public final String generateCityName (final MomGeneralServerKnowledgeEx gsk, final Race race)
+	public final String generateCityName (final MomGeneralServerKnowledge gsk, final Race race)
 	{
 		final List<String> possibleChoices = new ArrayList<String> ();
 

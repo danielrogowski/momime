@@ -25,11 +25,11 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutConstants;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainer;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutObjectFactory;
 
+import momime.client.graphics.database.GraphicsDatabase;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseExImpl;
 import momime.client.graphics.database.GraphicsDatabaseObjectFactory;
-import momime.client.graphics.database.v0_9_9.GraphicsDatabase;
 import momime.client.language.database.LanguageDatabaseConstants;
 import momime.common.database.AnimationGfx;
 import momime.common.database.CommonDatabaseConstants;

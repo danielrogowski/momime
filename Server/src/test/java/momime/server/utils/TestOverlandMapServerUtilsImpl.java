@@ -61,8 +61,8 @@ import momime.common.utils.UnitUtils;
 import momime.server.ServerTestData;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the OverlandMapServerUtilsImpl class
@@ -230,7 +230,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		}
 
 		// But 2 of them is already used
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.getUsedCityName ().add ("Hanna");
 		gsk.getUsedCityName ().add ("Emily");
 		

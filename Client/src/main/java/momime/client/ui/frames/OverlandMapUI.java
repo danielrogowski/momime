@@ -46,7 +46,7 @@ import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.languages.database.Month;
 import momime.client.languages.database.Shortcut;
@@ -150,7 +150,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	private CoordinateSystemUtils coordinateSystemUtils;
 
 	/** Client config, containing various overland map settings */
-	private MomImeClientConfigEx clientConfig;
+	private MomImeClientConfig clientConfig;
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
@@ -1724,7 +1724,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @return Client config, containing various overland map settings
 	 */	
-	public final MomImeClientConfigEx getClientConfig ()
+	public final MomImeClientConfig getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -1732,7 +1732,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @param config Client config, containing various overland map settings
 	 */
-	public final void setClientConfig (final MomImeClientConfigEx config)
+	public final void setClientConfig (final MomImeClientConfig config)
 	{
 		clientConfig = config;
 	}

@@ -21,7 +21,7 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Server side only helper methods for dealing with the overland map
@@ -49,7 +49,7 @@ public interface OverlandMapServerUtils
 	 * @param race The race who is creating a new city
 	 * @return Auto generated city name
 	 */
-	public String generateCityName (final MomGeneralServerKnowledgeEx gsk, final Race race);
+	public String generateCityName (final MomGeneralServerKnowledge gsk, final Race race);
 
 	/**
 	 * A spirit attempts to capture a node

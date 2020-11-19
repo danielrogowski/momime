@@ -3,8 +3,6 @@ package momime.client.graphics.database;
 import java.util.HashMap;
 import java.util.Map;
 
-import momime.client.graphics.database.v0_9_9.CombatTileFigurePositions;
-import momime.client.graphics.database.v0_9_9.FigurePositionsForFigureCount;
 import momime.common.database.RecordNotFoundException;
 
 /**
@@ -13,16 +11,16 @@ import momime.common.database.RecordNotFoundException;
 public final class CombatTileFigurePositionsGfx extends CombatTileFigurePositions
 {
 	/** Map of figure numbers to figure positions */
-	private Map<Integer, FigurePositionsForFigureCountGfx> figureNumbersMap;
+	private Map<Integer, FigurePositionsForFigureCount> figureNumbersMap;
 
 	/**
 	 * Builds the hash map to enable finding records faster
 	 */
 	public final void buildMap ()
 	{
-		figureNumbersMap = new HashMap<Integer, FigurePositionsForFigureCountGfx> ();
+		figureNumbersMap = new HashMap<Integer, FigurePositionsForFigureCount> ();
 		for (final FigurePositionsForFigureCount positions : getFigurePositionsForFigureCount ())
-			figureNumbersMap.put (positions.getFigureNumber (), (FigurePositionsForFigureCountGfx) positions);
+			figureNumbersMap.put (positions.getFigureNumber (), positions);
 	}
 	
 	/**
@@ -31,9 +29,9 @@ public final class CombatTileFigurePositionsGfx extends CombatTileFigurePosition
 	 * @return Coordinates to draw the figure at
 	 * @throws RecordNotFoundException If the figureNumber doesn't exist
 	 */
-	public final FigurePositionsForFigureCountGfx findFigureNumber (final int figureNumber, final String caller) throws RecordNotFoundException
+	public final FigurePositionsForFigureCount findFigureNumber (final int figureNumber, final String caller) throws RecordNotFoundException
 	{
-		final FigurePositionsForFigureCountGfx found = figureNumbersMap.get (figureNumber);
+		final FigurePositionsForFigureCount found = figureNumbersMap.get (figureNumber);
 
 		if (found == null)
 			throw new RecordNotFoundException (FigurePositionsForFigureCount.class, figureNumber, caller);

@@ -9,7 +9,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitSetting;
 import momime.common.messages.NumberedHeroItem;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Server only helper methods for dealing with hero items
@@ -21,7 +21,7 @@ public interface HeroItemServerUtils
 	 * @param gsk General server knowledge
 	 * @return Hero item with allocated URN
 	 */
-	public NumberedHeroItem createNumberedHeroItem (final HeroItem item, final MomGeneralServerKnowledgeEx gsk);
+	public NumberedHeroItem createNumberedHeroItem (final HeroItem item, final MomGeneralServerKnowledge gsk);
 
 	/**
 	 * @param player Player who wants to craft an item

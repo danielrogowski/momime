@@ -12,7 +12,7 @@ import com.ndg.map.CoordinateSystemUtilsImpl;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CommonDatabase;
@@ -44,7 +44,7 @@ public final class TestTileSetBitmaskGeneratorImpl extends ClientTestData
 	public final void testGenerateOverlandMapBitmask_NoSmoothing () throws Exception
 	{
 		// Client config
-		final MomImeClientConfigEx clientConfig = new MomImeClientConfigEx ();
+		final MomImeClientConfig clientConfig = new MomImeClientConfig ();
 		
 		// Smoothed tile type
 		final SmoothedTileTypeEx smoothedTileType = new SmoothedTileTypeEx ();
@@ -88,7 +88,7 @@ public final class TestTileSetBitmaskGeneratorImpl extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		// Client config
-		final MomImeClientConfigEx clientConfig = new MomImeClientConfigEx ();
+		final MomImeClientConfig clientConfig = new MomImeClientConfig ();
 		clientConfig.setOverlandSmoothTerrain (true);
 
 		// Smoothed tile type
@@ -137,7 +137,7 @@ public final class TestTileSetBitmaskGeneratorImpl extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		
 		// Client config
-		final MomImeClientConfigEx clientConfig = new MomImeClientConfigEx ();
+		final MomImeClientConfig clientConfig = new MomImeClientConfig ();
 		clientConfig.setOverlandSmoothTerrain (true);
 
 		// Smoothed tile type
@@ -195,7 +195,7 @@ public final class TestTileSetBitmaskGeneratorImpl extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Client config
-		final MomImeClientConfigEx clientConfig = new MomImeClientConfigEx ();
+		final MomImeClientConfig clientConfig = new MomImeClientConfig ();
 		clientConfig.setOverlandSmoothTerrain (true);
 
 		// Smoothed tile type
@@ -273,7 +273,7 @@ public final class TestTileSetBitmaskGeneratorImpl extends ClientTestData
 		when (client.getOurPersistentPlayerPrivateKnowledge ()).thenReturn (priv);
 		
 		// Client config
-		final MomImeClientConfigEx clientConfig = new MomImeClientConfigEx ();
+		final MomImeClientConfig clientConfig = new MomImeClientConfig ();
 		clientConfig.setOverlandSmoothTerrain (true);
 
 		// Smoothed tile type
@@ -318,7 +318,7 @@ public final class TestTileSetBitmaskGeneratorImpl extends ClientTestData
 	public final void testGenerateCombatMapBitmask_NoSmoothing () throws Exception
 	{
 		// Client config
-		final MomImeClientConfigEx clientConfig = new MomImeClientConfigEx ();
+		final MomImeClientConfig clientConfig = new MomImeClientConfig ();
 		
 		// Smoothed tile type
 		final SmoothedTileTypeEx smoothedTileType = new SmoothedTileTypeEx ();
@@ -362,7 +362,7 @@ public final class TestTileSetBitmaskGeneratorImpl extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 
 		// Client config
-		final MomImeClientConfigEx clientConfig = new MomImeClientConfigEx ();
+		final MomImeClientConfig clientConfig = new MomImeClientConfig ();
 		clientConfig.setCombatSmoothTerrain (true);
 		
 		// Smoothed tile type
@@ -413,7 +413,7 @@ public final class TestTileSetBitmaskGeneratorImpl extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 
 		// Client config
-		final MomImeClientConfigEx clientConfig = new MomImeClientConfigEx ();
+		final MomImeClientConfig clientConfig = new MomImeClientConfig ();
 		clientConfig.setCombatSmoothTerrain (true);
 		
 		// Smoothed tile type

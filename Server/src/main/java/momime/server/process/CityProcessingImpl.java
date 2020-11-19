@@ -69,8 +69,8 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 import momime.server.utils.PlayerPickServerUtils;
@@ -166,7 +166,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering createStartingCities");
@@ -408,7 +408,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 */
 	@Override
 	public final void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk,
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
@@ -1043,7 +1043,7 @@ public final class CityProcessingImpl implements CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledgeEx gsk, final List<PlayerServerDetails> players,
+	public final void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{

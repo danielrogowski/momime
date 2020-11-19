@@ -20,10 +20,9 @@ import com.ndg.zorder.ZOrderGraphics;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.calculations.ClientUnitCalculations;
-import momime.client.config.MomImeClientConfigEx;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.CombatTileFigurePositionsGfx;
-import momime.client.graphics.database.FigurePositionsForFigureCountGfx;
+import momime.client.graphics.database.FigurePositionsForFigureCount;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -106,9 +105,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	
 	/** Pending movement utils */
 	private PendingMovementUtils pendingMovementUtils;
-	
-	/** Client config, containing the scale setting */
-	private MomImeClientConfigEx clientConfig;
 	
 	/** Sound effects player */
 	private AudioPlayer soundPlayer;
@@ -443,7 +439,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final CombatTileFigurePositionsGfx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "calcUnitFigurePositions").findFigureCount (totalFigureCount * figureMultiplier, "calcUnitFigurePositions");
 		for (int n = 0; n < (aliveFigureCount * figureMultiplier); n++)
 		{
-			final FigurePositionsForFigureCountGfx position = positions.findFigureNumber (n+1, "calcUnitFigurePositions");
+			final FigurePositionsForFigureCount position = positions.findFigureNumber (n+1, "calcUnitFigurePositions");
 
 			// Generate coordinates
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET] = (position.getTileRelativeX () * relativeScaleMultiplier);
@@ -826,22 +822,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
-	}
-
-	/**
-	 * @return Client config, containing the scale setting
-	 */
-	public final MomImeClientConfigEx getClientConfig ()
-	{
-		return clientConfig;
-	}
-
-	/**
-	 * @param config Client config, containing the scale setting
-	 */
-	public final void setClientConfig (final MomImeClientConfigEx config)
-	{
-		clientConfig = config;
 	}
 
 	/**

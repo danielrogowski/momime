@@ -61,9 +61,9 @@ import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.mapgenerator.CombatMapGenerator;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.CityServerUtils;
 import momime.server.utils.OverlandMapServerUtils;
 
@@ -86,7 +86,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Attacking and defending locations
@@ -118,7 +118,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Attacking and defending locations
@@ -153,7 +153,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Session description
@@ -300,7 +300,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Session description
@@ -452,7 +452,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 
 		// Session description
@@ -598,7 +598,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Players
@@ -663,7 +663,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
@@ -780,7 +780,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
@@ -932,7 +932,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
@@ -1077,7 +1077,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
@@ -1267,7 +1267,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
@@ -1461,7 +1461,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session description
@@ -1608,7 +1608,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session description

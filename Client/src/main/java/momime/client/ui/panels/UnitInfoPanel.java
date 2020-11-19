@@ -38,7 +38,7 @@ import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
 import momime.client.calculations.ClientUnitCalculations;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.AnimationContainer;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.dialogs.MessageBoxUI;
@@ -213,7 +213,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Client config, containing various combat map settings */
-	private MomImeClientConfigEx clientConfig;
+	private MomImeClientConfig clientConfig;
 	
 	/** Help text scroll */
 	private HelpUI helpUI;
@@ -1170,7 +1170,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @return Client config, containing various combat map settings
 	 */	
-	public final MomImeClientConfigEx getClientConfig ()
+	public final MomImeClientConfig getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -1178,7 +1178,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/**
 	 * @param config Client config, containing various combat map settings
 	 */
-	public final void setClientConfig (final MomImeClientConfigEx config)
+	public final void setClientConfig (final MomImeClientConfig config)
 	{
 		clientConfig = config;
 	}

@@ -21,7 +21,7 @@ public final class TestCombatTileFigurePositionsGfx
 		final CombatTileFigurePositionsGfx positions = new CombatTileFigurePositionsGfx ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final FigurePositionsForFigureCountGfx figures = new FigurePositionsForFigureCountGfx ();
+			final FigurePositionsForFigureCount figures = new FigurePositionsForFigureCount ();
 			figures.setFigureNumber (n);
 			figures.setTileRelativeX (-n);
 			
@@ -45,7 +45,7 @@ public final class TestCombatTileFigurePositionsGfx
 		final CombatTileFigurePositionsGfx positions = new CombatTileFigurePositionsGfx ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final FigurePositionsForFigureCountGfx figures = new FigurePositionsForFigureCountGfx ();
+			final FigurePositionsForFigureCount figures = new FigurePositionsForFigureCount ();
 			figures.setFigureNumber (n);
 			figures.setTileRelativeX (-n);
 			

@@ -55,8 +55,8 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.calculations.ServerCityCalculations;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.CombatStartAndEnd;
 import momime.server.process.OneCellPendingMovement;
 import momime.server.process.PlayerMessageProcessing;
@@ -459,7 +459,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	@Override
 	public final void moveUnitStackOneCellOnServerAndClients (final List<MemoryUnit> unitStack, final PlayerServerDetails unitStackOwner,
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		log.trace ("Entering moveUnitStackOneCellOnServerAndClients: " + unitStack.size () + ", Player ID " +

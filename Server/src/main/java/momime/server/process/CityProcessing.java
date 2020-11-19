@@ -15,7 +15,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Methods for any significant message processing to do with cities that isn't done in the message implementations
@@ -39,7 +39,7 @@ public interface CityProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public void createStartingCities (final List<PlayerServerDetails> players,
-		final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;
 
 	/**
@@ -76,7 +76,7 @@ public interface CityProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void growCitiesAndProgressConstructionProjects (final int onlyOnePlayerID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk,
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 
@@ -194,7 +194,7 @@ public interface CityProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledgeEx gsk, final List<PlayerServerDetails> players,
+	public void moveSummoningCircleToWizardsFortress (final int playerID, final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException;
 }

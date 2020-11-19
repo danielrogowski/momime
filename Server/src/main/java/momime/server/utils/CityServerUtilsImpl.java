@@ -51,7 +51,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.fogofwar.KillUnitActionID;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Server side only helper methods for dealing with cities
@@ -250,7 +250,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void buildCityFromSettler (final MomGeneralServerKnowledgeEx gsk, final PlayerServerDetails player, final MemoryUnit settler,
+	public final void buildCityFromSettler (final MomGeneralServerKnowledge gsk, final PlayerServerDetails player, final MemoryUnit settler,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{

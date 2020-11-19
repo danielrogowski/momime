@@ -58,8 +58,8 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the SpellQueueingImpl class
@@ -492,7 +492,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		sd.setSpellSetting (settings);
 		
 		// Session variables
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getServerDB ()).thenReturn (db);
@@ -586,7 +586,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -670,7 +670,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -772,7 +772,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -872,7 +872,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -983,7 +983,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1098,7 +1098,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1213,7 +1213,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1337,7 +1337,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1458,7 +1458,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1589,7 +1589,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1721,7 +1721,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1849,7 +1849,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -1980,7 +1980,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -2118,7 +2118,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Session variables
@@ -2242,7 +2242,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// General server knowledge
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx (); 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2296,7 +2296,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx (); 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2378,7 +2378,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx (); 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();
@@ -2468,7 +2468,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		sd.setSpellSetting (settings);
 		
 		// General server knowledge
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx (); 
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge (); 
 		
 		// Players list
 		final PlayerDescription pd = new PlayerDescription ();

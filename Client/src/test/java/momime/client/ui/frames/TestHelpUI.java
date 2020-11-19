@@ -21,7 +21,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.graphics.database.UnitSkillComponentImageGfx;
+import momime.client.graphics.database.UnitSkillComponentImage;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -216,23 +216,23 @@ public final class TestHelpUI extends ClientTestData
 		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "HelpText")).thenReturn (meleeGfx);
 		
 		// Unit attribute component backgrounds
-		final UnitSkillComponentImageGfx basicBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage basicBackground = new UnitSkillComponentImage ();
 		basicBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/basic.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.BASIC, "HelpText")).thenReturn (basicBackground);
 		
-		final UnitSkillComponentImageGfx weaponGradeBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage weaponGradeBackground = new UnitSkillComponentImage ();
 		weaponGradeBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/weaponGrade.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.WEAPON_GRADE, "HelpText")).thenReturn (weaponGradeBackground);
 		
-		final UnitSkillComponentImageGfx experienceBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage experienceBackground = new UnitSkillComponentImage ();
 		experienceBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/experience.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.EXPERIENCE, "HelpText")).thenReturn (experienceBackground);
 		
-		final UnitSkillComponentImageGfx heroSkillsBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage heroSkillsBackground = new UnitSkillComponentImage ();
 		heroSkillsBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/heroSkills.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.HERO_SKILLS, "HelpText")).thenReturn (heroSkillsBackground);
 		
-		final UnitSkillComponentImageGfx caeBackground = new UnitSkillComponentImageGfx ();
+		final UnitSkillComponentImage caeBackground = new UnitSkillComponentImage ();
 		caeBackground.setUnitSkillComponentImageFile ("/momime.client.graphics/unitSkills/componentBackgrounds/combatAreaEffect.png");
 		when (gfx.findUnitSkillComponent (UnitSkillComponent.COMBAT_AREA_EFFECTS, "HelpText")).thenReturn (caeBackground);
 		

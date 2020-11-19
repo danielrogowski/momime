@@ -20,8 +20,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.config.MomImeClientConfigEx;
-import momime.client.config.v0_9_9.MomImeClientConfig;
+import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -128,17 +127,17 @@ public final class TestOptionsUI extends ClientTestData
 		when (languages.getLanguageOptions ()).thenReturn (languageOptions);
 
 		// Config
-		final MomImeClientConfigEx config = new MomImeClientConfigEx ();
+		final MomImeClientConfig config = new MomImeClientConfig ();
 		config.setCombatSmoothTerrain (true);
 		config.setOverlandSmoothTextures (true);
 		config.setDebugShowEdgesOfMap (true);
 		config.setDisplayUnitSkillsAsAttributes (UnitSkillTypeID.MODIFYABLE);
 		
 		// Decide a temp location to save updates to the config file
-		final String clientConfigLocation = File.createTempFile ("MomImeClientConfigEx", ".xml").getAbsolutePath ();
+		final String clientConfigLocation = File.createTempFile ("MomImeClientConfig", ".xml").getAbsolutePath ();
 		log.info ("Saving test updates to config file to \"" + clientConfigLocation + "\"");
 		
-		// Marshaller - have to specify the exact class here (not MomImeClientConfigEx) or saving the config does not work
+		// Marshaller - have to specify the exact class here (not MomImeClientConfig) or saving the config does not work
 		final Marshaller marshaller = JAXBContext.newInstance (MomImeClientConfig.class).createMarshaller ();
 		marshaller.setProperty (Marshaller.JAXB_FORMATTED_OUTPUT, true);
 		
@@ -146,7 +145,6 @@ public final class TestOptionsUI extends ClientTestData
 		final UnitClientUtilsImpl unitClientUtils = new UnitClientUtilsImpl ();
 		unitClientUtils.setGraphicsDB (gfx);
 		unitClientUtils.setAnim (anim);
-		unitClientUtils.setClientConfig (config);
 		unitClientUtils.setUtils (utils);
 		
 		// Layout

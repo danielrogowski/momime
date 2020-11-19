@@ -22,7 +22,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
@@ -197,7 +197,7 @@ public final class TestOverlandMapUI extends ClientTestData
 		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "updateAmountPerTurn")).thenReturn (player1);
 		
 		// Config
-		final MomImeClientConfigEx config = new MomImeClientConfigEx (); 
+		final MomImeClientConfig config = new MomImeClientConfig (); 
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

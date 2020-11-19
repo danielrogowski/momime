@@ -13,7 +13,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
-import momime.client.config.MomImeClientConfigEx;
+import momime.client.config.MomImeClientConfig;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.client.ui.frames.UnitInfoUI;
@@ -52,7 +52,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	private UnitClientUtils unitClientUtils;
 	
 	/** Client config, containing the scale setting */
-	private MomImeClientConfigEx clientConfig;
+	private MomImeClientConfig clientConfig;
 	
 	/** Overland map tile set */
 	private TileSetEx overlandMapTileSet;
@@ -360,7 +360,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	/**
 	 * @return Client config, containing the scale setting
 	 */
-	public final MomImeClientConfigEx getClientConfig ()
+	public final MomImeClientConfig getClientConfig ()
 	{
 		return clientConfig;
 	}
@@ -368,7 +368,7 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	/**
 	 * @param config Client config, containing the scale setting
 	 */
-	public final void setClientConfig (final MomImeClientConfigEx config)
+	public final void setClientConfig (final MomImeClientConfig config)
 	{
 		clientConfig = config;
 	}

@@ -16,31 +16,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="clientConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.client.config.v0_9_9.MomImeClientConfig</value>
+    			<value>momime.client.config.MomImeClientConfig</value>
     		</list>
    		</constructor-arg>
 	</bean>
-	
-	<bean id="clientConfigFactory" class="momime.client.config.ClientConfigFactory" />		<!-- Creates MomImeClientConfigEx instead of MomImeClientConfig -->
 	
 	<bean id="clientConfigUnmarshaller" class="javax.xml.bind.Unmarshaller" factory-bean="clientConfigJaxbContext" factory-method="createUnmarshaller">
 		<property name="schema" ref="clientConfigSchema" />
 	</bean>
 
-	<bean id="configureClientConfigUnmarshaller" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="targetObject" ref="clientConfigUnmarshaller" />
-		<property name="targetMethod" value="setProperty" />
-		<property name="arguments">
-			<list>
-				<value>com.sun.xml.bind.ObjectFactory</value>
-				<array>
-					<ref bean="clientConfigFactory" />
-				</array>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="clientConfig" class="momime.client.config.v0_9_9.MomImeClientConfig" factory-bean="clientConfigUnmarshaller" factory-method="unmarshal">
+	<bean id="clientConfig" class="momime.client.config.MomImeClientConfig" factory-bean="clientConfigUnmarshaller" factory-method="unmarshal">
 		<constructor-arg value="${configDir}MoMIMEClientConfig.xml" />
 	</bean>
 
@@ -68,7 +53,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="graphicsDatabaseJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.client.graphics.database.v0_9_9.GraphicsDatabase</value>
+    			<value>momime.client.graphics.database.GraphicsDatabase</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -806,7 +791,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
-		<property name="clientConfig" ref="clientConfig" />
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="heroItemsUI" ref="heroItemsUI" />

@@ -2,7 +2,7 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" xmlns:nxe="http://www.ndg.com/xmleditor/1.0.0"
 	xmlns:momimecommon="http://momime/common/database"
 	xmlns:mps="http://www.ndg.com/multiplayer/sessionbase" xmlns:map="http://www.ndg.com/map" 
-	xmlns:momimegfx="http://momime/client/graphics/database/v0_9_9" targetNamespace="http://momime/client/graphics/database/v0_9_9"
+	xmlns:momimegfx="http://momime/client/graphics/database" targetNamespace="http://momime/client/graphics/database"
 	jaxb:version="2.0">
 	
 	<xsd:import namespace="http://www.ndg.com/map" />
@@ -12,7 +12,7 @@
     <xsd:annotation>
 		<xsd:appinfo>
 			<nxe:backuponopen>Y</nxe:backuponopen>
-			<nxe:database namespaceURI="http://momime/client/graphics/database/v0_9_9">
+			<nxe:database namespaceURI="http://momime/client/graphics/database">
 				<nxe:title>Master of Magic Graphics File</nxe:title>
 				<nxe:xmlfilename>../client/graphics/Default.Master of Magic Graphics.xml</nxe:xmlfilename>
 			</nxe:database>

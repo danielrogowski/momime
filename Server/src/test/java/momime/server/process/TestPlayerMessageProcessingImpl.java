@@ -36,7 +36,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Tests the PlayerMessageProcessingImpl class
@@ -315,7 +315,7 @@ public final class TestPlayerMessageProcessingImpl
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Players
@@ -398,7 +398,7 @@ public final class TestPlayerMessageProcessingImpl
 		// General server knowledge
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (trueMap);
 		
 		// Players

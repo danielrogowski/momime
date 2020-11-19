@@ -17,7 +17,7 @@ public interface GraphicsDatabaseEx
 	 * @return Unit attribute component object
 	 * @throws RecordNotFoundException If the UnitSkillComponentID doesn't exist
 	 */
-	public UnitSkillComponentImageGfx findUnitSkillComponent (final UnitSkillComponent UnitSkillComponentID, final String caller) throws RecordNotFoundException;
+	public UnitSkillComponentImage findUnitSkillComponent (final UnitSkillComponent UnitSkillComponentID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @param unitSpecialOrderID Unit special order ID to search for
@@ -25,7 +25,7 @@ public interface GraphicsDatabaseEx
 	 * @return Unit special order object
 	 * @throws RecordNotFoundException If the unitSpecialOrderID doesn't exist
 	 */
-	public UnitSpecialOrderImageGfx findUnitSpecialOrder (final UnitSpecialOrder unitSpecialOrderID, final String caller) throws RecordNotFoundException;
+	public UnitSpecialOrderImage findUnitSpecialOrder (final UnitSpecialOrder unitSpecialOrderID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param scale Combat tile unit relative scale

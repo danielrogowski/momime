@@ -46,8 +46,8 @@ import momime.common.database.NodeStrengthPlane;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TileTypeEx;
 import momime.common.database.TileTypeAreaEffect;
+import momime.common.database.TileTypeEx;
 import momime.common.database.TileTypeFeatureChance;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSetting;
@@ -63,8 +63,8 @@ import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.unittests.mapstorage.StoredOverlandMap;
 
 /**
@@ -87,7 +87,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -133,7 +133,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Mock random number generator
@@ -185,7 +185,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Use real random number generator
@@ -264,7 +264,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Use real random number generator
@@ -351,7 +351,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Use real random number generator
@@ -439,7 +439,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -533,7 +533,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Mock random number generator
@@ -623,7 +623,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -669,7 +669,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		fow.setMap (terrain);
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -757,7 +757,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -938,7 +938,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -1136,7 +1136,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 
 		// Set up object to test
@@ -1238,7 +1238,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		// Map storage
 		final FogOfWarMemory fow = new FogOfWarMemory ();
 		
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		gsk.setTrueMap (fow);
 		
 		// Set up object to test
@@ -1349,7 +1349,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		final PlayerServerDetails monsterPlayer = new PlayerServerDetails (null, null, null, null, null); 
 		
 		// Map storage
-		final MomGeneralServerKnowledgeEx gsk = new MomGeneralServerKnowledgeEx ();
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
 		
 		// Mock random number generator
 		final RandomUtils random = mock (RandomUtils.class);

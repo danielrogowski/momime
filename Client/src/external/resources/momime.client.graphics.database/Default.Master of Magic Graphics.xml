@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database/v0_9_9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<momimegfx:graphicsDatabase xmlns:momimegfx="http://momime/client/graphics/database" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<unitSkillComponentImage unitSkillComponentID="B">
 		<unitSkillComponentImageFile>/momime.client.graphics/unitSkills/componentBackgrounds/basic.png</unitSkillComponentImageFile>
 	</unitSkillComponentImage>

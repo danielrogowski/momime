@@ -1,23 +1,13 @@
 package momime.server.knowledge;
 
-import momime.server.messages.v0_9_9.MomGeneralServerKnowledge;
-import momime.server.messages.v0_9_9.ObjectFactory;
-import momime.server.messages.v0_9_9.ServerGridCell;
+import momime.server.messages.ObjectFactory;
+import momime.server.messages.ServerGridCell;
 
 /**
  * Object factory necessary to create correct extensions of classes when reloading saved games
  */
 public final class MomServerKnowledgeObjectFactory extends ObjectFactory
 {
-	/**
-	 * @return Extended server knowledge structure
-	 */
-	@Override
-	public final MomGeneralServerKnowledge createMomGeneralServerKnowledge ()
-	{
-		return new MomGeneralServerKnowledgeEx ();
-	}
-
 	/**
 	 * @return Extended grid cell
 	 */

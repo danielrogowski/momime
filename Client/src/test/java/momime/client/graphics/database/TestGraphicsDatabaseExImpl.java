@@ -25,7 +25,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 65; n <= 67; n++)
 		{
-			final UnitSkillComponentImageGfx newUnitSkillComponent = new UnitSkillComponentImageGfx ();
+			final UnitSkillComponentImage newUnitSkillComponent = new UnitSkillComponentImage ();
 			newUnitSkillComponent.setUnitSkillComponentID (UnitSkillComponent.fromValue (new String (new char [] {(char) n})));
 			db.getUnitSkillComponentImage ().add (newUnitSkillComponent);
 		}
@@ -46,7 +46,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 65; n <= 67; n++)
 		{
-			final UnitSkillComponentImageGfx newUnitSkillComponent = new UnitSkillComponentImageGfx ();
+			final UnitSkillComponentImage newUnitSkillComponent = new UnitSkillComponentImage ();
 			newUnitSkillComponent.setUnitSkillComponentID (UnitSkillComponent.fromValue (new String (new char [] {(char) n})));
 			db.getUnitSkillComponentImage ().add (newUnitSkillComponent);
 		}
@@ -66,7 +66,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 67; n <= 68; n++)
 		{
-			final UnitSpecialOrderImageGfx newUnitSpecialOrder = new UnitSpecialOrderImageGfx ();
+			final UnitSpecialOrderImage newUnitSpecialOrder = new UnitSpecialOrderImage ();
 			newUnitSpecialOrder.setUnitSpecialOrderID (UnitSpecialOrder.fromValue (new String (new char [] {(char) n})));
 			db.getUnitSpecialOrderImage ().add (newUnitSpecialOrder);
 		}
@@ -87,7 +87,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 67; n <= 68; n++)
 		{
-			final UnitSpecialOrderImageGfx newUnitSpecialOrder = new UnitSpecialOrderImageGfx ();
+			final UnitSpecialOrderImage newUnitSpecialOrder = new UnitSpecialOrderImage ();
 			newUnitSpecialOrder.setUnitSpecialOrderID (UnitSpecialOrder.fromValue (new String (new char [] {(char) n})));
 			db.getUnitSpecialOrderImage ().add (newUnitSpecialOrder);
 		}

@@ -34,8 +34,8 @@ import momime.common.database.MapFeatureMagicRealm;
 import momime.common.database.MapSizePlane;
 import momime.common.database.NodeStrengthPlane;
 import momime.common.database.RecordNotFoundException;
-import momime.common.database.TileTypeEx;
 import momime.common.database.TileTypeAreaEffect;
+import momime.common.database.TileTypeEx;
 import momime.common.database.TileTypeFeatureChance;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
@@ -48,8 +48,8 @@ import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Server only class which contains all the code for generating a random overland map
@@ -62,7 +62,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private static final Log log = LogFactory.getLog (OverlandMapGeneratorImpl.class);
 	
 	/** Where to write the generated map to */
-	private MomGeneralServerKnowledgeEx gsk;
+	private MomGeneralServerKnowledge gsk;
 
 	/** Session description containing the parameters used to generate the map */
 	private MomSessionDescription sd;
@@ -1858,7 +1858,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	/**
 	 * @return Where to write the generated map to
 	 */
-	public final MomGeneralServerKnowledgeEx getGsk ()
+	public final MomGeneralServerKnowledge getGsk ()
 	{
 		return gsk;
 	}
@@ -1866,7 +1866,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	/**
 	 * @param terr Where to write the generated map to
 	 */
-	public final void setGsk (final MomGeneralServerKnowledgeEx terr)
+	public final void setGsk (final MomGeneralServerKnowledge terr)
 	{
 		gsk = terr;
 	}

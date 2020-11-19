@@ -26,7 +26,7 @@ import momime.common.messages.MomSessionDescription;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * This contains all methods that allow changes in the server's true memory to be replicated into each player's memory and send update messages to each client
@@ -88,7 +88,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
+	public MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation, final MapCoordinates3DEx combatLocation,
 		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final CommonDatabase db)
@@ -179,7 +179,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledgeEx gsk,
+	public void addExistingTrueMaintainedSpellToClients (final MomGeneralServerKnowledge gsk,
 		final MemoryMaintainedSpell trueSpell, final List<PlayerServerDetails> players,
 		final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
@@ -203,7 +203,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
+	public MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
 		final CommonDatabase db, final MomSessionDescription sd)
@@ -236,7 +236,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledgeEx gsk,
+	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException;
@@ -272,7 +272,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void addBuildingOnServerAndClients (final MomGeneralServerKnowledgeEx gsk, final List<PlayerServerDetails> players,
+	public void addBuildingOnServerAndClients (final MomGeneralServerKnowledge gsk, final List<PlayerServerDetails> players,
 		final MapCoordinates3DEx cityLocation, final String firstBuildingID, final String secondBuildingID,
 		final String buildingCreatedFromSpellID, final Integer buildingCreationSpellCastByPlayerID,
 		final MomSessionDescription sd, final CommonDatabase db)

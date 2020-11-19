@@ -20,7 +20,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="serverConfigJaxbContext" class="javax.xml.bind.JAXBContext" factory-method="newInstance">
 		<constructor-arg>
     		<list>
-    			<value>momime.server.config.v0_9_9.MomImeServerConfig</value>
+    			<value>momime.server.config.MomImeServerConfig</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -29,7 +29,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="schema" ref="serverConfigSchema" />
 	</bean>
 	
-	<bean id="serverConfig" class="momime.server.config.v0_9_9.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
+	<bean id="serverConfig" class="momime.server.config.MomImeServerConfig" factory-bean="serverConfigUnmarshaller" factory-method="unmarshal">
 		<constructor-arg value="${configDir}MoMIMEServerConfig.xml" />
 	</bean>
 	
@@ -284,8 +284,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     			<value>com.ndg.multiplayer.persistence.SavedGame</value>
 	   			<value>momime.common.messages.MomSessionDescription</value>
 	   			<value>momime.common.messages.MomGeneralPublicKnowledge</value>
-	   			<value>momime.server.messages.v0_9_9.MomGeneralServerKnowledge</value>
-	   			<value>momime.server.messages.v0_9_9.ServerGridCell</value>
+	   			<value>momime.server.messages.MomGeneralServerKnowledge</value>
+	   			<value>momime.server.messages.ServerGridCell</value>
 	   			<value>momime.common.messages.MomPersistentPlayerPublicKnowledge</value>
 	   			<value>momime.common.messages.MomPersistentPlayerPrivateKnowledge</value>
     		</list>
@@ -836,7 +836,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="trueMap" class="momime.common.messages.FogOfWarMemory" scope="prototype" />
 
-	<bean id="gsk" class="momime.server.knowledge.MomGeneralServerKnowledgeEx" scope="prototype">
+	<bean id="gsk" class="momime.server.messages.MomGeneralServerKnowledge" scope="prototype">
 		<property name="trueMap" ref="trueMap" />
 		<property name="nextFreeUnitURN" value="1" />
 		<property name="nextFreeBuildingURN" value="1" />

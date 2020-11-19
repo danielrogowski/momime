@@ -58,7 +58,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerSpellCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
-import momime.server.knowledge.MomGeneralServerKnowledgeEx;
+import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
  * Methods dealing with choosing treasure to reward to a player for capturing a lair/node/tower
@@ -211,7 +211,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 	@Override
 	public final TreasureRewardMessage rollTreasureReward (final int treasureValue, final PlayerServerDetails player,
 		final MapCoordinates3DEx lairNodeTowerLocation, final String tileTypeID, final String mapFeatureID,
-		final List<PlayerServerDetails> players, final MomGeneralServerKnowledgeEx gsk, final MomSessionDescription sd, final CommonDatabase db)
+		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		log.trace ("Entering rollTreasureReward: Value " + treasureValue + " for player " + player.getPlayerDescription ().getPlayerID ());

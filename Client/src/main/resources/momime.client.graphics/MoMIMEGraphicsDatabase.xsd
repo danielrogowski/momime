@@ -14,7 +14,7 @@
 			<nxe:backuponopen>Y</nxe:backuponopen>
 			<nxe:database namespaceURI="http://momime/client/graphics/database">
 				<nxe:title>Master of Magic Graphics File</nxe:title>
-				<nxe:xmlfilename>../client/graphics/Default.Master of Magic Graphics.xml</nxe:xmlfilename>
+				<nxe:xmlfilename>../client/graphics/Graphics.momime.xml</nxe:xmlfilename>
 			</nxe:database>
 		</xsd:appinfo>
 	</xsd:annotation>

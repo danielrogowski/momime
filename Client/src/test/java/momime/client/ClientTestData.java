@@ -76,7 +76,7 @@ public class ClientTestData
 	}
 
 	/**
-	 * @return Location of "Default.Master of Magic Graphics.xml" to test with
+	 * @return Location of "Graphics.momime.xml" to test with
 	 * @throws IOException If we are unable to locate the default graphics XML file
 	 */
 	public final File locateDefaultGraphicsXmlFile () throws IOException
@@ -85,7 +85,7 @@ public class ClientTestData
 		// So instead find something that is on the classpath of the MoMIMEClient project, then modify that location
 		final URL graphicsXSD = getClass ().getResource (GraphicsDatabaseConstants.GRAPHICS_XSD_LOCATION);
 		final File graphicsFile = new File (graphicsXSD.getFile ());
-		final File graphicsXmlFile = new File (graphicsFile, "../../../../src/external/resources/momime.client.graphics.database/Default.Master of Magic Graphics.xml");
+		final File graphicsXmlFile = new File (graphicsFile, "../../../../src/external/resources/momime.client.graphics.database/Graphics.momime.xml");
 
 		return graphicsXmlFile.getCanonicalFile ();
 	}

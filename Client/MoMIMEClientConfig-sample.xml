@@ -2,7 +2,7 @@
 <config:momImeClientConfig xmlns:config="http://momime/client/config">
 	<compressDataSentToServer>true</compressDataSentToServer>
 	<decompressDataReceivedFromServer>true</decompressDataReceivedFromServer>
-	<graphicsXmlFilename>client/graphics/Default.Master of Magic Graphics.xml</graphicsXmlFilename>
+	<graphicsXmlFilename>client/graphics/Graphics.momime.xml</graphicsXmlFilename>
     <languagesXmlFilename>client/languages/Languages.momime.xml</languagesXmlFilename>
 	<chosenLanguage>en</chosenLanguage>
 	<overlandSmoothTerrain>true</overlandSmoothTerrain>

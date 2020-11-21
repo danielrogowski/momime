@@ -1,7 +1,7 @@
 package momime.common.database;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Adds a map over the production values, so we can find their images faster
@@ -16,9 +16,7 @@ public final class ProductionTypeEx extends ProductionType
 	 */
 	public final void buildMap ()
 	{
-		productionValuesMap = new HashMap<String, String> ();
-		for (final ProductionTypeImage image : getProductionTypeImage ())
-			productionValuesMap.put (image.getProductionValue (), image.getProductionImageFile ());
+		productionValuesMap = getProductionTypeImage ().stream ().collect (Collectors.toMap (i -> i.getProductionValue (), i -> i.getProductionImageFile ()));
 	}
 	
 	/**

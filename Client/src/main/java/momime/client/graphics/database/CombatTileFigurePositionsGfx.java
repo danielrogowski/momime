@@ -1,7 +1,7 @@
 package momime.client.graphics.database;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import momime.common.database.RecordNotFoundException;
 
@@ -18,9 +18,7 @@ public final class CombatTileFigurePositionsGfx extends CombatTileFigurePosition
 	 */
 	public final void buildMap ()
 	{
-		figureNumbersMap = new HashMap<Integer, FigurePositionsForFigureCount> ();
-		for (final FigurePositionsForFigureCount positions : getFigurePositionsForFigureCount ())
-			figureNumbersMap.put (positions.getFigureNumber (), positions);
+		figureNumbersMap = getFigurePositionsForFigureCount ().stream ().collect (Collectors.toMap (p -> p.getFigureNumber (), p -> p));
 	}
 	
 	/**

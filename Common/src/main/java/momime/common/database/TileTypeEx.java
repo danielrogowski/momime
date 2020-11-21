@@ -1,7 +1,7 @@
 package momime.common.database;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Adds a map over the planes, so we can find the minimap colours quickly
@@ -19,13 +19,8 @@ public final class TileTypeEx extends TileType
 	 */
 	public final void buildMap ()
 	{
-		miniMapColoursMap = new HashMap<Integer, Integer> ();
-		for (final TileTypeMiniMap miniMap : getTileTypeMiniMap ())
-			miniMapColoursMap.put (miniMap.getPlaneNumber (), Integer.parseInt (miniMap.getMiniMapPixelColour (), 16));
-		
-		roadsMap = new HashMap<Integer, TileTypeRoad> ();
-		for (final TileTypeRoad road : getTileTypeRoad ())
-			roadsMap.put (road.getDirection (), road);
+		miniMapColoursMap = getTileTypeMiniMap ().stream ().collect (Collectors.toMap (t -> t.getPlaneNumber (), t -> Integer.parseInt (t.getMiniMapPixelColour (), 16)));
+		roadsMap = getTileTypeRoad ().stream ().collect (Collectors.toMap (t -> t.getDirection (), t -> t));
 	}
 	
 	/**

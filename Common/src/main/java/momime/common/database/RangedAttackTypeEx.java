@@ -1,7 +1,7 @@
 package momime.common.database;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Adds a map over the weapon grades, so we can find their images faster
@@ -19,13 +19,8 @@ public final class RangedAttackTypeEx extends RangedAttackType
 	 */
 	public final void buildMaps ()
 	{
-		weaponGradesMap = new HashMap<Integer, String> ();
-		for (final RangedAttackTypeWeaponGrade weaponGrade : getRangedAttackTypeWeaponGrade ())
-			weaponGradesMap.put (weaponGrade.getWeaponGradeNumber (), weaponGrade.getUnitDisplayRangedImageFile ());
-		
-		combatImagesMap = new HashMap<String, RangedAttackTypeCombatImage> ();
-		for (final RangedAttackTypeCombatImage combatImage : getRangedAttackTypeCombatImage ())
-			combatImagesMap.put (combatImage.getRangedAttackTypeActionID () + "-" + combatImage.getDirection (), combatImage);
+		weaponGradesMap = getRangedAttackTypeWeaponGrade ().stream ().collect (Collectors.toMap (w -> w.getWeaponGradeNumber (), w -> w.getUnitDisplayRangedImageFile ()));
+		combatImagesMap = getRangedAttackTypeCombatImage ().stream ().collect (Collectors.toMap (i -> i.getRangedAttackTypeActionID () + "-" + i.getDirection (), i -> i));
 	}
 	
 	/**

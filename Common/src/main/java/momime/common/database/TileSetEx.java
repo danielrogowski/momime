@@ -2,9 +2,10 @@ package momime.common.database;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,25 +52,13 @@ public final class TileSetEx extends TileSet
 		
 		// Have to do this in two passes, since we need all smoothing systems loaded before we can start loading smoothed tile types.
 		// i.e. one smoothing system may be shared by multiple tile types.
-		smoothingSystemsMap = new HashMap<String, SmoothingSystemEx> ();
-		
-		for (final SmoothingSystem ss : getSmoothingSystem ())
-		{
-			final SmoothingSystemEx ssex = (SmoothingSystemEx) ss;
-			ssex.buildMap (getDirections ());
-			smoothingSystemsMap.put (ssex.getSmoothingSystemID (), ssex);
-		}
+		smoothingSystemsMap = getSmoothingSystems ().stream ().collect (Collectors.toMap (s -> s.getSmoothingSystemID (), s -> s));
+		for (final SmoothingSystemEx ss : getSmoothingSystems ())
+			ss.buildMap (getDirections ());
 		
 		// Now we can directly find each smoothing system and have the smoothed -> list of unsmoothed map build, can deal with each tile type
-		for (final SmoothedTileType tt : getSmoothedTileType ())
-		{
-			final SmoothingSystemEx ss = smoothingSystemsMap.get (tt.getSmoothingSystemID ());
-			if (ss == null)
-				throw new RecordNotFoundException (SmoothingSystem.class, tt.getSmoothingSystemID (), "TileSetGfx.buildMaps");
-					
-			final SmoothedTileTypeEx ttex = (SmoothedTileTypeEx) tt;
-			ttex.buildMap (ss.getBitmasksMap ());
-		}
+		for (final SmoothedTileTypeEx tt : getSmoothedTileTypes ())
+			tt.buildMap (findSmoothingSystem (tt.getSmoothingSystemID (), "buildMaps").getBitmasksMap ());
 		
 		log.info ("Processed all smoothing system rules for the " + getTileSetName () + " tile set");		
 		log.trace ("Exiting buildMaps");
@@ -180,6 +169,15 @@ public final class TileSetEx extends TileSet
 	}
 	
 	/**
+	 * @return List of all smoothing systems
+	 */
+	@SuppressWarnings ("unchecked")
+	public final List<SmoothingSystemEx> getSmoothingSystems ()
+	{
+		return (List<SmoothingSystemEx>) (List<?>) getSmoothingSystem ();
+	}
+	
+	/**
 	 * @param smoothingSystemID Smoothing system ID to search for
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Smoothing system object
@@ -192,6 +190,15 @@ public final class TileSetEx extends TileSet
 			throw new RecordNotFoundException (SmoothingSystemEx.class, smoothingSystemID, caller);
 
 		return found;
+	}
+	
+	/**
+	 * @return List of all smoothed tile types
+	 */
+	@SuppressWarnings ("unchecked")
+	public final List<SmoothedTileTypeEx> getSmoothedTileTypes ()
+	{
+		return (List<SmoothedTileTypeEx>) (List<?>) getSmoothedTileType ();
 	}
 	
 	/**

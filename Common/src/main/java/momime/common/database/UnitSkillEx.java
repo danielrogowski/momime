@@ -1,7 +1,7 @@
 package momime.common.database;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Adds a map over the weapon grades, so we can find their images faster
@@ -16,9 +16,7 @@ public final class UnitSkillEx extends UnitSkill
 	 */
 	public final void buildMap ()
 	{
-		weaponGradesMap = new HashMap<Integer, String> ();
-		for (final UnitSkillWeaponGrade weaponGrade : getUnitSkillWeaponGrade ())
-			weaponGradesMap.put (weaponGrade.getWeaponGradeNumber (), weaponGrade.getSkillImageFile ());
+		weaponGradesMap = getUnitSkillWeaponGrade ().stream ().collect (Collectors.toMap (g -> g.getWeaponGradeNumber (), g -> g.getSkillImageFile ()));
 	}
 	
 	/**

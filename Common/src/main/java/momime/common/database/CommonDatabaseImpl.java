@@ -182,52 +182,15 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		buildingsMap = getBuilding ().stream ().collect (Collectors.toMap (b -> b.getBuildingID (), b -> b));
 		spellRanksMap = getSpellRank ().stream ().collect (Collectors.toMap (r -> r.getSpellRankID (), r -> r));
 		spellBookSectionsMap = getSpellBookSection ().stream ().collect (Collectors.toMap (b -> b.getSpellBookSectionID (), b -> b));
-		
-		// Create spells map
-		spellsMap = new HashMap<String, Spell> ();
-		for (final Spell thisSpell : getSpell ())
-			spellsMap.put (thisSpell.getSpellID (), thisSpell);
-
-		// Create combat area effects map
-		combatAreaEffectsMap = new HashMap<String, CombatAreaEffect> ();
-		for (final CombatAreaEffect thisCombatAreaEffect : getCombatAreaEffect ())
-			combatAreaEffectsMap.put (thisCombatAreaEffect.getCombatAreaEffectID (), thisCombatAreaEffect);
-
-		// Combat tile types map
-		combatTileTypesMap = new HashMap<String, CombatTileType> ();
-		for (final CombatTileType thisCombatTileType : getCombatTileType ())
-			combatTileTypesMap.put (thisCombatTileType.getCombatTileTypeID (), thisCombatTileType);
-
-		// Combat tile borders map
-		combatTileBordersMap = new HashMap<String, CombatTileBorder> ();
-		for (final CombatTileBorder thisCombatTileBorder : getCombatTileBorder ())
-			combatTileBordersMap.put (thisCombatTileBorder.getCombatTileBorderID (), thisCombatTileBorder);
-		
-		// City spell effects map
-		citySpellEffectsMap = new HashMap<String, CitySpellEffect> ();
-		for (final CitySpellEffect thisCitySpellEffect : getCitySpellEffect ())
-			citySpellEffectsMap.put (thisCitySpellEffect.getCitySpellEffectID (), thisCitySpellEffect);
-		
-		// Create hero item slot types map
-		heroItemSlotTypesMap = new HashMap<String, HeroItemSlotType> ();
-		for (final HeroItemSlotType thisHeroItemSlotType : getHeroItemSlotType ())
-			heroItemSlotTypesMap.put (thisHeroItemSlotType.getHeroItemSlotTypeID (), thisHeroItemSlotType);
-
-		// Create hero item types map
-		heroItemTypesMap = new HashMap<String, HeroItemType> ();
-		for (final HeroItemType thisHeroItemType : getHeroItemType ())
-			heroItemTypesMap.put (thisHeroItemType.getHeroItemTypeID (), thisHeroItemType);
-
-		// Create hero item bonuses map
-		heroItemBonusesMap = new HashMap<String, HeroItemBonus> ();
-		for (final HeroItemBonus thisHeroItemBonus : getHeroItemBonus ())
-			heroItemBonusesMap.put (thisHeroItemBonus.getHeroItemBonusID (), thisHeroItemBonus);
-		
-		// Create damage types map
-		damageTypesMap = new HashMap<String, DamageType> ();
-		for (final DamageType thisDamageType : getDamageType ())
-			damageTypesMap.put (thisDamageType.getDamageTypeID (), thisDamageType);
-		
+		spellsMap = getSpell ().stream ().collect (Collectors.toMap (s -> s.getSpellID (), s -> s));
+		combatAreaEffectsMap = getCombatAreaEffect ().stream ().collect (Collectors.toMap (c -> c.getCombatAreaEffectID (), c -> c));
+		combatTileTypesMap = getCombatTileType ().stream ().collect (Collectors.toMap (c -> c.getCombatTileTypeID (), c -> c));
+		combatTileBordersMap = getCombatTileBorder ().stream ().collect (Collectors.toMap (c -> c.getCombatTileBorderID (), c -> c));
+		citySpellEffectsMap = getCitySpellEffect ().stream ().collect (Collectors.toMap (c -> c.getCitySpellEffectID (), c -> c));
+		heroItemSlotTypesMap = getHeroItemSlotType ().stream ().collect (Collectors.toMap (h -> h.getHeroItemSlotTypeID (), h -> h));
+		heroItemTypesMap = getHeroItemType ().stream ().collect (Collectors.toMap (h -> h.getHeroItemTypeID (), h -> h));
+		heroItemBonusesMap = getHeroItemBonus ().stream ().collect (Collectors.toMap (h -> h.getHeroItemBonusID (), h -> h));
+		damageTypesMap = getDamageType ().stream ().collect (Collectors.toMap (d -> d.getDamageTypeID (), d -> d));
 		tileSetsMap = getTileSets ().stream ().collect (Collectors.toMap (s -> s.getTileSetID (), s -> s));
 		animationsMap = getAnimations ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> a));
 		playListsMap = getPlayList ().stream ().collect (Collectors.toMap (p -> p.getPlayListID (), p -> p));

@@ -1,7 +1,7 @@
 package momime.common.database;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Adds a map over directions, so we can find their images faster
@@ -16,9 +16,7 @@ public final class UnitCombatActionEx extends UnitCombatAction
 	 */
 	public final void buildMap ()
 	{
-		directionsMap = new HashMap<Integer, UnitCombatImage> ();
-		for (final UnitCombatImage image : getUnitCombatImage ())
-			directionsMap.put (image.getDirection (), image);
+		directionsMap = getUnitCombatImage ().stream ().collect (Collectors.toMap (i -> i.getDirection (), i -> i));
 	}
 
 	/**

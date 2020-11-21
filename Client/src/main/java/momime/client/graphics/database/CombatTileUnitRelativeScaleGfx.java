@@ -1,7 +1,8 @@
 package momime.client.graphics.database;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import momime.common.database.RecordNotFoundException;
 
@@ -18,13 +19,18 @@ public final class CombatTileUnitRelativeScaleGfx extends CombatTileUnitRelative
 	 */
 	public final void buildMap ()
 	{
-		figureCountsMap = new HashMap<Integer, CombatTileFigurePositionsGfx> ();
-		for (final CombatTileFigurePositions positions : getCombatTileFigurePositions ())
-		{
-			final CombatTileFigurePositionsGfx posex = (CombatTileFigurePositionsGfx) positions;
-			posex.buildMap ();
-			figureCountsMap.put (posex.getFigureCount (), posex);
-		}
+		figureCountsMap = getCombatTileFigurePositionsGfx ().stream ().collect (Collectors.toMap (p -> p.getFigureCount (), p -> p));
+		
+		getCombatTileFigurePositionsGfx ().forEach (p -> p.buildMap ());
+	}
+	
+	/**
+	 * @return List of figure counts
+	 */
+	@SuppressWarnings ("unchecked")
+	public final List<CombatTileFigurePositionsGfx> getCombatTileFigurePositionsGfx ()
+	{
+		return (List<CombatTileFigurePositionsGfx>) (List<?>) getCombatTileFigurePositions ();
 	}
 	
 	/**

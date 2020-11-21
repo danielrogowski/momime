@@ -1,7 +1,7 @@
 package momime.common.database;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Adds a map over the civlian types, so we can find their images faster
@@ -16,9 +16,7 @@ public final class RaceEx extends Race
 	 */
 	public final void buildMap ()
 	{
-		populationTasksMap = new HashMap<String, String> ();
-		for (final RacePopulationTask task : getRacePopulationTask ())
-			populationTasksMap.put (task.getPopulationTaskID (), task.getCivilianImageFile ());
+		populationTasksMap = getRacePopulationTask ().stream ().collect (Collectors.toMap (p -> p.getPopulationTaskID (), p -> p.getCivilianImageFile ())); 
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 package momime.client.graphics.database;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -24,7 +24,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	private static final Log log = LogFactory.getLog (GraphicsDatabaseExImpl.class);
 	
 	/** Map of unit attribute component IDs to unit attribute component objects */
-	private Map<UnitSkillComponent, UnitSkillComponentImage> UnitSkillComponentsMap;
+	private Map<UnitSkillComponent, UnitSkillComponentImage> unitSkillComponentsMap;
 	
 	/** Map of unit special order IDs to unit special order objects */
 	private Map<UnitSpecialOrder, UnitSpecialOrderImage> unitSpecialOrdersMap;
@@ -45,28 +45,13 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	{
 		log.trace ("Entering buildMaps");
 		
-		// Create unit attribute components map
-		UnitSkillComponentsMap = new HashMap<UnitSkillComponent, UnitSkillComponentImage> ();
-		for (final UnitSkillComponentImage thisComponent : getUnitSkillComponentImage ())
-			UnitSkillComponentsMap.put (thisComponent.getUnitSkillComponentID (), thisComponent);
-
-		// Create unit special orders map
-		unitSpecialOrdersMap = new HashMap<UnitSpecialOrder, UnitSpecialOrderImage> ();
-		for (final UnitSpecialOrderImage thisSpecialOrder : getUnitSpecialOrderImage ())
-			unitSpecialOrdersMap.put (thisSpecialOrder.getUnitSpecialOrderID (), thisSpecialOrder);
-		
-		// Create combat tile unit relative scales map
-		combatTileUnitRelativeScalesMap = new HashMap<Integer, CombatTileUnitRelativeScaleGfx> ();
-		for (final CombatTileUnitRelativeScale scale : getCombatTileUnitRelativeScale ())
-		{
-			final CombatTileUnitRelativeScaleGfx scaleEx = (CombatTileUnitRelativeScaleGfx) scale;
-			scaleEx.buildMap ();
-			combatTileUnitRelativeScalesMap.put (scaleEx.getScale (), scaleEx);
-		}
-		
-		// Create animations map
-		animationsMap = getAnimation ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> (AnimationGfx) a));
+		unitSkillComponentsMap = getUnitSkillComponentImage ().stream ().collect (Collectors.toMap (i -> i.getUnitSkillComponentID (), i -> i));
+		unitSpecialOrdersMap = getUnitSpecialOrderImage ().stream ().collect (Collectors.toMap (i -> i.getUnitSpecialOrderID (), i -> i));
+		combatTileUnitRelativeScalesMap = getCombatTileUnitRelativeScales ().stream ().collect (Collectors.toMap (s -> s.getScale (), s -> s));
+		animationsMap = getAnimations ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> a));
 		playListsMap = getPlayList ().stream ().collect (Collectors.toMap (p -> p.getPlayListID (), p -> p));
+		
+		getCombatTileUnitRelativeScales ().forEach (s -> s.buildMap ());
 		
 		log.trace ("Exiting buildMaps");
 	}
@@ -81,11 +66,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		log.info ("Processing graphics XML file");
 		
 		// Check all animations have frames with consistent sizes
-		for (final Animation anim : getAnimation ())
-		{
-			final AnimationGfx aex = (AnimationGfx) anim;
-			aex.deriveAnimationWidthAndHeight ();
-		}
+		for (final AnimationGfx anim : getAnimations ())
+			anim.deriveAnimationWidthAndHeight ();
+		
 		log.info ("All " + getAnimation ().size () + " graphics XML animations passed consistency checks");		
 		
 		log.trace ("Exiting consistencyChecks");
@@ -115,7 +98,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	public final UnitSkillComponentImage findUnitSkillComponent (final UnitSkillComponent UnitSkillComponentID, final String caller)
 		throws RecordNotFoundException
 	{
-		final UnitSkillComponentImage found = UnitSkillComponentsMap.get (UnitSkillComponentID);
+		final UnitSkillComponentImage found = unitSkillComponentsMap.get (UnitSkillComponentID);
 		if (found == null)
 			throw new RecordNotFoundException (UnitSkillComponentImage.class, UnitSkillComponentID.toString (), caller);
 
@@ -139,6 +122,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 	
 	/**
+	 * @return List of all unit relative scales
+	 */
+	@SuppressWarnings ("unchecked")
+	public final List<CombatTileUnitRelativeScaleGfx> getCombatTileUnitRelativeScales ()
+	{
+		return (List<CombatTileUnitRelativeScaleGfx>) (List<?>) getCombatTileUnitRelativeScale ();
+	}
+	
+	/**
 	 * @param scale Combat tile unit relative scale
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
 	 * @return Scale object
@@ -152,6 +144,15 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			throw new RecordNotFoundException (CombatTileUnitRelativeScale.class, scale, caller);
 
 		return found;
+	}
+
+	/**
+	 * @return List of all animations
+	 */
+	@SuppressWarnings ("unchecked")
+	public final List<AnimationGfx> getAnimations ()
+	{
+		return (List<AnimationGfx>) (List<?>) getAnimation ();
 	}
 	
 	/**

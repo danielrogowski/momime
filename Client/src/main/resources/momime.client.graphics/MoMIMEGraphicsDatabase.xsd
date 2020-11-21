@@ -25,7 +25,7 @@
 				<!-- Graphics DB entities -->
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillComponentImage" type="momimegfx:unitSkillComponentImage" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSpecialOrderImage" type="momimegfx:unitSpecialOrderImage" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileUnitRelativeScale" type="momimegfx:combatTileUnitRelativeScale" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileFigurePositions" type="momimegfx:combatTileFigurePositions" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimecommon:playList" />
 			</xsd:sequence>
@@ -41,9 +41,9 @@
 			<xsd:selector xpath="unitSpecialOrderImage" />
 			<xsd:field xpath="@unitSpecialOrderID" />
 		</xsd:key>
-		<xsd:key name="combatTileUnitRelativeScalePK">
-			<xsd:selector xpath="combatTileUnitRelativeScale" />
-			<xsd:field xpath="@scale" />
+		<xsd:key name="combatTileFigurePositionsPK">
+			<xsd:selector xpath="combatTileFigurePositions" />
+			<xsd:field xpath="@figureCount" />
 		</xsd:key>
 		<xsd:key name="animationPK">
 			<xsd:selector xpath="animation" />
@@ -71,13 +71,6 @@
 		<xsd:attribute name="unitSpecialOrderID" type="momimecommon:unitSpecialOrder" use="required" nxe:label="Special Order" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
-	<xsd:complexType name="combatTileUnitRelativeScale" nxe:singular="Combat Tile Unit Relative Scale" nxe:plural="Combat Tile Unit Relative Scales" nxe:submenu="Units">
-		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileFigurePositions" type="momimegfx:combatTileFigurePositions" />
-		</xsd:sequence>
-		<xsd:attribute name="scale" type="momimegfx:combatTileUnitRelativeScaleID" use="required" nxe:label="Scale" nxe:gridwidth="60" />
-	</xsd:complexType>
-
 	<xsd:complexType name="combatTileFigurePositions" nxe:singular="Figure Count" nxe:plural="Figure Counts">
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="figurePositionsForFigureCount" type="momimegfx:figurePositionsForFigureCount" />
@@ -95,8 +88,4 @@
 
 <!-- Simple data types -->
 	
-	<xsd:simpleType name="combatTileUnitRelativeScaleID">
-		<xsd:restriction base="xsd:unsignedShort" />
-	</xsd:simpleType>
-
 </xsd:schema>

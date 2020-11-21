@@ -98,43 +98,47 @@ public final class TestGraphicsDatabaseExImpl
 	}
 
 	/**
-	 * Tests the findCombatTileUnitRelativeScale method to find a scale that does exist
+	 * Tests the findFigureCount method to look for a figure count that does exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test
-	public final void testFindCombatTileUnitRelativeScale_Exists () throws RecordNotFoundException
+	public final void testFindFigureCount_Exists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatTileUnitRelativeScaleGfx newCombatTileUnitRelativeScale = new CombatTileUnitRelativeScaleGfx ();
-			newCombatTileUnitRelativeScale.setScale (n);
-			db.getCombatTileUnitRelativeScale ().add (newCombatTileUnitRelativeScale);
+			final CombatTileFigurePositionsGfx positions = new CombatTileFigurePositionsGfx ();
+			positions.setFigureCount (n);
+			
+			db.getCombatTileFigurePositions ().add (positions);
 		}
-
+		
 		db.buildMaps ();
-
-		assertEquals (2, db.findCombatTileUnitRelativeScale (2, "testFindCombatTileUnitRelativeScale_Exists").getScale ());
+		
+		// Run tests
+		assertEquals (2, db.findFigureCount (2, "testFindFigureCount_Exists").getFigureCount ());
 	}
 
 	/**
-	 * Tests the findCombatTileUnitRelativeScale method to find a scale that doesn't exist
+	 * Tests the findFigureCount method to look for a figure count that doesn't exist
 	 * @throws RecordNotFoundException If the record is not found
 	 */
 	@Test(expected=RecordNotFoundException.class)
-	public final void testFindCombatTileUnitRelativeScale_NotExists () throws RecordNotFoundException
+	public final void testFindFigureCount_NotExists () throws RecordNotFoundException
 	{
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final CombatTileUnitRelativeScaleGfx newCombatTileUnitRelativeScale = new CombatTileUnitRelativeScaleGfx ();
-			newCombatTileUnitRelativeScale.setScale (n);
-			db.getCombatTileUnitRelativeScale ().add (newCombatTileUnitRelativeScale);
+			final CombatTileFigurePositionsGfx positions = new CombatTileFigurePositionsGfx ();
+			positions.setFigureCount (n);
+			
+			db.getCombatTileFigurePositions ().add (positions);
 		}
-
+		
 		db.buildMaps ();
-
-		db.findCombatTileUnitRelativeScale (4, "testFindCombatTileUnitRelativeScale_NotExists");
+		
+		// Run tests
+		db.findFigureCount (4, "testFindFigureCount_NotExists");
 	}
 
 	/**

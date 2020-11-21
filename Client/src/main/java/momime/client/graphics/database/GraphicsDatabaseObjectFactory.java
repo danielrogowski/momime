@@ -18,15 +18,6 @@ public final class GraphicsDatabaseObjectFactory extends ObjectFactory
 	}
 
 	/**
-	 * @return Custom extended scale
-	 */
-	@Override
-	public final CombatTileUnitRelativeScale createCombatTileUnitRelativeScale ()
-	{
-		return new CombatTileUnitRelativeScaleGfx ();
-	}
-
-	/**
 	 * @return Custom extended Unit positions
 	 */
 	@Override

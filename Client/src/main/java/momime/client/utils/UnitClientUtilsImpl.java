@@ -422,31 +422,22 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final int [] [] calcUnitFigurePositions (final int totalFigureCount, final int aliveFigureCount, final int offsetX, final int offsetY) throws IOException
 	{
-		// relativeScale = which set of positions from the graphics XML to use for this unit's figures
-		// relativeScaleMultiplier = what to multiply the tileRelativeX, Y in th egraphics XML by
-		// unitImageMultiplier = how much to multiply the size of the unit figures by
-		// figureMultiplier = how many times the number of figures should we draw
-		final int relativeScale = 1;
-		final int relativeScaleMultiplier = 2;
-		final int figureMultiplier = 1;
-		final int unitImageMultiplier = 2;
-		
 		// This is to account that the unit's feet don't touch the bottom of the image
 		final int fudgeY = (totalFigureCount <= 2) ? 4 : 6;
 		
 		// Get the positions of the n times
-		final int [] [] result = new int [aliveFigureCount * figureMultiplier] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER+1];
-		final CombatTileFigurePositionsGfx positions = getGraphicsDB ().findCombatTileUnitRelativeScale (relativeScale, "calcUnitFigurePositions").findFigureCount (totalFigureCount * figureMultiplier, "calcUnitFigurePositions");
-		for (int n = 0; n < (aliveFigureCount * figureMultiplier); n++)
+		final int [] [] result = new int [aliveFigureCount] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER+1];
+		final CombatTileFigurePositionsGfx positions = getGraphicsDB ().findFigureCount (totalFigureCount, "calcUnitFigurePositions");
+		for (int n = 0; n < aliveFigureCount; n++)
 		{
 			final FigurePositionsForFigureCount position = positions.findFigureNumber (n+1, "calcUnitFigurePositions");
 
 			// Generate coordinates
-			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET] = (position.getTileRelativeX () * relativeScaleMultiplier);
-			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET] = (position.getTileRelativeY () * relativeScaleMultiplier) + (fudgeY * unitImageMultiplier);
+			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET] = (position.getTileRelativeX () * 2);
+			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET] = (position.getTileRelativeY () * 2) + (fudgeY * 2);
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] = offsetX + result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET];
 			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] = offsetY + result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET];
-			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER] = unitImageMultiplier;
+			result [n] [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER] = 2;
 		}
 		
 		return result;

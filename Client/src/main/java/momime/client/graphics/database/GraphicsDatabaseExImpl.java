@@ -29,8 +29,8 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	/** Map of unit special order IDs to unit special order objects */
 	private Map<UnitSpecialOrder, UnitSpecialOrderImage> unitSpecialOrdersMap;
 	
-	/** Map of scales to coordinates for each figure count */
-	private Map<Integer, CombatTileUnitRelativeScaleGfx> combatTileUnitRelativeScalesMap;
+	/** Map of figure counts to figure positions */
+	private Map<Integer, CombatTileFigurePositionsGfx> figureCountsMap;
 	
 	/** Map of animation IDs to animation objects */
 	private Map<String, AnimationEx> animationsMap;
@@ -47,11 +47,11 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		
 		unitSkillComponentsMap = getUnitSkillComponentImage ().stream ().collect (Collectors.toMap (i -> i.getUnitSkillComponentID (), i -> i));
 		unitSpecialOrdersMap = getUnitSpecialOrderImage ().stream ().collect (Collectors.toMap (i -> i.getUnitSpecialOrderID (), i -> i));
-		combatTileUnitRelativeScalesMap = getCombatTileUnitRelativeScales ().stream ().collect (Collectors.toMap (s -> s.getScale (), s -> s));
+		figureCountsMap = getCombatTileFigurePositionsGfx ().stream ().collect (Collectors.toMap (p -> p.getFigureCount (), p -> p));
 		animationsMap = getAnimations ().stream ().collect (Collectors.toMap (a -> a.getAnimationID (), a -> a));
 		playListsMap = getPlayList ().stream ().collect (Collectors.toMap (p -> p.getPlayListID (), p -> p));
 		
-		getCombatTileUnitRelativeScales ().forEach (s -> s.buildMap ());
+		getCombatTileFigurePositionsGfx ().forEach (p -> p.buildMap ());
 		
 		log.trace ("Exiting buildMaps");
 	}
@@ -122,27 +122,28 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	}
 	
 	/**
-	 * @return List of all unit relative scales
+	 * @return List of figure counts
 	 */
 	@SuppressWarnings ("unchecked")
-	public final List<CombatTileUnitRelativeScaleGfx> getCombatTileUnitRelativeScales ()
+	public final List<CombatTileFigurePositionsGfx> getCombatTileFigurePositionsGfx ()
 	{
-		return (List<CombatTileUnitRelativeScaleGfx>) (List<?>) getCombatTileUnitRelativeScale ();
+		return (List<CombatTileFigurePositionsGfx>) (List<?>) getCombatTileFigurePositions ();
 	}
 	
 	/**
-	 * @param scale Combat tile unit relative scale
+	 * @param figureCount Full number of units in the figure being drawn, before it takes any damage
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Scale object
-	 * @throws RecordNotFoundException If the scale doesn't exist
+	 * @return List of the coordinates to draw each figure at
+	 * @throws RecordNotFoundException If the figureCount doesn't exist
 	 */
 	@Override
-	public final CombatTileUnitRelativeScaleGfx findCombatTileUnitRelativeScale (final int scale, final String caller) throws RecordNotFoundException
+	public final CombatTileFigurePositionsGfx findFigureCount (final int figureCount, final String caller) throws RecordNotFoundException
 	{
-		final CombatTileUnitRelativeScaleGfx found = combatTileUnitRelativeScalesMap.get (scale);
-		if (found == null)
-			throw new RecordNotFoundException (CombatTileUnitRelativeScale.class, scale, caller);
+		final CombatTileFigurePositionsGfx found = figureCountsMap.get (figureCount);
 
+		if (found == null)
+			throw new RecordNotFoundException (CombatTileFigurePositions.class, figureCount, caller);
+		
 		return found;
 	}
 

@@ -42,478 +42,100 @@
 	<unitSpecialOrderImage unitSpecialOrderID="D">
 		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/dismiss.png</unitSpecialOrderImageFile>
 	</unitSpecialOrderImage>
-	<combatTileUnitRelativeScale scale="1">
-		<combatTileFigurePositions figureCount="1">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>15</tileRelativeX>
-				<tileRelativeY>11</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="2">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>7</tileRelativeX>
-				<tileRelativeY>9</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>23</tileRelativeX>
-				<tileRelativeY>9</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="4">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>15</tileRelativeX>
-				<tileRelativeY>2</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>5</tileRelativeX>
-				<tileRelativeY>7</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>25</tileRelativeX>
-				<tileRelativeY>7</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>15</tileRelativeX>
-				<tileRelativeY>12</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="6">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>15</tileRelativeX>
-				<tileRelativeY>2</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>4</tileRelativeX>
-				<tileRelativeY>7</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>18</tileRelativeX>
-				<tileRelativeY>6</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>11</tileRelativeX>
-				<tileRelativeY>10</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="5">
-				<tileRelativeX>24</tileRelativeX>
-				<tileRelativeY>8</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="6">
-				<tileRelativeX>15</tileRelativeX>
-				<tileRelativeY>13</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="8">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>15</tileRelativeX>
-				<tileRelativeY>2</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>4</tileRelativeX>
-				<tileRelativeY>7</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>12</tileRelativeX>
-				<tileRelativeY>6</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>20</tileRelativeX>
-				<tileRelativeY>5</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="5">
-				<tileRelativeX>9</tileRelativeX>
-				<tileRelativeY>10</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="6">
-				<tileRelativeX>24</tileRelativeX>
-				<tileRelativeY>7</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="7">
-				<tileRelativeX>17</tileRelativeX>
-				<tileRelativeY>8</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="8">
-				<tileRelativeX>15</tileRelativeX>
-				<tileRelativeY>13</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-	</combatTileUnitRelativeScale>
-	<combatTileUnitRelativeScale scale="2">
-		<combatTileFigurePositions figureCount="1">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>24</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="4">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>5</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>11</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>24</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>50</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="5">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>5</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>11</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>14</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>24</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="5">
-				<tileRelativeX>50</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="8">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>5</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>9</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>24</tileRelativeX>
-				<tileRelativeY>13</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>40</tileRelativeX>
-				<tileRelativeY>11</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="5">
-				<tileRelativeX>19</tileRelativeX>
-				<tileRelativeY>21</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="6">
-				<tileRelativeX>34</tileRelativeX>
-				<tileRelativeY>17</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="7">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>26</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="8">
-				<tileRelativeX>49</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="16">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>2</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>4</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>29</tileRelativeX>
-				<tileRelativeY>11</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>21</tileRelativeX>
-				<tileRelativeY>25</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="5">
-				<tileRelativeX>47</tileRelativeX>
-				<tileRelativeY>12</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="6">
-				<tileRelativeX>39</tileRelativeX>
-				<tileRelativeY>24</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="7">
-				<tileRelativeX>13</tileRelativeX>
-				<tileRelativeY>10</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="8">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>29</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="9">
-				<tileRelativeX>39</tileRelativeX>
-				<tileRelativeY>16</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="10">
-				<tileRelativeX>20</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="11">
-				<tileRelativeX>56</tileRelativeX>
-				<tileRelativeY>16</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="12">
-				<tileRelativeX>22</tileRelativeX>
-				<tileRelativeY>6</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="13">
-				<tileRelativeX>37</tileRelativeX>
-				<tileRelativeY>7</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="14">
-				<tileRelativeX>11</tileRelativeX>
-				<tileRelativeY>20</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="15">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>20</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="16">
-				<tileRelativeX>48</tileRelativeX>
-				<tileRelativeY>20</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="24">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>2</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>4</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>33</tileRelativeX>
-				<tileRelativeY>12</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>15</tileRelativeX>
-				<tileRelativeY>21</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="5">
-				<tileRelativeX>28</tileRelativeX>
-				<tileRelativeY>18</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="6">
-				<tileRelativeX>45</tileRelativeX>
-				<tileRelativeY>10</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="7">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>29</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="8">
-				<tileRelativeX>42</tileRelativeX>
-				<tileRelativeY>17</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="9">
-				<tileRelativeX>56</tileRelativeX>
-				<tileRelativeY>16</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="10">
-				<tileRelativeX>13</tileRelativeX>
-				<tileRelativeY>10</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="11">
-				<tileRelativeX>27</tileRelativeX>
-				<tileRelativeY>9</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="12">
-				<tileRelativeX>24</tileRelativeX>
-				<tileRelativeY>26</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="13">
-				<tileRelativeX>33</tileRelativeX>
-				<tileRelativeY>21</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="14">
-				<tileRelativeX>48</tileRelativeX>
-				<tileRelativeY>20</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="15">
-				<tileRelativeX>18</tileRelativeX>
-				<tileRelativeY>13</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="16">
-				<tileRelativeX>41</tileRelativeX>
-				<tileRelativeY>8</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="17">
-				<tileRelativeX>19</tileRelativeX>
-				<tileRelativeY>23</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="18">
-				<tileRelativeX>22</tileRelativeX>
-				<tileRelativeY>6</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="19">
-				<tileRelativeX>37</tileRelativeX>
-				<tileRelativeY>14</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="20">
-				<tileRelativeX>50</tileRelativeX>
-				<tileRelativeY>13</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="21">
-				<tileRelativeX>9</tileRelativeX>
-				<tileRelativeY>18</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="22">
-				<tileRelativeX>35</tileRelativeX>
-				<tileRelativeY>5</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="23">
-				<tileRelativeX>24</tileRelativeX>
-				<tileRelativeY>16</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="24">
-				<tileRelativeX>39</tileRelativeX>
-				<tileRelativeY>24</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-		<combatTileFigurePositions figureCount="32">
-			<figurePositionsForFigureCount figureNumber="1">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>2</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="2">
-				<tileRelativeX>4</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="3">
-				<tileRelativeX>22</tileRelativeX>
-				<tileRelativeY>11</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="4">
-				<tileRelativeX>38</tileRelativeX>
-				<tileRelativeY>13</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="5">
-				<tileRelativeX>17</tileRelativeX>
-				<tileRelativeY>22</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="6">
-				<tileRelativeX>31</tileRelativeX>
-				<tileRelativeY>22</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="7">
-				<tileRelativeX>46</tileRelativeX>
-				<tileRelativeY>11</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="8">
-				<tileRelativeX>30</tileRelativeX>
-				<tileRelativeY>29</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="9">
-				<tileRelativeX>43</tileRelativeX>
-				<tileRelativeY>22</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="10">
-				<tileRelativeX>17</tileRelativeX>
-				<tileRelativeY>8</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="11">
-				<tileRelativeX>54</tileRelativeX>
-				<tileRelativeY>15</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="12">
-				<tileRelativeX>26</tileRelativeX>
-				<tileRelativeY>19</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="13">
-				<tileRelativeX>38</tileRelativeX>
-				<tileRelativeY>7</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="14">
-				<tileRelativeX>26</tileRelativeX>
-				<tileRelativeY>27</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="15">
-				<tileRelativeX>43</tileRelativeX>
-				<tileRelativeY>16</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="16">
-				<tileRelativeX>28</tileRelativeX>
-				<tileRelativeY>14</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="17">
-				<tileRelativeX>16</tileRelativeX>
-				<tileRelativeY>14</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="18">
-				<tileRelativeX>28</tileRelativeX>
-				<tileRelativeY>8</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="19">
-				<tileRelativeX>37</tileRelativeX>
-				<tileRelativeY>19</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="20">
-				<tileRelativeX>8</tileRelativeX>
-				<tileRelativeY>17</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="21">
-				<tileRelativeX>49</tileRelativeX>
-				<tileRelativeY>19</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="22">
-				<tileRelativeX>34</tileRelativeX>
-				<tileRelativeY>11</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="23">
-				<tileRelativeX>11</tileRelativeX>
-				<tileRelativeY>11</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="24">
-				<tileRelativeX>42</tileRelativeX>
-				<tileRelativeY>9</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="25">
-				<tileRelativeX>22</tileRelativeX>
-				<tileRelativeY>17</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="26">
-				<tileRelativeX>37</tileRelativeX>
-				<tileRelativeY>25</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="27">
-				<tileRelativeX>34</tileRelativeX>
-				<tileRelativeY>5</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="28">
-				<tileRelativeX>22</tileRelativeX>
-				<tileRelativeY>24</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="29">
-				<tileRelativeX>23</tileRelativeX>
-				<tileRelativeY>5</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="30">
-				<tileRelativeX>13</tileRelativeX>
-				<tileRelativeY>20</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="31">
-				<tileRelativeX>32</tileRelativeX>
-				<tileRelativeY>16</tileRelativeY>
-			</figurePositionsForFigureCount>
-			<figurePositionsForFigureCount figureNumber="32">
-				<tileRelativeX>50</tileRelativeX>
-				<tileRelativeY>13</tileRelativeY>
-			</figurePositionsForFigureCount>
-		</combatTileFigurePositions>
-	</combatTileUnitRelativeScale>
+	<combatTileFigurePositions figureCount="1">
+		<figurePositionsForFigureCount figureNumber="1">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>11</tileRelativeY>
+		</figurePositionsForFigureCount>
+	</combatTileFigurePositions>
+	<combatTileFigurePositions figureCount="2">
+		<figurePositionsForFigureCount figureNumber="1">
+			<tileRelativeX>7</tileRelativeX>
+			<tileRelativeY>9</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="2">
+			<tileRelativeX>23</tileRelativeX>
+			<tileRelativeY>9</tileRelativeY>
+		</figurePositionsForFigureCount>
+	</combatTileFigurePositions>
+	<combatTileFigurePositions figureCount="4">
+		<figurePositionsForFigureCount figureNumber="1">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>2</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="2">
+			<tileRelativeX>5</tileRelativeX>
+			<tileRelativeY>7</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="3">
+			<tileRelativeX>25</tileRelativeX>
+			<tileRelativeY>7</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="4">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>12</tileRelativeY>
+		</figurePositionsForFigureCount>
+	</combatTileFigurePositions>
+	<combatTileFigurePositions figureCount="6">
+		<figurePositionsForFigureCount figureNumber="1">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>2</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="2">
+			<tileRelativeX>4</tileRelativeX>
+			<tileRelativeY>7</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="3">
+			<tileRelativeX>18</tileRelativeX>
+			<tileRelativeY>6</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="4">
+			<tileRelativeX>11</tileRelativeX>
+			<tileRelativeY>10</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="5">
+			<tileRelativeX>24</tileRelativeX>
+			<tileRelativeY>8</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="6">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>13</tileRelativeY>
+		</figurePositionsForFigureCount>
+	</combatTileFigurePositions>
+	<combatTileFigurePositions figureCount="8">
+		<figurePositionsForFigureCount figureNumber="1">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>2</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="2">
+			<tileRelativeX>4</tileRelativeX>
+			<tileRelativeY>7</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="3">
+			<tileRelativeX>12</tileRelativeX>
+			<tileRelativeY>6</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="4">
+			<tileRelativeX>20</tileRelativeX>
+			<tileRelativeY>5</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="5">
+			<tileRelativeX>9</tileRelativeX>
+			<tileRelativeY>10</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="6">
+			<tileRelativeX>24</tileRelativeX>
+			<tileRelativeY>7</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="7">
+			<tileRelativeX>17</tileRelativeX>
+			<tileRelativeY>8</tileRelativeY>
+		</figurePositionsForFigureCount>
+		<figurePositionsForFigureCount figureNumber="8">
+			<tileRelativeX>15</tileRelativeX>
+			<tileRelativeY>13</tileRelativeY>
+		</figurePositionsForFigureCount>
+	</combatTileFigurePositions>
 	<animation animationID="MUDDY_TILE">
 		<animationDescription>Muddy combat tile resulting from Earth to Mud spell</animationDescription>
 		<animationSpeed>4</animationSpeed>

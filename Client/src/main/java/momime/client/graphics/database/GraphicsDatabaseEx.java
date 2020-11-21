@@ -28,12 +28,12 @@ public interface GraphicsDatabaseEx
 	public UnitSpecialOrderImage findUnitSpecialOrder (final UnitSpecialOrder unitSpecialOrderID, final String caller) throws RecordNotFoundException;
 	
 	/**
-	 * @param scale Combat tile unit relative scale
+	 * @param figureCount Full number of units in the figure being drawn, before it takes any damage
 	 * @param caller Name of method calling this, for inclusion in debug message if there is a problem
-	 * @return Scale object
-	 * @throws RecordNotFoundException If the scale doesn't exist
+	 * @return List of the coordinates to draw each figure at
+	 * @throws RecordNotFoundException If the figureCount doesn't exist
 	 */
-	public CombatTileUnitRelativeScaleGfx findCombatTileUnitRelativeScale (final int scale, final String caller) throws RecordNotFoundException;
+	public CombatTileFigurePositionsGfx findFigureCount (final int figureCount, final String caller) throws RecordNotFoundException;
 		
 	/**
 	 * @param animationID Animation ID to search for

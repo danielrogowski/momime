@@ -39,7 +39,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.UnitName;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CombatAction;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -407,9 +407,9 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 	 * @param unitID ID of unit to set up animation for
 	 * @return Animation with necessary details for testDrawUnit
 	 */
-	private final AnimationGfx createUnitAnimation (final String unitID)
+	private final AnimationEx createUnitAnimation (final String unitID)
 	{
-		final AnimationGfx anim = new AnimationGfx ();
+		final AnimationEx anim = new AnimationEx ();
 		anim.setAnimationSpeed (6);
 		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-move-frame1.png");
 		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-stand.png");

@@ -23,7 +23,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 import momime.client.database.AvailableDatabase;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabaseFactory;
 import momime.common.database.CommonDatabaseImpl;
@@ -84,9 +84,9 @@ public final class TestServerDatabaseConvertersImpl extends ServerTestData
 			}
 			
 			@Override
-			public final AnimationGfx createAnimation ()
+			public final AnimationEx createAnimation ()
 			{
-				return new AnimationGfx ();
+				return new AnimationEx ();
 			}
 		});
 		

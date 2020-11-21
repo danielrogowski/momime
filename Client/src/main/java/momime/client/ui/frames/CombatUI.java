@@ -63,7 +63,7 @@ import momime.common.MomException;
 import momime.common.calculations.CombatMoveType;
 import momime.common.calculations.SpellCalculations;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorderImage;
 import momime.common.database.CommonDatabaseConstants;
@@ -388,7 +388,7 @@ public final class CombatUI extends MomClientFrameUI
 	private Color flashColour = NO_FLASH_COLOUR;
 	
 	/** Animation to display for a spell being cast */
-	private AnimationGfx combatCastAnimation;
+	private AnimationEx combatCastAnimation;
 	
 	/** Whether the combat case animation appears behind or in front of the units */
 	private boolean combatCastAnimationInFront;
@@ -780,7 +780,7 @@ public final class CombatUI extends MomClientFrameUI
 						if ((unit != null) && (unit.getAnimations () != null))
 							try
 							{
-								for (final AnimationGfx effectAnim : unit.getAnimations ())
+								for (final AnimationEx effectAnim : unit.getAnimations ())
 								{
 									final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
 									final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
@@ -801,7 +801,7 @@ public final class CombatUI extends MomClientFrameUI
 				if (getUnitMoving () != null)
 					try
 					{
-						for (final AnimationGfx effectAnim : getUnitMoving ().getAnimations ())
+						for (final AnimationEx effectAnim : getUnitMoving ().getAnimations ())
 						{
 							final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
 							final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
@@ -1879,7 +1879,7 @@ public final class CombatUI extends MomClientFrameUI
 			unitToDrawAtEachLocation [y] [x] = null;
 		else
 		{
-			final List<AnimationGfx> animations = new ArrayList<AnimationGfx> ();
+			final List<AnimationEx> animations = new ArrayList<AnimationEx> ();
 			final List<String> shadingColours = new ArrayList<String> ();
 			
 			for (final String unitSkillID : xu.listModifiedSkillIDs ())
@@ -2452,7 +2452,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @return Animation to display for a spell being cast
 	 */
-	public final AnimationGfx getCombatCastAnimation ()
+	public final AnimationEx getCombatCastAnimation ()
 	{
 		return combatCastAnimation;
 	}
@@ -2460,7 +2460,7 @@ public final class CombatUI extends MomClientFrameUI
 	/**
 	 * @param an Animation to display for a spell being cast
 	 */
-	public final void setCombatCastAnimation (final AnimationGfx an)
+	public final void setCombatCastAnimation (final AnimationEx an)
 	{
 		combatCastAnimation = an;
 	}

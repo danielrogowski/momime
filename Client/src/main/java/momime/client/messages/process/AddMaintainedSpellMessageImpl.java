@@ -26,7 +26,7 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.TileSetEx;
@@ -78,7 +78,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	private boolean animatedByOtherFrame;
 	
 	/** Animation to display; null to process message instantly, or if animation is being handled by another frame */
-	private AnimationGfx anim;
+	private AnimationEx anim;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server

@@ -20,7 +20,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.WizardWonScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
@@ -59,7 +59,7 @@ public final class TestWizardWonUI extends ClientTestData
 		when (db.findWizard ("WZ01", "WizardWonUI")).thenReturn (winningWizardDef);
 		
 		// Animations
-		final AnimationGfx worldsAnim = new AnimationGfx ();
+		final AnimationEx worldsAnim = new AnimationEx ();
 		for (int n = 1; n <= 67; n++)
 		{
 			String s = Integer.valueOf (n).toString ();
@@ -71,7 +71,7 @@ public final class TestWizardWonUI extends ClientTestData
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_WORLDS, "WizardWonUI (W)")).thenReturn (worldsAnim);
 
-		final AnimationGfx sparklesAnim = new AnimationGfx ();
+		final AnimationEx sparklesAnim = new AnimationEx ();
 		for (int n = 1; n <= 25; n++)
 		{
 			String s = Integer.valueOf (n).toString ();
@@ -83,7 +83,7 @@ public final class TestWizardWonUI extends ClientTestData
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_SPARKLES, "WizardWonUI (S)")).thenReturn (sparklesAnim);
 
-		final AnimationGfx talkingAnim = new AnimationGfx ();
+		final AnimationEx talkingAnim = new AnimationEx ();
 		for (int n = 1; n <= 20; n++)
 		{
 			String s = Integer.valueOf (n).toString ();

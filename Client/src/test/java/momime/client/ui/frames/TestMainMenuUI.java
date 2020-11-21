@@ -18,7 +18,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.MainMenuScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.AnimationControllerImpl;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.Language;
 
 /**
@@ -62,7 +62,7 @@ public final class TestMainMenuUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 
 		// Mock entries from the graphics XML
-		final AnimationGfx title = new AnimationGfx ();
+		final AnimationEx title = new AnimationEx ();
 		title.setAnimationSpeed (8);
 		for (int n = 1; n <= 20; n++)
 			title.getFrame ().add ("/momime.client.graphics/ui/mainMenu/title-frame" + ((n < 10) ? "0" : "") + n + ".png");

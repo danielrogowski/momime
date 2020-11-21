@@ -27,7 +27,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.HelpScreen;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CityViewElement;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
@@ -1063,7 +1063,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		final AnimationGfx anim = new AnimationGfx ();
+		final AnimationEx anim = new AnimationEx ();
 		for (int n = 1; n <= 3; n++)
 			anim.getFrame ().add ("BL15-frame" + n + ".png");
 		

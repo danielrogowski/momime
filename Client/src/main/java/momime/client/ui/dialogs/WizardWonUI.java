@@ -26,7 +26,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.PlayAnimationMessageImpl;
 import momime.client.ui.MomUIConstants;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 
@@ -99,7 +99,7 @@ public final class WizardWonUI extends MomClientDialogUI
 			(handsLayout.getWidth (), handsLayout.getHeight (), Image.SCALE_SMOOTH);
 		
 		final XmlLayoutComponent talkingLayout = getWizardWonLayout ().findComponent ("frmWizardWonTalking");
-		final AnimationGfx talkingAnim = (winningWizardDef == null) ? null : getClient ().getClientDB ().findAnimation (winningWizardDef.getTalkingAnimation (), "WizardWonUI (T)");
+		final AnimationEx talkingAnim = (winningWizardDef == null) ? null : getClient ().getClientDB ().findAnimation (winningWizardDef.getTalkingAnimation (), "WizardWonUI (T)");
 		
 		// Static images
 		final Image background = getUtils ().loadImage ("/momime.client.graphics/animations/worlds/background.png").getScaledInstance
@@ -107,10 +107,10 @@ public final class WizardWonUI extends MomClientDialogUI
 		
 		// Animations
 		final XmlLayoutComponent worldsLayout = getWizardWonLayout ().findComponent ("frmWizardWonWorlds");
-		final AnimationGfx worldsAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_WORLDS, "WizardWonUI (W)");
+		final AnimationEx worldsAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_WORLDS, "WizardWonUI (W)");
 		
 		final XmlLayoutComponent sparklesLayout = getWizardWonLayout ().findComponent ("frmWizardWonSparkles");
-		final AnimationGfx sparklesAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_SPARKLES, "WizardWonUI (S)");
+		final AnimationEx sparklesAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_SPARKLES, "WizardWonUI (S)");
 		
 		// Initialize the frame
 		final WizardWonUI ui = this;

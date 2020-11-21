@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.PlayList;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkillComponent;
@@ -148,7 +148,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final AnimationGfx newAnimation = new AnimationGfx ();
+			final AnimationEx newAnimation = new AnimationEx ();
 			newAnimation.setAnimationID ("AN0" + n);
 			db.getAnimation ().add (newAnimation);
 		}
@@ -170,7 +170,7 @@ public final class TestGraphicsDatabaseExImpl
 		final GraphicsDatabaseExImpl db = new GraphicsDatabaseExImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final AnimationGfx newAnimation = new AnimationGfx ();
+			final AnimationEx newAnimation = new AnimationEx ();
 			newAnimation.setAnimationID ("AN0" + n);
 			db.getAnimation ().add (newAnimation);
 		}

@@ -1258,7 +1258,7 @@ public final class TestCommonDatabaseImpl
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final AnimationGfx newAnimation = new AnimationGfx ();
+			final AnimationEx newAnimation = new AnimationEx ();
 			newAnimation.setAnimationID ("AN0" + n);
 			db.getAnimation ().add (newAnimation);
 		}
@@ -1280,7 +1280,7 @@ public final class TestCommonDatabaseImpl
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
 		for (int n = 1; n <= 3; n++)
 		{
-			final AnimationGfx newAnimation = new AnimationGfx ();
+			final AnimationEx newAnimation = new AnimationEx ();
 			newAnimation.setAnimationID ("AN0" + n);
 			db.getAnimation ().add (newAnimation);
 		}
@@ -1425,7 +1425,7 @@ public final class TestCommonDatabaseImpl
 		when (utils.loadImage ("frame1.png")).thenReturn (new BufferedImage (10, 40, BufferedImage.TYPE_INT_ARGB));
 		when (utils.loadImage ("frame2.png")).thenReturn (new BufferedImage (10, 40, BufferedImage.TYPE_INT_ARGB));
 		
-		final AnimationGfx anim = new AnimationGfx ();
+		final AnimationEx anim = new AnimationEx ();
 		anim.setAnimationID ("building3");
 		anim.getFrame ().add ("frame1.png");
 		anim.getFrame ().add ("frame2.png");

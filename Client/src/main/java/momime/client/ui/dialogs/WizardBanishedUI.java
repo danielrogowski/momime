@@ -29,7 +29,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.UpdateWizardStateMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.WizardClientUtils;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.LanguageText;
 import momime.common.database.WizardEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -152,13 +152,13 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		
 		// Animations
 		final XmlLayoutComponent singleBlastLayout = getWizardBanishedLayout ().findComponent ("frmWizardBanishedSingleBlast");
-		final AnimationGfx singleBlastAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_BANISHED_SINGLE_BLAST, "WizardBanishedUI (C)");
+		final AnimationEx singleBlastAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_BANISHED_SINGLE_BLAST, "WizardBanishedUI (C)");
 
 		final XmlLayoutComponent doubleBlastLayout = getWizardBanishedLayout ().findComponent ("frmWizardBanishedDoubleBlast");
-		final AnimationGfx doubleBlastAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_BANISHED_DOUBLE_BLAST, "WizardBanishedUI (D)");
+		final AnimationEx doubleBlastAnim = getGraphicsDB ().findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_BANISHED_DOUBLE_BLAST, "WizardBanishedUI (D)");
 
 		final XmlLayoutComponent evaporatingLayout = getWizardBanishedLayout ().findComponent ("frmWizardBanishedEvaporating");
-		final AnimationGfx evaporatingAnim = getClient ().getClientDB ().findAnimation (banishedWizardDef.getEvaporatingAnimation (), "WizardBanishedUI (E)");
+		final AnimationEx evaporatingAnim = getClient ().getClientDB ().findAnimation (banishedWizardDef.getEvaporatingAnimation (), "WizardBanishedUI (E)");
 		
 		// Initialize the frame
 		final WizardBanishedUI ui = this;

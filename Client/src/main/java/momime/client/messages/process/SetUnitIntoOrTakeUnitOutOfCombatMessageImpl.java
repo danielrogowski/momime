@@ -18,7 +18,7 @@ import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.TileSetEx;
@@ -58,7 +58,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 	private MemoryUnit unit;
 	
 	/** Animation to display, or null to process message instantly */
-	private AnimationGfx anim;
+	private AnimationEx anim;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server

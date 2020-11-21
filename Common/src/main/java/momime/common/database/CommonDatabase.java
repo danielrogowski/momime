@@ -508,7 +508,7 @@ public interface CommonDatabase
 	/**
 	 * @return Complete list of all animations in game
 	 */
-	public List<AnimationGfx> getAnimations ();
+	public List<AnimationEx> getAnimations ();
 
 	/**
 	 * @param animationID Animation ID to search for
@@ -516,7 +516,7 @@ public interface CommonDatabase
 	 * @return Animation object
 	 * @throws RecordNotFoundException If the animationID doesn't exist
 	 */
-	public AnimationGfx findAnimation (final String animationID, final String caller) throws RecordNotFoundException;
+	public AnimationEx findAnimation (final String animationID, final String caller) throws RecordNotFoundException;
 
 	/**
 	 * @param playListID Play list ID to search for

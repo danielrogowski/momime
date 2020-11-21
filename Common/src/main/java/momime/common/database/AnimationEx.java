@@ -13,10 +13,10 @@ import momime.common.MomException;
 /**
  * Provides a consistency check on animations, to ensure all the images are the same size
  */
-public final class AnimationGfx extends Animation
+public final class AnimationEx extends Animation
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (AnimationGfx.class);
+	private static final Log log = LogFactory.getLog (AnimationEx.class);
 	
 	/** All frames of an animation must share the same width (these aren't private because a unit test sets them) */
 	private int animationWidth;

@@ -23,7 +23,7 @@ import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.RecordNotFoundException;
 
 /**
@@ -124,7 +124,7 @@ public final class AnimationControllerImpl implements AnimationController
 		else
 		{
 			// Find the animation in the graphics XML
-			final AnimationGfx anim = (container == AnimationContainer.GRAPHICS_XML) ? getGraphicsDB ().findAnimation (animationID, "loadImageOrAnimationFrame") :
+			final AnimationEx anim = (container == AnimationContainer.GRAPHICS_XML) ? getGraphicsDB ().findAnimation (animationID, "loadImageOrAnimationFrame") :
 				getClient ().getClientDB ().findAnimation (animationID, "loadImageOrAnimationFrame");
 			
 			// Adjust system timer for the frame rate of this animation
@@ -389,7 +389,7 @@ public final class AnimationControllerImpl implements AnimationController
 	private final class AnimationFrameCounter implements ActionListener
 	{
 		/** The animation being displayed, so we don't have to keep re-finding it every frame */
-		public AnimationGfx anim;
+		public AnimationEx anim;
 		
 		/** Current frame number to display */
 		public int animationFrame;

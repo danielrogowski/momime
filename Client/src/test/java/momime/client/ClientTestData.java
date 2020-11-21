@@ -31,7 +31,7 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.graphics.database.GraphicsDatabaseExImpl;
 import momime.client.graphics.database.GraphicsDatabaseObjectFactory;
 import momime.client.language.database.LanguageDatabaseConstants;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabaseFactory;
 import momime.common.database.CommonDatabaseImpl;
@@ -137,9 +137,9 @@ public class ClientTestData
 			}
 			
 			@Override
-			public final AnimationGfx createAnimation ()
+			public final AnimationEx createAnimation ()
 			{
-				final AnimationGfx anim = new AnimationGfx ();
+				final AnimationEx anim = new AnimationEx ();
 				anim.setUtils (utils);
 				return anim;
 			}

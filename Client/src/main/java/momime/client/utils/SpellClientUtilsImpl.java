@@ -19,7 +19,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
@@ -306,7 +306,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 							// the help scrolls and anywhere else this is used, but it complicates things enormously having to
 							// set up repaint timers, and there's only a handful of spells this actually affects
 							// e.g. Dark Rituals, Altar of Battle, Move Fortress
-							final AnimationGfx anim = getClient ().getClientDB ().findAnimation (cityViewElement.getCityViewAnimation (), "findImageForSpell");
+							final AnimationEx anim = getClient ().getClientDB ().findAnimation (cityViewElement.getCityViewAnimation (), "findImageForSpell");
 							if (anim.getFrame ().size () > 0)
 								imageFilenames.add (anim.getFrame ().get (0));
 						}

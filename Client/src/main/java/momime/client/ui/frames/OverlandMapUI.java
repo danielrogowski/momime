@@ -61,7 +61,7 @@ import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.common.MomException;
 import momime.common.ai.ZoneAI;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Spell;
@@ -201,7 +201,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	private TileSetEx overlandMapTileSet;
 
 	/** Animation to display for a spell being cast */
-	private AnimationGfx overlandCastAnimation;
+	private AnimationEx overlandCastAnimation;
 	
 	/** X coord to display overland cast animation at, in pixels */
 	private int overlandCastAnimationX;
@@ -1804,7 +1804,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @return Animation to display for a spell being cast
 	 */
-	public final AnimationGfx getOverlandCastAnimation ()
+	public final AnimationEx getOverlandCastAnimation ()
 	{
 		return overlandCastAnimation;
 	}
@@ -1812,7 +1812,7 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/**
 	 * @param an Animation to display for a spell being cast
 	 */
-	public final void setOverlandCastAnimation (final AnimationGfx an)
+	public final void setOverlandCastAnimation (final AnimationEx an)
 	{
 		overlandCastAnimation = an;
 	}

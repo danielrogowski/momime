@@ -14,9 +14,9 @@ import org.junit.Test;
 import com.ndg.swing.NdgUIUtils;
 
 /**
- * Tests the AnimationGfx class
+ * Tests the AnimationEx class
  */
-public final class TestAnimationGfx
+public final class TestAnimationEx
 {
 	/**
 	 * Tests the deriveAnimationWidthAndHeight method on an animation with no frames
@@ -26,7 +26,7 @@ public final class TestAnimationGfx
 	public final void testDeriveAnimationWidthAndHeight_NoFrames () throws IOException
 	{
 		// Set up animation and some test frames
-		final AnimationGfx anim = new AnimationGfx ();
+		final AnimationEx anim = new AnimationEx ();
 		
 		// Run method
 		anim.deriveAnimationWidthAndHeight ();
@@ -40,7 +40,7 @@ public final class TestAnimationGfx
 	public final void testDeriveAnimationWidthAndHeight_OneFrame () throws IOException
 	{
 		// Set up animation and some test frames
-		final AnimationGfx anim = new AnimationGfx ();
+		final AnimationEx anim = new AnimationEx ();
 		anim.getFrame ().add ("ImageFile1");
 		
 		// Mock some images
@@ -66,7 +66,7 @@ public final class TestAnimationGfx
 	public final void testDeriveAnimationWidthAndHeight_MultipleFrames () throws IOException
 	{
 		// Set up animation and some test frames
-		final AnimationGfx anim = new AnimationGfx ();
+		final AnimationEx anim = new AnimationEx ();
 		for (int n = 1; n <= 3; n++)
 			anim.getFrame ().add ("ImageFile" + n);
 		
@@ -99,7 +99,7 @@ public final class TestAnimationGfx
 	public final void testDeriveAnimationWidthAndHeight_Inconsistent () throws IOException
 	{
 		// Set up animation and some test frames
-		final AnimationGfx anim = new AnimationGfx ();
+		final AnimationEx anim = new AnimationEx ();
 		for (int n = 1; n <= 3; n++)
 			anim.getFrame ().add ("ImageFile" + n);
 		

@@ -34,7 +34,7 @@ import momime.client.utils.AnimationControllerImpl;
 import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.calculations.CityCalculations;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CitySize;
@@ -137,7 +137,7 @@ public final class TestChangeConstructionUI extends ClientTestData
 		final CityViewElement granary = new CityViewElement ();
 		granary.setCityViewImageFile ("/momime.client.graphics/cityView/buildings/BL29.png");
 		
-		final AnimationGfx fightersGuildAnim = new AnimationGfx ();
+		final AnimationEx fightersGuildAnim = new AnimationEx ();
 		fightersGuildAnim.setAnimationSpeed (4);
 		for (int n = 1; n <= 9; n++)
 			fightersGuildAnim.getFrame ().add ("/momime.client.graphics/cityView/buildings/BL05-frame" + n + ".png");

@@ -51,7 +51,7 @@ import momime.client.ui.dialogs.VariableManaUI;
 import momime.client.utils.SpellSorter;
 import momime.client.utils.TextUtils;
 import momime.common.MomException;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.LanguageText;
@@ -183,7 +183,7 @@ public final class SpellBookUI extends MomClientFrameUI
 	private Timer pageTurnTimer;
 
 	/** Blue swirl animation for when we click on a spell to cast */
-	private AnimationGfx castingAnim;
+	private AnimationEx castingAnim;
 	
 	/** This ticks up 0..13 and then goes back to null when we don't need to display the anim anymore */
 	private Integer castingAnimFrame;
@@ -249,7 +249,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		final Dimension fixedSize = new Dimension (background.getWidth () * 2, (background.getHeight () * 2) + ANIM_VERTICAL_OFFSET);
 
 		// Find animations we need
-		final AnimationGfx pageTurnAnim = getGraphicsDB ().findAnimation (ANIM_PAGE_TURN, "SpellBookUI");
+		final AnimationEx pageTurnAnim = getGraphicsDB ().findAnimation (ANIM_PAGE_TURN, "SpellBookUI");
 		castingAnim = getGraphicsDB ().findAnimation (ANIM_SWIRL, "SpellBookUI");
 		
 		// Actions

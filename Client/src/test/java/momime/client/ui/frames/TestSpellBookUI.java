@@ -23,7 +23,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.SpellBookScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
@@ -105,7 +105,7 @@ public final class TestSpellBookUI extends ClientTestData
 		final LanguageChangeMaster langMaster = mock (LanguageChangeMaster.class);
 		
 		// Mock entries from the graphics XML
-		final AnimationGfx pageTurn = new AnimationGfx ();
+		final AnimationEx pageTurn = new AnimationEx ();
 		pageTurn.setAnimationSpeed (5);
 		for (int n = 1; n <= 4; n++)
 			pageTurn.getFrame ().add ("/momime.client.graphics/ui/spellBook/spellBookAnim-frame" + n + ".png");

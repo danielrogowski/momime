@@ -9,7 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import momime.common.database.Animation;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.PlayList;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkillComponent;
@@ -33,7 +33,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	private Map<Integer, CombatTileUnitRelativeScaleGfx> combatTileUnitRelativeScalesMap;
 	
 	/** Map of animation IDs to animation objects */
-	private Map<String, AnimationGfx> animationsMap;
+	private Map<String, AnimationEx> animationsMap;
 	
 	/** Map of play list IDs to play list objects */
 	private Map<String, PlayList> playListsMap;
@@ -66,7 +66,7 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		log.info ("Processing graphics XML file");
 		
 		// Check all animations have frames with consistent sizes
-		for (final AnimationGfx anim : getAnimations ())
+		for (final AnimationEx anim : getAnimations ())
 			anim.deriveAnimationWidthAndHeight ();
 		
 		log.info ("All " + getAnimation ().size () + " graphics XML animations passed consistency checks");		
@@ -150,9 +150,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @return List of all animations
 	 */
 	@SuppressWarnings ("unchecked")
-	public final List<AnimationGfx> getAnimations ()
+	public final List<AnimationEx> getAnimations ()
 	{
-		return (List<AnimationGfx>) (List<?>) getAnimation ();
+		return (List<AnimationEx>) (List<?>) getAnimation ();
 	}
 	
 	/**
@@ -162,9 +162,9 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 * @throws RecordNotFoundException If the animationID doesn't exist
 	 */
 	@Override
-	public final AnimationGfx findAnimation (final String animationID, final String caller) throws RecordNotFoundException
+	public final AnimationEx findAnimation (final String animationID, final String caller) throws RecordNotFoundException
 	{
-		final AnimationGfx found = animationsMap.get (animationID);
+		final AnimationEx found = animationsMap.get (animationID);
 		if (found == null)
 			throw new RecordNotFoundException (Animation.class, animationID, caller);
 

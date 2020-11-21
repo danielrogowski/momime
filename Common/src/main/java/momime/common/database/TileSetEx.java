@@ -80,7 +80,7 @@ public final class TileSetEx extends TileSet
 			for (final SmoothedTile tile : tt.getSmoothedTile ())
 				if (tile.getTileAnimation () != null)
 				{
-					final AnimationGfx anim = db.findAnimation (tile.getTileAnimation (), "deriveAnimationFrameCountAndSpeed");
+					final AnimationEx anim = db.findAnimation (tile.getTileAnimation (), "deriveAnimationFrameCountAndSpeed");
 					
 					// If they've never been set, set now
 					if (animationSpeed == null)
@@ -149,7 +149,7 @@ public final class TileSetEx extends TileSet
 				
 					else if (tile.getTileAnimation () != null)
 					{
-						final AnimationGfx anim = db.findAnimation (tile.getTileAnimation (), "deriveTileWidthAndHeight");
+						final AnimationEx anim = db.findAnimation (tile.getTileAnimation (), "deriveTileWidthAndHeight");
 						if (first)
 						{
 							tileWidth = anim.getAnimationWidth ();

@@ -18,7 +18,7 @@ import com.ndg.swing.NdgUIUtils;
 import momime.client.MomClient;
 import momime.client.config.MomImeClientConfig;
 import momime.client.ui.PlayerColourImageGenerator;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CityImage;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeatureEx;
@@ -186,7 +186,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						else if (tile.getTileAnimation () != null)
 						{
 							// Copy each animation frame over to each bitmap
-							final AnimationGfx anim = getClient ().getClientDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
+							final AnimationEx anim = getClient ().getClientDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
 							for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
 								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
@@ -239,7 +239,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 									else if (road.getRoadAnimation () != null)
 									{
 										// Copy each animation frame over to each bitmap
-										final AnimationGfx anim = getClient ().getClientDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
+										final AnimationEx anim = getClient ().getClientDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
 										for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 										{
 											final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
@@ -264,7 +264,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							else if (road.getRoadAnimation () != null)
 							{
 								// Copy each animation frame over to each bitmap
-								final AnimationGfx anim = getClient ().getClientDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
+								final AnimationEx anim = getClient ().getClientDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
 								for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 								{
 									final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));

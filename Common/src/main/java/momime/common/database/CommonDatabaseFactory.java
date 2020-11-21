@@ -33,5 +33,5 @@ public interface CommonDatabaseFactory
 	/**
 	 * @return Newly created animation
 	 */
-	public AnimationGfx createAnimation ();
+	public AnimationEx createAnimation ();
 }

@@ -29,26 +29,26 @@ public final class TestTileSetEx
 	public final void testDeriveAnimationFrameCountAndSpeed_Consistent () throws RecordNotFoundException, MomException
 	{
 		// Create some animations
-		final AnimationGfx anim1 = new AnimationGfx ();
+		final AnimationEx anim1 = new AnimationEx ();
 		anim1.setAnimationSpeed (6);
 		anim1.getFrame ().add (null);		// Don't need a real frame, we only care how many frames
 		anim1.getFrame ().add (null);
 		anim1.getFrame ().add (null);
 
-		final AnimationGfx anim2 = new AnimationGfx ();
+		final AnimationEx anim2 = new AnimationEx ();
 		anim2.setAnimationSpeed (6);
 		anim2.getFrame ().add (null);
 		anim2.getFrame ().add (null);
 		anim2.getFrame ().add (null);
 		
-		final AnimationGfx anim3 = new AnimationGfx ();
+		final AnimationEx anim3 = new AnimationEx ();
 		anim3.setAnimationSpeed (6);
 		anim3.getFrame ().add (null);
 		anim3.getFrame ().add (null);
 		anim3.getFrame ().add (null);
 
 		// Some animation that isn't used by the tileset, so its allowed to be different
-		final AnimationGfx anim4 = new AnimationGfx ();
+		final AnimationEx anim4 = new AnimationEx ();
 		anim4.setAnimationSpeed (7);
 		anim4.getFrame ().add (null);
 		anim4.getFrame ().add (null);
@@ -106,7 +106,7 @@ public final class TestTileSetEx
 	public final void testDeriveAnimationFrameCountAndSpeed_AllImages () throws RecordNotFoundException, MomException
 	{
 		// Create an animation that doesn't get used
-		final AnimationGfx anim1 = new AnimationGfx ();
+		final AnimationEx anim1 = new AnimationEx ();
 		anim1.setAnimationSpeed (6);
 		anim1.getFrame ().add (null);
 		anim1.getFrame ().add (null);
@@ -157,18 +157,18 @@ public final class TestTileSetEx
 	public final void testDeriveAnimationFrameCountAndSpeed_InconsistentFrameCount () throws RecordNotFoundException, MomException
 	{
 		// Create some animations
-		final AnimationGfx anim1 = new AnimationGfx ();
+		final AnimationEx anim1 = new AnimationEx ();
 		anim1.setAnimationSpeed (6);
 		anim1.getFrame ().add (null);		// Don't need a real frame, we only care how many frames
 		anim1.getFrame ().add (null);
 		anim1.getFrame ().add (null);
 
-		final AnimationGfx anim2 = new AnimationGfx ();
+		final AnimationEx anim2 = new AnimationEx ();
 		anim2.setAnimationSpeed (6);
 		anim2.getFrame ().add (null);
 		anim2.getFrame ().add (null);		// Missing a frame = error
 		
-		final AnimationGfx anim3 = new AnimationGfx ();
+		final AnimationEx anim3 = new AnimationEx ();
 		anim3.setAnimationSpeed (6);
 		anim3.getFrame ().add (null);
 		anim3.getFrame ().add (null);
@@ -215,19 +215,19 @@ public final class TestTileSetEx
 	public final void testDeriveAnimationFrameCountAndSpeed_InconsistentSpeed () throws RecordNotFoundException, MomException
 	{
 		// Create some animations
-		final AnimationGfx anim1 = new AnimationGfx ();
+		final AnimationEx anim1 = new AnimationEx ();
 		anim1.setAnimationSpeed (6);
 		anim1.getFrame ().add (null);		// Don't need a real frame, we only care how many frames
 		anim1.getFrame ().add (null);
 		anim1.getFrame ().add (null);
 
-		final AnimationGfx anim2 = new AnimationGfx ();
+		final AnimationEx anim2 = new AnimationEx ();
 		anim2.setAnimationSpeed (5);		// Mismatching speed = error
 		anim2.getFrame ().add (null);
 		anim2.getFrame ().add (null);
 		anim2.getFrame ().add (null);
 		
-		final AnimationGfx anim3 = new AnimationGfx ();
+		final AnimationEx anim3 = new AnimationEx ();
 		anim3.setAnimationSpeed (6);
 		anim3.getFrame ().add (null);
 		anim3.getFrame ().add (null);
@@ -307,11 +307,11 @@ public final class TestTileSetEx
 		when (utils.loadImage ("TileImage2")).thenReturn (image2);
 		
 		// Create some animations
-		final AnimationGfx anim1 = new AnimationGfx ();
+		final AnimationEx anim1 = new AnimationEx ();
 		anim1.setAnimationWidth (10);
 		anim1.setAnimationHeight (5);
 
-		final AnimationGfx anim2 = new AnimationGfx ();
+		final AnimationEx anim2 = new AnimationEx ();
 		anim2.setAnimationWidth (10);
 		anim2.setAnimationHeight (5);
 
@@ -368,11 +368,11 @@ public final class TestTileSetEx
 		when (utils.loadImage ("TileImage2")).thenReturn (image2);
 		
 		// Create some animations
-		final AnimationGfx anim1 = new AnimationGfx ();
+		final AnimationEx anim1 = new AnimationEx ();
 		anim1.setAnimationWidth (10);
 		anim1.setAnimationHeight (5);
 
-		final AnimationGfx anim2 = new AnimationGfx ();
+		final AnimationEx anim2 = new AnimationEx ();
 		anim2.setAnimationWidth (10);
 		anim2.setAnimationHeight (5);
 
@@ -429,11 +429,11 @@ public final class TestTileSetEx
 		when (utils.loadImage ("TileImage2")).thenReturn (image2);
 		
 		// Create some animations
-		final AnimationGfx anim1 = new AnimationGfx ();
+		final AnimationEx anim1 = new AnimationEx ();
 		anim1.setAnimationWidth (10);
 		anim1.setAnimationHeight (5);
 
-		final AnimationGfx anim2 = new AnimationGfx ();
+		final AnimationEx anim2 = new AnimationEx ();
 		anim2.setAnimationWidth (10);
 		anim2.setAnimationHeight (6);
 

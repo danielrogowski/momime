@@ -17,7 +17,7 @@ import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.frames.CombatUI;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.Spell;
 import momime.common.database.TileSetEx;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
@@ -48,7 +48,7 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
 
 	/** Animation to display; null to process message instantly, or if animation is being handled by another frame */
-	private AnimationGfx anim;
+	private AnimationEx anim;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server

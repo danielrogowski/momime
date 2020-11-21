@@ -1,6 +1,6 @@
 package momime.client.graphics.database;
 
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.PlayList;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitSkillComponent;
@@ -41,7 +41,7 @@ public interface GraphicsDatabaseEx
 	 * @return Animation object
 	 * @throws RecordNotFoundException If the animationID doesn't exist
 	 */
-	public AnimationGfx findAnimation (final String animationID, final String caller) throws RecordNotFoundException;
+	public AnimationEx findAnimation (final String animationID, final String caller) throws RecordNotFoundException;
 	
 	/**
 	 * @param playListID Play list ID to search for

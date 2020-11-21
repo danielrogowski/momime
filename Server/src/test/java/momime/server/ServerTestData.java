@@ -17,7 +17,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
 
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.CommonDatabaseFactory;
@@ -101,9 +101,9 @@ public class ServerTestData
 			}
 			
 			@Override
-			public final AnimationGfx createAnimation ()
+			public final AnimationEx createAnimation ()
 			{
-				return new AnimationGfx ();
+				return new AnimationEx ();
 			}
 		});
 

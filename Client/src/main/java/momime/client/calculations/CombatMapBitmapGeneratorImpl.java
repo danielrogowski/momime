@@ -15,7 +15,7 @@ import com.ndg.swing.NdgUIUtils;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SmoothedTile;
@@ -204,7 +204,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 								ypos = ypos + (smoothedTileTypesLayer [y] [x].getTileOffsetY () * 2);
 							
 							// Copy each animation frame over to each bitmap
-							final AnimationGfx anim = getClient ().getClientDB ().findAnimation (tile.getTileAnimation (), "generateCombatMapBitmaps");
+							final AnimationEx anim = getClient ().getClientDB ().findAnimation (tile.getTileAnimation (), "generateCombatMapBitmaps");
 							for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
 								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
@@ -219,7 +219,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 						int xpos = combatCoordinatesX (x, y, combatMapTileSet);
 						int ypos = combatCoordinatesY (x, y, combatMapTileSet);
 
-						final AnimationGfx anim = getGraphicsDB ().findAnimation ("MUDDY_TILE", "generateCombatMapBitmaps");
+						final AnimationEx anim = getGraphicsDB ().findAnimation ("MUDDY_TILE", "generateCombatMapBitmaps");
 						for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 						{
 							final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));

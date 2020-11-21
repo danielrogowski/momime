@@ -21,7 +21,7 @@ import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.TileSetEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.MemoryUnit;
@@ -86,7 +86,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	private int currentZOrder;
 	
 	/** Animations to draw on top of the unit that's moving */
-	private List<AnimationGfx> animations;
+	private List<AnimationEx> animations;
 	
 	/** List of shading colours to apply to the image */
 	private List<String> shadingColours;
@@ -113,7 +113,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 		
 		// See if we need to draw an animation that moves with the unit, e.g. Confusion
-		animations = new ArrayList<AnimationGfx> ();
+		animations = new ArrayList<AnimationEx> ();
 		shadingColours = new ArrayList<String> ();
 		
 		for (final String unitSkillID : unit.listModifiedSkillIDs ())
@@ -395,7 +395,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/**
 	 * @return Animations to draw on top of the unit that's moving
 	 */
-	public final List<AnimationGfx> getAnimations ()
+	public final List<AnimationEx> getAnimations ()
 	{
 		return animations;
 	}

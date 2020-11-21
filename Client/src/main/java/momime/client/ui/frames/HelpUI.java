@@ -41,7 +41,7 @@ import momime.client.ui.MomUIConstants;
 import momime.client.utils.SpellClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.UnitClientUtils;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CitySpellEffect;
 import momime.common.database.CityViewElement;
 import momime.common.database.CombatAreaEffect;
@@ -679,7 +679,7 @@ public final class HelpUI extends MomClientFrameUI
 				// the help scrolls and anywhere else this is used, but it complicates things enormously having to
 				// set up repaint timers, and there's only a handful of effects this actually affects
 				// e.g. Dark Rituals, Altar of Battle
-				final AnimationGfx anim = getClient ().getClientDB ().findAnimation (cityViewElement.getCityViewAnimation (), "showCitySpellEffectID");
+				final AnimationEx anim = getClient ().getClientDB ().findAnimation (cityViewElement.getCityViewAnimation (), "showCitySpellEffectID");
 				if (anim.getFrame ().size () > 0)
 					imageFilename = anim.getFrame ().get (0);
 			}

@@ -128,7 +128,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	private Map<String, TileSetEx> tileSetsMap;
 	
 	/** Map of animation IDs to animation objects */
-	private Map<String, AnimationGfx> animationsMap;
+	private Map<String, AnimationEx> animationsMap;
 	
 	/** Map of playlist IDs to playlist objects */
 	private Map<String, PlayList> playListsMap;
@@ -288,7 +288,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		// Check all animations have frames with consistent sizes
 		for (final Animation anim : getAnimation ())
 		{
-			final AnimationGfx aex = (AnimationGfx) anim;
+			final AnimationEx aex = (AnimationEx) anim;
 			aex.deriveAnimationWidthAndHeight ();
 		}
 		log.info ("All " + getAnimation ().size () + " common XML animations passed consistency checks");
@@ -323,7 +323,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 				final int thisHeight;
 				if (thisBuilding.getCityViewAnimation () != null)
 				{
-					final AnimationGfx anim = findAnimation (thisBuilding.getCityViewAnimation (), "clientConsistencyChecks");
+					final AnimationEx anim = findAnimation (thisBuilding.getCityViewAnimation (), "clientConsistencyChecks");
 					thisWidth = anim.getAnimationWidth ();
 					thisHeight = anim.getAnimationHeight ();
 				}
@@ -1008,9 +1008,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	 */
 	@Override
 	@SuppressWarnings ("unchecked")
-	public final List<AnimationGfx> getAnimations ()
+	public final List<AnimationEx> getAnimations ()
 	{
-		return (List<AnimationGfx>) (List<?>) getAnimation ();
+		return (List<AnimationEx>) (List<?>) getAnimation ();
 	}
 	
 	/**
@@ -1020,9 +1020,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	 * @throws RecordNotFoundException If the animationID doesn't exist
 	 */
 	@Override
-	public final AnimationGfx findAnimation (final String animationID, final String caller) throws RecordNotFoundException
+	public final AnimationEx findAnimation (final String animationID, final String caller) throws RecordNotFoundException
 	{
-		final AnimationGfx found = animationsMap.get (animationID);
+		final AnimationEx found = animationsMap.get (animationID);
 		if (found == null)
 			throw new RecordNotFoundException (Animation.class, animationID, caller);
 

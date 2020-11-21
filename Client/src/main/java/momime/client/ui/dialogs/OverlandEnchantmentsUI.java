@@ -34,7 +34,7 @@ import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -98,7 +98,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	private Timer timer;
 	
 	/** The swirling animation to fade images in and out */
-	private AnimationGfx fadeAnim;
+	private AnimationEx fadeAnim;
 	
 	/** Whether we've unblocked the message queue */
 	private boolean unblocked;

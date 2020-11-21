@@ -237,7 +237,7 @@
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
-	<bean id="animation" class="momime.common.database.AnimationGfx" scope="prototype">
+	<bean id="animation" class="momime.common.database.AnimationEx" scope="prototype">
 		<property name="utils" ref="uiUtils" />
 	</bean>
 	

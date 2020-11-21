@@ -28,7 +28,7 @@ import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
 import momime.common.calculations.UnitCalculations;
-import momime.common.database.AnimationGfx;
+import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.RangedAttackTypeActionID;
@@ -146,10 +146,10 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	private RangedAttackTypeCombatImage ratCurrentImage;
 	
 	/** Animation to display; null if the damage isn't coming from a spell or the spell has no animation */
-	private AnimationGfx spellAnim;
+	private AnimationEx spellAnim;
 
 	/** Animation to display of the spell flying in from off screen; null if the damage isn't coming from a spell, the spell has no animation, or the spell has a stationary animation */
-	private AnimationGfx spellAnimFly;
+	private AnimationEx spellAnimFly;
 	
 	/** Combat map tile set is required all over the place */
 	private TileSetEx combatMapTileSet;

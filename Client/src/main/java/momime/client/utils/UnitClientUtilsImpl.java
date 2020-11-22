@@ -35,7 +35,6 @@ import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
-import momime.common.MomException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.LanguageText;
@@ -534,26 +533,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			drawUnitFigures (unit.getUnitID (), unit.getFullFigureCount (), aliveFigureCount, combatActionID,
 				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours);
 		}
-	}
-	
-	/**
-	 * When we 4x the number of units in a tile, if they still take the same amount of time to walk from tile to tile, it looks
-	 * like they are really sprinting it - so make these take longer, according to the same rules as how unitImageMultiplier is
-	 * calculated in drawUnitFigures above.  i.e. if unitImageMultiplier == 2 then take 1 second, if unitImageMultiplier == 1 then take 2 seconds.
-	 *  
-	 * @param unit The unit that is walking/flying
-	 * @return Time, in seconds, a unit takes to walk from tile to tile in combat
-	 * @throws MomException If we encounter a combatScale that we don't know how to handle
-	 */
-	@Override
-	public final double calculateWalkTiming (final ExpandedUnitDetails unit) throws MomException
-	{
-		log.trace ("Entering calculateWalkTiming: " + unit.getUnitID ());
-		
-		final int unitImageMultiplier = 2;
-		final int result = 3 - unitImageMultiplier;		
-		log.trace ("Exiting calculateWalkTiming = " + result);
-		return result;
 	}
 	
 	/**

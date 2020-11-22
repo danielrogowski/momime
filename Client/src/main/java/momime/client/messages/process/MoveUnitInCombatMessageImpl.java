@@ -37,6 +37,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/** Class logger */
 	private static final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
 
+	/** Time, in seconds, a unit takes to walk from tile to tile in combat */
+	private final static double COMBAT_WALK_TIMING = 1;
+	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 
@@ -140,7 +143,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		currentZOrder = getMoveFrom ().getY ();
 		
 		// Work the duration out once only
-		duration = getUnitClientUtils ().calculateWalkTiming (unit) * 0.8d;
+		duration = COMBAT_WALK_TIMING * 0.8d;
 
 		// Work out new position
 		moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) getMoveFrom ());

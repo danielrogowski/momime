@@ -10,7 +10,6 @@ import javax.xml.stream.XMLStreamException;
 
 import com.ndg.zorder.ZOrderGraphics;
 
-import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryUnit;
@@ -170,17 +169,6 @@ public interface UnitClientUtils
 	 */
 	public void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
 		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder, final List<String> shadingColours) throws IOException;
-
-	/**
-	 * When we 4x the number of units in a tile, if they still take the same amount of time to walk from tile to tile, it looks
-	 * like they are really sprinting it - so make these take longer, according to the same rules as how unitImageMultiplier is
-	 * calculated in drawUnitFigures above.  i.e. if unitImageMultiplier == 2 then take 1 second, if unitImageMultiplier == 1 then take 2 seconds.
-	 *  
-	 * @param unit The unit that is walking/flying
-	 * @return Time, in seconds, a unit takes to walk from tile to tile in combat
-	 * @throws MomException If we encounter a combatScale that we don't know how to handle
-	 */
-	public double calculateWalkTiming (final ExpandedUnitDetails unit) throws MomException;
 
 	/**
 	 * Plays the sound effect for a particular unit taking a particular action.  This covers all combat actions, so the clank clank of units walking,

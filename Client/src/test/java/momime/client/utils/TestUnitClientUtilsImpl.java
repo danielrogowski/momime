@@ -519,35 +519,6 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 	}
 	
 	/**
-	 * Tests the calculateWalkTiming method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testCalculateWalkTiming () throws Exception
-	{
-		// Set up units
-		final ExpandedUnitDetails regularUnit = mock (ExpandedUnitDetails.class);
-		when (regularUnit.isSummoned ()).thenReturn (false);
-		when (regularUnit.getFullFigureCount ()).thenReturn (4);
-		
-		final ExpandedUnitDetails summonedMultiple = mock (ExpandedUnitDetails.class);
-		when (summonedMultiple.isSummoned ()).thenReturn (true);
-		when (summonedMultiple.getFullFigureCount ()).thenReturn (4);
-		
-		final ExpandedUnitDetails summonedSingle = mock (ExpandedUnitDetails.class); 
-		when (summonedSingle.isSummoned ()).thenReturn (true);
-		when (summonedSingle.getFullFigureCount ()).thenReturn (1);
-		
-		// Set up object to test
-		final UnitClientUtilsImpl obj = new UnitClientUtilsImpl ();
-		
-		// Test double size units scale
-		assertEquals (1, obj.calculateWalkTiming (regularUnit), 0.0001);
-		assertEquals (1, obj.calculateWalkTiming (summonedMultiple), 0.0001);
-		assertEquals (1, obj.calculateWalkTiming (summonedSingle), 0.0001);
-	}
-	
-	/**
 	 * Tests the playCombatActionSound method where a unit has no specific sound defined
 	 * @throws Exception If there is a problem
 	 */

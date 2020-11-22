@@ -230,7 +230,7 @@
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSetting" type="momimecommon:unitSetting" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSetting" type="momimecommon:spellSetting" />
-				<xsd:element minOccurs="0" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />			
+				<xsd:element minOccurs="1" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />			
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImage" type="momimecommon:cityImage" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatTileBorderImage" type="momimecommon:combatTileBorderImage" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityViewElementSet" type="momimecommon:cityViewElementSet" />
@@ -1280,13 +1280,13 @@
         	<xsd:documentation>Default map size, difficulty level and so on to preselect on the new game screen.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultOverlandMapSizeID" type="momimecommon:overlandMapSizeID" nxe:label="Default Overland Map Size" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultLandProportionID" type="momimecommon:landProportionID" nxe:label="Default Land Proportion" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultNodeStrengthID" type="momimecommon:nodeStrengthID" nxe:label="Default Node Strength" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultDifficultyLevelID" type="momimecommon:difficultyLevelID" nxe:label="Default Difficulty Level" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultFogOfWarSettingID" type="momimecommon:fogOfWarSettingID" nxe:label="Default Fog of War Settings" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultUnitSettingID" type="momimecommon:unitSettingID" nxe:label="Default Unit Settings" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="defaultSpellSettingID" type="momimecommon:spellSettingID" nxe:label="Default Spell Settings" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultOverlandMapSizeID" type="momimecommon:overlandMapSizeID" nxe:label="Default Overland Map Size" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultLandProportionID" type="momimecommon:landProportionID" nxe:label="Default Land Proportion" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultNodeStrengthID" type="momimecommon:nodeStrengthID" nxe:label="Default Node Strength" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultDifficultyLevelID" type="momimecommon:difficultyLevelID" nxe:label="Default Difficulty Level" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultFogOfWarSettingID" type="momimecommon:fogOfWarSettingID" nxe:label="Default Fog of War Settings" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultUnitSettingID" type="momimecommon:unitSettingID" nxe:label="Default Unit Settings" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultSpellSettingID" type="momimecommon:spellSettingID" nxe:label="Default Spell Settings" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -1372,7 +1372,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="raceMineralMultiplerApplies" type="xsd:boolean" nxe:label="Race Mineral Multipler Applies?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimecommon:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="380" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="overlandMapImageFile" type="momimecommon:imageFilename" nxe:label="Overland Map image file" nxe:gridwidth="380" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="overlandMapImageFile" type="momimecommon:imageFilename" nxe:label="Overland Map image file" nxe:gridwidth="380" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureProduction" type="momimecommon:productionTypeAndDoubledValue">
 		        <xsd:annotation>
 		        	<xsd:documentation>Defines the types of production that a particular map feature generates, e.g. +5 Gold from Gems, +2 Magic Power from Adamantium.</xsd:documentation>
@@ -1743,7 +1743,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			<xsd:element minOccurs="1" maxOccurs="1" name="buildingChance" type="momimecommon:weighting" nxe:label="Building chance" nxe:gridwidth="250" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="settlersChance" type="momimecommon:weighting" nxe:label="Settlers chance" nxe:gridwidth="250" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="engineersChance" type="momimecommon:weighting" nxe:label="Engineers chance" nxe:gridwidth="250" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="flagColour" type="momimecommon:colour" nxe:label="Flag colour" nxe:gridwidth="80" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="flagColour" type="momimecommon:colour" nxe:label="Flag colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="portraitImageFile" type="momimecommon:imageFilename" nxe:label="Portrait image file" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="standingImageFile" type="momimecommon:imageFilename" nxe:label="Standing image file" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="banishingImageFile" type="momimecommon:imageFilename" nxe:label="Banishing image file" nxe:gridwidth="250" />
@@ -1846,7 +1846,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
         	<xsd:documentation>Defines the characteristics of each population task for a particular race.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="civilianImageFile" type="momimecommon:imageFilename" nxe:label="Civilian image file" nxe:gridwidth="290" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="civilianImageFile" type="momimecommon:imageFilename" nxe:label="Civilian image file" nxe:gridwidth="290" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="racePopulationTaskProduction" type="momimecommon:productionTypeAndDoubledValue">
 		        <xsd:annotation>
 		        	<xsd:documentation>Lists the types of production that 1,000 civilians of a particular race performing a particular task produce.  e.g. Defines that
@@ -1919,7 +1919,9 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="productionCost" type="momimecommon:productionCost" nxe:label="Production Cost" nxe:gridwidth="110" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="productionCost" type="momimecommon:productionCost" nxe:label="Production Cost" nxe:gridwidth="110">
+		        <xsd:annotation><xsd:documentation>Builidngs like trade goods, housing, summoning circle don't specify a production cost.</xsd:documentation></xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingPopulationProductionModifier" type="momimecommon:buildingPopulationProductionModifier" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingPrerequisite" type="momimecommon:buildingPrerequisite" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingRequiresTileType" type="momimecommon:buildingRequiresTileType" />
@@ -2007,7 +2009,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="rangedAttackSoundFile" type="momimecommon:imageFilename" nxe:label="RAT sound file" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="rangedAttackSoundFile" type="momimecommon:imageFilename" nxe:label="RAT sound file" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeWeaponGrade" type="momimecommon:rangedAttackTypeWeaponGrade" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackTypeCombatImage" type="momimecommon:rangedAttackTypeCombatImage" />
 		</xsd:sequence>
@@ -2149,7 +2151,7 @@ the lead figure then the unit's value will be multiplied by x7.5.
 The value of multiplicative skills is ignored, so don't use this for any skill that may take a value.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillTypeID" type="momimecommon:unitSkillTypeID" nxe:label="Skill type" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillTypeID" type="momimecommon:unitSkillTypeID" nxe:label="Skill type" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillImageFile" type="momimecommon:imageFilename" nxe:label="Unit skill image file" nxe:gridwidth="270" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImageFile" type="momimecommon:imageFilename" nxe:label="Movement icon image file" nxe:gridwidth="270" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImagePreference" type="momimecommon:rulePreferenceWeighting" nxe:label="Movement icon image preference weighting" nxe:gridwidth="200" />
@@ -2331,7 +2333,7 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="ringColour" type="momimecommon:colour" nxe:label="Ring Colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="ringCount" type="momimecommon:experienceLevelRingCount" nxe:label="Nbr. Rings" nxe:gridwidth="70" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="experienceLevelImageFile" type="momimecommon:imageFilename" nxe:label="Name" nxe:gridwidth="300" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="experienceLevelImageFile" type="momimecommon:imageFilename" nxe:label="Name" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceSkillBonus" type="momimecommon:unitSkillAndValue" />
 		</xsd:sequence>
 		<xsd:attribute name="levelNumber" type="momimecommon:experienceLevelNumber" use="required" nxe:label="Level" nxe:gridwidth="50" />
@@ -2397,7 +2399,7 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroRandomPickCount" type="momimecommon:heroRandomPickCount" nxe:label="Hero Random Picks" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="freeAtStartCount" type="momimecommon:freeAtStartCount" nxe:label="Nbr. Free at Start" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitSummonImageFile" type="momimecommon:imageFilename" nxe:label="Summoning image file" nxe:gridwidth="280" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitOverlandImageFile" type="momimecommon:imageFilename" nxe:label="Overland image file" nxe:gridwidth="280" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitOverlandImageFile" type="momimecommon:imageFilename" nxe:label="Overland image file" nxe:gridwidth="280" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroPortraitImageFile" type="momimecommon:imageFilename" nxe:label="Hero Portrait image file" nxe:gridwidth="280" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitCombatAction" type="momimecommon:unitCombatAction" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroName" type="momimecommon:heroName" />
@@ -2551,7 +2553,7 @@ but kept these separate to make it totally clear when production values are reco
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectImageFile" type="momimecommon:imageFilename" nxe:label="CAE image file" nxe:gridwidth="290" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="combatAreaEffectImageFile" type="momimecommon:imageFilename" nxe:label="CAE image file" nxe:gridwidth="290" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffectSkillBonus" type="momimecommon:combatAreaEffectSkillBonus" />
 		</xsd:sequence>
 		<xsd:attribute name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" use="required" nxe:label="Effect ID" nxe:gridwidth="80" />
@@ -2911,15 +2913,15 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="slotTypeDescription" type="momimecommon:languageText" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroSlotAllowedItemType" type="momimecommon:heroSlotAllowedItemType" nxe:label="Allowed item type" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="basicHeroItemForAiRatingItemTypeID" type="momimecommon:heroItemTypeID" nxe:label="AI basic rating Item Type ID" nxe:gridwidth="100">
+			<xsd:element minOccurs="1" maxOccurs="1" name="basicHeroItemForAiRatingItemTypeID" type="momimecommon:heroItemTypeID" nxe:label="AI basic rating Item Type ID" nxe:gridwidth="100">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemSlotTypeImageFile" type="momimecommon:imageFilename" nxe:label="Hero Item Slot Image" nxe:gridwidth="350" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemSlotTypeImageFileWithBackground" type="momimecommon:imageFilename" nxe:label="Slot Image with Background" nxe:gridwidth="350" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFile" type="momimecommon:imageFilename" nxe:label="Hero Item Slot Image" nxe:gridwidth="350" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFileWithBackground" type="momimecommon:imageFilename" nxe:label="Slot Image with Background" nxe:gridwidth="350" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="basicHeroItemForAiRatingChosenBonus" type="momimecommon:heroItemTypeAllowedBonus" nxe:label="AI basic rating Bonuses" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Slot Type ID" nxe:gridwidth="100" />
@@ -3449,7 +3451,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="1" maxOccurs="1" name="setValue1" type="momimecommon:bit" nxe:label="(a) to this value" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="setDirection2" type="map:mapDirection" nxe:label="and (b) set direction" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="setValue2" type="momimecommon:bit" nxe:label="(b) to this value" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
 		</xsd:sequence>
 	</xsd:complexType>
 

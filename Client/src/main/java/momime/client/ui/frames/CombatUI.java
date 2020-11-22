@@ -727,7 +727,7 @@ public final class CombatUI extends MomClientFrameUI
 											// If wall section is wrecked then use alternative image if we have one (wrecked wall sections are N/A for walls of fire/darkness)
 											final BufferedImage image = getAnim ().loadImageOrAnimationFrame
 												(((tile.isWrecked ()) && (borderImage.getWreckedFile () != null)) ?
-													borderImage.getWreckedFile () : borderImage.getStandardFile (), borderImage.getStandardAnimation (), false, AnimationContainer.GRAPHICS_XML);
+													borderImage.getWreckedFile () : borderImage.getStandardFile (), borderImage.getStandardAnimation (), false, AnimationContainer.COMMON_XML);
 											
 											zOrderGraphics.drawImage (image,
 												getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) - (2 * 2),
@@ -785,7 +785,7 @@ public final class CombatUI extends MomClientFrameUI
 									final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
 									final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
 									
-									final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.GRAPHICS_XML);
+									final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.COMMON_XML);
 									g.drawImage (image,
 										getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) + adjustX,
 										getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
@@ -806,7 +806,7 @@ public final class CombatUI extends MomClientFrameUI
 							final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
 							final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
 							
-							final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.GRAPHICS_XML);
+							final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.COMMON_XML);
 							g.drawImage (image, getUnitMoving ().getCurrentX () + adjustX, getUnitMoving ().getCurrentY () + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
 						}
 					}

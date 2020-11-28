@@ -94,6 +94,11 @@
 						<xsd:selector xpath="bookImageFile" />
 						<xsd:field xpath="." />
 					</xsd:key>
+					<xsd:unique name="pickPrerequisitePK">		<!-- This doesn't really work, as key is only checked if both values are present, and they never are -->
+						<xsd:selector xpath="pickPrerequisite" />
+						<xsd:field xpath="prerequisiteID" />
+						<xsd:field xpath="prerequisiteTypeID" />
+					</xsd:unique>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizard" type="momimecommon:wizard">
 					<xsd:key name="wizardPickCountPK">
@@ -362,7 +367,7 @@
 						<xsd:selector xpath="smoothingSystem" />
 						<xsd:field xpath="@smoothingSystemID" />
 					</xsd:key>
-					<xsd:unique name="smoothedTileTypePK">		<!-- Elements of key are all optional -->
+					<xsd:unique name="smoothedTileTypePK">		<!-- This doesn't really work, as key is only checked if all 3 values are present -->
 						<xsd:selector xpath="smoothedTileType" />
 						<xsd:field xpath="@tileTypeID" />
 						<xsd:field xpath="@planeNumber" />

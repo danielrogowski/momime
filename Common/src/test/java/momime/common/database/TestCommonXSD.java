@@ -93,9 +93,6 @@ public final class TestCommonXSD
 		unboundedEntities.remove ("frame");									// Animation frames sometimes repeat, e.g. there's many 1-2-3-2 patterns
 		unboundedEntities.remove ("audioFile");								// Similar to animations, there's no real need for tracks in a playlist to be blocked from repeating
 		
-		// Ones that could be fixed
-		unboundedEntities.remove ("pickPrerequisite");						// Can be either a pickID or a pickTypeID, and can't specify keys with nullable fields
-		
 		// Now find list of all unbounded entities without PKs
 		final StringBuilder s = new StringBuilder ();
 		for (final String unboundedEntity : unboundedEntities)

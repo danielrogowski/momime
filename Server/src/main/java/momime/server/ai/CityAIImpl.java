@@ -28,7 +28,6 @@ import momime.common.calculations.CityCalculationsImpl;
 import momime.common.calculations.CityProductionBreakdownsEx;
 import momime.common.database.AiBuildingTypeID;
 import momime.common.database.Building;
-import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
@@ -613,9 +612,9 @@ public final class CityAIImpl implements CityAI
 				// We want this, but we need to build something else first - find out what
 				// Note we don't need to check whether each prerequisite can itself be constructed, or for the right tile types, because
 				// canEventuallyConstructBuilding () above already checked all this over the entire prerequisite tree, so all we need to do is add them
-				for (final BuildingPrerequisite prereq : thisBuilding.getBuildingPrerequisite ())
+				for (final String prereq : thisBuilding.getBuildingPrerequisite ())
 				{
-					final Building buildingPrereq = db.findBuilding (prereq.getPrerequisiteID (), "decideWhatToBuild");
+					final Building buildingPrereq = db.findBuilding (prereq, "decideWhatToBuild");
 					if ((!buildingOptions.contains (buildingPrereq)) && (getMemoryBuildingUtils ().findBuilding (knownBuildings, cityLocation, buildingPrereq.getBuildingID ()) == null))
 						buildingOptions.add (buildingPrereq);
 				}

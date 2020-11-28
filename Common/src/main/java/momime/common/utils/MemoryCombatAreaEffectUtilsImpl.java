@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.Spell;
-import momime.common.database.SpellHasCombatEffect;
-import momime.common.messages.MemoryCombatAreaEffect;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.messages.MemoryCombatAreaEffect;
 
 /**
  * Helper methods for dealing with MemoryCombatAreaEffect objects
@@ -152,9 +151,9 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
     	else
     	{
     		combatAreaEffectIDs = new ArrayList<String> ();
-    		for (final SpellHasCombatEffect effect : spell.getSpellHasCombatEffect ())
-    			if (findCombatAreaEffect (CAEs, combatLocation, effect.getCombatAreaEffectID (), castingPlayerID) == null)
-    				combatAreaEffectIDs.add (effect.getCombatAreaEffectID ());
+    		for (final String combatAreaEffectID : spell.getSpellHasCombatEffect ())
+    			if (findCombatAreaEffect (CAEs, combatLocation, combatAreaEffectID, castingPlayerID) == null)
+    				combatAreaEffectIDs.add (combatAreaEffectID);
     	}
 
     	log.trace ("Exiting listCombatEffectsNotYetCastAtLocation = " + combatAreaEffectIDs);

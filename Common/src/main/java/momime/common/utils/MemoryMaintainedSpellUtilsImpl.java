@@ -19,8 +19,6 @@ import momime.common.database.DamageType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.SpellHasCityEffect;
-import momime.common.database.SpellValidBorderTarget;
 import momime.common.database.TileType;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
@@ -258,9 +256,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	else
     	{
     		citySpellEffectIDs = new ArrayList<String> ();
-    		for (final SpellHasCityEffect effect : spell.getSpellHasCityEffect ())
-    			if (findMaintainedSpell (spells, castingPlayerID, spell.getSpellID (), null, null, cityLocation, effect.getCitySpellEffectID ()) == null)
-   					citySpellEffectIDs.add (effect.getCitySpellEffectID ());
+    		for (final String citySpellEffectID : spell.getSpellHasCityEffect ())
+    			if (findMaintainedSpell (spells, castingPlayerID, spell.getSpellID (), null, null, cityLocation, citySpellEffectID) == null)
+   					citySpellEffectIDs.add (citySpellEffectID);
     	}
 
     	log.trace ("Exiting listCitySpellEffectsNotYetCastAtLocation = " + citySpellEffectIDs);
@@ -533,8 +531,8 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		else
     		{
     			boolean found = false;
-    			for (final SpellValidBorderTarget possibleTargetBorderType : spell.getSpellValidBorderTarget ())
-    				if (tile.getBorderID ().contains (possibleTargetBorderType.getTargetCombatTileBorderID ()))
+    			for (final String combatTileBorderID : spell.getSpellValidBorderTarget ())
+    				if (tile.getBorderID ().contains (combatTileBorderID))
     					found = true;
     			
     			result = found;

@@ -15,7 +15,6 @@ import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlotType;
-import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
@@ -160,11 +159,11 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 									error = "The hero who you want to move the item to doesn't define the specified slot number.";
 								else
 								{
-									final String slotTypeID = unitDef.getHeroItemSlot ().get (getToSlotNumber ()).getHeroItemSlotTypeID ();
+									final String slotTypeID = unitDef.getHeroItemSlot ().get (getToSlotNumber ());
 									final HeroItemSlotType slotType = mom.getServerDB ().findHeroItemSlotType (slotTypeID, "RequestMoveHeroItemMessageImpl");
 									boolean ok = false;
-									for (final HeroSlotAllowedItemType allowed : slotType.getHeroSlotAllowedItemType ())
-										if (allowed.getHeroItemTypeID ().equals (item.getHeroItemTypeID ()))
+									for (final String heroItemTypeID : slotType.getHeroSlotAllowedItemType ())
+										if (heroItemTypeID.equals (item.getHeroItemTypeID ()))
 											ok = true;
 									
 									if (!ok)

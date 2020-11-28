@@ -28,7 +28,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
 import momime.common.database.Race;
-import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.messages.AvailableUnit;
@@ -164,9 +163,9 @@ public final class CityServerUtilsImpl implements CityServerUtils
 
 					// Check that the race inhabiting the city can build this building
 					boolean cannotBuild = false;
-					final Iterator<RaceCannotBuild> cannotBuildIter = race.getRaceCannotBuild ().iterator ();
+					final Iterator<String> cannotBuildIter = race.getRaceCannotBuild ().iterator ();
 					while ((!cannotBuild) && (cannotBuildIter.hasNext ()))
-						if (cannotBuildIter.next ().getCannotBuildBuildingID ().equals (buildingID))
+						if (cannotBuildIter.next ().equals (buildingID))
 							cannotBuild = true;
 
 					if (cannotBuild)

@@ -26,7 +26,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.MomDatabase;
 import momime.common.database.PickAndQuantity;
-import momime.common.database.PickFreeSpell;
 import momime.common.database.Plane;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TileType;
@@ -495,8 +494,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// Grant any free spells the player gets from the picks they've chosen (i.e. Enchant Item & Create Artifact from Artificer)
 				final List<String> freeSpellIDs = new ArrayList<String> ();
 				for (final PlayerPick pick : ppk.getPick ())
-					for (final PickFreeSpell freeSpell : mom.getServerDB ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpell ())
-						freeSpellIDs.add (freeSpell.getFreeSpellID ());
+					for (final String freeSpellID : mom.getServerDB ().findPick (pick.getPickID (), "checkIfCanStartGame").getPickFreeSpell ())
+						freeSpellIDs.add (freeSpellID);
 
 				if (freeSpellIDs.size () > 0)
 					for (final SpellResearchStatus thisSpell : priv.getSpellResearchStatus ())

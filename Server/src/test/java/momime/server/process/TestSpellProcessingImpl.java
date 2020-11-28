@@ -26,8 +26,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.SpellHasCombatEffect;
-import momime.common.database.SummonedUnit;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
@@ -167,11 +165,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// It grants one of 5 possible effects
 		for (int n = 1; n <= 5; n++)
-		{
-			final SpellHasCombatEffect effect = new SpellHasCombatEffect ();
-			effect.setCombatAreaEffectID ("CSE00" + n);
-			spell.getSpellHasCombatEffect ().add (effect);
-		}
+			spell.getSpellHasCombatEffect ().add ("CSE00" + n);
 		
 		// Pick the 4th effect
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -606,9 +600,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		spell.setSpellID ("SP001");
 		
 		// It only summons 1 kind of unit
-		final SummonedUnit summonedUnit = new SummonedUnit ();
-		summonedUnit.setSummonedUnitID ("UN001");
-		spell.getSummonedUnit ().add (summonedUnit);
+		spell.getSummonedUnit ().add ("UN001");
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -980,11 +972,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// It summons one of 5 possible units
 		for (int n = 1; n <= 5; n++)
-		{
-			final SummonedUnit summons = new SummonedUnit ();
-			summons.setSummonedUnitID ("UN00" + n);
-			spell.getSummonedUnit ().add (summons);
-		}
+			spell.getSummonedUnit ().add ("UN00" + n);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (15, 25, 1);
@@ -1154,11 +1142,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Mock database - spell grants 5 effects
 		final Spell spell = new Spell ();
 		for (int n = 1; n <= 5; n++)
-		{
-			final SpellHasCombatEffect effect = new SpellHasCombatEffect ();
-			effect.setCombatAreaEffectID ("CSE00" + n);
-			spell.getSpellHasCombatEffect ().add (effect);
-		}
+			spell.getSpellHasCombatEffect ().add ("CSE00" + n);
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findSpell ("SP001", "switchOffSpell")).thenReturn (spell);

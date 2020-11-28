@@ -45,7 +45,6 @@ import momime.common.database.Language;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeImage;
-import momime.common.database.RaceCannotBuild;
 import momime.common.database.RaceEx;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
@@ -94,11 +93,8 @@ public final class TestChangeConstructionUI extends ClientTestData
 			buildings.add (building);
 		}
 		
-		final RaceCannotBuild raceCannotBuild = new RaceCannotBuild ();
-		raceCannotBuild.setCannotBuildBuildingID ("BL02");
-		
 		final RaceEx race = new RaceEx ();
-		race.getRaceCannotBuild ().add (raceCannotBuild);
+		race.getRaceCannotBuild ().add ("BL02");
 		
 		final List<UnitEx> units = new ArrayList<UnitEx> ();
 		for (int n = 1; n <= 5; n++)

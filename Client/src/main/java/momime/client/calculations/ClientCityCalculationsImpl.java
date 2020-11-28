@@ -20,13 +20,10 @@ import momime.client.utils.UnitNameType;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.Building;
-import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Race;
-import momime.common.database.RaceCannotBuild;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitPrerequisite;
 import momime.common.internal.CityGrowthRateBreakdown;
 import momime.common.internal.CityGrowthRateBreakdownBuilding;
 import momime.common.internal.CityGrowthRateBreakdownDying;
@@ -472,18 +469,18 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 				{
 					// Check if its actually a prerequsite
 					boolean prereq = false;
-					final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
+					final Iterator<String> iter = building.getBuildingPrerequisite ().iterator ();
 					while ((!prereq) && (iter.hasNext ()))
-						if (iter.next ().getPrerequisiteID ().equals (buildingID))
+						if (iter.next ().equals (buildingID))
 							prereq = true;
 				
 					if (prereq)
 					{
 						// Check the city's race can build it
 						boolean canBuild = true;
-						final Iterator<RaceCannotBuild> cannot = race.getRaceCannotBuild ().iterator ();
+						final Iterator<String> cannot = race.getRaceCannotBuild ().iterator ();
 						while ((canBuild) && (cannot.hasNext ()))
-							if (cannot.next ().getCannotBuildBuildingID ().equals (building.getBuildingID ()))
+							if (cannot.next ().equals (building.getBuildingID ()))
 								canBuild = false;
 					
 						if (canBuild)
@@ -509,9 +506,9 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 				{
 					// Check if its actually a prerequsite
 					boolean prereq = false;
-					final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
+					final Iterator<String> iter = unit.getUnitPrerequisite ().iterator ();
 					while ((!prereq) && (iter.hasNext ()))
-						if (iter.next ().getPrerequisiteID ().equals (buildingID))
+						if (iter.next ().equals (buildingID))
 							prereq = true;
 				
 					if (prereq)
@@ -569,13 +566,10 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			{
 				// Check the race inhabiting this city can construct this kind of building
 				boolean canBuild = true;
-				final Iterator<RaceCannotBuild> iter = race.getRaceCannotBuild ().iterator ();
+				final Iterator<String> iter = race.getRaceCannotBuild ().iterator ();
 				while ((canBuild) && (iter.hasNext ()))
-				{
-					final RaceCannotBuild cannotBuild = iter.next ();
-					if (cannotBuild.getCannotBuildBuildingID ().equals (thisBuilding.getBuildingID ()))
+					if (iter.next ().equals (thisBuilding.getBuildingID ()))
 						canBuild = false;
-				}
 				
 				if (canBuild)
 					buildList.add (thisBuilding);

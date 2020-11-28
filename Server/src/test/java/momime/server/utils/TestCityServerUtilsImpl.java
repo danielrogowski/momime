@@ -22,7 +22,6 @@ import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RaceEx;
-import momime.common.database.RaceCannotBuild;
 import momime.common.database.UnitEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -241,11 +240,8 @@ public final class TestCityServerUtilsImpl extends ServerTestData
 	public final void testValidateCityConstruction_Building_RaceCannotBuild () throws Exception
 	{
 		// Mock details
-		final RaceCannotBuild rcb = new RaceCannotBuild ();
-		rcb.setCannotBuildBuildingID ("BL08");
-		
 		final RaceEx raceDef = new RaceEx ();
-		raceDef.getRaceCannotBuild ().add (rcb);		// <---
+		raceDef.getRaceCannotBuild ().add ("BL08");		// <---
 		
 		final Building blacksmithDef = new Building ();
 		

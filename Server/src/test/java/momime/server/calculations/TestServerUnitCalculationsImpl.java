@@ -28,7 +28,6 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.Spell;
-import momime.common.database.SummonedUnit;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.CombatMapSize;
@@ -368,11 +367,8 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		final PlayerServerDetails player = new PlayerServerDetails (null, null, null, null, null);
 
 		// Spell
-		final SummonedUnit summonedUnit = new SummonedUnit ();
-		summonedUnit.setSummonedUnitID ("UN001");
-		
 		final Spell spell = new Spell ();
-		spell.getSummonedUnit ().add (summonedUnit);
+		spell.getSummonedUnit ().add ("UN001");
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();
@@ -444,11 +440,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		// Spell
 		final Spell spell = new Spell ();
 		for (int n = 1; n <= 9; n++)
-		{
-			final SummonedUnit summonedUnit = new SummonedUnit ();
-			summonedUnit.setSummonedUnitID ("UN00" + n);
-			spell.getSummonedUnit ().add (summonedUnit);
-		}		
+			spell.getSummonedUnit ().add ("UN00" + n);
 		
 		// Set up object to test
 		final ServerUnitCalculationsImpl calc = new ServerUnitCalculationsImpl ();

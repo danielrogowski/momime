@@ -41,7 +41,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.Language;
 import momime.common.database.Pick;
 import momime.common.database.ProductionTypeEx;
@@ -266,11 +265,7 @@ public final class TestHelpUI extends ClientTestData
 		slot.getSlotTypeDescription ().add (createLanguageText (Language.ENGLISH, "Armour slot"));
 		
 		for (int n = 1; n <= 3; n++)
-		{
-			final HeroSlotAllowedItemType allowed = new HeroSlotAllowedItemType ();
-			allowed.setHeroItemTypeID ("IT0"+ n);
-			slot.getHeroSlotAllowedItemType ().add (allowed);
-		}
+			slot.getHeroSlotAllowedItemType ().add ("IT0"+ n);
 		
 		when (db.findHeroItemSlotType ("IST01", "HelpUI")).thenReturn (slot);
 		

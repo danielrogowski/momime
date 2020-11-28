@@ -13,7 +13,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -98,15 +97,15 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 			final List<String> bonusIDs = new ArrayList<String> ();
 			final List<String> bonusSkillIDs = new ArrayList<String> ();
 			
-			for (final HeroItemTypeAllowedBonus bonus : heroItem.getHeroItemChosenBonus ())
+			for (final String bonusID : heroItem.getHeroItemChosenBonus ())
 			{
-				final HeroItemBonus bonusDef = db.findHeroItemBonus (bonus.getHeroItemBonusID (), "validateHeroItem");
+				final HeroItemBonus bonusDef = db.findHeroItemBonus (bonusID, "validateHeroItem");
 				
-				if (bonusIDs.contains (bonus.getHeroItemBonusID ()))
+				if (bonusIDs.contains (bonusID))
 					error = "Bonus " + bonusDef.getHeroItemBonusID () + " was chosen more than once";
 				else
 				{
-					bonusIDs.add (bonus.getHeroItemBonusID ());
+					bonusIDs.add (bonusID);
 					
 					if ((spell.getHeroItemBonusMaximumCraftingCost () > 0) && ((bonusDef.getBonusCraftingCost () == null) ||
 						(bonusDef.getBonusCraftingCost () > spell.getHeroItemBonusMaximumCraftingCost ())))

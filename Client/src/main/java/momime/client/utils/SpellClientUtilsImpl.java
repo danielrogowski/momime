@@ -25,10 +25,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.SpellHasCityEffect;
-import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SpellValidUnitTarget;
-import momime.common.database.SummonedUnit;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.PlayerPick;
 import momime.common.utils.PlayerPickUtils;
@@ -251,9 +248,9 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				// Summoning
 				case SUMMONING:
 				{
-					for (final SummonedUnit summonedUnit : spell.getSummonedUnit ())
+					for (final String summonedUnitID : spell.getSummonedUnit ())
 					{
-						final String imageName = getClient ().getClientDB ().findUnit (summonedUnit.getSummonedUnitID (), "findImageForSpell").getUnitSummonImageFile ();
+						final String imageName = getClient ().getClientDB ().findUnit (summonedUnitID, "findImageForSpell").getUnitSummonImageFile ();
 						if ((imageName != null) && (!imageFilenames.contains (imageName)))
 							imageFilenames.add (imageName);
 					}
@@ -283,9 +280,9 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 					final List<CityViewElement> cityViewElements = new ArrayList<CityViewElement> ();
 					
 					// Spells that create city effects, like Altar of Battle
-					for (final SpellHasCityEffect citySpellEffect : spell.getSpellHasCityEffect ())
+					for (final String citySpellEffectID : spell.getSpellHasCityEffect ())
 					{
-						final CityViewElement cityViewElement = getClient ().getClientDB ().findCityViewElementSpellEffect (citySpellEffect.getCitySpellEffectID ());
+						final CityViewElement cityViewElement = getClient ().getClientDB ().findCityViewElementSpellEffect (citySpellEffectID);
 						if (cityViewElement != null)
 							cityViewElements.add (cityViewElement);
 					}
@@ -317,9 +314,9 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 				// Combat enchantments
 				case COMBAT_ENCHANTMENTS:
 				{
-					for (final SpellHasCombatEffect combatSpellEffect : spell.getSpellHasCombatEffect ())
+					for (final String combatSpellEffectID : spell.getSpellHasCombatEffect ())
 					{
-						final String imageName = getClient ().getClientDB ().findCombatAreaEffect (combatSpellEffect.getCombatAreaEffectID (), "findImageForSpell").getCombatAreaEffectImageFile ();
+						final String imageName = getClient ().getClientDB ().findCombatAreaEffect (combatSpellEffectID, "findImageForSpell").getCombatAreaEffectImageFile ();
 						if (!imageFilenames.contains (imageName))
 							imageFilenames.add (imageName);
 					}

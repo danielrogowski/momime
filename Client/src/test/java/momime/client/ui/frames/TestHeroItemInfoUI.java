@@ -20,7 +20,6 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.Language;
 import momime.common.database.Spell;
 import momime.common.messages.NumberedHeroItem;
@@ -87,11 +86,7 @@ public final class TestHeroItemInfoUI extends ClientTestData
 		item.setSpellID ("SP001");
 		
 		for (final String bonusID : new String [] {"IB01", "IB02", "IB03", CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES})
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			item.getHeroItemChosenBonus ().add (bonus);
-		}
+			item.getHeroItemChosenBonus ().add (bonusID);
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/HeroItemInfoUI.xml"));

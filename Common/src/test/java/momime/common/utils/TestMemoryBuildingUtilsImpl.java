@@ -22,13 +22,11 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import momime.common.MomException;
 import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
-import momime.common.database.BuildingPrerequisite;
 import momime.common.database.CommonDatabase;
 import momime.common.database.GenerateTestData;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitPrerequisite;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.OverlandMapCityData;
@@ -254,9 +252,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
 
 		final Building building = new Building ();
-		final BuildingPrerequisite req = new BuildingPrerequisite ();
-		req.setPrerequisiteID ("BL01");
-		building.getBuildingPrerequisite ().add (req);
+		building.getBuildingPrerequisite ().add ("BL01");
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsBuildingRequirements (buildingsList, new MapCoordinates3DEx (15, 10, 1), building));
@@ -275,9 +271,7 @@ public final class TestMemoryBuildingUtilsImpl
 		buildingsList.add (mem);
 
 		final Building building = new Building ();
-		final BuildingPrerequisite req = new BuildingPrerequisite ();
-		req.setPrerequisiteID ("BL01");
-		building.getBuildingPrerequisite ().add (req);
+		building.getBuildingPrerequisite ().add ("BL01");
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsBuildingRequirements (buildingsList, new MapCoordinates3DEx (16, 10, 1), building));
@@ -296,9 +290,7 @@ public final class TestMemoryBuildingUtilsImpl
 		buildingsList.add (mem);
 
 		final Building building = new Building ();
-		final BuildingPrerequisite req = new BuildingPrerequisite ();
-		req.setPrerequisiteID ("BL01");
-		building.getBuildingPrerequisite ().add (req);
+		building.getBuildingPrerequisite ().add ("BL01");
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsBuildingRequirements (buildingsList, new MapCoordinates3DEx (15, 10, 1), building));
@@ -318,11 +310,7 @@ public final class TestMemoryBuildingUtilsImpl
 
 		final Building building = new Building ();
 		for (int n = 1; n <= 2; n++)
-		{
-			final BuildingPrerequisite req = new BuildingPrerequisite ();
-			req.setPrerequisiteID ("BL0" + n);
-			building.getBuildingPrerequisite ().add (req);
-		}
+			building.getBuildingPrerequisite ().add ("BL0" + n);
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsBuildingRequirements (buildingsList, new MapCoordinates3DEx (15, 10, 1), building));
@@ -345,11 +333,7 @@ public final class TestMemoryBuildingUtilsImpl
 
 		final Building building = new Building ();
 		for (int n = 1; n <= 2; n++)
-		{
-			final BuildingPrerequisite req = new BuildingPrerequisite ();
-			req.setPrerequisiteID ("BL0" + n);
-			building.getBuildingPrerequisite ().add (req);
-		}
+			building.getBuildingPrerequisite ().add ("BL0" + n);
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsBuildingRequirements (buildingsList, new MapCoordinates3DEx (15, 10, 1), building));
@@ -378,9 +362,7 @@ public final class TestMemoryBuildingUtilsImpl
 		final List<MemoryBuilding> buildingsList = new ArrayList<MemoryBuilding> ();
 
 		final Unit unit = new Unit ();
-		final UnitPrerequisite req = new UnitPrerequisite ();
-		req.setPrerequisiteID ("BL01");
-		unit.getUnitPrerequisite ().add (req);
+		unit.getUnitPrerequisite ().add ("BL01");
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsUnitRequirements (buildingsList, new MapCoordinates3DEx (15, 10, 1), unit));
@@ -399,9 +381,7 @@ public final class TestMemoryBuildingUtilsImpl
 		buildingsList.add (mem);
 
 		final Unit unit = new Unit ();
-		final UnitPrerequisite req = new UnitPrerequisite ();
-		req.setPrerequisiteID ("BL01");
-		unit.getUnitPrerequisite ().add (req);
+		unit.getUnitPrerequisite ().add ("BL01");
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsUnitRequirements (buildingsList, new MapCoordinates3DEx (16, 10, 1), unit));
@@ -420,9 +400,7 @@ public final class TestMemoryBuildingUtilsImpl
 		buildingsList.add (mem);
 
 		final Unit unit = new Unit ();
-		final UnitPrerequisite req = new UnitPrerequisite ();
-		req.setPrerequisiteID ("BL01");
-		unit.getUnitPrerequisite ().add (req);
+		unit.getUnitPrerequisite ().add ("BL01");
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsUnitRequirements (buildingsList, new MapCoordinates3DEx (15, 10, 1), unit));
@@ -442,11 +420,7 @@ public final class TestMemoryBuildingUtilsImpl
 
 		final Unit unit = new Unit ();
 		for (int n = 1; n <= 2; n++)
-		{
-			final UnitPrerequisite req = new UnitPrerequisite ();
-			req.setPrerequisiteID ("BL0" + n);
-			unit.getUnitPrerequisite ().add (req);
-		}
+			unit.getUnitPrerequisite ().add ("BL0" + n);
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertFalse (utils.meetsUnitRequirements (buildingsList, new MapCoordinates3DEx (15, 10, 1), unit));
@@ -469,11 +443,7 @@ public final class TestMemoryBuildingUtilsImpl
 
 		final Unit unit = new Unit ();
 		for (int n = 1; n <= 2; n++)
-		{
-			final UnitPrerequisite req = new UnitPrerequisite ();
-			req.setPrerequisiteID ("BL0" + n);
-			unit.getUnitPrerequisite ().add (req);
-		}
+			unit.getUnitPrerequisite ().add ("BL0" + n);
 
 		final MemoryBuildingUtilsImpl utils = new MemoryBuildingUtilsImpl ();
 		assertTrue (utils.meetsUnitRequirements (buildingsList, new MapCoordinates3DEx (15, 10, 1), unit));
@@ -490,9 +460,7 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of building types
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
-		prereq.setPrerequisiteID ("BL02");
-		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
+		dbBuildingOne.getBuildingPrerequisite ().add ("BL02");
 
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
@@ -526,9 +494,7 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of building types
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
-		prereq.setPrerequisiteID ("BL02");
-		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
+		dbBuildingOne.getBuildingPrerequisite ().add ("BL02");
 
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
@@ -562,9 +528,7 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of building types
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
-		prereq.setPrerequisiteID ("BL02");
-		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
+		dbBuildingOne.getBuildingPrerequisite ().add ("BL02");
 
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
@@ -598,9 +562,7 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of building types
 		final Building dbBuildingOne = new Building ();
 		dbBuildingOne.setBuildingID ("BL01");
-		final BuildingPrerequisite prereq = new BuildingPrerequisite ();
-		prereq.setPrerequisiteID ("BL02");
-		dbBuildingOne.getBuildingPrerequisite ().add (prereq);
+		dbBuildingOne.getBuildingPrerequisite ().add ("BL02");
 
 		final Building dbBuildingTwo = new Building ();
 		dbBuildingTwo.setBuildingID ("BL02");
@@ -625,9 +587,7 @@ public final class TestMemoryBuildingUtilsImpl
 		// Set up dummy XML definitions for couple of unit types
 		final UnitEx dbUnitOne = new UnitEx ();
 		dbUnitOne.setUnitID ("UN001");
-		final UnitPrerequisite prerequ = new UnitPrerequisite ();
-		prerequ.setPrerequisiteID ("BL01");
-		dbUnitOne.getUnitPrerequisite ().add (prerequ);
+		dbUnitOne.getUnitPrerequisite ().add ("BL01");
 
 		final UnitEx dbUnitTwo = new UnitEx ();
 		dbUnitTwo.setUnitID ("UN002");

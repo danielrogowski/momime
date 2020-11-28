@@ -25,9 +25,9 @@ public final class WizardEx extends Wizard
 		log.trace ("Entering chooseRandomCombatPlayListID");
 		
 		if (getCombatPlayList ().size () == 0)
-			throw new RecordNotFoundException (WizardCombatPlayList.class, null, "chooseRandomCombatPlayListID");
+			throw new RecordNotFoundException ("WizardCombatPlayList", null, "chooseRandomCombatPlayListID");
 		
-		final String playListID = getCombatPlayList ().get (getRandomUtils ().nextInt (getCombatPlayList ().size ())).getPlayListID ();
+		final String playListID = getCombatPlayList ().get (getRandomUtils ().nextInt (getCombatPlayList ().size ()));
 		log.trace ("Exiting chooseRandomCombatPlayListID = " + playListID);
 		return playListID;
 	}

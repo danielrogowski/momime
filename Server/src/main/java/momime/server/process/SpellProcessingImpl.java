@@ -34,10 +34,9 @@ import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.StoredDamageTypeID;
-import momime.common.database.UnitEx;
 import momime.common.database.UnitCombatSideID;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
 import momime.common.messages.FogOfWarMemory;
@@ -228,7 +227,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if (spell.getSpellHasCombatEffect ().size () > 0)
 				{
 					// Pick one at random
-					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ())).getCombatAreaEffectID ();
+					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ()));
 					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID, spell.getSpellID (),
 						player.getPlayerDescription ().getPlayerID (), null, mom.getPlayers (), mom.getSessionDescription ());
 				}
@@ -591,7 +590,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// Pick an actual unit at random
 			if (spell.getSummonedUnit ().size () > 0)
 			{
-				final String unitID = spell.getSummonedUnit ().get (getRandomUtils ().nextInt (spell.getSummonedUnit ().size ())).getSummonedUnitID ();
+				final String unitID = spell.getSummonedUnit ().get (getRandomUtils ().nextInt (spell.getSummonedUnit ().size ()));
 				log.debug ("castCombatNow chose Unit ID " + unitID + " as unit to summon from spell " + spell.getSpellID ());
 				
 				// Even though we're summoning the unit into a combat, the location of the unit might not be
@@ -878,10 +877,10 @@ public final class SpellProcessingImpl implements SpellProcessing
 		if (sectionID == SpellBookSectionID.OVERLAND_ENCHANTMENTS)
 		{
 			// Check each combat area effect that this overland enchantment gives to see if we have any of them in effect - if so cancel them
-			for (final SpellHasCombatEffect effect : spell.getSpellHasCombatEffect ())
+			for (final String combatAreaEffectID: spell.getSpellHasCombatEffect ())
 			{
 				final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-					(trueMap.getCombatAreaEffect (), null, effect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
+					(trueMap.getCombatAreaEffect (), null, combatAreaEffectID, trueSpell.getCastingPlayerID ());
 				
 				if (cae != null)
 					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, sd);

@@ -27,8 +27,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroItemTypeAllowedBonus;
-import momime.common.database.HeroItemTypeAttackType;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackTypeEx;
@@ -36,9 +34,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillComponent;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitType;
@@ -320,13 +318,13 @@ public final class UnitUtilsImpl implements UnitUtils
 							basicSkillValues.put (basicStat.getUnitSkillID (), null);
 					
 					// Bonuses imbued on the item
-					for (final HeroItemTypeAllowedBonus bonus : slot.getHeroItem ().getHeroItemChosenBonus ())
-						for (final HeroItemBonusStat bonusStat : db.findHeroItemBonus (bonus.getHeroItemBonusID (), "expandUnitDetails").getHeroItemBonusStat ())
+					for (final String bonusID : slot.getHeroItem ().getHeroItemChosenBonus ())
+						for (final HeroItemBonusStat bonusStat : db.findHeroItemBonus (bonusID, "expandUnitDetails").getHeroItemBonusStat ())
 							if ((bonusStat.getUnitSkillValue () == null) && (!basicSkillValues.containsKey (bonusStat.getUnitSkillID ())))
 
 								// Some bonuses only apply if the attackFromSkillID matches the kind of item they're imbued in
 								if ((bonusStat.isAppliesOnlyToAttacksAppropriateForTypeOfHeroItem () == null) || (!bonusStat.isAppliesOnlyToAttacksAppropriateForTypeOfHeroItem ()) ||
-									((attackFromSkillID != null) && (heroItemType.getHeroItemTypeAttackType ().stream ().anyMatch (t -> t.getUnitSkillID ().equals (attackFromSkillID)))))
+									((attackFromSkillID != null) && (heroItemType.getHeroItemTypeAttackType ().stream ().anyMatch (t -> t.equals (attackFromSkillID)))))
 								
 									basicSkillValues.put (bonusStat.getUnitSkillID (), null);
 				}
@@ -339,7 +337,7 @@ public final class UnitUtilsImpl implements UnitUtils
 			final UnitSkillEx skillDef = db.findUnitSkill (skillsLeftToCheck.get (0), "expandUnitDetails");
 			skillsLeftToCheck.remove (0);
 			
-			skillDef.getGrantsSkill ().stream ().map (s -> s.getGrantsSkillID ()).forEach (s ->
+			skillDef.getGrantsSkill ().stream ().forEach (s ->
 			{
 				basicSkillValues.put (s, null);
 				skillsLeftToCheck.add (s);
@@ -420,7 +418,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				final Pick pick = iter.next ();
 				
 				if ((pick.getMergedFromPick ().size () == changedMagicRealmLifeformTypeIDs.size ()) &&
-					(pick.getMergedFromPick ().stream ().map (m -> m.getMergedFromPickID ()).allMatch (m -> changedMagicRealmLifeformTypeIDs.contains (m))))
+					(pick.getMergedFromPick ().stream ().allMatch (m -> changedMagicRealmLifeformTypeIDs.contains (m))))
 					
 					match = pick;
 			}
@@ -688,8 +686,8 @@ public final class UnitUtilsImpl implements UnitUtils
 						}
 					
 					// Bonuses imbued on the item
-					for (final HeroItemTypeAllowedBonus bonus : slot.getHeroItem ().getHeroItemChosenBonus ())
-						for (final UnitSkillAndValue bonusStat : db.findHeroItemBonus (bonus.getHeroItemBonusID (), "expandUnitDetails").getHeroItemBonusStat ())
+					for (final String bonusID : slot.getHeroItem ().getHeroItemChosenBonus ())
+						for (final UnitSkillAndValue bonusStat : db.findHeroItemBonus (bonusID, "expandUnitDetails").getHeroItemBonusStat ())
 							if (bonusStat.getUnitSkillValue () == null)
 							{
 								// Just want bonuses with a numeric value
@@ -699,9 +697,9 @@ public final class UnitUtilsImpl implements UnitUtils
 							// This deals with that e.g. swords don't add to "Thrown Weapons" skill but axes do.
 							else if (bonusStat.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM))
 							{
-								for (final HeroItemTypeAttackType attackSkill : heroItemType.getHeroItemTypeAttackType ())
+								for (final String attackSkillID : heroItemType.getHeroItemTypeAttackType ())
 								{
-									final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (attackSkill.getUnitSkillID ());
+									final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (attackSkillID);
 									if (components != null)
 									{
 										// This might coincide with a basic stat, e.g. plate mail (+2 defence) with another +4 defence imbued onto it
@@ -1091,12 +1089,7 @@ public final class UnitUtilsImpl implements UnitUtils
 				destItem.setSpellID (srcItem.getSpellID ());
 				destItem.setSpellChargeCount (srcItem.getSpellChargeCount ());
 				
-				srcItem.getHeroItemChosenBonus ().forEach (srcBonus ->
-				{
-					final HeroItemTypeAllowedBonus destBonus = new HeroItemTypeAllowedBonus ();
-					destBonus.setHeroItemBonusID (srcBonus.getHeroItemBonusID ());
-					destItem.getHeroItemChosenBonus ().add (destBonus);
-				});
+				destItem.getHeroItemChosenBonus ().addAll (srcItem.getHeroItemChosenBonus ());
 				
 				destItemSlot.setHeroItem (destItem);
 			}

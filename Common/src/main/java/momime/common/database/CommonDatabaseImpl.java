@@ -861,11 +861,10 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 				// So the size matches - but does this image require buildings to be present?  If so, count how many
 				boolean buildingsMatch = true;
 				int buildingCount = 0;
-				final Iterator<CityImagePrerequisite> iter = image.getCityImagePrerequisite ().iterator ();
+				final Iterator<String> iter = image.getCityImagePrerequisite ().iterator ();
 				while ((buildingsMatch) && (iter.hasNext ()))
 				{
-					final String buildingID = iter.next ().getPrerequisiteID ();
-					if (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, buildingID) != null)
+					if (getMemoryBuildingUtils ().findBuilding (buildings, cityLocation, iter.next ()) != null)
 						buildingCount++;
 					else
 						buildingsMatch = false;

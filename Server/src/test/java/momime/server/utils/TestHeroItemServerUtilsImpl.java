@@ -15,7 +15,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemBonusStat;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.Spell;
 import momime.common.database.UnitSetting;
@@ -98,11 +97,7 @@ public final class TestHeroItemServerUtilsImpl
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01"})
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			heroItem.getHeroItemChosenBonus ().add (bonus);
-		}
+			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -145,11 +140,7 @@ public final class TestHeroItemServerUtilsImpl
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB02"})
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			heroItem.getHeroItemChosenBonus ().add (bonus);
-		}
+			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -192,11 +183,7 @@ public final class TestHeroItemServerUtilsImpl
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB01"})
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			heroItem.getHeroItemChosenBonus ().add (bonus);
-		}
+			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -239,11 +226,7 @@ public final class TestHeroItemServerUtilsImpl
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB02"})
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			heroItem.getHeroItemChosenBonus ().add (bonus);
-		}
+			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -285,11 +268,7 @@ public final class TestHeroItemServerUtilsImpl
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01"})
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			heroItem.getHeroItemChosenBonus ().add (bonus);
-		}
+			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -343,11 +322,7 @@ public final class TestHeroItemServerUtilsImpl
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB02"})
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			heroItem.getHeroItemChosenBonus ().add (bonus);
-		}
+			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -396,11 +371,7 @@ public final class TestHeroItemServerUtilsImpl
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		for (final String bonusID : new String [] {"IB01", "IB02"})
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			heroItem.getHeroItemChosenBonus ().add (bonus);
-		}
+			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -504,9 +475,7 @@ public final class TestHeroItemServerUtilsImpl
 		// Item we want to create
 		final HeroItem heroItem = new HeroItem ();
 		
-		final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-		bonus.setHeroItemBonusID (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
-		heroItem.getHeroItemChosenBonus ().add (bonus);
+		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -545,9 +514,7 @@ public final class TestHeroItemServerUtilsImpl
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setSpellID ("SP001");
 		
-		final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-		bonus.setHeroItemBonusID (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
-		heroItem.getHeroItemChosenBonus ().add (bonus);
+		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -588,9 +555,7 @@ public final class TestHeroItemServerUtilsImpl
 		heroItem.setSpellID ("SP001");
 		heroItem.setSpellChargeCount (4);
 		
-		final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-		bonus.setHeroItemBonusID (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
-		heroItem.getHeroItemChosenBonus ().add (bonus);
+		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -643,9 +608,7 @@ public final class TestHeroItemServerUtilsImpl
 		heroItem.setSpellID ("SP001");
 		heroItem.setSpellChargeCount (4);
 		
-		final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-		bonus.setHeroItemBonusID (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
-		heroItem.getHeroItemChosenBonus ().add (bonus);
+		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -701,9 +664,7 @@ public final class TestHeroItemServerUtilsImpl
 		heroItem.setSpellID ("SP001");
 		heroItem.setSpellChargeCount (4);
 		
-		final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-		bonus.setHeroItemBonusID (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
-		heroItem.getHeroItemChosenBonus ().add (bonus);
+		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();
@@ -759,9 +720,7 @@ public final class TestHeroItemServerUtilsImpl
 		heroItem.setSpellID ("SP001");
 		heroItem.setSpellChargeCount (4);
 		
-		final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-		bonus.setHeroItemBonusID (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
-		heroItem.getHeroItemChosenBonus ().add (bonus);
+		heroItem.getHeroItemChosenBonus ().add (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES);
 		
 		// Set up object to test
 		final HeroItemServerUtilsImpl utils = new HeroItemServerUtilsImpl ();

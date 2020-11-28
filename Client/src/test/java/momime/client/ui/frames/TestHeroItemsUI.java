@@ -30,7 +30,6 @@ import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.HeroItemSlot;
 import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroItemType;
 import momime.common.database.Language;
@@ -78,11 +77,7 @@ public final class TestHeroItemsUI extends ClientTestData
 			unitDef.setHeroPortraitImageFile ("/momime.client.graphics/units/UN00" + n + "/portrait.png");
 			
 			for (int s = 0; s < 3; s++)
-			{
-				final HeroItemSlot slot = new HeroItemSlot ();
-				slot.setHeroItemSlotTypeID ("IST0" + (n+s));
-				unitDef.getHeroItemSlot ().add (slot);				
-			}
+				unitDef.getHeroItemSlot ().add ("IST0" + (n+s));				
 			
 			when (db.findUnit (eq ("UN00" + n), anyString ())).thenReturn (unitDef);
 		}

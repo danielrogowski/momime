@@ -18,7 +18,6 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
-import momime.common.database.SummonedUnit;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
@@ -86,10 +85,10 @@ public final class SpellUtilsImpl implements SpellUtils
 		// for War Bears, Sky Drakes, etc. we want "S", and for Summon Hero, Champion & Incarnation we want "H"
 		String result = null;
 		if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
-			for (final SummonedUnit spellSummonsUnit : spell.getSummonedUnit ())
+			for (final String spellSummonsUnitID : spell.getSummonedUnit ())
 			{
 				// Now find the unit's magic realm / lifeform type
-				final String thisMagicRealmID = db.findUnit (spellSummonsUnit.getSummonedUnitID (), "spellSummonsUnitTypeID").getUnitMagicRealm ();
+				final String thisMagicRealmID = db.findUnit (spellSummonsUnitID, "spellSummonsUnitTypeID").getUnitMagicRealm ();
 
 				// Use the cache for the magic realm / lifeform type to get the Unit Type ID
 				final String unitTypeID = db.findPick (thisMagicRealmID, "spellSummonsUnitTypeID").getUnitTypeID ();

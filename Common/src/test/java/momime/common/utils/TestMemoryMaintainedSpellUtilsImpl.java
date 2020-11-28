@@ -25,8 +25,6 @@ import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.SpellHasCityEffect;
-import momime.common.database.SpellValidBorderTarget;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitSpellEffect;
@@ -548,9 +546,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertNull (utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation));
 		
 		// Spell with exactly one citySpellEffectID, that isn't cast yet
-		final SpellHasCityEffect effectA = new SpellHasCityEffect ();
-		effectA.setCitySpellEffectID ("A");
-		spell.getSpellHasCityEffect ().add (effectA);
+		spell.getSpellHasCityEffect ().add ("A");
 		
 		final List<String> listOne = utils.listCitySpellEffectsNotYetCastAtLocation (spells, spell, 1, cityLocation);
 		assertEquals (1, listOne.size ());
@@ -569,11 +565,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		
 		// Add three more effects
 		for (final String effectID : new String [] {"B", "C", "D"})
-		{
-			final SpellHasCityEffect effectB = new SpellHasCityEffect ();
-			effectB.setCitySpellEffectID (effectID);
-			spell.getSpellHasCityEffect ().add (effectB);
-		}
+			spell.getSpellHasCityEffect ().add (effectID);
 		
 		// One with wrong spell ID
 		final MemoryMaintainedSpell existingEffectB = new MemoryMaintainedSpell ();
@@ -866,11 +858,8 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Spell that creates one of two spell effects
 		enchantment.setBuildingID (null);
 		for (int n = 1; n <= 2; n++)
-		{
-			final SpellHasCityEffect effect = new SpellHasCityEffect ();
-			effect.setCitySpellEffectID ("CSE0" + n);
-			enchantment.getSpellHasCityEffect ().add (effect);
-		}
+			enchantment.getSpellHasCityEffect ().add ("CSE0" + n);
+		
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isCityValidTargetForSpell (spells, enchantment, 1, new MapCoordinates3DEx (23, 20, 0), map, fow, buildings));
 		
 		final MemoryMaintainedSpell effect1 = new MemoryMaintainedSpell ();
@@ -967,10 +956,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (2, 1), map));
 		
 		// Now we need a specific border
-		final SpellValidBorderTarget borderReq1 = new SpellValidBorderTarget ();
-		borderReq1.setTargetCombatTileBorderID ("CTB01");
-		spell.getSpellValidBorderTarget ().add (borderReq1);
-
+		spell.getSpellValidBorderTarget ().add ("CTB01");
 		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
 		
 		// Put the wrong kind of border there
@@ -978,10 +964,7 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		assertFalse (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
 		
 		// Now the spell can hit either
-		final SpellValidBorderTarget borderReq2 = new SpellValidBorderTarget ();
-		borderReq2.setTargetCombatTileBorderID ("CTB02");
-		spell.getSpellValidBorderTarget ().add (borderReq2);
-
+		spell.getSpellValidBorderTarget ().add ("CTB02");
 		assertTrue (utils.isCombatLocationValidTargetForSpell (spell, new MapCoordinates2DEx (10, 5), map));
 		
 		// Border already destroyed

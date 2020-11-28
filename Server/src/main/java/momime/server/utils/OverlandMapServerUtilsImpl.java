@@ -22,7 +22,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
-import momime.common.database.CityNameContainer;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
@@ -171,9 +170,9 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		{
 			// Test each name to see if it has been used before
 			possibleChoices.clear ();
-			for (final CityNameContainer thisCache : race.getCityName ())
+			for (final String thisCache : race.getCityName ())
 			{
-				String thisName = thisCache.getCityName ();
+				String thisName = thisCache;
 				if (numeral > 1)
 					thisName = thisName + " " + RomanNumerals.intToRoman (numeral);
 

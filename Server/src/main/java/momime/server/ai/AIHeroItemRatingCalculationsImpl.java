@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.HeroItemBonus;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.NumberedHeroItem;
 
@@ -48,8 +47,8 @@ public final class AIHeroItemRatingCalculationsImpl implements AIHeroItemRatingC
 		log.trace ("Entering calculateHeroItemRating: Item URN " + item.getHeroItemURN () + ", name " + item.getHeroItemName ());
 
 		int rating = 0;
-		for (final HeroItemTypeAllowedBonus bonus : item.getHeroItemChosenBonus ())
-			rating = rating + calculateHeroItemBonusRating (db.findHeroItemBonus (bonus.getHeroItemBonusID (), "calculateUnitPotentialRating"));
+		for (final String bonusID : item.getHeroItemChosenBonus ())
+			rating = rating + calculateHeroItemBonusRating (db.findHeroItemBonus (bonusID, "calculateUnitPotentialRating"));
 		
 		log.trace ("Exiting calculateHeroItemRating = " + rating);
 		return rating;

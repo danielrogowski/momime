@@ -44,7 +44,6 @@ import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.UnitSkillAndValue;
@@ -348,10 +347,10 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			final List<HeroItemBonus> attributeBonuses = new ArrayList<HeroItemBonus> ();
 			final List<HeroItemBonus> spellEffectBonuses = new ArrayList<HeroItemBonus> ();
 			
-			for (final HeroItemTypeAllowedBonus allowedBonus : heroItemType.getHeroItemTypeAllowedBonus ())
-				if (getHeroItemCalculations ().haveRequiredBooksForBonus (allowedBonus.getHeroItemBonusID (), pub.getPick (), getClient ().getClientDB ()))
+			for (final String allowedBonusID : heroItemType.getHeroItemTypeAllowedBonus ())
+				if (getHeroItemCalculations ().haveRequiredBooksForBonus (allowedBonusID, pub.getPick (), getClient ().getClientDB ()))
 				{
-					final HeroItemBonus bonus = getClient ().getClientDB ().findHeroItemBonus (allowedBonus.getHeroItemBonusID (), "selectItemType");
+					final HeroItemBonus bonus = getClient ().getClientDB ().findHeroItemBonus (allowedBonusID, "selectItemType");
 					
 					// Limit bonuses available for Enchant Item, but check for spell max = 0 first - so we allow Spell Charges for Create Artifact
 					if ((spell.getHeroItemBonusMaximumCraftingCost () == 0) ||
@@ -637,11 +636,7 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		heroItem.setHeroItemImageNumber (imageNumber);
 		
 		for (final String bonusID : selectedBonusIDs)
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID (bonusID);
-			heroItem.getHeroItemChosenBonus ().add (bonus);
-		}
+			heroItem.getHeroItemChosenBonus ().add (bonusID);
 		
 		if (selectedBonusIDs.contains (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES)) {
 			heroItem.setSpellID (spellChargesChosenSpell.getSpellID ());

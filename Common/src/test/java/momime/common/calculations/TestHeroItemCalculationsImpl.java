@@ -16,7 +16,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -73,11 +72,7 @@ public final class TestHeroItemCalculationsImpl
 		item.setSpellChargeCount (3);
 		
 		for (int n = 0; n <= 3; n++)
-		{
-			final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
-			bonus.setHeroItemBonusID ((n == 0) ? CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES : "IB0" + n);
-			item.getHeroItemChosenBonus ().add (bonus);
-		}
+			item.getHeroItemChosenBonus ().add ((n == 0) ? CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES : "IB0" + n);
 		
 		// Set up object to test
 		final HeroItemCalculationsImpl calc = new HeroItemCalculationsImpl ();
@@ -191,16 +186,12 @@ public final class TestHeroItemCalculationsImpl
 		assertTrue (calc.haveRequiredBooksForItem (item, picks, db));
 		
 		// Add a bonus that doesn't have any requirements
-		final HeroItemTypeAllowedBonus bonus1 = new HeroItemTypeAllowedBonus ();
-		bonus1.setHeroItemBonusID ("IB01");
-		item.getHeroItemChosenBonus ().add (bonus1);
+		item.getHeroItemChosenBonus ().add ("IB01");
 		
 		assertTrue (calc.haveRequiredBooksForItem (item, picks, db));
 		
 		// Add a bonus that needs some books
-		final HeroItemTypeAllowedBonus bonus2 = new HeroItemTypeAllowedBonus ();
-		bonus2.setHeroItemBonusID ("IB02");
-		item.getHeroItemChosenBonus ().add (bonus2);
+		item.getHeroItemChosenBonus ().add ("IB02");
 		
 		assertFalse (calc.haveRequiredBooksForItem (item, picks, db));
 		
@@ -209,9 +200,7 @@ public final class TestHeroItemCalculationsImpl
 		assertTrue (calc.haveRequiredBooksForItem (item, picks, db));
 		
 		// Add another bonus that requires a different kind of book
-		final HeroItemTypeAllowedBonus bonus3 = new HeroItemTypeAllowedBonus ();
-		bonus3.setHeroItemBonusID ("IB03");
-		item.getHeroItemChosenBonus ().add (bonus3);
+		item.getHeroItemChosenBonus ().add ("IB03");
 		
 		assertFalse (calc.haveRequiredBooksForItem (item, picks, db));
 		

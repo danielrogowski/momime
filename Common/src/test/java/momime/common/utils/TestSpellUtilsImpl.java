@@ -22,7 +22,6 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.SpellSetting;
 import momime.common.database.SpellValidUnitTarget;
-import momime.common.database.SummonedUnit;
 import momime.common.database.UnitEx;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
@@ -116,13 +115,12 @@ public final class TestSpellUtilsImpl
 
 		for (int n = 1; n <= 3; n++)
 		{
-			final SummonedUnit summonedUnit = new SummonedUnit ();
-			summonedUnit.setSummonedUnitID ("UN00" + n);
-			summoningSpell.getSummonedUnit ().add (summonedUnit);
+			final String summonedUnitID = "UN00" + n;
+			summoningSpell.getSummonedUnit ().add (summonedUnitID);
 			
 			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitMagicRealm ("MB01");
-			when (db.findUnit (summonedUnit.getSummonedUnitID (), "spellSummonsUnitTypeID")).thenReturn (unitDef);
+			when (db.findUnit (summonedUnitID, "spellSummonsUnitTypeID")).thenReturn (unitDef);
 		}
 		
 		// Set up object to test
@@ -157,13 +155,12 @@ public final class TestSpellUtilsImpl
 
 		for (int n = 1; n <= 2; n++)
 		{
-			final SummonedUnit summonedUnit = new SummonedUnit ();
-			summonedUnit.setSummonedUnitID ("UN00" + n);
-			summoningSpell.getSummonedUnit ().add (summonedUnit);
+			final String summonedUnitID = "UN00" + n;
+			summoningSpell.getSummonedUnit ().add (summonedUnitID);
 			
 			final UnitEx unitDef = new UnitEx ();
 			unitDef.setUnitMagicRealm ("MB0" + n);
-			when (db.findUnit (summonedUnit.getSummonedUnitID (), "spellSummonsUnitTypeID")).thenReturn (unitDef);
+			when (db.findUnit (summonedUnitID, "spellSummonsUnitTypeID")).thenReturn (unitDef);
 		}
 		
 		// Set up object to test

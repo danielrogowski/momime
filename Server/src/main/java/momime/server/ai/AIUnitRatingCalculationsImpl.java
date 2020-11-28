@@ -163,7 +163,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 				// Is the item in this slot good enough already?
 				if ((slotNumber < unitDef.getHeroItemSlot ().size ()) && ((slot.getHeroItem () == null) || (getAiHeroItemRatingCalculations ().calculateHeroItemRating (slot.getHeroItem (), db) < 6)))
 				{
-					final HeroItemSlotType slotType = db.findHeroItemSlotType (unitDef.getHeroItemSlot ().get (slotNumber).getHeroItemSlotTypeID (), "calculateUnitPotentialRating");
+					final HeroItemSlotType slotType = db.findHeroItemSlotType (unitDef.getHeroItemSlot ().get (slotNumber), "calculateUnitPotentialRating");
 					
 					if (slotType.getBasicHeroItemForAiRatingItemTypeID () != null)
 					{

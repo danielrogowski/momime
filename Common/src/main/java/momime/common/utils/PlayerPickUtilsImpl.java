@@ -5,17 +5,16 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.database.CommonDatabase;
-import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.Pick;
-import momime.common.database.PickExclusiveFrom;
-import momime.common.database.PickPrerequisite;
-import momime.common.database.PickProductionBonus;
-import momime.common.messages.PlayerPick;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import momime.common.database.CommonDatabase;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Pick;
+import momime.common.database.PickPrerequisite;
+import momime.common.database.PickProductionBonus;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.PlayerPick;
 
 /**
  * Methods for working with list of PlayerPicks
@@ -348,10 +347,10 @@ public final class PlayerPickUtilsImpl implements PlayerPickUtils
 		final Pick pick = db.findPick (pickID, "canSafelyAdd");
 		
 		boolean result = true;
-		for (final PickExclusiveFrom thisExclusive : pick.getPickExclusiveFrom ())
+		for (final String thisExclusive : pick.getPickExclusiveFrom ())
 		{
 			// Found an exclusivity - check if we have any of it
-			if (getQuantityOfPick (picks, thisExclusive.getPickExclusiveFromID ()) > 0)
+			if (getQuantityOfPick (picks, thisExclusive) > 0)
 
 				// Mutually exclusive pick found, so we can't add this pick
 				result = false;

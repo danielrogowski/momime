@@ -32,7 +32,6 @@ import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.calculations.CityCalculationsImpl;
-import momime.common.database.CityNameContainer;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -223,11 +222,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 
 		final Race race = new Race ();
 		for (final String thisName : names)
-		{
-			final CityNameContainer cont = new CityNameContainer ();
-			cont.setCityName (thisName);
-			race.getCityName ().add (cont);
-		}
+			race.getCityName ().add (thisName);
 
 		// But 2 of them is already used
 		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();

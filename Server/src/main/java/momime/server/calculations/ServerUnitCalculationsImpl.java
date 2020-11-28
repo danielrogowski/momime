@@ -25,7 +25,6 @@ import momime.common.database.FogOfWarSetting;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.database.SummonedUnit;
 import momime.common.database.UnitEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -259,15 +258,15 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
 		final List<UnitEx> possibleUnits = new ArrayList<UnitEx> ();
-		for (final SummonedUnit possibleSummonedUnit : spell.getSummonedUnit ())
+		for (final String possibleSummonedUnitID : spell.getSummonedUnit ())
 		{
 			// Check whether we can summon this unit If its a hero, this depends on whether we've summoned the hero before, or if he's dead
-			final UnitEx possibleUnit = db.findUnit (possibleSummonedUnit.getSummonedUnitID (), "listUnitsSpellMightSummon");
+			final UnitEx possibleUnit = db.findUnit (possibleSummonedUnitID, "listUnitsSpellMightSummon");
 			boolean addToList;
 			if (possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 			{
 				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (trueUnits,
-					player.getPlayerDescription ().getPlayerID (), possibleSummonedUnit.getSummonedUnitID ());
+					player.getPlayerDescription ().getPlayerID (), possibleSummonedUnitID);
 
 				if (hero == null)
 					addToList = false;

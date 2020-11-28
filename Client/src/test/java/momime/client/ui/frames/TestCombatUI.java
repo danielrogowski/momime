@@ -52,7 +52,6 @@ import momime.common.database.TileSetEx;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
-import momime.common.database.WizardCombatPlayList;
 import momime.common.database.WizardEx;
 import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
@@ -116,7 +115,7 @@ public final class TestCombatUI extends ClientTestData
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final WizardEx monsterWizardEx = new WizardEx ();
-		monsterWizardEx.getCombatPlayList ().add (new WizardCombatPlayList ());
+		monsterWizardEx.getCombatPlayList ().add ("PLAY_LIST");
 		monsterWizardEx.setRandomUtils (mock (RandomUtils.class));
 		
 		when (db.findWizard (CommonDatabaseConstants.WIZARD_ID_MONSTERS, "initNewCombat")).thenReturn (monsterWizardEx);

@@ -47,7 +47,6 @@ import momime.common.database.CityViewElement;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlotType;
-import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.LanguageText;
 import momime.common.database.Pick;
 import momime.common.database.Spell;
@@ -379,9 +378,9 @@ public final class HelpUI extends MomClientFrameUI
 				final HeroItemSlotType heroItemSlotType = getClient ().getClientDB ().findHeroItemSlotType (heroItemSlotTypeID, "HelpUI");
 				title.setText (getLanguageHolder ().findDescription (heroItemSlotType.getSlotTypeDescription ()));
 
-				for (final HeroSlotAllowedItemType allowed : heroItemSlotType.getHeroSlotAllowedItemType ())
+				for (final String heroItemTypeID : heroItemSlotType.getHeroSlotAllowedItemType ())
 					description.append (System.lineSeparator () + "\u2022 " + getLanguageHolder ().findDescription
-						(getClient ().getClientDB ().findHeroItemType (allowed.getHeroItemTypeID (), "HelpUI").getHeroItemTypeDescription ()));
+						(getClient ().getClientDB ().findHeroItemType (heroItemTypeID, "HelpUI").getHeroItemTypeDescription ()));
 				
 				indentedText.setText (description.toString ());
 			}

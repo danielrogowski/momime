@@ -6,14 +6,13 @@ import static org.junit.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.Spell;
-import momime.common.database.SpellHasCombatEffect;
-import momime.common.messages.MemoryCombatAreaEffect;
-
 import org.junit.Test;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.messages.MemoryCombatAreaEffect;
 
 /**
  * Tests the MemoryCombatAreaEffectUtils class
@@ -206,9 +205,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 		assertNull (utils.listCombatEffectsNotYetCastAtLocation (CAEs, spell, 1, combatLocation));
 		
 		// Spell with exactly one citySpellEffectID, that isn't cast yet
-		final SpellHasCombatEffect effectA = new SpellHasCombatEffect ();
-		effectA.setCombatAreaEffectID ("A");
-		spell.getSpellHasCombatEffect ().add (effectA);
+		spell.getSpellHasCombatEffect ().add ("A");
 		
 		final List<String> listOne = utils.listCombatEffectsNotYetCastAtLocation (CAEs, spell, 1, combatLocation);
 		assertEquals (1, listOne.size ());
@@ -226,11 +223,7 @@ public final class TestMemoryCombatAreaEffectUtilsImpl
 		
 		// Add three more effects
 		for (final String effectID : new String [] {"B", "C", "D"})
-		{
-			final SpellHasCombatEffect effectB = new SpellHasCombatEffect ();
-			effectB.setCombatAreaEffectID (effectID);
-			spell.getSpellHasCombatEffect ().add (effectB);
-		}
+			spell.getSpellHasCombatEffect ().add (effectID);
 		
 		// One matches
 		final MemoryCombatAreaEffect existingEffectB = new MemoryCombatAreaEffect ();

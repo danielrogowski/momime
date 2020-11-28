@@ -60,7 +60,6 @@ import momime.common.database.Language;
 import momime.common.database.NodeStrength;
 import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
-import momime.common.database.PickExclusiveFrom;
 import momime.common.database.Plane;
 import momime.common.database.RaceEx;
 import momime.common.database.Spell;
@@ -138,11 +137,7 @@ public final class TestNewGameUI extends ClientTestData
 
 		// Don't allow picking both life + death books
 		for (int n = 1; n <= 2; n++)
-		{
-			final PickExclusiveFrom ex = new PickExclusiveFrom ();
-			ex.setPickExclusiveFromID ("MB0" + (3-n));
-			db.findPick ("MB0" + n, "createNewGameUI").getPickExclusiveFrom ().add (ex);
-		}
+			db.findPick ("MB0" + n, "createNewGameUI").getPickExclusiveFrom ().add ("MB0" + (3-n));
 
 		for (int n = 1; n <= 4; n++)
 		{

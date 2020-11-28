@@ -29,13 +29,9 @@ import momime.common.database.CombatAreaEffectSkillBonus;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
-import momime.common.database.GrantsSkill;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroItemTypeAllowedBonus;
-import momime.common.database.HeroItemTypeAttackType;
-import momime.common.database.MergedFromPick;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
 import momime.common.database.Pick;
@@ -46,8 +42,8 @@ import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpellEffect;
 import momime.common.database.UnitType;
 import momime.common.database.WeaponGrade;
@@ -721,11 +717,7 @@ public final class TestUnitUtilsImpl
 		
 		final UnitSkillEx skillThatGrantsOthers = new UnitSkillEx ();
 		for (int n = 2; n <= 4; n++)
-		{
-			final GrantsSkill grantsSkill = new GrantsSkill ();
-			grantsSkill.setGrantsSkillID ("US00" + n);
-			skillThatGrantsOthers.getGrantsSkill ().add (grantsSkill);
-		}
+			skillThatGrantsOthers.getGrantsSkill ().add ("US00" + n);
 		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (skillThatGrantsOthers);
 		
 		final NegatedBySkill negatedByOurs = new NegatedBySkill ();
@@ -1034,11 +1026,7 @@ public final class TestUnitUtilsImpl
 		mergedMagicRealm.setPickID ("LTUC");
 		
 		for (final String mergedFromPickID : new String [] {"LTC", "LTU"})
-		{
-			final MergedFromPick mergedFromPick = new MergedFromPick ();
-			mergedFromPick.setMergedFromPickID (mergedFromPickID);
-			mergedMagicRealm.getMergedFromPick ().add (mergedFromPick);
-		}
+			mergedMagicRealm.getMergedFromPick ().add (mergedFromPickID);
 		
 		when (db.findPick ("LTUC", "expandUnitDetails")).thenReturn (mergedMagicRealm);
 		
@@ -1520,11 +1508,8 @@ public final class TestUnitUtilsImpl
 		for (int n = 1; n <= 9; n++)
 			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
 
-		final GrantsSkill grantsWepImmunity = new GrantsSkill ();
-		grantsWepImmunity.setGrantsSkillID ("US005");
-		
 		final UnitSkillEx invulnerabilityDef = new UnitSkillEx ();
-		invulnerabilityDef.getGrantsSkill ().add (grantsWepImmunity);
+		invulnerabilityDef.getGrantsSkill ().add ("US005");
 		when (db.findUnitSkill ("US010", "expandUnitDetails")).thenReturn (invulnerabilityDef);
 		
 		// Hero item type
@@ -1542,11 +1527,7 @@ public final class TestUnitUtilsImpl
 		}
 		
 		for (int n = 8; n <= 9; n++)
-		{
-			final HeroItemTypeAttackType attackType = new HeroItemTypeAttackType ();
-			attackType.setUnitSkillID ("US00" + n);
-			heroItemType.getHeroItemTypeAttackType ().add (attackType);
-		}
+			heroItemType.getHeroItemTypeAttackType ().add ("US00" + n);
 		
 		when (db.findHeroItemType ("IT01", "expandUnitDetails")).thenReturn (heroItemType);
 		
@@ -1610,11 +1591,7 @@ public final class TestUnitUtilsImpl
 		item.setHeroItemTypeID ("IT01");
 		
 		for (int n = 1; n <= 5; n++)
-		{
-			final HeroItemTypeAllowedBonus imbuedSkill = new HeroItemTypeAllowedBonus ();
-			imbuedSkill.setHeroItemBonusID ("IB0" + n);
-			item.getHeroItemChosenBonus ().add (imbuedSkill);
-		}
+			item.getHeroItemChosenBonus ().add ("IB0" + n);
 		
 		final MemoryUnitHeroItemSlot slot = new MemoryUnitHeroItemSlot ();
 		slot.setHeroItem (item);

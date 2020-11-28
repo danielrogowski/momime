@@ -3,22 +3,20 @@ package momime.common.utils;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.MomException;
-import momime.common.database.Building;
-import momime.common.database.BuildingPopulationProductionModifier;
-import momime.common.database.BuildingPrerequisite;
-import momime.common.database.CommonDatabase;
-import momime.common.database.RecordNotFoundException;
-import momime.common.database.Unit;
-import momime.common.database.UnitPrerequisite;
-import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryBuilding;
-import momime.common.messages.OverlandMapCityData;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+
+import momime.common.MomException;
+import momime.common.database.Building;
+import momime.common.database.BuildingPopulationProductionModifier;
+import momime.common.database.CommonDatabase;
+import momime.common.database.RecordNotFoundException;
+import momime.common.database.Unit;
+import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.OverlandMapCityData;
 
 /**
  * Methods for working with list of MemoryBuildings
@@ -173,9 +171,9 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		log.trace ("Entering meetsBuildingRequirements: " + cityLocation + ", " + building.getBuildingID ());
 
 		boolean result = true;
-		final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
+		final Iterator<String> iter = building.getBuildingPrerequisite ().iterator ();
 		while ((result) && (iter.hasNext ()))
-			if (findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()) == null)
+			if (findBuilding (buildingsList, cityLocation, iter.next ()) == null)
 				result = false;
 
 		log.trace ("Exiting meetsBuildingRequirements = " + result);
@@ -195,9 +193,9 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 		log.trace ("Entering meetsUnitRequirements: " + cityLocation + ", " + unit.getUnitID ());
 
 		boolean result = true;
-		final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
+		final Iterator<String> iter = unit.getUnitPrerequisite ().iterator ();
 		while ((result) && (iter.hasNext ()))
-			if (findBuilding (buildingsList, cityLocation, iter.next ().getPrerequisiteID ()) == null)
+			if (findBuilding (buildingsList, cityLocation, iter.next ()) == null)
 				result = false;
 
 		log.trace ("Exiting meetsUnitRequirements = " + result);
@@ -230,9 +228,9 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 			{
 				// This building is at the same location as the one we're tryign to sell - does it have as
 				// a prerequisite the building we are trying to sell?
-				final Iterator<BuildingPrerequisite> prereqs = db.findBuilding (thisBuilding.getBuildingID (), "doAnyBuildingsDependOn").getBuildingPrerequisite ().iterator ();
+				final Iterator<String> prereqs = db.findBuilding (thisBuilding.getBuildingID (), "doAnyBuildingsDependOn").getBuildingPrerequisite ().iterator ();
 				while ((result == null) && (prereqs.hasNext ()))
-					if (prereqs.next ().getPrerequisiteID ().equals (buildingID))
+					if (prereqs.next ().equals (buildingID))
 						result = thisBuilding.getBuildingID ();
 			}
 		}
@@ -255,9 +253,9 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 
 		boolean result = false;
 		final Building building = db.findBuilding (buildingID, "isBuildingAPrerequisiteForBuilding");
-		final Iterator<BuildingPrerequisite> iter = building.getBuildingPrerequisite ().iterator ();
+		final Iterator<String> iter = building.getBuildingPrerequisite ().iterator ();
 		while ((!result) && (iter.hasNext ()))
-			if (iter.next ().getPrerequisiteID ().equals (buildingBeingRemoved))
+			if (iter.next ().equals (buildingBeingRemoved))
 				result = true;
 
 		log.trace ("Exiting isBuildingAPrerequisiteForBuilding = " + result);
@@ -278,9 +276,9 @@ public final class MemoryBuildingUtilsImpl implements MemoryBuildingUtils
 
 		boolean result = false;
 		final Unit unit = db.findUnit (unitID, "isBuildingAPrerequisiteForUnit");
-		final Iterator<UnitPrerequisite> iter = unit.getUnitPrerequisite ().iterator ();
+		final Iterator<String> iter = unit.getUnitPrerequisite ().iterator ();
 		while ((!result) && (iter.hasNext ()))
-			if (iter.next ().getPrerequisiteID ().equals (buildingBeingRemoved))
+			if (iter.next ().equals (buildingBeingRemoved))
 				result = true;
 
 		log.trace ("Exiting isBuildingAPrerequisiteForUnit = " + result);

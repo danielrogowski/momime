@@ -32,15 +32,14 @@ import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
-import momime.common.database.HeroItemSlot;
 import momime.common.database.HeroName;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSetting;
-import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillAndValue;
+import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
@@ -103,7 +102,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final UnitEx unitDef = new UnitEx ();
-		unitDef.getHeroItemSlot ().add (new HeroItemSlot ());
+		unitDef.getHeroItemSlot ().add ("IST01");
 		
 		// Initialize skills method returns the unit definition
 		final UnitUtils unitUtils = mock (UnitUtils.class);

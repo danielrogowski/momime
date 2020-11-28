@@ -594,9 +594,7 @@ public final class TestCommonDatabaseImpl
 			final RaceEx newRace = new RaceEx ();
 			newRace.setRaceID ("RC0" + n);
 
-			final CityNameContainer cityName = new CityNameContainer ();
-			cityName.setCityName ("Blah");
-			newRace.getCityName ().add (cityName);
+			newRace.getCityName ().add ("Blah");
 
 			db.getRace ().add (newRace);
 		}
@@ -605,7 +603,7 @@ public final class TestCommonDatabaseImpl
 
 		assertEquals ("RC02", db.findRace ("RC02", "testFindRaceID_Exists").getRaceID ());
 		assertEquals (1, db.findRace ("RC02", "testFindRaceID_Exists").getCityName ().size ());
-		assertEquals ("Blah", db.findRace ("RC02", "testFindRaceID_Exists").getCityName ().get (0).getCityName ());
+		assertEquals ("Blah", db.findRace ("RC02", "testFindRaceID_Exists").getCityName ().get (0));
 	}
 
 	/**
@@ -1144,36 +1142,23 @@ public final class TestCommonDatabaseImpl
 		db.getCityImage ().add (image1);
 		
 		// An image for CS01 needing a building that we have (this should get chosen)
-		final CityImagePrerequisite image2prereq = new CityImagePrerequisite ();
-		image2prereq.setPrerequisiteID ("BL01");
-		
 		final CityImage image2 = new CityImage ();
 		image2.setCitySizeID ("CS01");
-		image2.getCityImagePrerequisite ().add (image2prereq);
+		image2.getCityImagePrerequisite ().add ("BL01");
 		db.getCityImage ().add (image2);
 
 		// An image for CS01 needing a building that we have plus one that we don't
-		final CityImagePrerequisite image3prereq1 = new CityImagePrerequisite ();
-		image3prereq1.setPrerequisiteID ("BL01");
-		final CityImagePrerequisite image3prereq2 = new CityImagePrerequisite ();
-		image3prereq2.setPrerequisiteID ("BL02");
-		
 		final CityImage image3 = new CityImage ();
 		image3.setCitySizeID ("CS01");
-		image3.getCityImagePrerequisite ().add (image3prereq1);
-		image3.getCityImagePrerequisite ().add (image3prereq2);
+		image3.getCityImagePrerequisite ().add ("BL01");
+		image3.getCityImagePrerequisite ().add ("BL02");
 		db.getCityImage ().add (image3);
 		
 		// An image for CS02 needing two building that we have
-		final CityImagePrerequisite image4prereq1 = new CityImagePrerequisite ();
-		image4prereq1.setPrerequisiteID ("BL01");
-		final CityImagePrerequisite image4prereq2 = new CityImagePrerequisite ();
-		image4prereq2.setPrerequisiteID ("BL03");
-		
 		final CityImage image4 = new CityImage ();
 		image4.setCitySizeID ("CS02");
-		image4.getCityImagePrerequisite ().add (image4prereq1);
-		image4.getCityImagePrerequisite ().add (image4prereq2);
+		image4.getCityImagePrerequisite ().add ("BL01");
+		image4.getCityImagePrerequisite ().add ("BL03");
 		db.getCityImage ().add (image4);
 		
 		// Run test

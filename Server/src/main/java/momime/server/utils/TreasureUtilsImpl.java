@@ -23,18 +23,14 @@ import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.MapFeature;
-import momime.common.database.MapFeatureTreasureBookReward;
 import momime.common.database.Pick;
 import momime.common.database.PickAndQuantity;
-import momime.common.database.PickExclusiveFrom;
-import momime.common.database.PickFreeSpell;
 import momime.common.database.PickPrerequisite;
 import momime.common.database.PickType;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellRank;
-import momime.common.database.SummonedUnit;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
@@ -269,12 +265,12 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			// Get a list of non-dead heroes who aren't currently in service (heroes that we dismiss go back to "Generated")
 			final List<MemoryUnit> availableHeroes = new ArrayList<MemoryUnit> ();
 			if (remainingTreasureValue >= PRISONER_REWARD_COST)
-				for (final SummonedUnit summoned : summonHero.getSummonedUnit ())
+				for (final String summoned : summonHero.getSummonedUnit ())
 				{
-					final Unit possibleUnit = db.findUnit (summoned.getSummonedUnitID (), "rollTreasureReward");
+					final Unit possibleUnit = db.findUnit (summoned, "rollTreasureReward");
 					
 					final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID
-						(gsk.getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summoned.getSummonedUnitID ());
+						(gsk.getTrueMap ().getUnit (), player.getPlayerDescription ().getPlayerID (), summoned);
 					
 					boolean addToList = ((hero != null) && ((hero.getStatus () == UnitStatusID.GENERATED) || (hero.getStatus () == UnitStatusID.NOT_GENERATED)));
 
@@ -452,8 +448,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			if (mapFeatureID != null)
 			{
 				final MapFeature mapFeature = db.findMapFeature (mapFeatureID, "rollTreasureReward");
-				for (final MapFeatureTreasureBookReward book : mapFeature.getMapFeatureTreasureBookReward ())
-					availableSpellBookIDs.add (book.getPickID ());
+				for (final String book : mapFeature.getMapFeatureTreasureBookReward ())
+					availableSpellBookIDs.add (book);
 			}
 			
 			// If we got none, then either there was no map feature there, or its not a lair type of feature, e.g. gold
@@ -499,8 +495,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					{
 						// Can't get life books if have any death books, and vice versa
 						boolean ok = true;
-						for (final PickExclusiveFrom exclusive : pick.getPickExclusiveFrom ())
-							if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), exclusive.getPickExclusiveFromID ()) > 0)
+						for (final String exclusive : pick.getPickExclusiveFrom ())
+							if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), exclusive) > 0)
 								ok = false;
 		
 						// We don't normally care about pre-requisites, except for the special situation that we only
@@ -627,8 +623,8 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					}
 					
 					// If the pick grants any spells (Artificer) then learn them
-					for (final PickFreeSpell freeSpell : pick.getPickFreeSpell ())
-						getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), freeSpell.getFreeSpellID ()).setStatus (SpellResearchStatusID.AVAILABLE);
+					for (final String freeSpellID : pick.getPickFreeSpell ())
+						getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), freeSpellID).setStatus (SpellResearchStatusID.AVAILABLE);
 				}
 			}
 		}

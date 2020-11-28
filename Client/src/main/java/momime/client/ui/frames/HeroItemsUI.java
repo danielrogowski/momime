@@ -51,7 +51,6 @@ import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemSlotType;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroSlotAllowedItemType;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
@@ -444,12 +443,12 @@ public final class HeroItemsUI extends MomClientFrameUI
 									final Unit unitDef = getClient ().getClientDB ().findUnit (dropUnit.getUnitID (), "HeroItemsUI-canImport");
 									if (slotNumber < unitDef.getHeroItemSlot ().size ())
 									{
-										final String slotTypeID = unitDef.getHeroItemSlot ().get (slotNumber).getHeroItemSlotTypeID ();
+										final String slotTypeID = unitDef.getHeroItemSlot ().get (slotNumber);
 										final HeroItemSlotType slotType = getClient ().getClientDB ().findHeroItemSlotType (slotTypeID, "HeroItemsUI-canImport");
 										final NumberedHeroItem item = (NumberedHeroItem) support.getTransferable ().getTransferData (getHeroItemFlavour ());
 										
-										for (final HeroSlotAllowedItemType allowed : slotType.getHeroSlotAllowedItemType ())
-											if (allowed.getHeroItemTypeID ().equals (item.getHeroItemTypeID ()))
+										for (final String heroItemTypeID : slotType.getHeroSlotAllowedItemType ())
+											if (heroItemTypeID.equals (item.getHeroItemTypeID ()))
 												imported = true;
 									}
 								}
@@ -535,7 +534,7 @@ public final class HeroItemsUI extends MomClientFrameUI
 									// Show info about the slot type
 									final Unit unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "HeroItemsUI-slotHelp");
 									if (slotNumber < unitDef.getHeroItemSlot ().size ())
-										getHelpUI ().showHeroItemSlotTypeID (unitDef.getHeroItemSlot ().get (slotNumber).getHeroItemSlotTypeID ());
+										getHelpUI ().showHeroItemSlotTypeID (unitDef.getHeroItemSlot ().get (slotNumber));
 								}
 								else
 								{

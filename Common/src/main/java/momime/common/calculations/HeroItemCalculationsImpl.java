@@ -12,7 +12,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.PickAndQuantity;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.PlayerPick;
@@ -46,12 +45,12 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 		int cost = itemType.getBaseCraftingCost ();
 		
 		// Add on cost of enchantments
-		for (final HeroItemTypeAllowedBonus chosenBonus : heroItem.getHeroItemChosenBonus ())
+		for (final String chosenBonusID : heroItem.getHeroItemChosenBonus ())
 		{
-			final HeroItemBonus bonus = db.findHeroItemBonus (chosenBonus.getHeroItemBonusID (), "calculateCraftingCost");
+			final HeroItemBonus bonus = db.findHeroItemBonus (chosenBonusID, "calculateCraftingCost");
 			
 			int bonusCost;
-			if (!chosenBonus.getHeroItemBonusID ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
+			if (!chosenBonusID.equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
 				bonusCost = bonus.getBonusCraftingCost ();
 			else if ((heroItem.getSpellID () == null) || (heroItem.getSpellChargeCount () == null))
 				throw new MomException ("Hero item \"" + heroItem.getHeroItemName () + "\" includes Spell Charges bonus, but doesn't specify which spell and/or the number of charges"); 
@@ -108,9 +107,9 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 		log.trace ("Entering haveRequiredBooksForItem: " + heroItem.getHeroItemTypeID () + ", " + heroItem.getHeroItemName ());
 		
 		boolean haveRequiredBooks = true;
-		final Iterator<HeroItemTypeAllowedBonus> iter = heroItem.getHeroItemChosenBonus ().iterator ();
+		final Iterator<String> iter = heroItem.getHeroItemChosenBonus ().iterator ();
 		while ((haveRequiredBooks) && (iter.hasNext ()))
-			if (!haveRequiredBooksForBonus (iter.next ().getHeroItemBonusID (), picks, db))
+			if (!haveRequiredBooksForBonus (iter.next (), picks, db))
 				haveRequiredBooks = false;
 		
 		// NB. the Spell Charges bonus has no prerequisite books and you do not need to know (nor have enough

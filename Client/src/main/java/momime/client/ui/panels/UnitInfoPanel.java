@@ -59,7 +59,6 @@ import momime.common.database.Building;
 import momime.common.database.BuildingPopulationProductionModifier;
 import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.HeroItemSlot;
 import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.Spell;
 import momime.common.database.UnitCanCast;
@@ -738,7 +737,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		// Add hero item slots
 		int slotNumber = 0;
-		for (final HeroItemSlot slot : getUnit ().getUnitDefinition ().getHeroItemSlot ())
+		for (final String slotTypeID : getUnit ().getUnitDefinition ().getHeroItemSlot ())
 		{
 			// Is there an item in this slot?
 			NumberedHeroItem item = null;
@@ -757,7 +756,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			{
 				// Add empty slot image
 				final UnitSkillOrHeroItemSlot skill = new UnitSkillOrHeroItemSlot ();
-				skill.setHeroItemSlotTypeID (slot.getHeroItemSlotTypeID ());
+				skill.setHeroItemSlotTypeID (slotTypeID);
 				unitSkillsItems.addElement (skill);
 			}
 			

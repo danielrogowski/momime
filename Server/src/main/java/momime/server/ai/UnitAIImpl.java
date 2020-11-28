@@ -813,8 +813,7 @@ public final class UnitAIImpl implements UnitAI
 			// Use list of movement codes from the unit stack's category
 			final boolean isRaiders = CommonDatabaseConstants.WIZARD_ID_RAIDERS.equals (pub.getWizardID ());
 	
-			final List<AiMovementCode> movementCodes = category.getMovementCode ().stream ().map (c -> c.getAiMovementCode ()).collect (Collectors.toList ());		
-			final AIMovementDecision destination = decideUnitMovement (units, movementCodes, doubleMovementDistances, underdefendedLocations,
+			final AIMovementDecision destination = decideUnitMovement (units, category.getMovementCode (), doubleMovementDistances, underdefendedLocations,
 				ourUnitsInSameCategory, enemyUnits, priv.getFogOfWarMemory ().getMap (), desiredSpecialUnitLocations, isRaiders, mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ());
 			
 			// Move, if we found somewhere to go

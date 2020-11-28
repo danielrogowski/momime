@@ -27,7 +27,6 @@ import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
-import momime.common.database.HeroItemSlot;
 import momime.common.database.Unit;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
@@ -155,7 +154,7 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 				
 				// Item slots
 				int slotNumber = 0;
-				for (final HeroItemSlot slot : unitDef.getHeroItemSlot ())
+				for (final String slotTypeID : unitDef.getHeroItemSlot ())
 				{
 					// Is there an item in this slot?
 					NumberedHeroItem item = null;
@@ -171,7 +170,7 @@ public final class HeroTableCellRenderer extends JPanel implements TableCellRend
 						String itemImageFilename;
 						if (item == null)
 							itemImageFilename = getClient ().getClientDB ().findHeroItemSlotType
-								(slot.getHeroItemSlotTypeID (), "HeroTableCellRenderer").getHeroItemSlotTypeImageFile ();
+								(slotTypeID, "HeroTableCellRenderer").getHeroItemSlotTypeImageFile ();
 						else
 							itemImageFilename = getClient ().getClientDB ().findHeroItemType
 								(item.getHeroItemTypeID (), "HeroTableCellRenderer").getHeroItemTypeImageFile ().get (item.getHeroItemImageNumber ());

@@ -34,7 +34,6 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItem;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.Language;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
@@ -88,10 +87,8 @@ public final class TestCreateArtifactUI extends ClientTestData
 			// Which bonuses does this item type allow
 			for (int m = 1; m <= 10; m++)
 			{
-				final HeroItemTypeAllowedBonus bonus = new HeroItemTypeAllowedBonus ();
 				int bonusID = ((itemTypeNumber-1) * 3) + m;		// So they are staggered a bit... item type 1 has bonuses 1..10; item type 2 has bonuses 4..14 and so on
-				bonus.setHeroItemBonusID ("IB" + ((bonusID < 10) ? "0" : "") + bonusID);
-				itemType.getHeroItemTypeAllowedBonus ().add (bonus);
+				itemType.getHeroItemTypeAllowedBonus ().add ("IB" + ((bonusID < 10) ? "0" : "") + bonusID);
 			}
 		}
 		doReturn (itemTypes).when (db).getHeroItemType ();

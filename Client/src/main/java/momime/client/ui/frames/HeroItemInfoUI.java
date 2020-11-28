@@ -25,7 +25,6 @@ import momime.client.MomClient;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemType;
-import momime.common.database.HeroItemTypeAllowedBonus;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.NumberedHeroItem;
 
@@ -141,7 +140,7 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 		
 		// Bonus descriptions
 		final StringBuilder text = new StringBuilder ();
-		for (final HeroItemTypeAllowedBonus bonus : item.getHeroItemChosenBonus ())
+		for (final String bonusID : item.getHeroItemChosenBonus ())
 		{
 			if (text.length () > 0)
 				text.append (System.lineSeparator ());
@@ -151,12 +150,12 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 			
 			try
 			{
-				if (bonus.getHeroItemBonusID ().equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
+				if (bonusID.equals (CommonDatabaseConstants.HERO_ITEM_BONUS_ID_SPELL_CHARGES))
 					text.append (item.getSpellChargeCount () + "x " + getLanguageHolder ().findDescription
 						(getClient ().getClientDB ().findSpell (item.getSpellID (), "HeroItemInfoUI").getSpellName ()));
 				else
 					text.append (getLanguageHolder ().findDescription
-						(getClient ().getClientDB ().findHeroItemBonus (bonus.getHeroItemBonusID (), "HeroItemInfoUI").getHeroItemBonusDescription ()));
+						(getClient ().getClientDB ().findHeroItemBonus (bonusID, "HeroItemInfoUI").getHeroItemBonusDescription ()));
 			}
 			catch (final RecordNotFoundException e)
 			{

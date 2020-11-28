@@ -38,10 +38,7 @@ import momime.common.database.ProductionTypeAndUndoubledValue;
 import momime.common.database.ProductionTypeEx;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
-import momime.common.database.SpellHasCityEffect;
-import momime.common.database.SpellHasCombatEffect;
 import momime.common.database.SpellValidUnitTarget;
-import momime.common.database.SummonedUnit;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpellEffect;
@@ -697,11 +694,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		for (int n = 1; n < 10; n++)
 			if (n % 2 == 1)
-			{
-				final SummonedUnit summoned = new SummonedUnit ();
-				summoned.setSummonedUnitID ("UN00" + n);
-				spell.getSummonedUnit ().add (summoned);
-			}
+				spell.getSummonedUnit ().add ("UN00" + n);
 		
 		when (db.findSpell ("SP001", "findImageForSpell")).thenReturn (spell);
 		
@@ -769,11 +762,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
 		for (int n = 1; n < 10; n++)
-		{
-			final SummonedUnit summoned = new SummonedUnit ();
-			summoned.setSummonedUnitID ("UN00" + n);
-			spell.getSummonedUnit ().add (summoned);
-		}
+			spell.getSummonedUnit ().add ("UN00" + n);
 		
 		when (db.findSpell ("SP001", "findImageForSpell")).thenReturn (spell);
 		
@@ -946,9 +935,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
 		
-		final SpellHasCityEffect effect = new SpellHasCityEffect ();
-		effect.setCitySpellEffectID ("CSE050");
-		spell.getSpellHasCityEffect ().add (effect);
+		spell.getSpellHasCityEffect ().add ("CSE050");
 		
 		when (db.findSpell ("SP001", "findImageForSpell")).thenReturn (spell);
 		
@@ -1008,11 +995,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		spell.setSpellBookSectionID (SpellBookSectionID.CITY_ENCHANTMENTS);
 		
 		for (int n = 50; n <= 51; n++)
-		{
-			final SpellHasCityEffect effect = new SpellHasCityEffect ();
-			effect.setCitySpellEffectID ("CSE0" + n);
-			spell.getSpellHasCityEffect ().add (effect);
-		}
+			spell.getSpellHasCityEffect ().add ("CSE0" + n);
 		
 		when (db.findSpell ("SP001", "findImageForSpell")).thenReturn (spell);
 		
@@ -1120,10 +1103,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		// Spell details
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
-		
-		final SpellHasCombatEffect effect = new SpellHasCombatEffect ();
-		effect.setCombatAreaEffectID ("CAE050");
-		spell.getSpellHasCombatEffect ().add (effect);
+		spell.getSpellHasCombatEffect ().add ("CAE050");
 		
 		when (db.findSpell ("SP001", "findImageForSpell")).thenReturn (spell);
 		
@@ -1174,11 +1154,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 		final Spell spell = new Spell ();
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
 		for (int n = 50; n <= 51; n++)
-		{
-			final SpellHasCombatEffect effect = new SpellHasCombatEffect ();
-			effect.setCombatAreaEffectID ("CAE0" + n);
-			spell.getSpellHasCombatEffect ().add (effect);
-		}
+			spell.getSpellHasCombatEffect ().add ("CAE0" + n);
 		
 		when (db.findSpell ("SP001", "findImageForSpell")).thenReturn (spell);
 		

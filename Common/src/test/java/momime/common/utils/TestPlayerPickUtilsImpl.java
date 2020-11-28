@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import momime.common.database.CommonDatabase;
 import momime.common.database.Pick;
-import momime.common.database.PickExclusiveFrom;
 import momime.common.database.PickPrerequisite;
 import momime.common.database.PickProductionBonus;
 import momime.common.database.RecordNotFoundException;
@@ -339,10 +338,7 @@ public final class TestPlayerPickUtilsImpl
 	{
 		// Mock database
 		final Pick pickB = new Pick ();
-
-		final PickExclusiveFrom ex = new PickExclusiveFrom ();
-		ex.setPickExclusiveFromID ("A");
-		pickB.getPickExclusiveFrom ().add (ex);
+		pickB.getPickExclusiveFrom ().add ("A");
 		
 		final CommonDatabase db = mock (CommonDatabase.class);
 		when (db.findPick ("B", "canSafelyAdd")).thenReturn (pickB);

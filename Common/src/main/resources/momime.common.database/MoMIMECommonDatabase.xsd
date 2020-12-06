@@ -3596,7 +3596,7 @@ Ordering of this list is very significant.
 	
 	<xsd:complexType name="animation" nxe:singular="Animation" nxe:plural="Animations">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="animationDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="animationDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="500" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="animationSpeed" type="momimecommon:frameRate" nxe:label="Speed / Frame Rate" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastOffsetX" type="momimecommon:pixelCoordinate" nxe:label="Overland cast offset X" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Overland cast offset Y" nxe:gridwidth="150" />

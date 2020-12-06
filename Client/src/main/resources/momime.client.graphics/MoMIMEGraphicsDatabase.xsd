@@ -59,14 +59,14 @@
 	
 	<xsd:complexType name="unitSkillComponentImage" nxe:singular="Unit Skill Component" nxe:plural="Unit Skill Components" nxe:submenu="Units">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillComponentImageFile" type="momimecommon:imageFilename" nxe:label="Component image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillComponentImageFile" type="momimecommon:imageFilename" nxe:label="Component image file" nxe:gridwidth="500" />
 		</xsd:sequence>
 		<xsd:attribute name="unitSkillComponentID" type="momimecommon:unitSkillComponent" use="required" nxe:label="Component" nxe:gridwidth="100" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="unitSpecialOrderImage" nxe:singular="Unit Special Order" nxe:plural="Unit Special Orders" nxe:submenu="Units">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitSpecialOrderImageFile" type="momimecommon:imageFilename" nxe:label="Special order image file" nxe:gridwidth="250" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unitSpecialOrderImageFile" type="momimecommon:imageFilename" nxe:label="Special order image file" nxe:gridwidth="400" />
 		</xsd:sequence>
 		<xsd:attribute name="unitSpecialOrderID" type="momimecommon:unitSpecialOrder" use="required" nxe:label="Special Order" nxe:gridwidth="100" />
 	</xsd:complexType>

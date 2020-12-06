@@ -6,7 +6,7 @@
 
 	<!-- XML -->
 
-	<bean id="momResourceResolver" class="momime.server.database.ServerXsdResourceResolver">
+	<bean id="momResourceResolver" class="momime.common.database.CommonXsdResourceResolver">
 		<constructor-arg ref="domImplementationRegistry" />
 	</bean>
 
@@ -22,95 +22,13 @@
 
 	<!-- MoM IME Graphics specific -->
 
-	<bean id="wizardGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="150" />
-		<property name="filenameElements">
-			<list>
-				<value>portraitImageFile</value>
-				<value>standingImageFile</value>
-				<value>banishingImageFile</value>
-				<value>banishingHandImageFile</value>
-				<value>worldHandsImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="productionTypeImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>productionImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="racePopulationTaskGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>civilianImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="bookImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+	<bean id="unitSkillComponentImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
 		<property name="filenameElements">
 			<list>
-				<value>bookImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="spellGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="120" />
-		<property name="filenameElements">
-			<list>
-				<value>overlandEnchantmentImageFile</value>
-				<value>unitCanCastImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="combatAreaEffectGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>combatAreaEffectImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="unitAttributeWeaponGradeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>attributeImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="unitAttributeComponentGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>unitAttributeComponentImageFile</value>
+				<value>unitSkillComponentImageFile</value>
 			</list>
 		</property>
 	</bean>
@@ -118,160 +36,10 @@
 	<bean id="unitSpecialOrderGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>unitSpecialOrderImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="rangedAttackTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>unitDisplayRangedImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="rangedAttackTypeCombatImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
 		<property name="filenameElements">
 			<list>
-				<value>rangedAttackTypeCombatImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="unitGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="84" />
-		<property name="filenameElements">
-			<list>
-				<value>unitSummonImageFile</value>
-				<value>unitOverlandImageFile</value>
-				<value>heroPortraitImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="unitCombatImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="40" />
-		<property name="filenameElements">
-			<list>
-				<value>unitCombatImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="unitSkillGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>unitSkillImageFile</value>
-				<value>movementIconImageFile</value>
-				<value>sampleTileImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="smoothedTileGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="24" />
-		<property name="filenameElements">
-			<list>
-				<value>tileFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="tileTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="70" />
-		<property name="filenameElements">
-			<list>
-				<value>monsterFoundImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="tileTypeRoadGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="24" />
-		<property name="filenameElements">
-			<list>
-				<value>roadImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="mapFeatureGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="70" />
-		<property name="filenameElements">
-			<list>
-				<value>monsterFoundImageFile</value>
-				<value>overlandMapImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="buildingGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="70" />
-		<property name="filenameElements">
-			<list>
-				<value>monsterFoundImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="cityImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="36" />
-		<property name="filenameElements">
-			<list>
-				<value>cityImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="combatTileBorderImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="40" />
-		<property name="filenameElements">
-			<list>
-				<value>standardFile</value>
-				<value>wreckedFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="cityViewElementGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="40" />
-		<property name="filenameElements">
-			<list>
-				<value>cityViewImageFile</value>
-				<value>cityViewAlternativeImageFile</value>
+				<value>unitSpecialOrderImageFile</value>
 			</list>
 		</property>
 	</bean>
@@ -287,58 +55,13 @@
 		</property>
 	</bean>
 
-	<bean id="heroItemTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>heroItemTypeImageFile</value>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="heroItemSlotTypeGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="20" />
-		<property name="filenameElements">
-			<list>
-				<value>heroItemSlotTypeImageFile</value>
-				<value>heroItemSlotTypeImageFileWithBackground</value>
-			</list>
-		</property>
-	</bean>
-
 	<bean id="dispatcher" class="com.ndg.xmleditor.editor.XmlEditorDispatcher">
 		<property name="creator" ref="creator" />
 		<property name="gridBeansMap">
 			<map>
-				<entry key="wizard" value="wizardGrid" />
-				<entry key="productionTypeImage" value="productionTypeImageGrid" />
-				<entry key="racePopulationTask" value="racePopulationTaskGrid" />
-				<entry key="bookImageFile" value="bookImageGrid" />
-				<entry key="spell" value="spellGrid" />
-				<entry key="combatAreaEffect" value="combatAreaEffectGrid" />
-				<entry key="unitAttributeWeaponGrade" value="unitAttributeWeaponGradeGrid" />
-				<entry key="unitAttributeComponentImage" value="unitAttributeComponentGrid" />
+				<entry key="unitSkillComponentImage" value="unitSkillComponentImageGrid" />
 				<entry key="unitSpecialOrderImage" value="unitSpecialOrderGrid" />
-				<entry key="rangedAttackType" value="rangedAttackTypeGrid" />
-				<entry key="rangedAttackTypeCombatImage" value="rangedAttackTypeCombatImageGrid" />
-				<entry key="unit" value="unitGrid" />
-				<entry key="unitCombatImage" value="unitCombatImageGrid" />
-				<entry key="unitSkill" value="unitSkillGrid" />
-				<entry key="smoothedTile" value="smoothedTileGrid" />
-				<entry key="tileType" value="tileTypeGrid" />
-				<entry key="tileTypeRoad" value="tileTypeRoadGrid" />
-				<entry key="mapFeature" value="mapFeatureGrid" />
-				<entry key="building" value="buildingGrid" />
-				<entry key="cityImage" value="cityImageGrid" />
-				<entry key="combatTileBorderImage" value="combatTileBorderImageGrid" />
-				<entry key="cityViewElement" value="cityViewElementGrid" />
 				<entry key="frame" value="frameGrid" />
-				<entry key="heroItemTypeImageFile" value="heroItemTypeGrid" />
-				<entry key="heroItemSlotType" value="heroItemSlotTypeGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

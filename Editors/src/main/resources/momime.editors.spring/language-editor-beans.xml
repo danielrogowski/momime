@@ -6,7 +6,7 @@
 
 	<!-- XML -->
 
-	<bean id="momResourceResolver" class="momime.server.database.ServerXsdResourceResolver">
+	<bean id="momResourceResolver" class="momime.common.database.CommonXsdResourceResolver">
 		<constructor-arg ref="domImplementationRegistry" />
 	</bean>
 
@@ -22,40 +22,10 @@
 
 	<!-- MoM IME Language specific -->
 
-	<bean id="buildingGrid" class="momime.editors.client.language.building.BuildingGrid" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="heroNameGrid" class="momime.editors.client.language.heroName.HeroNameGrid" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="spellGrid" class="momime.editors.client.language.spell.SpellGrid" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="unitGrid" class="momime.editors.client.language.unit.UnitGrid" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="heroItemBonusGrid" class="momime.editors.client.language.heroItemBonus.HeroItemBonusGrid" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
 	<bean id="dispatcher" class="com.ndg.xmleditor.editor.XmlEditorDispatcher">
 		<property name="creator" ref="creator" />
 		<property name="gridBeansMap">
 			<map>
-				<entry key="building" value="buildingGrid" />
-				<entry key="hero" value="heroNameGrid" />
-				<entry key="spell" value="spellGrid" />
-				<entry key="unit" value="unitGrid" />
-				<entry key="heroItemBonus" value="heroItemBonusGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>
@@ -78,7 +48,7 @@
 		</property>
 	</bean>
 
-	<bean id="mdiEditor" class="momime.editors.client.language.LanguageEditorMain">
+	<bean id="mdiEditor" class="com.ndg.xmleditor.editor.XmlEditorMain">
 		<property name="dispatcher" ref="dispatcher" />
 	</bean>
 
@@ -95,7 +65,7 @@
 		
 		<property name="resourceResolver" ref="resourceResolver" />
 		<property name="loadXsdFromClasspath" value="true" />
-		<property name="xsdFilename" value="/momime.client.language/MoMIMELanguageDatabase.xsd" />
+		<property name="xsdFilename" value="/momime.client.language/MoMIMELanguagesDatabase.xsd" />
 	</bean>
 
 </beans>

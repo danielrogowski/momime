@@ -103,7 +103,7 @@
 		
 		<property name="resourceResolver" ref="resourceResolver" />
 		<property name="loadXsdFromClasspath" value="true" />
-		<property name="xsdFilename" value="/momime.server.database/MoMIMEServerDatabase.xsd" />
+		<property name="xsdFilename" value="/momime.common.database/MoMIMECommonDatabase.xsd" />
 	</bean>
 	
 	<bean id="mdiEditor" class="com.ndg.xmleditor.editor.XmlEditorMain">

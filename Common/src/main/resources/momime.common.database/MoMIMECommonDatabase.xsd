@@ -1440,7 +1440,7 @@
 			<xsd:element minOccurs="0" maxOccurs="1" name="prerequisitePickToChooseNativeRace" type="momimecommon:pickID" nxe:label="Pre-requisite Pick to choose native race from this Plane" nxe:gridwidth="300">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -1516,7 +1516,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		        <xsd:annotation>
 		        	<xsd:documentation>Lists the different books we can win from "special" awards when capturing a lair of this type.</xsd:documentation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 		        </xsd:annotation>
 			</xsd:element>
@@ -1540,7 +1540,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		<xsd:attribute name="magicRealm" type="momimecommon:pickID" use="required" nxe:label="Magic Realm" nxe:showmaincolumn="false">
 			<xsd:annotation>
 				<xsd:appinfo>
-					<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+					<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -1564,7 +1564,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmID" type="momimecommon:pickID" nxe:label="Fill with Monsters" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -1742,7 +1742,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="castSpellsFromPickID" type="momimecommon:pickID" nxe:label="Caster skill (unit) casts spells of which pick?" nxe:gridwidth="300" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -1767,7 +1767,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 		        <xsd:annotation>
 		        	<xsd:documentation>This models that both Life and Death books cannot be chosen together.</xsd:documentation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 		        </xsd:annotation>
 			</xsd:element>
@@ -1777,7 +1777,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 When the code is checking for skills that modify a unit's magic realm/lifeform type, if it finds only one then that one becomes its modified magic realm/lifeform type.
 If it finds multiple, it will look for a pick with mergedFromPick entries that match the list.</xsd:documentation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 		        </xsd:annotation>
 			</xsd:element>
@@ -1806,7 +1806,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 				<xsd:element minOccurs="0" maxOccurs="1" name="prerequisiteID" type="momimecommon:pickID" nxe:label="Pre-requisite Pick" nxe:gridwidth="100">
 					<xsd:annotation>
 						<xsd:appinfo>
-							<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+							<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 						</xsd:appinfo>
 					</xsd:annotation>
 				</xsd:element>
@@ -1824,7 +1824,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			<xsd:element minOccurs="0" maxOccurs="1" name="magicRealmID" type="momimecommon:pickID" nxe:label="Magic Realm" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -1909,7 +1909,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 		<xsd:attribute name="pickID" type="momimecommon:pickID" use="required" nxe:label="Pick" nxe:gridwidth="80">
 			<xsd:annotation>
 				<xsd:appinfo>
-					<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+					<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					<nxe:showreferencedfield>pickType</nxe:showreferencedfield>
 					<nxe:showreferencedfield>pickCost</nxe:showreferencedfield>
 				</xsd:appinfo>
@@ -2107,7 +2107,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 				<xsd:annotation>
 					<xsd:documentation>Non-magical ranged attacks (such as arrows and rocks) do not have a magic realm ID.</xsd:documentation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -2176,7 +2176,7 @@ is defined in the graphics XML file.</xsd:documentation>
 			<xsd:element minOccurs="0" maxOccurs="1" name="changesUnitToMagicRealm" type="momimecommon:pickID" nxe:label="Changes Unit to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -2219,7 +2219,7 @@ attacks and so the rating of the unit skill is multiplied up by the number of fi
 				<xsd:annotation>
 					<xsd:documentation>Magic realm of the damage dealt, e.g. lightning breath is considered a Chaos attack.</xsd:documentation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -2366,7 +2366,7 @@ This is principally here for the ""Large Shield", which is defined as "gives +2 
         			<xsd:documentation>Some spell effects, e.g. Resist Elements or Bless, only provide a stat bonus when the unit is attacked by certain realms of magic.
 In that case, the restriction is put here, with multiple addsToSkill records if necessary.  A null here means the bonus always applies no matter the kind of attack.</xsd:documentation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -2463,7 +2463,7 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitMagicRealm" type="momimecommon:pickID" nxe:label="Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -2681,7 +2681,7 @@ but kept these separate to make it totally clear when production values are reco
 					<xsd:element minOccurs="0" maxOccurs="1" name="effectMagicRealm" type="momimecommon:pickID" nxe:label="Bonus applies to creatures of magic realm" nxe:showmaincolumn="false">
 						<xsd:annotation>
 							<xsd:appinfo>
-								<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+								<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 							</xsd:appinfo>
 						</xsd:annotation>
 					</xsd:element>
@@ -2711,7 +2711,7 @@ but kept these separate to make it totally clear when production values are reco
 				<xsd:annotation>
 					<xsd:documentation>'Arcane' is not defined as a spell realm in MoM IME, so spells are defined as Arcane by leaving off the spellRealm element.</xsd:documentation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -2905,7 +2905,7 @@ This is to model spells which have different saving throws for different types o
 
 If targetMagicRealmID is ommitted, the spell can be cast on all types of unit and has the same saving throw (if any) against all types of unit.</xsd:documentation>
 				<xsd:appinfo>
-					<nxe:showreferencedfield>pickDescription</nxe:showreferencedfield>
+					<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>

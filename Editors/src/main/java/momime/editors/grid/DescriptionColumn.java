@@ -1,48 +1,43 @@
-package momime.editors.client.graphics;
+package momime.editors.grid;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.table.TableRowSorter;
 import javax.xml.namespace.QName;
 
 import org.jdom2.Element;
 
+import com.ndg.xmleditor.constants.XsdConstants;
 import com.ndg.xmleditor.doc.ListOfXmlDocuments;
 import com.ndg.xmleditor.grid.XmlTableModel;
 import com.ndg.xmleditor.grid.column.XmlGridColumn;
 import com.ndg.xmleditor.schema.ComplexTypeEx;
 
 /**
- * Column that displays an image from the classpath
+ * Column that displays the first of a particular languageText element
  */
-public final class ImageColumn extends XmlGridColumn
+public final class DescriptionColumn extends XmlGridColumn
 {
-	/** The element containing the filename of the image to display */
-	private final String filenameElement;
+	/** The languageText element to display */
+	private final String textElement;
 	
 	/**
 	 * Creates a special column that displays an image from the classpath
 	 * @param aTypeDefinition The xsd:complexType node of the entity being edited from the XSD
 	 * @param aXmlDocuments A list of the main XML document being edited, plus any referenced documents
-	 * @param aFilenameElement The element containing the filename of the image to display
+	 * @param aTextElement The languageText element to display
 	 */
-	public ImageColumn (final ComplexTypeEx aTypeDefinition, final ListOfXmlDocuments aXmlDocuments, final String aFilenameElement)
+	public DescriptionColumn (final ComplexTypeEx aTypeDefinition, final ListOfXmlDocuments aXmlDocuments, final String aTextElement)
 	{
 		super (aTypeDefinition, aXmlDocuments);
-		filenameElement = aFilenameElement;
+		textElement = aTextElement;
 	}
-	
+
 	/**
 	 * @return The title to display in the header above this column
 	 */
 	@Override
 	public final String getColumnHeading ()
 	{
-		return "Image";
+		return "Description";
 	}
 
 	/**
@@ -60,16 +55,7 @@ public final class ImageColumn extends XmlGridColumn
 	@Override
 	public final QName getColumnType ()
 	{
-		return null;
-	}
-
-	/**
-	 * @return Class hint, so the correct rendeder can be selected
-	 */
-	@Override
-	public final Class<?> getColumnClass ()
-	{
-		return ImageIcon.class;
+		return new QName (XsdConstants.XML_SCHEMA_XSD_NAMESPACE_URI, XsdConstants.VALUE_DATA_TYPE_SINGLE_LINE_STRING);
 	}
 	
 	/**
@@ -81,32 +67,18 @@ public final class ImageColumn extends XmlGridColumn
 	 */
 	@SuppressWarnings ("unused")
 	@Override
-	public final Object getColumnValueObj (final Element record, final int rowIndex, final int columnIndex, final TableRowSorter<XmlTableModel> tableSorter)
+	public final String getColumnValue (final Element record, final int rowIndex, final int columnIndex, final TableRowSorter<XmlTableModel> tableSorter)
 	{
-		final String filename;
+		String text = null;
 		if (getTypeDefinition () == null)
-			filename = record.getText ();
+			text = record.getText ();
 		else
-			filename = record.getChildText (filenameElement);		
+		{
+			final Element element = record.getChild (textElement);
+			if ((element != null) && (element.getChildren ().size () == 1))
+				text = element.getChildren ().get (0).getText ();
+		}		
 		
-		ImageIcon icon = null;
-		if (filename != null)
-			try
-			{
-				try (final InputStream in = getClass ().getResourceAsStream (filename))
-				{
-					if (in != null)
-					{
-						final BufferedImage image = ImageIO.read (in);
-						icon = new ImageIcon (image);
-					}
-				}
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace ();;
-			}
-		
-		return icon;
+		return text;
 	}
 }

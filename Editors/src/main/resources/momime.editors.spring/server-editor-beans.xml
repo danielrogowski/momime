@@ -22,22 +22,50 @@
 
 	<!-- MoM IME Server specific -->
 
-	<bean id="productionTypeImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+	<bean id="planeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>planeDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="productionTypeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>productionTypeDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="productionTypeImageGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
-		<property name="filenameElements">
+		<property name="imageColumns">
 			<list>
 				<value>productionImageFile</value>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="mapFeatureGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+	<bean id="mapFeatureGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="50" />
-		<property name="filenameElements">
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>mapFeatureDescription</value>
+			</list>
+		</property>
+		<property name="imageColumns">
 			<list>
 				<value>overlandMapImageFile</value>
 				<value>monsterFoundImageFile</value>
@@ -84,6 +112,8 @@
 		<property name="creator" ref="creator" />
 		<property name="gridBeansMap">
 			<map>
+				<entry key="plane" value="planeGrid" />
+				<entry key="productionType" value="productionTypeGrid" />
 				<entry key="productionTypeImage" value="productionTypeImageGrid" />
 				<entry key="mapFeature" value="mapFeatureGrid" />
 				<entry key="pickTypeCount" value="pickTypeCountGrid" />

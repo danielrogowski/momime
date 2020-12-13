@@ -22,33 +22,33 @@
 
 	<!-- MoM IME Graphics specific -->
 
-	<bean id="unitSkillComponentImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+	<bean id="unitSkillComponentImageGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
-		<property name="filenameElements">
+		<property name="imageColumns">
 			<list>
 				<value>unitSkillComponentImageFile</value>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="unitSpecialOrderGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+	<bean id="unitSpecialOrderGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="30" />
-		<property name="filenameElements">
+		<property name="imageColumns">
 			<list>
 				<value>unitSpecialOrderImageFile</value>
 			</list>
 		</property>
 	</bean>
 
-	<bean id="frameGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+	<bean id="frameGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="100" />
-		<property name="filenameElements">
+		<property name="imageColumns">
 			<list>
 				<value>frame</value>
 			</list>

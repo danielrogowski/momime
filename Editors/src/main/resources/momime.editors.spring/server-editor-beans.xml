@@ -22,6 +22,29 @@
 
 	<!-- MoM IME Server specific -->
 
+	<bean id="productionTypeImageGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="30" />
+		<property name="filenameElements">
+			<list>
+				<value>productionImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="mapFeatureGrid" class="momime.editors.client.graphics.XmlEditorGridWithImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="50" />
+		<property name="filenameElements">
+			<list>
+				<value>overlandMapImageFile</value>
+				<value>monsterFoundImageFile</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="pickTypeCountGrid" class="momime.editors.server.pickTypeCount.PickTypeCountGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -61,6 +84,8 @@
 		<property name="creator" ref="creator" />
 		<property name="gridBeansMap">
 			<map>
+				<entry key="productionTypeImage" value="productionTypeImageGrid" />
+				<entry key="mapFeature" value="mapFeatureGrid" />
 				<entry key="pickTypeCount" value="pickTypeCountGrid" />
 				<entry key="raceCannotBuild" value="raceCannotBuildGrid" />
 				<entry key="spell" value="spellGrid" />

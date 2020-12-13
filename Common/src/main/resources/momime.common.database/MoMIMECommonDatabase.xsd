@@ -1435,8 +1435,8 @@
         	<xsd:documentation>Defines the multiple planes/worlds.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="planeDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="planeRacesTitle" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="planeDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="planeRacesTitle" type="momimecommon:languageText" nxe:label="Races title" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="prerequisitePickToChooseNativeRace" type="momimecommon:pickID" nxe:label="Pre-requisite Pick to choose native race from this Plane" nxe:gridwidth="300">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -1445,7 +1445,7 @@
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="roadsEnchanted" type="xsd:boolean" nxe:label="Roads always enchanted?" nxe:gridwidth="200" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPlaneProduction" type="momimecommon:productionTypeAndDoubledValue">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPlaneProduction" type="momimecommon:productionTypeAndDoubledValue" nxe:label="Production from fortress on this plane" nxe:plural="Productions from fortress on this plane">
 		        <xsd:annotation>
 		        	<xsd:documentation>Models that a Wizards' Fortress on Myrror generates +5 magic power.</xsd:documentation>
 		        </xsd:annotation>
@@ -1460,12 +1460,12 @@
 e.g. we can have negative Gold per turn as long as the accumulated amount stays above zero, but we Rations per turn must stay above zero.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionTypeDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionTypeSuffix" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitKilledFromLackOfProduction" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingSoldFromLackOfProduction" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSwitchedOffFromLackOfProduction" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cannotEndTurnDueToLackOfProduction" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionTypeDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionTypeSuffix" type="momimecommon:languageText" nxe:label="Suffix" nxe:plural="Suffixes" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitKilledFromLackOfProduction" type="momimecommon:languageText" nxe:label="Unit killed from lack of production" nxe:plural="Units killed from lack of production" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingSoldFromLackOfProduction" type="momimecommon:languageText" nxe:label="Building sold from lack of production" nxe:plural="Buildings sold from lack of production" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSwitchedOffFromLackOfProduction" type="momimecommon:languageText" nxe:label="Spell switched off from lack of production" nxe:plural="Spells switched off from lack of production" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cannotEndTurnDueToLackOfProduction" type="momimecommon:languageText" nxe:label="Cannot end turn due to lack of production" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="roundingDirectionID" type="momimecommon:roundingDirectionID" nxe:label="Rounding Direction for production from Cities" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="percentage" type="xsd:boolean" nxe:label="Percentage?" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="difficultyLevelMultiplierApplies" type="xsd:boolean" nxe:label="AI Difficulty Level Multiplier applies?" nxe:gridwidth="200" />
@@ -1486,7 +1486,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 
 	<xsd:complexType name="productionTypeImage" nxe:singular="Production Type Image" nxe:plural="Production Type Images">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="productionImageFile" type="momimecommon:imageFilename" nxe:label="Production type image file" nxe:gridwidth="270" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="productionImageFile" type="momimecommon:imageFilename" nxe:label="Production type image file" nxe:gridwidth="350" />
 		</xsd:sequence>
 		<xsd:attribute name="productionValue" type="momimecommon:productionImageValue" use="required" nxe:label="Production Type Value" nxe:gridwidth="150" />
 	</xsd:complexType>
@@ -1496,11 +1496,11 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines features that can appear on the map on top of the regular terrain, e.g. Gems, Coal, Adamantium, Wild Game, Towers of Wizardry and Monster Lairs.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureCannotBuildCityDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureMagicWeaponsDescription" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureCannotBuildCityDescription" type="momimecommon:languageText" nxe:label="Description if can't build city here" nxe:plural="Descriptions if can't build city here" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureMagicWeaponsDescription" type="momimecommon:languageText" nxe:label="Description about Magic weapons" nxe:plural="Descriptions about Magic weapons" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="canBuildCity" type="xsd:boolean" nxe:label="Can Build City on this Feature?" nxe:gridwidth="180" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="overlandMapImageFile" type="momimecommon:imageFilename" nxe:label="Overland Map image file" nxe:gridwidth="380" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="overlandMapImageFile" type="momimecommon:imageFilename" nxe:label="Overland Map image file" nxe:gridwidth="500" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="featureSpellProtection" type="xsd:boolean" nxe:label="Protects from Spells?" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="featureMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false" nxe:gridwidth="150">
 				<xsd:annotation>
@@ -1510,9 +1510,9 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="raceMineralMultiplerApplies" type="xsd:boolean" nxe:label="Race Mineral Multipler Applies?" nxe:gridwidth="200" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimecommon:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="380" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimecommon:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="500" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityQualityEstimate" type="momimecommon:cityQualityEstimate" nxe:label="+ to City Quality Estimate" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureTreasureBookReward" type="momimecommon:pickID">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureTreasureBookReward" type="momimecommon:pickID" nxe:label="Treasure book reward" nxe:showmaincolumn="false">
 		        <xsd:annotation>
 		        	<xsd:documentation>Lists the different books we can win from "special" awards when capturing a lair of this type.</xsd:documentation>
 					<xsd:appinfo>
@@ -1520,7 +1520,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					</xsd:appinfo>
 		        </xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureProduction" type="momimecommon:productionTypeAndDoubledValue">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeatureProduction" type="momimecommon:productionTypeAndDoubledValue" nxe:label="Map feature generates" nxe:plural="Map feature generates">
 		        <xsd:annotation>
 		        	<xsd:documentation>Defines the types of production that a particular map feature generates, e.g. +5 Gold from Gems, +2 Magic Power from Adamantium.</xsd:documentation>
 		        </xsd:annotation>

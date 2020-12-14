@@ -5,6 +5,9 @@ package momime.editors.server;
  */
 public final class ServerEditorDatabaseConstants
 {
+	/** For languageText entries, used all over the place */
+	public static final String TAG_VALUE_TEXT = "text";
+	
 	// tileType
 
 	/**
@@ -28,7 +31,7 @@ public final class ServerEditorDatabaseConstants
 	public static final String TAG_ATTRIBUTE_PICK_ID = "pickID";
 
 	/** Description of a spell book or retort that can be chosen at the start of the game */
-	public static final String TAG_VALUE_PICK_DESCRIPTION = "pickDescription";
+	public static final String TAG_VALUE_PICK_DESCRIPTION_SINGULAR = "pickDescriptionSingular";
 	
 	// pickType - pickTypeCount - spellCount
 

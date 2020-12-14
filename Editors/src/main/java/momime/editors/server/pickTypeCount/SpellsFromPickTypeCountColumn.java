@@ -53,7 +53,7 @@ public final class SpellsFromPickTypeCountColumn extends XmlGridColumn
 	@Override
 	public final int getColumnWidth ()
 	{
-		return 300;
+		return 350;
 	}
 
 	/**
@@ -102,11 +102,13 @@ public final class SpellsFromPickTypeCountColumn extends XmlGridColumn
 				final Element spellRankNode = JdomUtils.findDomChildNodeWithTextAttribute (getXmlDocuments ().get (0).getXml (),
 					ServerEditorDatabaseConstants.TAG_ENTITY_SPELL_RANK, ServerEditorDatabaseConstants.TAG_ATTRIBUTE_SPELL_RANK_ID, spellRankId);
 
-				String spellRankDescription;
-				if (spellRankNode == null)
-					spellRankDescription = spellRankId;
-				else
-					spellRankDescription = spellRankNode.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_RANK_DESCRIPTION);
+				String spellRankDescription = "";
+				if (spellRankNode != null)
+				{
+					final Element description = spellRankNode.getChild (ServerEditorDatabaseConstants.TAG_VALUE_SPELL_RANK_DESCRIPTION);
+					if (description != null)
+						spellRankDescription = description.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_TEXT);
+				}
 
 				// Add to list
 				if (!list.equals (""))

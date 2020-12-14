@@ -1551,10 +1551,10 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines the types of terrain tiles that make up the map, e.g. Grassland, Forest, Mountains, Ocean, Nodes, plus some special entries which aren't really "terrain" - roads and fog of war - for defining movement rate rules.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="tileTypeDetailedDescription" type="momimecommon:description" nxe:label="Tile Type Detailed Description" nxe:gridwidth="200" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeCannotBuildCityDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeShowAsFeature" type="momimecommon:languageText" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="tileTypeDetailedDescription" type="momimecommon:description" nxe:label="Tile Type Detailed Description" nxe:gridwidth="220" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeCannotBuildCityDescription" type="momimecommon:languageText" nxe:label="Description if can't build city here" nxe:plural="Descriptions if can't build city here" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeShowAsFeature" type="momimecommon:languageText" nxe:label="Description to make look like a map feature"  nxe:plural="Descriptions to make look like a map feature" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="land" type="xsd:boolean" nxe:label="Is Solid Land?" nxe:gridwidth="80" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="productionBonus" type="momimecommon:percentage" nxe:label="Production Bonus %" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldBonus" type="momimecommon:percentage" nxe:label="Gold Bonus %" nxe:gridwidth="90" />
@@ -1573,13 +1573,13 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatDarkTiles" type="momimecommon:combatMapTileCount" nxe:label="Combat Dark Tiles" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatRidgeTiles" type="momimecommon:combatMapTileCount" nxe:label="Combat Ridge Tiles" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatTerrainFeatures" type="momimecommon:combatMapTileCount" nxe:label="Combat Features (e.g. trees)" nxe:gridwidth="180" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimecommon:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="380" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimecommon:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="400" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeFeatureChance" type="momimecommon:tileTypeFeatureChance" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeAreaEffect" type="momimecommon:tileTypeAreaEffect" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeMiniMap" type="momimecommon:tileTypeMiniMap" nxe:label="Mini map" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeRoad" type="momimecommon:tileTypeRoad" nxe:label="Mini map" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeMiniMap" type="momimecommon:tileTypeMiniMap" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileTypeRoad" type="momimecommon:tileTypeRoad" />
 		</xsd:sequence>
-		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="80" />
+		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 
 	<xsd:complexType name="tileTypeFeatureChance" nxe:singular="Feature Chance" nxe:plural="Feature Chances">
@@ -1636,16 +1636,16 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 
 	<xsd:complexType name="tileTypeRoad" nxe:singular="Road" nxe:plural="Roads" nxe:submenu="Overland Map">
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="roadAnimation" type="momimecommon:animationID" nxe:label="Road animation" nxe:gridwidth="150">
+			<xsd:element minOccurs="0" maxOccurs="1" name="roadAnimation" type="momimecommon:animationID" nxe:label="Road animation" nxe:gridwidth="180">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="roadImageFile" type="momimecommon:imageFilename" nxe:label="Road image file" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="roadImageFile" type="momimecommon:imageFilename" nxe:label="Road image file" nxe:gridwidth="400" />
 		</xsd:sequence>
-		<xsd:attribute name="direction" type="momimecommon:mapDirectionOrNone" use="required" nxe:label="Direction" nxe:gridwidth="50" />
+		<xsd:attribute name="direction" type="momimecommon:mapDirectionOrNone" use="required" nxe:label="Direction" nxe:gridwidth="70" />
 	</xsd:complexType>
 
 	<xsd:complexType name="pickType" nxe:singular="Type of Spell Pick" nxe:plural="Types of Spell Pick" nxe:submenu="Magic">
@@ -1653,17 +1653,17 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines types of picks that can be chosen at the start of the game, i.e. Spell Books &amp; Retorts.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypeDescriptionSingular" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypeDescriptionPlural" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypePrerequisiteSingular" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypePrerequisitePlural" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypeDescriptionSingular" type="momimecommon:languageText" nxe:label="Singular description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypeDescriptionPlural" type="momimecommon:languageText" nxe:label="Plural description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypePrerequisiteSingular" type="momimecommon:languageText" nxe:label="Singular pre-requisite" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickTypePrerequisitePlural" type="momimecommon:languageText" nxe:label="Plural pre-requisite" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="maximumQuantity" nxe:label="Max. Quantity" type="momimecommon:pickTypeCount">
 		        <xsd:annotation>
 		        	<xsd:documentation>Retorts can only be picked once; books have no such limit so have a null here.</xsd:documentation>
 		        </xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="relativeChance" type="momimecommon:percentage" nxe:label="Special Treasure Rel. Chance" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPickTypeProduction" type="momimecommon:productionTypeAndDoubledValue">
+			<xsd:element minOccurs="0" maxOccurs="1" name="relativeChance" type="momimecommon:percentage" nxe:label="Special Treasure Relative Chance" nxe:gridwidth="250" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fortressPickTypeProduction" type="momimecommon:productionTypeAndDoubledValue" nxe:label="Production from each of this type of pick" nxe:plural="Productions from each of this type of pick">
 		        <xsd:annotation>
 		        	<xsd:documentation>Models that a Wizards' Fortress generates +2 magic power for each spell book the wizard has.</xsd:documentation>
 		        </xsd:annotation>
@@ -1710,16 +1710,16 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
         	<xsd:documentation>Defines different picks that can be chosen at the start of the game, i.e. the 5x types of Spell Books &amp; different Retorts.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="pickDetailedDescription" type="momimecommon:description" nxe:label="Pick Detailed Description" nxe:gridwidth="300" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickDescriptionSingular" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickDescriptionPlural" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="bookshelfDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealmPlural" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickHelpText" type="momimecommon:languageText" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="pickDetailedDescription" type="momimecommon:description" nxe:label="Pick Detailed Description" nxe:gridwidth="850" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickDescriptionSingular" type="momimecommon:languageText" nxe:label="Singular description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickDescriptionPlural" type="momimecommon:languageText" nxe:label="Plural description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="bookshelfDescription" type="momimecommon:languageText" nxe:label="Bookshelf description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitMagicRealmPlural" type="momimecommon:languageText" nxe:label="Unit magic realm plural description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickHelpText" type="momimecommon:languageText" nxe:label="Help text" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="pickType" type="momimecommon:pickTypeID" nxe:label="Pick Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>pickTypeDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>pickTypeSingularDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -1763,7 +1763,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickBookshelfTitleColour" type="momimecommon:colour" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickExclusiveFrom" type="momimecommon:pickID">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickExclusiveFrom" type="momimecommon:pickID" nxe:label="Exclusive from" nxe:plural="Exclusive from">
 		        <xsd:annotation>
 		        	<xsd:documentation>This models that both Life and Death books cannot be chosen together.</xsd:documentation>
 					<xsd:appinfo>
@@ -1771,7 +1771,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 					</xsd:appinfo>
 		        </xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mergedFromPick" type="momimecommon:pickID">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="mergedFromPick" type="momimecommon:pickID" nxe:label="Merged from" nxe:plural="Merged from">
 		        <xsd:annotation>
 		        	<xsd:documentation>This is for modelling units that are both Undead and Chaos Channeled.  So LTUC = LTU + LTC.
 When the code is checking for skills that modify a unit's magic realm/lifeform type, if it finds only one then that one becomes its modified magic realm/lifeform type.
@@ -1781,7 +1781,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 					</xsd:appinfo>
 		        </xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickFreeSpell" type="momimecommon:spellID">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickFreeSpell" type="momimecommon:spellID" nxe:label="Free spell">
 		        <xsd:annotation>
 		        	<xsd:documentation>Models that the Artificer retort gives you the Enchant Item and Create Artifact spells for free.</xsd:documentation>
 					<xsd:appinfo>
@@ -1810,7 +1810,13 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 						</xsd:appinfo>
 					</xsd:annotation>
 				</xsd:element>
-				<xsd:element minOccurs="0" maxOccurs="1" name="prerequisiteTypeID" type="momimecommon:pickTypeID" nxe:label="Pre-requisite Type" nxe:gridwidth="100" />
+				<xsd:element minOccurs="0" maxOccurs="1" name="prerequisiteTypeID" type="momimecommon:pickTypeID" nxe:label="Pre-requisite Type" nxe:gridwidth="100">
+					<xsd:annotation>
+						<xsd:appinfo>
+							<nxe:showreferencedfield>pickTypeDescriptionSingular</nxe:showreferencedfield>
+						</xsd:appinfo>
+					</xsd:annotation>
+				</xsd:element>
 			</xsd:choice>
 		</xsd:sequence>
 	</xsd:complexType>

@@ -73,9 +73,53 @@
 		</property>
 	</bean>
 
+	<bean id="tileTypeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="50" />
+		<property name="imageColumns">
+			<list>
+				<value>monsterFoundImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="tileTypeRoadGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>roadImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="pickTypeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>pickTypeDescriptionSingular</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="pickTypeCountGrid" class="momime.editors.server.pickTypeCount.PickTypeCountGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
+	</bean>
+
+	<bean id="bookImageFileGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>bookImageFile</value>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="raceCannotBuildGrid" class="momime.editors.server.raceCannotBuild.RaceCannotBuildGrid" scope="prototype">
@@ -116,7 +160,11 @@
 				<entry key="productionType" value="productionTypeGrid" />
 				<entry key="productionTypeImage" value="productionTypeImageGrid" />
 				<entry key="mapFeature" value="mapFeatureGrid" />
+				<entry key="tileType" value="tileTypeGrid" />
+				<entry key="tileTypeRoad" value="tileTypeRoadGrid" />
+				<entry key="pickType" value="pickTypeGrid" />
 				<entry key="pickTypeCount" value="pickTypeCountGrid" />
+				<entry key="bookImageFile" value="bookImageFileGrid" />
 				<entry key="raceCannotBuild" value="raceCannotBuildGrid" />
 				<entry key="spell" value="spellGrid" />
 				<entry key="wizardPickCount" value="wizardPickCountGrid" />

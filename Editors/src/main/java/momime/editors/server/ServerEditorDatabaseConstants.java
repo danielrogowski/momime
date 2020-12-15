@@ -119,9 +119,6 @@ public final class ServerEditorDatabaseConstants
 	/** For a particular building, defines the buildings you must already have in order to construct it, e.g. to build a Farmers' Market you must have a Granary and a Marketplace */
 	public static final String TAG_CHILD_ENTITY_BUILDING_PREREQUISITE = "buildingPrerequisite";
 
-	/** The building ID of the required building */
-	public static final String TAG_ATTRIBUTE_BUILDING_PREREQUISITE_ID = "prerequisiteID";
-	
 	// unitSkill
 
 	/**

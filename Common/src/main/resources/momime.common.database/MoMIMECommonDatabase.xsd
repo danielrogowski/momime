@@ -1928,10 +1928,10 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
         	<xsd:documentation>The different races of civilians &amp; units in the game.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceNameSingular" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceNamePlural" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceAdvantages" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceDisadvantages" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceNameSingular" type="momimecommon:languageText" nxe:label="Singular description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceNamePlural" type="momimecommon:languageText" nxe:label="Plural description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceAdvantages" type="momimecommon:languageText" nxe:label="Advantages description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceDisadvantages" type="momimecommon:languageText" nxe:label="Disadvantages description" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="nativePlane" type="momimecommon:planeNumber" nxe:label="Native Plane" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -1942,7 +1942,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			<xsd:element minOccurs="1" maxOccurs="1" name="mineralBonusMultiplier" type="momimecommon:mineralBonusMultiplier" nxe:label="Mineral Bonus Multipler" nxe:gridwidth="130" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateModifier" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Modifier" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="goldTradeBonus" type="momimecommon:percentage" nxe:label="Gold Trade Bonus" nxe:gridwidth="130" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceCannotBuild" type="momimecommon:buildingID">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="raceCannotBuild" type="momimecommon:buildingID" nxe:label="Cannot build" nxe:plural="Cannot build">
 		        <xsd:annotation>
 		        	<xsd:documentation>Lists out all the buildings that a particular race cannot build.</xsd:documentation>
 					<xsd:appinfo>
@@ -1950,7 +1950,7 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 					</xsd:appinfo>
 		        </xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="unbounded" name="cityName" type="momimecommon:description">
+			<xsd:element minOccurs="1" maxOccurs="unbounded" name="cityName" type="momimecommon:description" nxe:label="City name">
 		        <xsd:annotation>
 		        	<xsd:documentation>Lists all the available city names for a particular race.</xsd:documentation>
 		        </xsd:annotation>
@@ -1989,13 +1989,13 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 		<xsd:sequence>
 			<xsd:choice minOccurs="1" maxOccurs="1" >
 				<xsd:element minOccurs="0" maxOccurs="1" name="unrestPercentage" type="momimecommon:percentage" nxe:label="Unrest %" nxe:gridwidth="70" />
-				<xsd:element minOccurs="0" maxOccurs="1" name="unrestLiteral" type="momimecommon:unrestLiteral" nxe:label="Unrest Literal Amount" nxe:gridwidth="120" />
+				<xsd:element minOccurs="0" maxOccurs="1" name="unrestLiteral" type="momimecommon:unrestLiteral" nxe:label="Unrest Literal Amount" nxe:gridwidth="160" />
 			</xsd:choice>
 		</xsd:sequence>
 		<xsd:attribute name="capitalRaceID" type="momimecommon:raceID" use="required" nxe:label="Capital Race ID" nxe:showmaincolumn="false">
 			<xsd:annotation>
 				<xsd:appinfo>
-					<nxe:showreferencedfield>raceName</nxe:showreferencedfield>
+					<nxe:showreferencedfield>raceNameSingular</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -2017,10 +2017,10 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
         	<xsd:documentation>All the different buildings that can be constructed in cities, plus a couple of special entries (the special settings Housing &amp; Trade Goods, the Wizards' Fortress and Summoning Circle).</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingName" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingHelpText" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReduction" type="momimecommon:buildingUnrestReduction" nxe:label="Unrest Reduction" nxe:gridwidth="50" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReductionImprovedByRetorts" type="xsd:boolean" nxe:label="Unrest reduction improved by DivP/InfP?" nxe:gridwidth="220" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingHelpText" type="momimecommon:languageText" nxe:label="Help text" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReduction" type="momimecommon:buildingUnrestReduction" nxe:label="Unrest Reduction" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReductionImprovedByRetorts" type="xsd:boolean" nxe:label="Unrest reduction improved by DivP/InfP?" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateBonus" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Bonus" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="housingPercentageBonus" type="momimecommon:percentage" nxe:label="Housing %" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingExperience" type="momimecommon:experiencePoints" nxe:label="Experience Granted" nxe:gridwidth="120" />
@@ -2039,7 +2039,7 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 			<xsd:element minOccurs="0" maxOccurs="1" name="inRaidersStartingCitiesWithPopulationAtLeast" type="momimecommon:cityPopulationDiv1000" nxe:label="In Raider Starting Cities of what size?" nxe:gridwith="180" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="aiBuildingTypeID" type="momimecommon:aiBuildingTypeID" nxe:label="AI Building Type" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="monsterFoundImageFile" type="momimecommon:imageFilename" nxe:label="Monster Found image file" nxe:gridwidth="380" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingPrerequisite" type="momimecommon:buildingID">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingPrerequisite" type="momimecommon:buildingID" nxe:label="Building pre-requisite">
 		        <xsd:annotation>
 		        	<xsd:documentation>For a particular building, defines the buildings you must already have in order to construct it,
 e.g. to build a Farmers' Market you must have a Granary and a Marketplace.</xsd:documentation>
@@ -2051,7 +2051,7 @@ e.g. to build a Farmers' Market you must have a Granary and a Marketplace.</xsd:
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingPopulationProductionModifier" type="momimecommon:buildingPopulationProductionModifier" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingRequiresTileType" type="momimecommon:buildingRequiresTileType" />
 		</xsd:sequence>
-		<xsd:attribute name="buildingID" type="momimecommon:buildingID" use="required" nxe:label="Building ID" nxe:gridwidth="65" />
+		<xsd:attribute name="buildingID" type="momimecommon:buildingID" use="required" nxe:label="Building ID" nxe:gridwidth="80" />
 	</xsd:complexType>
 	
 	<xsd:complexType name="buildingPopulationProductionModifier" nxe:singular="Building Population Production Modifier" nxe:plural="Building Population Production Modifiers">
@@ -2061,7 +2061,7 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="doubleAmount" type="momimecommon:doubledProductionValue" nxe:label="2x Modifier Amount" nxe:gridwidth="120" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="percentageBonus" type="momimecommon:percentage" nxe:label="Percentage Bonus" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="percentageBonus" type="momimecommon:percentage" nxe:label="Percentage Bonus" nxe:gridwidth="120" />
 		</xsd:sequence>
 		<xsd:attribute name="populationTaskID" type="momimecommon:populationTaskID" use="optional" nxe:label="Population Task ID" nxe:showmaincolumn="false">
 	        <xsd:annotation>
@@ -2478,7 +2478,7 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitRaceID" type="momimecommon:raceID" nxe:label="Unit Race" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>raceName</nxe:showreferencedfield>
+						<nxe:showreferencedfield>raceNameSingular</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -3168,8 +3168,8 @@ Implication is that for spells and attacks whose damage resolution is based on r
         	<xsd:documentation>Different tasks each block of 1,000 civilians can be allocated to (Farmer, Worker or Rebel).</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTaskSingular" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTaskPlural" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTaskSingular" type="momimecommon:languageText" nxe:label="Singular description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTaskPlural" type="momimecommon:languageText" nxe:label="Plural description" />
 		</xsd:sequence>
 		<xsd:attribute name="populationTaskID" type="momimecommon:populationTaskID" use="required" nxe:label="Population Task ID" nxe:gridwidth="120" />
 	</xsd:complexType>

@@ -67,28 +67,27 @@ public final class RaceCannotBuildGrid extends XmlEditorGrid
 	 * Does the actual work resolving out the implicit building restrictions
 	 * @return Complete list of all the buildings this race cannot build, including both restrictions explicitly listed in the XML file, and implicit restrictions
 	 */
-	@SuppressWarnings ("rawtypes")
 	private List<RaceImplicitCannotBuild> buildListOfBuildingsThatRaceCannotBuild ()
 	{
 		// Create list
 		final List<RaceImplicitCannotBuild> cannotBuildList = new ArrayList<RaceImplicitCannotBuild> ();
 
 		// Start by listing those buildings explicitly listed in the XML file
-		final Iterator explicitList = getParentRecord ().getChildren (ServerEditorDatabaseConstants.TAG_CHILD_ENTITY_RACE_CANNOT_BUILD).iterator ();
-		while (explicitList.hasNext ())
+		final Iterator<Element> explicitListIter = getParentRecord ().getChildren (ServerEditorDatabaseConstants.TAG_CHILD_ENTITY_RACE_CANNOT_BUILD).iterator ();
+		while (explicitListIter.hasNext ())
 		{
-			final Element explicitRestriction = (Element) explicitList.next ();
-			final String buildingId = explicitRestriction.getAttributeValue (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_RACE_CANNOT_BUILD_BUILDING_ID);
+			final String buildingId = explicitListIter.next ().getText ();
 
 			final Element buildingNode = JdomUtils.findDomChildNodeWithTextAttribute (getMdiEditor ().getXmlDocuments ().get (0).getXml (),
 				ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING, ServerEditorDatabaseConstants.TAG_ATTRIBUTE_BUILDING_ID, buildingId);
-			final String buildingName = buildingNode.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_NAME);
+			final String buildingName = buildingNode.getChild (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_NAME).getChildText
+				(ServerEditorDatabaseConstants.TAG_VALUE_TEXT);
 
 			cannotBuildList.add (new RaceImplicitCannotBuild (buildingId, buildingName, null));
 		}
 
 		// Go through all buildings looking for buildings which require buildings already in the list, and repeat this until we add no more
-		final List allBuildingsList = getMdiEditor ().getXmlDocuments ().get (0).getXml ().getChildren (ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING);
+		final List<Element> allBuildingsList = getMdiEditor ().getXmlDocuments ().get (0).getXml ().getChildren (ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING);
 		boolean keepGoing = true;
 		while (keepGoing)
 		{
@@ -96,10 +95,10 @@ public final class RaceCannotBuildGrid extends XmlEditorGrid
 			keepGoing = false;
 
 			// Check every building in the databaase
-			final Iterator allBuildings = allBuildingsList.iterator ();
+			final Iterator<Element> allBuildings = allBuildingsList.iterator ();
 			while (allBuildings.hasNext ())
 			{
-				final Element buildingNode = (Element) allBuildings.next ();
+				final Element buildingNode = allBuildings.next ();
 				final String buildingId = buildingNode.getAttributeValue (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_BUILDING_ID);
 
 				// Ignore if already in the list
@@ -114,11 +113,10 @@ public final class RaceCannotBuildGrid extends XmlEditorGrid
 					String reasons = null;
 
 					// Go through all the pre-requisites of this building to see if it has any pre-requisites already in the list
-					final Iterator prerequisites = buildingNode.getChildren (ServerEditorDatabaseConstants.TAG_CHILD_ENTITY_BUILDING_PREREQUISITE).iterator ();
+					final Iterator<Element> prerequisites = buildingNode.getChildren (ServerEditorDatabaseConstants.TAG_CHILD_ENTITY_BUILDING_PREREQUISITE).iterator ();
 					while (prerequisites.hasNext ())
 					{
-						final Element thisPrerequisite = (Element) prerequisites.next ();
-						final String prerequisiteBuildingId = thisPrerequisite.getAttributeValue (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_BUILDING_PREREQUISITE_ID);
+						final String prerequisiteBuildingId = prerequisites.next ().getText ();
 
 						// Is this pre-requisite building one of those we cannot build?
 						boolean preventsUsFromConstructingThisBuilding = false;
@@ -131,7 +129,8 @@ public final class RaceCannotBuildGrid extends XmlEditorGrid
 							// Get the name of the building that is preventing us from constructing this building
 							final Element prerequisiteBuildingNode = JdomUtils.findDomChildNodeWithTextAttribute (getMdiEditor ().getXmlDocuments ().get (0).getXml (),
 								ServerEditorDatabaseConstants.TAG_ENTITY_BUILDING, ServerEditorDatabaseConstants.TAG_ATTRIBUTE_BUILDING_ID, prerequisiteBuildingId);
-							final String prerequisiteBuildingName = prerequisiteBuildingNode.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_NAME);
+							final String prerequisiteBuildingName = prerequisiteBuildingNode.getChild (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_NAME).getChildText
+								(ServerEditorDatabaseConstants.TAG_VALUE_TEXT);
 
 							if (reasons == null)
 								reasons = prerequisiteBuildingName;
@@ -143,7 +142,8 @@ public final class RaceCannotBuildGrid extends XmlEditorGrid
 					// Did we find any required buildings that we cannot build?
 					if (reasons != null)
 					{
-						final String buildingName = buildingNode.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_NAME);
+						final String buildingName = buildingNode.getChild (ServerEditorDatabaseConstants.TAG_VALUE_BUILDING_NAME).getChildText
+							(ServerEditorDatabaseConstants.TAG_VALUE_TEXT);
 
 						cannotBuildList.add (new RaceImplicitCannotBuild (buildingId, buildingName, reasons));
 						keepGoing = true;

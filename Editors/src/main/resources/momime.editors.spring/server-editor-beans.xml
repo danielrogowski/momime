@@ -158,9 +158,59 @@
 		<property name="utils" ref="utils" />
 	</bean>
 
+	<bean id="populationTaskGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>populationTaskSingular</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="raceGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>raceNameSingular</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="raceCannotBuildGrid" class="momime.editors.server.raceCannotBuild.RaceCannotBuildGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
+	</bean>
+
+	<bean id="racePopulationTaskGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>civilianImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="buildingGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="55" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>buildingName</value>
+			</list>
+		</property>
+		<property name="imageColumns">
+			<list>
+				<value>monsterFoundImageFile</value>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="spellGrid" class="momime.editors.server.spell.SpellGrid" scope="prototype">
@@ -199,7 +249,11 @@
 				<entry key="bookImageFile" value="bookImageFileGrid" />
 				<entry key="wizard" value="wizardGrid" />
 				<entry key="wizardPickCount" value="wizardPickCountGrid" />
+				<entry key="populationTask" value="populationTaskGrid" />
+				<entry key="race" value="raceGrid" />
 				<entry key="raceCannotBuild" value="raceCannotBuildGrid" />
+				<entry key="racePopulationTask" value="racePopulationTaskGrid" />
+				<entry key="building" value="buildingGrid" />
 				<entry key="spell" value="spellGrid" />
 				<entry key="heroItemBonus" value="heroItemBonusGrid" />
 				<entry key="heroItem" value="heroItemGrid" />

@@ -10,7 +10,7 @@ import com.ndg.xmleditor.grid.column.XmlGridColumn;
 /**
  * Adds a special column displaying an image from the classpath
  */
-public final class XmlEditorGridWithDescriptionsAndImages extends XmlEditorGrid
+public class XmlEditorGridWithDescriptionsAndImages extends XmlEditorGrid
 {
 	/** Height to give each row in the table - varies, depending on the typical images referenced in this table */
 	private int rowHeight;
@@ -30,7 +30,7 @@ public final class XmlEditorGridWithDescriptionsAndImages extends XmlEditorGrid
 	 * @throws IOException If there is a problem loading the button images
 	 */
 	@Override
-	public final void init () throws XmlEditorException, IOException
+	public void init () throws XmlEditorException, IOException
 	{
 		super.init ();
 		

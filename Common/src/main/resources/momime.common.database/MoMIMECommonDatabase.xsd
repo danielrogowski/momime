@@ -756,6 +756,10 @@
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="magicRealmID" />
 		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:weaponGradePK" name="unitSkillWeaponGradeFKweaponGrade">
+			<xsd:selector xpath="unitSkill/unitSkillWeaponGrade" />
+			<xsd:field xpath="@weaponGradeNumber" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:unitSkillPK" name="unitHasSkillFKunitSkill">
 			<xsd:selector xpath="unit/unitHasSkill" />
 			<xsd:field xpath="@unitSkillID" />
@@ -1916,8 +1920,6 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 			<xsd:annotation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
-					<nxe:showreferencedfield>pickType</nxe:showreferencedfield>
-					<nxe:showreferencedfield>pickCost</nxe:showreferencedfield>
 				</xsd:appinfo>
 			</xsd:annotation>
 		</xsd:attribute>
@@ -2176,8 +2178,8 @@ i.e. both the lists of top half and bottom half of the unit info screen.  Their 
 is defined in the graphics XML file.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillHelpText" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSkillHelpText" type="momimecommon:languageText" nxe:label="Help text" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitSkillTypeID" type="momimecommon:unitSkillTypeID" nxe:label="Skill type" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="changesUnitToMagicRealm" type="momimecommon:pickID" nxe:label="Changes Unit to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
@@ -2256,10 +2258,10 @@ the lead figure then the unit's value will be multiplied by x7.5.
 The value of multiplicative skills is ignored, so don't use this for any skill that may take a value.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillImageFile" type="momimecommon:imageFilename" nxe:label="Unit skill image file" nxe:gridwidth="270" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImageFile" type="momimecommon:imageFilename" nxe:label="Movement icon image file" nxe:gridwidth="270" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitSkillImageFile" type="momimecommon:imageFilename" nxe:label="Unit skill image file" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImageFile" type="momimecommon:imageFilename" nxe:label="Movement icon image file" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="movementIconImagePreference" type="momimecommon:rulePreferenceWeighting" nxe:label="Movement icon image preference weighting" nxe:gridwidth="200" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="sampleTileImageFile" type="momimecommon:imageFilename" nxe:label="Sample Tile image file" nxe:gridwidth="350" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="sampleTileImageFile" type="momimecommon:imageFilename" nxe:label="Sample Tile image file" nxe:gridwidth="400" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="standActionID" type="momimecommon:combatActionID" nxe:label="Standing combat action ID" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -2282,7 +2284,7 @@ The value of multiplicative skills is ignored, so don't use this for any skill t
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="grantsSkill" type="momimecommon:unitSkillID">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="grantsSkill" type="momimecommon:unitSkillID" nxe:label="Grants skill">
 				<xsd:annotation>
 					<xsd:documentation>Certain skills implicitly grant other skills, e.g. Invulerability and Wraith Form both implicitly grant Weapon Immunity.
 But we can't just duplicate the Weapon Immunity effect because a unit with magical weapons ignores the Weapon Immunity portion of the skill but not the -2 damage portion.
@@ -2398,7 +2400,7 @@ and under Resist Elements will be a negation record listing that Elemental Armou
 
 	<xsd:complexType name="unitSkillWeaponGrade" nxe:singular="Attr Weapon Grade" nxe:plural="Attr Weapon Grades">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="skillImageFile" type="momimecommon:imageFilename" nxe:label="Unit Skill image file" nxe:gridwidth="290" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="skillImageFile" type="momimecommon:imageFilename" nxe:label="Unit Skill image file" nxe:gridwidth="350" />
 		</xsd:sequence>
 		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120">
 			<xsd:annotation>
@@ -2415,10 +2417,10 @@ and under Resist Elements will be a negation record listing that Elemental Armou
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitTypeDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="200" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitTypeInexperienced" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitTypeExperienced" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitTypeMaxNaturalExperience" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitTypeMaxExperience" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitTypeInexperienced" type="momimecommon:languageText" nxe:label="Help text when inexperienced" nxe:plural="Help text when inexperienced" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitTypeExperienced" type="momimecommon:languageText" nxe:label="Help text when experienced" nxe:plural="Help text when experienced" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitTypeMaxNaturalExperience" type="momimecommon:languageText" nxe:label="Help text when at max naturally attainable experience" nxe:plural="Help text when at max naturally attainable experience" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitTypeMaxExperience" type="momimecommon:languageText" nxe:label="Help text when at absolute max experience" nxe:plural="Help text when at absolute max experience" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="undeadUpkeepPercentage" type="xsd:unsignedShort" nxe:label="Undead upkeep %" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="announceWhenLevelGained" type="xsd:boolean" nxe:label="Announce when level gained?" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceLevel" type="momimecommon:experienceLevel">
@@ -2436,7 +2438,7 @@ and under Resist Elements will be a negation record listing that Elemental Armou
         	<xsd:documentation>Defines the different experience levels a particular type of unit can attain.  Normal units and Heroes have different experience tables; Summoned units don't gain experience at all.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceLevelName" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceLevelName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="ringColour" type="momimecommon:colour" nxe:label="Ring Colour" nxe:gridwidth="80" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="ringCount" type="momimecommon:experienceLevelRingCount" nxe:label="Nbr. Rings" nxe:gridwidth="70" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="experienceLevelImageFile" type="momimecommon:imageFilename" nxe:label="Name" nxe:gridwidth="300" />
@@ -2446,7 +2448,7 @@ and under Resist Elements will be a negation record listing that Elemental Armou
 Levels that do not require any experience (i.e. Recruit for normal units) must state a 0 here and not leave the field blank.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceSkillBonus" type="momimecommon:unitSkillAndValue" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="experienceSkillBonus" type="momimecommon:unitSkillAndValue" nxe:label="Bonus to skill" nxe:plural="Bonuses to skills" />
 		</xsd:sequence>
 		<xsd:attribute name="levelNumber" type="momimecommon:experienceLevelNumber" use="required" nxe:label="Level" nxe:gridwidth="50" />
 	</xsd:complexType>
@@ -2985,8 +2987,8 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         	<xsd:documentation>Types of hero items - sword, axe, ring, shield, plate mail, and so on.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="baseCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Base Crafting Cost" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="baseCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Base Crafting Cost" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="itemBonusCraftingCostMultiplier" type="momimecommon:spellCastingCost" nxe:label="Cost Multiplier" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemTypeAttackType" type="momimecommon:unitSkillID" nxe:label="Attack Type" nxe:gridwidth="100">
 		        <xsd:annotation>
@@ -3015,16 +3017,16 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
         	<xsd:documentation>Defines the different "item slots" heroes can have for, e.g. some heroes can only use a sword, some can only use a wand, but some have a slot that can take either.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="slotTypeDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="basicHeroItemForAiRatingItemTypeID" type="momimecommon:heroItemTypeID" nxe:label="AI basic rating Item Type ID" nxe:gridwidth="100">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="slotTypeDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="basicHeroItemForAiRatingItemTypeID" type="momimecommon:heroItemTypeID" nxe:label="AI basic rating Item Type ID" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>heroItemTypeDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFile" type="momimecommon:imageFilename" nxe:label="Hero Item Slot Image" nxe:gridwidth="350" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFileWithBackground" type="momimecommon:imageFilename" nxe:label="Slot Image with Background" nxe:gridwidth="350" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFile" type="momimecommon:imageFilename" nxe:label="Hero Item Slot Image" nxe:gridwidth="380" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="heroItemSlotTypeImageFileWithBackground" type="momimecommon:imageFilename" nxe:label="Slot Image with Background" nxe:gridwidth="380" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroSlotAllowedItemType" type="momimecommon:heroItemTypeID" nxe:label="Allowed item type" nxe:gridwidth="100">
 		        <xsd:annotation>
 		        	<xsd:documentation>Defines the different kinds of hero items that can be equipped in the different kinds of slots.</xsd:documentation>
@@ -3046,19 +3048,19 @@ they don't currently own.  This lists, for a particular item type, the mods on a
 		<xsd:attribute name="heroItemSlotTypeID" type="momimecommon:heroItemSlotTypeID" use="required" nxe:label="Slot Type ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 
-	<xsd:complexType name="heroItemBonus" nxe:singular="Hero Item Bonus" nxe:plural="Hero Item Bonuses">
+	<xsd:complexType name="heroItemBonus" nxe:singular="Hero Item Bonus" nxe:plural="Hero Item Bonuses" nxe:submenu="Hero items">
         <xsd:annotation>
         	<xsd:documentation>Lists all possible stats and bonuses that can be added to hero items.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusDescription" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonusDescription" type="momimecommon:languageText" nxe:label="Description" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="craftingCostMultiplierApplies" type="xsd:boolean" nxe:label="Cost multiplier applies?" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="bonusCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Bonus Crafting Cost" nxe:gridwidth="150">
 		        <xsd:annotation>
 		        	<xsd:documentation>Mandatory for every bonus except "Spell Charges", where the cost is calculated depending on which spell is added.</xsd:documentation>
 		        </xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="allowCombiningWithBonusesToSameStat" type="xsd:boolean" nxe:label="Allow combining with bonuses to same stat?" nxe:gridwidth="150">
+			<xsd:element minOccurs="0" maxOccurs="1" name="allowCombiningWithBonusesToSameStat" type="xsd:boolean" nxe:label="Allow combining with bonuses to same stat?" nxe:gridwidth="250">
 		        <xsd:annotation>
 		        	<xsd:documentation>This is for the "Flaming" hero item bonus.  Normally two bonuses cannot be chosen if they provide a bonus to the same stat, so you cannot
 pick both e.g. +1 and +2 attack on the same item.  However "Flaming" looks identical to +3 attack, so we need some flag that indicates that its OK to have both Flaming and +attack together.</xsd:documentation>
@@ -3110,7 +3112,7 @@ e.g. The Elven Archer hero can use both swords and bows, but if she has a Sword 
 			</xsd:annotation>
 		</xsd:element>
 		<xsd:element minOccurs="0" maxOccurs="1" name="spellChargeCount" type="momimecommon:spellCount" nxe:label="Spell Charge Count" nxe:gridwidth="150" />
-		<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemChosenBonus" type="momimecommon:heroItemBonusID" nxe:label="Bonus" nxe:gridwidth="100">
+		<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemChosenBonus" type="momimecommon:heroItemBonusID" nxe:label="Bonus" nxe:plural="Bonuses">
 	        <xsd:annotation>
 	        	<xsd:documentation>Specifies the list of bonuses which this hero item actually has, e.g. +6 attack and Flaming.</xsd:documentation>
 				<xsd:appinfo>
@@ -3179,8 +3181,8 @@ Implication is that for spells and attacks whose damage resolution is based on r
         	<xsd:documentation>Lists the city size categories, e.g. that a city changes from a "Village" to a "Town" when it goes from 9,999 to 10,000 population.  Each "city size" also has a different appearance on the overland map.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySizeName" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySizeNameIncludingOwner" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySizeName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySizeNameIncludingOwner" type="momimecommon:languageText" nxe:label="Name, including owner" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="fameLostForRazing" type="momimecommon:fame" nxe:label="Fame Lost for Razing" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMinimum" type="momimecommon:cityPopulation" nxe:label="Minimum population" nxe:gridwidth="130" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMaximum" type="momimecommon:cityPopulation" nxe:label="Maximum population" nxe:gridwidth="130" />

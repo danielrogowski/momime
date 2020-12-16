@@ -20,7 +20,7 @@ import com.ndg.xmleditor.doc.ComplexTypeReference;
 import com.ndg.xmleditor.editor.XmlEditorException;
 
 import momime.common.database.CommonDatabaseConstants;
-import momime.editors.MoMEditorGridWithImport;
+import momime.editors.grid.MoMEditorGridWithImport;
 import momime.editors.server.ServerEditorDatabaseConstants;
 import momime.server.database.ServerDatabaseValues;
 

@@ -213,22 +213,116 @@
 		</property>
 	</bean>
 
+	<bean id="experienceLevelGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="20" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>experienceLevelName</value>
+			</list>
+		</property>
+		<property name="imageColumns">
+			<list>
+				<value>experienceLevelImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="heroItemTypeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>heroItemTypeDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="heroItemTypeImageFileGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>heroItemTypeImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="heroItemSlotTypeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>slotTypeDescription</value>
+			</list>
+		</property>
+		<property name="imageColumns">
+			<list>
+				<value>heroItemSlotTypeImageFile</value>
+				<value>heroItemSlotTypeImageFileWithBackground</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="heroItemBonusGrid" class="momime.editors.server.heroItemBonus.HeroItemBonusGrid" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>heroItemBonusDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="heroItemGrid" class="momime.editors.server.heroItem.HeroItemGrid" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+	</bean>
+
+	<bean id="unitSkillGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>unitSkillDescription</value>
+			</list>
+		</property>
+		<property name="imageColumns">
+			<list>
+				<value>unitSkillImageFile</value>
+				<value>movementIconImageFile</value>
+				<value>sampleTileImageFile</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="unitSkillWeaponGradeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="imageColumns">
+			<list>
+				<value>skillImageFile</value>
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="spellGrid" class="momime.editors.server.spell.SpellGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 	</bean>
 
 	<bean id="editUnit" class="momime.editors.server.unit.EditUnit" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="heroItemBonusGrid" class="momime.editors.server.heroItemBonus.HeroItemBonusGrid" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-	</bean>
-
-	<bean id="heroItemGrid" class="momime.editors.server.heroItem.HeroItemGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 	</bean>
@@ -254,9 +348,15 @@
 				<entry key="raceCannotBuild" value="raceCannotBuildGrid" />
 				<entry key="racePopulationTask" value="racePopulationTaskGrid" />
 				<entry key="building" value="buildingGrid" />
-				<entry key="spell" value="spellGrid" />
+				<entry key="experienceLevel" value="experienceLevelGrid" />
+				<entry key="heroItemType" value="heroItemTypeGrid" />
+				<entry key="heroItemTypeImageFile" value="heroItemTypeImageFileGrid" />
+				<entry key="heroItemSlotType" value="heroItemSlotTypeGrid" />
 				<entry key="heroItemBonus" value="heroItemBonusGrid" />
 				<entry key="heroItem" value="heroItemGrid" />
+				<entry key="unitSkill" value="unitSkillGrid" />
+				<entry key="unitSkillWeaponGrade" value="unitSkillWeaponGradeGrid" />
+				<entry key="spell" value="spellGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

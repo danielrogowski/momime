@@ -1,19 +1,25 @@
-package momime.editors;
+package momime.editors.grid;
 
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
+import com.ndg.swing.GridBagConstraintsHorizontalFill;
 import com.ndg.swing.actions.MessageDialogAction;
 import com.ndg.swing.filefilters.ExtensionFileFilter;
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.grid.XmlEditorGridWithImport;
 
 /**
- * Shows a file open dialog asking for the location of an LBX file to import when the Import button is clicked
+ * Shows a file open dialog asking for the location of an LBX file to import when the Import button is clicked.
+ * 
+ * This really needs to inherit from both XmlEditorGridWithDescriptionsAndImages and XmlEditorGridWithImport, but can't do that,
+ * so just pulled in the code from XmlEditorGridWithImport to here.
  */
-public abstract class MoMEditorGridWithImport extends XmlEditorGridWithImport
+public abstract class MoMEditorGridWithImport extends XmlEditorGridWithDescriptionsAndImages
 {
 	/**
 	 * Shows a file open dialog asking for the location of an LBX file to import when the Import button is clicked
@@ -24,9 +30,9 @@ public abstract class MoMEditorGridWithImport extends XmlEditorGridWithImport
 	public void init () throws XmlEditorException, IOException
 	{
 		super.init ();
-		
+
 		// Import action
-		setImportAction (new MessageDialogAction ((ev) ->
+		final Action importAction = new MessageDialogAction ("Import", new ImageIcon (getUtils ().loadImage ("/com.ndg.xmleditor.icons/Import.gif")), (ev) ->
 		{
 			final JFileChooser lbxChooser = new JFileChooser ();
 			lbxChooser.addChoosableFileFilter (new ExtensionFileFilter ("lbx", "Original Master of Magic LBX files"));
@@ -37,7 +43,12 @@ public abstract class MoMEditorGridWithImport extends XmlEditorGridWithImport
 				importFromLbx (lbxChooser.getSelectedFile ());
 				getTableModel ().fireTableDataChanged ();
 			}
-		}));
+		});
+		
+		// Import button
+		final JButton importButton = new JButton (importAction);
+		getButtonPanel ().add (importButton, getUtils ().createConstraintsHorizontalFill (0, getButtonPanelY (), 2, 1, INSET, GridBagConstraintsHorizontalFill.CENTRE));
+		setButtonPanelY (getButtonPanelY () + 1);
 	}
 
 	/**

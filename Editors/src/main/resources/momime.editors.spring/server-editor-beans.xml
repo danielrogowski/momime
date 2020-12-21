@@ -309,7 +309,6 @@
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="25" />
-		<property name="firstDescriptionColumnIndex" value="1" />
 		<property name="imageColumns">
 			<list>
 				<value>skillImageFile</value>
@@ -317,9 +316,136 @@
 		</property>
 	</bean>
 	
+	<bean id="rangedAttackTypeWeaponGradeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>unitDisplayRangedImageFile</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="rangedAttackTypeCombatImageGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>rangedAttackTypeCombatImageFile</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="unitGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="85" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>unitName</value>
+				<value>unitNamePrefix</value>
+			</list>
+		</property>
+		<property name="imageColumns">
+			<list>
+				<value>unitOverlandImageFile</value>
+				<value>unitSummonImageFile</value>
+				<value>heroPortraitImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="unitCombatImageGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="35" />
+		<property name="imageColumns">
+			<list>
+				<value>unitCombatImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="heroNameGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>heroNameLang</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="weaponGradeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>weaponGradeMiniImageFile</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="combatAreaEffectGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>combatAreaEffectDescription</value>
+			</list>
+		</property>
+		<property name="imageColumns">
+			<list>
+				<value>combatAreaEffectImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="spellRankGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>spellRankDescription</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="spellBookSectionGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>spellBookSectionName</value>
+			</list>
+		</property>
+	</bean>
+	
 	<bean id="spellGrid" class="momime.editors.server.spell.SpellGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="120" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>spellName</value>
+			</list>
+		</property>
+		<property name="imageColumns">
+			<list>
+				<value>overlandEnchantmentImageFile</value>
+				<value>unitCanCastImageFile</value>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="editUnit" class="momime.editors.server.unit.EditUnit" scope="prototype">
@@ -356,6 +482,15 @@
 				<entry key="heroItem" value="heroItemGrid" />
 				<entry key="unitSkill" value="unitSkillGrid" />
 				<entry key="unitSkillWeaponGrade" value="unitSkillWeaponGradeGrid" />
+				<entry key="rangedAttackTypeWeaponGrade" value="rangedAttackTypeWeaponGradeGrid" />
+				<entry key="rangedAttackTypeCombatImage" value="rangedAttackTypeCombatImageGrid" />
+				<entry key="unit" value="unitGrid" />
+				<entry key="unitCombatImage" value="unitCombatImageGrid" />
+				<entry key="heroName" value="heroNameGrid" />
+				<entry key="weaponGrade" value="weaponGradeGrid" />
+				<entry key="combatAreaEffect" value="combatAreaEffectGrid" />
+				<entry key="spellRank" value="spellRankGrid" />
+				<entry key="spellBookSection" value="spellBookSectionGrid" />
 				<entry key="spell" value="spellGrid" />
 				<entry key="default" value="grid" />
 			</map>

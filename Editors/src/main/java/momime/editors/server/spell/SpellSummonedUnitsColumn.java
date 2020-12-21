@@ -71,22 +71,19 @@ public final class SpellSummonedUnitsColumn extends XmlGridColumn
 	{
 		String list = "";
 
-		@SuppressWarnings ("rawtypes")
-		final Iterator picks = record.getChildren (ServerEditorDatabaseConstants.TAG_CHILD_ENTITY_SPELL_SUMMONED_UNIT).iterator ();
+		final Iterator<Element> picks = record.getChildren (ServerEditorDatabaseConstants.TAG_CHILD_ENTITY_SPELL_SUMMONED_UNIT).iterator ();
 		while (picks.hasNext ())
 		{
-			final Element thisUnit = (Element) picks.next ();
-
-			final String unitId = thisUnit.getAttributeValue (ServerEditorDatabaseConstants.TAG_ATTRIBUTE_SUMMONED_UNIT_ID);
+			final String unitId = picks.next ().getText ();
 
 			final Element unitNode = JdomUtils.findDomChildNodeWithTextAttribute (getXmlDocuments ().get (0).getXml (),
-					ServerEditorDatabaseConstants.TAG_ENTITY_UNIT, ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, unitId);
+				ServerEditorDatabaseConstants.TAG_ENTITY_UNIT, ServerEditorDatabaseConstants.TAG_ATTRIBUTE_UNIT_ID, unitId);
 
 			String unitName;
 			if (unitNode == null)
 				unitName = unitId;
 			else
-				unitName = unitNode.getChildText (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_NAME);
+				unitName = unitNode.getChild (ServerEditorDatabaseConstants.TAG_VALUE_UNIT_NAME).getChildText (ServerEditorDatabaseConstants.TAG_VALUE_TEXT);
 
 			// Add to list
 			if (!list.equals (""))

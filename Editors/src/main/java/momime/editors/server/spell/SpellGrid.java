@@ -3,13 +3,14 @@ package momime.editors.server.spell;
 import java.util.List;
 
 import com.ndg.xmleditor.editor.XmlEditorException;
-import com.ndg.xmleditor.grid.XmlEditorGrid;
 import com.ndg.xmleditor.grid.column.XmlGridColumn;
+
+import momime.editors.grid.XmlEditorGridWithDescriptionsAndImages;
 
 /**
  * Adds a special column listing out all the units that a spell can summon
  */
-public final class SpellGrid extends XmlEditorGrid
+public final class SpellGrid extends XmlEditorGridWithDescriptionsAndImages
 {
 
 	/**

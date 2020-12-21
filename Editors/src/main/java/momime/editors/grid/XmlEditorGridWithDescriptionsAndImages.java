@@ -44,7 +44,7 @@ public class XmlEditorGridWithDescriptionsAndImages extends XmlEditorGrid
 	 * @throws XmlEditorException If there a syntax problem parsing the XSD
 	 */
 	@Override
-	protected final List<XmlGridColumn> buildColumnsList ()
+	protected List<XmlGridColumn> buildColumnsList ()
 		throws XmlEditorException
 	{
 		final List<XmlGridColumn> columns = super.buildColumnsList ();

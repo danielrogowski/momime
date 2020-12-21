@@ -195,9 +195,6 @@ public final class ServerEditorDatabaseConstants
 
 	/** For summoning spells, defines all possible units that can be summoned by the spell */
 	public static final String TAG_CHILD_ENTITY_SPELL_SUMMONED_UNIT = "summonedUnit";
-
-	/** The unit ID of the unit which this spell may summon */
-	public static final String TAG_ATTRIBUTE_SUMMONED_UNIT_ID = "summonedUnitID";
 	
 	// heroItemBonus
 	

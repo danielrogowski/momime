@@ -448,6 +448,17 @@
 		</property>
 	</bean>
 
+	<bean id="citySpellEffectGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>citySpellEffectName</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="editUnit" class="momime.editors.server.unit.EditUnit" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -492,6 +503,7 @@
 				<entry key="spellRank" value="spellRankGrid" />
 				<entry key="spellBookSection" value="spellBookSectionGrid" />
 				<entry key="spell" value="spellGrid" />
+				<entry key="citySpellEffect" value="citySpellEffectGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

@@ -2967,7 +2967,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
-						<nxe:showreferencedfield>isLand</nxe:showreferencedfield>
+						<nxe:showreferencedfield>land</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -2985,7 +2985,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="500" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -3230,8 +3230,8 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
         	<xsd:documentation>Defines all possible spell effects on cities.  This is separate mainly for Spell Ward, which is a single spell with 5 possible effects, depending on the Magic Realm chosen when the spell is casted.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectName" type="momimecommon:languageText" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectHelpText" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectName" type="momimecommon:languageText" nxe:label="Name" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffectHelpText" type="momimecommon:languageText" nxe:label="Help text" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" nxe:label="CAE" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -3386,7 +3386,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="1" name="transport" type="xsd:boolean" nxe:label="Must be a transport?" nxe:gridwidth="140" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="inTransport" type="xsd:boolean" nxe:label="Must be in a transport?" nxe:gridwidth="140" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="allTerrainPassable" type="xsd:boolean" nxe:label="Must be able to pass all terrain types?" nxe:gridwidth="220" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementCode" type="momimecommon:aiMovementCode">
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementCode" type="momimecommon:aiMovementCode" nxe:label="Movement code" nxe:gridwidth="150">
 		        <xsd:annotation>
 		        	<xsd:documentation>Ordered list of movement codes that the AI will try in order to decide where to move units overland.</xsd:documentation>
 		        </xsd:annotation>

@@ -459,6 +459,128 @@
 		</property>
 	</bean>
 
+	<bean id="overlandMapSizeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="descriptionColumns">
+			<list>
+				<value>overlandMapSizeDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="landProportionGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>landProportionDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="nodeStrengthGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>nodeStrengthDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="difficultyLevelGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>difficultyLevelDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="fogOfWarSettingGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>fogOfWarSettingDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="unitSettingGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>unitSettingDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="spellSettingGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="firstDescriptionColumnIndex" value="1" />
+		<property name="descriptionColumns">
+			<list>
+				<value>spellSettingDescription</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cityImageGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="35" />
+		<property name="imageColumns">
+			<list>
+				<value>cityImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="combatTileBorderImageGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="40" />
+		<property name="imageColumns">
+			<list>
+				<value>standardFile</value>
+				<value>wreckedFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cityViewElementGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="50" />
+		<property name="imageColumns">
+			<list>
+				<value>cityViewImageFile</value>
+				<value>cityViewAlternativeImageFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="smoothedTileGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="25" />
+		<property name="imageColumns">
+			<list>
+				<value>tileFile</value>
+			</list>
+		</property>
+	</bean>
+
 	<bean id="editUnit" class="momime.editors.server.unit.EditUnit" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -504,6 +626,17 @@
 				<entry key="spellBookSection" value="spellBookSectionGrid" />
 				<entry key="spell" value="spellGrid" />
 				<entry key="citySpellEffect" value="citySpellEffectGrid" />
+				<entry key="overlandMapSize" value="overlandMapSizeGrid" />
+				<entry key="landProportion" value="landProportionGrid" />
+				<entry key="nodeStrength" value="nodeStrengthGrid" />
+				<entry key="difficultyLevel" value="difficultyLevelGrid" />
+				<entry key="fogOfWarSetting" value="fogOfWarSettingGrid" />
+				<entry key="unitSetting" value="unitSettingGrid" />
+				<entry key="spellSetting" value="spellSettingGrid" />
+				<entry key="cityImage" value="cityImageGrid" />
+				<entry key="combatTileBorderImage" value="combatTileBorderImageGrid" />
+				<entry key="cityViewElement" value="cityViewElementGrid" />
+				<entry key="smoothedTile" value="smoothedTileGrid" />
 				<entry key="default" value="grid" />
 			</map>
 		</property>

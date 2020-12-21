@@ -349,7 +349,7 @@
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSetting" type="momimecommon:unitSetting" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSetting" type="momimecommon:spellSetting" />
-				<xsd:element minOccurs="1" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />			
+				<xsd:element minOccurs="0" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />			
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImage" type="momimecommon:cityImage">
 					<xsd:key name="cityImagePrerequisitePK">
 						<xsd:selector xpath="cityImagePrerequisite" />
@@ -373,6 +373,10 @@
 						<xsd:field xpath="@planeNumber" />
 						<xsd:field xpath="combatTileTypeID" />
 					</xsd:unique>
+					<xsd:keyref refer="momimecommon:smoothingSystemPK" name="smoothedTileTypeFKsmoothingSystem">
+						<xsd:selector xpath="smoothedTileType" />
+						<xsd:field xpath="smoothingSystemID" />
+					</xsd:keyref>
 				</xsd:element>			
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="animation" type="momimecommon:animation" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="playList" type="momimecommon:playList" />
@@ -918,6 +922,10 @@
 		</xsd:keyref>
 
 		<!-- New game form settings, new for 0.9.2 -->
+		<xsd:keyref refer="momimecommon:planePK" name="mapSizePlaneFKplane">
+			<xsd:selector xpath="overlandMapSize/mapSizePlane" />
+			<xsd:field xpath="@planeNumber" />
+		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:tileTypePK" name="landProportionTileTypeFKtileType">
 			<xsd:selector xpath="landProportion/landProportionTileType" />
 			<xsd:field xpath="@tileTypeID" />
@@ -941,6 +949,34 @@
 		<xsd:keyref refer="momimecommon:planePK" name="difficultyLevelNodeStrengthFKplane">
 			<xsd:selector xpath="difficultyLevel/difficultyLevelNodeStrength" />
 			<xsd:field xpath="@planeNumber" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:overlandMapSizePK" name="newGameDefaultsFKoverlandMapSize">
+			<xsd:selector xpath="newGameDefaults" />
+			<xsd:field xpath="defaultOverlandMapSizeID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:landProportionPK" name="newGameDefaultsFKlandProportion">
+			<xsd:selector xpath="newGameDefaults" />
+			<xsd:field xpath="defaultLandProportionID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:nodeStrengthPK" name="newGameDefaultsFKnodeStrength">
+			<xsd:selector xpath="newGameDefaults" />
+			<xsd:field xpath="defaultNodeStrengthID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:difficultyLevelPK" name="newGameDefaultsFKdifficultyLevel">
+			<xsd:selector xpath="newGameDefaults" />
+			<xsd:field xpath="defaultDifficultyLevelID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:fogOfWarSettingPK" name="newGameDefaultsFKfogOfWarSetting">
+			<xsd:selector xpath="newGameDefaults" />
+			<xsd:field xpath="defaultFogOfWarSettingID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:unitSettingPK" name="newGameDefaultsFKunitSetting">
+			<xsd:selector xpath="newGameDefaults" />
+			<xsd:field xpath="defaultUnitSettingID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:spellSettingPK" name="newGameDefaultsFKspellSetting">
+			<xsd:selector xpath="newGameDefaults" />
+			<xsd:field xpath="defaultSpellSettingID" />
 		</xsd:keyref>
 
 		<!-- Combat map generation, new for 0.9.3 -->
@@ -1150,19 +1186,19 @@
 			<xsd:selector xpath="wizard/combatPlayList" />
 			<xsd:field xpath="." />
 		</xsd:keyref>
-		
+
 	</xsd:element>
 
 <!-- Types used in the new game database that the server sends to each client before they create a session so they know available databases and new game params -->
 
-	<xsd:complexType name="overlandMapSize">
+	<xsd:complexType name="overlandMapSize" nxe:singular="Overland map size" nxe:plural="Overland map sizes" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Defines standard map sizes, i.e. 60x40.</xsd:documentation>
         </xsd:annotation>
 		<xsd:complexContent>
 			<xsd:extension base="map:coordinateSystem">
 				<xsd:sequence>
-					<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSizeDescription" type="momimecommon:languageText" />
+					<xsd:element minOccurs="0" maxOccurs="unbounded" name="overlandMapSizeDescription" type="momimecommon:languageText" nxe:label="Description" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="zoneWidth" type="map:mapDimension" nxe:label="Zone Width" nxe:gridwidth="100" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="zoneHeight" type="map:mapDimension" nxe:label="Zone Height" nxe:gridwidth="100" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="normalLairCount" type="momimecommon:lairCount" nxe:label="Nbr. normal lairs" nxe:gridwidth="120" />
@@ -1185,7 +1221,7 @@
         	<xsd:documentation>Defines map size details that are different on each plane.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfNodesOnPlane" type="momimecommon:numberOfNodesOnPlane" nxe:label="Number of nodes on Plane" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="numberOfNodesOnPlane" type="momimecommon:numberOfNodesOnPlane" nxe:label="Number of nodes on Plane" nxe:gridwidth="200" />
 		</xsd:sequence>
 		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -1196,16 +1232,16 @@
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="landProportion">
+	<xsd:complexType name="landProportion" nxe:singular="Land proportion" nxe:plural="Land proportions" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Defines land proportions choosable on the new game form, i.e. small/medium/large.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfMapIsLand" type="momimecommon:percentage" nxe:label="% of map which is land" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLandIsHills" type="momimecommon:percentage" nxe:label="% of land which is hills" nxe:gridwidth="150" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfHillsAreMountains" type="momimecommon:percentage" nxe:label="% of hills which are mountains" nxe:gridwidth="170" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="tundraRowCount" type="momimecommon:mapTileCount" nxe:label="Nbr. rows from map edge where tundra can appear" nxe:gridwidth="270" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfMapIsLand" type="momimecommon:percentage" nxe:label="% of map which is land" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLandIsHills" type="momimecommon:percentage" nxe:label="% of land which is hills" nxe:gridwidth="170" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfHillsAreMountains" type="momimecommon:percentage" nxe:label="% of hills which are mountains" nxe:gridwidth="200" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="tundraRowCount" type="momimecommon:mapTileCount" nxe:label="Nbr. rows from map edge where tundra can appear" nxe:gridwidth="300" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionTileType" type="momimecommon:landProportionTileType" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportionPlane" type="momimecommon:landProportionPlane" />
 		</xsd:sequence>
@@ -1218,7 +1254,7 @@
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="percentageOfLand" type="momimecommon:percentage" nxe:label="% of land which is this terrain" nxe:gridwidth="180" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="eachAreaTileCount" type="momimecommon:mapTileCount" nxe:label="Approx. size of each area of this terrain" nxe:gridwidth="220" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="eachAreaTileCount" type="momimecommon:mapTileCount" nxe:label="Approx. size of each area of this terrain" nxe:gridwidth="240" />
 		</xsd:sequence>
 		<xsd:attribute name="tileTypeID" type="momimecommon:tileTypeID" use="required" nxe:label="Tile Type ID" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -1234,7 +1270,7 @@
         	<xsd:documentation>Defines land proportion values that are different on each plane.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="featureChance" type="momimecommon:featureChance" nxe:label="1 in X chance of each terrain tile gaining a special feature/mineral" nxe:gridwidth="350" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="featureChance" type="momimecommon:featureChance" nxe:label="1 in X chance of each terrain tile gaining a special feature/mineral" nxe:gridwidth="400" />
 		</xsd:sequence>
 		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
 			<xsd:annotation>
@@ -1245,13 +1281,13 @@
 		</xsd:attribute>
 	</xsd:complexType>
 	
-	<xsd:complexType name="nodeStrength">
+	<xsd:complexType name="nodeStrength" nxe:singular="Node strength" nxe:plural="Node strengths" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Defines node strengths choosable on the new game form, i.e. weak/normal/powerful.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrengthDescription" type="momimecommon:languageText" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="doubleNodeAuraMagicPower" type="momimecommon:doubledProductionValue" nxe:label="2x node aura magic power" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrengthDescription" type="momimecommon:languageText" nxe:label="Description" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="doubleNodeAuraMagicPower" type="momimecommon:doubledProductionValue" nxe:label="2x node aura magic power" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrengthPlane" type="momimecommon:nodeStrengthPlane" />
 		</xsd:sequence>
 		<xsd:attribute name="nodeStrengthID" type="momimecommon:nodeStrengthID" use="optional" nxe:label="Node Strength ID" nxe:gridwidth="150" />
@@ -1274,12 +1310,12 @@
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="difficultyLevel">
+	<xsd:complexType name="difficultyLevel" nxe:singular="Difficulty level" nxe:plural="Difficulty levels" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Defines difficulty levels choosable on the new game form, i.e. intro/easy/normal/hard/impossible.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelDescription" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevelDescription" type="momimecommon:languageText" nxe:label="Description" />
 			
 			<!-- Strategy Guide p397 -->
 			<xsd:element minOccurs="1" maxOccurs="1" name="humanSpellPicks" type="momimecommon:pickCount" nxe:label="Human spell picks" nxe:gridwidth="120" />
@@ -1348,7 +1384,13 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="treasureMinimum" type="momimecommon:treasureValue" nxe:label="Min. treasure value" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="treasureMaximum" type="momimecommon:treasureValue" nxe:label="Max. treasure value" nxe:gridwidth="150" />
 		</xsd:sequence>
-		<xsd:attribute name="nodeStrengthID" type="momimecommon:nodeStrengthID" use="optional" nxe:label="Node Strength ID" nxe:showmaincolumn="false" />
+		<xsd:attribute name="nodeStrengthID" type="momimecommon:nodeStrengthID" use="optional" nxe:label="Node Strength ID" nxe:showmaincolumn="false">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>nodeStrengthDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
 		<xsd:attribute name="planeNumber" type="momimecommon:planeNumber" use="required" nxe:label="Plane Number" nxe:showmaincolumn="false">
 			<xsd:annotation>
 				<xsd:appinfo>
@@ -1358,12 +1400,12 @@
 		</xsd:attribute>
 	</xsd:complexType>
 
-	<xsd:complexType name="fogOfWarSetting">
+	<xsd:complexType name="fogOfWarSetting" nxe:singular="Fog of War settings" nxe:plural="Fog of War settings" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Defines standard fog of war settings choosable on the new game form, i.e. original/recommended.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSettingDescription" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSettingDescription" type="momimecommon:languageText" nxe:label="Description" />
 		
 			<xsd:element minOccurs="1" maxOccurs="1" name="terrainAndNodeAuras" type="momimecommon:fogOfWarValue" nxe:label="Terrain and Node Auras" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="citiesSpellsAndCombatAreaEffects" type="momimecommon:fogOfWarValue" nxe:label="Cities, Combat Spells and CAEs" nxe:showmaincolumn="false" />
@@ -1373,12 +1415,12 @@
 		<xsd:attribute name="fogOfWarSettingID" type="momimecommon:fogOfWarSettingID" use="optional" nxe:label="Fog of War Setting ID" nxe:gridwidth="150" />
 	</xsd:complexType>
 
-	<xsd:complexType name="unitSetting">
+	<xsd:complexType name="unitSetting" nxe:singular="Unit settings" nxe:plural="Unit settings" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Defines standard unit settings choosable on the new game form, i.e. original/recommended.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSettingDescription" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSettingDescription" type="momimecommon:languageText" nxe:label="Description" />
 
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitsPerMapCell" type="momimecommon:unitCount" nxe:label="Max. units in a map cell" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="canExceedMaximumUnitsDuringCombat" type="xsd:boolean" nxe:label="Exceed limit during combat?" nxe:gridwidth="150" />
@@ -1397,12 +1439,12 @@
 		<xsd:attribute name="unitSettingID" type="momimecommon:unitSettingID" use="optional" nxe:label="Unit Setting ID" nxe:gridwidth="100" />
 	</xsd:complexType>
 
-	<xsd:complexType name="spellSetting">
+	<xsd:complexType name="spellSetting" nxe:singular="Spell settings" nxe:plural="Spell settings" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Defines spell settings that must be supplied when creating a new game.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSettingDescription" type="momimecommon:languageText" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSettingDescription" type="momimecommon:languageText" nxe:label="Description" />
 		
 			<xsd:element minOccurs="1" maxOccurs="1" name="switchResearch" type="momimecommon:switchResearch" nxe:label="Switch spell research?" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="spellBooksToObtainFirstReduction" type="momimecommon:spellBookCount" nxe:label="Spell books to obtain first reduction" nxe:gridwidth="200" />
@@ -1417,18 +1459,60 @@
 		<xsd:attribute name="spellSettingID" type="momimecommon:spellSettingID" use="optional" nxe:label="Spell Setting ID" nxe:gridwidth="120" />
 	</xsd:complexType>
 
-	<xsd:complexType name="newGameDefaults">
+	<xsd:complexType name="newGameDefaults" nxe:singular="Default new game settings" nxe:plural="Default new game settings" nxe:submenu="New game settings">
         <xsd:annotation>
         	<xsd:documentation>Default map size, difficulty level and so on to preselect on the new game screen.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="defaultOverlandMapSizeID" type="momimecommon:overlandMapSizeID" nxe:label="Default Overland Map Size" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defaultLandProportionID" type="momimecommon:landProportionID" nxe:label="Default Land Proportion" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defaultNodeStrengthID" type="momimecommon:nodeStrengthID" nxe:label="Default Node Strength" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defaultDifficultyLevelID" type="momimecommon:difficultyLevelID" nxe:label="Default Difficulty Level" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defaultFogOfWarSettingID" type="momimecommon:fogOfWarSettingID" nxe:label="Default Fog of War Settings" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defaultUnitSettingID" type="momimecommon:unitSettingID" nxe:label="Default Unit Settings" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="defaultSpellSettingID" type="momimecommon:spellSettingID" nxe:label="Default Spell Settings" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultOverlandMapSizeID" type="momimecommon:overlandMapSizeID" nxe:label="Default Overland Map Size" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>overlandMapSizeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultLandProportionID" type="momimecommon:landProportionID" nxe:label="Default Land Proportion" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>landProportionDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultNodeStrengthID" type="momimecommon:nodeStrengthID" nxe:label="Default Node Strength" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>nodeStrengthDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultDifficultyLevelID" type="momimecommon:difficultyLevelID" nxe:label="Default Difficulty Level" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>difficultyLevelDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultFogOfWarSettingID" type="momimecommon:fogOfWarSettingID" nxe:label="Default Fog of War Settings" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>fogOfWarSettingDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultUnitSettingID" type="momimecommon:unitSettingID" nxe:label="Default Unit Settings" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSettingDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="defaultSpellSettingID" type="momimecommon:spellSettingID" nxe:label="Default Spell Settings" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>spellSettingDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -3249,8 +3333,8 @@ treasure rewards, i.e. Spell of Mastery.</xsd:documentation>
 a city wall, a wizards' fortress tile should be added if the city contains the wizards' fortress, or that a house should be added if the city contains over 5,000 population.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="locationX" type="momimecommon:combatMapCoordinate" nxe:label="Location to place X" nxe:gridwidth="110" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="locationY" type="momimecommon:combatMapCoordinate" nxe:label="Location to place Y" nxe:gridwidth="110" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="locationX" type="momimecommon:combatMapCoordinate" nxe:label="Location to place X" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="locationY" type="momimecommon:combatMapCoordinate" nxe:label="Location to place Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" nxe:label="Condition - Building" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
@@ -3419,10 +3503,16 @@ Ordering of this list is very significant.
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="1" maxOccurs="1" name="cityImageFile" type="momimecommon:imageFilename" nxe:label="City image file" nxe:gridwidth="320" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="cityImageFile" type="momimecommon:imageFilename" nxe:label="City image file" nxe:gridwidth="350" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="flagOffsetX" type="momimecommon:pixelCoordinate" nxe:label="Flag offset X" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="flagOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Flag offset Y" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImagePrerequisite" type="momimecommon:buildingID" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImagePrerequisite" type="momimecommon:buildingID" nxe:label="Building pre-requisite">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>buildingName</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -3443,8 +3533,8 @@ Ordering of this list is very significant.
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewImageFile" type="momimecommon:imageFilename" nxe:label="Image file" nxe:gridwidth="300" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewElementSetID" type="momimecommon:cityViewElementSetID" nxe:label="Element Set" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewImageFile" type="momimecommon:imageFilename" nxe:label="Image file" nxe:gridwidth="380" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewElementSetID" type="momimecommon:cityViewElementSetID" nxe:label="Element Set" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="locationX" type="momimecommon:pixelCoordinate" nxe:label="Location X" nxe:gridwidth="100">
 		        <xsd:annotation>
         			<xsd:documentation>Location is optional; this is for Trade Goods + Housing special settings that have an image defined but don't appear on the actual city scape image.</xsd:documentation>
@@ -3455,29 +3545,35 @@ Ordering of this list is very significant.
         			<xsd:documentation>Location is optional; this is for Trade Goods + Housing special settings that have an image defined but don't appear on the actual city scape image.</xsd:documentation>
         		</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="planeNumber" type="momimecommon:planeNumber" nxe:label="Plane Number" nxe:gridwidth="80">
-			<xsd:annotation>
-				<xsd:appinfo>
-					<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
-				</xsd:appinfo>
-			</xsd:annotation>
+			<xsd:element minOccurs="0" maxOccurs="1" name="planeNumber" type="momimecommon:planeNumber" nxe:label="Plane Number" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>planeDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID" nxe:label="City Spell Effect" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type" nxe:gridwidth="150">
+			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID" nxe:label="City Spell Effect" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>citySpellEffectName</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileTypeID" type="momimecommon:tileTypeID" nxe:label="Tile Type" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" nxe:label="Building" nxe:gridwidth="150">
+			<xsd:element minOccurs="0" maxOccurs="1" name="buildingID" type="momimecommon:buildingID" nxe:label="Building" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>buildingName</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewAlternativeImageFile" type="momimecommon:imageFilename" nxe:label="Alternative image file" nxe:gridwidth="300" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="cityViewAlternativeImageFile" type="momimecommon:imageFilename" nxe:label="Alternative image file" nxe:gridwidth="420" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -3518,8 +3614,8 @@ Ordering of this list is very significant.
 
 	<xsd:complexType name="smoothingSystem" nxe:singular="Smoothing System" nxe:plural="Smoothing Systems">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="smoothingSystemDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="250" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="maxValueEachDirection" type="momimecommon:bit" nxe:label="Max. possible value of each bit in bitmasks" nxe:gridwidth="220" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="smoothingSystemDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="500" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="maxValueEachDirection" type="momimecommon:bit" nxe:label="Max. possible value of each bit in bitmasks" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="smoothingReduction" type="momimecommon:smoothingReduction" />
 		</xsd:sequence>
 		<xsd:attribute name="smoothingSystemID" type="momimecommon:smoothingSystemID" use="required" nxe:label="Smoothing System ID" nxe:gridwidth="150" />
@@ -3540,7 +3636,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="1" maxOccurs="1" name="setValue1" type="momimecommon:bit" nxe:label="(a) to this value" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="setDirection2" type="map:mapDirection" nxe:label="and (b) set direction" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="setValue2" type="momimecommon:bit" nxe:label="(b) to this value" nxe:gridwidth="100" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="300" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="description" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="500" />
 		</xsd:sequence>
 	</xsd:complexType>
 
@@ -3549,7 +3645,7 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="1" maxOccurs="1" name="smoothingSystemID" type="momimecommon:smoothingSystemID" nxe:label="Smoothing System ID" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
-						<nxe:showreferencedfield>tileTypeDescription</nxe:showreferencedfield>
+						<nxe:showreferencedfield>smoothingSystemDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
@@ -3599,14 +3695,14 @@ Ordering of this list is very significant.
         	<xsd:documentation>Note its valid for the same bitmask to be repeated multiple times; in this case an image will be chosen at random.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="0" maxOccurs="1" name="tileAnimation" type="momimecommon:animationID" nxe:label="Tile animation" nxe:gridwidth="150">
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileAnimation" type="momimecommon:animationID" nxe:label="Tile animation" nxe:gridwidth="300">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="tileFile" type="momimecommon:imageFilename" nxe:label="Tile image file" nxe:gridwidth="400" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="tileFile" type="momimecommon:imageFilename" nxe:label="Tile image file" nxe:gridwidth="430" />
 		</xsd:sequence>
 		<xsd:attribute name="bitmask" type="momimecommon:bitmask" use="required" nxe:label="Bitmask" nxe:gridwidth="80" />
 	</xsd:complexType>
@@ -3619,16 +3715,16 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Overland cast offset Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetX" type="momimecommon:pixelCoordinate" nxe:label="Combat cast offset X" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Combat cast offset Y" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="frame" type="momimecommon:imageFilename" nxe:label="Frame image file" nxe:gridwidth="350" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="frame" type="momimecommon:imageFilename" nxe:label="Frame image file" nxe:gridwidth="500" />
 		</xsd:sequence>
-		<xsd:attribute name="animationID" type="momimecommon:animationID" use="required" nxe:label="Animation ID" nxe:gridwidth="150" />
+		<xsd:attribute name="animationID" type="momimecommon:animationID" use="required" nxe:label="Animation ID" nxe:gridwidth="300" />
 	</xsd:complexType>	
 	
 	<xsd:complexType name="playList" nxe:singular="Play list" nxe:plural="Play lists">
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="unbounded" name="audioFile" type="momimecommon:imageFilename" />
+			<xsd:element minOccurs="1" maxOccurs="unbounded" name="audioFile" type="momimecommon:imageFilename" nxe:label="Music file" nxe:gridwidth="500" />
 		</xsd:sequence>
-		<xsd:attribute name="playListID" type="momimecommon:playListID" use="required" nxe:label="Play list ID" nxe:gridwidth="150" />
+		<xsd:attribute name="playListID" type="momimecommon:playListID" use="required" nxe:label="Play list ID" nxe:gridwidth="200" />
 	</xsd:complexType>
 	
 <!-- Generic simple data types that are not really MoM specific -->

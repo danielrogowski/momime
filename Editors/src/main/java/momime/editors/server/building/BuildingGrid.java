@@ -1,4 +1,4 @@
-package momime.editors.client.language.building;
+package momime.editors.server.building;
 
 import java.io.File;
 import java.io.FileInputStream;

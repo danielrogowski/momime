@@ -1,4 +1,4 @@
-package momime.editors.client.language.unit;
+package momime.editors.server.unit;
 
 import java.awt.Font;
 import java.io.BufferedInputStream;

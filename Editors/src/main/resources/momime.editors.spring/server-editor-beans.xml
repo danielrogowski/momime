@@ -196,7 +196,7 @@
 		</property>
 	</bean>
 
-	<bean id="buildingGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="buildingGrid" class="momime.editors.server.building.BuildingGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="55" />
@@ -338,7 +338,7 @@
 		</property>
 	</bean>
 	
-	<bean id="unitGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="unitGrid" class="momime.editors.server.unit.UnitGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="rowHeight" value="85" />
@@ -369,7 +369,7 @@
 		</property>
 	</bean>
 
-	<bean id="heroNameGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+	<bean id="heroNameGrid" class="momime.editors.server.heroName.HeroNameGrid" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
 		<property name="firstDescriptionColumnIndex" value="1" />

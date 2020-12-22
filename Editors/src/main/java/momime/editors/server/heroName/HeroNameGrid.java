@@ -1,4 +1,4 @@
-package momime.editors.client.language.heroName;
+package momime.editors.server.heroName;
 
 import java.awt.Font;
 import java.io.File;

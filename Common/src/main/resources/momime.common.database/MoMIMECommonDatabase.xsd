@@ -23,11 +23,43 @@
 						<xsd:selector xpath="fortressPlaneProduction" />
 						<xsd:field xpath="@productionTypeID" />
 					</xsd:key>
+					<xsd:key name="planeDescriptionPK">
+						<xsd:selector xpath="planeDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="planeRacesTitlePK">
+						<xsd:selector xpath="planeRacesTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="productionType" type="momimecommon:productionType">
 					<xsd:key name="productionTypeImagePK">
 						<xsd:selector xpath="productionTypeImage" />
 						<xsd:field xpath="@productionValue" />
+					</xsd:key>
+					<xsd:key name="productionTypeDescriptionPK">
+						<xsd:selector xpath="productionTypeDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="productionTypeSuffixPK">
+						<xsd:selector xpath="productionTypeSuffix" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitKilledFromLackOfProductionPK">
+						<xsd:selector xpath="unitKilledFromLackOfProduction" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buildingSoldFromLackOfProductionPK">
+						<xsd:selector xpath="buildingSoldFromLackOfProduction" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellSwitchedOffFromLackOfProductionPK">
+						<xsd:selector xpath="spellSwitchedOffFromLackOfProduction" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cannotEndTurnDueToLackOfProductionPK">
+						<xsd:selector xpath="cannotEndTurnDueToLackOfProduction" />
+						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="mapFeature" type="momimecommon:mapFeature">
@@ -42,6 +74,18 @@
 					<xsd:key name="mapFeatureTreasureBookRewardPK">
 						<xsd:selector xpath="mapFeatureTreasureBookReward" />
 						<xsd:field xpath="." />
+					</xsd:key>
+					<xsd:key name="mapFeatureDescriptionPK">
+						<xsd:selector xpath="mapFeatureDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mapFeatureCannotBuildCityDescriptionPK">
+						<xsd:selector xpath="mapFeatureCannotBuildCityDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mapFeatureMagicWeaponsDescriptionPK">
+						<xsd:selector xpath="mapFeatureMagicWeaponsDescription" />
+						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="tileType" type="momimecommon:tileType">
@@ -62,6 +106,18 @@
 						<xsd:selector xpath="tileTypeRoad" />
 						<xsd:field xpath="@direction" />
 					</xsd:key>
+					<xsd:key name="tileTypeDescriptionPK">
+						<xsd:selector xpath="tileTypeDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="tileTypeCannotBuildCityDescriptionPK">
+						<xsd:selector xpath="tileTypeCannotBuildCityDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="tileTypeShowAsFeaturePK">
+						<xsd:selector xpath="tileTypeShowAsFeature" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="pickType" type="momimecommon:pickType">
 					<xsd:key name="fortressPickTypeProductionPK">
@@ -71,6 +127,22 @@
 					<xsd:key name="pickTypeCountPK">
 						<xsd:selector xpath="pickTypeCount" />
 						<xsd:field xpath="@count" />
+					</xsd:key>
+					<xsd:key name="pickTypeDescriptionSingularPK">
+						<xsd:selector xpath="pickTypeDescriptionSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="pickTypeDescriptionPluralPK">
+						<xsd:selector xpath="pickTypeDescriptionPlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="pickTypePrerequisiteSingularPK">
+						<xsd:selector xpath="pickTypePrerequisiteSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="pickTypePrerequisitePluralPK">
+						<xsd:selector xpath="pickTypePrerequisitePlural" />
+						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="pick" type="momimecommon:pick">
@@ -99,6 +171,26 @@
 						<xsd:field xpath="prerequisiteID" />
 						<xsd:field xpath="prerequisiteTypeID" />
 					</xsd:unique>
+					<xsd:key name="pickDescriptionSingularPK">
+						<xsd:selector xpath="pickDescriptionSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="pickDescriptionPluralPK">
+						<xsd:selector xpath="pickDescriptionPlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="bookshelfDescriptionPK">
+						<xsd:selector xpath="bookshelfDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitMagicRealmPluralPK">
+						<xsd:selector xpath="unitMagicRealmPlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="pickHelpTextPK">
+						<xsd:selector xpath="pickHelpText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="wizard" type="momimecommon:wizard">
 					<xsd:key name="wizardPickCountPK">
@@ -109,8 +201,21 @@
 						<xsd:selector xpath="combatPlayList" />
 						<xsd:field xpath="." />
 					</xsd:key>
+					<xsd:key name="wizardNamePK">
+						<xsd:selector xpath="wizardName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTask" type="momimecommon:populationTask" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="populationTask" type="momimecommon:populationTask">
+					<xsd:key name="populationTaskSingularPK">
+						<xsd:selector xpath="populationTaskSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="populationTaskPluralPK">
+						<xsd:selector xpath="populationTaskPlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="race" type="momimecommon:race">
 					<xsd:key name="cityNamePK">
 						<xsd:selector xpath="cityName" />
@@ -127,6 +232,22 @@
 					<xsd:key name="raceUnrestPK">
 						<xsd:selector xpath="raceUnrest" />
 						<xsd:field xpath="@capitalRaceID" />
+					</xsd:key>
+					<xsd:key name="raceNameSingularPK">
+						<xsd:selector xpath="raceNameSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="raceNamePluralPK">
+						<xsd:selector xpath="raceNamePlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="raceAdvantagesPK">
+						<xsd:selector xpath="raceAdvantages" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="raceDisadvantagesPK">
+						<xsd:selector xpath="raceDisadvantages" />
+						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="taxRate" type="momimecommon:taxRate" />
@@ -146,13 +267,46 @@
 						<xsd:selector xpath="buildingRequiresTileType" />
 						<xsd:field xpath="@tileTypeID" />
 					</xsd:key>
+					<xsd:key name="buildingNamePK">
+						<xsd:selector xpath="buildingName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buildingHelpTextPK">
+						<xsd:selector xpath="buildingHelpText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySize" type="momimecommon:citySize" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySize" type="momimecommon:citySize">
+					<xsd:key name="citySizeNamePK">
+						<xsd:selector xpath="citySizeName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citySizeNameIncludingOwnerPK">
+						<xsd:selector xpath="citySizeNameIncludingOwner" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroSkillType" type="momimecommon:heroSkillType" />
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitType" type="momimecommon:unitType">
 					<xsd:key name="experienceLevelPK">
 						<xsd:selector xpath="experienceLevel" />
 						<xsd:field xpath="@levelNumber" />
+					</xsd:key>
+					<xsd:key name="unitTypeInexperiencedPK">
+						<xsd:selector xpath="unitTypeInexperienced" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitTypeExperiencedPK">
+						<xsd:selector xpath="unitTypeExperienced" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitTypeMaxNaturalExperiencePK">
+						<xsd:selector xpath="unitTypeMaxNaturalExperience" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitTypeMaxExperiencePK">
+						<xsd:selector xpath="unitTypeMaxExperience" />
+						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemType" type="momimecommon:heroItemType">
@@ -172,6 +326,10 @@
 						<xsd:selector xpath="heroItemTypeImageFile" />
 						<xsd:field xpath="." />
 					</xsd:key>
+					<xsd:key name="heroItemTypeDescriptionPK">
+						<xsd:selector xpath="heroItemTypeDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemSlotType" type="momimecommon:heroItemSlotType">
 					<xsd:key name="heroSlotAllowedItemTypePK">
@@ -182,6 +340,10 @@
 						<xsd:selector xpath="basicHeroItemForAiRatingChosenBonus" />
 						<xsd:field xpath="." />
 					</xsd:key>
+					<xsd:key name="slotTypeDescriptionPK">
+						<xsd:selector xpath="slotTypeDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItemBonus" type="momimecommon:heroItemBonus">
 					<xsd:key name="heroItemBonusPrerequisitePK">
@@ -191,6 +353,10 @@
 					<xsd:key name="heroItemBonusStatPK">
 						<xsd:selector xpath="heroItemBonusStat" />
 						<xsd:field xpath="@unitSkillID" />
+					</xsd:key>
+					<xsd:key name="heroItemBonusDescriptionPK">
+						<xsd:selector xpath="heroItemBonusDescription" />
+						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroItem" type="momimecommon:heroItem">
@@ -216,6 +382,14 @@
 						<xsd:selector xpath="attackResolution" />
 						<xsd:field xpath="attackResolutionDescription" />
 					</xsd:key>
+					<xsd:key name="unitSkillDescriptionPK">
+						<xsd:selector xpath="unitSkillDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitSkillHelpTextPK">
+						<xsd:selector xpath="unitSkillHelpText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="rangedAttackType" type="momimecommon:rangedAttackType">
 					<xsd:key name="rangedAttackTypeWeaponGradePK">
@@ -227,11 +401,19 @@
 						<xsd:field xpath="@rangedAttackTypeActionID" />
 						<xsd:field xpath="@direction" />
 					</xsd:key>
+					<xsd:key name="rangedAttackTypeDescriptionPK">
+						<xsd:selector xpath="rangedAttackTypeDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="damageType" type="momimecommon:damageType">
 					<xsd:key name="damageTypeImmunityPK">
 						<xsd:selector xpath="damageTypeImmunity" />
 						<xsd:field xpath="@unitSkillID" />
+					</xsd:key>
+					<xsd:key name="damageTypeNamePK">
+						<xsd:selector xpath="damageTypeName" />
+						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAction" type="momimecommon:combatAction" />
@@ -264,6 +446,14 @@
 						<xsd:selector xpath="unitPickPrerequisite" />
 						<xsd:field xpath="@pickID" />
 					</xsd:key>
+					<xsd:key name="unitNamePK">
+						<xsd:selector xpath="unitName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitNamePrefixPK">
+						<xsd:selector xpath="unitNamePrefix" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGrade" type="momimecommon:weaponGrade">
 					<xsd:key name="weaponGradeSkillBonusPK">
@@ -271,9 +461,32 @@
 						<xsd:field xpath="@unitSkillID" />
 					</xsd:key>
 				</xsd:element>
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimecommon:combatAreaEffect" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellRank" type="momimecommon:spellRank" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellBookSection" type="momimecommon:spellBookSection" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffect" type="momimecommon:combatAreaEffect">
+					<xsd:key name="combatAreaEffectDescriptionPK">
+						<xsd:selector xpath="combatAreaEffectDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatAreaEffectHelpTextPK">
+						<xsd:selector xpath="combatAreaEffectHelpText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellRank" type="momimecommon:spellRank">
+					<xsd:key name="spellRankDescriptionPK">
+						<xsd:selector xpath="spellRankDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellBookSection" type="momimecommon:spellBookSection">
+					<xsd:key name="spellBookSectionNamePK">
+						<xsd:selector xpath="spellBookSectionName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargetPromptPK">
+						<xsd:selector xpath="spellTargetPrompt" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spell" type="momimecommon:spell">
 					<xsd:key name="summonedUnitPK">
 						<xsd:selector xpath="summonedUnit" />
@@ -304,9 +517,30 @@
 						<xsd:selector xpath="spellValidBorderTarget" />
 						<xsd:field xpath="." />
 					</xsd:key>
+					<xsd:key name="spellNamePK">
+						<xsd:selector xpath="spellName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellDescriptionPK">
+						<xsd:selector xpath="spellDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellHelpTextPK">
+						<xsd:selector xpath="spellHelpText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="movementRateRule" type="momimecommon:movementRateRule" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimecommon:citySpellEffect" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySpellEffect" type="momimecommon:citySpellEffect">
+					<xsd:key name="citySpellEffectNamePK">
+						<xsd:selector xpath="citySpellEffectName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citySpellEffectHelpTextPK">
+						<xsd:selector xpath="citySpellEffectHelpText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="aiUnitCategory" type="momimecommon:aiUnitCategory">
 					<xsd:key name="movementCodePK">
 						<xsd:selector xpath="movementCode" />
@@ -318,6 +552,10 @@
 						<xsd:selector xpath="mapSizePlane" />
 						<xsd:field xpath="@planeNumber" />
 					</xsd:key>
+					<xsd:key name="overlandMapSizeDescriptionPK">
+						<xsd:selector xpath="overlandMapSizeDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="landProportion" type="momimecommon:landProportion">
 					<xsd:key name="landProportionTileTypePK">
@@ -328,11 +566,19 @@
 						<xsd:selector xpath="landProportionPlane" />
 						<xsd:field xpath="@planeNumber" />
 					</xsd:key>
+					<xsd:key name="landProportionDescriptionPK">
+						<xsd:selector xpath="landProportionDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="nodeStrength" type="momimecommon:nodeStrength">
 					<xsd:key name="nodeStrengthPlanePK">
 						<xsd:selector xpath="nodeStrengthPlane" />
 						<xsd:field xpath="@planeNumber" />
+					</xsd:key>
+					<xsd:key name="nodeStrengthDescriptionPK">
+						<xsd:selector xpath="nodeStrengthDescription" />
+						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="difficultyLevel" type="momimecommon:difficultyLevel">
@@ -345,10 +591,29 @@
 						<xsd:field xpath="@nodeStrengthID" />
 						<xsd:field xpath="@planeNumber" />
 					</xsd:key>
+					<xsd:key name="difficultyLevelDescriptionPK">
+						<xsd:selector xpath="difficultyLevelDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 				</xsd:element>
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSetting" type="momimecommon:unitSetting" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSetting" type="momimecommon:spellSetting" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="fogOfWarSetting" type="momimecommon:fogOfWarSetting">
+					<xsd:key name="fogOfWarSettingDescriptionPK">
+						<xsd:selector xpath="fogOfWarSettingDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSetting" type="momimecommon:unitSetting">
+					<xsd:key name="unitSettingDescriptionPK">
+						<xsd:selector xpath="unitSettingDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellSetting" type="momimecommon:spellSetting">
+					<xsd:key name="spellSettingDescriptionPK">
+						<xsd:selector xpath="spellSettingDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="1" name="newGameDefaults" type="momimecommon:newGameDefaults" />			
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="cityImage" type="momimecommon:cityImage">
 					<xsd:key name="cityImagePrerequisitePK">
@@ -2512,6 +2777,10 @@ and under Resist Elements will be a negation record listing that Elemental Armou
 					<xsd:selector xpath="experienceSkillBonus" />
 					<xsd:field xpath="@unitSkillID" />
 				</xsd:key>
+				<xsd:key name="experienceLevelNamePK">
+					<xsd:selector xpath="experienceLevelName" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
 			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="unitTypeID" type="momimecommon:unitTypeID" use="required" nxe:label="Unit Type ID" nxe:gridwidth="100" />
@@ -2619,7 +2888,12 @@ This is used to stop the server putting Floating Islands in Sorcery Nodes.</xsd:
 					<xsd:field xpath="@direction" />
 				</xsd:key>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroName" type="momimecommon:heroName" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="heroName" type="momimecommon:heroName">
+				<xsd:key name="heroNameLangPK">
+					<xsd:selector xpath="heroNameLang" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitPickPrerequisite" type="momimecommon:pickAndQuantity" nxe:label="Pick pre-requisite">
 				<xsd:annotation>
 					<xsd:documentation>Lists any picks necessary in order to be able to summon this unit, e.g. to summon Ravashack the Necromancer you need at least 1 Death Book.

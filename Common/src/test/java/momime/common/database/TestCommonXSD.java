@@ -39,8 +39,7 @@ public final class TestCommonXSD
 					while (line != null)
 					{
 						// Unbounded elements should all have primary keys defined
-						// For now, leave out languageText, but really even those should stop duplicate entries
-						if ((line.contains ("maxOccurs=\"unbounded\"")) && (!line.contains ("type=\"momimecommon:languageText\"")))
+						if (line.contains ("maxOccurs=\"unbounded\""))
 						{
 							// Find the name
 							final int pos = line.indexOf ("name=\"");

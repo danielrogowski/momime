@@ -80,12 +80,6 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmOptionsCombatUnitScale">
-		<left>20</left>
-		<top>365</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
 	<component name="frmOptionsUnitInfoSection">
 		<left>345</left>
 		<top>160</top>

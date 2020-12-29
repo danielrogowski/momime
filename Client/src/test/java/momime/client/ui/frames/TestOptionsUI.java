@@ -81,7 +81,6 @@ public final class TestOptionsUI extends ClientTestData
 		
 		optionsScreenLang.getShowUnitURNs ().add (createLanguageText (Language.ENGLISH, "Show Unit, Building and Spell URNs"));
 		optionsScreenLang.getShowEdgesOfMap ().add (createLanguageText (Language.ENGLISH, "Show edges of map"));
-		optionsScreenLang.getCombatUnitScale ().add (createLanguageText (Language.ENGLISH, "Unit scale (visual only; showing 4x figures does not mean 4x attacks):"));
 		optionsScreenLang.getChooseLanguage ().add (createLanguageText (Language.ENGLISH, "Choose Language:"));
 		optionsScreenLang.getShowHeroPortraits ().add (createLanguageText (Language.ENGLISH, "Show hero portraits"));
 		

@@ -143,9 +143,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	/** True to show a white line around the map edges, so you have a point of reference along axes that wrap */
 	private JCheckBox debugShowEdgesOfMap;
 
-	/** Whether to scale units to bigger resolution by drawing them bigger, or drawing them with more figures */
-	private JLabel combatScaleLabel;
-
 	/** Choose language label */
 	private JLabel chooseLanguageLabel;
 	
@@ -252,9 +249,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		debugShowEdgesOfMap = getUtils ().createImageCheckBox (MomUIConstants.SILVER, getSmallFont (), checkboxUnticked, checkboxTicked);
 		contentPane.add (debugShowEdgesOfMap, "frmOptionsShowEdgesOfMap");
 		
-		combatScaleLabel = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
-		contentPane.add (combatScaleLabel, "frmOptionsCombatUnitScale");
-
 		chooseLanguageLabel = getUtils ().createLabel (MomUIConstants.SILVER, getSmallFont ());
 		contentPane.add (chooseLanguageLabel, "frmOptionsChooseLanguage");
 
@@ -549,7 +543,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		combatSmoothTerrain.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getSmoothTerrain ()));
 		debugShowURNs.setText						(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowUnitURNs ()));
 		debugShowEdgesOfMap.setText			(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowEdgesOfMap ()));
-		combatScaleLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getCombatUnitScale ()));
 		chooseLanguageLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getChooseLanguage ()));
 		showHeroPortraits.setText					(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getShowHeroPortraits ()));
 		unitAttributesLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getUnitAttributes ()));

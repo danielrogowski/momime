@@ -19,66 +19,1913 @@
 		<xsd:complexType>
 			<xsd:sequence>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="languageOption" type="momimelangs:languageOption" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="knownServer" type="momimelangs:knownServer" />
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="shortcutKey" type="momimelangs:shortcutKey" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="knownServer" type="momimelangs:knownServer">
+					<xsd:key name="knownServerDescriptionPK">
+						<xsd:selector xpath="knownServerDescription" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="shortcutKey" type="momimelangs:shortcutKey">
+					<xsd:key name="shortcutKeyKeyLangPK">
+						<xsd:selector xpath="keyLang" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+				</xsd:element>
 				
-			    <xsd:element minOccurs="0" maxOccurs="1" name="simple" type="momimelangs:simple" />
-    			<xsd:element minOccurs="0" maxOccurs="unbounded" name="month" type="momimelangs:month" />
+			    <xsd:element minOccurs="0" maxOccurs="1" name="simple" type="momimelangs:simple">
+					<xsd:key name="simpleOkPK">
+						<xsd:selector xpath="ok" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="simpleCancelPK">
+						<xsd:selector xpath="cancel" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="simpleAndPK">
+						<xsd:selector xpath="and" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="simpleNoPK">
+						<xsd:selector xpath="no" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="simpleYesPK">
+						<xsd:selector xpath="yes" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="simpleClosePK">
+						<xsd:selector xpath="close" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+			    </xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="unbounded" name="month" type="momimelangs:month">
+					<xsd:key name="monthNamePK">
+						<xsd:selector xpath="name" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
     			
-    			<xsd:element minOccurs="0" maxOccurs="1" name="multiplayer" type="momimelangs:multiplayer" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="multiplayer" type="momimelangs:multiplayer">
+					<xsd:key name="multiplayerDeleteSavedGameTitlePK">
+						<xsd:selector xpath="deleteSavedGameTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="multiplayerDeleteSavedGameTextPK">
+						<xsd:selector xpath="deleteSavedGameText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="multiplayerKickedTitlePK">
+						<xsd:selector xpath="kickedTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="multiplayerKickedTextPK">
+						<xsd:selector xpath="kickedText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
     			
-    			<xsd:element minOccurs="0" maxOccurs="1" name="unitName" type="momimelangs:unitName" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="turnSystems" type="momimelangs:turnSystems" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="spellCasting" type="momimelangs:spellCasting" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="dispelMagic" type="momimelangs:dispelMagic" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="variableMana" type="momimelangs:variableMana" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="spellTargetting" type="momimelangs:spellTargetting" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="combatDamage" type="momimelangs:combatDamage" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="cityGrowthRate" type="momimelangs:cityGrowthRate" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="cityProduction" type="momimelangs:cityProduction" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="unrestCalculation" type="momimelangs:unrestCalculation" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="buyingAndSellingBuildings" type="momimelangs:buyingAndSellingBuildings" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="newTurnMessages" type="momimelangs:newTurnMessages" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="unitName" type="momimelangs:unitName">
+					<xsd:key name="unitNameTheUnitOfNameSingularPK">
+						<xsd:selector xpath="theUnitOfNameSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitNameTheUnitOfNamePluralPK">
+						<xsd:selector xpath="theUnitOfNamePlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="turnSystems" type="momimelangs:turnSystems">
+					<xsd:key name="turnSystemsOnePlayerAtATimePK">
+						<xsd:selector xpath="onePlayerAtATime" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="turnSystemsSimultaneousPK">
+						<xsd:selector xpath="simultaneous" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellCasting" type="momimelangs:spellCasting">
+					<xsd:key name="spellCastingYouHaveCastPK">
+						<xsd:selector xpath="youHaveCast" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingSomeoneElseHasCastPK">
+						<xsd:selector xpath="someoneElseHasCast" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingOurOverlandEnchantmentPK">
+						<xsd:selector xpath="ourOverlandEnchantment" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingEnemyOverlandEnchantmentPK">
+						<xsd:selector xpath="enemyOverlandEnchantment" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingSwitchOffSpellTitlePK">
+						<xsd:selector xpath="switchOffSpellTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingSwitchOffSpellPK">
+						<xsd:selector xpath="switchOffSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingSwitchOffSpellNotOursPK">
+						<xsd:selector xpath="switchOffSpellNotOurs" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingWhoWillCastTitlePK">
+						<xsd:selector xpath="whoWillCastTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="dispelMagic" type="momimelangs:dispelMagic">
+					<xsd:key name="dispelMagicOurDispelMagicHeadingPK">
+						<xsd:selector xpath="ourDispelMagicHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicOurDispelMagicSuccessPK">
+						<xsd:selector xpath="ourDispelMagicSuccess" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicOurDispelMagicFailPK">
+						<xsd:selector xpath="ourDispelMagicFail" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicTheirDispelMagicHeadingPK">
+						<xsd:selector xpath="theirDispelMagicHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicTheirDispelMagicSuccessPK">
+						<xsd:selector xpath="theirDispelMagicSuccess" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicTheirDispelMagicFailPK">
+						<xsd:selector xpath="theirDispelMagicFail" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="variableMana" type="momimelangs:variableMana">
+					<xsd:key name="variableManaTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="variableManaDamagePK">
+						<xsd:selector xpath="damage" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="variableManaResistancePK">
+						<xsd:selector xpath="resistance" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="variableManaDispelPK">
+						<xsd:selector xpath="dispel" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellTargetting" type="momimelangs:spellTargetting">
+					<xsd:key name="spellTargettingTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingInvalidMagicRealmLifeformTypePK">
+						<xsd:selector xpath="invalidMagicRealmLifeformType" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingNoUnitSpellEffectIDsDefinedPK">
+						<xsd:selector xpath="noUnitSpellEffectIDsDefined" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingEnchantingEnemyUnitPK">
+						<xsd:selector xpath="enchantingEnemyUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingCursingOwnUnitPK">
+						<xsd:selector xpath="cursingOwnUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingAlreadyHasAllPossibleUnitSpellEffectsPK">
+						<xsd:selector xpath="alreadyHasAllPossibleUnitSpellEffects" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingNoCitySpellEffectIDsDefinedPK">
+						<xsd:selector xpath="noCitySpellEffectIDsDefined" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingEnchantingEnemyCityPK">
+						<xsd:selector xpath="enchantingEnemyCity" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingCursingOwnCityPK">
+						<xsd:selector xpath="cursingOwnCity" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingAlreadyHasAllPossibleCitySpellEffectsPK">
+						<xsd:selector xpath="alreadyHasAllPossibleCitySpellEffects" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingAlreadyHasBuildingPK">
+						<xsd:selector xpath="alreadyHasBuilding" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingTooHighResistancePK">
+						<xsd:selector xpath="tooHighResistance" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingImmunePK">
+						<xsd:selector xpath="immune" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingUnitNotInExpectedCombatPK">
+						<xsd:selector xpath="unitNotInExpectedCombat" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingUnitDeadPK">
+						<xsd:selector xpath="unitDead" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingUndamagedPK">
+						<xsd:selector xpath="undamaged" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingPermanentlyDamagedPK">
+						<xsd:selector xpath="permanentlyDamaged" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingNoEnemySpellsUnitPK">
+						<xsd:selector xpath="noEnemySpellsUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingCannotSeeLocationPK">
+						<xsd:selector xpath="cannotSeeLocation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingCannotSeeCityPK">
+						<xsd:selector xpath="cannotSeeCity" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingMustTargetLandPK">
+						<xsd:selector xpath="mustTargetLand" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingLocationAlreadyCorruptedPK">
+						<xsd:selector xpath="locationAlreadyCorrupted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingCannotTargetNodesPK">
+						<xsd:selector xpath="cannotTargetNodes" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingCancelTitlePK">
+						<xsd:selector xpath="cancelTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellTargettingCancelTextPK">
+						<xsd:selector xpath="cancelText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="combatDamage" type="momimelangs:combatDamage">
+					<xsd:key name="combatDamageTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageHeaderWithAttackerUnitPK">
+						<xsd:selector xpath="headerWithAttackerUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageHeaderWithoutAttackerUnitPK">
+						<xsd:selector xpath="headerWithoutAttackerUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageHeaderWithoutEitherUnitPK">
+						<xsd:selector xpath="headerWithoutEitherUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackWithUnitPK">
+						<xsd:selector xpath="attackWithUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackWithoutUnitPK">
+						<xsd:selector xpath="attackWithoutUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackChanceOfDeathPK">
+						<xsd:selector xpath="attackChanceOfDeath" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackEachFigureResistOrDiePK">
+						<xsd:selector xpath="attackEachFigureResistOrDie" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackSingleFigureResistOrDiePK">
+						<xsd:selector xpath="attackSingleFigureResistOrDie" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackResistOrTakeDamagePK">
+						<xsd:selector xpath="attackResistOrTakeDamage" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackZeroesAmmoPK">
+						<xsd:selector xpath="attackZeroesAmmo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackResistanceRollsPK">
+						<xsd:selector xpath="attackResistanceRolls" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackDisintegratePK">
+						<xsd:selector xpath="attackDisintegrate" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageAttackFearPK">
+						<xsd:selector xpath="attackFear" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceStrengthReducedPK">
+						<xsd:selector xpath="defenceStrengthReduced" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceStrengthIncreasedPK">
+						<xsd:selector xpath="defenceStrengthIncreased" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceStatisticsPK">
+						<xsd:selector xpath="defenceStatistics" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceStatisticsAutomaticPK">
+						<xsd:selector xpath="defenceStatisticsAutomatic" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceChanceOfDeathDiesPK">
+						<xsd:selector xpath="defenceChanceOfDeathDies" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceChanceOfDeathSurvivesPK">
+						<xsd:selector xpath="defenceChanceOfDeathSurvives" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceEachFigureResistOrDiePK">
+						<xsd:selector xpath="defenceEachFigureResistOrDie" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceSingleFigureResistOrDieDiesPK">
+						<xsd:selector xpath="defenceSingleFigureResistOrDieDies" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceSingleFigureResistOrDieSurvivesPK">
+						<xsd:selector xpath="defenceSingleFigureResistOrDieSurvives" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceResistOrTakeDamagePK">
+						<xsd:selector xpath="defenceResistOrTakeDamage" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceResistanceRollsPK">
+						<xsd:selector xpath="defenceResistanceRolls" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceDisintegrateDiesPK">
+						<xsd:selector xpath="defenceDisintegrateDies" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceDisintegrateSurvivesPK">
+						<xsd:selector xpath="defenceDisintegrateSurvives" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageDefenceFearPK">
+						<xsd:selector xpath="defenceFear" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="cityGrowthRate" type="momimelangs:cityGrowthRate">
+					<xsd:key name="cityGrowthRateTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateCurrentPopulationPK">
+						<xsd:selector xpath="currentPopulation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateMaximumPopulationPK">
+						<xsd:selector xpath="maximumPopulation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateBaseGrowthRatePK">
+						<xsd:selector xpath="baseGrowthRate" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateRacialGrowthModifierPK">
+						<xsd:selector xpath="racialGrowthModifier" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateGrowthBonusFromBuildingPK">
+						<xsd:selector xpath="growthBonusFromBuilding" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateTotalPK">
+						<xsd:selector xpath="cityGrowthRateTotal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateHousingPK">
+						<xsd:selector xpath="housing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateDifficultyLevelMultiplierPK">
+						<xsd:selector xpath="difficultyLevelMultiplier" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateCappedPK">
+						<xsd:selector xpath="cityGrowthRateCapped" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateDeathRatePK">
+						<xsd:selector xpath="deathRate" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityGrowthRateAtMaximumSizePK">
+						<xsd:selector xpath="atMaximumSize" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="cityProduction" type="momimelangs:cityProduction">
+					<xsd:key name="cityProductionTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionMainHeadingPK">
+						<xsd:selector xpath="productionMainHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromSinglePopulationPK">
+						<xsd:selector xpath="productionFromSinglePopulation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromMultiplePopulationPK">
+						<xsd:selector xpath="productionFromMultiplePopulation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionGoldFromTaxesPK">
+						<xsd:selector xpath="goldFromTaxes" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromSingleTilePK">
+						<xsd:selector xpath="productionFromSingleTile" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromMultipleTilesPK">
+						<xsd:selector xpath="productionFromMultipleTiles" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromSingleMapFeaturePK">
+						<xsd:selector xpath="productionFromSingleMapFeature" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromMultipleMapFeaturesPK">
+						<xsd:selector xpath="productionFromMultipleMapFeatures" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromMapFeatureRaceBonusPK">
+						<xsd:selector xpath="productionFromMapFeatureRaceBonus" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromMapFeatureBuildingBonusPK">
+						<xsd:selector xpath="productionFromMapFeatureBuildingBonus" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromBuildingWithoutReligiousRetortBonusPK">
+						<xsd:selector xpath="productionFromBuildingWithoutReligiousRetortBonus" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromBuildingWithReligiousRetortBonusPK">
+						<xsd:selector xpath="productionFromBuildingWithReligiousRetortBonus" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromFortressPlanePK">
+						<xsd:selector xpath="productionFromFortressPlane" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionFromFortressPicksPK">
+						<xsd:selector xpath="productionFromFortressPicks" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionRoundingTotalBeforePK">
+						<xsd:selector xpath="roundingTotalBefore" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionRoundingUpPK">
+						<xsd:selector xpath="roundingUp" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionRoundingDownPK">
+						<xsd:selector xpath="roundingDown" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionPercentageBonusHeadingPK">
+						<xsd:selector xpath="productionPercentageBonusHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionPercentageBonusFromSingleTilePK">
+						<xsd:selector xpath="percentageBonusFromSingleTile" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionPercentageBonusFromMultipleTilesPK">
+						<xsd:selector xpath="percentageBonusFromMultipleTiles" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionPercentageBonusFromBuildingPK">
+						<xsd:selector xpath="percentageBonusFromBuilding" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionGoldTradeBonusFromTileTypePK">
+						<xsd:selector xpath="goldTradeBonusFromTileType" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionGoldTradeBonusFromRoadsPK">
+						<xsd:selector xpath="goldTradeBonusFromRoads" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionGoldTradeBonusFromRacePK">
+						<xsd:selector xpath="goldTradeBonusFromRace" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionGoldTradeBonusUncappedPK">
+						<xsd:selector xpath="goldTradeBonusUncapped" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionGoldTradeBonusCappedPK">
+						<xsd:selector xpath="goldTradeBonusCapped" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionPercentageBonusTotalPK">
+						<xsd:selector xpath="productionPercentageBonusTotal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionDifficultyLevelMultiplierPK">
+						<xsd:selector xpath="difficultyLevelMultiplier" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionProductionCappedPK">
+						<xsd:selector xpath="productionCapped" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionConsumptionMainHeadingPK">
+						<xsd:selector xpath="consumptionMainHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionRationsAteByPopulationPK">
+						<xsd:selector xpath="rationsAteByPopulation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionBuildingConsumptionPK">
+						<xsd:selector xpath="buildingConsumption" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionNetEffectBreakingEvenPK">
+						<xsd:selector xpath="netEffectBreakingEven" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionNetEffectGainPK">
+						<xsd:selector xpath="netEffectGain" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionNetEffectLossPK">
+						<xsd:selector xpath="netEffectLoss" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityProductionTradeGoodsPK">
+						<xsd:selector xpath="tradeGoods" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="unrestCalculation" type="momimelangs:unrestCalculation">
+					<xsd:key name="unrestCalculationTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationTaxPercentagePK">
+						<xsd:selector xpath="taxPercentage" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationRacialPercentagePK">
+						<xsd:selector xpath="racialPercentage" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationTotalPercentagePK">
+						<xsd:selector xpath="totalPercentage" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationBaseValuePK">
+						<xsd:selector xpath="baseValue" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationRacialLiteralPK">
+						<xsd:selector xpath="racialLiteral" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationBuildingUnrestReductionPK">
+						<xsd:selector xpath="buildingUnrestReduction" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationRetortPK">
+						<xsd:selector xpath="retort" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationUnitReductionPK">
+						<xsd:selector xpath="unitReduction" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationBaseTotalPK">
+						<xsd:selector xpath="baseTotal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationForcePositivePK">
+						<xsd:selector xpath="forcePositive" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationForceAllPK">
+						<xsd:selector xpath="forceAll" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unrestCalculationMinimumFarmersPK">
+						<xsd:selector xpath="minimumFarmers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="buyingAndSellingBuildings" type="momimelangs:buyingAndSellingBuildings">
+					<xsd:key name="buyingAndSellingBuildingsRushBuyTitlePK">
+						<xsd:selector xpath="rushBuyTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buyingAndSellingBuildingsRushBuyPromptPK">
+						<xsd:selector xpath="rushBuyPrompt" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buyingAndSellingBuildingsSellTitlePK">
+						<xsd:selector xpath="sellTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buyingAndSellingBuildingsSellPromptNormalPK">
+						<xsd:selector xpath="sellPromptNormal" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buyingAndSellingBuildingsSellPromptPrerequisitePK">
+						<xsd:selector xpath="sellPromptPrerequisite" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buyingAndSellingBuildingsCannotSellSpecialBuildingPK">
+						<xsd:selector xpath="cannotSellSpecialBuilding" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buyingAndSellingBuildingsOnlySellOneEachTurnPK">
+						<xsd:selector xpath="onlySellOneEachTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="buyingAndSellingBuildingsCannotSellRequiredByAnotherPK">
+						<xsd:selector xpath="cannotSellRequiredByAnother" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="newTurnMessages" type="momimelangs:newTurnMessages">
+					<xsd:key name="newTurnMessagesTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesConstructionCategoryPK">
+						<xsd:selector xpath="constructionCategory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesConstructionCompletedPK">
+						<xsd:selector xpath="constructionCompleted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesConstructionAbortedPK">
+						<xsd:selector xpath="constructionAborted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesNextConstructionPK">
+						<xsd:selector xpath="nextConstruction" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesLackOfProductionCategoryPK">
+						<xsd:selector xpath="lackOfProductionCategory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesCityGrowthCategoryPK">
+						<xsd:selector xpath="cityGrowthCategory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesCityGrowthPK">
+						<xsd:selector xpath="cityGrowth" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesCityDeathCategoryPK">
+						<xsd:selector xpath="cityDeathCategory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesCityDeathPK">
+						<xsd:selector xpath="cityDeath" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesSpellsCategoryPK">
+						<xsd:selector xpath="spellsCategory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesResearchNotChosenPK">
+						<xsd:selector xpath="researchNotChosen" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesResearchChosenPK">
+						<xsd:selector xpath="researchChosen" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesSummonedUnitPK">
+						<xsd:selector xpath="summonedUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesSummonedUnitLastTurnPK">
+						<xsd:selector xpath="summonedUnitLastTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesSummonedUnitBumpedSuffixPK">
+						<xsd:selector xpath="summonedUnitBumpedSuffix" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesSummonedUnitNoRoomSuffixPK">
+						<xsd:selector xpath="summonedUnitNoRoomSuffix" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesCreateArtifactPK">
+						<xsd:selector xpath="createArtifact" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesCreateArtifactLastTurnPK">
+						<xsd:selector xpath="createArtifactLastTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesTargetSpellPK">
+						<xsd:selector xpath="targetSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesTargetSpellChosenNamedPK">
+						<xsd:selector xpath="targetSpellChosenNamed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesTargetSpellChosenUnnamedPK">
+						<xsd:selector xpath="targetSpellChosenUnnamed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesTargetSpellCancelledPK">
+						<xsd:selector xpath="targetSpellCancelled" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesTargetSpellChosenLastTurnNamedPK">
+						<xsd:selector xpath="targetSpellChosenLastTurnNamed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesTargetSpellChosenLastTurnUnnamedPK">
+						<xsd:selector xpath="targetSpellChosenLastTurnUnnamed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesTargetSpellCancelledLastTurnPK">
+						<xsd:selector xpath="targetSpellCancelledLastTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesNodesCategoryPK">
+						<xsd:selector xpath="nodesCategory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesEmptyNodeCapturedPK">
+						<xsd:selector xpath="emptyNodeCaptured" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOwnedNodeCapturedPK">
+						<xsd:selector xpath="ownedNodeCaptured" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesEmptyNodeCapturedLastTurnPK">
+						<xsd:selector xpath="emptyNodeCapturedLastTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOwnedNodeCapturedLastTurnPK">
+						<xsd:selector xpath="ownedNodeCapturedLastTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesNodeLostPK">
+						<xsd:selector xpath="nodeLost" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesNodeLostLastTurnPK">
+						<xsd:selector xpath="nodeLostLastTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesUnitsCategoryPK">
+						<xsd:selector xpath="unitsCategory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesHeroGainedALevelPK">
+						<xsd:selector xpath="heroGainedALevel" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesHeroGainedALevelLastTurnPK">
+						<xsd:selector xpath="heroGainedALevelLastTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
     			
-    			<xsd:element minOccurs="0" maxOccurs="1" name="mainMenuScreen" type="momimelangs:mainMenuScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="messageBoxScreen" type="momimelangs:messageBoxScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="connectToServerScreen" type="momimelangs:connectToServerScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="newGameScreen" type="momimelangs:newGameScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="joinGameScreen" type="momimelangs:joinGameScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="loadGameScreen" type="momimelangs:loadGameScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseWizardScreen" type="momimelangs:chooseWizardScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="choosePortraitScreen" type="momimelangs:choosePortraitScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseFlagColourScreen" type="momimelangs:chooseFlagColourScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="customPicksScreen" type="momimelangs:customPicksScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseInitialSpellsScreen" type="momimelangs:chooseInitialSpellsScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseRaceScreen" type="momimelangs:chooseRaceScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="waitForPlayersToJoinScreen" type="momimelangs:waitForPlayersToJoinScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="mainMenuScreen" type="momimelangs:mainMenuScreen">
+					<xsd:key name="mainMenuScreenLongTitlePK">
+						<xsd:selector xpath="longTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenShortTitlePK">
+						<xsd:selector xpath="shortTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenVersionPK">
+						<xsd:selector xpath="version" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenOriginalCopyrightLine1PK">
+						<xsd:selector xpath="originalCopyrightLine1" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenOriginalCopyrightLine2PK">
+						<xsd:selector xpath="originalCopyrightLine2" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenConnectToServerPK">
+						<xsd:selector xpath="connectToServer" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenNewGamePK">
+						<xsd:selector xpath="newGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenJoinGamePK">
+						<xsd:selector xpath="joinGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenLoadGamePK">
+						<xsd:selector xpath="loadGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenOptionsPK">
+						<xsd:selector xpath="options" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="mainMenuScreenExitPK">
+						<xsd:selector xpath="exit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="messageBoxScreen" type="momimelangs:messageBoxScreen">
+					<xsd:key name="messageBoxScreenErrorTitlePK">
+						<xsd:selector xpath="errorTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="connectToServerScreen" type="momimelangs:connectToServerScreen">
+					<xsd:key name="connectToServerScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="connectToServerScreenPickFromListPK">
+						<xsd:selector xpath="pickFromList" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="connectToServerScreenEnterServerPK">
+						<xsd:selector xpath="enterServer" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="connectToServerScreenPlayerNamePK">
+						<xsd:selector xpath="playerName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="connectToServerScreenPasswordPK">
+						<xsd:selector xpath="password" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="connectToServerScreenCreateAccountPK">
+						<xsd:selector xpath="createAccount" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="connectToServerScreenKickExistingConnectionPK">
+						<xsd:selector xpath="kickExistingConnection" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="newGameScreen" type="momimelangs:newGameScreen">
+					<xsd:key name="newGameScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenDifficultyPK">
+						<xsd:selector xpath="difficulty" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenHumanOpponentsPK">
+						<xsd:selector xpath="humanOpponents" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenAiOpponentsPK">
+						<xsd:selector xpath="aiOpponents" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenMapSizePK">
+						<xsd:selector xpath="mapSize" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenLandProportionPK">
+						<xsd:selector xpath="landProportion" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenNodesPK">
+						<xsd:selector xpath="nodes" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenTurnSystemPK">
+						<xsd:selector xpath="turnSystem" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenFogOfWarPK">
+						<xsd:selector xpath="fogOfWar" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenUnitSettingsPK">
+						<xsd:selector xpath="unitSettings" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenSpellSettingsPK">
+						<xsd:selector xpath="spellSettings" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenDebugOptionsPK">
+						<xsd:selector xpath="debugOptions" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenGameNamePK">
+						<xsd:selector xpath="gameName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenCustomizePK">
+						<xsd:selector xpath="customize" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newGameScreenInvalidNumberOfPlayersPK">
+						<xsd:selector xpath="invalidNumberOfPlayers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="joinGameScreen" type="momimelangs:joinGameScreen">
+					<xsd:key name="joinGameScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenSessionsColumnGameNamePK">
+						<xsd:selector xpath="sessionsColumnGameName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenSessionsColumnPlayersPK">
+						<xsd:selector xpath="sessionsColumnPlayers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenSessionsColumnSettingsPK">
+						<xsd:selector xpath="sessionsColumnSettings" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenSessionsColumnTurnSystemPK">
+						<xsd:selector xpath="sessionsColumnTurnSystem" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenRefreshPK">
+						<xsd:selector xpath="refresh" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="joinGameScreenJoinPK">
+						<xsd:selector xpath="join" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="loadGameScreen" type="momimelangs:loadGameScreen">
+					<xsd:key name="loadGameScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenSavedGamesColumnGameNamePK">
+						<xsd:selector xpath="savedGamesColumnGameName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenSavedGamesColumnPlayersPK">
+						<xsd:selector xpath="savedGamesColumnPlayers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenSavedGamesColumnGameStartedPK">
+						<xsd:selector xpath="savedGamesColumnGameStarted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenSavedGamesColumnLatestSavePK">
+						<xsd:selector xpath="savedGamesColumnLatestSave" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenSavePointsColumnSavedAtPK">
+						<xsd:selector xpath="savePointsColumnSavedAt" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenSavePointsColumnTurnPK">
+						<xsd:selector xpath="savePointsColumnTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenDeleteSavedGamePK">
+						<xsd:selector xpath="deleteSavedGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenSelectSavedGamePK">
+						<xsd:selector xpath="selectSavedGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenSelectSavePointPK">
+						<xsd:selector xpath="selectSavePoint" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="loadGameScreenBackPK">
+						<xsd:selector xpath="back" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseWizardScreen" type="momimelangs:chooseWizardScreen">
+					<xsd:key name="chooseWizardScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="chooseWizardScreenLeaveGamePK">
+						<xsd:selector xpath="leaveGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="chooseWizardScreenCustomPK">
+						<xsd:selector xpath="custom" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="choosePortraitScreen" type="momimelangs:choosePortraitScreen">
+					<xsd:key name="choosePortraitScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="choosePortraitScreenLeaveGamePK">
+						<xsd:selector xpath="leaveGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="choosePortraitScreenCustomPK">
+						<xsd:selector xpath="custom" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="choosePortraitScreenCustomTooLargePK">
+						<xsd:selector xpath="customTooLarge" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseFlagColourScreen" type="momimelangs:chooseFlagColourScreen">
+					<xsd:key name="chooseFlagColourScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="chooseFlagColourScreenRedPK">
+						<xsd:selector xpath="red" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="chooseFlagColourScreenBluePK">
+						<xsd:selector xpath="blue" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="chooseFlagColourScreenGreenPK">
+						<xsd:selector xpath="green" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="chooseFlagColourScreenLeaveGamePK">
+						<xsd:selector xpath="leaveGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="customPicksScreen" type="momimelangs:customPicksScreen">
+					<xsd:key name="customPicksScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="customPicksScreenLeaveGamePK">
+						<xsd:selector xpath="leaveGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="customPicksScreenNoPicksPK">
+						<xsd:selector xpath="noPicks" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="customPicksScreenInsufficientPicksPK">
+						<xsd:selector xpath="insufficientPicks" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="customPicksScreenPrerequisitesPK">
+						<xsd:selector xpath="prerequisites" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseInitialSpellsScreen" type="momimelangs:chooseInitialSpellsScreen">
+					<xsd:key name="chooseInitialSpellsScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="chooseInitialSpellsScreenLeaveGamePK">
+						<xsd:selector xpath="leaveGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="chooseRaceScreen" type="momimelangs:chooseRaceScreen">
+					<xsd:key name="chooseRaceScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="chooseRaceScreenLeaveGamePK">
+						<xsd:selector xpath="leaveGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="waitForPlayersToJoinScreen" type="momimelangs:waitForPlayersToJoinScreen">
+					<xsd:key name="waitForPlayersToJoinScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="waitForPlayersToJoinScreenLeaveGamePK">
+						<xsd:selector xpath="leaveGame" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="waitForPlayersToJoinScreenListColumnNamePK">
+						<xsd:selector xpath="listColumnName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="waitForPlayersToJoinScreenListColumnWizardPK">
+						<xsd:selector xpath="listColumnWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="waitForPlayersToJoinScreenListColumnHumanOrAIPK">
+						<xsd:selector xpath="listColumnHumanOrAI" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="waitForPlayersToJoinScreenHumanPK">
+						<xsd:selector xpath="human" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="waitForPlayersToJoinScreenAiPK">
+						<xsd:selector xpath="ai" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="waitForPlayersToJoinScreenCustomPK">
+						<xsd:selector xpath="custom" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="overlandMapScreen" type="momimelangs:overlandMapScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="nameCityScreen" type="momimelangs:nameCityScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="cityScreen" type="momimelangs:cityScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="changeConstructionScreen" type="momimelangs:changeConstructionScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="unitInfoScreen" type="momimelangs:unitInfoScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="optionsScreen" type="momimelangs:optionsScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="razeCityScreen" type="momimelangs:razeCityScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="combatScreen" type="momimelangs:combatScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="combatEndedScreen" type="momimelangs:combatEndedScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="magicSlidersScreen" type="momimelangs:magicSlidersScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="alchemyScreen" type="momimelangs:alchemyScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="spellBookScreen" type="momimelangs:spellBookScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="selectAdvisorScreen" type="momimelangs:selectAdvisorScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="taxRateScreen" type="momimelangs:taxRateScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="unitRowDisplayScreen" type="momimelangs:unitRowDisplayScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="spellQueueScreen" type="momimelangs:spellQueueScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardsScreen" type="momimelangs:wizardsScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="armyListScreen" type="momimelangs:armyListScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="citiesListScreen" type="momimelangs:citiesListScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemsScreen" type="momimelangs:heroItemsScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemInfoScreen" type="momimelangs:heroItemInfoScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="treasureScreen" type="momimelangs:treasureScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardBanishedScreen" type="momimelangs:wizardBanishedScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardWonScreen" type="momimelangs:wizardWonScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="historyScreen" type="momimelangs:historyScreen" />
-    			<xsd:element minOccurs="0" maxOccurs="1" name="helpScreen" type="momimelangs:helpScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="nameCityScreen" type="momimelangs:nameCityScreen">
+					<xsd:key name="nameCityScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="nameCityScreenPromptPK">
+						<xsd:selector xpath="prompt" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="cityScreen" type="momimelangs:cityScreen">
+					<xsd:key name="cityScreenResourcesPK">
+						<xsd:selector xpath="resources" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenEnchantmentsPK">
+						<xsd:selector xpath="enchantments" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenTerrainPK">
+						<xsd:selector xpath="terrain" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenBuildingsPK">
+						<xsd:selector xpath="buildings" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenUnitsPK">
+						<xsd:selector xpath="units" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenProductionPK">
+						<xsd:selector xpath="production" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenRushBuyPK">
+						<xsd:selector xpath="rushBuy" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenChangeConstructionPK">
+						<xsd:selector xpath="changeConstruction" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenRenamePK">
+						<xsd:selector xpath="rename" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenMaxCitySizePK">
+						<xsd:selector xpath="maxCitySize" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenPopulationMaxedPK">
+						<xsd:selector xpath="populationMaxed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="cityScreenPopulationAndGrowthPK">
+						<xsd:selector xpath="populationAndGrowth" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="changeConstructionScreen" type="momimelangs:changeConstructionScreen">
+					<xsd:key name="changeConstructionScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="changeConstructionScreenUpkeepPK">
+						<xsd:selector xpath="upkeep" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="changeConstructionScreenCostPK">
+						<xsd:selector xpath="cost" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="changeConstructionScreenAllowsPK">
+						<xsd:selector xpath="allows" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="changeConstructionScreenUnitURNPK">
+						<xsd:selector xpath="unitURN" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="changeConstructionScreenBuildingURNPK">
+						<xsd:selector xpath="buildingURN" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="unitInfoScreen" type="momimelangs:unitInfoScreen">
+					<xsd:key name="unitInfoScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitInfoScreenDismissPK">
+						<xsd:selector xpath="dismiss" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitInfoScreenDismissTitlePK">
+						<xsd:selector xpath="dismissTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitInfoScreenDismissPromptPK">
+						<xsd:selector xpath="dismissPrompt" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitInfoScreenRenamePK">
+						<xsd:selector xpath="rename" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitInfoScreenRenamePromptPK">
+						<xsd:selector xpath="renamePrompt" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitInfoScreenUnitCanCastPK">
+						<xsd:selector xpath="unitCanCast" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="optionsScreen" type="momimelangs:optionsScreen">
+					<xsd:key name="optionsScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenOverlandMapPK">
+						<xsd:selector xpath="overlandMap" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenLinearTextureFilterPK">
+						<xsd:selector xpath="linearTextureFilter" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenShowFogOfWarPK">
+						<xsd:selector xpath="showFogOfWar" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenSmoothTerrainPK">
+						<xsd:selector xpath="smoothTerrain" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenSmoothFogOfWarPK">
+						<xsd:selector xpath="smoothFogOfWar" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenShowOurBorderPK">
+						<xsd:selector xpath="showOurBorder" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenShowEnemyBordersPK">
+						<xsd:selector xpath="showEnemyBorders" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenAnimateUnitsMovingPK">
+						<xsd:selector xpath="animateUnitsMoving" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenCombatMapPK">
+						<xsd:selector xpath="combatMap" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenDebugPK">
+						<xsd:selector xpath="debug" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenShowFrameRatePK">
+						<xsd:selector xpath="showFrameRate" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenShowUnitURNsPK">
+						<xsd:selector xpath="showUnitURNs" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenShowEdgesOfMapPK">
+						<xsd:selector xpath="showEdgesOfMap" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenLanguagePK">
+						<xsd:selector xpath="language" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenChooseLanguagePK">
+						<xsd:selector xpath="chooseLanguage" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenUnitInfoPK">
+						<xsd:selector xpath="unitInfo" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenShowHeroPortraitsPK">
+						<xsd:selector xpath="showHeroPortraits" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenUnitAttributesPK">
+						<xsd:selector xpath="unitAttributes" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenUnitAttributesStandardPK">
+						<xsd:selector xpath="unitAttributesStandard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenUnitAttributesModifyablePK">
+						<xsd:selector xpath="unitAttributesModifyable" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="optionsScreenUnitAttributesAllPK">
+						<xsd:selector xpath="unitAttributesAll" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="razeCityScreen" type="momimelangs:razeCityScreen">
+					<xsd:key name="razeCityScreenTextPK">
+						<xsd:selector xpath="text" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="razeCityScreenRazePK">
+						<xsd:selector xpath="raze" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="combatScreen" type="momimelangs:combatScreen">
+					<xsd:key name="combatScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenSpellPK">
+						<xsd:selector xpath="spell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenWaitPK">
+						<xsd:selector xpath="wait" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenDonePK">
+						<xsd:selector xpath="done" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenFleePK">
+						<xsd:selector xpath="flee" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenAutoPK">
+						<xsd:selector xpath="auto" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenSkillPK">
+						<xsd:selector xpath="skill" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenManaPK">
+						<xsd:selector xpath="mana" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenRangePK">
+						<xsd:selector xpath="range" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenCastablePK">
+						<xsd:selector xpath="castable" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenAveragePrefixPK">
+						<xsd:selector xpath="averagePrefix" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenCancelTargetSpellPK">
+						<xsd:selector xpath="cancelTargetSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatScreenOneSpellPerTurnPK">
+						<xsd:selector xpath="oneSpellPerTurn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="combatEndedScreen" type="momimelangs:combatEndedScreen">
+					<xsd:key name="combatEndedScreenDefeatPK">
+						<xsd:selector xpath="defeat" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenVictoryPK">
+						<xsd:selector xpath="victory" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenYouCapturedPK">
+						<xsd:selector xpath="youCaptured" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenYouRazedPK">
+						<xsd:selector xpath="youRazed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenYouGotGoldFromEnemyCityPK">
+						<xsd:selector xpath="youGotGoldFromEnemyCity" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenYouGotGoldFromRazingPK">
+						<xsd:selector xpath="youGotGoldFromRazing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenEnemyCapturedPK">
+						<xsd:selector xpath="enemyCaptured" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenEnemyRazedPK">
+						<xsd:selector xpath="enemyRazed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenEnemyGotGoldFromYourCityPK">
+						<xsd:selector xpath="enemyGotGoldFromYourCity" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenHeroItemsPK">
+						<xsd:selector xpath="heroItems" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenUndeadCreatedSingularPK">
+						<xsd:selector xpath="undeadCreatedSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenUndeadCreatedPluralPK">
+						<xsd:selector xpath="undeadCreatedPlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="magicSlidersScreen" type="momimelangs:magicSlidersScreen">
+					<xsd:key name="magicSlidersScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenPowerBasePK">
+						<xsd:selector xpath="powerBase" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenManaTitlePK">
+						<xsd:selector xpath="manaTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenResearchTitlePK">
+						<xsd:selector xpath="researchTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenSkillTitlePK">
+						<xsd:selector xpath="skillTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenManaLabelPK">
+						<xsd:selector xpath="manaLabel" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenResearchLabelPK">
+						<xsd:selector xpath="researchLabel" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenSkillLabelPK">
+						<xsd:selector xpath="skillLabel" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenResearchingNothingPK">
+						<xsd:selector xpath="researchingNothing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenOverlandEnchantmentsPK">
+						<xsd:selector xpath="overlandEnchantments" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenAlchemyPK">
+						<xsd:selector xpath="alchemy" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="magicSlidersScreenApplyPK">
+						<xsd:selector xpath="apply" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="alchemyScreen" type="momimelangs:alchemyScreen">
+					<xsd:key name="alchemyScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="alchemyScreenConversionPK">
+						<xsd:selector xpath="conversion" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellBookScreen" type="momimelangs:spellBookScreen">
+					<xsd:key name="spellBookScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenSwitchResearchTitlePK">
+						<xsd:selector xpath="switchResearchTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenSwitchResearchDisallowedPK">
+						<xsd:selector xpath="switchResearchDisallowed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenSwitchResearchLosePK">
+						<xsd:selector xpath="switchResearchLose" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenCastSpellTitlePK">
+						<xsd:selector xpath="castSpellTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenRequestCastExistingOverlandEnchantmentPK">
+						<xsd:selector xpath="requestCastExistingOverlandEnchantment" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenNoValidTargetsPK">
+						<xsd:selector xpath="noValidTargets" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenNoCombatSpellEffectIDsDefinedPK">
+						<xsd:selector xpath="noCombatSpellEffectIDsDefined" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenAlreadyHasAllPossibleCombatSpellEffectsPK">
+						<xsd:selector xpath="alreadyHasAllPossibleCombatSpellEffects" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellBookScreenNoDeadUnitsToBeRaisedPK">
+						<xsd:selector xpath="noDeadUnitsToBeRaised" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="selectAdvisorScreen" type="momimelangs:selectAdvisorScreen">
+					<xsd:key name="selectAdvisorScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenSurveyorPK">
+						<xsd:selector xpath="surveyor" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenCartographerPK">
+						<xsd:selector xpath="cartographer" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenApprenticePK">
+						<xsd:selector xpath="apprentice" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenHistorianPK">
+						<xsd:selector xpath="historian" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenAstrologerPK">
+						<xsd:selector xpath="astrologer" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenChancellorPK">
+						<xsd:selector xpath="chancellor" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenTaxCollectorPK">
+						<xsd:selector xpath="taxCollector" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenGrandVizierPK">
+						<xsd:selector xpath="grandVizier" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="selectAdvisorScreenWizardsPK">
+						<xsd:selector xpath="wizards" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="taxRateScreen" type="momimelangs:taxRateScreen">
+					<xsd:key name="taxRateScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="taxRateScreenEntryPK">
+						<xsd:selector xpath="entry" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="unitRowDisplayScreen" type="momimelangs:unitRowDisplayScreen">
+					<xsd:key name="unitRowDisplayScreenTitleRaiseOwnPK">
+						<xsd:selector xpath="titleRaiseOwn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitRowDisplayScreenTitleRaiseEitherPK">
+						<xsd:selector xpath="titleRaiseEither" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellQueueScreen" type="momimelangs:spellQueueScreen">
+					<xsd:key name="spellQueueScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellQueueScreenCantCancelSpellOfReturnPK">
+						<xsd:selector xpath="cantCancelSpellOfReturn" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellQueueScreenConfirmCancelSpellPK">
+						<xsd:selector xpath="confirmCancelSpell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardsScreen" type="momimelangs:wizardsScreen">
+					<xsd:key name="wizardsScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="armyListScreen" type="momimelangs:armyListScreen">
+					<xsd:key name="armyListScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="armyListScreenHeroItemsPK">
+						<xsd:selector xpath="heroItems" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="citiesListScreen" type="momimelangs:citiesListScreen">
+					<xsd:key name="citiesListScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityNamePK">
+						<xsd:selector xpath="cityName" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityRacePK">
+						<xsd:selector xpath="cityRace" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityPopulationPK">
+						<xsd:selector xpath="cityPopulation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityRationsPK">
+						<xsd:selector xpath="cityRations" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityGoldPK">
+						<xsd:selector xpath="cityGold" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityProductionPK">
+						<xsd:selector xpath="cityProduction" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="citiesListScreenCityConstructingPK">
+						<xsd:selector xpath="cityConstructing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemsScreen" type="momimelangs:heroItemsScreen">
+					<xsd:key name="heroItemsScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="heroItemsScreenBankPK">
+						<xsd:selector xpath="bank" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="heroItemsScreenAlchemyPK">
+						<xsd:selector xpath="alchemy" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="heroItemsScreenDestroyTitlePK">
+						<xsd:selector xpath="destroyTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="heroItemsScreenDestroyPK">
+						<xsd:selector xpath="destroy" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemInfoScreen" type="momimelangs:heroItemInfoScreen">
+					<xsd:key name="heroItemInfoScreenItemSlotHelpTextPrefixPK">
+						<xsd:selector xpath="itemSlotHelpTextPrefix" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="treasureScreen" type="momimelangs:treasureScreen">
+					<xsd:key name="treasureScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="treasureScreenTextPK">
+						<xsd:selector xpath="text" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="treasureScreenNothingPK">
+						<xsd:selector xpath="nothing" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="treasureScreenSpellPK">
+						<xsd:selector xpath="spell" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="treasureScreenRetortPK">
+						<xsd:selector xpath="retort" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="treasureScreenPrisonerPK">
+						<xsd:selector xpath="prisoner" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="treasureScreenPrisonerBumpedPK">
+						<xsd:selector xpath="prisonerBumped" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="treasureScreenPrisonerEscapedPK">
+						<xsd:selector xpath="prisonerEscaped" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardBanishedScreen" type="momimelangs:wizardBanishedScreen">
+					<xsd:key name="wizardBanishedScreenBanishedByWizardPK">
+						<xsd:selector xpath="banishedByWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardBanishedScreenBanishedByRaidersPK">
+						<xsd:selector xpath="banishedByRaiders" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardBanishedScreenDefeatedByWizardPK">
+						<xsd:selector xpath="defeatedByWizard" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardBanishedScreenDefeatedByRaidersPK">
+						<xsd:selector xpath="defeatedByRaiders" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="wizardWonScreen" type="momimelangs:wizardWonScreen">
+					<xsd:key name="wizardWonScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardWonScreenLine1PK">
+						<xsd:selector xpath="line1" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardWonScreenLine2PK">
+						<xsd:selector xpath="line2" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardWonScreenLine3PK">
+						<xsd:selector xpath="line3" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="wizardWonScreenLine4PK">
+						<xsd:selector xpath="line4" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="historyScreen" type="momimelangs:historyScreen">
+					<xsd:key name="historyScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="helpScreen" type="momimelangs:helpScreen">
+					<xsd:key name="helpScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookSectionPK">
+						<xsd:selector xpath="spellBookSection" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookResearchCostNotOursPK">
+						<xsd:selector xpath="spellBookResearchCostNotOurs" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookResearchCostResearchedPK">
+						<xsd:selector xpath="spellBookResearchCostResearched" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookResearchCostNotStartedPK">
+						<xsd:selector xpath="spellBookResearchCostNotStarted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookResearchCostPartialPK">
+						<xsd:selector xpath="spellBookResearchCostPartial" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookOverlandCostFullPK">
+						<xsd:selector xpath="spellBookOverlandCostFull" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookOverlandCostReducedPK">
+						<xsd:selector xpath="spellBookOverlandCostReduced" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookCombatCostFullPK">
+						<xsd:selector xpath="spellBookCombatCostFull" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookCombatCostReducedPK">
+						<xsd:selector xpath="spellBookCombatCostReduced" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookNoSavingThrowPK">
+						<xsd:selector xpath="spellBookNoSavingThrow" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookNoSavingThrowModifierPK">
+						<xsd:selector xpath="spellBookNoSavingThrowModifier" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookSingleSavingThrowModifierPK">
+						<xsd:selector xpath="spellBookSingleSavingThrowModifier" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellBookMultipleSavingThrowModifiersPK">
+						<xsd:selector xpath="spellBookMultipleSavingThrowModifiers" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellUpkeepWithoutChannelerPK">
+						<xsd:selector xpath="spellUpkeepWithoutChanneler" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellUpkeepWithChannelerPK">
+						<xsd:selector xpath="spellUpkeepWithChanneler" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellUpkeepFixedPK">
+						<xsd:selector xpath="spellUpkeepFixed" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenSpellUpkeepRangePK">
+						<xsd:selector xpath="spellUpkeepRange" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenExperienceLevelBoostPK">
+						<xsd:selector xpath="experienceLevelBoost" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenExperienceForNextLevelWithoutBoostPK">
+						<xsd:selector xpath="experienceForNextLevelWithoutBoost" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="helpScreenExperienceForNextLevelWithBoostPK">
+						<xsd:selector xpath="experienceForNextLevelWithBoost" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
 			</xsd:sequence>
 		</xsd:complexType>
 
@@ -95,6 +1942,10 @@
 		<xsd:key name="shortcutKeyPK">
 			<xsd:selector xpath="shortcutKey" />
 			<xsd:field xpath="@shortcut" />
+		</xsd:key>
+		<xsd:key name="monthPK">
+			<xsd:selector xpath="name" />
+			<xsd:field xpath="@language" />
 		</xsd:key>
 		
 	</xsd:element>
@@ -116,8 +1967,8 @@
         	<xsd:documentation>Defines known MoM IME servers to suggest the client connects to.</xsd:documentation>
         </xsd:annotation>
 		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="knownServerIP" type="momimelangs:ipAddress" nxe:label="IP Address" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="knownServerDescription" type="momimecommon:languageText" nxe:label="Description" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="knownServerIP" type="momimelangs:ipAddress" nxe:label="IP Address" nxe:gridwidth="200" />
 		</xsd:sequence>
 		<xsd:attribute name="knownServerID" type="momimelangs:knownServerID" use="required" nxe:label="Server ID" nxe:gridwidth="100" />
 	</xsd:complexType>
@@ -161,17 +2012,200 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="deleteSavedGameText" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickedTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="kickedText" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="createAccountFailed" type="momimelangs:createAccountFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="loginFailed" type="momimelangs:loginFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="logoutFailed" type="momimelangs:logoutFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="requestSessionListFailed" type="momimelangs:requestSessionListFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="joinFailed" type="momimelangs:joinFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="leaveSessionFailed" type="momimelangs:leaveSessionFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="browseSavedGamesFailed" type="momimelangs:browseSavedGamesFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="browseSavePointsFailed" type="momimelangs:browseSavePointsFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="deleteSavedGameFailed" type="momimelangs:deleteSavedGameFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="loadGameFailed" type="momimelangs:loadGameFailed" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="connectionErrors" type="momimelangs:connectionErrors" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="createAccountFailed" type="momimelangs:createAccountFailed">
+				<xsd:key name="createAccountFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="createAccountFailedPlayerAlreadyExistsPK">
+					<xsd:selector xpath="playerAlreadyExists" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="loginFailed" type="momimelangs:loginFailed">
+				<xsd:key name="loginFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="loginFailedYourConnectionIsAlreadyLoggedInPK">
+					<xsd:selector xpath="yourConnectionIsAlreadyLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="loginFailedPlayerNameOrPasswordNotRecognizedPK">
+					<xsd:selector xpath="playerNameOrPasswordNotRecognized" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="loginFailedAnotherConnectionUsingYourPlayerIDPK">
+					<xsd:selector xpath="anotherConnectionUsingYourPlayerID" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="logoutFailed" type="momimelangs:logoutFailed">
+				<xsd:key name="logoutFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="logoutFailedNotLoggedInPK">
+					<xsd:selector xpath="notLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="requestSessionListFailed" type="momimelangs:requestSessionListFailed">
+				<xsd:key name="requestSessionListFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="requestSessionListFailedNotLoggedInPK">
+					<xsd:selector xpath="notLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="joinFailed" type="momimelangs:joinFailed">
+				<xsd:key name="joinFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="joinFailedNotLoggedInPK">
+					<xsd:selector xpath="notLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="joinFailedAlreadyInSessionPK">
+					<xsd:selector xpath="alreadyInSession" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="joinFailedSessionIDNotFoundPK">
+					<xsd:selector xpath="sessionIDNotFound" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="joinFailedSessionFullPK">
+					<xsd:selector xpath="sessionFull" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="leaveSessionFailed" type="momimelangs:leaveSessionFailed">
+				<xsd:key name="leaveSessionFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="leaveSessionFailedNotLoggedInPK">
+					<xsd:selector xpath="notLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="leaveSessionFailedNotInSessionPK">
+					<xsd:selector xpath="notInSession" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="browseSavedGamesFailed" type="momimelangs:browseSavedGamesFailed">
+				<xsd:key name="browseSavedGamesFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="browseSavedGamesFailedNotLoggedInPK">
+					<xsd:selector xpath="notLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="browseSavedGamesFailedAlreadyInSessionPK">
+					<xsd:selector xpath="alreadyInSession" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="browseSavedGamesFailedSavedGamesNotSupportedPK">
+					<xsd:selector xpath="savedGamesNotSupported" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="browseSavePointsFailed" type="momimelangs:browseSavePointsFailed">
+				<xsd:key name="browseSavePointsFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="browseSavePointsFailedNotLoggedInPK">
+					<xsd:selector xpath="notLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="browseSavePointsFailedAlreadyInSessionPK">
+					<xsd:selector xpath="alreadyInSession" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="browseSavePointsFailedSavedGameIDNotFoundPK">
+					<xsd:selector xpath="savedGameIDNotFound" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="browseSavePointsFailedSavedGamesNotSupportedPK">
+					<xsd:selector xpath="savedGamesNotSupported" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="deleteSavedGameFailed" type="momimelangs:deleteSavedGameFailed">
+				<xsd:key name="deleteSavedGameFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="deleteSavedGameFailedNotLoggedInPK">
+					<xsd:selector xpath="notLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="deleteSavedGameFailedAlreadyInSessionPK">
+					<xsd:selector xpath="alreadyInSession" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="deleteSavedGameFailedSavedGameIDNotFoundPK">
+					<xsd:selector xpath="savedGameIDNotFound" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="deleteSavedGameFailedSavedGamesNotSupportedPK">
+					<xsd:selector xpath="savedGamesNotSupported" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="loadGameFailed" type="momimelangs:loadGameFailed">
+				<xsd:key name="loadGameFailedTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="loadGameFailedNotLoggedInPK">
+					<xsd:selector xpath="notLoggedIn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="loadGameFailedAlreadyInSessionPK">
+					<xsd:selector xpath="alreadyInSession" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="loadGameFailedSavedGameIDNotFoundPK">
+					<xsd:selector xpath="savedGameIDNotFound" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="loadGameFailedSavedGameFilenameNotFoundPK">
+					<xsd:selector xpath="savedGameFilenameNotFound" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="loadGameFailedSavedGamesNotSupportedPK">
+					<xsd:selector xpath="savedGamesNotSupported" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="connectionErrors" type="momimelangs:connectionErrors">
+				<xsd:key name="connectionErrorsTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="connectionErrorsUnknownHostExceptionPK">
+					<xsd:selector xpath="unknownHostException" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="connectionErrorsTimedOutPK">
+					<xsd:selector xpath="timedOut" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="connectionErrorsRefusedPK">
+					<xsd:selector xpath="refused" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="connectionErrorsOtherPK">
+					<xsd:selector xpath="other" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -487,7 +2521,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="constructionCompleted" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="constructionAborted" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nextConstruction" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="LackOfProductionCategory" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="lackOfProductionCategory" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowthCategory" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityGrowth" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cityDeathCategory" />
@@ -572,16 +2606,502 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="gameName" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="customize" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="invalidNumberOfPlayers" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customMapSizeTab" type="momimelangs:customMapSizeTab" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customLandProportionTab" type="momimelangs:customLandProportionTab" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customNodesTab" type="momimelangs:customNodesTab" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab1" type="momimelangs:customDifficultyTab1" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab2" type="momimelangs:customDifficultyTab2" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab3" type="momimelangs:customDifficultyTab3" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customFogOfWarTab" type="momimelangs:customFogOfWarTab" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customSpellsTab" type="momimelangs:customSpellsTab" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customUnitsTab" type="momimelangs:customUnitsTab" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="customDebugTab" type="momimelangs:customDebugTab" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customMapSizeTab" type="momimelangs:customMapSizeTab">
+				<xsd:key name="customMapSizeTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabMapSizePK">
+					<xsd:selector xpath="mapSize" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabZonesPK">
+					<xsd:selector xpath="zones" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabNormalLairCountPK">
+					<xsd:selector xpath="normalLairCount" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabWeakLairCountPK">
+					<xsd:selector xpath="weakLairCount" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabTowersPK">
+					<xsd:selector xpath="towers" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabTowersSeparationPK">
+					<xsd:selector xpath="towersSeparation" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabContinentalPK">
+					<xsd:selector xpath="continental" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabCitySeparationPK">
+					<xsd:selector xpath="citySeparation" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabWrapsLeftRightPK">
+					<xsd:selector xpath="wrapsLeftRight" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customMapSizeTabWrapsTopBottomPK">
+					<xsd:selector xpath="wrapsTopBottom" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customLandProportionTab" type="momimelangs:customLandProportionTab">
+				<xsd:key name="customLandProportionTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabPercentageMapIsLandPK">
+					<xsd:selector xpath="percentageMapIsLand" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabHillsProportionPK">
+					<xsd:selector xpath="hillsProportion" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabMountainsProportionPK">
+					<xsd:selector xpath="mountainsProportion" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabTreesProportionPK">
+					<xsd:selector xpath="treesProportion" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabDesertProportionPK">
+					<xsd:selector xpath="desertProportion" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabSwampProportionPK">
+					<xsd:selector xpath="swampProportion" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabTreeAreaTileCountPrefixPK">
+					<xsd:selector xpath="treeAreaTileCountPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabTreeAreaTileCountSuffixPK">
+					<xsd:selector xpath="treeAreaTileCountSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabDesertAreaTileCountPrefixPK">
+					<xsd:selector xpath="desertAreaTileCountPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabDesertAreaTileCountSuffixPK">
+					<xsd:selector xpath="desertAreaTileCountSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabSwampAreaTileCountPrefixPK">
+					<xsd:selector xpath="swampAreaTileCountPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabSwampAreaTileCountSuffixPK">
+					<xsd:selector xpath="swampAreaTileCountSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabTundraPrefixPK">
+					<xsd:selector xpath="tundraPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabTundraSuffixPK">
+					<xsd:selector xpath="tundraSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabRiversPK">
+					<xsd:selector xpath="rivers" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabArcanusPrefixPK">
+					<xsd:selector xpath="arcanusPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabArcanusSuffixPK">
+					<xsd:selector xpath="arcanusSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabMyrrorPrefixPK">
+					<xsd:selector xpath="myrrorPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customLandProportionTabMyrrorSuffixPK">
+					<xsd:selector xpath="myrrorSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customNodesTab" type="momimelangs:customNodesTab">
+				<xsd:key name="customNodesTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodesTabMagicPowerPrefixPK">
+					<xsd:selector xpath="magicPowerPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodesTabMagicPowerSuffixPK">
+					<xsd:selector xpath="magicPowerSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodesTabArcanusCountPK">
+					<xsd:selector xpath="arcanusCount" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodesTabArcanusNodeAuraPrefixPK">
+					<xsd:selector xpath="arcanusNodeAuraPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodesTabArcanusNodeAuraSuffixPK">
+					<xsd:selector xpath="arcanusNodeAuraSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodesTabMyrrorCountPK">
+					<xsd:selector xpath="myrrorCount" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodesTabMyrrorNodeAuraPrefixPK">
+					<xsd:selector xpath="myrrorNodeAuraPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customNodesTabMyrrorNodeAuraSuffixPK">
+					<xsd:selector xpath="myrrorNodeAuraSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab1" type="momimelangs:customDifficultyTab1">
+				<xsd:key name="customDifficultyTab1TitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1HumanSpellPicksPK">
+					<xsd:selector xpath="humanSpellPicks" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiSpellPicksPK">
+					<xsd:selector xpath="aiSpellPicks" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1HumanGoldPK">
+					<xsd:selector xpath="humanGold" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiGoldPK">
+					<xsd:selector xpath="aiGold" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1SpellPicksPK">
+					<xsd:selector xpath="spellPicks" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1GoldPK">
+					<xsd:selector xpath="gold" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiPopulationGrowthRateMultiplierPK">
+					<xsd:selector xpath="aiPopulationGrowthRateMultiplier" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiPopulationGrowthRateMultiplierWizardsPK">
+					<xsd:selector xpath="aiPopulationGrowthRateMultiplierWizards" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiPopulationGrowthRateMultiplierRaidersPK">
+					<xsd:selector xpath="aiPopulationGrowthRateMultiplierRaiders" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiProductionRateMultiplierPK">
+					<xsd:selector xpath="aiProductionRateMultiplier" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiProductionRateMultiplierWizardsPK">
+					<xsd:selector xpath="aiProductionRateMultiplierWizards" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiProductionRateMultiplierRaidersPK">
+					<xsd:selector xpath="aiProductionRateMultiplierRaiders" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiSpellResearchMultiplierPK">
+					<xsd:selector xpath="aiSpellResearchMultiplier" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1AiUpkeepMultiplierPK">
+					<xsd:selector xpath="aiUpkeepMultiplier" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1WizardCitySizePK">
+					<xsd:selector xpath="wizardCitySize" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1RaiderCityCountPK">
+					<xsd:selector xpath="raiderCityCount" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1RaiderCitySizePrefixPK">
+					<xsd:selector xpath="raiderCitySizePrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1RaiderCityGrowthPrefixPK">
+					<xsd:selector xpath="raiderCityGrowthPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1RaiderCityGrowthSuffixPK">
+					<xsd:selector xpath="raiderCityGrowthSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1MaxCitySizePK">
+					<xsd:selector xpath="maxCitySize" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1CustomWizardsPK">
+					<xsd:selector xpath="customWizards" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab1EachWizardOnlyOncePK">
+					<xsd:selector xpath="eachWizardOnlyOnce" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab2" type="momimelangs:customDifficultyTab2">
+				<xsd:key name="customDifficultyTab2TitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2TowerMonstersPK">
+					<xsd:selector xpath="towerMonsters" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2TowerTreasurePK">
+					<xsd:selector xpath="towerTreasure" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2NormalLairsPK">
+					<xsd:selector xpath="normalLairs" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2NormalArcanusLairMonstersPK">
+					<xsd:selector xpath="normalArcanusLairMonsters" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2NormalArcanusLairTreasurePK">
+					<xsd:selector xpath="normalArcanusLairTreasure" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2NormalMyrrorLairMonstersPK">
+					<xsd:selector xpath="normalMyrrorLairMonsters" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2NormalMyrrorLairTreasurePK">
+					<xsd:selector xpath="normalMyrrorLairTreasure" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2WeakLairsPK">
+					<xsd:selector xpath="weakLairs" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2WeakArcanusLairMonstersPK">
+					<xsd:selector xpath="weakArcanusLairMonsters" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2WeakArcanusLairTreasurePK">
+					<xsd:selector xpath="weakArcanusLairTreasure" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2WeakMyrrorLairMonstersPK">
+					<xsd:selector xpath="weakMyrrorLairMonsters" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab2WeakMyrrorLairTreasurePK">
+					<xsd:selector xpath="weakMyrrorLairTreasure" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab3" type="momimelangs:customDifficultyTab3">
+				<xsd:key name="customDifficultyTab3TitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3ArcanusNodeMonstersPK">
+					<xsd:selector xpath="arcanusNodeMonsters" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3ArcanusNodeTreasurePK">
+					<xsd:selector xpath="arcanusNodeTreasure" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3MyrrorNodeMonstersPK">
+					<xsd:selector xpath="myrrorNodeMonsters" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDifficultyTab3MyrrorNodeTreasurePK">
+					<xsd:selector xpath="myrrorNodeTreasure" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customFogOfWarTab" type="momimelangs:customFogOfWarTab">
+				<xsd:key name="customFogOfWarTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customFogOfWarTabAlwaysPK">
+					<xsd:selector xpath="always" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customFogOfWarTabRememberPK">
+					<xsd:selector xpath="remember" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customFogOfWarTabForgetPK">
+					<xsd:selector xpath="forget" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customFogOfWarTabTerrainNodesAurasPK">
+					<xsd:selector xpath="terrainNodesAuras" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customFogOfWarTabCitiesSpellsCombatAreaEffectsPK">
+					<xsd:selector xpath="citiesSpellsCombatAreaEffects" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customFogOfWarTabUnitsPK">
+					<xsd:selector xpath="units" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customFogOfWarTabConstructingPK">
+					<xsd:selector xpath="constructing" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customSpellsTab" type="momimelangs:customSpellsTab">
+				<xsd:key name="customSpellsTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabSwitchResearchPK">
+					<xsd:selector xpath="switchResearch" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabSwitchResearchNoPK">
+					<xsd:selector xpath="switchResearchNo" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabSwitchResearchNotStartedPK">
+					<xsd:selector xpath="switchResearchNotStarted" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabSwitchResearchLosePK">
+					<xsd:selector xpath="switchResearchLose" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabSwitchResearchFreelyPK">
+					<xsd:selector xpath="switchResearchFreely" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabBooksToObtainFirstReductionPK">
+					<xsd:selector xpath="booksToObtainFirstReduction" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabEachBookPK">
+					<xsd:selector xpath="eachBook" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabCastingReductionPrefixPK">
+					<xsd:selector xpath="castingReductionPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabCastingReductionSuffixPK">
+					<xsd:selector xpath="castingReductionSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabResearchBonusPrefixPK">
+					<xsd:selector xpath="researchBonusPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabResearchBonusSuffixPK">
+					<xsd:selector xpath="researchBonusSuffix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabCastingReductionCombinationAddPK">
+					<xsd:selector xpath="castingReductionCombinationAdd" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabCastingReductionCombinationMultiplyPK">
+					<xsd:selector xpath="castingReductionCombinationMultiply" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabResearchBonusCombinationAddPK">
+					<xsd:selector xpath="researchBonusCombinationAdd" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabResearchBonusCombinationMultiplyPK">
+					<xsd:selector xpath="researchBonusCombinationMultiply" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabCastingReductionCapPK">
+					<xsd:selector xpath="castingReductionCap" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabResearchBonusCapPK">
+					<xsd:selector xpath="researchBonusCap" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customSpellsTabStolenFromFortressPK">
+					<xsd:selector xpath="stolenFromFortress" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customUnitsTab" type="momimelangs:customUnitsTab">
+				<xsd:key name="customUnitsTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customUnitsTabMaxPerGridCellPK">
+					<xsd:selector xpath="maxPerGridCell" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customUnitsTabCanExceedMaximumUnitsDuringCombatPK">
+					<xsd:selector xpath="canExceedMaximumUnitsDuringCombat" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customUnitsTabMaxHeroesPK">
+					<xsd:selector xpath="maxHeroes" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customUnitsTabRollHeroSkillsAtStartOfGamePK">
+					<xsd:selector xpath="rollHeroSkillsAtStartOfGame" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customUnitsTabMaxHeroItemBonusesPK">
+					<xsd:selector xpath="maxHeroItemBonuses" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customUnitsTabMaxHeroItemSpellChargesPK">
+					<xsd:selector xpath="maxHeroItemSpellCharges" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customUnitsTabMaxHeroItemsInBankPK">
+					<xsd:selector xpath="maxHeroItemsInBank" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customUnitsTabUnlimitedPK">
+					<xsd:selector xpath="unlimited" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="customDebugTab" type="momimelangs:customDebugTab">
+				<xsd:key name="customDebugTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="customDebugTabDisableFogOfWarPK">
+					<xsd:selector xpath="disableFogOfWar" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -837,9 +3357,9 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="leaveGame" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ListColumnName" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ListColumnWizard" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ListColumnHumanOrAI" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="listColumnName" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="listColumnWizard" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="listColumnHumanOrAI" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="human" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ai" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="custom" />
@@ -848,9 +3368,140 @@
 
 	<xsd:complexType name="overlandMapScreen" nxe:submenu="Overland map" nxe:singular="Overland map" nxe:plural="Overland map">
 		<xsd:sequence>
-   			<xsd:element minOccurs="0" maxOccurs="1" name="mapButtonBar" type="momimelangs:mapButtonBar" />
-   			<xsd:element minOccurs="0" maxOccurs="1" name="mapRightHandBar" type="momimelangs:mapRightHandBar" />
-    		<xsd:element minOccurs="0" maxOccurs="1" name="surveyorTab" type="momimelangs:surveyorTab" />
+   			<xsd:element minOccurs="0" maxOccurs="1" name="mapButtonBar" type="momimelangs:mapButtonBar">
+				<xsd:key name="mapButtonBarGamePK">
+					<xsd:selector xpath="game" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapButtonBarSpellsPK">
+					<xsd:selector xpath="spells" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapButtonBarArmiesPK">
+					<xsd:selector xpath="armies" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapButtonBarCitiesPK">
+					<xsd:selector xpath="cities" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapButtonBarMagicPK">
+					<xsd:selector xpath="magic" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapButtonBarPlanePK">
+					<xsd:selector xpath="plane" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapButtonBarNewTurnMessagesPK">
+					<xsd:selector xpath="newTurnMessages" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapButtonBarChatPK">
+					<xsd:selector xpath="chat" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapButtonBarTurnPK">
+					<xsd:selector xpath="turn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+   			<xsd:element minOccurs="0" maxOccurs="1" name="mapRightHandBar" type="momimelangs:mapRightHandBar">
+				<xsd:key name="mapRightHandBarDonePK">
+					<xsd:selector xpath="done" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarPatrolPK">
+					<xsd:selector xpath="patrol" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarWaitPK">
+					<xsd:selector xpath="wait" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarOnePlayerAtATimeCurrentPlayerPK">
+					<xsd:selector xpath="onePlayerAtATimeCurrentPlayer" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarSimultaneousTurnsLine1PK">
+					<xsd:selector xpath="simultaneousTurnsLine1" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarSimultaneousTurnsLine2PK">
+					<xsd:selector xpath="simultaneousTurnsLine2" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarProductionPerTurnPK">
+					<xsd:selector xpath="productionPerTurn" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarProductionPerTurnMagicPowerPK">
+					<xsd:selector xpath="productionPerTurnMagicPower" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarTargetSpellPK">
+					<xsd:selector xpath="targetSpell" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarCannotEndTurnTitlePK">
+					<xsd:selector xpath="cannotEndTurnTitle" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarCannotEndTurnPrefixPK">
+					<xsd:selector xpath="cannotEndTurnPrefix" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarCannotEndTurnResearchPK">
+					<xsd:selector xpath="cannotEndTurnResearch" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarCannotEndTurnNewTurnMessagesPK">
+					<xsd:selector xpath="cannotEndTurnNewTurnMessages" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarCannotEndTurnUnassignedHeroItemsPK">
+					<xsd:selector xpath="cannotEndTurnUnassignedHeroItems" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+   			</xsd:element>
+    		<xsd:element minOccurs="0" maxOccurs="1" name="surveyorTab" type="momimelangs:surveyorTab">
+				<xsd:key name="surveyorTabTitlePK">
+					<xsd:selector xpath="title" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="surveyorTabCityResourcesPK">
+					<xsd:selector xpath="cityResources" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="surveyorTabCantBuildCityBecauseUnscoutedPK">
+					<xsd:selector xpath="cantBuildCityBecauseUnscouted" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="surveyorTabCantBuildCityBecauseOfTerrainPK">
+					<xsd:selector xpath="cantBuildCityBecauseOfTerrain" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="surveyorTabCantBuildCityBecauseOfFeaturePK">
+					<xsd:selector xpath="cantBuildCityBecauseOfFeature" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="surveyorTabCantBuildCityTooCloseToAnotherCityPK">
+					<xsd:selector xpath="cantBuildCityTooCloseToAnotherCity" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="surveyorTabCanBuildCityPK">
+					<xsd:selector xpath="canBuildCity" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="surveyorTabFeatureProvidesSpellProtectionPK">
+					<xsd:selector xpath="featureProvidesSpellProtection" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="surveyorTabCorruptedPK">
+					<xsd:selector xpath="corrupted" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+    		</xsd:element>
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -946,7 +3597,6 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showEnemyBorders" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="animateUnitsMoving" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="combatMap" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="combatUnitScale" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="debug" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showFrameRate" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="showUnitURNs" />
@@ -972,8 +3622,6 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cantBuildCityTooCloseToAnotherCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="canBuildCity" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="featureProvidesSpellProtection" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodeLairTowerUnscouted" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodeTowerCleared" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="corrupted" />
 		</xsd:sequence>
     </xsd:complexType>

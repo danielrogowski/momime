@@ -13,13 +13,13 @@
         <languageDescription>Polski</languageDescription>
     </languageOption>
     <knownServer knownServerID="SVR01">
-        <knownServerIP>localhost</knownServerIP>
         <knownServerDescription language="en">
             <text>Local PC</text>
         </knownServerDescription>
         <knownServerDescription language="pl">
             <text>Lokalny PC</text>
         </knownServerDescription>
+        <knownServerIP>localhost</knownServerIP>
     </knownServer>
     <shortcutKey shortcut="ARMIES_SCREEN">
         <keyLang language="en">
@@ -1050,14 +1050,6 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <defenceStatistics language="fr">
             <text>DEFENDER_NAME subit ACTUAL_DAMAGE points de dégâts - Chacun des DEFENDER_FIGURES personnages se défend avec DEFENCE_STRENGTH * CHANCE_TO_DEFEND% de chance de bloquer = AVERAGE_BLOCK dégâts bloqués en moyenne - Dégâts réellement bloqués par chaque personnage = ACTUAL_BLOCK</text>
         </defenceStatistics>
-        <defenceStatistics language="de">
-            <text>DEFENDER_NAME taking ACTUAL_DAMAGE hits - Each of DEFENDER_FIGURES figures has defence DEFENCE_STRENGTH
-        * CHANCE_TO_DEFEND% chance to block = average AVERAGE_BLOCK hits blocked - Actual hits blocked by each figure = ACTUAL_BLOCK</text>
-        </defenceStatistics>
-        <defenceStatistics language="pl">
-            <text>DEFENDER_NAME taking ACTUAL_DAMAGE hits - Each of DEFENDER_FIGURES figures has defence DEFENCE_STRENGTH
-        * CHANCE_TO_DEFEND% chance to block = average AVERAGE_BLOCK hits blocked - Actual hits blocked by each figure = ACTUAL_BLOCK</text>
-        </defenceStatistics>
         <defenceStatisticsAutomatic language="en">
             <text>ACTUAL_HITS hit(s) strike DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME, FINAL_HITS hit(s) damage HP.</text>
         </defenceStatisticsAutomatic>
@@ -1598,9 +1590,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
         <nextConstruction language="en">
             <text>and is now starting to construct NEW_CONSTRUCTION</text>
         </nextConstruction>
-        <LackOfProductionCategory language="en">
+        <lackOfProductionCategory language="en">
             <text>Losses from Lack of Production</text>
-        </LackOfProductionCategory>
+        </lackOfProductionCategory>
         <cityGrowthCategory language="en">
             <text>City Growth</text>
         </cityGrowthCategory>
@@ -3195,33 +3187,33 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
         <leaveGame language="pl">
             <text>Opuść Grę</text>
         </leaveGame>
-        <ListColumnName language="en">
+        <listColumnName language="en">
             <text>Name</text>
-        </ListColumnName>
-        <ListColumnName language="fr">
+        </listColumnName>
+        <listColumnName language="fr">
             <text>Nom</text>
-        </ListColumnName>
-        <ListColumnName language="pl">
+        </listColumnName>
+        <listColumnName language="pl">
             <text>Imię</text>
-        </ListColumnName>
-        <ListColumnWizard language="en">
+        </listColumnName>
+        <listColumnWizard language="en">
             <text>Wizard</text>
-        </ListColumnWizard>
-        <ListColumnWizard language="fr">
+        </listColumnWizard>
+        <listColumnWizard language="fr">
             <text>Sorcier</text>
-        </ListColumnWizard>
-        <ListColumnWizard language="pl">
+        </listColumnWizard>
+        <listColumnWizard language="pl">
             <text>Czarodziej</text>
-        </ListColumnWizard>
-        <ListColumnHumanOrAI language="en">
+        </listColumnWizard>
+        <listColumnHumanOrAI language="en">
             <text>Human or AI?</text>
-        </ListColumnHumanOrAI>
-        <ListColumnHumanOrAI language="fr">
+        </listColumnHumanOrAI>
+        <listColumnHumanOrAI language="fr">
             <text>Humain ou IA?</text>
-        </ListColumnHumanOrAI>
-        <ListColumnHumanOrAI language="pl">
+        </listColumnHumanOrAI>
+        <listColumnHumanOrAI language="pl">
             <text>Człowiek czy SI?</text>
-        </ListColumnHumanOrAI>
+        </listColumnHumanOrAI>
         <human language="en">
             <text>Human</text>
         </human>
@@ -3417,18 +3409,6 @@ Bonus Or +GOLD_BONUS%</text>
             <featureProvidesSpellProtection language="fr">
                 <text>Protège contre sorts</text>
             </featureProvidesSpellProtection>
-            <nodeLairTowerUnscouted language="en">
-                <text>Unexplored</text>
-            </nodeLairTowerUnscouted>
-            <nodeLairTowerUnscouted language="fr">
-                <text>Inexploré</text>
-            </nodeLairTowerUnscouted>
-            <nodeTowerCleared language="en">
-                <text>Cleared</text>
-            </nodeTowerCleared>
-            <nodeTowerCleared language="fr">
-                <text>Dégagé</text>
-            </nodeTowerCleared>
             <corrupted language="en">
                 <text>Corrupted</text>
             </corrupted>
@@ -3590,18 +3570,6 @@ Bonus Or +GOLD_BONUS%</text>
         <combatMap language="pl">
             <text>Mapa Walki</text>
         </combatMap>
-        <combatUnitScale language="en">
-            <text>Unit scale (visual only; showing 4x figures does not mean 4x attacks):</text>
-        </combatUnitScale>
-        <combatUnitScale language="fr">
-            <text>Grille de Combat :</text>
-        </combatUnitScale>
-        <combatUnitScale language="de">
-            <text>Unit scale:</text>
-        </combatUnitScale>
-        <combatUnitScale language="pl">
-            <text>Skala Jednostek:</text>
-        </combatUnitScale>
         <debug language="en">
             <text>Debug Options</text>
         </debug>
@@ -3625,12 +3593,6 @@ Bonus Or +GOLD_BONUS%</text>
         </showUnitURNs>
         <showUnitURNs language="fr">
             <text>Affiche URNs d'Unité</text>
-        </showUnitURNs>
-        <showUnitURNs language="de">
-            <text>Show Unit URNs on Unit Info screen</text>
-        </showUnitURNs>
-        <showUnitURNs language="pl">
-            <text>Show Unit URNs on Unit Info screen</text>
         </showUnitURNs>
         <showEdgesOfMap language="en">
             <text>Show edges of map</text>

@@ -1,8 +1,5 @@
 package momime.common.database;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.random.RandomUtils;
 
 /**
@@ -10,9 +7,6 @@ import com.ndg.random.RandomUtils;
  */
 public final class WizardEx extends Wizard
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (WizardEx.class);
-	
 	/** Random utils */
 	private RandomUtils randomUtils;
 	
@@ -22,13 +16,10 @@ public final class WizardEx extends Wizard
 	 */
 	public final String chooseRandomCombatPlayListID () throws RecordNotFoundException
 	{
-		log.trace ("Entering chooseRandomCombatPlayListID");
-		
 		if (getCombatPlayList ().size () == 0)
 			throw new RecordNotFoundException ("WizardCombatPlayList", null, "chooseRandomCombatPlayListID");
 		
 		final String playListID = getCombatPlayList ().get (getRandomUtils ().nextInt (getCombatPlayList ().size ()));
-		log.trace ("Exiting chooseRandomCombatPlayListID = " + playListID);
 		return playListID;
 	}
 

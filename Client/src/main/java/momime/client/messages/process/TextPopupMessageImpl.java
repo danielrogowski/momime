@@ -5,25 +5,19 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.TextPopupMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
 /**
  * Server sends to clients for warning/error messages
  */
 public final class TextPopupMessageImpl extends TextPopupMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (TextPopupMessageImpl.class);
-
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
@@ -38,14 +32,10 @@ public final class TextPopupMessageImpl extends TextPopupMessage implements Base
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 		msg.setLanguageTitle (getLanguages ().getMessageBoxScreen ().getErrorTitle ());
 		msg.setText (getText ());
 		msg.setVisible (true);
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

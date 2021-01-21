@@ -5,23 +5,17 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.ConnectToServerUI;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Message server sends to clients as they connect, to tell them what databases and pre-defined settings are available
  */
 public final class NewGameDatabaseMessageImpl extends NewGameDatabaseMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewGameDatabaseMessageImpl.class);
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -36,15 +30,11 @@ public final class NewGameDatabaseMessageImpl extends NewGameDatabaseMessage imp
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		// Record it
 		getClient ().setNewGameDatabase (getNewGameDatabase ());
 		
 		// Now we're connected, log in, or create account then log in
 		getConnectToServerUI ().afterConnected ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

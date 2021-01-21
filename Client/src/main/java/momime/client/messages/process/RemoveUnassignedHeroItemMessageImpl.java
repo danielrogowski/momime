@@ -46,8 +46,6 @@ public final class RemoveUnassignedHeroItemMessageImpl extends RemoveUnassignedH
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getHeroItemURN ());
-		
 		final NumberedHeroItem item = getHeroItemUtils ().findHeroItemURN (getHeroItemURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ());
 		
 		if (item == null)
@@ -58,8 +56,6 @@ public final class RemoveUnassignedHeroItemMessageImpl extends RemoveUnassignedH
 			getHeroItemsUI ().refreshItemsBank ();
 			getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 		}
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

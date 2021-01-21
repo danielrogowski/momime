@@ -3,6 +3,10 @@ package momime.server.process.resourceconsumer;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryBuilding;
@@ -12,21 +16,11 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.process.CityProcessing;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-
 /**
  * Building that consumes a particular type of resource
  */
 public final class MomResourceConsumerBuilding implements MomResourceConsumer
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MomResourceConsumerBuilding.class);
-	
 	/** True map building that is consuming resources */
 	private MemoryBuilding building;
 
@@ -123,8 +117,6 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering kill: " + getBuilding ().getCityLocation () + ", " + getBuilding ().getBuildingID ());
-
 		getCityProcessing ().sellBuilding (mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (),
 			(MapCoordinates3DEx) getBuilding ().getCityLocation (), getBuilding ().getBuildingURN (), false, false, mom.getSessionDescription (), mom.getServerDB ());
 
@@ -138,8 +130,6 @@ public final class MomResourceConsumerBuilding implements MomResourceConsumer
 
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (buildingSold);
 		}
-
-		log.trace ("Exiting kill");
 	}
 
 	/**

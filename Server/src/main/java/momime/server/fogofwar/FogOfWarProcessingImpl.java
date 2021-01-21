@@ -197,8 +197,6 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		log.trace ("Entering markVisibleArea: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// Nature Awareness allows us to see the whole map, in which case no point checking each city or unit
@@ -285,8 +283,6 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 							thisSpell.getCityLocation ().getY (), thisSpell.getCityLocation ().getZ (), spellDef.getSpellRadius ());
 				}
 		}
-
-		log.trace ("Exiting markVisibleArea");
 	}
 
 	/**
@@ -366,8 +362,6 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		final List<PlayerServerDetails> players, final String triggeredFrom, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering updateAndSendFogOfWar: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		markVisibleArea (trueMap, player, players, sd, db);
 
 		// Start off the big message, if a human player
@@ -834,8 +828,6 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 		// Send the completed message
 		if (msg != null)
 			player.getConnection ().sendMessageToClient (msg);
-
-		log.trace ("Exiting updateAndSendFogOfWar");
 	}
 
 	/**

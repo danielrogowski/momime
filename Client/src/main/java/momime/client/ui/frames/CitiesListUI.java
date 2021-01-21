@@ -153,8 +153,6 @@ public final class CitiesListUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/citiesList.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button82x30goldBorderNormal.png");
@@ -359,8 +357,6 @@ public final class CitiesListUI extends MomClientFrameUI
 			(new int [] {10, 6, 6, 10, 0, 0,		652, 652, 642, 646, 646, 642,		642, 646, 646, 642, 652, 652,		0, 0, 10, 6, 6, 10},
 			new int [] {38, 38, 30, 30, 10, 0,	0, 10, 30, 30, 38, 38,					378, 378, 386, 386, 406, 416,		416, 406, 386, 386, 378, 378},
 			24));		
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -369,8 +365,6 @@ public final class CitiesListUI extends MomClientFrameUI
 	 */
 	public final void refreshCitiesList () throws IOException
 	{
-		log.trace ("Entering refreshCitiesList");
-		
 		if (citiesItems != null)
 		{
 			// Where is the wizard's fortress? (this could give a null if we're banished)
@@ -414,8 +408,6 @@ public final class CitiesListUI extends MomClientFrameUI
 			citiesItems.clear ();
 			cities.stream ().sorted (new CitiesListSorter ()).forEach (c -> citiesItems.addElement (c));
 		}
-		
-		log.trace ("Ending refreshCitiesList");
 	}
 
 	/**
@@ -424,8 +416,6 @@ public final class CitiesListUI extends MomClientFrameUI
 	 */
 	public final void regenerateMiniMapBitmaps () throws IOException
 	{
-		log.trace ("Entering regenerateMiniMapBitmaps");
-		
 		if ((citiesList != null) && (citiesList.getSelectedIndex () >= 0))
 		{
 			final MapCoordinates3DEx coords = citiesItems.get (citiesList.getSelectedIndex ()).getCityLocation ();
@@ -451,8 +441,6 @@ public final class CitiesListUI extends MomClientFrameUI
 			miniMapBitmaps [1] = b;			
 			miniMapPanel.repaint ();
 		}
-		
-		log.trace ("Exiting regenerateMiniMapBitmaps");
 	}
 	
 	/**
@@ -461,8 +449,6 @@ public final class CitiesListUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		// Title containing player name
 		String titleText = getLanguageHolder ().findDescription (getLanguages ().getCitiesListScreen ().getTitle ());
 		
@@ -484,8 +470,6 @@ public final class CitiesListUI extends MomClientFrameUI
 		
 		// Buttons
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

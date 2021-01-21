@@ -165,8 +165,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		// Can we see the attacker?
 		if (getAttackerUnitURN () != null)
 		{
@@ -323,8 +321,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 					}
 			}
 		}
-		
-		log.trace ("Exiting start");
 	}
 
 	/**
@@ -476,8 +472,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	@Override
 	public final void finish () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering finish");
-		
 		// Damage to attacker
 		if (attackerUnit != null)
 		{
@@ -548,8 +542,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 		getCombatUI ().setAttackAnim (null);
 		getCombatUI ().setCombatCastAnimation (null);
 		getCombatUI ().getCombatCastAnimationPositions ().clear ();
-		
-		log.trace ("Exiting finish");
 	}
 	
 	/**

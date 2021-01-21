@@ -3,8 +3,6 @@ package momime.client.language.replacer;
 import java.io.IOException;
 import java.net.URL;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.expression.ExpressionException;
 import org.springframework.expression.ExpressionParser;
@@ -15,9 +13,6 @@ import org.springframework.expression.spel.standard.SpelExpressionParser;
  */
 public final class SpringExpressionReplacerImpl extends LanguageVariableReplacerImpl implements SpringExpressionReplacer
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpringExpressionReplacerImpl.class);
-	
 	/** Context to use when evaluating expressions */ 
 	private EvaluationContext evaluationContext;
 	
@@ -34,8 +29,6 @@ public final class SpringExpressionReplacerImpl extends LanguageVariableReplacer
 	@Override
 	public final LanguageVariableReplacerCodePosition findCode (final String description)
 	{
-		log.trace ("Entering findCode: " + description);
-
 		final LanguageVariableReplacerCodePosition position;
 		final int codeStart = description.indexOf ("#{");
 		if (codeStart < 0)
@@ -50,7 +43,6 @@ public final class SpringExpressionReplacerImpl extends LanguageVariableReplacer
 				position = new LanguageVariableReplacerCodePosition (codeStart, codeEnd + 1);
 		}
 
-		log.trace ("Exiting findCode: " + position);
 		return position;
 	}
 	
@@ -62,8 +54,6 @@ public final class SpringExpressionReplacerImpl extends LanguageVariableReplacer
 	@Override
 	public final String determineVariableValue (final String code) throws IOException
 	{
-		log.trace ("Entering determineVariableValue: " + code);
-
 		// Strip off the #{..} container
 		final String expression = code.substring (2, code.length () - 1);
 		
@@ -88,7 +78,6 @@ public final class SpringExpressionReplacerImpl extends LanguageVariableReplacer
 			throw new IOException ("Error evaluating expression " + code, e);
 		}
 
-		log.trace ("Entering determineVariableValue: " + value);
 		return value;
 	}
 

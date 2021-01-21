@@ -5,13 +5,10 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.process.OverlandMapProcessing;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * When the server is sending a sequence of messages resulting from a unit moving, it sends this to say that the
@@ -21,9 +18,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  */
 public final class SelectNextUnitToMoveOverlandMessageImpl extends SelectNextUnitToMoveOverlandMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
-	
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
@@ -35,11 +29,7 @@ public final class SelectNextUnitToMoveOverlandMessageImpl extends SelectNextUni
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		getOverlandMapProcessing ().selectNextUnitToMoveOverland ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

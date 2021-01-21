@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.UnitInfoUI;
@@ -13,19 +15,11 @@ import momime.common.messages.servertoclient.CancelCombatAreaEffectMessage;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.UnitUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
 /**
  * Server sends this to notify clients of cancelled CAEs, or those that have gone out of view.
  */
 public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEffectMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (CancelCombatAreaEffectMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -46,8 +40,6 @@ public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEff
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: CAE URN " + getCombatAreaEffectURN ());
-		
 		// Grab the CAE before we remove it
 		final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (getCombatAreaEffectURN (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect (), "CancelCombatAreaEffectMessageImpl");
@@ -64,8 +56,6 @@ public final class CancelCombatAreaEffectMessageImpl extends CancelCombatAreaEff
 		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
 			if (getUnitUtils ().doesCombatAreaEffectApplyToUnit (unitInfo.getUnit (), cae, getClient ().getClientDB ()))
 				unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

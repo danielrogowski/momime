@@ -3,9 +3,6 @@ package momime.client.calculations.damage;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
@@ -25,9 +22,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class DamageCalculationHeaderDataEx extends DamageCalculationHeaderData implements DamageCalculationText
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (DamageCalculationHeaderDataEx.class);
-	
 	/** Attacking unit */
 	private MemoryUnit attackerUnit;
 	
@@ -67,8 +61,6 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 	@Override
 	public final void preProcess () throws IOException
 	{
-		log.trace ("Entering preProcess");
-		
 		// Find attacking unit and player
 		if (getAttackerUnitURN () != null)
 		{
@@ -91,8 +83,6 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 		    setDefenderPlayer (getMultiplayerSessionUtils ().findPlayerWithID
 		    	(getClient ().getPlayers (), getDefenderUnit ().getOwningPlayerID (), "DamageCalculationHeaderDataEx-dup"));
 		}
-
-		log.trace ("Exiting preProcess");
 	}
 	
 	/**

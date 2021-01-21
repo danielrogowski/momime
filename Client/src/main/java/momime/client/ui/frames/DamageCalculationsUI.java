@@ -65,8 +65,6 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/damageCalculations.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
@@ -110,8 +108,6 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -146,8 +142,6 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 	 */
 	public final void addBreakdown (final DamageCalculationText breakdown)
 	{
-		log.trace ("Entering addBreakdown");
-		
 		// See if we need to remove the oldest entry
 		while (breakdowns.size () >= MAX_MESSAGES)
 			breakdowns.remove (0);
@@ -169,8 +163,6 @@ public final class DamageCalculationsUI extends MomClientFrameUI
 			{
 				log.error (e, e);
 			}
-
-		log.trace ("Exiting addBreakdown");
 	}
 
 	/**

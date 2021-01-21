@@ -1,8 +1,5 @@
 package momime.common.calculations;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Calculations for dealing with casting skill
  *
@@ -16,9 +13,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class SkillCalculationsImpl implements SkillCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SkillCalculationsImpl.class);
-	
 	/**
 	 * @param currentSkill Current casting skill of the wizard
 	 * @return How many skill points we need to improve past the specified skill level (In total, i.e. doesn't consider if we've already spent some towards the improvement)
@@ -26,15 +20,12 @@ public final class SkillCalculationsImpl implements SkillCalculations
 	@Override
 	public final int getSkillPointsRequiredToImproveSkillFrom (final int currentSkill)
 	{
-		log.trace ("Entering getSkillPointsRequiredToImproveSkillFrom: " + currentSkill);
-
 		final int result;
 		if (currentSkill <= 0)
 			result = 1;
 		else
 			result = currentSkill * 2;		// Strategy guide p31
 
-		log.trace ("Exiting getSkillPointsRequiredToImproveSkillFrom = " + result);
 		return result;
 	}
 
@@ -45,8 +36,6 @@ public final class SkillCalculationsImpl implements SkillCalculations
 	@Override
 	public final int getSkillPointsRequiredForCastingSkill (final int castingSkill)
 	{
-		log.trace ("Entering getSkillPointsRequiredForCastingSkill: " + castingSkill);
-
 	    /*
 	     * To get from casting skill (x) to casting skill (x + 1) we need
 	     * (2x) more skill points, which works out as below...
@@ -59,7 +48,6 @@ public final class SkillCalculationsImpl implements SkillCalculations
 		else
 			result = (castingSkill * castingSkill) - castingSkill + 1;
 
-		log.trace ("Exiting getSkillPointsRequiredForCastingSkill = " + result);
 		return result;
 	}
 
@@ -70,8 +58,6 @@ public final class SkillCalculationsImpl implements SkillCalculations
 	@Override
 	public final int getCastingSkillForSkillPoints (final int skillPoints)
 	{
-		log.trace ("Entering getCastingSkillForSkillPoints: " + skillPoints);
-
 		/*
 		 * Odd formula but it works
 		 * Old delphi formula was:
@@ -83,7 +69,6 @@ public final class SkillCalculationsImpl implements SkillCalculations
 		final int skillPointsPlusRoundedSquareRootOfSkillPoints = skillPoints + roundedSquareRootOfSkillPoints;
 		final int result = (int) Math.sqrt (skillPointsPlusRoundedSquareRootOfSkillPoints);
 
-		log.trace ("Exiting getCastingSkillForSkillPoints = " + result);
 		return result;
 	}
 }

@@ -82,8 +82,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	@Override
 	public final String describeCityUnrestCalculation (final CityUnrestBreakdown breakdown)
 	{
-		log.trace ("Entering describeCityUnrestCalculation");
-
 		getUnrestReplacer ().setBreakdown (breakdown);
 		final StringBuilder text = new StringBuilder ();
 		
@@ -135,7 +133,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		if (breakdown.getMinimumFarmers () > 0)
 			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getMinimumFarmers ()));
 		
-		log.trace ("Exiting describeCityUnrestCalculation");
 		return text.toString ();
 	}
 	
@@ -146,8 +143,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	@Override
 	public final String describeCityGrowthRateCalculation (final CityGrowthRateBreakdown breakdown)
 	{
-		log.trace ("Entering describeCityGrowthRateCalculation");
-		
 		getGrowthReplacer ().setBreakdown (breakdown);
 		final StringBuilder text = new StringBuilder ();
 		
@@ -196,7 +191,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		if (breakdown.getCappedTotal () != breakdown.getInitialTotal ())
 			getGrowthReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityGrowthRate ().getCityGrowthRateCapped ()));
 		
-		log.trace ("Exiting describeCityGrowthRateCalculation");
 		return text.toString ();
 	}
 	
@@ -208,8 +202,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	@Override
 	public final String describeCityProductionCalculation (final CityProductionBreakdown calc) throws MomException
 	{
-		log.trace ("Entering describeCityProductionCalculation");
-
 		getProductionReplacer ().setBreakdown (calc);
 		
 		// List out into blocks of production, % bonuses and consumption - so we can test whether each block contains 0, 1 or many entries
@@ -437,7 +429,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 			getProductionReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getCityProduction ().getTradeGoods ()));
 		}
 
-		log.trace ("Exiting describeCityProductionCalculation");
 		return text.toString ();
 	}	
 
@@ -449,8 +440,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	@Override
 	public final String describeWhatBuildingAllows (final String buildingID, final MapCoordinates3DEx cityLocation)
 	{
-		log.trace ("Entering describeWhatBuildingAllows: " + buildingID + ", " + cityLocation);
-		
 		final StringBuilder allows = new StringBuilder ();
 		
 		// City data
@@ -530,7 +519,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		
 		// Did we find anything?
 		final String s = (allows.length () == 0) ? null : getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getAllows ()) + " " + allows.toString () + ".";
-		log.trace ("Exiting describeWhatBuildingAllows = " + s);
 		return s;
 	}
 	
@@ -542,8 +530,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 	@Override
 	public final List<Building> listBuildingsCityCanConstruct (final MapCoordinates3DEx cityLocation) throws RecordNotFoundException
 	{
-		log.trace ("Entering listBuildingsCityCanConstruct: " + cityLocation);
-
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		
@@ -575,7 +561,6 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 					buildList.add (thisBuilding);
 			}
 		
-		log.trace ("Exiting listBuildingsCityCanConstruct = " + buildList.size ());
 		return buildList;
 	}
 		

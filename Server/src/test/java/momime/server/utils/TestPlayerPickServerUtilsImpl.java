@@ -775,7 +775,7 @@ public final class TestPlayerPickServerUtilsImpl
 		final SpellResearchStatus spell1 = new SpellResearchStatus ();
 		final SpellResearchStatus spell2 = new SpellResearchStatus ();
 		final SpellResearchStatus spell3 = new SpellResearchStatus ();
-		when (spellAI.chooseFreeSpellAI (priv.getSpellResearchStatus (), "MB02", "SR01", -1, db)).thenReturn (spell1, spell2, spell3);
+		when (spellAI.chooseFreeSpellAI (priv.getSpellResearchStatus (), "MB02", "SR01", db)).thenReturn (spell1, spell2, spell3);
 		
 		final PlayerPickServerUtilsImpl utils = new PlayerPickServerUtilsImpl ();
 		utils.setSpellUtils (spellUtils);

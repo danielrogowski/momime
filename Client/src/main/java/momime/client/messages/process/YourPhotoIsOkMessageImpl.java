@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.ui.frames.NewGameUI;
@@ -20,9 +17,6 @@ import momime.common.utils.PlayerKnowledgeUtils;
  */
 public final class YourPhotoIsOkMessageImpl extends YourPhotoIsOkMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (YourPhotoIsOkMessageImpl.class);
-
 	/** New Game UI */
 	private NewGameUI newGameUI;
 
@@ -34,15 +28,11 @@ public final class YourPhotoIsOkMessageImpl extends YourPhotoIsOkMessage impleme
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		// Standard portraits have fixed colours, only if we chose a custom portrait do we need to go to the flag colour screen
 		if (PlayerKnowledgeUtils.isCustomWizard (getNewGameUI ().getPortraitChosen ()))
 			getNewGameUI ().showCustomFlagColourPanel ();
 		else
 			getNewGameUI ().showCustomPicksPanel ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

@@ -66,8 +66,6 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getSpellID ());
-		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Spell should already exist, but not targetted
@@ -236,8 +234,6 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		}
 		else
 			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, (MapCoordinates3DEx) getOverlandTargetLocation (), unit, citySpellEffectID, unitSkillID, mom);
-		
-		log.trace ("Exiting process");
 	}		
 
 	/**

@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
@@ -21,9 +18,6 @@ import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
  */
 public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (OverlandCastQueuedMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -41,8 +35,6 @@ public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessa
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getSpellID ());
-		
 		final QueuedSpell queued = new QueuedSpell ();
 		queued.setQueuedSpellID (getSpellID ());
 		queued.setHeroItem (getHeroItem ());
@@ -53,8 +45,6 @@ public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessa
 		getQueuedSpellsUI ().updateQueuedSpells ();
 		if (previousSize == 0)
 			getMagicSlidersUI ().updateProductionLabels ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

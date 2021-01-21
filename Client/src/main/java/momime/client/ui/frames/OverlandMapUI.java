@@ -261,8 +261,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load images
 		topBarBackground = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/background.png");
 		final BufferedImage topBarGoldButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/topBar/goldNormal.png");
@@ -1072,8 +1070,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 				if (shortcut instanceof Shortcut)
 					contentPane.getActionMap ().put (shortcut, getSelectAdvisorUI ().getActionMap ().get (shortcut));
 		}
-		
-		log.trace ("Exiting init");
 	}
 
 	/**
@@ -1082,8 +1078,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		gameAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getGame ()));
 		spellsAction.putValue			(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getSpells ()));
 		armiesAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getArmies ()));
@@ -1095,8 +1089,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		// Shortcut keys
 		getLanguageHolder ().configureShortcutKeys (contentPane);
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -1107,8 +1099,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	private final void moveUnitStackInDirection (final SquareMapDirection d) throws JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering moveUnitStackInDirection: " + d);
-
 		if ((getOverlandMapRightHandPanel ().getTop () != OverlandMapRightHandPanelTop.SURVEYOR) &&
 			((getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 			(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()))) &&
@@ -1120,8 +1110,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 				if (getDoubleMovementDistances () [coords.getZ ()] [coords.getY ()] [coords.getX ()] >= 0)
 					getOverlandMapProcessing ().moveUnitStackTo (coords);
 		}
-
-		log.trace ("Exiting moveUnitStackInDirection");
 	}
 	
 	/**
@@ -1196,8 +1184,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	public final void regenerateOverlandMapBitmaps () throws IOException
 	{
-		log.trace ("Entering regenerateOverlandMapBitmaps: " + mapViewPlane);
-
 		overlandMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapViewPlane,
 			0, 0, getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ());
 		
@@ -1206,8 +1192,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		// have to duplicate this city loop in 5+ places and forget to do it somewhere.
 		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
 			cityView.regenerateCityViewMiniMapBitmaps ();
-
-		log.trace ("Exiting regenerateOverlandMapBitmaps");
 	}
 	
 	/**
@@ -1217,16 +1201,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	public final void regenerateFogOfWarBitmap () throws IOException
 	{
-		log.trace ("Entering regenerateFogOfWarBitmap");
-
 		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapViewPlane,
 			0, 0, getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (), getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ());
 
 		// Tell all the city screens to do the same
 		for (final CityViewUI cityView : getClient ().getCityViews ().values ())
 			cityView.regenerateCityViewMiniMapFogOfWar ();
-		
-		log.trace ("Exiting regenerateFogOfWarBitmap");
 	}
 
 	/**
@@ -1279,8 +1259,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	public final void updateTurnLabelText ()
 	{
-		log.trace ("Entering updateTurnLabelText");
-
 		// Turn 1 is January 1400 - so last turn in 1400 is turn 12
 		// Months are numbered 1-12
 		final int year = 1400 + ((getClient ().getGeneralPublicKnowledge ().getTurnNumber () - 1) / 12);
@@ -1297,8 +1275,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		turnLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapButtonBar ().getTurn ()).replaceAll
 			("MONTH", monthText).replaceAll ("YEAR", Integer.valueOf (year).toString ()).replaceAll
 			("TURN", Integer.valueOf (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
-
-		log.trace ("Exiting updateTurnLabelText");
 	}
 
 	/**
@@ -1306,8 +1282,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	public final void regenerateMovementTypesBitmap ()
 	{
-		log.trace ("Entering setMovementTypes");
-
 		// Regenerate shading bitmap
 		if ((getDoubleMovementDistances () == null) || (getCanMoveToInOneTurn () == null))
 			movementTypesBitmap = null;
@@ -1330,8 +1304,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		}
 
 		sceneryPanel.repaint ();
-
-		log.trace ("Exiting setMovementTypes");
 	}
 	
 	/**
@@ -1356,8 +1328,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	private final void switchMapViewPlane () throws IOException
 	{
-		log.trace ("Entering switchMapViewPlane");
-
 		mapViewPlane = 1 - mapViewPlane;
 		
 		regenerateOverlandMapBitmaps ();
@@ -1366,8 +1336,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 		// Keep the same movement types array, but regenerate the bitmap from it to show movement available on the new plane
 		regenerateMovementTypesBitmap ();
-
-		log.trace ("Exiting switchMapViewPlane");
 	}
 	
 	/**
@@ -1380,8 +1348,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 	 */
 	public final void scrollTo (final int x, final int y, final int plane, final boolean force)
 	{
-		log.trace ("Entering setMovementTypes: (" + x + ", " + y + ", " + plane + ")");
-
 		try
 		{
 			// Switch plane if necessary
@@ -1437,8 +1403,6 @@ public final class OverlandMapUI extends MomClientFrameUI
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting setMovementTypes");
 	}
 
 	/**

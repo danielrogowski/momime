@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
@@ -21,9 +18,6 @@ import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
  */
 public final class AddUnassignedHeroItemMessageImpl extends AddUnassignedHeroItemMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AddUnassignedHeroItemMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 
@@ -41,13 +35,9 @@ public final class AddUnassignedHeroItemMessageImpl extends AddUnassignedHeroIte
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getHeroItem ().getHeroItemURN () + ", " + getHeroItem ().getHeroItemName ());
-		
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ().add (getHeroItem ());
 		getHeroItemsUI ().refreshItemsBank ();
 		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

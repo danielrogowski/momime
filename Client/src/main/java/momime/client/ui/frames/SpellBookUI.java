@@ -237,8 +237,6 @@ public final class SpellBookUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/background.png");
 		final BufferedImage closeButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/spellBook/closeButtonNormal.png");
@@ -671,7 +669,6 @@ public final class SpellBookUI extends MomClientFrameUI
 		
 		updateSpellBook ();
 		turnPageLeftButton.setHidden (true);
-		log.trace ("Exiting init");
 	}
 
 	/**
@@ -687,8 +684,6 @@ public final class SpellBookUI extends MomClientFrameUI
 	 */
 	public final void castSpell (final Spell spell, final Integer spellX, final Integer spellY) throws IOException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering castSpell");
-
 		final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
 
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
@@ -975,8 +970,6 @@ public final class SpellBookUI extends MomClientFrameUI
 				castingAnimTimer.start ();
 			}
 		}
-		
-		log.trace ("Exiting castSpell");
 	}
 	
 	/**
@@ -985,12 +978,8 @@ public final class SpellBookUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getSpellBookScreen ().getTitle ()));
 		languageOrPageChanged ();
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -1007,8 +996,6 @@ public final class SpellBookUI extends MomClientFrameUI
 	 */
 	public final void updateSpellBook () throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		log.trace ("Entering updateSpellBook");
-
 		// If it is a unit casting, rather than the wizard
 		final List<String> heroKnownSpellIDs = new ArrayList<String> ();
 		String overridePickID = null;
@@ -1111,8 +1098,6 @@ public final class SpellBookUI extends MomClientFrameUI
 		}
 		
 		languageOrPageChanged ();
-		
-		log.trace ("Exiting updateSpellBook");
 	}
 	
 	/**
@@ -1120,8 +1105,6 @@ public final class SpellBookUI extends MomClientFrameUI
 	 */
 	public final void languageOrPageChanged ()
 	{
-		log.trace ("Entering languageOrPageChanged");
-
 		// This can be called before we've ever opened the spell book, so none of the components exist
 		if (contentPane != null)
 		{
@@ -1334,8 +1317,6 @@ public final class SpellBookUI extends MomClientFrameUI
 				log.error (e, e);
 			}
 		}
-		
-		log.trace ("Exiting languageOrPageChanged");
 	}
 
 	/**

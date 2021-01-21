@@ -224,8 +224,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	@Override
 	public final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		backgroundMain = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetails.png");
 		heroPortraitFrame = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitDetailsHeroFrame.png");
@@ -501,8 +499,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 				}
 			}
 		});
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -511,11 +507,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	 */
 	public final void unitInfoPanelClosing () throws MomException
 	{
-		log.trace ("Entering unitInfoPanelClosing");
-		
 		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
-
-		log.trace ("Exiting unitInfoPanelClosing");
 	}
 	
 	/**
@@ -533,8 +525,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	 */
 	public final void showBuilding (final MemoryBuilding showBuilding) throws IOException
 	{
-		log.trace ("Entering showBuilding");
-
 		clear ();
 		unitAttributesScrollPane.setVisible (false);
 		unitSkillsScrollPane.setVisible (false);
@@ -590,8 +580,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			urnLabel.setVisible (false);
 			urnValue.setVisible (false);
 		}
-		
-		log.trace ("Entering showBuilding");
 	}
 	
 	/**
@@ -625,8 +613,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	 */
 	public final void showUnit (final AvailableUnit showUnit) throws IOException
 	{
-		log.trace ("Entering showUnit");
-		
 		clear ();
 		currentlyConstructingAllows.setVisible (false);
 		currentlyConstructingDescription.setVisible (false);
@@ -783,8 +769,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			urnLabel.setVisible (false);
 			urnValue.setVisible (false);
 		}
-		
-		log.trace ("Entering showUnit");
 	}
 
 	/**
@@ -810,16 +794,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		// Fixed labels
 		upkeepLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getUpkeep ()));
 		costLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getCost ()));
 
 		// Update text about unit or building being displayed
 		currentConstructionChanged ();
-		
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**
@@ -828,8 +808,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	 */
 	private final void currentConstructionChanged ()
 	{
-		log.trace ("Entering currentConstructionChanged");
-
 		try
 		{
 			// Labels if showing a building
@@ -854,8 +832,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting currentConstructionChanged");
 	}
 
 	/**

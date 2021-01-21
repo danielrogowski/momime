@@ -2,9 +2,6 @@ package momime.client.calculations;
 
 import java.awt.image.BufferedImage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -20,9 +17,6 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
  */
 public final class MiniMapBitmapGeneratorImpl implements MiniMapBitmapGenerator
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MiniMapBitmapGeneratorImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -38,8 +32,6 @@ public final class MiniMapBitmapGeneratorImpl implements MiniMapBitmapGenerator
 	@Override
 	public final BufferedImage generateMiniMapBitmap (final int mapViewPlane) throws RecordNotFoundException, PlayerNotFoundException
 	{
-		log.trace ("Entering generateMiniMapBitmap: " + mapViewPlane);
-		
 		final BufferedImage image = new BufferedImage (getClient ().getSessionDescription ().getOverlandMapSize ().getWidth (),
 			getClient ().getSessionDescription ().getOverlandMapSize ().getHeight (), BufferedImage.TYPE_INT_ARGB);
 		
@@ -74,7 +66,6 @@ public final class MiniMapBitmapGeneratorImpl implements MiniMapBitmapGenerator
 					image.setRGB (x, y, 0xFF000000 | colour);
 			}
 		
-		log.trace ("Exiting generateMiniMapBitmap");
 		return image;
 	}
 

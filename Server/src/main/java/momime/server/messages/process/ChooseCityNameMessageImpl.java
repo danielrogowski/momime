@@ -38,8 +38,6 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCityLocation ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Check and update true map cell
@@ -60,8 +58,6 @@ public final class ChooseCityNameMessageImpl extends ChooseCityNameMessage imple
 			reply.setText ("You tried to name a city which isn''t yours - change ignored.");
 			sender.getConnection ().sendMessageToClient (reply);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

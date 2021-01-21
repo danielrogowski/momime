@@ -3,19 +3,16 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.PlayerMessageProcessing;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 /**
  * Message clients send out when the next turn button is clicked.
@@ -23,9 +20,6 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
  */
 public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage implements PostSessionClientToServerMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (NextTurnButtonMessageImpl.class);
-	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
 	
@@ -42,13 +36,9 @@ public final class NextTurnButtonMessageImpl extends NextTurnButtonMessage imple
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		getPlayerMessageProcessing ().nextTurnButton (mom, sender);
-
-		log.trace ("Exiting process");
 	}
 
 	/**

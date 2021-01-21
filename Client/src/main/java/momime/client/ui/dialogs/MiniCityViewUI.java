@@ -108,8 +108,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init: " + getCityLocation ());
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/miniBackground.png");
 		
@@ -238,8 +236,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
 		setCloseOnClick (true);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -248,8 +244,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	 */
 	private final void addSpellOrBuilding () throws IOException
 	{
-		log.trace ("Entering addSpellOrBuilding: " + getCityLocation ());
-		
 		// Spells are easy, can just add the data directly
 		if (getAddSpellMessage () != null)
 		{
@@ -306,7 +300,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		}
 		
 		added = true;
-		log.trace ("Exiting addSpellOrBuilding");
 	}
 
 	/**
@@ -315,8 +308,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged: " + getCityLocation ());
-		
 		// Get details about the city
 		if (getRenderCityData () != null)
 			try
@@ -384,8 +375,6 @@ public final class MiniCityViewUI extends MomClientDialogUI
 		{
 			log.error (e, e);
 		}
-
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**

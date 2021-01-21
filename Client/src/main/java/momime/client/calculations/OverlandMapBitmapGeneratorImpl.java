@@ -5,9 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
 import com.ndg.map.areas.storage.MapArea3D;
@@ -40,9 +37,6 @@ import momime.common.messages.MemoryGridCell;
  */
 public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGenerator
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (OverlandMapBitmapGeneratorImpl.class);
-
 	/** $50000000 matches the alpha value on the partial border images */
 	private final static Color PARTIAL_FOW_COLOUR = new Color (0, 0, 0, 0x50);
 	
@@ -75,12 +69,8 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	@Override
 	public final void afterJoinedSession ()
 	{
-		log.trace ("Entering afterJoinedSession");
-
 		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
 		smoothedTiles = new SmoothedTile [overlandMapSize.getDepth ()] [overlandMapSize.getHeight ()] [overlandMapSize.getWidth ()];
-
-		log.trace ("Exiting afterJoinedSession");
 	}	
 	
 	/**
@@ -91,8 +81,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	@Override
 	public final void smoothMapTerrain (final MapArea3D<Boolean> areaToSmooth) throws RecordNotFoundException
 	{
-		log.trace ("Entering smoothMapTerrain: " + areaToSmooth);
-
 		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
 		
 		// Choose the appropriate tile set
@@ -120,8 +108,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							smoothedTiles [planeNo] [y] [x] = smoothedTileType.getRandomImage (bitmask.toString ());
 						}
 					}
-		
-		log.trace ("Exiting smoothMapTerrain");
 	}
 	
 	/**
@@ -141,8 +127,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	@Override
 	public final BufferedImage [] generateOverlandMapBitmaps (final int mapViewPlane, final int startX, final int startY, final int countX, final int countY) throws IOException
 	{
-		log.trace ("Entering generateOverlandMapBitmaps: " + mapViewPlane);
-
 		final OverlandMapSize overlandMapSize = getClient ().getSessionDescription ().getOverlandMapSize ();
 		final int maxDirection = getCoordinateSystemUtils ().getMaxDirection (overlandMapSize.getCoordinateSystemType ());
 		
@@ -356,7 +340,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 		for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 			g [frameNo].dispose ();
 		
-		log.trace ("Exiting generateOverlandMapBitmaps");
 		return overlandMapBitmaps;
 	}
 	
@@ -377,8 +360,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 	@Override
 	public final BufferedImage generateFogOfWarBitmap (final int mapViewPlane, final int startX, final int startY, final int countX, final int countY) throws IOException
 	{
-		log.trace ("Entering generateFogOfWarBitmap: " + mapViewPlane);
-
 		// Depending on options, we may not need to do anything at all
 		final BufferedImage fogOfWarBitmap;
 		if ((!getClientConfig ().isOverlandShowPartialFogOfWar ()) && (!getClientConfig ().isOverlandSmoothFogOfWar ()))
@@ -493,7 +474,6 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 			g.dispose ();
 		}
 		
-		log.trace ("Exiting generateFogOfWarBitmap = " + fogOfWarBitmap);
 		return fogOfWarBitmap;
 	}
 	

@@ -1,8 +1,5 @@
 package momime.server.ai;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.common.database.CommonDatabase;
 import momime.common.database.HeroItemBonus;
 import momime.common.database.RecordNotFoundException;
@@ -13,17 +10,12 @@ import momime.common.messages.NumberedHeroItem;
  */
 public final class AIHeroItemRatingCalculationsImpl implements AIHeroItemRatingCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AIHeroItemRatingCalculationsImpl.class);
-	
 	/**
 	 * @param bonus Hero item bonus to evaluate
 	 * @return Value AI estimates for how good of a hero item bonus this is 
 	 */
 	final int calculateHeroItemBonusRating (final HeroItemBonus bonus)
 	{
-		log.trace ("Entering calculateHeroItemBonusRating: " + bonus.getHeroItemBonusID ());
-
 		final int rating;
 		
 		if (bonus.getHeroItemBonusStat ().isEmpty ())
@@ -31,7 +23,6 @@ public final class AIHeroItemRatingCalculationsImpl implements AIHeroItemRatingC
 		else
 			rating = bonus.getHeroItemBonusStat ().stream ().mapToInt (s -> (s.getUnitSkillValue () == null) ? 2 : s.getUnitSkillValue ()).sum ();
 		
-		log.trace ("Exiting calculateHeroItemBonusRating = " + rating);
 		return rating;
 	}
 
@@ -44,13 +35,10 @@ public final class AIHeroItemRatingCalculationsImpl implements AIHeroItemRatingC
 	@Override
 	public final int calculateHeroItemRating (final NumberedHeroItem item, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateHeroItemRating: Item URN " + item.getHeroItemURN () + ", name " + item.getHeroItemName ());
-
 		int rating = 0;
 		for (final String bonusID : item.getHeroItemChosenBonus ())
 			rating = rating + calculateHeroItemBonusRating (db.findHeroItemBonus (bonusID, "calculateUnitPotentialRating"));
 		
-		log.trace ("Exiting calculateHeroItemRating = " + rating);
 		return rating;
 	}
 }

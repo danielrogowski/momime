@@ -210,8 +210,6 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		final List<PlayerServerDetails> players, final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering rollTreasureReward: Value " + treasureValue + " for player " + player.getPlayerDescription ().getPlayerID ());
-		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -629,8 +627,6 @@ public final class TreasureUtilsImpl implements TreasureUtils
 			}
 		}
 		
-		log.trace ("Exiting rollTreasureReward: " + reward.getHeroItem ().size () + " hero items, " + reward.getSpellID ().size () + " spells, " +
-			reward.getResource ().size () + " resources, " + reward.getPick ().size () + " picks, " + reward.getPrisoner ().size () + " prisoners"); 
 		return reward;
 	}
 	
@@ -662,8 +658,6 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.trace ("Entering sendTreasureReward: Player " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
@@ -708,8 +702,6 @@ public final class TreasureUtilsImpl implements TreasureUtils
 		// Resend resource values if we gained some gold/mana
 		if (reward.getResource ().size () > 0)
 			getServerResourceCalculations ().sendGlobalProductionValues (player, null);
-		
-		log.trace ("Exiting sendTreasureReward");
 	}
 
 	/**

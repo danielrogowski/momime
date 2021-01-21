@@ -146,8 +146,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init: " + getCityLocation ());
-
 		// Load images
 		final BufferedImage changeConstructionBackground = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/changeConstruction.png");
 		
@@ -331,8 +329,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 				
 			// Shape of units list box
 			new Rectangle (panelLeft + panelSize.width + 2, 0, changeConstructionBackground.getWidth (), changeConstructionBackground.getHeight ())}));
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -341,8 +337,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	 */
 	public final void updateWhatCanBeConstructed () throws IOException
 	{
-		log.trace ("Entering updateWhatCanBeConstructed");
-
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
 		
@@ -391,8 +385,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		
 		if (unitsList.getSelectedIndex () >= 0)
 			unitSelectionListener.valueChanged (null);
-		
-		log.trace ("Exiting updateWhatCanBeConstructed");
 	}
 
 	/**
@@ -401,8 +393,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged: " + getCityLocation ());
-
 		// Get details about the city
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
@@ -425,8 +415,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 		// Actions
 		okAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 		cancelAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -434,11 +422,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	 */
 	public final void close ()
 	{
-		log.trace ("Entering close: " + getCityLocation ());
-		
 		getFrame ().dispose ();
-
-		log.trace ("Exiting close: " + getCityLocation ());
 	}
 	
 	/**

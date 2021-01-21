@@ -72,8 +72,6 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/queuedSpells.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
@@ -145,8 +143,6 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -154,8 +150,6 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 	 */
 	public final void updateQueuedSpells ()
 	{
-		log.trace ("Entering updateQueuedSpells");
-		
 		if (spellsItems != null)
 		{
 			spellsItems.clear ();
@@ -164,8 +158,6 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 			
 			spellsList.repaint ();
 		}
-		
-		log.trace ("Exiting updateQueuedSpells");
 	}
 
 	/**
@@ -174,16 +166,12 @@ public final class QueuedSpellsUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getSpellQueueScreen ().getTitle ()));
 		title.setText (getFrame ().getTitle ());
 		
 		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
 		
 		updateQueuedSpells ();
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

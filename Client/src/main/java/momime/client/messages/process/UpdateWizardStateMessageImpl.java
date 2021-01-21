@@ -6,9 +6,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.CustomDurationServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -33,9 +30,6 @@ import momime.common.utils.PlayerKnowledgeUtils;
  */
 public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage implements CustomDurationServerToClientMessage 
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UpdateWizardStateMessageImpl.class);
-
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
@@ -62,8 +56,6 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		// Update player details
 		final PlayerPublicDetails banishedWizard = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getBanishedPlayerID (), "WizardBanishedMessageImpl (A)");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) banishedWizard.getPersistentPlayerPublicKnowledge ();
@@ -120,8 +112,6 @@ public final class UpdateWizardStateMessageImpl extends UpdateWizardStateMessage
 				getClient ().finishCustomDurationMessage (this);
 			}
 		}
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

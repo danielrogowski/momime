@@ -51,8 +51,6 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", Unit URN " + getUnitURN () + ", " + getMoveFrom () + ", " + getMoveTo ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Process through all the units
@@ -106,8 +104,6 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 			getFogOfWarMidTurnMultiChanges ().moveUnitStack (unitStack, sender, true, (MapCoordinates3DEx) getMoveFrom (), (MapCoordinates3DEx) getMoveTo (),
 				(mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS), mom);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

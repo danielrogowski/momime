@@ -45,8 +45,6 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = getPlayerPickServerUtils ().validateInitialSpellSelection (sender, getPickID (), getSpell (), mom.getServerDB ());
@@ -76,8 +74,6 @@ public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMes
 			else
 				sender.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

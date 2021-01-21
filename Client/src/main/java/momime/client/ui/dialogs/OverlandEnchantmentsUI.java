@@ -110,8 +110,6 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage shiny = getUtils ().loadImage ("/momime.client.graphics/ui/mirror/shiny.png");
 		fadeAnim = getGraphicsDB ().findAnimation (MIRROR_ANIM, "OverlandEnchantmentsUI");
@@ -268,8 +266,6 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
 		setCloseOnClick (true);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -308,8 +304,6 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		// Spell name
 		if (animationFrame >= fadeAnim.getFrame ().size () + PAUSE_FRAMES)
 		{
@@ -336,8 +330,6 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 			spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getEnemyOverlandEnchantment ()).replaceAll
 				("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
 		}
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

@@ -5,22 +5,16 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.ui.frames.NewGameUI;
 import momime.common.messages.servertoclient.ChooseInitialSpellsNowMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to client to tell them how many spells of each rank they can choose for free at the start of the game
  */
 public final class ChooseInitialSpellsNowMessageImpl extends ChooseInitialSpellsNowMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChooseInitialSpellsNowMessageImpl.class);
-
 	/** New Game UI */
 	private NewGameUI newGameUI;
 
@@ -32,11 +26,7 @@ public final class ChooseInitialSpellsNowMessageImpl extends ChooseInitialSpells
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getMagicRealmID () + ", " + getSpellRank ().size ());
-
-		getNewGameUI ().showInitialSpellsPanel (getMagicRealmID(), getSpellRank());
-		
-		log.trace ("Exiting start");
+		getNewGameUI ().showInitialSpellsPanel (getMagicRealmID (), getSpellRank ());
 	}
 	
 	/**

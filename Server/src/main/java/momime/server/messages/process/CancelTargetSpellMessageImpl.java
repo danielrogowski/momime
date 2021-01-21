@@ -44,8 +44,6 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getSpellID ());
-		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Spell should already exist, but not targetted
@@ -72,8 +70,6 @@ public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage
 		}
 		else
 			getSpellProcessing ().cancelTargetOverlandSpell (maintainedSpell, mom);
-		
-		log.trace ("Exiting process");
 	}
 
 	/**

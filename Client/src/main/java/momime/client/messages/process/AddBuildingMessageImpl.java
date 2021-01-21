@@ -60,9 +60,6 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getFirstBuilding ().getCityLocation () + ", " + getFirstBuilding ().getBuildingID () + ", " +
-			((getSecondBuilding () == null) ? "null" : getSecondBuilding ().getBuildingID ()));
-		
 		// If its a city spell, show an animation for it and don't even add the spell yet - the animation handles that as well
 		boolean animated = false;
 		if (getBuildingCreatedFromSpellID () != null)
@@ -113,8 +110,6 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			getClient ().finishCustomDurationMessage (this);
 			
 		}
-		
-		log.trace ("Exiting start");
 	}
 
 	/**
@@ -122,9 +117,6 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 	 */
 	public final void processOneUpdate ()
 	{
-		log.trace ("Entering processOneUpdate: " + getFirstBuilding ().getCityLocation () + ", " + getFirstBuilding ().getBuildingID () + ", " +
-			((getSecondBuilding () == null) ? "null" : getSecondBuilding ().getBuildingID ()));
-		
 		// Add building(s)
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding ().add (firstBuilding);
 		if (getSecondBuilding () != null)
@@ -153,8 +145,6 @@ public final class AddBuildingMessageImpl extends AddBuildingMessage implements 
 			{
 				log.error (e, e);
 			}		
-		
-		log.trace ("Exiting processOneUpdate");
 	}
 	
 	/**

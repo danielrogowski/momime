@@ -204,8 +204,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void castOverlandNow (final PlayerServerDetails player, final Spell spell, final HeroItem heroItem, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering castOverlandNow: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID ());
-
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -353,8 +351,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		else
 			throw new MomException ("Completed casting an overland spell with a section ID that there is no code to deal with yet: " + sectionID);
-
-		log.trace ("Exiting castOverlandNow");
 	}
 	
 	/**
@@ -390,9 +386,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
 	{
-		log.trace ("Entering castCombatNow: Player ID " +
-			castingPlayer.getPlayerDescription ().getPlayerID () + ", " + spell.getSpellID () + ", " + spell.getSpellBookSectionID () + ", " + combatLocation);
-
 		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
@@ -831,7 +824,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 			combatEnded = true;
 		}
 
-		log.trace ("Exiting castCombatNow = " + combatEnded);
 		return combatEnded;
 	}
 	
@@ -861,8 +853,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering switchOffSpell: Spell URN " + spellURN);
-
 		// First find the spell
 		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (spellURN, trueMap.getMaintainedSpell (), "switchOffSpell");
 		
@@ -889,8 +879,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 
 		// Remove spell itself
 		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
-
-		log.trace ("Exiting switchOffSpell");
 	}
 	
 	/**
@@ -919,8 +907,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering targetOverlandSpell: Spell URN " + maintainedSpell.getSpellURN () + ", " + spell.getSpellID ());
-		
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), maintainedSpell.getCastingPlayerID (), "targetOverlandSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
@@ -1155,8 +1141,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 		
 		// New spell will probably use up some mana maintenance
 		getServerResourceCalculations ().recalculateGlobalProductionValues (castingPlayer.getPlayerDescription ().getPlayerID (), false, mom);
-		
-		log.trace ("Exiting targetOverlandSpell");
 	}
 
 	/**
@@ -1176,15 +1160,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void cancelTargetOverlandSpell (final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering cancelTargetOverlandSpell: Spell URN " + maintainedSpell.getSpellURN ());
-		
 		// Remove it
 		mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().remove (maintainedSpell);
 		
 		// Cancelled spell will probably use up some mana maintenance
 		getServerResourceCalculations ().recalculateGlobalProductionValues (maintainedSpell.getCastingPlayerID (), false, mom);
-		
-		log.trace ("Exiting cancelTargetOverlandSpell");
 	}
 	
 	/**
@@ -1203,8 +1183,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final List<String> stealSpells (final PlayerServerDetails stealFrom, final PlayerServerDetails giveTo, final int spellsStolenFromFortress, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.trace ("Entering stealSpells: Player ID " + giveTo.getPlayerDescription ().getPlayerID () + " stealing from " + stealFrom.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPrivateKnowledge stealFromPriv = (MomPersistentPlayerPrivateKnowledge) stealFrom.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge giveToPriv = (MomPersistentPlayerPrivateKnowledge) giveTo.getPersistentPlayerPrivateKnowledge ();
 		
@@ -1248,7 +1226,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 			giveTo.getConnection ().sendMessageToClient (spellsMsg);
 		}
 		
-		log.trace ("Exiting stealSpells = " + stolenSpellIDs.size ());
 		return stolenSpellIDs;		
 	}
 	

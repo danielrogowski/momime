@@ -1252,8 +1252,6 @@ public final class NewGameUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/background.png");
 		final BufferedImage divider = getUtils ().loadImage ("/momime.client.graphics/ui/newGame/divider.png");
@@ -2523,8 +2521,6 @@ public final class NewGameUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -2533,8 +2529,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showNewGamePanel () throws IOException
 	{
-		log.trace ("Entering showNewGamePanel");
-		
 		playerName.setText (null);
 		wizardPortrait.setIcon (null);
 		flag1.setIcon (null);
@@ -2546,8 +2540,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		currentMagicRealmID = null;
 		cardLayout.show (cards, NEW_GAME_PANEL);
-
-		log.trace ("Exiting showNewGamePanel");
 	}
 	
 	/**
@@ -2561,8 +2553,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	final void showNextNewGamePanel () throws JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering showNextNewGamePanel");
-
 		// Which panel did we click OK on; basically this is "how many custom screens have we already OK'd"
 		final int currentPanel;
 		if (newGamePanel.isVisible ())
@@ -2651,8 +2641,6 @@ public final class NewGameUI extends MomClientFrameUI
 			// "custom" screens because they can just to confirm settings as they are if desired
 			okAction.setEnabled (false);
 		}
-		
-		log.trace ("Exiting showNextNewGamePanel");
 	}
 	
 	/**
@@ -2663,8 +2651,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void afterJoinedSession () throws RecordNotFoundException
 	{
-		log.trace ("Entering afterJoinedSession");
-		
 		playerName.setText (getClient ().getOurPlayerName ());
 		
 		// Remove any old buttons leftover from a previous joining game
@@ -3043,8 +3029,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Show the page
 		cardLayout.show (cards, WIZARD_PANEL);
-
-		log.trace ("Exiting afterJoinedSession");
 	}
 
 	/**
@@ -3052,8 +3036,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void enableOrDisableWizardButtons ()
 	{
-		log.trace ("Entering enableOrDisableWizardButtons");
-
 		// First enable them all
 		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
 			wizard.getValue ().setEnabled (true);
@@ -3076,8 +3058,6 @@ public final class NewGameUI extends MomClientFrameUI
 				
 				okAction.setEnabled (false);
 		}
-		
-		log.trace ("Exiting enableOrDisableWizardButtons");
 	}
 
 	/**
@@ -3085,11 +3065,7 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showPortraitPanel ()
 	{
-		log.trace ("Entering showPortraitPanel");
-
 		cardLayout.show (cards, PORTRAIT_PANEL);
-
-		log.trace ("Exiting showPortraitPanel");
 	}
 
 	/**
@@ -3098,13 +3074,9 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showCustomFlagColourPanel () throws PlayerNotFoundException
 	{
-		log.trace ("Entering showCustomFlagColourPanel");
-
 		updateCustomFlagColour ();
 		okAction.setEnabled (true);		// Since we can just OK the default colour immediately if we wish
 		cardLayout.show (cards, FLAG_PANEL);
-
-		log.trace ("Exiting showCustomFlagColourPanel");
 	}
 
 	/**
@@ -3112,11 +3084,7 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showCustomPicksPanel ()
 	{
-		log.trace ("Entering showCustomPicksPanel");
-
 		cardLayout.show (cards, PICKS_PANEL);
-
-		log.trace ("Exiting showCustomPicksPanel");
 	}
 	
 	/**
@@ -3129,8 +3097,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showInitialSpellsPanel (final String magicRealmID, final List<ChooseInitialSpellsNowRank> spellRanks) throws RecordNotFoundException
 	{
-		log.trace ("Entering showInitialSpellsPanel: " + magicRealmID);
-		
 		currentMagicRealmID = magicRealmID;
 		
 		// Remove old ones
@@ -3283,8 +3249,6 @@ public final class NewGameUI extends MomClientFrameUI
 		freeSpellsPanel.repaint ();
 		
 		cardLayout.show (cards, FREE_SPELLS_PANEL);
-
-		log.trace ("Exiting showInitialSpellsPanel");
 	}
 
 	/**
@@ -3294,8 +3258,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showRacePanel () throws PlayerNotFoundException, RecordNotFoundException
 	{
-		log.trace ("Entering showRacePanel");
-		
 		// Enable/disable Myrran buttons, now we know what picks we chose
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "NewGameUI.showRacePanel");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
@@ -3310,8 +3272,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Now can show it
 		cardLayout.show (cards, RACE_PANEL);
-
-		log.trace ("Exiting showRacePanel");
 	}
 	
 	/**
@@ -3319,12 +3279,8 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void showWaitPanel ()
 	{
-		log.trace ("Entering showWaitPanel");
-
 		playersTableModel.fireTableDataChanged ();
 		cardLayout.show (cards, WAIT_PANEL);
-
-		log.trace ("Exiting showWaitPanel");
 	}
 	
 	/**
@@ -3332,11 +3288,7 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	public final void updateWaitPanelPlayersList ()
 	{
-		log.trace ("Entering updateWaitPanelPlayersList");
-
 		playersTableModel.fireTableDataChanged ();
-
-		log.trace ("Exiting updateWaitPanelPlayersList");
 	}
 
 	/**
@@ -3344,15 +3296,11 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void enableOrDisableNewGameOkButton ()
 	{
-		log.trace ("Entering enableOrDisableNewGameOkButton");
-
 		// This gets triggered during startup before both actions have been created
 		final int totalOpponents = ((changeHumanOpponentsAction.getSelectedItem () == null) || (changeAIOpponentsAction.getSelectedItem () == null)) ? 0 :
 			changeHumanOpponentsAction.getSelectedItem () + changeAIOpponentsAction.getSelectedItem ();
 		
 		okAction.setEnabled ((totalOpponents >= 1) && (totalOpponents <= 13) && (!gameName.getText ().trim ().equals ("")));
-
-		log.trace ("Exiting enableOrDisableNewGameOkButton");
 	}
 
 	/**
@@ -3361,11 +3309,7 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void updateCustomFlagColour () throws PlayerNotFoundException
 	{
-		log.trace ("Entering updateCustomFlagColour");
-
 		updateFlagColour ((flagColourRed.getValue () << 16) + (flagColourGreen.getValue () << 8) + flagColourBlue.getValue ());
-
-		log.trace ("Exiting updateCustomFlagColour");
 	}
 	
 	/**
@@ -3377,8 +3321,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void updateFlagColour (final int rgb) throws PlayerNotFoundException
 	{
-		log.trace ("Entering updateFlagColour: " + rgb);
-
 		final BufferedImage wizardFlag = getUtils ().multiplyImageByColour (flag, rgb);
 		flag1.setIcon (new ImageIcon (wizardFlag));
 		flag2.setIcon (new ImageIcon (wizardFlag));
@@ -3394,8 +3336,6 @@ public final class NewGameUI extends MomClientFrameUI
 			value = "0" + value;
 		
 		trans.setFlagColour (value);
-		
-		log.trace ("Exiting updateFlagColour");
 	}
 	
 	/**
@@ -3419,8 +3359,6 @@ public final class NewGameUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		// Overall panel
 		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
@@ -3634,8 +3572,6 @@ public final class NewGameUI extends MomClientFrameUI
 			{
 				log.error (e, e);
 			}
-
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**
@@ -3643,8 +3579,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void languageOrCardChanged ()
 	{
-		log.trace ("Entering languageOrCardChanged");
-		
 		title.setForeground (MomUIConstants.GOLD);
 		if (newGamePanel.isVisible ())
 			title.setText (getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getTitle ()));
@@ -3709,8 +3643,6 @@ public final class NewGameUI extends MomClientFrameUI
 		}
 		
 		getFrame ().setTitle (title.getText ());
-
-		log.trace ("Exiting languageOrCardChanged");
 	}
 	
 	/**
@@ -3719,8 +3651,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void selectedDatabaseOrLanguageChanged ()
 	{
-		log.trace ("Entering selectedDatabaseOrLanguageChanged");
-
 		// Reload the available selections of all the buttons
 		changeMapSizeAction.clearItems ();
 		for (final OverlandMapSize overlandMapSize : changeDatabaseAction.getSelectedItem ().getOverlandMapSize ())
@@ -3775,8 +3705,6 @@ public final class NewGameUI extends MomClientFrameUI
 			while ((defaults.getDefaultSpellSettingID () != null) && (!defaults.getDefaultSpellSettingID ().equals (changeSpellSettingsAction.getSelectedItem ().getSpellSettingID ())))
 				changeSpellSettingsAction.actionPerformed (null);
 		}
-
-		log.trace ("Exiting selectedDatabaseOrLanguageChanged");
 	}
 	
 	/**
@@ -3785,8 +3713,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void updateBookshelfFromPicks () throws IOException
 	{
-		log.trace ("Entering updateBookshelfFromPicks");
-
 		// Remove all the old books; try to remove from all bookshelves since we only keep one list so we don't know which bookshelf this image is on
 		for (final JLabel oldBook : bookImages)
 		{
@@ -3836,8 +3762,6 @@ public final class NewGameUI extends MomClientFrameUI
 		// bookshelf.validate only redraws the new smaller area and leaves bits of the old books showing
 		contentPane.validate ();
 		contentPane.repaint ();
-
-		log.trace ("Exiting updateBookshelfFromPicks");
 	}
 
 	/**
@@ -3849,8 +3773,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final String updateRetortsFromPicks (final int charIndex) throws RecordNotFoundException
 	{
-		log.trace ("Entering updateRetortsFromPicks");
-		
 		final StringBuffer desc = new StringBuffer ();
 		String result = null;
 		for (final PlayerPick pick : picks)
@@ -3876,7 +3798,6 @@ public final class NewGameUI extends MomClientFrameUI
 		}
 		retorts.setText (getTextUtils ().replaceFinalCommaByAnd (desc.toString ()));
 
-		log.trace ("Exiting updateRetortsFromPicks = " + result);
 		return result;
 	}	
 	
@@ -3886,8 +3807,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void languageChangedAfterInGame () throws RecordNotFoundException
 	{
-		log.trace ("Entering languageChangedAfterInGame");
-		
 		// Choose wizard buttons
 		for (final Entry<String, Action> wizard : wizardButtonActions.entrySet ())
 			if (PlayerKnowledgeUtils.isCustomWizard (wizard.getKey ()))
@@ -3922,8 +3841,6 @@ public final class NewGameUI extends MomClientFrameUI
 		// Choose race buttons
 		for (final Entry<RaceEx, Action> raceAction : raceButtonActions.entrySet ())
 			raceAction.getValue ().putValue (Action.NAME, getLanguageHolder ().findDescription (raceAction.getKey ().getRaceNameSingular ()));
-
-		log.trace ("Exiting languageChangedAfterInGame");
 	}
 	
 	/**
@@ -3934,8 +3851,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void updateCustomPicksCount () throws RecordNotFoundException
 	{
-		log.trace ("Entering updateCustomPicksCount");
-		
 		// Count retorts and books
 		final int count = getPlayerPickUtils ().getTotalPickCost (picks, getClient ().getClientDB ());
 		
@@ -3981,7 +3896,6 @@ public final class NewGameUI extends MomClientFrameUI
 			}
 
 		okAction.setEnabled (count == totalPicks);
-		log.trace ("Exiting updateCustomPicksCount");
 	}
 	
 	/**
@@ -3990,8 +3904,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void setCurrentMagicRealmSpellNames () throws RecordNotFoundException
 	{
-		log.trace ("Entering setCurrentMagicRealmSpellNames");
-		
 		// Names of every spell
 		for (final Entry<Spell, ToggleAction> spellAction : freeSpellActions.entrySet ())
 		{
@@ -3999,8 +3911,6 @@ public final class NewGameUI extends MomClientFrameUI
 				(getClient ().getClientDB ().findSpell (spellAction.getKey ().getSpellID (), "setCurrentMagicRealmSpellNames").getSpellName ());
 			spellAction.getValue ().putValue (Action.NAME, spellName);
 		}
-
-		log.trace ("Exiting setCurrentMagicRealmSpellNames");
 	}
 	
 	/**
@@ -4009,8 +3919,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void updateInitialSpellsCount () throws RecordNotFoundException
 	{
-		log.trace ("Entering updateInitialSpellsCount");
-		
 		for (final Entry<ChooseInitialSpellsNowRank, JLabel> rank : spellRankTitles.entrySet ())
 		{
 			// How many spells have been chosen at this rank
@@ -4058,8 +3966,6 @@ public final class NewGameUI extends MomClientFrameUI
 				else
 					spellButton.setForeground (MomUIConstants.GRAY);
 			}
-
-		log.trace ("Exiting updateInitialSpellsCount");
 	}
 	
 	/**
@@ -4067,8 +3973,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final boolean isCorrectNumberOfFreeSpellsChosen ()
 	{
-		log.trace ("Entering isCorrectNumberOfFreeSpellsChosen");
-		
 		boolean allOk = true;
 		final Iterator<ChooseInitialSpellsNowRank> rankIter = spellRankTitles.keySet ().iterator ();
 		
@@ -4087,7 +3991,6 @@ public final class NewGameUI extends MomClientFrameUI
 				allOk = false;
 		}
 		
-		log.trace ("Exiting isCorrectNumberOfFreeSpellsChosen = " + allOk);
 		return allOk;
 	}
 	
@@ -4096,8 +3999,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final void populateNewGameFieldsFromSelectedOptions ()
 	{
-		log.trace ("Entering populateNewGameFieldsFromSelectedOptions");
-		
 		// Map size
 		final OverlandMapSize overlandMapSize = changeMapSizeAction.getSelectedItem ();
 		mapSizeWidth.setText						(Integer.valueOf (overlandMapSize.getWidth ()).toString ());
@@ -4279,8 +4180,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Debug options
 		disableFogOfWar.setSelected (false);
-		
-		log.trace ("Exiting populateNewGameFieldsFromSelectedOptions");
 	}
 	
 	/**
@@ -4288,8 +4187,6 @@ public final class NewGameUI extends MomClientFrameUI
 	 */
 	private final MomSessionDescription buildSessionDescription ()
 	{
-		log.trace ("Entering buildSessionDescription");
-		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		
 		// Easy fields
@@ -4560,7 +4457,6 @@ public final class NewGameUI extends MomClientFrameUI
 		// Debug options
 		sd.setDisableFogOfWar (disableFogOfWar.isSelected ());
 		
-		log.trace ("Exiting buildSessionDescription = " + sd);
 		return sd;
 	}
 

@@ -64,8 +64,6 @@ public final class CityViewPanel extends JPanel
 	 */
 	public final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Used for simultaneous turns games
 		pendingSaleImage = getUtils ().loadImage ("/momime.client.graphics/cityView/spellEffects/SE145.png");
 		
@@ -190,8 +188,6 @@ public final class CityViewPanel extends JPanel
 				}
 			});
 		}
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -200,11 +196,7 @@ public final class CityViewPanel extends JPanel
 	 */
 	public final void cityViewClosing () throws MomException
 	{
-		log.trace ("Entering cityViewClosing");
-		
 		getAnim ().unregisterRepaintTrigger (null, this);
-
-		log.trace ("Exiting cityViewClosing");
 	}
 	
 	/**

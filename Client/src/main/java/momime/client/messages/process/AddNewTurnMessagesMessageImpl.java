@@ -5,15 +5,12 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.newturnmessages.NewTurnMessageProcessing;
 import momime.client.newturnmessages.NewTurnMessageStatus;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this if additional messages are generated during a turn
@@ -21,9 +18,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  */
 public final class AddNewTurnMessagesMessageImpl extends AddNewTurnMessagesMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
-	
 	/** New turn messages helper methods */
 	private NewTurnMessageProcessing newTurnMessageProcessing;
 	
@@ -38,8 +32,6 @@ public final class AddNewTurnMessagesMessageImpl extends AddNewTurnMessagesMessa
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Message count " + getMessage ().size () + ", expire? " + isExpireMessages ());
-		
 		// Read in the new turn messages
 		if (isExpireMessages ())
 			getNewTurnMessageProcessing ().expireMessages ();
@@ -50,8 +42,6 @@ public final class AddNewTurnMessagesMessageImpl extends AddNewTurnMessagesMessa
 		// Only show the form if we got new messages - doesn't matter if there's some old ones we've already seen
 		if (getMessage ().size () > 0)
 			getNewTurnMessagesUI ().setVisible (true);
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

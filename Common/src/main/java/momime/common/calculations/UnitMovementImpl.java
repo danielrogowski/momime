@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -37,9 +34,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class UnitMovementImpl implements UnitMovement
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitMovementImpl.class);
-	
 	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
 	private static final int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
 
@@ -66,14 +60,11 @@ public final class UnitMovementImpl implements UnitMovement
 	 */
 	final int [] [] [] countOurAliveUnitsAtEveryLocation (final int playerID, final List<MemoryUnit> units, final CoordinateSystem sys)
 	{
-		log.trace ("Entering countOurAliveUnitsAtEveryLocation: Player ID " + playerID);
-
 		final int [] [] [] count = new int [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () == playerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getUnitLocation () != null))
 				count [thisUnit.getUnitLocation ().getZ ()] [thisUnit.getUnitLocation ().getY ()] [thisUnit.getUnitLocation ().getX ()]++;
 
-		log.trace ("Exiting countOurAliveUnitsAtEveryLocation");
 		return count;
 	}
 	
@@ -87,8 +78,6 @@ public final class UnitMovementImpl implements UnitMovement
 	final Map<String, Integer> calculateDoubleMovementRatesForUnitStack (final List<ExpandedUnitDetails> unitStack,
 		final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering calculateDoubleMovementRatesForUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
-
 		// Get list of all the skills that any unit in the stack has, in case any of them have path finding, wind walking, etc.
 		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
 
@@ -117,7 +106,6 @@ public final class UnitMovementImpl implements UnitMovement
 					movementRates.put (tileType.getTileTypeID (), worstMovementRate);
 			}
 
-		log.trace ("Exiting calculateDoubleMovementRatesForUnitStack");
 		return movementRates;
 	}
 
@@ -138,8 +126,6 @@ public final class UnitMovementImpl implements UnitMovement
 		final List<? extends PlayerPublicDetails> players, final CoordinateSystem sys, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException 
 	{
-		log.trace ("Entering calculateCellTransportCapacity");
-
 		// If its a transported movement, then by defintion the stack can move onto another transport if it wants to,
 		// so don't need to make any special considerations for moving units onto a transport
 		final int [] [] [] cellTransportCapacity;
@@ -191,7 +177,6 @@ public final class UnitMovementImpl implements UnitMovement
 				}			
 		}
 		
-		log.trace ("Exiting calculateCellTransportCapacity");
 		return cellTransportCapacity;
 	}
 	
@@ -211,8 +196,6 @@ public final class UnitMovementImpl implements UnitMovement
 		final int [] [] [] cellTransportCapacity, final int [] [] [] ourUnitCountAtLocation, final Map<String, Integer> doubleMovementRates,
 		final int unitsPerMapCell, final CoordinateSystem sys, final CommonDatabase db)
 	{
-		log.trace ("Entering calculateDoubleMovementToEnterTile");
-
 		final Integer [] [] [] doubleMovementToEnterTile = new Integer [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (int z = 0; z < sys.getDepth (); z++)
 			for (int y = 0; y < sys.getHeight (); y++)
@@ -260,7 +243,6 @@ public final class UnitMovementImpl implements UnitMovement
 					}
 				}
 		
-		log.trace ("Exiting calculateDoubleMovementToEnterTile");
 		return doubleMovementToEnterTile;
 	}
 	
@@ -288,9 +270,6 @@ public final class UnitMovementImpl implements UnitMovement
 		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
 		final List<MapCoordinates2DEx> cellsLeftToCheck, final CoordinateSystem sys)
 	{
-		log.trace ("Entering calculateOverlandMovementDistances_Cell: Player ID " + movingPlayerID +
-			", (" + cellX + ", " + cellY + ", " + cellPlane + ")");
-
 		final int doubleDistanceToHere = doubleMovementDistances [cellPlane] [cellY] [cellX];
 		final int doubleMovementRemainingToHere = doubleMovementRemaining - doubleDistanceToHere;
 
@@ -337,8 +316,6 @@ public final class UnitMovementImpl implements UnitMovement
 				}
 			}
 		}
-
-		log.trace ("Exiting calculateOverlandMovementDistances_Cell");
 	}
 
 	/**
@@ -364,8 +341,6 @@ public final class UnitMovementImpl implements UnitMovement
 		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
 		final CoordinateSystem sys)
 	{
-		log.trace ("Entering calculateOverlandMovementDistances_Plane: Player ID " + movingPlayerID + ", (" + startX + ", " + startY + ", " + startPlane + ")");
-
 		// We can move to where we start from for free
 		doubleMovementDistances [startPlane] [startY] [startX] = 0;
 		canMoveToInOneTurn [startPlane] [startY] [startX] = true;
@@ -386,8 +361,6 @@ public final class UnitMovementImpl implements UnitMovement
 
 			cellsLeftToCheck.remove (0);
 		}
-
-		log.trace ("Exiting calculateOverlandMovementDistances_Plane");
 	}
 
 	/**
@@ -421,8 +394,6 @@ public final class UnitMovementImpl implements UnitMovement
 		final boolean [] [] [] movingHereResultsInAttack, final List<? extends PlayerPublicDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering calculateOverlandMovementDistances: (" + startX + ", " + startY + ", " + startPlane + ")");
-
 		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack.getUnits ());
 		
 		// Count of the number of free transport spaces at every map cell; these can make otherwise impassable terrain passable
@@ -467,8 +438,6 @@ public final class UnitMovementImpl implements UnitMovement
 			calculateOverlandMovementDistances_Plane (startX, startY, startPlane, movingPlayerID, map.getMap (), map.getUnit (),
 				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
 				doubleMovementToEnterTile, sd.getOverlandMapSize ());
-
-		log.trace ("Exiting calculateOverlandMovementDistances");
 	}
 
 	/**

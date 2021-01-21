@@ -5,13 +5,10 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.process.OverlandMapProcessing;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends to client to tell them that it has finished processed their continued unit movement
@@ -21,9 +18,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  */
 public final class EndOfContinuedMovementMessageImpl extends EndOfContinuedMovementMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (EndOfContinuedMovementMessageImpl.class);
-
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 	
@@ -35,12 +29,8 @@ public final class EndOfContinuedMovementMessageImpl extends EndOfContinuedMovem
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		getOverlandMapProcessing ().setProcessingContinuedMovement (false);
 		getOverlandMapProcessing ().buildUnitsLeftToMoveList ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

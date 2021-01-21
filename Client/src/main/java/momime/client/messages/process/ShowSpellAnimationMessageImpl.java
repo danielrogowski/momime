@@ -58,8 +58,6 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getSpellID ());
-		
 		final Spell spell = getClient ().getClientDB ().findSpell (getSpellID (), "ShowSpellAnimationMessageImpl");
 		
 		anim = null;
@@ -97,8 +95,6 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 			{
 				log.error (e, e);
 			}
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

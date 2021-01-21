@@ -16,9 +16,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -34,9 +31,6 @@ import momime.common.messages.clienttoserver.ChangeTaxRateMessage;
  */
 public final class TaxRateUI extends MomClientFrameUI
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (TaxRateUI.class);
-
 	/** XML layout */
 	private XmlLayoutContainerEx selectAdvisorLayout;
 	
@@ -74,8 +68,6 @@ public final class TaxRateUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/selectAdvisor.png");
 		buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button234x14Normal.png");
@@ -103,7 +95,6 @@ public final class TaxRateUI extends MomClientFrameUI
 			20));		
 
 		updateTaxRateButtons ();
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -111,8 +102,6 @@ public final class TaxRateUI extends MomClientFrameUI
 	 */
 	public final void updateTaxRateButtons ()
 	{
-		log.trace ("Entering updateTaxRateButtons");
-		
 		// This gets ran when we receive the DB from the server; for the first game the form won't exist yet, so skip the call at that stage
 		if (contentPane != null)
 		{
@@ -150,8 +139,6 @@ public final class TaxRateUI extends MomClientFrameUI
 			// Set the action labels
 			languageChanged ();
 		}
-		
-		log.trace ("Exiting updateTaxRateButtons");
 	}
 	
 	/**
@@ -160,8 +147,6 @@ public final class TaxRateUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		title.setText (getLanguageHolder ().findDescription (getLanguages ().getTaxRateScreen ().getTitle ()));
 		
 		final String text = getLanguageHolder ().findDescription (getLanguages ().getTaxRateScreen ().getEntry ());
@@ -178,8 +163,6 @@ public final class TaxRateUI extends MomClientFrameUI
 				
 				taxRateAction.getValue ().putValue (Action.NAME, thisText);
 			}
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

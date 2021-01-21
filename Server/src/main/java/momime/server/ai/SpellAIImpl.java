@@ -121,15 +121,12 @@ public final class SpellAIImpl implements SpellAI
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
 	 * @param spells List of possible spells to choose from
-	 * @param aiPlayerID Player ID, for debug message
 	 * @return ID of chosen spell to research
 	 * @throws MomException If the list was empty
 	 */
-	final Spell chooseSpellToResearchAI (final List<Spell> spells, final int aiPlayerID)
+	final Spell chooseSpellToResearchAI (final List<Spell> spells)
 		throws MomException
 	{
-		log.trace ("Entering chooseSpellToResearchAI: Player ID " + aiPlayerID);
-
 		String debugLogMessage = null;
 
 		// Check each spell in the list to find the the best research order, 1 being the best, 9 being the worst, and make a list of spells with this research order
@@ -163,8 +160,6 @@ public final class SpellAIImpl implements SpellAI
 
 		// Pick one at random
 		final Spell chosenSpell = spellsWithBestResearchOrder.get (getRandomUtils ().nextInt (spellsWithBestResearchOrder.size ()));
-
-		log.trace ("Exiting chooseSpellToResearchAI = " + chosenSpell.getSpellID ());
 		return chosenSpell;
 	}
 
@@ -178,8 +173,6 @@ public final class SpellAIImpl implements SpellAI
 	public final void decideWhatToResearch (final PlayerServerDetails player, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering decideWhatToResearch: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		final List<Spell> researchableSpells = getSpellUtils ().getSpellsForStatus
@@ -187,11 +180,9 @@ public final class SpellAIImpl implements SpellAI
 
 		if (!researchableSpells.isEmpty ())
 		{
-			final Spell chosenSpell = chooseSpellToResearchAI (researchableSpells, player.getPlayerDescription ().getPlayerID ());
+			final Spell chosenSpell = chooseSpellToResearchAI (researchableSpells);
 			priv.setSpellIDBeingResearched (chosenSpell.getSpellID ());
 		}
-
-		log.trace ("Exiting decideWhatToResearch = " + priv.getSpellIDBeingResearched ());
 	}
 
 	/**
@@ -199,29 +190,23 @@ public final class SpellAIImpl implements SpellAI
 	 * @param spells Pre-locked list of the player's spell
 	 * @param magicRealmID Magic Realm (e.g. chaos) to pick a spell from
 	 * @param spellRankID Spell rank (e.g. uncommon) to pick a spell of
-	 * @param aiPlayerID Player ID, for debug message
 	 * @param db Lookup lists built over the XML database
 	 * @return Spell AI chose to learn for free
 	 * @throws MomException If no eligible spells are available (e.g. player has them all researched already)
 	 * @throws RecordNotFoundException If the spell chosen couldn't be found in the player's spell list
 	 */
 	@Override
-	public final SpellResearchStatus chooseFreeSpellAI (final List<SpellResearchStatus> spells, final String magicRealmID, final String spellRankID,
-		final int aiPlayerID, final CommonDatabase db)
+	public final SpellResearchStatus chooseFreeSpellAI (final List<SpellResearchStatus> spells, final String magicRealmID, final String spellRankID, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering chooseFreeSpellAI: Player ID " + aiPlayerID + ", " + magicRealmID + ", " + spellRankID);
-
 		// Get candidate spells
 		final List<Spell> spellList = getSpellUtils ().getSpellsNotInBookForRealmAndRank (spells, magicRealmID, spellRankID, db);
 
 		// Choose a spell
-		final Spell chosenSpell = chooseSpellToResearchAI (spellList, aiPlayerID);
+		final Spell chosenSpell = chooseSpellToResearchAI (spellList);
 
 		// Return spell research status; calling routine sets it to available
 		final SpellResearchStatus chosenSpellStatus = getSpellUtils ().findSpellResearchStatus (spells, chosenSpell.getSpellID ());
-
-		log.trace ("Exiting chooseFreeSpellAI: " + chosenSpellStatus.getSpellID ());
 		return chosenSpellStatus;
 	}
 	
@@ -243,8 +228,6 @@ public final class SpellAIImpl implements SpellAI
 		final Map<Integer, List<AIUnitType>> wantedUnitTypesOnEachPlane, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering decideWhatToCastOverland: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		// Exit if we're already in the middle of casting something
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		if (priv.getQueuedSpell ().size () == 0)
@@ -418,8 +401,6 @@ public final class SpellAIImpl implements SpellAI
 				getSpellQueueing ().requestCastSpell (player, null, null, null, spell.getSpellID (), null, null, null, null, null, mom);
 			}
 		}
-		
-		log.trace ("Exiting decideWhatToCastOverland");
 	}
 	
 	/**
@@ -442,8 +423,6 @@ public final class SpellAIImpl implements SpellAI
 	public final void decideSpellTarget (final PlayerServerDetails player, final Spell spell, final MemoryMaintainedSpell maintainedSpell, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering decideSpellTarget: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spell + ", Spell URN " + maintainedSpell.getSpellURN ());
-		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		MapCoordinates3DEx targetLocation = null;
@@ -571,8 +550,6 @@ public final class SpellAIImpl implements SpellAI
 			// Target it
 			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, targetLocation, targetUnit, citySpellEffectID, unitSkillID, mom);
 		}
-		
-		log.trace ("Exiting decideSpellTarget");
 	}
 
 	/**
@@ -594,8 +571,6 @@ public final class SpellAIImpl implements SpellAI
 		final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering decideWhatToCastCombat: Player ID " + player.getPlayerDescription ().getPlayerID ());
-		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -789,7 +764,6 @@ public final class SpellAIImpl implements SpellAI
 				result = CombatAIMovementResult.MOVED_OR_ATTACKED;
 		}
 
-		log.trace ("Exiting decideWhatToCastCombat = " + result);
 		return result;
 	}
 	

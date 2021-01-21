@@ -68,8 +68,6 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getUnitURN () + ", " + getCombatLocation () + ", " + getCombatLocation () + ", " + getCombatSide () + ", " + getSummonedBySpellID ()); 
-
 		unit = getUnitUtils ().findUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		
 		// See if there is an animation defined in the graphics XML file
@@ -111,8 +109,6 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 					log.error (e, e);
 				}
 		}
-
-		log.trace ("Exiting start");
 	}
 
 	/**
@@ -160,8 +156,6 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 	@Override
 	public final void finish () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering finish");
-
 		// Remove the anim
 		if (anim != null)
 		{
@@ -200,8 +194,6 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		// Prompt for it to move
 		if (getCombatPosition () != null)
 			getCombatMapProcessing ().moveToFrontOfList (unit);
-		
-		log.trace ("Exiting finish");
 	}
 	
 	/**

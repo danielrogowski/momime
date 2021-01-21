@@ -3,9 +3,6 @@ package momime.server.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.MomException;
@@ -33,9 +30,6 @@ import momime.server.messages.MomGeneralServerKnowledge;
  */
 public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (HeroItemServerUtilsImpl.class);
-
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
@@ -50,8 +44,6 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 	@Override
 	public final NumberedHeroItem createNumberedHeroItem (final HeroItem item, final MomGeneralServerKnowledge gsk)
 	{
-		log.trace ("Entering createNumberedHeroItem: " + item.getHeroItemName ());
-		
 		final NumberedHeroItem numberedItem = new NumberedHeroItem ();
 		numberedItem.setHeroItemURN (gsk.getNextFreeHeroItemURN ());
 		gsk.setNextFreeHeroItemURN (gsk.getNextFreeHeroItemURN () + 1);
@@ -63,7 +55,6 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 		numberedItem.setSpellChargeCount (item.getSpellChargeCount ());
 		numberedItem.getHeroItemChosenBonus ().addAll (item.getHeroItemChosenBonus ());
 		
-		log.trace ("Exiting createNumberedHeroItem = " + numberedItem.getHeroItemURN ());
 		return numberedItem;
 	}
 	
@@ -81,8 +72,6 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 	public final String validateHeroItem (final PlayerServerDetails player, final Spell spell, final HeroItem heroItem, final UnitSetting unitSettings, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering validateHeroItem: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
 		// Either spell can be used to make any item, at any cost, so nothing to check there.
@@ -162,7 +151,6 @@ public final class HeroItemServerUtilsImpl implements HeroItemServerUtils
 			}
 		}
 
-		log.trace ("Entering validateHeroItem: " + error);
 		return error;
 	}
 

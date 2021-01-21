@@ -87,8 +87,6 @@ public final class WizardWonUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Find details about the wizard
 		final MomPersistentPlayerPublicKnowledge winningWizardPub = (MomPersistentPlayerPublicKnowledge) getWinningWizard ().getPersistentPlayerPublicKnowledge ();
 		final WizardEx winningWizardDef = (winningWizardPub.getStandardPhotoID () == null) ? null :
@@ -239,8 +237,6 @@ public final class WizardWonUI extends MomClientDialogUI
 			contentPane.repaint ();
 		});
 		timer.start ();
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -249,8 +245,6 @@ public final class WizardWonUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getDialog ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getWizardWonScreen ().getTitle ()));
 		
 		switch (lineTextNumber)
@@ -260,8 +254,6 @@ public final class WizardWonUI extends MomClientDialogUI
 			case 3: lineLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardWonScreen ().getLine3 ())); break;
 			case 4: lineLabel.setText (getLanguageHolder ().findDescription (getLanguages ().getWizardWonScreen ().getLine4 ())); break;
 		}
-				
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**

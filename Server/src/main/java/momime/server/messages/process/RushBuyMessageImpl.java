@@ -56,8 +56,6 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCityLocation ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		Integer productionCost = null;
@@ -130,8 +128,6 @@ public final class RushBuyMessageImpl extends RushBuyMessage implements PostSess
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), (MapCoordinates3DEx) getCityLocation (), mom.getSessionDescription ().getFogOfWarSetting ());
 		}
-		
-		log.trace ("Exiting process");
 	}
 
 	/**

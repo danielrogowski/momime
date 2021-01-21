@@ -47,8 +47,6 @@ public final class UnitRowDisplayButton extends JButton
 	 */
 	public final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// We don't really need this image, but use it to fix the size of the button		
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/overland/unitBackground.png");
 		
@@ -57,8 +55,6 @@ public final class UnitRowDisplayButton extends JButton
 		setMinimumSize (buttonSize);
 		setMaximumSize (buttonSize);
 		setPreferredSize (buttonSize);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**

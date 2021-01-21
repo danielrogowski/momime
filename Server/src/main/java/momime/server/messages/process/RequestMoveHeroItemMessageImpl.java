@@ -73,8 +73,6 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering process: Hero Item URN " + getHeroItemURN () + " from " + getFromLocation () + " to " + getToLocation ());
-		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
@@ -243,8 +241,6 @@ public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMes
 					throw new MomException ("RequestMoveHeroItemMessage doesn't know how to move hero item to location " + getToLocation ());
 			}
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

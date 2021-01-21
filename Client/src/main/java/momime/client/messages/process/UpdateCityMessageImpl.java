@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
@@ -26,9 +23,6 @@ import momime.common.messages.servertoclient.UpdateCityMessage;
  */
 public final class UpdateCityMessageImpl extends UpdateCityMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UpdateCityMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -54,8 +48,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getData ().getMapLocation ());
-		
 		processOneUpdate ();
 		
 		// Regenerate city images to show change in size or owner
@@ -63,8 +55,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
 		getCitiesListUI ().refreshCitiesList ();
 		getCitiesListUI ().regenerateMiniMapBitmaps ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**
@@ -73,8 +63,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 	 */
 	public final void processOneUpdate () throws IOException
 	{
-		log.trace ("Entering processOneUpdate: " + getData ().getMapLocation ());
-		
 		final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getData ().getMapLocation ().getZ ()).getRow ().get (getData ().getMapLocation ().getY ()).getCell ().get (getData ().getMapLocation ().getX ());
 		
@@ -105,8 +93,6 @@ public final class UpdateCityMessageImpl extends UpdateCityMessage implements Ba
 		
 		// If any new turn message(s) are showing what this city may have just constructed, then we need to update those as well
 		getNewTurnMessagesUI ().cityDataChanged ((MapCoordinates3DEx) getData ().getMapLocation ());
-		
-		log.trace ("Exiting processOneUpdate");
 	}
 
 	/**

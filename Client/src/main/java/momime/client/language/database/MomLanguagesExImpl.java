@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.client.languages.database.KnownServer;
 import momime.client.languages.database.LanguageOption;
 import momime.client.languages.database.MomLanguages;
@@ -20,9 +17,6 @@ import momime.common.database.RecordNotFoundException;
  */
 public final class MomLanguagesExImpl extends MomLanguages implements MomLanguagesEx
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MomLanguagesExImpl.class);
-	
 	/** Map of language enums to language options objects */
 	private Map<Language, LanguageOptionEx> languageOptionsMap;
 	
@@ -37,13 +31,9 @@ public final class MomLanguagesExImpl extends MomLanguages implements MomLanguag
 	 */
 	public final void buildMaps ()
 	{
-		log.trace ("Entering buildMaps");
-		
 		languageOptionsMap = getLanguageOptions ().stream ().collect (Collectors.toMap (l -> l.getLanguage (), l -> l));
 		knownServersMap = getKnownServer ().stream ().collect (Collectors.toMap (s -> s.getKnownServerID (), s -> s));
 		shortcutsMap = getShortcutKey ().stream ().collect (Collectors.toMap (s -> s.getShortcut (), s -> s));
-		
-		log.trace ("Exiting buildMaps");
 	}
 
 	/**

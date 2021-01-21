@@ -5,27 +5,21 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.NewGameUI;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.ChosenWizardMessage;
 import momime.common.utils.PlayerKnowledgeUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-
 /**
  * Message server sends to players to tell them which wizards players have chosen
  */
 public final class ChosenWizardMessageImpl extends ChosenWizardMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChosenWizardMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -43,8 +37,6 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Player ID " + getPlayerID () + ", " + getWizardID ());
-
 		// Set the Wizard ID
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ChosenWizardMessageImpl");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
@@ -59,8 +51,6 @@ public final class ChosenWizardMessageImpl extends ChosenWizardMessage implement
 		// Show chosen wizard on wait for players list, or enable/disable selection buttons, depending what stage of game setup we're at
 		getNewGameUI ().enableOrDisableWizardButtons ();
 		getNewGameUI ().updateWaitPanelPlayersList ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.random.RandomUtils;
 
 import momime.common.database.CommonDatabase;
@@ -27,9 +24,6 @@ import momime.common.utils.SpellUtils;
  */
 public final class ServerSpellCalculationsImpl implements ServerSpellCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ServerSpellCalculationsImpl.class);
-	
 	/** The number of choices we're offered from which to pick a spell to research */
 	private static final int SPELL_COUNT_TO_PICK_RESEARCH_FROM = 8;
 
@@ -55,8 +49,6 @@ public final class ServerSpellCalculationsImpl implements ServerSpellCalculation
 		final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering randomizeResearchableSpells");
-
 		final List<String> spellIdsToMakeResearchable = new ArrayList<String> ();
 		final List<String> spellIdsToMakeNotInBook = new ArrayList<String> ();
 
@@ -118,8 +110,6 @@ public final class ServerSpellCalculationsImpl implements ServerSpellCalculation
 				else if (spellIdsToMakeNotInBook.contains (researchStatus.getSpellID ()))
 					researchStatus.setStatus (SpellResearchStatusID.NOT_IN_SPELL_BOOK);
 			}
-
-		log.trace ("Exiting randomizeResearchableSpells");
 	}
 
 	/**
@@ -133,8 +123,6 @@ public final class ServerSpellCalculationsImpl implements ServerSpellCalculation
 	public final void randomizeSpellsResearchableNow (final List<SpellResearchStatus> spells, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering randomizeSpellsResearchableNow");
-
 		// First find how many 'researchable now' spells we already have - maybe we already have 8 and have nothing to do
 		int researchableNow = getSpellUtils ().getSpellsForStatus (spells, SpellResearchStatusID.RESEARCHABLE_NOW, db).size ();
 		if (researchableNow < SPELL_COUNT_TO_PICK_RESEARCH_FROM)
@@ -171,8 +159,6 @@ public final class ServerSpellCalculationsImpl implements ServerSpellCalculation
 					if (spellIdsToMakeResearchableNow.contains (researchStatus.getSpellID ()))
 						researchStatus.setStatus (SpellResearchStatusID.RESEARCHABLE_NOW);
 		}
-
-		log.trace ("Exiting randomizeSpellsResearchableNow");
 	}
 
 	/**

@@ -6,9 +6,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 
@@ -35,9 +32,6 @@ import momime.common.messages.servertoclient.DispelMagicResultsMessage;
  */
 public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (DispelMagicResultsMessageImpl.class);
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -64,8 +58,6 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Player ID " + getCastingPlayerID () + ", " + getDispelMagicResult ().size () + " results");
-
 		// Work out main text
 		final StringBuilder text = new StringBuilder ();
 		
@@ -107,8 +99,6 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 		msg.setTitle (spellName);
 		msg.setText (text.toString ());
 		msg.setVisible (true);
-
-		log.trace ("Exiting start");
 	}
 
 	/**

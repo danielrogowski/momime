@@ -110,8 +110,6 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Find details about the 2 wizards involved
 		// Having a pic and sound effect for the banished wizard is mandatory or we cannot draw anything sensible.
 		// Having a pic for the banishing wizard is optional, as there's some mobs shown too so can just show them like raiders if nothing else.
@@ -308,8 +306,6 @@ public final class WizardBanishedUI extends MomClientDialogUI
 				timer.stop ();
 		});
 		timer.start ();
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -318,8 +314,6 @@ public final class WizardBanishedUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		final MomPersistentPlayerPublicKnowledge banishingWizardPub = (MomPersistentPlayerPublicKnowledge) getBanishingWizard ().getPersistentPlayerPublicKnowledge ();
 		
 		final List<LanguageText> languageText;
@@ -334,8 +328,6 @@ public final class WizardBanishedUI extends MomClientDialogUI
 		
 		getDialog ().setTitle (title);
 		titleLabel.setText (title);
-		
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**

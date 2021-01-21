@@ -183,8 +183,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/magicSliders/background.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
@@ -515,8 +513,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		// Shortcut keys
 		contentPane.getActionMap ().put (Shortcut.ALCHEMY, alchemyAction);
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -525,8 +521,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getTitle ()));
 		
 		manaTitle.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getManaTitle ()));
@@ -545,8 +539,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		
 		// Shortcut keys
 		getLanguageHolder ().configureShortcutKeys (contentPane);
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -554,8 +546,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	 */
 	public final void updateProductionLabels ()
 	{
-		log.trace ("Entering updateProductionLabels");
-		
 		// This can be called before the screen has been opened and the UI components exist
 		if (manaPerTurn != null)
 			try
@@ -649,8 +639,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 			{
 				log.error (e, e);
 			}
-		
-		log.trace ("Exiting updateProductionLabels");
 	}	
 
 	/**
@@ -658,8 +646,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	 */
 	public final void spellsChanged ()
 	{
-		log.trace ("Entering spellsChanged");
-		
 		if (spellsTableModel != null)
 		{
 			spellsTableModel.getSpells ().clear ();
@@ -669,8 +655,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 			
 			spellsTableModel.fireTableDataChanged ();
 		}
-		
-		log.trace ("Exiting spellsChanged");
 	}
 	
 	/**

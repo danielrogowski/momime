@@ -99,8 +99,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	@Override
 	public final Integer findClosestCityTo (final MapCoordinates3DEx location, final MapVolumeOfMemoryGridCells map, final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		log.trace ("Entering findClosestCityTo: " + location);
-
 		Integer closestDistance = null;
 		
 		for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
@@ -112,7 +110,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 						closestDistance = thisDistance;
 				}
 
-		log.trace ("Exiting findClosestCityTo = " + closestDistance);
 		return closestDistance;
 	}
 	
@@ -134,8 +131,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final String buildingID, final String unitID, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering validateCityConstruction: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + buildingID + ", " + unitID);
-
 		final OverlandMapCityData cityData = trueMap.getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		String msg = null;
@@ -198,7 +193,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 				msg = "The building/unit that you tried to build doesn't exist";
 		}
 
-		log.trace ("Exiting validateCityConstruction = " + msg);
 		return msg;
 	}
 
@@ -215,8 +209,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final String validateOptionalFarmers (final PlayerServerDetails player, final MapVolumeOfMemoryGridCells trueTerrain, final MapCoordinates3DEx cityLocation,
 		final int optionalFarmers)
 	{
-		log.trace ("Entering validateOptionalFarmers: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + optionalFarmers);
-
 		final OverlandMapCityData cityData = trueTerrain.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		String msg = null;
@@ -231,7 +223,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 			msg = "You tried to change the number of farmers & workers to an invalid amount - change ignored.";
 		}
 
-		log.trace ("Exiting validateOptionalFarmers = " + msg);
 		return msg;
 	}
 
@@ -253,8 +244,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering buildCityFromSettler: " + settler.getUnitURN ());
-		
 		// Add the city on the server
 		final MapCoordinates3DEx cityLocation = (MapCoordinates3DEx) settler.getUnitLocation ();
 		final MemoryGridCell tc = gsk.getTrueMap ().getMap ().getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -293,8 +282,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		
 		// Update our own FOW (the city can see further than the settler could)
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), player, players, "buildCityFromSettler", sd, db);
-		
-		log.trace ("Exiting buildCityFromSettler");
 	}
 	
 	/**
@@ -308,8 +295,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final int totalCostOfBuildingsAtLocation (final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering totalCostOfBuildingsAtLocation: " + cityLocation);
-		
 		int total = 0;
 		for (final MemoryBuilding thisBuilding : buildings)
 			if (cityLocation.equals (thisBuilding.getCityLocation ()))
@@ -319,7 +304,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 					total = total + building.getProductionCost ();
 			}
 		
-		log.trace ("Exiting totalCostOfBuildingsAtLocation = " + total);
 		return total;
 	}
 	
@@ -333,8 +317,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	public final MapCoordinates3DEx findCityWithinRadius (final MapCoordinates3DEx searchLocation, final MapVolumeOfMemoryGridCells trueTerrain,
 		final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		log.trace ("Entering findCityWithinRadius: " + searchLocation);
-
 		MapCoordinates3DEx found = null;
 		
 		final MapCoordinates3DEx coords = new MapCoordinates3DEx (searchLocation);
@@ -343,7 +325,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 				if (trueTerrain.getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getCityData () != null)
 					found = coords;
 		
-		log.trace ("Exiting findCityWithinRadius = " + found);
 		return found;
 	}
 
@@ -355,8 +336,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 	@Override
 	public final int countCities (final MapVolumeOfMemoryGridCells terrain, final int playerID)
 	{
-		log.trace ("Entering countCities: Player ID " + playerID);
-		
 		int numberOfCities = 0;
 		for (final MapAreaOfMemoryGridCells plane : terrain.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
@@ -367,7 +346,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 						numberOfCities++;
 				}
 		
-		log.trace ("Exiting countCities = " + numberOfCities);
 		return numberOfCities;
 	}
 	
@@ -392,8 +370,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final List<PlayerServerDetails> players, final FogOfWarMemory fogOfWarMemory, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering listMissingRoadCellsBetween: " + firstCityLocation + " to " + secondCityLocation);
-		
 		// Don't just create a straight line - what's the shortest distance for a basic unit like a spearman to walk from one city to the other, going around mountains for example?
 		final int [] [] [] doubleMovementDistances			= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 		final int [] [] [] movementDirections					= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
@@ -434,7 +410,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 			}
 		}
 		
-		log.trace ("Exiting listMissingRoadCellsBetween = " + missingRoadCells.size ());
 		return missingRoadCells;
 	}
 	

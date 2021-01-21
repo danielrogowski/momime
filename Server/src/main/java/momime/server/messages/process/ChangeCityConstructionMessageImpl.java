@@ -50,8 +50,6 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: " + getCityLocation () + ", " + getBuildingID () + ", " + getUnitID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = getCityServerUtils ().validateCityConstruction (sender, mom.getGeneralServerKnowledge ().getTrueMap (),
@@ -84,8 +82,6 @@ public final class ChangeCityConstructionMessageImpl extends ChangeCityConstruct
 				(CommonDatabaseConstants.BUILDING_TRADE_GOODS.equals (getBuildingID ())))
 				getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

@@ -43,8 +43,6 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "PlayAnimationMessageImpl");
 		
 		switch (getAnimationID ())
@@ -61,8 +59,6 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 				log.error ("PlayAnimationMessageImpl doesn't know how to play animation \"" + getAnimationID () + "\"");
 				getClient ().finishCustomDurationMessage (this);
 		}
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

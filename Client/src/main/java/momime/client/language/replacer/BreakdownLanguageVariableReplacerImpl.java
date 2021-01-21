@@ -2,9 +2,6 @@ package momime.client.language.replacer;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -19,9 +16,6 @@ import momime.common.database.RecordNotFoundException;
  */
 public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageVariableReplacerTokenImpl implements BreakdownLanguageVariableReplacer<B>
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (BreakdownLanguageVariableReplacerImpl.class);
-	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 
@@ -41,8 +35,6 @@ public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageV
 	 */
 	final String listPickDescriptions (final List<String> pickIDs) throws RecordNotFoundException
 	{
-		log.trace ("Entering listPickDescriptions: " + ((pickIDs == null) ? "null" : Integer.valueOf (pickIDs.size ()).toString ()));
-		
 		final StringBuilder retortList = new StringBuilder ();
 		if (pickIDs != null)
 			for (final String pickID : pickIDs)
@@ -56,7 +48,6 @@ public abstract class BreakdownLanguageVariableReplacerImpl<B> extends LanguageV
 			}
 
 		final String s = getTextUtils ().replaceFinalCommaByAnd (retortList.toString ());
-		log.trace ("Entering listPickDescriptions = " + s);
 		return s;
 	}
 	

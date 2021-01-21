@@ -168,8 +168,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/options.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldNormal.png");
@@ -511,8 +509,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-		
-		log.trace ("Exiting init");
 	}	
 	
 	/**
@@ -521,8 +517,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle							(getLanguageHolder ().findDescription (getLanguages ().getOptionsScreen ().getTitle ()));
 		shortTitleLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getShortTitle ()));
 		versionLabel.setText							(getLanguageHolder ().findDescription (getLanguages ().getMainMenuScreen ().getVersion ()).replaceAll ("VERSION", getVersion ()));
@@ -587,8 +581,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		
 		if (selectedIndex != null)
 			unitAttributesChoice.setSelectedIndex (selectedIndex);
-
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -596,8 +588,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 	 */
 	private final void saveConfigFile ()
 	{
-		log.trace ("Entering saveConfigFile");
-
 		try
 		{
 			getClientConfigMarshaller ().marshal (getClientConfig (), new File (getClientConfigLocation ()));
@@ -606,8 +596,6 @@ public final class OptionsUI extends MomClientFrameUI implements LanguageChangeM
 		{
 			log.error (e, e);
 		}
-
-		log.trace ("Exiting saveConfigFile");
 	}
 
 	/**

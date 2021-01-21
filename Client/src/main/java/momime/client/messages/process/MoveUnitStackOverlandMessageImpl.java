@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
@@ -30,9 +27,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlandMessage implements AnimatedServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -86,8 +80,6 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		// If the move is only 1 cell, show as an animation; if its a further move (like Recall Hero) then just do it instantly
 		anim = (getClientConfig ().isOverlandAnimateUnitsMoving ()) &&
 			(getCoordinateSystemUtils ().findDistanceBetweenXCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), getMoveFrom ().getX (), getMoveTo ().getX ()) <= 1) &&
@@ -166,8 +158,6 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		}
 		else
 			tickCount = 0;
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**
@@ -226,8 +216,6 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 	@Override
 	public final void finish () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering finish");
-		
 		if (isFreeAfterMoving ())
 			getMemoryMaintainedSpellUtils ().removeSpellsCastOnUnitStack (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getUnitURN ());
 		
@@ -257,8 +245,6 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 		// clever and only update units in either the moveFrom or moveTo locations, but just leave it safe / simple for now)
 		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
 			unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
-		
-		log.trace ("Exiting finish");
 	}
 	
 	/**

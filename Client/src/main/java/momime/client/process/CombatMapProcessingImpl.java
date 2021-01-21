@@ -14,18 +14,12 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.EndCombatTurnMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Methods dealing with combat movement and unit lists, to keep this from making CombatUI too large and complicated.
  * Also many of these have equivalents in OverlandMapProcessingImpl so it made sense to keep the separation the same. 
  */
 public final class CombatMapProcessingImpl implements CombatMapProcessing
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (CombatMapProcessingImpl.class);
-	
 	/** Ordered list of units that we have to give orders to this combat turn; if it isn't our turn, this is empty */
 	private final List<MemoryUnit> unitsLeftToMoveCombat = new ArrayList<MemoryUnit> ();
 
@@ -46,8 +40,6 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	@Override
 	public final void buildUnitsLeftToMoveList () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering buildUnitsLeftToMoveList");
-		
 		// Rebuild the list
 		unitsLeftToMoveCombat.clear ();
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
@@ -59,8 +51,6 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 		
 		// Ask for movement orders for the first unit
 		selectNextUnitToMoveCombat ();
-		
-		log.trace ("Exiting buildUnitsLeftToMoveList");
 	}
 
 	/**
@@ -73,8 +63,6 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	public final void selectNextUnitToMoveCombat ()
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering selectNextUnitToMoveCombat");
-		
 		if ((getClient ().getOurPlayerID ().equals (getCombatUI ().getCurrentPlayerID ())) && (!getCombatUI ().isAutoControl ()))
 		{
 			// Revert back to the spells the wizard knows, and their cost reductions, in case the spell book was showing casting for a particular unit
@@ -93,8 +81,6 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 			else
 				getCombatUI ().setSelectedUnitInCombat (unitsLeftToMoveCombat.get (0));
 		}
-		
-		log.trace ("Exiting selectNextUnitToMoveCombat");
 	}
 
 	/**
@@ -103,11 +89,7 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	@Override
 	public final void removeUnitFromLeftToMoveCombat (final MemoryUnit unit)
 	{
-		log.trace ("Entering removeUnitFromLeftToMoveCombat");
-
 		unitsLeftToMoveCombat.remove (unit);
-
-		log.trace ("Exiting removeUnitFromLeftToMoveCombat");
 	}
 	
 	/**
@@ -119,12 +101,8 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	@Override
 	public final void selectedUnitDone () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering selectedUnitsDone");
-		
 		removeUnitFromLeftToMoveCombat (getCombatUI ().getSelectedUnitInCombat ());	
 		selectNextUnitToMoveCombat ();
-		
-		log.trace ("Exiting selectedUnitsDone");
 	}
 	
 	/**
@@ -136,16 +114,12 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	@Override
 	public final void selectedUnitWait () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering selectedUnitsWait");
-
 		// Only put units back in the 'left to move' list if they already were in it - otherwise this can result in units who've already used
 		// up all their movement being put back in the 'left to move' list which really screws things up.
 		if (unitsLeftToMoveCombat.remove (getCombatUI ().getSelectedUnitInCombat ()))
 			unitsLeftToMoveCombat.add (getCombatUI ().getSelectedUnitInCombat ());
 			
 		selectNextUnitToMoveCombat ();
-		
-		log.trace ("Exiting selectedUnitsWait");
 	}
 
 	/**
@@ -159,14 +133,10 @@ public final class CombatMapProcessingImpl implements CombatMapProcessing
 	@Override
 	public final void moveToFrontOfList (final MemoryUnit unit) throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering moveToFrontOfList: Unit URN " + unit.getUnitURN ());
-
 		unitsLeftToMoveCombat.remove (unit);
 		unitsLeftToMoveCombat.add (0, unit);
 			
 		selectNextUnitToMoveCombat ();
-		
-		log.trace ("Exiting moveToFrontOfList");
 	}
 	
 	/**

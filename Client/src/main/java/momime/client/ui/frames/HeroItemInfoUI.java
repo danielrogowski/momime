@@ -64,8 +64,6 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/heroItems/itemInfo.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button50x18goldNormal.png");
@@ -123,8 +121,6 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 		// Lock dialog size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -133,8 +129,6 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		// Button
 		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
 		
@@ -164,8 +158,6 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 		}
 		
 		bonuses.setText (text.toString ());
-
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**
@@ -173,11 +165,7 @@ public final class HeroItemInfoUI extends MomClientFrameUI
 	 */
 	public final void close ()
 	{
-		log.trace ("Entering close: " + getItem ().getHeroItemURN ());
-		
 		getFrame ().dispose ();
-
-		log.trace ("Exiting close: " + getItem ().getHeroItemURN ());
 	}
 	
 	/**

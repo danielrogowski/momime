@@ -6,9 +6,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
@@ -25,9 +22,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMessage implements AnimatedServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AddCombatAreaEffectMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -51,8 +45,6 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getMemoryCombatAreaEffect ().getMapLocation () + ", " + getMemoryCombatAreaEffect ().getCombatAreaEffectID ());
-
 		// First add the CAE
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ().add (getMemoryCombatAreaEffect ());
 		
@@ -72,8 +64,6 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 				flashColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
 			}
 		}
-		
-		log.trace ("Exiting start");
 	}
 
 	/**
@@ -128,8 +118,6 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	@Override
 	public final void finish () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering finish");
-		
 		// If there's a combat in progress, the icon for this CAE might need to be added to it
 		if (getCombatUI ().isVisible ())
 			getCombatUI ().generateCombatAreaEffectIcons ();
@@ -141,8 +129,6 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 		for (final UnitInfoUI unitInfo : getClient ().getUnitInfos ().values ())
 			if (getUnitUtils ().doesCombatAreaEffectApplyToUnit (unitInfo.getUnit (), getMemoryCombatAreaEffect (), getClient ().getClientDB ()))
 				unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
-
-		log.trace ("Exiting finish");
 	}
 	
 	/**

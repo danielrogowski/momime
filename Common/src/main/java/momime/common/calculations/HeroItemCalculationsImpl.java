@@ -3,9 +3,6 @@ package momime.common.calculations;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -22,9 +19,6 @@ import momime.common.utils.PlayerPickUtils;
  */
 public final class HeroItemCalculationsImpl implements HeroItemCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (HeroItemCalculationsImpl.class);
-	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
@@ -38,8 +32,6 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 	@Override
 	public final int calculateCraftingCost (final HeroItem heroItem, final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering calculateCraftingCost: " + heroItem.getHeroItemTypeID () + ", " + heroItem.getHeroItemName ());
-		
 		// Get base cost
 		final HeroItemType itemType = db.findHeroItemType (heroItem.getHeroItemTypeID (), "calculateCraftingCost");
 		int cost = itemType.getBaseCraftingCost ();
@@ -63,7 +55,6 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 			cost = cost + bonusCost;
 		}
 		
-		log.trace ("Exiting calculateCraftingCost = " + cost);
 		return cost;
 	}
 
@@ -77,8 +68,6 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 	@Override
 	public final boolean haveRequiredBooksForBonus (final String heroItemBonusID, final List<PlayerPick> picks, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering haveRequiredBooksForBonus: " + heroItemBonusID);
-		
 		final HeroItemBonus bonus = db.findHeroItemBonus (heroItemBonusID, "haveRequiredBooksForBonus");
 			
 		boolean haveRequiredBooks = true;
@@ -90,7 +79,6 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 				haveRequiredBooks = false;
 		}
 		
-		log.trace ("Exiting haveRequiredBooksForBonus = " + haveRequiredBooks);
 		return haveRequiredBooks;
 	}
 	
@@ -104,8 +92,6 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 	@Override
 	public final boolean haveRequiredBooksForItem (final HeroItem heroItem, final List<PlayerPick> picks, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering haveRequiredBooksForItem: " + heroItem.getHeroItemTypeID () + ", " + heroItem.getHeroItemName ());
-		
 		boolean haveRequiredBooks = true;
 		final Iterator<String> iter = heroItem.getHeroItemChosenBonus ().iterator ();
 		while ((haveRequiredBooks) && (iter.hasNext ()))
@@ -114,8 +100,6 @@ public final class HeroItemCalculationsImpl implements HeroItemCalculations
 		
 		// NB. the Spell Charges bonus has no prerequisite books and you do not need to know (nor have enough
 		// books to know) the spell in order to be able to obtain an item that casts it.
-		
-		log.trace ("Exiting haveRequiredBooksForItem = " + haveRequiredBooks);
 		return haveRequiredBooks;
 	}
 

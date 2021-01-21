@@ -8,9 +8,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
@@ -44,9 +41,6 @@ import momime.server.process.CombatProcessing;
  */
 public final class CombatAIImpl implements CombatAI
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (CombatAIImpl.class);
-	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -71,8 +65,6 @@ public final class CombatAIImpl implements CombatAI
 	final List<MemoryUnit> listUnitsToMove (final MapCoordinates3DEx combatLocation, final int currentPlayerID,
 		final List<MemoryUnit> trueUnits)
 	{
-		log.trace ("Entering listOurUnits: Player ID " + currentPlayerID);
-		
 		final List<MemoryUnit> unitsToMove = new ArrayList<MemoryUnit> ();
 		for (final MemoryUnit tu : trueUnits)
 			if ((tu.getOwningPlayerID () == currentPlayerID) && (tu.getStatus () == UnitStatusID.ALIVE) &&
@@ -81,7 +73,6 @@ public final class CombatAIImpl implements CombatAI
 				
 				unitsToMove.add (tu);				
 		
-		log.trace ("Exiting listOurUnits = " + unitsToMove.size ());
 		return unitsToMove;
 	}
 	
@@ -97,7 +88,6 @@ public final class CombatAIImpl implements CombatAI
 	 */
 	final int calculateUnitCombatAIOrder (final ExpandedUnitDetails unit) throws MomException
 	{
-		log.trace ("Entering calculateUnitCombatAIOrder: Unit URN + " + unit.getUnitURN ());
 		final int result;
 
 		// Caster with MP remaining?
@@ -119,7 +109,6 @@ public final class CombatAIImpl implements CombatAI
 				result = 4;
 		}
 		
-		log.trace ("Exiting calculateUnitCombatAIOrder = " + result);
 		return result;
 	}
 	
@@ -134,9 +123,9 @@ public final class CombatAIImpl implements CombatAI
 	 * @return Numeric rating for how good of a target this unit is to attack; higher value=attack first, lower value=attack last
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
+	@SuppressWarnings ("unused")
 	final int evaluateTarget (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender) throws MomException
 	{
-		log.trace ("Entering evaluateTarget: Unit URN " + attacker.getUnitURN () + ", Unit URN " + defender.getUnitURN ());
 		final int result;
 
 		// Go for units with sufficient mana to still cast spells first
@@ -151,7 +140,6 @@ public final class CombatAIImpl implements CombatAI
 		else
 			result = 1;
 		
-		log.trace ("Exiting evaluateTarget = " + result);
 		return result;
 	}
 	
@@ -178,8 +166,6 @@ public final class CombatAIImpl implements CombatAI
 		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering selectBestTarget: Unit URN " + attacker.getUnitURN ());
-
 		// Need this in a list for the comparison below
 		final List<CombatMoveType> attacks = new ArrayList<CombatMoveType> ();
 		attacks.add (CombatMoveType.MELEE);
@@ -217,7 +203,6 @@ public final class CombatAIImpl implements CombatAI
 				}
 			}
 		
-		log.trace ("Exiting selectBestTarget : Unit URN " + ((bestUnit == null) ? "null" : Integer.valueOf (bestUnit.getUnitURN ()).toString ()));
 		return bestUnit;
 	}
 	
@@ -239,8 +224,6 @@ public final class CombatAIImpl implements CombatAI
 		final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering moveOneUnit: Unit URN + " + tu.getUnitURN ());
-		
 		// Work out where this unit can move
 		final CombatMapSize combatMapSize = mom.getSessionDescription ().getCombatMapSize ();
 		
@@ -287,7 +270,6 @@ public final class CombatAIImpl implements CombatAI
 				CombatAIMovementResult.ENDED_COMBAT : CombatAIMovementResult.MOVED_OR_ATTACKED;
 		}
 		
-		log.trace ("Exiting moveOneUnit = " + result);
 		return result;
 	}
 	
@@ -311,8 +293,6 @@ public final class CombatAIImpl implements CombatAI
 	public final CombatAIMovementResult aiCombatTurn (final MapCoordinates3DEx combatLocation, final PlayerServerDetails currentPlayer, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering aiCombatTurn: Player ID + " + currentPlayer.getPlayerDescription ().getPlayerID ());
-		
 		// If AI Wizard (not raiders, not banished, not human player on auto) then maybe cast a spell before we move units
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) currentPlayer.getPersistentPlayerPublicKnowledge ();
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING;
@@ -371,7 +351,6 @@ public final class CombatAIImpl implements CombatAI
 			}
 		}
 		
-		log.trace ("Exiting aiCombatTurn = " + result);
 		return result;
 	}
 

@@ -83,8 +83,6 @@ public final class TreasureUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/treasure.png");
 		final BufferedImage sideImage = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/treasureImage.png");
@@ -134,8 +132,6 @@ public final class TreasureUI extends MomClientDialogUI
 
 		// Shortcut keys
 		contentPane.getActionMap ().put (Shortcut.MESSAGE_BOX_CLOSE,	okAction);
-		
-		log.trace ("Exiting init");
 	}
 
 	/**
@@ -144,8 +140,6 @@ public final class TreasureUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		getDialog ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getTreasureScreen ().getTitle ()));
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 
@@ -263,8 +257,6 @@ public final class TreasureUI extends MomClientDialogUI
 		
 		// Shortcut keys
 		getLanguageHolder ().configureShortcutKeys (contentPane);
-
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

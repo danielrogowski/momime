@@ -5,19 +5,16 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.RequestCastSpellMessage;
-import momime.server.MomSessionVariables;
-import momime.server.process.SpellQueueing;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.server.MomSessionVariables;
+import momime.server.process.SpellQueueing;
 
 /**
  * Client sends this to request a spell being cast, in combat or overland.
@@ -32,9 +29,6 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
  */
 public class RequestCastSpellMessageImpl extends RequestCastSpellMessage implements PostSessionClientToServerMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (RequestCastSpellMessageImpl.class);
-
 	/** Spell queueing methods */
 	private SpellQueueing spellQueueing;
 	
@@ -49,15 +43,11 @@ public class RequestCastSpellMessageImpl extends RequestCastSpellMessage impleme
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", "+ getSpellID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		getSpellQueueing ().requestCastSpell (sender, getCombatCastingUnitURN (), getCombatCastingFixedSpellNumber (),
 			getCombatCastingSlotNumber (), getSpellID (), getHeroItem (),
 			(MapCoordinates3DEx) getCombatLocation (), (MapCoordinates2DEx) getCombatTargetLocation (), getCombatTargetUnitURN (), getVariableDamage (), mom);
-
-		log.trace ("Exiting process");
 	}
 
 	/**

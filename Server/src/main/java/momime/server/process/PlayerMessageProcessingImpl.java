@@ -178,8 +178,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering chooseWizard: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + wizardID);
-
 		// Check if not specified
 		boolean valid;
 		WizardEx wizard = null;
@@ -314,8 +312,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// Tell everyone about the wizard this player has chosen
 			broadcastWizardChoice (players, player);
 		}
-
-		log.trace ("Exiting chooseWizard");
 	}
 
 	/**
@@ -328,8 +324,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private final void broadcastWizardChoice (final List<PlayerServerDetails> players, final PlayerServerDetails player)
 		throws JAXBException, XMLStreamException
 	{
-		log.trace ("Entering broadcastWizardChoice: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		// Convert empty string (custom wizard) to a null
 		final MomPersistentPlayerPublicKnowledge ppk = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 
@@ -338,8 +332,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		msg.setWizardID (ppk.getWizardID ());
 
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
-
-		log.trace ("Exiting broadcastWizardChoice");
 	}
 
 	/**
@@ -371,8 +363,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering createHeroes");
-
 		for (final UnitEx thisUnit : db.getUnits ())
 			if (thisUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
 
@@ -384,8 +374,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					if (!ppk.getWizardID ().equals (CommonDatabaseConstants.WIZARD_ID_MONSTERS))
 						getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), null, null, null, thisPlayer, UnitStatusID.NOT_GENERATED, null, sd, db);
 				}
-
-		log.trace ("Exiting createHeroes");
 	}
 
 
@@ -400,8 +388,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void checkIfCanStartGame (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering checkIfCanStartGame");
-
 		if (getPlayerPickServerUtils ().allPlayersHaveChosenAllDetails (mom.getPlayers (), mom.getSessionDescription ()))
 		{
 			// Add AI wizards
@@ -598,8 +584,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					throw new MomException ("checkIfCanStartGame encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
 			}
 		}
-
-		log.trace ("Exiting checkIfCanStartGame");
 	}
 
 	/**
@@ -616,8 +600,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void checkIfCanStartLoadedGame (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		log.trace ("Entering checkIfCanStartLoadedGame");
-
 		if (getPlayerPickServerUtils ().allPlayersAreConnected (mom.getPlayers ()))
 		{
 			// Use the same Start Game message as when starting a new game; this tells the client to close out the "Wait for players" list and show the overland map
@@ -639,8 +621,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					throw new MomException ("checkIfCanStartLoadedGame encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
 			}
 		}
-
-		log.trace ("Exiting checkIfCanStartLoadedGame");
 	}
 	
 	/**
@@ -657,8 +637,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private final void startPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering startPhase: Player ID " + onlyOnePlayerID);
-
 		if (onlyOnePlayerID == 0)
 			log.info ("Start phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
@@ -693,8 +671,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// 3) Completed buildings (both bonuses and increased maintenance)
 		getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, false, mom);
 		storePowerBaseHistory (onlyOnePlayerID, mom.getPlayers ());
-
-		log.trace ("Exiting startPhase");
 	}
 	
 	/**
@@ -703,8 +679,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 */
 	private final void saveGame (final MomSessionVariables mom)
 	{
-		log.trace ("Entering saveGame");
-		
 		try
 		{
 			// Temporarily strip out the database, so it doesn't get included in the saved game file.
@@ -727,8 +701,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			// Don't allow failure to save the game to totally kill things if there's a problem
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting saveGame");
 	}
 
 	/**
@@ -746,9 +718,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void switchToNextPlayer (final MomSessionVariables mom, final boolean loadingSavedGame)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering switchToNextPlayer: Player ID " +
-			mom.getGeneralPublicKnowledge ().getCurrentPlayerID () + " turn " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
-
 		final PlayerServerDetails currentPlayer;
 		if (loadingSavedGame)
 			currentPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getCurrentPlayerID (), "switchToNextPlayer (L)");
@@ -804,9 +773,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 				nextTurnButton (mom, currentPlayer);
 		}
-
-		log.trace ("Exiting switchToNextPlayer = Player ID " +
-			mom.getGeneralPublicKnowledge ().getCurrentPlayerID () + " turn " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
 	}
 
 	/**
@@ -824,8 +790,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void kickOffSimultaneousTurn (final MomSessionVariables mom, final boolean loadingSavedGame)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering kickOffSimultaneousTurn: " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
-
 		if (!loadingSavedGame)
 		{
 			// Bump up the turn number
@@ -851,8 +815,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// In the Delphi version, this is triggered back in the VCL thread via the OnTerminate method (which isn't obvious)
 				nextTurnButton (mom, aiPlayer);
 			}
-
-		log.trace ("Exiting kickOffSimultaneousTurn = " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
 	}
 
 	/**
@@ -870,8 +832,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void sendNewTurnMessages (final MomGeneralPublicKnowledge gpk, final List<PlayerServerDetails> players,
 		final TurnSystem messageType) throws JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering sendNewTurnMessages: " + messageType);
-		
 		for (final PlayerServerDetails player : players)
 			if (player.getPlayerDescription ().isHuman ())
 			{
@@ -918,8 +878,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				else
 					throw new MomException ("sendNewTurnMessages doesn't know how handle messageType of " + messageType);
 			}
-		
-		log.trace ("Exiting sendNewTurnMessages");
 	}
 	
 	/**
@@ -937,8 +895,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void endPhase (final MomSessionVariables mom, final int onlyOnePlayerID)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering endPhase: Player ID " + onlyOnePlayerID);
-
 		if (onlyOnePlayerID == 0)
 			log.info ("End phase for everyone turn " + mom.getGeneralPublicKnowledge ().getTurnNumber () + "...");
 		else
@@ -969,8 +925,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			default:
 				throw new MomException ("endPhase encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
 		}
-
-		log.trace ("Exiting endPhase");
 	}
 	
 	/**
@@ -991,8 +945,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering progressMultiTurnSpecialOrders: Player ID " + onlyOnePlayerID);
-		
 		for (final MemoryUnit tu : trueMap.getUnit ())
 			if ((tu.getStatus () == UnitStatusID.ALIVE) && ((tu.getSpecialOrder () == UnitSpecialOrder.PURIFY) || (tu.getSpecialOrder () == UnitSpecialOrder.BUILD_ROAD)) &&
 				((onlyOnePlayerID == 0) || (tu.getOwningPlayerID () == onlyOnePlayerID)))
@@ -1084,8 +1036,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						throw new MomException ("progressMultiTurnSpecialOrders does not know what to do with special order " + tu.getSpecialOrder ());
 				}
 			}
-		
-		log.trace ("Exiting progressMultiTurnSpecialOrders");
 	}
 
 	/**
@@ -1102,8 +1052,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void nextTurnButton (final MomSessionVariables mom, final PlayerServerDetails player)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering nextTurnButton: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		switch (mom.getSessionDescription ().getTurnSystem ())
 		{
 			case ONE_PLAYER_AT_A_TIME:
@@ -1148,8 +1096,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			default:
 				throw new MomException ("nextTurnButton encountered an unknown turn system " + mom.getSessionDescription ().getTurnSystem ());
 		}
-
-		log.trace ("Exiting nextTurnButton");
 	}
 
 	/**
@@ -1172,8 +1118,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	final void continueMovement (final int onlyOnePlayerID, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering continueMovement: Player ID " + onlyOnePlayerID);
-
 		if (onlyOnePlayerID == 0)
 			log.info ("Continuing pending movements for everyone...");
 		else
@@ -1206,8 +1150,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						(MapCoordinates3DEx) thisMove.getMoveFrom (), (MapCoordinates3DEx) thisMove.getMoveTo (), false, mom);
 				}
 			}
-
-		log.trace ("Exiting continueMovement");				
 	}
 
 	/**
@@ -1220,8 +1162,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	 */
 	final void storePowerBaseHistory (final int onlyOnePlayerID, final List<PlayerServerDetails> players) throws JAXBException, XMLStreamException
 	{
-		log.trace ("Entering onlyOnePlayerID: Player ID " + onlyOnePlayerID);
-		
 		final AddPowerBaseHistoryMessage msg = new AddPowerBaseHistoryMessage ();
 		
 		for (final PlayerServerDetails player : players)
@@ -1248,8 +1188,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		
 		if (msg.getPlayer ().size () > 0)
 			getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
-		
-		log.trace ("Exiting onlyOnePlayerID");
 	}
 	
 	/**
@@ -1263,8 +1201,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	@Override
 	public final void checkIfWonGame (final MomSessionVariables mom) throws PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering checkIfWonGame");
-		
 		int aliveCount = 0;
 		PlayerServerDetails aliveWizard = null;
 		
@@ -1288,8 +1224,6 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			
 			mom.updateHumanPlayerToAI (aliveWizard.getPlayerDescription ().getPlayerID ());
 		}
-		
-		log.trace ("Exiting checkIfWonGame");
 	}
 
 	/**

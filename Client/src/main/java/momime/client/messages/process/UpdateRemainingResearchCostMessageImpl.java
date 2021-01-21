@@ -5,16 +5,13 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.SpellBookUI;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.SpellUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to client to update the number of research points they have left to spend before getting a particular spell.
@@ -23,9 +20,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  */
 public final class UpdateRemainingResearchCostMessageImpl extends UpdateRemainingResearchCostMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UpdateRemainingResearchCostMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -46,8 +40,6 @@ public final class UpdateRemainingResearchCostMessageImpl extends UpdateRemainin
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		// Store new value
 		getSpellUtils ().findSpellResearchStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
 			getSpellID ()).setRemainingResearchCost (getRemainingResearchCost ());
@@ -57,8 +49,6 @@ public final class UpdateRemainingResearchCostMessageImpl extends UpdateRemainin
 		
 		// Update the progress bar on the magic screen
 		getMagicSlidersUI ().updateProductionLabels ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

@@ -435,11 +435,7 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final int calculateHitPointsRemaining () throws MomException
 	{
-		log.trace ("Entering calculateHitPointsRemaining: " + getDebugIdentifier ());
-		
 		final int result = (getFullFigureCount () * getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)) - getTotalDamageTaken ();
-		
-		log.trace ("Exiting calculateHitPointsRemaining = " + result);
 		return result;
 	}
 	
@@ -452,8 +448,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final int calculateAliveFigureCount () throws MomException
 	{
-		log.trace ("Entering calculateAliveFigureCount: " + getDebugIdentifier ());
-		
 		int figures = getFullFigureCount () -
 				
 			// Take off 1 for each full set of HP the unit has taken in damage
@@ -463,7 +457,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		if (figures < 0)
 			figures = 0;
 		
-		log.trace ("Exiting calculateAliveFigureCount = " + figures);
 		return figures;
 	}
 	
@@ -474,8 +467,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final int calculateHitPointsRemainingOfFirstFigure () throws MomException
 	{
-		log.trace ("Entering calculateHitPointsRemainingOfFirstFigure: " + getDebugIdentifier ());
-		
 		final int hitPointsPerFigure = getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);
 		
 		// Work out how much damage the first figure has taken
@@ -484,7 +475,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 		// Then from that work out how many hit points the first figure has left
 		final int result = hitPointsPerFigure - firstFigureDamageTaken;
 		
-		log.trace ("Exiting calculateHitPointsRemainingOfFirstFigure = " + result);
 		return result;
 	}
 	
@@ -496,8 +486,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final boolean unitIgnoresCombatTerrain (final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering unitIgnoresCombatTerrain: " + getDebugIdentifier ());
-
 		boolean found = false;
 
 		final Iterator<String> iter = basicSkillValues.keySet ().iterator ();
@@ -508,7 +496,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 				found = true;
 		}
 
-		log.trace ("Exiting unitIgnoresCombatTerrain = " + found);
 		return found;
 	}
 
@@ -519,13 +506,10 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final boolean isUnitImmuneToDamageType (final DamageType damageType)
 	{
-    	log.trace ("Entering isUnitImmuneToDamageType: " + getDebugIdentifier () + ", " + damageType.getDamageTypeID ());
-
     	// We only want complete immunities - even if it boots defence to 50, its still a valid target
     	final boolean immunity = damageType.getDamageTypeImmunity ().stream ().anyMatch
     		(i -> (i.getBoostsDefenceTo () == null) && (hasModifiedSkill (i.getUnitSkillID ())));
 		
-    	log.trace ("Exiting isUnitImmuneToDamageType = " + immunity);
 		return immunity;
 	}
 
@@ -547,8 +531,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	@Override
 	public final int calculateManaTotal () throws MomException
 	{
-		log.trace ("Entering calculateManaTotal: " + getDebugIdentifier ());
-		
 		// Unit caster skill is easy, this directly says how many MP the unit has
 		int total = hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) ?
 			getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT) : 0;
@@ -561,7 +543,6 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 			total = total + heroSkillValue;
 		}
 		
-		log.trace ("Exiting calculateManaTotal = " + total);
 		return total;
 	}
 	

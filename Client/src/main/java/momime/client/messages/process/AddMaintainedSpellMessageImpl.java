@@ -88,8 +88,6 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getMaintainedSpell ().getSpellID ());
-		
 		// Some types of important spells show their castings as animations that are displayed in a different window;
 		// in that case the animations, and even adding the spell itself, are handled by those other windows instead.
 		final Spell spell = getClient ().getClientDB ().findSpell (getMaintainedSpell ().getSpellID (), "AddMaintainedSpellMessageImpl");
@@ -264,8 +262,6 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 		// If no spell animation, then just add it right away
 		if (!animatedByOtherFrame)
 			processOneUpdate ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**
@@ -315,8 +311,6 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 	 */
 	public final void processOneUpdate ()
 	{
-		log.trace ("Entering processOneUpdate: " + getMaintainedSpell ().getSpellID ());
-		
 		if (!isSpellTransient ())
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getMaintainedSpell ());
 		
@@ -357,8 +351,6 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting processOneUpdate");
 	}
 	
 	/**

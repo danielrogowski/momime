@@ -112,8 +112,6 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init: " + getUnits ().size ());
-		
 		// Load images
 		final BufferedImage top = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitRowDisplayTop.png");
 		final BufferedImage bottom = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/unitRowDisplayBottom.png");
@@ -284,8 +282,6 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 		// Lock frame size
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
-		
-		log.trace ("Exiting init");
 	}
 
 	/**
@@ -294,8 +290,6 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged: " + getUnits ().size ());
-		
 		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		
 		try
@@ -334,8 +328,6 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

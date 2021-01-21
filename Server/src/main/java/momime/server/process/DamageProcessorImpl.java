@@ -7,9 +7,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -46,9 +43,6 @@ import momime.server.utils.UnitServerUtils;
  */
 public final class DamageProcessorImpl implements DamageProcessor
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (DamageProcessorImpl.class);
-
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
 	
@@ -103,16 +97,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		if (log.isTraceEnabled ())
-		{
-			String msg = "Entering resolveAttack: Attacking unit URN " + ((attacker != null) ? Integer.valueOf (attacker.getUnitURN ()).toString () : "N/A") + ", Defending unit URN(s) ";
-			
-			for (final MemoryUnit defender : defenders)
-				msg = msg + defender.getUnitURN () + ", ";
-			
-			log.trace (msg);
-		}
-		
 		if (defenders.size () == 0)
 			throw new MomException ("resolveAttack was called with 0 defenders");
 
@@ -339,7 +323,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 		if (combatEnded)
 			getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
 		
-		log.trace ("Exiting resolveAttack = " + combatEnded);
 		return combatEnded;
 	}
 
@@ -353,8 +336,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 	public final int countUnitsInCombat (final MapCoordinates3DEx combatLocation, final UnitCombatSideID combatSide,
 		final List<MemoryUnit> trueUnits)
 	{
-		log.trace ("Entering countUnitsInCombat: " + combatLocation + ", " + combatSide);
-			
 		int count = 0;
 		for (final MemoryUnit trueUnit : trueUnits)
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
@@ -362,7 +343,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 					
 				count++;
 
-		log.trace ("Exiting countUnitsInCombat = " + count);
 		return count;
 	}
 	

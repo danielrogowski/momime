@@ -154,8 +154,6 @@ public final class HelpUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/background.png");
 		final BufferedImage roller = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/position3-0.png");
@@ -289,8 +287,6 @@ public final class HelpUI extends MomClientFrameUI
 				0, 0, 9, 10, 6, 14, roller.getHeight () - 14, roller.getHeight () - 6, roller.getHeight () - 10, roller.getHeight () - 9, roller.getHeight (), roller.getHeight ()},
 					
 			68));
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -299,8 +295,6 @@ public final class HelpUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getTitle ()));
 		
 		String text = null;		// unindentedText
@@ -513,8 +507,6 @@ public final class HelpUI extends MomClientFrameUI
 		// The text and images resize themselves according to the size of the text, so force everything to reposition and redraw itself
 		contentPane.validate ();
 		contentPane.repaint ();
-
-		log.trace ("Exiting languageChanged");
 	}	
 
 	/**
@@ -523,8 +515,6 @@ public final class HelpUI extends MomClientFrameUI
 	 */
 	private final void clear () throws IOException
 	{
-		log.trace ("Entering clear");
-
 		// Force form to be initialized
 		if (!isVisible ())
 			setVisible (false);
@@ -546,8 +536,6 @@ public final class HelpUI extends MomClientFrameUI
 		citySpellEffectID = null;
 		combatAreaEffectID = null;
 		heroItemSlotTypeID = null;
-
-		log.trace ("Exiting clear");
 	}
 	
 	/**
@@ -556,8 +544,6 @@ public final class HelpUI extends MomClientFrameUI
 	 */
 	public final void showPickID (final String id) throws IOException
 	{
-		log.trace ("Entering showPickID: " + id);
-
 		clear ();
 		pickID = id;
 		
@@ -598,8 +584,6 @@ public final class HelpUI extends MomClientFrameUI
 		
 		languageChanged ();
 		setVisible (true);
-
-		log.trace ("Exiting showPickID");
 	}
 	
 	/**
@@ -609,8 +593,6 @@ public final class HelpUI extends MomClientFrameUI
 	 */
 	public final void showUnitSkillID (final String id, final ExpandedUnitDetails u) throws IOException
 	{
-		log.trace ("Entering showUnitSkillID: " + id + ", " + u.getUnitID ());
-
 		clear ();
 		unitSkillID = id;
 		unit = u;
@@ -624,8 +606,6 @@ public final class HelpUI extends MomClientFrameUI
 		
 		languageChanged ();
 		setVisible (true);
-
-		log.trace ("Exiting showUnitSkillID");
 	}
 	
 	/**
@@ -634,8 +614,6 @@ public final class HelpUI extends MomClientFrameUI
 	 */
 	public final void showCombatAreaEffectID (final String id) throws IOException
 	{
-		log.trace ("Entering showCombatAreaEffectID: " + id);
-
 		clear ();
 		combatAreaEffectID = id;
 
@@ -645,8 +623,6 @@ public final class HelpUI extends MomClientFrameUI
 		
 		languageChanged ();
 		setVisible (true);
-
-		log.trace ("Exiting showCombatAreaEffectID");
 	}
 
 	/**
@@ -657,8 +633,6 @@ public final class HelpUI extends MomClientFrameUI
 	 */
 	public final void showCitySpellEffectID (final String id, final String aSpellID, final PlayerPublicDetails player) throws IOException
 	{
-		log.trace ("Entering showCitySpellEffectID: " + id);
-
 		clear ();
 		citySpellEffectID = id;
 		spellID = aSpellID;
@@ -692,8 +666,6 @@ public final class HelpUI extends MomClientFrameUI
 		
 		languageChanged ();
 		setVisible (true);
-
-		log.trace ("Exiting showCitySpellEffectID");
 	}
 	
 	/**
@@ -703,8 +675,6 @@ public final class HelpUI extends MomClientFrameUI
 	 */
 	public final void showSpellID (final String id, final PlayerPublicDetails player) throws IOException
 	{
-		log.trace ("Entering showSpellID: " + id);
-
 		clear ();
 		spellID = id;
 		castingPlayer = player;
@@ -718,8 +688,6 @@ public final class HelpUI extends MomClientFrameUI
 		
 		languageChanged ();
 		setVisible (true);
-
-		log.trace ("Exiting showUnitSkillID");
 	}
 	
 	/**
@@ -728,8 +696,6 @@ public final class HelpUI extends MomClientFrameUI
 	 */
 	public final void showHeroItemSlotTypeID (final String id) throws IOException
 	{
-		log.trace ("Entering showHeroItemSlotTypeID: " + id);
-
 		clear ();
 		heroItemSlotTypeID = id;
 
@@ -739,8 +705,6 @@ public final class HelpUI extends MomClientFrameUI
 		
 		languageChanged ();
 		setVisible (true);
-
-		log.trace ("Exiting showHeroItemSlotTypeID");
 	}
 
 	

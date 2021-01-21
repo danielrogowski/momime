@@ -6,9 +6,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -46,9 +43,6 @@ import momime.server.utils.UnitServerUtils;
  */
 public final class DamageCalculatorImpl implements DamageCalculator
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (DamageCalculatorImpl.class);
-
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -117,8 +111,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final String attackSkillID, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering attackFromUnitSkill: Unit URN " + attacker.getUnit ().getUnitURN () + ", " + attackSkillID);
-
 		// We need the attacker's full details to generate the defender's full details, and vice versa, so this is a real chicken and egg situation.
 		// e.g. Defender may have Weapon Immunity but the attacker has Holy Weapon which negates it
 		// e.g. Attacker may have First Strike but the defender has Negate First Strike
@@ -261,7 +253,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 			}
 		}
 		
-		log.trace ("Exiting attackFromUnitSkill = " + attackDamage);
 		return attackDamage;
 	}
 	
@@ -285,8 +276,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.trace ("Entering attackFromSpell: Unit URN " + spell.getSpellID () + ", " + variableDamage);
-		
 		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
 		final Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
 		final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "attackFromSpell");
@@ -304,7 +293,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 
 		// Fill in the damage object
 		final AttackDamage attackDamage = new AttackDamage (damage, 0, damageType, null, spell, null, null, 1);
-		log.trace ("Exiting attackFromSpell = " + attackDamage);
 		return attackDamage;
 	}
 	
@@ -326,13 +314,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateSingleFigureDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateSingleFigureDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attackDamage, 1);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
-		
-		log.trace ("Exiting calculateSingleFigureDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -353,13 +337,9 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateArmourPiercingDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateArmourPiercingDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attackDamage, 2);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
-		
-		log.trace ("Exiting calculateArmourPiercingDamage = " + totalHits);
 		return totalHits;
 	}
 
@@ -380,11 +360,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateIllusionaryDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateIllusionaryDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, 0, attackingPlayer, defendingPlayer, attackDamage);
-		
-		log.trace ("Exiting calculateIllusionaryDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -405,8 +381,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final AttackDamage attackDamage)
 		throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateSingleFigureDamageInternal: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -440,7 +414,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateSingleFigureDamageInternal = " + totalHits);
 		return totalHits;
 	}
 
@@ -461,8 +434,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateMultiFigureDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateMultiFigureDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -525,7 +496,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateMultiFigureDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -545,8 +515,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateDoomDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateDoomDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -565,7 +533,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateDoomDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -585,8 +552,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateChanceOfDeathDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateChanceOfDeathDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -607,7 +572,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		}
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateChanceOfDeathDamage = " + damageCalculationMsg.getFinalHits ());
 		return damageCalculationMsg.getFinalHits ();
 	}
 
@@ -627,8 +591,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateEachFigureResistOrDieDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateEachFigureResistOrDieDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -687,7 +649,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateEachFigureResistOrDieDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -707,8 +668,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateSingleFigureResistOrDieDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateSingleFigureResistOrDieDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -766,7 +725,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateSingleFigureResistOrDieDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -787,8 +745,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateResistOrTakeDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateResistOrTakeDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -817,7 +773,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateResistOrTakeDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -838,8 +793,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateResistanceRollsDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateResistanceRollsDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -867,7 +820,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setFinalHits (totalHits);
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateResistanceRollsDamage = " + totalHits);
 		return totalHits;
 	}
 	
@@ -887,8 +839,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	public final int calculateDisintegrateDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateDisintegrateDamage: Unit URN " + defender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -911,7 +861,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		}
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
-		log.trace ("Exiting calculateDisintegrateDamage = " + damageCalculationMsg.getFinalHits ());
 		return damageCalculationMsg.getFinalHits ();
 	}
 	
@@ -933,8 +882,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
 		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering calculateFearDamage: Unit URN " + xuDefender.getUnitURN () + " hit by " + attackDamage);
-		
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
@@ -963,8 +910,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 		
 		defender.setFiguresFrozenInFear (defender.getFiguresFrozenInFear () + figuresFrozen);
-		
-		log.trace ("Exiting calculateFearDamage = " + figuresFrozen);
 	}
 	
 	/**

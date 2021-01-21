@@ -3,9 +3,6 @@ package momime.server.ai;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -32,9 +29,6 @@ import momime.server.calculations.ServerUnitCalculations;
  */
 public final class AISpellCalculationsImpl implements AISpellCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AISpellCalculationsImpl.class);
-
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
@@ -67,8 +61,6 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 		final List<MemoryUnit> trueUnits, final SpellSetting spellSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering canAffordSpellMaintenance: Player ID " + player.getPlayerDescription ().getPlayerID () + ", spell ID " + spell.getSpellID ());
-
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
@@ -116,7 +108,6 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 			}
 		}
 		
-		log.trace ("Exiting canAffordSpellMaintenance = " + ok);
 		return ok;
 	}
 

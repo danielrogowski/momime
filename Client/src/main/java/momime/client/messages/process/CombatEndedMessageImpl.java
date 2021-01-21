@@ -60,13 +60,9 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getCombatLocation ());
-		
 		final CombatEndedUI ui = getPrototypeFrameCreator ().createCombatEnded ();
 		ui.setMessage (this);
 		ui.setVisible (true);
-		
-		log.trace ("Exiting start: " + getCombatLocation ());
 	}
 
 	/**
@@ -77,8 +73,6 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 	@Override
 	public final void finish () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering finish: " + getCombatLocation ());
-		
 		// Close down the UI
 		getCombatUI ().setVisible (false);
 		
@@ -98,8 +92,6 @@ public final class CombatEndedMessageImpl extends CombatEndedMessage implements 
 		
 		// Prompt for next overland movement
 		getOverlandMapProcessing ().selectNextUnitToMoveOverland ();
-		
-		log.trace ("Exiting finish: " + getCombatLocation ());
 	}
 
 	/**

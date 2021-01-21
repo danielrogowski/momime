@@ -5,6 +5,11 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
@@ -12,11 +17,6 @@ import momime.client.ui.frames.MainMenuUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.OverlandMapUI;
 import momime.common.messages.servertoclient.StartGameMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Message server broadcasts when all game setup is complete and its time for clients to actually switch to the map screen
@@ -46,8 +46,6 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		getNewGameUI ().setVisible (false);
 		getMainMenuUI ().setVisible (false);
 		getOverlandMapUI ().setVisible (true);
@@ -61,8 +59,6 @@ public final class StartGameMessageImpl extends StartGameMessage implements Base
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

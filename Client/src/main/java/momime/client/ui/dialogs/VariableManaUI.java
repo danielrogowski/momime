@@ -104,8 +104,6 @@ public final class VariableManaUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/editString298x76.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/okButton41x15Normal.png");
@@ -178,8 +176,6 @@ public final class VariableManaUI extends MomClientDialogUI
 		// Lock frame size
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -188,16 +184,12 @@ public final class VariableManaUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		getDialog ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getVariableMana ().getTitle ()));
 		
 		// No action text to set, because the button has OK on it as part of the image
 		
 		// Update slider labels
 		sliderPositionChanged ();		
-
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**
@@ -205,8 +197,6 @@ public final class VariableManaUI extends MomClientDialogUI
 	 */
 	public final void sliderPositionChanged ()
 	{
-		log.trace ("Entering sliderPositionChanged");
-		
 		if ((slider != null) && (getSpellBeingTargetted () != null))
 			try
 			{
@@ -269,8 +259,6 @@ public final class VariableManaUI extends MomClientDialogUI
 			{
 				log.error (e, e);
 			}
-		
-		log.trace ("Exiting sliderPositionChanged");
 	}
 	
 	/**
@@ -288,8 +276,6 @@ public final class VariableManaUI extends MomClientDialogUI
 	 */
 	public final void setSpellBeingTargetted (final Spell spell) throws IOException
 	{
-		log.trace ("Entering setSpellBeingTargetted: " + spell.getSpellID ());
-
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "setSpellBeingTargetted");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 		
@@ -367,8 +353,6 @@ public final class VariableManaUI extends MomClientDialogUI
 			// Update slider labels
 			sliderPositionChanged ();
 		}
-		
-		log.trace ("Exiting setSpellBeingTargetted");
 	}
 	
 	/**
@@ -402,8 +386,6 @@ public final class VariableManaUI extends MomClientDialogUI
 	 */
 	public final void variableDamageChosen () throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering variableDamageChosen");
-
 		final Spell spell = getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "variableDamageChosen");
 		final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
 		
@@ -430,8 +412,6 @@ public final class VariableManaUI extends MomClientDialogUI
 			
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 		}
-
-		log.trace ("Exiting variableDamageChosen");
 	}
 	
 	/**

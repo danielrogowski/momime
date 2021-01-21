@@ -409,8 +409,6 @@ public final class CombatUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/combat/background.png");
 		
@@ -1161,8 +1159,6 @@ public final class CombatUI extends MomClientFrameUI
 		contentPane.getActionMap ().put (Shortcut.COMBAT_MOVE_WAIT,									waitAction);
 		
 		topPanel.init ("CombatUI-repaintTimer");
-		
-		log.trace ("Exiting init");
 	}
 
 	/**
@@ -1173,8 +1169,6 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void initNewCombat () throws IOException
 	{
-		log.trace ("Entering initNewCombat");
-
 		// Skip if the controls don't exist yet - there's a duplicate call to initNewCombat () at the end of init () for the case of the 1st combat that takes place
 		if (defendingPlayerName != null)
 		{
@@ -1284,8 +1278,6 @@ public final class CombatUI extends MomClientFrameUI
 			
 			generateCombatAreaEffectIcons ();
 		}
-
-		log.trace ("Exiting initNewCombat");
 	}
 	
 	/**
@@ -1295,12 +1287,8 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void smoothCombatMapAndGenerateBitmaps () throws IOException
 	{
-		log.trace ("Entering smoothCombatMapAndGenerateBitmaps");
-
 		getCombatMapBitmapGenerator ().smoothMapTerrain (getCombatLocation (), getCombatTerrain ());
 		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps (getCombatTerrain ());
-
-		log.trace ("Exiting smoothCombatMapAndGenerateBitmaps");
 	}
 
 	/**
@@ -1311,11 +1299,7 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void regenerateBitmaps () throws IOException
 	{
-		log.trace ("Entering smoothCombatMapAndGenerateBitmaps");
-
 		combatMapBitmaps = getCombatMapBitmapGenerator ().generateCombatMapBitmaps (getCombatTerrain ());
-
-		log.trace ("Exiting regenerateBitmaps");
 	}
 
 	/**
@@ -1323,8 +1307,6 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void updateRemainingCastingSkill (final int currentSkill)
 	{
-		log.trace ("Entering updateRemainingCastingSkill: " + currentSkill);
-
 		skillValue.setText (getTextUtils ().intToStrCommas (currentSkill));
 		
 		final int manaStored = getResourceValueUtils ().findAmountStoredForProductionType
@@ -1340,8 +1322,6 @@ public final class CombatUI extends MomClientFrameUI
 		
 		// Additional spells may need to be greyed out in the spell book now we have less casting skill/MP
 		getSpellBookUI ().languageOrPageChanged ();
-
-		log.trace ("Exiting updateRemainingCastingSkill");
 	}
 
 	/**
@@ -1483,8 +1463,6 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void generateCombatAreaEffectIcons () throws IOException
 	{
-		log.trace ("Entering generateCombatAreaEffectIcons");
-
 		// Don't do anything if the combatUI has never been displayed (possible we're casting a spell like Heavenly Light that adds a CAE prior to any combat being played)
 		if (defendingPlayerName != null)
 		{
@@ -1558,8 +1536,6 @@ public final class CombatUI extends MomClientFrameUI
 			attackerCAEs.revalidate ();
 			commonCAEs.revalidate ();
 		}		
-		
-		log.trace ("Exiting generateCombatAreaEffectIcons");
 	}
 	
 	/**
@@ -1568,8 +1544,6 @@ public final class CombatUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getTitle ()));
 		
 		spellAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getCombatScreen ().getSpell ()));
@@ -1637,8 +1611,6 @@ public final class CombatUI extends MomClientFrameUI
 		
 		// Shortcut keys
 		getLanguageHolder ().configureShortcutKeys (contentPane);
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -1682,8 +1654,6 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void setSelectedUnitInCombat (final MemoryUnit unit) throws IOException
 	{
-		log.trace ("Entering setSelectedUnitInCombat: " + ((unit == null) ? "null" : "Unit URN " + unit.getUnitURN ()));
-		
 		// Record the selected unit
 		selectedUnitInCombat = unit;
 		
@@ -1765,8 +1735,6 @@ public final class CombatUI extends MomClientFrameUI
 		
 		enableOrDisableSpellAction ();
 		languageOrSelectedUnitChanged ();
-		
-		log.trace ("Exiting setSelectedUnitInCombat");
 	}
 	
 	/**
@@ -1774,8 +1742,6 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	private final void languageOrSelectedUnitChanged ()
 	{
-		log.trace ("Entering languageOrSelectedUnitChanged");
-		
 		selectedUnitName.setText (null);
 		selectedUnitMeleeAverageLabel.setText (null);
 		selectedUnitRangedAverageLabel.setText (null);
@@ -1797,8 +1763,6 @@ public final class CombatUI extends MomClientFrameUI
 			{
 				log.error (e, e);
 			}
-				
-		log.trace ("Exiting languageOrSelectedUnitChanged");
 	}
 
 	/**
@@ -1816,8 +1780,6 @@ public final class CombatUI extends MomClientFrameUI
 	 */
 	public final void setSpellBeingTargetted (final Spell spell) throws RecordNotFoundException
 	{
-		log.trace ("Entering setSpellBeingTargetted: " + spell.getSpellID ());
-		
 		spellBeingTargetted = spell;
 		
 		// Find all the controls to use, depending on whether we're the attacker or defender
@@ -1846,8 +1808,6 @@ public final class CombatUI extends MomClientFrameUI
 		
 		playerName.setVisible (false);
 		spellCancel.setVisible (true);
-		
-		log.trace ("Exiting setSpellBeingTargetted");
 	}
 	
 	/**

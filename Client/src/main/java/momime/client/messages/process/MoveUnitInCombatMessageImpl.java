@@ -102,8 +102,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		// Find the unit that's moving
 		final MemoryUnit mu = getUnitUtils ().findUnitURN (getUnitURN (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "MoveUnitInCombatMessageImpl.start");
@@ -155,8 +153,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		// Play walking sound effect
 		getUnitClientUtils ().playCombatActionSound (mu, movingActionID);
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**
@@ -215,8 +211,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	@Override
 	public final void finish () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering finish");
-		
 		// Set the unit into the new map cell so the regular drawing routine takes over drawing this unit again
 		unit.setCombatPosition (moveTo);
 		getCombatUI ().setUnitToDrawAtLocation (moveTo.getX (), moveTo.getY (), unit);
@@ -231,8 +225,6 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 			getCombatMapProcessing ().removeUnitFromLeftToMoveCombat (unit.getMemoryUnit ());
 		
 		getCombatMapProcessing ().selectNextUnitToMoveCombat ();
-		
-		log.trace ("Exiting finish");
 	}
 	
 	/**

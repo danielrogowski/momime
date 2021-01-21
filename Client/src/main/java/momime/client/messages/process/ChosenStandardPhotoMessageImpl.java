@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -23,9 +20,6 @@ import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
  */
 public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChosenStandardPhotoMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -40,8 +34,6 @@ public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMes
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Player ID " + getPlayerID () + ", " + getPhotoID ());
-
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ChosenStandardPhotoMessageImpl");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
@@ -51,8 +43,6 @@ public final class ChosenStandardPhotoMessageImpl extends ChosenStandardPhotoMes
 		
 		// Store flag colour
 		trans.setFlagColour (getClient ().getClientDB ().findWizard (getPhotoID (), "ChosenStandardPhotoMessageImpl").getFlagColour ());
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

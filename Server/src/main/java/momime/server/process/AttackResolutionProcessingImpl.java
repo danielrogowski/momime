@@ -7,9 +7,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -40,9 +37,6 @@ import momime.server.utils.UnitServerUtils;
  */
 public final class AttackResolutionProcessingImpl implements AttackResolutionProcessing
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AttackResolutionProcessingImpl.class);
-
 	/** Unit utils */
 	private UnitUtils unitUtils;	
 	
@@ -74,8 +68,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	public AttackResolution chooseAttackResolution (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender, final String attackSkillID,
 		final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering chooseAttackResolution: Attacker " + attacker.getDebugIdentifier () + ", defender " + defender.getDebugIdentifier () + ", skillID " + attackSkillID);
-	
 		final UnitSkill unitSkill = db.findUnitSkill (attackSkillID, "chooseAttackResolution");
 		
 		// Check all possible attack resolutions to select the most appropriate one
@@ -107,7 +99,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			throw new MomException ("Unit URN " + attacker.getUnitURN () + " tried to hit Unit URN " + defender.getUnitURN () + " with attack of type " + attackSkillID +
 				" but there are no defined attack resolutions capable of processing the attack");
 		
-		log.trace ("Exiting chooseAttackResolution = " + match);
 		return match;
 	}
 	
@@ -120,8 +111,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	public final List<List<AttackResolutionStep>> splitAttackResolutionStepsByStepNumber (final List<AttackResolutionStep> steps)
 		throws MomException
 	{
-		log.trace ("Entering splitAttackResolutionStepsByStepNumber: " + steps.size () + " steps");
-		
 		final List<List<AttackResolutionStep>> result = new ArrayList<List<AttackResolutionStep>> ();
 		
 		int currentStepNumber = 0;
@@ -147,7 +136,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				throw new MomException ("Found an attack resolution with steps out of order - jumped from " + currentStepNumber + " to " + step.getStepNumber ());
 		}
 
-		log.trace ("Exiting splitAttackResolutionStepsByStepNumber = " + result.size () + " step numbers");
 		return result;
 	}
 	
@@ -178,9 +166,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering processAttackResolutionStep: Attacking unit URN " + ((attacker != null) ? Integer.valueOf (attacker.getUnit ().getUnitURN ()).toString () : "N/A") +
-			", Defending unit URN " + defender.getUnit ().getUnitURN () + ", " + steps.size () + " steps");
-
 		// Zero out damage taken
 		final List<UnitDamage> damageToDefender = new ArrayList<UnitDamage> ();
 		final List<UnitDamage> damageToAttacker = new ArrayList<UnitDamage> ();
@@ -421,7 +406,6 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -xuAttacker.calculateHitPointsRemaining (), true);
 		}
 		
-		log.trace ("Exiting processAttackResolutionStep = " + specialDamageResolutionsApplied.size ());
 		return specialDamageResolutionsApplied;
 	}
 

@@ -5,15 +5,12 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.CityViewUI;
 import momime.common.messages.servertoclient.PendingSaleMessage;
 import momime.common.utils.MemoryBuildingUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this in a simultaneous turns game to inform the city owner *only* that a building will be sold at the end of the turn.
@@ -21,9 +18,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  */
 public final class PendingSaleMessageImpl extends PendingSaleMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (PendingSaleMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 
@@ -38,8 +32,6 @@ public final class PendingSaleMessageImpl extends PendingSaleMessage implements 
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getCityLocation () + ", Building URN " + getBuildingURN ());
-		
 		final String buildingID = (getBuildingURN () == null) ? null : getMemoryBuildingUtils ().findBuildingURN
 			(getBuildingURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "PendingSaleMessageImpl").getBuildingID ();
 		
@@ -50,8 +42,6 @@ public final class PendingSaleMessageImpl extends PendingSaleMessage implements 
 		final CityViewUI cityView = getClient ().getCityViews ().get (getCityLocation ().toString ());
 		if (cityView != null)
 			cityView.getCityViewPanel ().repaint ();
-
-		log.trace ("Exiting start");
 	}
 
 	/**

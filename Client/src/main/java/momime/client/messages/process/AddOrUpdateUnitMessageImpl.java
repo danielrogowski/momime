@@ -7,9 +7,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.utils.Holder;
@@ -38,9 +35,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AddOrUpdateUnitMessageImpl.class);
-
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -64,15 +58,11 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Unit URN " + getMemoryUnit ().getUnitURN ());
-		
 		final List<MapCoordinates3DEx> unitLocations = new ArrayList<MapCoordinates3DEx> ();
 		final Holder<Boolean> anyOfOurHeroes = new Holder<Boolean> (false);
 		
 		processOneUpdate (unitLocations, anyOfOurHeroes);
 		endUpdates (unitLocations, anyOfOurHeroes);
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**
@@ -87,8 +77,6 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	public final void processOneUpdate (final List<MapCoordinates3DEx> unitLocations, final Holder<Boolean> anyOfOurHeroes)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering processOneUpdate: Unit URN " + getMemoryUnit ().getUnitURN ());
-
 		// Since Java server now supports units set to 'remember as last seen', its possible to get an 'add unit' message just to
 		// update a unit that we remember in a different state - so if we already have the unit, update the existing one, otherwise add it.
 		// This stops us screwing up references to the existing MemoryUnit obj, especially in the unitsLeftToMoveOverland list and the selectUnitButtons.
@@ -142,8 +130,6 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 				
 				anyOfOurHeroes.setValue (true);
 		}
-		
-		log.trace ("Exiting processOneUpdate");
 	}
 
 	/**
@@ -156,8 +142,6 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 	public final void endUpdates (final List<MapCoordinates3DEx> unitLocations, final Holder<Boolean> anyOfOurHeroes)
 		throws IOException
 	{
-		log.trace ("Entering endUpdates");
-		
 		// Select unit buttons on the City screen
 		for (final MapCoordinates3DEx unitLocation : unitLocations)
 		{
@@ -168,8 +152,6 @@ public final class AddOrUpdateUnitMessageImpl extends AddOrUpdateUnitMessage imp
 		
 		if (anyOfOurHeroes.getValue ())
 			getHeroItemsUI ().refreshHeroes ();
-		
-		log.trace ("Exiting endUpdates");
 	}
 	
 	/**

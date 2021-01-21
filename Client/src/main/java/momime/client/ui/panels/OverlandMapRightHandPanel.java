@@ -320,8 +320,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	@Override
 	public final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load in all necessary images
 		background = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/background.png");
 		
@@ -778,8 +776,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				colourPatches.repaint ();
 			}
 		}).start ();
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -805,14 +801,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 */
 	public final void regenerateMiniMapBitmap () throws IOException
 	{
-		log.trace ("Entering regenerateMiniMapBitmap: " + getOverlandMapUI ().getMapViewPlane ());
-		
 		miniMapBitmap = getMiniMapBitmapGenerator ().generateMiniMapBitmap (getOverlandMapUI ().getMapViewPlane ());
 
 		if (miniMapPanel != null)
 			miniMapPanel.repaint ();
-		
-		log.trace ("Exiting regenerateMiniMapBitmap");
 	}
 	
 	/**
@@ -821,8 +813,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		cancelAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		doneAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getDone ()));
 		patrolAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getPatrol ()));
@@ -860,8 +850,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**
@@ -927,8 +915,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 */
 	public final void updateGlobalEconomyValues () throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering updateGlobalEconomyValues");
-		
 		// Amounts stored
 		updateAmountStored (goldAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		updateAmountStored (manaAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
@@ -945,8 +931,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		updateAmountPerTurn (magicPowerAmountPerTurn, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER,
 			getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getProductionPerTurnMagicPower (), MomUIConstants.SILVER);
-		
-		log.trace ("Exiting updateGlobalEconomyValues");
 	}
 
 	/**
@@ -955,8 +939,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 */
 	public final void turnSystemOrCurrentPlayerChanged () throws PlayerNotFoundException
 	{
-		log.trace ("Entering turnSystemOrCurrentPlayerChanged");
-		
 		switch (getClient ().getSessionDescription ().getTurnSystem ())
 		{
 			case ONE_PLAYER_AT_A_TIME:
@@ -982,8 +964,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				playerLine2.setForeground (MomUIConstants.GOLD);
 				break;
 		}
-		
-		log.trace ("Exiting turnSystemOrCurrentPlayerChanged");
 	}
 	
 	/**
@@ -993,8 +973,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 */
 	private final void surveyorLocationOrLanguageChanged () throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering surveyorLocationOrLanguageChanged: " + getSurveyorLocation ());
-
 		final MemoryGridCell mc = (getSurveyorLocation () == null) ? null :
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 				(getSurveyorLocation ().getZ ()).getRow ().get (getSurveyorLocation ().getY ()).getCell ().get (getSurveyorLocation ().getX ());
@@ -1170,8 +1148,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 
 		if (lines.length > 3)
 			log.warn ("Surveyor city info generated more than 3 lines");
-
-		log.trace ("Exiting surveyorLocationOrLanguageChanged");
 	}
 
 	/**
@@ -1185,8 +1161,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	 */
 	public final String updateProductionTypesStoppingUsFromEndingTurn () throws IOException
 	{
-		log.trace ("Entering updateProductionTypesStoppingUsFromEndingTurn");
-
 		final StringBuffer text = new StringBuffer (); 
 		
 		// This can be ran prior to init even being called
@@ -1312,7 +1286,6 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		}
 		
 		final String result = (text.length () == 0) ? null : text.toString ();
-		log.trace ("Exiting updateProductionTypesStoppingUsFromEndingTurn: " + result);
 		return result;
 	}
 	

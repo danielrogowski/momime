@@ -160,8 +160,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/createArtifact/background.png");
 		final BufferedImage itemTypeButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button62x26Normal.png");
@@ -291,8 +289,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		selectItemType (getClient ().getClientDB ().getHeroItemType ().get (0));		// Pick Sword by default
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -455,8 +451,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	 */
 	public final void setSpellCharges (final Spell chosenSpell)
 	{
-		log.trace ("Entering setSpellCharges: " + chosenSpell.getSpellID ());
-
 		spellChargesChosenSpell = chosenSpell;
 		spellChargesBackground.setVisible (true);
 		spellChargesChosenSpellLabel.setVisible (true);
@@ -466,8 +460,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			spellChargesButtons.get (n).setVisible (n < getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemSpellCharges ());
 		
 		languageChanged ();
-		
-		log.trace ("Exiting setSpellCharges");
 	}
 	
 	/**
@@ -542,8 +534,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		
@@ -585,9 +575,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			{
 				log.error (e, e);
 			}
-		
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -596,8 +583,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	 */
 	private final void updateCraftingCost () throws IOException
 	{
-		log.trace ("Entering updateCraftingCost");
-		
 		final HeroItem heroItem = buildHeroItem ();
 		
 		// Base crafting cost
@@ -619,8 +604,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 		
 		// Set text
 		craftingCost.setText (text);
-		
-		log.trace ("Exiting updateCraftingCost = " + text);
 	}
 	
 	/**
@@ -628,8 +611,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 	 */
 	private final HeroItem buildHeroItem ()
 	{
-		log.trace ("Entering buildHeroItem");
-		
 		final HeroItem heroItem = new HeroItem ();
 		heroItem.setHeroItemTypeID (heroItemType.getHeroItemTypeID ());
 		heroItem.setHeroItemName (itemName.getText ());
@@ -643,7 +624,6 @@ public final class CreateArtifactUI extends MomClientFrameUI
 			heroItem.setSpellChargeCount (spellChargesChosenCount);
 		}
 
-		log.trace ("Exiting buildHeroItem = " + heroItem);
 		return heroItem;
 	}
 

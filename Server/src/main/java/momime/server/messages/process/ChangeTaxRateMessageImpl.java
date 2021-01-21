@@ -3,28 +3,22 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.clienttoserver.ChangeTaxRateMessage;
 import momime.server.MomSessionVariables;
 import momime.server.process.CityProcessing;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-
 /**
  * Clients send this to the server to request a change in their global tax rate
  */
 public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage implements PostSessionClientToServerMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChangeTaxRateMessageImpl.class);
-
 	/** City processing methods */
 	private CityProcessing cityProcessing;
 	
@@ -41,13 +35,9 @@ public final class ChangeTaxRateMessageImpl extends ChangeTaxRateMessage impleme
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getTaxRateID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		getCityProcessing ().changeTaxRate (sender, getTaxRateID (), mom);
-
-		log.trace ("Exiting process");
 	}
 
 	/**

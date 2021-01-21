@@ -74,8 +74,6 @@ public final class CombatEndedUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init: " + getMessage ().getCombatLocation ());
-		
 		// Load images
 		final boolean weWon = (getMessage ().getWinningPlayerID () == getClient ().getOurPlayerID ());
 		
@@ -155,8 +153,6 @@ public final class CombatEndedUI extends MomClientDialogUI
 				bottomRollerBottom - 6, bottomRollerBottom - 3, bottomRollerBottom + 2, bottomRollerBottom + 5, getCombatEndedLayout ().getFormHeight () - 7, getCombatEndedLayout ().getFormHeight (), getCombatEndedLayout ().getFormHeight (), getCombatEndedLayout ().getFormHeight () - 7, bottomRollerBottom + 5, bottomRollerBottom + 2, bottomRollerBottom - 3, bottomRollerBottom - 6, 
 				210, 208, 207, 204, 192, 189, 186, 23, 21, 18, 14},
 			38));
-		
-		log.trace ("Exiting init");
 	}
 
 	/**
@@ -165,8 +161,6 @@ public final class CombatEndedUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged: " + getMessage ().getCombatLocation ());
-		
 		// Get the city name, in case we need it
 		final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getMessage ().getCombatLocation ().getZ ()).getRow ().get (getMessage ().getCombatLocation ().getY ()).getCell ().get (getMessage ().getCombatLocation ().getX ());
@@ -236,8 +230,6 @@ public final class CombatEndedUI extends MomClientDialogUI
 		
 		headingText.setText (getLanguageHolder ().findDescription (languageText).replaceAll ("CITY_NAME", cityName));
 		mainText.setText (bottomText.toString ());
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

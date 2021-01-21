@@ -7,9 +7,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.areas.storage.MapArea3D;
@@ -52,9 +49,6 @@ import momime.server.messages.MomGeneralServerKnowledge;
  */
 public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (OverlandMapServerUtilsImpl.class);
-	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -87,8 +81,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	final void setContinentalRace (final MapVolumeOfMemoryGridCells map, final MapArea3D<String> continentalRace,
 		final int x, final int y, final int plane, final String raceID, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering setContinentalRace: (" + x + ", " + y + ", " + plane + "), " + raceID);
-
 		final CoordinateSystem sys = continentalRace.getCoordinateSystem ();
 
 		// Set centre tile
@@ -107,8 +99,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 					setContinentalRace (map, continentalRace, coords.getX (), coords.getY (), plane, raceID, db);
 			}
 		}
-
-		log.trace ("Exiting setContinentalRace");
 	}
 
 	/**
@@ -125,8 +115,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final MapArea3D<String> decideAllContinentalRaces (final MapVolumeOfMemoryGridCells map,
 		final CoordinateSystem sys, final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering decideAllContinentalRaces");
-
 		// Allocate a race to each continent of land for raider cities
 		final MapArea3D<String> continentalRace = new MapArea3DArrayListImpl<String> ();
 		continentalRace.setCoordinateSystem (sys);
@@ -145,7 +133,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 							getPlayerPickServerUtils ().chooseRandomRaceForPlane (plane.getPlaneNumber (), db), db);
 				}
 
-		log.trace ("Exiting decideAllContinentalRaces");
 		return continentalRace;
 	}
 
@@ -212,9 +199,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.trace ("Entering attemptToMeldWithNode: " +
-			attackingSpirit.getUnitID () + ", Player ID " + attackingSpirit.getOwningPlayerID () + ", Unit URN " + attackingSpirit.getUnitURN ());
-
 		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
 			(attackingSpirit.getUnitLocation ().getZ ()).getRow ().get (attackingSpirit.getUnitLocation ().getY ()).getCell ().get (attackingSpirit.getUnitLocation ().getX ());
 		
@@ -298,8 +282,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		
 		// Kill off the spirit
 		getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (attackingSpirit.getMemoryUnit (), KillUnitActionID.PERMANENT_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
-
-		log.trace ("Exiting attemptToMeldWithNode = " + successful);
 	}
 
 	/**
@@ -312,8 +294,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	@Override
 	public final int totalPlayerPopulation (final MapVolumeOfMemoryGridCells map, final int playerID, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 	{
-		log.trace ("Entering totalPlayerPopulation: Player ID " + playerID);
-		
 		int total = 0;
 		for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
 			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
@@ -325,7 +305,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 						total = total + cityData.getCityPopulation ();
 				}
 		
-		log.trace ("Exiting totalPlayerPopulation = " + total);
 		return total;
 	}
 	
@@ -340,8 +319,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 	public final MapCoordinates3DEx findMapLocationOfUnitsInCombat (final MapCoordinates3DEx combatLocation,
 		final UnitCombatSideID combatSide, final List<MemoryUnit> units) throws MomException
 	{
-		log.trace ("Entering findMapLocationOfUnitsInCombat: " + combatLocation.toString () + ", " + combatSide);
-		
 		MapCoordinates3DEx location = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
 		while ((location == null) && (iter.hasNext ()))
@@ -356,7 +333,6 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 		if (location == null)
 			throw new MomException ("No units on the specified side are left alive");
 		
-		log.trace ("Exiting findMapLocationOfUnitsInCombat = " + location);
 		return location;
 	}
 	

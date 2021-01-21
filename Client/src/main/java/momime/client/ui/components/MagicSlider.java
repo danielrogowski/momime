@@ -14,12 +14,9 @@ import javax.swing.JSlider;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
-import momime.common.database.CommonDatabaseConstants;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.swing.NdgUIUtils;
+
+import momime.common.database.CommonDatabaseConstants;
 
 /**
  * Mana/Research/Skill sliders on the magic screen that allow sliding the value up and down and clicking the head of the staff to lock it.
@@ -27,9 +24,6 @@ import com.ndg.swing.NdgUIUtils;
  */
 public final class MagicSlider extends JPanel
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MagicSlider.class);
-	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
@@ -61,8 +55,6 @@ public final class MagicSlider extends JPanel
 	 */
 	public final void init (final String prefix, final Action buttonAction, final int initialValue) throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load in all necessary images
 		empty			= getUtils ().loadImage ("/momime.client.graphics/ui/magicSliders/" + prefix + "StaffEmpty.png");
 		full				= getUtils ().loadImage ("/momime.client.graphics/ui/magicSliders/" + prefix + "StaffFull.png");
@@ -112,8 +104,6 @@ public final class MagicSlider extends JPanel
 		slider.setOrientation (SwingConstants.VERTICAL);
 		
 		add (slider, BorderLayout.SOUTH);
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**

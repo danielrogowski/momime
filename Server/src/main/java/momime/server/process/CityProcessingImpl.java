@@ -169,8 +169,6 @@ public final class CityProcessingImpl implements CityProcessing
 		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering createStartingCities");
-
 		// Allocate a race to each continent of land for raider cities
 		final MapArea3D<String> continentalRace = getOverlandMapServerUtils ().decideAllContinentalRaces (gsk.getTrueMap ().getMap (), sd.getOverlandMapSize (), db);
 
@@ -300,8 +298,6 @@ public final class CityProcessingImpl implements CityProcessing
 				for (final Plane plane : db.getPlane ())
 					createStartingRoads (thisPlayer.getPlayerDescription ().getPlayerID (), plane.getPlaneNumber (), players, gsk.getTrueMap (), sd, db);
 		}
-
-		log.trace ("Exiting createStartingCities");
 	}
 
 	/**
@@ -353,7 +349,6 @@ public final class CityProcessingImpl implements CityProcessing
 			}
 		}
 		
-		log.trace ("Exiting listMissingRoadCells = " + missingRoadCells.size ());
 		return missingRoadCells;
 	}
 	
@@ -374,8 +369,6 @@ public final class CityProcessingImpl implements CityProcessing
 		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering createStartingRoads");
-		
 		final List<MapCoordinates3DEx> missingRoadCells = listMissingRoadCells (playerID, plane, CommonDatabaseConstants.CITY_SEPARATION_TO_GET_STARTER_ROADS,
 			players, trueMap, sd, db);
 		if (missingRoadCells.size () > 0)
@@ -388,8 +381,6 @@ public final class CityProcessingImpl implements CityProcessing
 			for (final MapCoordinates3DEx coords : missingRoadCells)
 				trueMap.getMap ().getPlane ().get (coords.getZ ()).getRow ().get (coords.getY ()).getCell ().get (coords.getX ()).getTerrainData ().setRoadTileTypeID (roadTileTypeID);
 		}
-		
-		log.trace ("Exiting createStartingRoads");
 	}
 	
 	/**
@@ -412,8 +403,6 @@ public final class CityProcessingImpl implements CityProcessing
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering growCitiesAndProgressConstructionProjects: Player ID " + onlyOnePlayerID);
-
 		for (final Plane plane : db.getPlane ())
 			for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
@@ -566,8 +555,6 @@ public final class CityProcessingImpl implements CityProcessing
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (gsk.getTrueMap ().getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 					}
 				}
-
-		log.trace ("Exiting growCitiesAndProgressConstructionProjects");
 	}
 
 	/**
@@ -601,8 +588,6 @@ public final class CityProcessingImpl implements CityProcessing
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering sellBuilding: " + cityLocation + ", building URN " + buildingURN);
-
 		// Building details
 		final MemoryBuilding trueBuilding = (buildingURN == null) ? null : getMemoryBuildingUtils ().findBuildingURN (buildingURN, trueMap.getBuilding (), "sellBuilding");
 		final String buildingID = (trueBuilding == null) ? null : trueBuilding.getBuildingID ();
@@ -664,8 +649,6 @@ public final class CityProcessingImpl implements CityProcessing
 			// Send the updated city stats to any clients that can see the city
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 		}
-
-		log.trace ("Exiting sellBuilding");
 	}
 
 	/**
@@ -685,8 +668,6 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void changeTaxRate (final PlayerServerDetails player, final String taxRateID, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering changeTaxRate: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + taxRateID);
-		
 		TaxRate newTaxRate = null;
 		try
 		{
@@ -743,8 +724,6 @@ public final class CityProcessingImpl implements CityProcessing
 			// Recalculate all global production based on the new tax rate
 			getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
 		}
-		
-		log.trace ("Exiting changeTaxRate");
 	}
 	
 	/**
@@ -768,9 +747,6 @@ public final class CityProcessingImpl implements CityProcessing
 		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering captureCity: " + cityLocation + " was owned by player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () +
-			", being captured by " + attackingPlayer.getPlayerDescription ().getPlayerID ());				
-
 		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
 			(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		
@@ -820,8 +796,6 @@ public final class CityProcessingImpl implements CityProcessing
 		
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (),
 			players, cityLocation, sd.getFogOfWarSetting ());
-		
-		log.trace ("Exiting captureCity");
 	}
 	
 	/**
@@ -843,8 +817,6 @@ public final class CityProcessingImpl implements CityProcessing
 		final List<PlayerServerDetails> players, final FogOfWarMemory trueMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering razeCity: " + cityLocation);				
-	
 		final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
 				(cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		
@@ -865,8 +837,6 @@ public final class CityProcessingImpl implements CityProcessing
 		tc.getTerrainData ().setRoadTileTypeID (null);
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfTerrain (trueMap.getMap (), players,
 			cityLocation, sd.getFogOfWarSetting ().getTerrainAndNodeAuras ());
-		
-		log.trace ("Exiting razeCity");
 	}
 	
 	/**
@@ -885,8 +855,6 @@ public final class CityProcessingImpl implements CityProcessing
 	public final void banishWizard (final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.trace ("Entering banishWizard: Player ID " + defendingPlayer.getPlayerDescription ().getPlayerID () + " being banished by " + attackingPlayer.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPublicKnowledge defenderPub = (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge attackerPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
@@ -1023,8 +991,6 @@ public final class CityProcessingImpl implements CityProcessing
 			if (wizardState == WizardState.BANISHED)
 				getSpellQueueing ().queueSpell (defendingPlayer, CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN, null);
 		}
-
-		log.trace ("Exiting banishWizard");
 	}
 	
 	/**
@@ -1047,16 +1013,12 @@ public final class CityProcessingImpl implements CityProcessing
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering moveSummoningCircleToWizardsFortress: Player ID " + playerID);
-		
 		final MemoryBuilding wizardsFortress = getMemoryBuildingUtils ().findCityWithBuilding (playerID,
 			CommonDatabaseConstants.BUILDING_FORTRESS, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding ());
 		
 		if (wizardsFortress != null)
 			getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, players, (MapCoordinates3DEx) wizardsFortress.getCityLocation (),
 				CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, null, null, null, sd, db);
-
-		log.trace ("Exiting moveSummoningCircleToWizardsFortress");
 	}
 	
 	/**

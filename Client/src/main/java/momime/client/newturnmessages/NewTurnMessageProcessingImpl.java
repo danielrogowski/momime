@@ -44,8 +44,6 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	@Override
 	public final void expireMessages ()
 	{
-		log.trace ("Entering expireMessages: " + getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().size ());
-		
 		final Iterator<NewTurnMessageData> iter = getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().iterator ();
 		while (iter.hasNext ())
 		{
@@ -58,8 +56,6 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 				// It must be MAIN or BEFORE_OUR_TURN_BEGAN
 				iter.remove ();
 		}
-		
-		log.trace ("Exiting expireMessages = " + getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().size ());
 	}
 	
 	/**
@@ -74,8 +70,6 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	public final void readNewTurnMessagesFromServer (final List<NewTurnMessageData> msgs, final NewTurnMessageStatus statusForNewMessages)
 		throws IOException
 	{
-		log.trace ("Entering readNewTurnMessagesFromServer: " + msgs.size ());
-		
 		String musicResourceName = null;
 		Integer musicSortOrder = null;
 		
@@ -122,8 +116,6 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 		
 		// See if any new NTM must be acted on
 		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
-		
-		log.trace ("Exiting readNewTurnMessagesFromServer = " + getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().size ());
 	}
 	
 	/**
@@ -133,8 +125,6 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 	@Override
 	public final List<NewTurnMessageUI> sortAndAddCategories () throws MomException
 	{
-		log.trace ("Entering sortAndAddCategories: " + getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().size ());
-		
 		// Copy into a temporary list and get the typecasting done
 		final List<NewTurnMessageUI> msgs = new ArrayList<NewTurnMessageUI> ();
 		for (final NewTurnMessageData msg : getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ())
@@ -170,7 +160,6 @@ public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcess
 			n++;
 		}
 
-		log.trace ("Exiting sortAndAddCategories = " + msgs.size ());
 		return msgs;
 	}
 	

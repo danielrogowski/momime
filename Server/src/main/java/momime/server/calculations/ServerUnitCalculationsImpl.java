@@ -83,8 +83,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	@Override
 	public final int calculateUnitScoutingRange (final ExpandedUnitDetails unit, final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering calculateUnitScoutingRange: " + unit.getDebugIdentifier ());
-
 		int scoutingRange = 1;
 
 		// Actual scouting skill
@@ -99,7 +97,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				scoutingRange = Math.max (scoutingRange, unitSkillScoutingRange);
 		}
 
-		log.trace ("Exiting calculateUnitScoutingRange = " + scoutingRange);
 		return scoutingRange;
 	}
 
@@ -124,8 +121,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.trace ("Entering recheckTransportCapacity: " + combatLocation);
-		
 		// First get a list of the map coordinates and players to check; this could be two cells if the defender won - they'll have units at the combatLocation and the
 		// attackers' transports may have been wiped out but the transported units are still sat at the point they attacked from.
 		final List<MapCoordinates3DEx> mapLocations = new ArrayList<MapCoordinates3DEx> ();
@@ -198,8 +193,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 					impassableUnits.remove (killUnit);
 				}
 			}
-		
-		log.trace ("Exiting recheckTransportCapacity");
 	}
 
 	/**
@@ -216,8 +209,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	public final int calculateRangedAttackDistancePenalty (final ExpandedUnitDetails attacker, final ExpandedUnitDetails defender,
 		final CombatMapSize combatMapCoordinateSystem) throws MomException
 	{
-		log.trace ("Entering calculateRangedAttackDistancePenalty: Attacker " + attacker.getDebugIdentifier () + ", Defender " + defender.getDebugIdentifier ());
-
 		// Magic attacks suffer no penalty
 		int penalty;
 		if (attacker.getRangedAttackType ().getMagicRealmID () != null)
@@ -234,7 +225,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				penalty = 1;
 		}
 		
-		log.trace ("Exiting calculateRangedAttackDistancePenalty = " + penalty);
 		return penalty;
 	}
 	
@@ -253,8 +243,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	public final List<UnitEx> listUnitsSpellMightSummon (final Spell spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering listUnitsSpellMightSummon: " + spell.getSpellID ());
-		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
 		final List<UnitEx> possibleUnits = new ArrayList<UnitEx> ();
@@ -289,7 +277,6 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				possibleUnits.add (possibleUnit);
 		}
 		
-		log.trace ("Exiting listUnitsSpellMightSummon = " + possibleUnits.size ());
 		return possibleUnits;
 	}
 	

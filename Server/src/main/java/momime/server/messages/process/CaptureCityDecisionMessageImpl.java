@@ -5,27 +5,21 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
-import momime.server.MomSessionVariables;
-import momime.server.process.CombatStartAndEnd;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 
+import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
+import momime.server.MomSessionVariables;
+import momime.server.process.CombatStartAndEnd;
+
 /**
  * Client sends this to tell the server whether they want to raze or capture a city they just took.
  */
 public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMessage implements PostSessionClientToServerMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (CaptureCityDecisionMessageImpl.class);
-
 	/** Starting and ending combats */
 	private CombatStartAndEnd combatStartAndEnd;
 	
@@ -43,14 +37,10 @@ public final class CaptureCityDecisionMessageImpl extends CaptureCityDecisionMes
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: " + getCityLocation () + ", " + getCaptureCityDecision ());
-		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		final PlayerServerDetails defendingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), getDefendingPlayerID (), "CaptureCityDecisionMessageImpl");
 		getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) getCityLocation (), sender, defendingPlayer, sender, getCaptureCityDecision (), mom);
-
-		log.trace ("Exiting process");
 	}	
 
 	/**

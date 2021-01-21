@@ -5,23 +5,17 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.TaxRateUI;
 import momime.common.messages.servertoclient.TaxRateChangedMessage;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this back to clients who request a tax rate change to acknowledge that their request was OK
  */
 public final class TaxRateChangedMessageImpl extends TaxRateChangedMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (TaxRateChangedMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -36,14 +30,10 @@ public final class TaxRateChangedMessageImpl extends TaxRateChangedMessage imple
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().setTaxRateID (getTaxRateID ());
 		
 		// Move the * showing the current tax rate
 		getTaxRateUI ().languageChanged ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

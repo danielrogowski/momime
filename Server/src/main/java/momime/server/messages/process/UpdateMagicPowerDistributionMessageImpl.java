@@ -33,8 +33,6 @@ public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPo
 	public final void process (@SuppressWarnings ("unused") final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
-
 		final String error;
 
 		// Check all the values are within valid ranges
@@ -71,7 +69,5 @@ public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPo
 
 			// No confirmation - client assumes change will be OK
 		}
-
-		log.trace ("Exiting process");
 	}
 }

@@ -53,8 +53,6 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, MomException, PlayerNotFoundException, RecordNotFoundException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Look for the spell
@@ -93,8 +91,6 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 			// Spell no longer using mana
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

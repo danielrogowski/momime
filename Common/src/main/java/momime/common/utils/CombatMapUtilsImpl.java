@@ -3,28 +3,22 @@ package momime.common.utils;
 import java.util.Iterator;
 import java.util.List;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.database.CombatMapLayerID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
 import momime.common.messages.UnitStatusID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.map.coordinates.MapCoordinates3DEx;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
-
 /**
  * Helper utils for dealing with combat maps
  */
 public final class CombatMapUtilsImpl implements CombatMapUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (CombatMapUtilsImpl.class);
-	
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
@@ -104,8 +98,6 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	public final CombatPlayers determinePlayersInCombatFromLocation (final MapCoordinates3DEx combatLocation,
 		final List<MemoryUnit> units, final List<? extends PlayerPublicDetails> players) throws PlayerNotFoundException
 	{
-		log.trace ("Entering determinePlayersInCombatFromLocation: " + combatLocation);
-		
 		Integer attackingPlayerID = null;
 		Integer defendingPlayerID = null;
 		
@@ -133,7 +125,6 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 		final CombatPlayers result = new CombatPlayers
 			((attackingPlayerID == null) ? null : getMultiplayerSessionUtils ().findPlayerWithID (players, attackingPlayerID, "determinePlayersInCombatFromLocation-A"),
 			(defendingPlayerID == null) ? null : getMultiplayerSessionUtils ().findPlayerWithID (players, defendingPlayerID, "determinePlayersInCombatFromLocation-D"));
-		log.trace ("Exiting determinePlayersInCombatFromLocation = " + attackingPlayerID + ", " + defendingPlayerID);
 		
 		return result;
 	}
@@ -147,15 +138,12 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	@Override
 	public final int countPlayersAliveUnitsAtCombatLocation (final int playerID, final MapCoordinates3DEx combatLocation, final List<MemoryUnit> units)
 	{
-		log.trace ("Entering countPlayersAliveUnitsAtCombatLocation: Player ID " + playerID + ", " + combatLocation);
-		
 		int count = 0;
 		for (final MemoryUnit thisUnit : units)
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatHeading () != null) &&
 				(thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null))
 				count++;			
 
-		log.trace ("Exiting countPlayersAliveUnitsAtCombatLocation = " + count);
 		return count;
 	}
 

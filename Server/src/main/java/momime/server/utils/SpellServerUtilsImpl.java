@@ -1,8 +1,5 @@
 package momime.server.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 
 import momime.common.database.CommonDatabase;
@@ -19,9 +16,6 @@ import momime.common.utils.SpellUtils;
  */
 public final class SpellServerUtilsImpl implements SpellServerUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpellServerUtilsImpl.class);
-	
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
@@ -37,8 +31,6 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 	public final String validateResearch (final PlayerServerDetails player, final String spellID,
 		final SwitchResearch switchResearch, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering validateResearch: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spellID);
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// Find the spell that we want to research
@@ -78,7 +70,6 @@ public final class SpellServerUtilsImpl implements SpellServerUtils
 		else
 			msg = null;
 
-		log.trace ("Exiting validateResearch = " + msg);
 		return msg;
 	}
 

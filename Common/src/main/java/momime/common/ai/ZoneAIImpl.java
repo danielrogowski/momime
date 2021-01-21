@@ -3,9 +3,6 @@ package momime.common.ai;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
@@ -33,9 +30,6 @@ import momime.common.messages.OverlandMapCityData;
  */
 public final class ZoneAIImpl implements ZoneAI
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ZoneAIImpl.class);
-	
 	/** Boolean operations for 2D maps */
 	private BooleanMapAreaOperations2D booleanMapAreaOperations2D;
 
@@ -59,8 +53,6 @@ public final class ZoneAIImpl implements ZoneAI
 		final CoordinateSystem overlandMapCoordinateSystem, final int playerID, final int separation, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateFriendlyZone: Player ID " + playerID + ", " + separation);
-
 		// Make a list of all of our cities
 		final List<MapCoordinates3DEx> cityLocations = new ArrayList<MapCoordinates3DEx> ();
 		for (int plane = 0; plane < overlandMapCoordinateSystem.getDepth (); plane++)
@@ -159,7 +151,6 @@ public final class ZoneAIImpl implements ZoneAI
 		for (final MapCoordinates3DEx cityLocation : cityLocations)
 			zone.set (cityLocation, true);
 
-		log.trace ("Exiting calculateFriendlyZone = " + zone);
 		return zone;
 	}
 

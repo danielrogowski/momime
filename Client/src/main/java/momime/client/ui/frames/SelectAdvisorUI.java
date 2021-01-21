@@ -11,9 +11,6 @@ import javax.swing.ActionMap;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
@@ -29,9 +26,6 @@ import momime.client.ui.panels.OverlandMapRightHandPanelTop;
  */
 public final class SelectAdvisorUI extends MomClientFrameUI
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SelectAdvisorUI.class);
-
 	/** Width of the gold border */
 	public final static int BORDER_WIDTH = 15;
 
@@ -102,8 +96,6 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/selectAdvisor.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button234x14Normal.png");
@@ -191,8 +183,6 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		contentPane.getActionMap ().put (Shortcut.ADVISOR_TAX_RATE,				taxCollectorAction);
 		contentPane.getActionMap ().put (Shortcut.ADVISOR_AUTO_CONTROL,		grandVizierAction);
 		contentPane.getActionMap ().put (Shortcut.ADVISOR_WIZARDS,					wizardsAction);
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -201,8 +191,6 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		title.setText (getLanguageHolder ().findDescription (getLanguages ().getSelectAdvisorScreen ().getTitle ()));
 		getFrame ().setTitle (title.getText ());
 		
@@ -218,8 +206,6 @@ public final class SelectAdvisorUI extends MomClientFrameUI
 		
 		// Shortcut keys
 		getLanguageHolder ().configureShortcutKeys (contentPane);
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

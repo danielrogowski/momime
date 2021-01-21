@@ -6,25 +6,19 @@ import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.messages.servertoclient.NewGameDatabaseMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.server.MultiplayerBaseServerThread;
 import com.ndg.multiplayer.server.MultiplayerClientConnection;
 import com.ndg.multiplayer.server.MultiplayerSessionServer;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.SessionDescription;
 
+import momime.common.messages.servertoclient.NewGameDatabaseMessage;
+
 /**
  * Main server class to listen for client connection requests and manage list of sessions
  */
 public final class MomServer extends MultiplayerSessionServer
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MomServer.class);
-	
 	/** Message to send new game database to clients as they connect */
 	private NewGameDatabaseMessage newGameDatabaseMessage;
 
@@ -50,8 +44,6 @@ public final class MomServer extends MultiplayerSessionServer
 	@Override
 	protected final MultiplayerBaseServerThread createAndStartClientThread (final Socket socket) throws InterruptedException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering createAndStartClientThread");
-		
 		final Object readyForMessagesMonitor = new Object ();
 		
 		final MultiplayerClientConnection conn = new MultiplayerClientConnection ("ClientConnection-" + socket);
@@ -74,7 +66,6 @@ public final class MomServer extends MultiplayerSessionServer
 
 		conn.sendMessageToClient (newGameDatabaseMessage);
 		
-		log.trace ("Exiting createAndStartClientThread");
 		return conn;
 	}
 
@@ -86,8 +77,6 @@ public final class MomServer extends MultiplayerSessionServer
 	@Override
 	public final MultiplayerSessionThread createSessionThread (final SessionDescription sessionDescription)
 	{
-		log.trace ("Entering createSessionThread: Session ID " + sessionDescription.getSessionID ());
-
 		final MomSessionThread thread = getSessionThreadFactory ().createThread ();
 		thread.setSessionDescription (sessionDescription);
 

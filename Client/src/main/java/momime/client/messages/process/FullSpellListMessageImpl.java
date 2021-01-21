@@ -6,6 +6,8 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.SpellBookUI;
 import momime.common.messages.SpellResearchStatus;
@@ -13,19 +15,11 @@ import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.utils.SpellUtils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
 /**
  * Server sends this to client to tell them the status of every spell in the game
  */
 public final class FullSpellListMessageImpl extends FullSpellListMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (FullSpellListMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -43,8 +37,6 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getSpellResearchStatus ().size ());
-
 		// Check got the right number
 		final List<SpellResearchStatus> ourSpells = getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus ();
 		if (ourSpells.size () != getSpellResearchStatus ().size ())
@@ -76,8 +68,6 @@ public final class FullSpellListMessageImpl extends FullSpellListMessage impleme
 				// In either of those situations, the server will be sending us updated GPVs shortly which will trigger the icons to be regen'd at that stage				
 			}
 		}
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

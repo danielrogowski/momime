@@ -3,9 +3,6 @@ package momime.server.ai;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -31,9 +28,6 @@ import momime.server.utils.UnitSkillDirectAccess;
  */
 public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AIUnitRatingCalculationsImpl.class);
-
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -53,8 +47,6 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	final int calculateUnitRating (final ExpandedUnitDetails xu, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{		
-		log.trace ("Entering calculateUnitRating: " + xu.getDebugIdentifier ());
-
 		// Units with no attacks whatsoever (settlers) aren't even considered to be combat units
 		int total = 0;
 		if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) ||
@@ -94,7 +86,6 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 			total = (int) (total * multipliers);
 		}
 		
-		log.trace ("Exiting calculateUnitRating = " + total);
 		return total;
 	}
 	
@@ -113,11 +104,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	public final int calculateUnitCurrentRating (final AvailableUnit unit, final ExpandedUnitDetails xu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering calculateUnitCurrentRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
-		
 		final int rating = calculateUnitRating ((xu != null) ? xu : getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db), db);
-		
-		log.trace ("Exiting calculateUnitCurrentRating = " + rating);
 		return rating;
 	}
 
@@ -135,8 +122,6 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	public final int calculateUnitPotentialRating (final AvailableUnit unit, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering calculateUnitPotentialRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
-		
 		// Since MoM is single threaded (with respect to each session) we can temporarily fiddle with the existing unit details, then put it back the way it was afterwards
 		final int experience = getUnitSkillDirectAccess ().getDirectSkillValue (unit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 		if (experience >= 0)
@@ -199,7 +184,6 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 				mu.getHeroItemSlot ().get (slotNumber).setHeroItem (heroItems.get (slotNumber));
 		}
 		
-		log.trace ("Exiting calculateUnitPotentialRating = " + rating);
 		return rating;
 	}
 

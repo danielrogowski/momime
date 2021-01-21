@@ -84,8 +84,6 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/selectAdvisor.png");
 		buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button234x14Normal.png");
@@ -113,7 +111,6 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 			20));		
 
 		setCastingSources (castingSources);
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -121,8 +118,6 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 	 */
 	public final void setCastingSources (final List<CastCombatSpellFrom> aCastingSources)
 	{
-		log.trace ("Entering updateCastingSources");
-		
 		// Typically this gets called prior to showing the form
 		castingSources = aCastingSources;
 		if (contentPane != null)
@@ -157,8 +152,6 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 			// Set the action labels
 			languageChanged ();
 		}
-		
-		log.trace ("Exiting updateCastingSources");
 	}
 	
 	/**
@@ -167,8 +160,6 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		title.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getWhoWillCastTitle ()));
 		
 		try
@@ -217,8 +208,6 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

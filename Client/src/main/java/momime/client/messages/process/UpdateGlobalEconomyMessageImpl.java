@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.AlchemyUI;
 import momime.client.ui.frames.CityViewUI;
@@ -13,11 +15,6 @@ import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to each client to tell them what their current production rates and storage are.
@@ -35,9 +32,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  */
 public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UpdateGlobalEconomyMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -64,8 +58,6 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		// Accept new values
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ().clear ();
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ().addAll (getResourceValue ());
@@ -90,8 +82,6 @@ public final class UpdateGlobalEconomyMessageImpl extends UpdateGlobalEconomyMes
 			getCombatUI ().updateRemainingCastingSkill (getCastingSkillRemainingThisCombat ());
 			getCombatUI ().setSpellCastThisCombatTurn (true);
 		}
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

@@ -5,17 +5,14 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.client.MomClient;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Server sends this to all clients to notify that one player has finished allocating simultaneous movement
@@ -23,9 +20,6 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
  */
 public final class OnePlayerSimultaneousTurnDoneMessageImpl extends OnePlayerSimultaneousTurnDoneMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (StartSimultaneousTurnMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 
@@ -43,15 +37,11 @@ public final class OnePlayerSimultaneousTurnDoneMessageImpl extends OnePlayerSim
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Player ID " + getPlayerID ());
-		
 		final PlayerPublicDetails donePlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "OnePlayerSimultaneousTurnDoneMessageImpl");
 		final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) donePlayer.getTransientPlayerPublicKnowledge ();
 		trans.setMovementAllocatedForTurnNumber (getClient ().getGeneralPublicKnowledge ().getTurnNumber ());
 		
 		getOverlandMapRightHandPanel ().repaintColourPatches ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

@@ -5,32 +5,26 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.client.calculations.OverlandMapBitmapGenerator;
-import momime.client.ui.frames.OverlandMapUI;
-import momime.client.ui.panels.OverlandMapRightHandPanel;
-import momime.common.database.RecordNotFoundException;
-import momime.common.messages.servertoclient.UpdateTerrainMessage;
-import momime.common.messages.MemoryGridCell;
-import momime.common.utils.CompareUtils;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.areas.operations.BooleanMapAreaOperations3D;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
+import momime.client.MomClient;
+import momime.client.calculations.OverlandMapBitmapGenerator;
+import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.MemoryGridCell;
+import momime.common.messages.servertoclient.UpdateTerrainMessage;
+import momime.common.utils.CompareUtils;
+
 /**
  * Server sends this to the client to tell them the map scenery
  */
 public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UpdateTerrainMessageImpl.class);
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -56,8 +50,6 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getData ().getMapLocation ());
-
 		final MapArea3D<Boolean> areaToSmooth = new MapArea3DArrayListImpl<Boolean> ();
 		areaToSmooth.setCoordinateSystem (getClient ().getSessionDescription ().getOverlandMapSize ());
 		
@@ -68,8 +60,6 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 		// about... so that's already almost everything (although we could avoid regenerating the units...)
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
 		getOverlandMapRightHandPanel ().regenerateMiniMapBitmap ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**
@@ -78,8 +68,6 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	 */
 	public final void processOneUpdate (final MapArea3D<Boolean> areaToSmooth)
 	{
-		log.trace ("Entering processOneUpdate: " + getData ().getMapLocation ());
-		
 		final MemoryGridCell gc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getData ().getMapLocation ().getZ ()).getRow ().get (getData ().getMapLocation ().getY ()).getCell ().get (getData ().getMapLocation ().getX ());
 		
@@ -95,8 +83,6 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 
 		// Actually update it
 		gc.setTerrainData (getData ().getTerrainData ());
-		
-		log.trace ("Exiting processOneUpdate");
 	}
 	
 	/**
@@ -106,12 +92,8 @@ public final class UpdateTerrainMessageImpl extends UpdateTerrainMessage impleme
 	 */
 	public final void endUpdates (final MapArea3D<Boolean> areaToSmooth) throws RecordNotFoundException
 	{
-		log.trace ("Entering endUpdates");
-		
 		getBooleanMapAreaOperations3D ().enlarge (areaToSmooth, null, false);
 		getOverlandMapBitmapGenerator ().smoothMapTerrain (areaToSmooth);
-		
-		log.trace ("Exiting endUpdates");
 	}
 
 	/**

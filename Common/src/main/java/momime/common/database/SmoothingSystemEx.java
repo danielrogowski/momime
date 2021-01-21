@@ -5,9 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.common.MomException;
 
 /**
@@ -17,9 +14,6 @@ import momime.common.MomException;
  */
 public final class SmoothingSystemEx extends SmoothingSystem
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SmoothingSystemEx.class);
-	
 	/** Map of smoothed bitmasks, to the list of unsmoothed bitmasks that reduce to it */
 	private final Map<String, List<String>> bitmasksMap = new HashMap<String, List<String>> ();
 	
@@ -29,8 +23,6 @@ public final class SmoothingSystemEx extends SmoothingSystem
 	 */
 	final List<String> listUnsmoothedBitmasks (final int directions)
 	{
-		log.trace ("Entering listUnsmoothedBitmasks: " + getSmoothingSystemID ());
-		
 		final List<String> bitmasks = new ArrayList<String> ();
 		final int base = getMaxValueEachDirection () + 1; 
 		
@@ -45,7 +37,6 @@ public final class SmoothingSystemEx extends SmoothingSystem
 			bitmasks.add (bitmask);
 		}
 		
-		log.trace ("Exiting listUnsmoothedBitmasks = " + bitmasks.size ());
 		return bitmasks;
 	}
 	
@@ -131,8 +122,6 @@ public final class SmoothingSystemEx extends SmoothingSystem
 	 */
 	final String applySmoothingReductionRules (final String bitmask) throws MomException
 	{
-		log.trace ("Entering applySmoothingReductionRules: " + getSmoothingSystemID () + ", " + bitmask);
-		
 		String out = bitmask;
 		for (final SmoothingReduction rule : getSmoothingReduction ())
 			if ((smoothingReductionConditionMatches (out, rule.getDirection1 (), rule.getRepetitions1 (), rule.getValue1 ())) &&
@@ -143,7 +132,6 @@ public final class SmoothingSystemEx extends SmoothingSystem
 				out = applySmoothingReductionReplacement (out, rule.getSetDirection2 (), rule.getSetValue2 ());
 			}
 		
-		log.trace ("Exiting applySmoothingReductionRules = " + out);
 		return out;
 	}
 
@@ -155,8 +143,6 @@ public final class SmoothingSystemEx extends SmoothingSystem
 	 */
 	final void buildMap (final int directions) throws MomException
 	{
-		log.trace ("Entering buildMap: " + getSmoothingSystemID ());
-		
 		final List<String> bitmasks = listUnsmoothedBitmasks (directions);
 		for (final String unsmoothed : bitmasks)
 		{
@@ -173,8 +159,6 @@ public final class SmoothingSystemEx extends SmoothingSystem
 			// Add new unsmoothed bitmask to the list
 			unsmoothedList.add (unsmoothed);
 		}
-		
-		log.trace ("Exiting buildMap = " + bitmasksMap.size ());
 	}
 	
 	/**

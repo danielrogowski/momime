@@ -8,9 +8,6 @@ import javax.swing.Action;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -26,9 +23,6 @@ import momime.common.messages.clienttoserver.CaptureCityDecisionMessage;
  */
 public final class RazeCityUI extends MomClientDialogUI
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (RazeCityUI.class);
-
 	/** XML layout */
 	private XmlLayoutContainerEx razeCityLayout;
 
@@ -60,8 +54,6 @@ public final class RazeCityUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init: " + getCityLocation ());
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/twoButtonBox186x60.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x17Normal.png");
@@ -108,8 +100,6 @@ public final class RazeCityUI extends MomClientDialogUI
 		// Lock frame size
 		getDialog ().setContentPane (contentPane);
 		getDialog ().setResizable (false);
-		
-		log.trace ("Exiting init");
 	}
 
 	/**
@@ -118,14 +108,10 @@ public final class RazeCityUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged: " + getCityLocation ());
-		
 		messageText.setText (getLanguageHolder ().findDescription (getLanguages ().getRazeCityScreen ().getText ()));
 		
 		razeAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getRazeCityScreen ().getRaze ()));
 		captureAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getNo ()));
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

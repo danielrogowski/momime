@@ -192,8 +192,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	 */
 	public final void start ()
 	{
-		log.trace ("Entering start");
-		
 		// Multiplayer client event handlers
 		getEventListeners ().add (new MultiplayerSessionClientEvent ()
 		{
@@ -743,8 +741,6 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				log.error (e, e);
 			}
 		});
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

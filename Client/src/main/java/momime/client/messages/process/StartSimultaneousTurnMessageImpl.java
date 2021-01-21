@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
@@ -25,9 +22,6 @@ import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
  */
 public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTurnMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (StartSimultaneousTurnMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -57,8 +51,6 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Turn " + getTurnNumber () + ", message count " + getMessage ().size () + ", expire? " + isExpireMessages ());
-
 		// Update turn number
 		getClient ().getGeneralPublicKnowledge ().setTurnNumber (getTurnNumber ());
 		getOverlandMapUI ().updateTurnLabelText ();
@@ -82,8 +74,6 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 		getOverlandMapProcessing ().setProcessingContinuedMovement (false);
 		getOverlandMapProcessing ().buildUnitsLeftToMoveList ();
 		getOverlandMapProcessing ().updateMovementRemaining ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

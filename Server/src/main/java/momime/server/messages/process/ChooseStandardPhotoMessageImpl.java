@@ -35,8 +35,6 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getPhotoID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Check is valid - we don't need the record from the DB, we just need to prove that it exists
@@ -60,7 +58,5 @@ public final class ChooseStandardPhotoMessageImpl extends ChooseStandardPhotoMes
 			reply.setText ("Photo choice invalid, please try again");
 			sender.getConnection ().sendMessageToClient (reply);
 		}
-
-		log.trace ("Exiting process");
 	}
 }

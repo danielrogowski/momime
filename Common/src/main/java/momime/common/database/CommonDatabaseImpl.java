@@ -151,8 +151,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	@Override
 	public final void buildMaps ()
 	{
-		log.trace ("Entering buildMaps");
-		
 		// Build lower levels maps
 		getTileTypes ().forEach (t -> t.buildMap ());
 		getUnits ().forEach (u -> u.buildMaps ());
@@ -226,8 +224,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		combatTileBorderImagesMap = new HashMap<String, CombatTileBorderImage> ();
 		for (final CombatTileBorderImage ctb : getCombatTileBorderImage ())
 			combatTileBorderImagesMap.put (ctb.getCombatTileBorderID () + "-" + ctb.getDirections () + "-" + ctb.getFrontOrBack ().value (), ctb);
-		
-		log.trace ("Exiting buildMaps");
 	}
 
 	/**
@@ -237,8 +233,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	@Override
 	public final void consistencyChecks () throws MomException
 	{
-		log.trace ("Entering consistencyChecks");
-		
 		// Check all units have an HP and double movement speed "skill" value defined
 		for (final Unit unitDef : getUnit ())
 		{
@@ -271,8 +265,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 				mostExpensiveConstructionCost = Math.max (mostExpensiveConstructionCost, thisUnit.getProductionCost ());
 		
 		log.info ("Most expensive construction project is " + mostExpensiveConstructionCost);
-		
-		log.trace ("Exiting consistencyChecks");
 	}
 	
 	/**
@@ -282,7 +274,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	@Override
 	public final void clientConsistencyChecks () throws IOException
 	{
-		log.trace ("Entering clientConsistencyChecks");
 		log.info ("Processing common XML file");
 		
 		// Check all animations have frames with consistent sizes
@@ -341,8 +332,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		
 		log.info ("Largest building image is " + largestWidth + "x" + largestHeight);
 		largestBuildingSize = new Dimension (largestWidth, largestHeight);
-		
-		log.trace ("Exiting clientConsistencyChecks");
 	}
 	
 	/**

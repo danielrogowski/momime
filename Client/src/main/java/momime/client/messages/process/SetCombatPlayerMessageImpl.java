@@ -47,8 +47,6 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getCombatLocation () + ", Player ID " + getPlayerID ());
-		
 		getCombatUI ().setCurrentPlayerID (getPlayerID ());
 		
 		if (getPlayerID () == getClient ().getOurPlayerID ())
@@ -84,8 +82,6 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 			// This disables spell casting because it realises it isn't our turn
 			getCombatUI ().setCastingSource (null, false);
 		}
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

@@ -14,9 +14,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.sessionbase.JoinSession;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 import com.ndg.multiplayer.sessionbase.RequestSessionList;
@@ -36,9 +33,6 @@ import momime.common.messages.TurnSystem;
  */
 public final class JoinGameUI extends MomClientFrameUI
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (JoinGameUI.class);
-
 	/** XML layout */
 	private XmlLayoutContainerEx joinGameLayout;
 
@@ -76,8 +70,6 @@ public final class JoinGameUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/sessionList.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldNormal.png");
@@ -157,8 +149,6 @@ public final class JoinGameUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -167,8 +157,6 @@ public final class JoinGameUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getJoinGameScreen ().getTitle ()));
 		
 		refreshAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getJoinGameScreen ().getRefresh ()));
@@ -176,7 +164,6 @@ public final class JoinGameUI extends MomClientFrameUI
 		cancelAction.putValue		(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 
 		sessionsTableModel.fireTableDataChanged ();
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -184,11 +171,7 @@ public final class JoinGameUI extends MomClientFrameUI
 	 */
 	public final void refreshSessionList ()
 	{
-		log.trace ("Entering refreshSessionList");
-
 		refreshAction.actionPerformed (null);
-
-		log.trace ("Exiting refreshSessionList");
 	}
 	
 	/**

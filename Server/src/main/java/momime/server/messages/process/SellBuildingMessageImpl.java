@@ -55,8 +55,6 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getCityLocation () + ", building URN " + getBuildingURN ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final MemoryGridCell tc;
@@ -128,8 +126,6 @@ public final class SellBuildingMessageImpl extends SellBuildingMessage implement
 			
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
-		
-		log.trace ("Exiting process");
 	}
 
 	/**

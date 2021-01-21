@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.SquareMapDirection;
@@ -77,9 +74,6 @@ import momime.common.utils.PlayerPickUtils;
  */
 public final class CityCalculationsImpl implements CityCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (CityCalculationsImpl.class);
-	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
@@ -127,8 +121,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering listCityProductionPercentageBonusesFromTerrainTiles: " + cityLocation);
-
 		// First pass - get a list of how many of each tile type are within the city radius
 		final Map<String, CityProductionBreakdownTileType> tileTypes = new HashMap<String, CityProductionBreakdownTileType> ();
 
@@ -174,7 +166,6 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 		}
 
-		log.trace ("Exiting listCityProductionPercentageBonusesFromTerrainTiles = " + breakdown.getPercentageBonus ());
 		return breakdown;
 	}
 
@@ -195,8 +186,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final Integer overridePopulation, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateGoldTradeBonus: " + cityLocation);
-
 		// Deal with centre square
 		gold.setTradePercentageBonusFromTileType (0);
 		final MemoryGridCell centreTile = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
@@ -256,8 +245,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		
 		// Add to other bonuses
 		gold.setPercentageBonus (gold.getPercentageBonus () + gold.getTradePercentageBonusCapped ());
-		
-		log.trace ("Exiting calculateGoldTradeBonus");
 	}
 
 	/**
@@ -271,8 +258,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	public final boolean buildingPassesTileTypeRequirements (final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation, final Building building,
 		final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		log.trace ("Entering buildingPassesTileTypeRequirements: " + cityLocation + ", " + building.getBuildingID ());
-
 		// If there are no requirements then we're automatically fine
 		final boolean passes;
 		if (building.getBuildingRequiresTileType ().size () == 0)
@@ -341,7 +326,6 @@ public final class CityCalculationsImpl implements CityCalculations
 			passes = anyRequirementPassed;
 		}
 
-		log.trace ("Exiting buildingPassesTileTypeRequirements = " + passes);
 		return passes;
 	}
 
@@ -360,8 +344,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering listCityFoodProductionFromTerrainTiles: " + cityLocation);
-
 		// First pass - get a list of how many of each tile type are within the city radius
 		final Map<String, CityProductionBreakdownTileType> tileTypes = new HashMap<String, CityProductionBreakdownTileType> ();
 
@@ -407,7 +389,6 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 		}
 
-		log.trace ("Exiting listCityFoodProductionFromTerrainTiles = " + breakdown.getDoubleProductionAmount ());
 		return breakdown;
 	}
 
@@ -431,8 +412,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final int maxCitySize, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		log.trace ("Entering calculateCityGrowthRate: " + cityLocation);
-
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		// Start off calculation
@@ -556,7 +535,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		breakdown.setCurrentPopulation (currentPopulation);
 		breakdown.setMaximumPopulation (maximumPopulation);		
 
-		log.trace ("Exiting calculateCityGrowthRate = " + breakdown.getCappedTotal ());
 		return breakdown;
 	}
 
@@ -590,8 +568,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
-		log.trace ("Entering calculateCityRebels: " + cityLocation);
-
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
 
@@ -723,7 +699,6 @@ public final class CityCalculationsImpl implements CityCalculations
 			breakdown.setFinalTotal (boundedTotal);
 		}
 
-		log.trace ("Entering calculateCityRebels: " + breakdown.getFinalTotal ());
 		return breakdown;
 	}
 
@@ -742,8 +717,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	final void addProductionFromPopulation (final CityProductionBreakdownsEx productionValues, final Race race, final String populationTaskID,
 		final int numberDoingTask, final MapCoordinates3DEx cityLocation, final List<MemoryBuilding> buildings, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering addProductionFromPopulation: " + race.getRaceID () + ", " + populationTaskID + " x" + numberDoingTask + ", " + cityLocation);
-		
 		if (numberDoingTask > 0)
 
 			// Find definition for this population task (farmer, worker, rebel) for the city's race
@@ -769,8 +742,6 @@ public final class CityCalculationsImpl implements CityCalculations
 						breakdown.getPopulationTaskProduction ().add (taskBreakdown);
 						breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + taskBreakdown.getDoubleProductionAmountAllPopulation ());
 					}
-
-		log.trace ("Exiting addProductionFromPopulation");
 	}
 	
 	/**
@@ -782,8 +753,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	final void addProductionFromFortressPickType (final CityProductionBreakdownsEx productionValues, final PickType pickType, final int pickTypeCount)
 	{
-		log.trace ("Entering addProductionFromFortressPickType: " + pickType.getPickTypeID () + " x" + pickTypeCount);
-
 		if (pickTypeCount > 0)
 			for (final ProductionTypeAndDoubledValue thisProduction : pickType.getFortressPickTypeProduction ())
 			{
@@ -797,8 +766,6 @@ public final class CityCalculationsImpl implements CityCalculations
 				breakdown.getPickTypeProduction ().add (pickTypeBreakdown);
 				breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + pickTypeBreakdown.getDoubleProductionAmountAllPicks ());
 			}
-
-		log.trace ("Exiting addProductionFromFortressPickType");
 	}
 
 	/**
@@ -809,8 +776,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	final void addProductionFromFortressPlane (final CityProductionBreakdownsEx productionValues, final Plane plane)
 	{
-		log.trace ("Entering addProductionFromFortressPlane: " + plane.getPlaneNumber ());
-
 		for (final ProductionTypeAndDoubledValue thisProduction : plane.getFortressPlaneProduction ())
 		{
 			final CityProductionBreakdown breakdown = productionValues.findOrAddProductionType (thisProduction.getProductionTypeID ());
@@ -818,8 +783,6 @@ public final class CityCalculationsImpl implements CityCalculations
 			breakdown.setDoubleProductionAmountFortressPlane (breakdown.getDoubleProductionAmountFortressPlane () + thisProduction.getDoubledProductionValue ());
 			breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + thisProduction.getDoubledProductionValue ());
 		}
-
-		log.trace ("Exiting addProductionFromFortressPlane");
 	}
 	
 	/**
@@ -836,8 +799,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final Building building, final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering addProductionAndConsumptionFromBuilding: " + building.getBuildingID ());
-
 		// Go through each type of production/consumption from this building
 		for (final BuildingPopulationProductionModifier thisProduction : building.getBuildingPopulationProductionModifier ())
 
@@ -912,8 +873,6 @@ public final class CityCalculationsImpl implements CityCalculations
 					breakdown.setPercentageBonus (breakdown.getPercentageBonus () + buildingBreakdown.getPercentageBonus ());
 				}
 			}
-
-		log.trace ("Exiting addProductionAndConsumptionFromBuilding");
 	}
 	
 	/**
@@ -932,8 +891,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db,
 		final int raceMineralBonusMultipler, final int buildingMineralPercentageBonus) throws RecordNotFoundException
 	{
-		log.trace ("Entering addProductionFromMapFeatures: " + cityLocation + ", " + raceMineralBonusMultipler + ", " + buildingMineralPercentageBonus);
-		
 		// First pass - get a list of how many of each map feature are within the city radius
 		final Map<String, CityProductionBreakdownMapFeature> mapFeatures = new HashMap<String, CityProductionBreakdownMapFeature> ();
 
@@ -1007,8 +964,6 @@ public final class CityCalculationsImpl implements CityCalculations
 				breakdown.setDoubleProductionAmount (breakdown.getDoubleProductionAmount () + copyMapFeature.getDoubleModifiedProductionAmountAllFeatures ());
 			}
 		}
-
-		log.trace ("Exiting addProductionFromMapFeatures");
 	}
 	
 	/**
@@ -1035,8 +990,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final boolean calculatePotential, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering calculateAllCityProductions: " + cityLocation);
-
 		final MemoryGridCell mc = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ());
 		final OverlandMapCityData cityData = mc.getCityData ();
 		final String raceID = (cityData != null) ? cityData.getCityRaceID () : null;
@@ -1169,7 +1122,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		// Sort the list
 		Collections.sort (productionValues.getProductionType (), new CityProductionBreakdownSorter ());
 
-		log.trace ("Exiting calculateAllCityProductions = " + productionValues);
 		return productionValues;
 	}
 	
@@ -1187,8 +1139,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	final void halveAddPercentageBonusAndCapProduction (final PlayerPublicDetails cityOwner, final CityProductionBreakdown thisProduction, final DifficultyLevel difficultyLevel, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering halveAddPercentageBonusAndCapProduction: " + thisProduction.getProductionTypeID () + ", " + thisProduction.getDoubleProductionAmount ());
-		
 		if (thisProduction.getDoubleProductionAmount () > 0)
 		{
 			final ProductionType productionType = db.findProductionType (thisProduction.getProductionTypeID (), "halveAddPercentageBonusAndCapProduction");
@@ -1241,8 +1191,6 @@ public final class CityCalculationsImpl implements CityCalculations
 			final int cap = (thisProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FOOD)) ? difficultyLevel.getCityMaxSize () : Integer.MAX_VALUE;
 			thisProduction.setCappedProductionAmount (Math.min (thisProduction.getTotalAdjustedForDifficultyLevel (), cap));
 		}
-
-		log.trace ("Exiting halveAddPercentageBonusAndCapProduction = " + thisProduction.getCappedProductionAmount ());
 	}
 
 	/**
@@ -1267,8 +1215,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		final boolean includeProductionAndConsumptionFromPopulation, final CommonDatabase db, final String productionTypeID)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering calculateSingleCityProduction: " + cityLocation);
-
 		// This is a right pain - ideally we want a cut down routine that scans only for this production type - however the Miners' Guild really
 		// buggers that up because it has a different production ID but still might affect the single production type we've asked for (by giving bonuses to map minerals), e.g. Gold
 		// So just do this the long way and then throw away all the other results
@@ -1282,7 +1228,6 @@ public final class CityCalculationsImpl implements CityCalculations
 		else
 			netGain = singleProductionValue.getCappedProductionAmount () - singleProductionValue.getConsumptionAmount () + singleProductionValue.getConvertToProductionAmount ();
 
-		log.trace ("Exiting calculateSingleCityProduction = " + netGain);
 		return netGain;
 	}
 
@@ -1294,8 +1239,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	@Override
 	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map, final int onlyOnePlayerID)
 	{
-		log.trace ("Entering blankBuildingsSoldThisTurn: Player ID " + onlyOnePlayerID);
-
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell mc : row.getCell ())
@@ -1305,8 +1248,6 @@ public final class CityCalculationsImpl implements CityCalculations
 
 						mc.setBuildingIdSoldThisTurn (null);
 				}
-
-		log.trace ("Exiting blankBuildingsSoldThisTurn");
 	}
 
 	/**
@@ -1326,8 +1267,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	public final MapArea2D<Boolean> markWithinExistingCityRadius (final MapVolumeOfMemoryGridCells map1, final MapVolumeOfMemoryGridCells map2,
 		final int plane, final OverlandMapSize overlandMapSize)
 	{
-		log.trace ("Entering markWithinExistingCityRadius: " + plane);
-
 		final MapArea2D<Boolean> result = new MapArea2DArrayListImpl<Boolean> ();
 		result.setCoordinateSystem (overlandMapSize);
 		
@@ -1346,7 +1285,6 @@ public final class CityCalculationsImpl implements CityCalculations
 					getBooleanMapAreaOperations2D ().selectRadius (result, x, y, overlandMapSize.getCitySeparation ());
 			}
 
-		log.trace ("Exiting markWithinExistingCityRadius");
 		return result;
 	}
 
@@ -1383,8 +1321,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	public final List<UnitEx> listUnitsCityCanConstruct (final MapCoordinates3DEx cityLocation,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CommonDatabase db)
 	{
-		log.trace ("Entering listUnitsCityCanConstruct: " + cityLocation);
-
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		
 		final List<UnitEx> buildList = new ArrayList<UnitEx> ();
@@ -1401,7 +1337,6 @@ public final class CityCalculationsImpl implements CityCalculations
 				
 				buildList.add (thisUnit);
 		
-		log.trace ("Exiting listUnitsCityCanConstruct = " + buildList.size ());
 		return buildList;
 	}
 
@@ -1417,8 +1352,6 @@ public final class CityCalculationsImpl implements CityCalculations
 	@Override
 	public final RenderCityData buildRenderCityData (final MapCoordinates3DEx cityLocation, final CoordinateSystem overlandMapCoordinateSystem, final FogOfWarMemory mem)
 	{
-		log.trace ("Entering buildRenderCityData: " + cityLocation);
-		
 		final RenderCityData renderCityData = new RenderCityData ();
 		renderCityData.setPlaneNumber (cityLocation.getZ ());
 
@@ -1451,7 +1384,6 @@ public final class CityCalculationsImpl implements CityCalculations
 			}
 		}
 		
-		log.trace ("Exiting buildRenderCityData");
 		return renderCityData;
 	}
 	

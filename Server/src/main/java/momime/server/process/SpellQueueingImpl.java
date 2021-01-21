@@ -131,9 +131,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 		final Integer variableDamage, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering requestCastSpell: Player ID " + player.getPlayerDescription ().getPlayerID () + ", caster unit URN " + combatCastingUnitURN + ", " + spellID + ", " +
-			combatLocation + ", " + combatTargetLocation + ", " + combatTargetUnitURN + ", " + variableDamage);
-		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -529,7 +526,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 				queueSpell (player, spellID, heroItem);
 		}
 		
-		log.trace ("Exiting requestCastSpell = " + combatEnded);
 		return combatEnded;
 	}
 	
@@ -547,8 +543,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem)
 		throws JAXBException, XMLStreamException
 	{
-		log.trace ("Entering queueSpell: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + spellID);
-		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		// Queue it on server
@@ -567,8 +561,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 			
 			player.getConnection ().sendMessageToClient (reply);
 		}
-		
-		log.trace ("Exiting queueSpell");
 	}
 
 	/**
@@ -587,8 +579,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final boolean progressOverlandCasting (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering progressOverlandCasting: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
@@ -645,7 +635,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// No need to tell client how much skill they've got left or mana stored since this is the end of the turn and both will be sent next start phase
 		}
 
-		log.trace ("Exiting progressOverlandCasting = " + anySpellsCast);
 		return anySpellsCast;
 	}
 

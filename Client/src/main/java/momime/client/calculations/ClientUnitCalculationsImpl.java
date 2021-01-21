@@ -1,8 +1,5 @@
 package momime.client.calculations;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.client.MomClient;
 import momime.common.MomException;
 import momime.common.database.UnitSkillEx;
@@ -14,9 +11,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ClientUnitCalculationsImpl.class);
-	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
@@ -36,8 +30,6 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	@Override
 	public final UnitSkillEx findPreferredMovementSkillGraphics (final ExpandedUnitDetails unit) throws MomException
 	{
-		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID ());
-		
 		// Check all movement skills
 		UnitSkillEx bestMatch = null;
 		for (final UnitSkillEx thisSkill : getClient ().getClientDB ().getUnitSkills ())
@@ -49,7 +41,6 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 		if (bestMatch == null)
 			throw new MomException ("Unit " + unit.getUnitID () + " has no skills which have movement graphics");
 		
-		log.trace ("Exiting findPreferredMovementSkillGraphics = " + bestMatch.getUnitSkillID ());
 		return bestMatch;
 	}
 
@@ -76,8 +67,6 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 	public final String determineCombatActionID (final ExpandedUnitDetails unit, final boolean isMoving)
 		throws MomException
 	{
-		log.trace ("Entering findPreferredMovementSkillGraphics: " + unit.getUnitID () + ", " + isMoving);
-		
 		// This is pretty straightforward, findPreferredMovementSkillGraphics does most of the work for us
 		final UnitSkillEx movementSkill = findPreferredMovementSkillGraphics (unit);
 		final String combatActionID = isMoving ? movementSkill.getMoveActionID () : movementSkill.getStandActionID ();
@@ -86,7 +75,6 @@ public final class ClientUnitCalculationsImpl implements ClientUnitCalculations
 			throw new MomException ("determineCombatActionID for unit " + unit.getUnitID () + " found movement skill " + movementSkill.getUnitSkillID () +
 				" but the movement skill doesn't specify a combatActionID for isMoving = " + isMoving); 
 		
-		log.trace ("Exiting findPreferredMovementSkillGraphics = " + combatActionID);
 		return combatActionID;
 	}
 	

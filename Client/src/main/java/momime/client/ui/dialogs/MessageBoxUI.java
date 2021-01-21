@@ -128,8 +128,6 @@ public final class MessageBoxUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/messageBox498x100.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
@@ -296,8 +294,6 @@ public final class MessageBoxUI extends MomClientDialogUI
 		contentPane.getActionMap ().put (Shortcut.MESSAGE_BOX_CLOSE,	okAction);
 		contentPane.getActionMap ().put (Shortcut.MESSAGE_BOX_YES,		yesAction);
 		contentPane.getActionMap ().put (Shortcut.MESSAGE_BOX_NO,		noAction);
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -306,8 +302,6 @@ public final class MessageBoxUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		// Title
 		final String useTitle;
 		if (getTitle () != null)
@@ -332,8 +326,6 @@ public final class MessageBoxUI extends MomClientDialogUI
 
 		// Shortcut keys
 		getLanguageHolder ().configureShortcutKeys (contentPane);
-
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**

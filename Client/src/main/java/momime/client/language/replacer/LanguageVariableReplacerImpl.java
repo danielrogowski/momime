@@ -20,8 +20,6 @@ public abstract class LanguageVariableReplacerImpl implements LanguageVariableRe
 	@Override
 	public final String replaceVariables (final String description)
 	{
-		log.trace ("Entering replaceVariables: " + description);
-		
 		String text = description;
 		
 		LanguageVariableReplacerCodePosition position = findCode (text);
@@ -53,7 +51,6 @@ public abstract class LanguageVariableReplacerImpl implements LanguageVariableRe
 			position = findCode (text);
 		}
 		
-		log.trace ("Exiting replaceVariables = " + text);
 		return text;
 	}
 

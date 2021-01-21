@@ -58,8 +58,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final AIMovementDecision considerUnitMovement_Reinforce (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final List<AIDefenceLocation> underdefendedLocations, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_Reinforce");
-		
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
@@ -96,7 +94,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
-		log.trace ("Exiting considerUnitMovement_Reinforce = " + decision);
 		return decision;
 	}
 
@@ -118,8 +115,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering considerUnitMovement_AttackStationary");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
@@ -171,7 +166,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
-		log.trace ("Exiting considerUnitMovement_AttackStationary = " + decision);
 		return decision;
 	}
 	
@@ -192,8 +186,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final AIUnitsAndRatings [] [] [] enemyUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering considerUnitMovement_AttackWandering");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		final int ourCurrentRating = units.totalCombatUnitCurrentRatings ();
@@ -239,7 +231,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
-		log.trace ("Exiting considerUnitMovement_AttackWandering = " + decision);
 		return decision;
 	}
 
@@ -259,8 +250,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final AIMovementDecision considerUnitMovement_ScoutLand (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db, final int playerID) throws RecordNotFoundException
 	{
-		log.trace ("Entering considerUnitMovement_ScoutLand");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
@@ -331,7 +320,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
-		log.trace ("Exiting considerUnitMovement_ScoutLand = " + decision);
 		return decision;
 	}
 	
@@ -349,8 +337,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final AIMovementDecision considerUnitMovement_ScoutAll (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final int playerID)
 	{
-		log.trace ("Entering considerUnitMovement_ScoutAll");
-		
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
@@ -398,7 +384,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
-		log.trace ("Exiting considerUnitMovement_ScoutAll = " + decision);
 		return decision;
 	}
 
@@ -423,8 +408,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering considerUnitMovement_JoinStack");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		// First of all we have to find the weakest enemy unit stack that we can reach but that is still too strong for us to fight alone
@@ -500,7 +483,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			}
 		}		
 		
-		log.trace ("Exiting considerUnitMovement_JoinStack = " + decision);
 		return decision;
 	}
 
@@ -515,15 +497,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	@Override
 	public final AIMovementDecision considerUnitMovement_PlaneShift (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_PlaneShift");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		log.warn ("AI movement code PLANE_SHIFT is not yet implemented");
 		
 		final AIMovementDecision decision = null;
 		
-		log.trace ("Exiting considerUnitMovement_PlaneShift = " + decision);
 		return decision;
 	}
 	
@@ -538,15 +517,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	@Override
 	public final AIMovementDecision considerUnitMovement_GetInTransport (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_GetInTransport");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		log.warn ("AI movement code GET_IN_TRANSPORT is not yet implemented");
 		
 		final AIMovementDecision decision = null;
 		
-		log.trace ("Exiting considerUnitMovement_GetInTransport = " + decision);
 		return decision;
 	}
 
@@ -568,8 +544,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 		final AIUnitsAndRatings [] [] [] enemyUnits, final boolean isRaiders, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering considerUnitMovement_Overdefend");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		final List<MapCoordinates3DEx> destinations = new ArrayList<MapCoordinates3DEx> ();
@@ -624,7 +598,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			decision = new AIMovementDecision (chosenLocation);
 		}
 		
-		log.trace ("Exiting considerUnitMovement_Overdefend = " + decision);
 		return decision;
 	}
 
@@ -641,8 +614,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final AIMovementDecision considerUnitMovement_BuildCity (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final List<MapCoordinates3DEx> desiredCityLocations, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_BuildCity");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		// If we have no idea where to put a city, then nothing to do
@@ -694,7 +665,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			}
 		}
 		
-		log.trace ("Exiting considerUnitMovement_BuildCity = " + decision);
 		return decision;
 	}
 
@@ -711,8 +681,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final AIMovementDecision considerUnitMovement_BuildRoad (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final List<MapCoordinates3DEx> desiredRoadLocations, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_BuildRoad");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		// If we have nowhere we need to put road, then nothing to do
@@ -764,7 +732,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			}
 		}
 		
-		log.trace ("Exiting considerUnitMovement_BuildRoad = " + decision);
 		return decision;
 	}
 
@@ -779,15 +746,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	@Override
 	public final AIMovementDecision considerUnitMovement_Purify (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_Purify");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		log.warn ("AI movement code PURIFY is not yet implemented");
 		
 		final AIMovementDecision decision = null;
 		
-		log.trace ("Exiting considerUnitMovement_Purify = " + decision);
 		return decision;
 	}
 
@@ -804,8 +768,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	public final AIMovementDecision considerUnitMovement_MeldWithNode (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances,
 		final List<MapCoordinates3DEx> nodeCaptureLocations, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_MeldWithNode");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		// If we have no nodes to capture, then nothing to do
@@ -857,7 +819,6 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 			}
 		}
 		
-		log.trace ("Exiting considerUnitMovement_MeldWithNode = " + decision);
 		return decision;
 	}
 	
@@ -872,15 +833,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	@Override
 	public final AIMovementDecision considerUnitMovement_CarryUnits (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_CarryUnits");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		log.warn ("AI movement code CARRY_UNITS is not yet implemented");
 		
 		final AIMovementDecision decision = null;
 		
-		log.trace ("Exiting considerUnitMovement_CarryUnits = " + decision);
 		return decision;
 	}
 	
@@ -895,15 +853,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	@Override
 	public final AIMovementDecision considerUnitMovement_LoadUnits (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_LoadUnits");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		log.warn ("AI movement code LOAD_UNITS is not yet implemented");
 		
 		final AIMovementDecision decision = null;
 		
-		log.trace ("Exiting considerUnitMovement_LoadUnits = " + decision);
 		return decision;
 	}
 	
@@ -919,15 +874,12 @@ public final class UnitAIMovementImpl implements UnitAIMovement
 	@Override
 	public final AIMovementDecision considerUnitMovement_FortressIsland (final AIUnitsAndRatings units, final int [] [] [] doubleMovementDistances, final CoordinateSystem sys)
 	{
-		log.trace ("Entering considerUnitMovement_FortressIsland");
-
 		final MapCoordinates3DEx currentLocation = (MapCoordinates3DEx) units.get (0).getUnit ().getUnitLocation ();
 		
 		log.warn ("AI movement code FORTRESS_ISLAND is not yet implemented");
 		
 		final AIMovementDecision decision = null;
 		
-		log.trace ("Exiting considerUnitMovement_FortressIsland = " + decision);
 		return decision;
 	}
 	

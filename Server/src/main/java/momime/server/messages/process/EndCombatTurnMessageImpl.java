@@ -43,8 +43,6 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering process: " + getCombatLocation ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -54,8 +52,6 @@ public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage impleme
 			log.warn ("Received EndCombatTurnMessage from wrong player - ignored");
 		else
 			getCombatProcessing ().progressCombat ((MapCoordinates3DEx) getCombatLocation (), false, false, mom);
-
-		log.trace ("Exiting process");
 	}
 
 	/**

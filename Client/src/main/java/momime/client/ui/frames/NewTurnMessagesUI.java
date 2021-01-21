@@ -70,8 +70,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/background.png");
 		final BufferedImage roller = getUtils ().loadImage ("/momime.client.graphics/ui/scroll/position3-0.png");
@@ -209,8 +207,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 				0, 0, 9, 10, 6, 14, roller.getHeight () - 14, roller.getHeight () - 6, roller.getHeight () - 10, roller.getHeight () - 9, roller.getHeight (), roller.getHeight ()},
 					
 			68));
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -219,16 +215,12 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		// This can be called before the screen has ever been used
 		if (newTurnMessagesList != null)
 		{
 			getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getNewTurnMessages ().getTitle ()));
 			newTurnMessagesList.repaint ();
 		}
-		
-		log.trace ("Exiting languageChanged");
 	}	
 
 	/**
@@ -237,8 +229,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	 */
 	public final void setNewTurnMessages (final List<NewTurnMessageUI> msgs) throws IOException
 	{
-		log.trace ("Entering setNewTurnMessages: " + msgs.size ());
-
 		// Clear out the old messages and repaint triggers
 		if (newTurnMessagesList != null)
 			getAnim ().unregisterRepaintTrigger (null, newTurnMessagesList);
@@ -254,8 +244,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 			if ((newTurnMessagesList != null) && (msg instanceof NewTurnMessageAnimated))
 				((NewTurnMessageAnimated) msg).registerRepaintTriggers (newTurnMessagesList);
 		}
-		
-		log.trace ("Exiting setNewTurnMessages");
 	}
 
 	/**
@@ -265,8 +253,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	 */
 	public final void cityDataChanged (final MapCoordinates3DEx cityLocation) throws IOException
 	{
-		log.trace ("Entering cityDataChanged: " + cityLocation);
-
 		boolean repaint = false;
 		
 		final Enumeration<NewTurnMessageUI> msgs = newTurnMessages.elements ();
@@ -284,8 +270,6 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		
 		if (repaint)
 			newTurnMessagesList.repaint ();
-
-		log.trace ("Exiting cityDataChanged");
 	}
 	
 	/**

@@ -127,8 +127,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final String getUnitName (final AvailableUnit unit, final UnitNameType unitNameType) throws RecordNotFoundException
 	{
-		log.trace ("Entering getUnitName: " + unit.getUnitID () + ", " + unitNameType);
-		
 		final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "getUnitName");
 		
 		// Heroes just output their name for all unitNameTypes, so in that case we don't need to look up anything at all
@@ -182,7 +180,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}
 		}
 		
-		log.trace ("Exiting getUnitName = " + unitName);
 		return unitName;
 	}
 	
@@ -203,8 +200,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final BufferedImage getUnitSkillComponentBreakdownIcon (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException
 	{
-		log.trace ("Entering getUnitSkillComponentBreakdownIcon: " + unit.getUnitID () + ", " + unitSkillID);
-		
 		final String skillImageName;
 		if (unitSkillID.equals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK))
 		{
@@ -237,8 +232,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		}
 		
 		final BufferedImage skillImage = (skillImageName == null) ? null : getUtils ().loadImage (skillImageName);
-		
-		log.trace ("Exiting getUnitSkillComponentBreakdownIcon = " + skillImage);
 		return skillImage;
 	}
 	
@@ -258,8 +251,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final BufferedImage getUnitSkillSingleIcon (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException
 	{
-		log.trace ("Entering getUnitSkillSingleIcon: " + unit.getUnitID () + ", " + unitSkillID);
-		
 		final String image;
 		if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE))
 		{
@@ -278,8 +269,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		}
 
 		final BufferedImage skillImage = (image == null) ? null : getUtils ().loadImage (image);
-		
-		log.trace ("Exiting getUnitSkillSingleIcon = " + skillImage);
 		return skillImage;
 	}
 
@@ -295,8 +284,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final void killUnit (final MemoryUnit unit, final UnitStatusID newStatus) throws IOException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering killUnit: Unit URN " + unit.getUnitURN () + ", " + newStatus);
-
 		// Even if not actually freeing the unit, we still need to eliminate all references to it, except for it being in the main unit list
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (getClient ().getOurPersistentPlayerPrivateKnowledge ().getPendingMovement (), unit.getUnitURN ());
 		getUnitUtils ().beforeKillingUnit (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unit.getUnitURN ());	// Removes spells cast on unit
@@ -356,8 +343,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			// If it was our unit dying in combat, jump to next unit to move
 			getCombatMapProcessing ().selectNextUnitToMoveCombat ();
 		}
-		
-		log.trace ("Exiting killUnit");
 	}
 	
 	/**
@@ -373,13 +358,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final void registerUnitFiguresAnimation (final String unitID, final String combatActionID, final int direction, final JComponent component) throws IOException
 	{
-		log.trace ("Entering registerUnitFiguresAnimation: " + unitID + ", " + combatActionID + ", " + direction + ", " + component);
-		
 		final UnitEx unit = getClient ().getClientDB ().findUnit (unitID, "registerUnitFiguresAnimation");
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "registerUnitFiguresAnimation").findDirection (direction, "registerUnitFiguresAnimation");
 		getAnim ().registerRepaintTrigger (unitImage.getUnitCombatAnimation (), component, AnimationContainer.COMMON_XML);
-
-		log.trace ("Exiting registerUnitFiguresAnimation");
 	}
 
 	/**
@@ -396,13 +377,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final void unregisterUnitFiguresAnimation (final String unitID, final String combatActionID, final int direction, final JComponent component) throws IOException
 	{
-		log.trace ("Entering unregisterUnitFiguresAnimation: " + unitID + ", " + combatActionID + ", " + direction + ", " + component);
-
 		final UnitEx unit = getClient ().getClientDB ().findUnit (unitID, "unregisterUnitFiguresAnimation");
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "unregisterUnitFiguresAnimation").findDirection (direction, "unregisterUnitFiguresAnimation");
 		getAnim ().unregisterRepaintTrigger (unitImage.getUnitCombatAnimation (), component);
-		
-		log.trace ("Exiting unregisterUnitFiguresAnimation");
 	}
 
 	/**
@@ -546,8 +523,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final void playCombatActionSound (final AvailableUnit unit, final String combatActionID) throws RecordNotFoundException
 	{
-		log.trace ("Entering playCombatActionSound: " + unit.getUnitID () + ", " + combatActionID);
-		
 		// See if there's a specific override sound specified for this unit.
 		// This so earth elementals make a stomp stomp noise, cavalry go clippity clop and regular swordsmen go clank clank, even though they're all just doing the WALK action.
 		final String soundEffectFilename;
@@ -572,8 +547,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			{
 				log.error (e, e);
 			}
-		
-		log.trace ("Exiting playCombatActionSound");
 	}
 	
 	/**
@@ -585,8 +558,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	@Override
 	public final BufferedImage generateAttributeImage (final ExpandedUnitDetails unit, final String unitSkillID) throws IOException
 	{
-		log.trace ("Entering generateAttributeImage: " + unit.getUnitID () + ", " + unitSkillID);
-
 		// If the unit doesn't even have the skill, then just return a null image.
 		// Also if it is a value-less skill like a movement skill then there's nothing to draw.
 		// If they DID have the skill but something is zeroing it out, then DO display the greyed out icons
@@ -669,7 +640,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			}
 		}
 		
-		log.trace ("Exiting generateAttributeImage: " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
 		return image;
 	}
 	

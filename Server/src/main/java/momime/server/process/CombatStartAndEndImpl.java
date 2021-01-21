@@ -152,8 +152,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		final PendingMovement attackerPendingMovement, final PendingMovement defenderPendingMovement, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering startCombat: " + defendingLocation + ", " + attackingFrom);
-		
 		// If attacking a tower in Myrror, then Defending-AttackingFrom will be 0-1
 		// If attacking from a tower onto Myrror, then Defending-AttackingFrom will be 1-0 - both of these should be shown on Myrror only
 		// Any tower combats to/from Arcanus will be 0-0, and should appear on Arcanus only
@@ -247,8 +245,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			// Kick off first turn of combat
 			getCombatProcessing ().progressCombat (combatLocation, true, false, mom);
 		}
-
-		log.trace ("Exiting startCombat");
 	}
 	
 	/**
@@ -275,8 +271,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		final CaptureCityDecisionID captureCityDecision, final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering combatEnded: " + combatLocation);
-		
 		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 		
@@ -563,8 +557,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				}
 			}
 		}
-		
-		log.trace ("Exiting combatEnded");
 	}
 	
 	/**

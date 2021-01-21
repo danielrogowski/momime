@@ -3,9 +3,6 @@ package momime.server.utils;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.common.MomException;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.AvailableUnit;
@@ -19,9 +16,6 @@ import momime.common.messages.AvailableUnit;
  */
 public final class UnitSkillDirectAccessImpl implements UnitSkillDirectAccess
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitSkillDirectAccessImpl.class);
-	
 	/**
 	 * @param skills List of unit skills to check; this can either be the unmodified list read straight from unit.getUnitHasSkill () or UnitHasSkillMergedList
 	 * @param unitSkillID Unique identifier for this skill
@@ -58,8 +52,6 @@ public final class UnitSkillDirectAccessImpl implements UnitSkillDirectAccess
 	public final void setDirectSkillValue (final AvailableUnit unit, final String unitSkillID, final int skillValue)
 		throws MomException
 	{
-		log.trace ("Entering setDirectSkillValue: " + unit.getUnitID () + ", " + unitSkillID + ", " + skillValue);
-
 		boolean found = false;
 		final Iterator<UnitSkillAndValue> iter = unit.getUnitHasSkill ().iterator ();
 
@@ -75,7 +67,5 @@ public final class UnitSkillDirectAccessImpl implements UnitSkillDirectAccess
 
 		if (!found)
 			throw new MomException ("setDirectSkillValue: Unit " + unit.getUnitID () + " does not have skill " + unitSkillID + " and so cannot set its value to " + skillValue);
-
-		log.trace ("Exiting setDirectSkillValue");
 	}
 }

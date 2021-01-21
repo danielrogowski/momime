@@ -3,29 +3,23 @@ package momime.server.messages.process;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.common.MomException;
-import momime.common.database.RecordNotFoundException;
-import momime.common.messages.clienttoserver.ChatMessage;
-import momime.common.messages.servertoclient.BroadcastChatMessage;
-import momime.server.MomSessionVariables;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
+import momime.common.MomException;
+import momime.common.database.RecordNotFoundException;
+import momime.common.messages.clienttoserver.ChatMessage;
+import momime.common.messages.servertoclient.BroadcastChatMessage;
+import momime.server.MomSessionVariables;
+
 /**
  * Client sends to server to send a chat message to other players
  */
 public final class ChatMessageImpl extends ChatMessage implements PostSessionClientToServerMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChatMessageImpl.class);
-
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
@@ -42,8 +36,6 @@ public final class ChatMessageImpl extends ChatMessage implements PostSessionCli
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final BroadcastChatMessage msg = new BroadcastChatMessage ();
@@ -51,8 +43,6 @@ public final class ChatMessageImpl extends ChatMessage implements PostSessionCli
 		msg.setText (getText ());
 		
 		getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
-
-		log.trace ("Exiting process");
 	}
 
 	/**

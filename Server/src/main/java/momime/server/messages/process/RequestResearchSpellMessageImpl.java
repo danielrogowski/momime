@@ -50,8 +50,6 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getSpellID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) sender.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
@@ -98,8 +96,6 @@ public final class RequestResearchSpellMessageImpl extends RequestResearchSpellM
 			msg.setSpellID (getSpellID ());
 			sender.getConnection ().sendMessageToClient (msg);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

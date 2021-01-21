@@ -150,8 +150,6 @@ public final class HeroItemsUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/heroItems/background.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button118x30Normal.png");
@@ -587,8 +585,6 @@ public final class HeroItemsUI extends MomClientFrameUI
 		
 		// Shortcut keys
 		contentPane.getActionMap ().put (Shortcut.ALCHEMY, alchemyAction);
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -597,8 +593,6 @@ public final class HeroItemsUI extends MomClientFrameUI
 	 */
 	public final void refreshHeroes () throws RecordNotFoundException
 	{
-		log.trace ("Entering refreshHeroes");
-
 		if (heroesTableModel != null)
 		{
 			heroesTableModel.getUnits ().clear ();
@@ -611,8 +605,6 @@ public final class HeroItemsUI extends MomClientFrameUI
 			
 			heroesTableModel.fireTableDataChanged ();
 		}
-		
-		log.trace ("Exiting refreshHeroes");
 	}
 	
 	/**
@@ -620,16 +612,12 @@ public final class HeroItemsUI extends MomClientFrameUI
 	 */
 	public final void refreshItemsBank ()
 	{
-		log.trace ("Entering refreshItemsBank");
-
 		if (bankItems != null)
 		{
 			bankItems.clear ();
 			for (final NumberedHeroItem item : getClient ().getOurPersistentPlayerPrivateKnowledge ().getUnassignedHeroItem ())
 				bankItems.addElement (item);
 		}
-		
-		log.trace ("Exiting refreshItemsBank");
 	}
 	
 	/**
@@ -663,12 +651,8 @@ public final class HeroItemsUI extends MomClientFrameUI
 	 */
 	public final void updateGlobalEconomyValues ()
 	{
-		log.trace ("Entering updateGlobalEconomyValues");
-		
 		updateAmountStored (goldAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 		updateAmountStored (manaAmountStored, CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		
-		log.trace ("Exiting updateGlobalEconomyValues");
 	}
 	
 	/**
@@ -677,8 +661,6 @@ public final class HeroItemsUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getHeroItemsScreen ().getTitle ()));
 		bankTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getHeroItemsScreen ().getBank ()));
 
@@ -691,8 +673,6 @@ public final class HeroItemsUI extends MomClientFrameUI
 		
 		// GP or MP suffix may have changed
 		updateGlobalEconomyValues ();
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

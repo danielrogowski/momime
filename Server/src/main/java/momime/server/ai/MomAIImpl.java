@@ -90,8 +90,6 @@ public final class MomAIImpl implements MomAI
 	public final boolean aiPlayerTurn (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering aiPlayerTurn: Player ID " + player.getPlayerDescription ().getPlayerID () + ", turn " + mom.getGeneralPublicKnowledge ().getTurnNumber ());
-
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -360,8 +358,6 @@ public final class MomAIImpl implements MomAI
 		}
 
 		final boolean aiTurnCompleted = !combatStarted;
-		
-		log.trace ("Exiting aiPlayerTurn = " + aiTurnCompleted);
 		return aiTurnCompleted;
 	}
 	
@@ -370,8 +366,6 @@ public final class MomAIImpl implements MomAI
 	 */
 	final void considerAlchemy (final PlayerServerDetails player)
 	{
-		log.trace ("Entering considerAlchemy: Player ID " + player.getPlayerDescription ().getPlayerID ());
-	
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		// Want 10x casting skill in MP
@@ -409,8 +403,6 @@ public final class MomAIImpl implements MomAI
 				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, manaToConvert);
 			}
 		}
-		
-		log.trace ("Exiting considerAlchemy");
 	}
 
 	/**

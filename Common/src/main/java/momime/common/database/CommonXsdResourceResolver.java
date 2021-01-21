@@ -39,9 +39,6 @@ public class CommonXsdResourceResolver extends MultiplayerSessionXsdResourceReso
 	@Override
 	protected InputStream resolveResourceToStream (final String type, final String namespaceURI, final String publicId, final String systemId, final String baseURI)
 	{
-		log.trace ("Entering resolveResourceToStream: " +
-			type + ", " + namespaceURI + ", " + publicId + ", " + systemId + ", " + baseURI);
-
 		final InputStream result;
 
 		// Map XSD
@@ -88,7 +85,6 @@ public class CommonXsdResourceResolver extends MultiplayerSessionXsdResourceReso
 		else
 			result = super.resolveResourceToStream (type, namespaceURI, publicId, systemId, baseURI);
 
-		log.trace ("Exiting resolveResourceToStream: " + result);
 		return result;
 	}
 }

@@ -3,9 +3,6 @@ package momime.common.database;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.swing.NdgUIUtils;
 
 import momime.common.MomException;
@@ -15,9 +12,6 @@ import momime.common.MomException;
  */
 public final class AnimationEx extends Animation
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AnimationEx.class);
-	
 	/** All frames of an animation must share the same width (these aren't private because a unit test sets them) */
 	private int animationWidth;
 	
@@ -33,8 +27,6 @@ public final class AnimationEx extends Animation
 	 */
 	public final void deriveAnimationWidthAndHeight () throws IOException
 	{
-		log.trace ("Entering deriveAnimationWidthAndHeight: " + getAnimationID ());
-		
 		// Animations must be non-empty
 		if (getFrame ().size () == 0)
 			throw new MomException ("Animation " + getAnimationID () + " has 0 frames");
@@ -54,8 +46,6 @@ public final class AnimationEx extends Animation
 				throw new MomException ("Frames of animation " + getAnimationID () + " are not consistent sizes (some are " +
 					getAnimationWidth () + "x" + getAnimationHeight () + " and some are " + image.getWidth () + "x" + image.getHeight () + ")");
 		}
-		
-		log.trace ("Exiting deriveAnimationWidthAndHeight = " + animationWidth + "x" + animationHeight);
 	}
 	
 	/**

@@ -113,8 +113,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	public final void processSimultaneousTurnsMovement (final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering processSimultaneousTurnsMovement");
-
 		// Process non combat moves
 		while (findAndProcessOneCellPendingMovement (mom));
 
@@ -182,8 +180,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			// End this turn and start the next one
 			getPlayerMessageProcessing ().endPhase (mom, 0);
 		}
-		
-		log.trace ("Exiting processSimultaneousTurnsMovement");
 	}
 	
 	/**
@@ -202,8 +198,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	final boolean findAndProcessOneCellPendingMovement (final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering findAndProcessOneCellPendingMovement");
-
 		// Go through all pending movements for all players
 		final List<OneCellPendingMovement> moves = new ArrayList<OneCellPendingMovement> ();
 		for (final PlayerServerDetails player : mom.getPlayers ())
@@ -289,7 +283,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				oneCell.getPendingMovement ().setMoveFrom (oneCell.getOneStep ());
 		}
 		
-		log.trace ("Exiting findAndProcessOneCellPendingMovement = " + found);
 		return found;
 	}
 
@@ -308,8 +301,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	final boolean findAndProcessOneCombat (final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering findAndProcessOneCombat");
-
 		// Go through all pending movements for all players
 		final List<OneCellPendingMovement> combats = new ArrayList<OneCellPendingMovement> ();
 		for (final PlayerServerDetails player : mom.getPlayers ())
@@ -438,7 +429,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			}
 		}
 		
-		log.trace ("Exiting findAndProcessOneCombat = " + found);
 		return found;
 	}
 	
@@ -456,8 +446,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 	public final void processSpecialOrders (final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		log.trace ("Entering processSpecialOrders");
-		
 		// Dismiss units with pending dismiss orders.
 		// Regular units are killed outright, heroes are killed outright on the clients but return to 'Generated' status on the server.
 		final List<MemoryUnit> dismisses = getUnitServerUtils ().listUnitsWithSpecialOrder (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), UnitSpecialOrder.DISMISS);
@@ -585,8 +573,6 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 			}			
 		}
-		
-		log.trace ("Exiting processSpecialOrders");
 	}
 
 	/**

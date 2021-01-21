@@ -3,9 +3,6 @@ package momime.server.ai;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -28,9 +25,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class AIUnitCalculationsImpl implements AIUnitCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AIUnitCalculationsImpl.class);
-	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -50,8 +44,6 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	@Override
 	public final AIUnitType determineAIUnitType (final ExpandedUnitDetails xu)
 	{
-		log.trace ("Entering determineAIUnitType: " + xu);
-		
 		final AIUnitType aiUnitType;
 		
 		if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST))
@@ -72,7 +64,6 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 		else
 			aiUnitType = AIUnitType.COMBAT_UNIT;
 
-		log.trace ("Exiting determineAIUnitType = " + aiUnitType);
 		return aiUnitType;
 	}
 
@@ -91,11 +82,7 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	public final int calculateUnitAverageRating (final AvailableUnit unit, final ExpandedUnitDetails xu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering calculateUnitAverageRating: " + unit.getUnitID () + " owned by player ID " + unit.getOwningPlayerID ());
-		
 		final int rating = (getAiUnitRatingCalculations ().calculateUnitCurrentRating (unit, xu, players, mem, db) + getAiUnitRatingCalculations ().calculateUnitPotentialRating (unit, players, mem, db)) / 2;
-
-		log.trace ("Exiting calculateUnitAverageRating = " + rating);
 		return rating;
 	}
 	
@@ -114,8 +101,6 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 	public final boolean canAffordUnitMaintenance (final PlayerServerDetails player, final List<PlayerServerDetails> players, final AvailableUnit unit,
 		final SpellSetting spellSettings, final CommonDatabase db) throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering canAffordUnitMaintenance: " + unit.getUnitID () + " owned by player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
@@ -144,7 +129,6 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 			}
 		}
 		
-		log.trace ("Exiting canAffordUnitMaintenance = " + ok);
 		return ok;
 	}
 

@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 
@@ -30,9 +27,6 @@ import momime.common.utils.CombatMapUtils;
  */
 public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenerator
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (CombatMapBitmapGeneratorImpl.class);
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -60,8 +54,6 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	@Override
 	public final void afterJoinedSession ()
 	{
-		log.trace ("Entering afterJoinedSession");
-
 		smoothedTiles = new HashMap<CombatMapLayerID, SmoothedTile [] []> ();
 		smoothedTileTypes = new HashMap<CombatMapLayerID, SmoothedTileTypeEx [] []> ();
 		
@@ -71,8 +63,6 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 			smoothedTiles.put (layer, new SmoothedTile [mapSize.getHeight ()] [mapSize.getWidth ()]);
 			smoothedTileTypes.put (layer, new SmoothedTileTypeEx [mapSize.getHeight ()] [mapSize.getWidth ()]);
 		}
-
-		log.trace ("Exiting afterJoinedSession");
 	}	
 	
 	/**
@@ -85,8 +75,6 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	@Override
 	public final void smoothMapTerrain (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatTerrain) throws RecordNotFoundException
 	{
-		log.trace ("Entering smoothMapTerrain");
-
 		// What kind of terrain are we generating images for
 		final String tileTypeID = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ()).getTerrainData ().getTileTypeID ();
@@ -124,8 +112,6 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 					}
 				}
 		}
-		
-		log.trace ("Exiting smoothMapTerrain");
 	}
 
 	/**
@@ -141,8 +127,6 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 	@Override
 	public final BufferedImage [] generateCombatMapBitmaps (final MapAreaOfCombatTiles combatTerrain) throws IOException
 	{
-		log.trace ("Entering generateCombatMapBitmaps");
-
 		final CombatMapSize mapSize = getClient ().getSessionDescription ().getCombatMapSize ();
 		
 		// We need the tile set so we know how many animation frames there are
@@ -233,7 +217,6 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 		for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 			g [frameNo].dispose ();
 		
-		log.trace ("Exiting generateCombatMapBitmaps");
 		return combatMapBitmaps;
 	}
 	

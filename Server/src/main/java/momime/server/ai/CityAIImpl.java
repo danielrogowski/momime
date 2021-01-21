@@ -110,8 +110,6 @@ public final class CityAIImpl implements CityAI
 		final MapVolumeOfMemoryGridCells knownMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering evaluateCityQuality: " + cityLocation);
-		
 		Integer thisCityQuality;
 		
 		final CityProductionBreakdownsEx productions = getCityCalculations ().calculateAllCityProductions (null, knownMap, null, cityLocation, null, sd, false, true, db);
@@ -159,7 +157,6 @@ public final class CityAIImpl implements CityAI
 			}
 		}
 		
-		log.trace ("Exiting evaluateCityQuality = " + thisCityQuality);
 		return thisCityQuality;
 	}
 	
@@ -184,8 +181,6 @@ public final class CityAIImpl implements CityAI
 		final int plane, final boolean avoidOtherCities, final MomSessionDescription sd, final CommonDatabase db, final String purpose)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering chooseCityLocation: " + plane);
-
 		// Mark off all places within 3 squares of an existing city, i.e. those spaces we can't put a new city
 		final MapArea2D<Boolean> withinExistingCityRadius = getCityCalculations ().markWithinExistingCityRadius (trueMap, knownMap, plane, sd.getOverlandMapSize ());
 
@@ -222,8 +217,6 @@ public final class CityAIImpl implements CityAI
 			}
 		
 		log.debug ("AI chose city location " + bestLocation + " with quality " + bestCityQuality + " for " + purpose);
-
-		log.trace ("Exiting chooseCityLocation = " + bestLocation);
 		return bestLocation;
 	}
 
@@ -244,8 +237,6 @@ public final class CityAIImpl implements CityAI
 		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering findWorkersToConvertToFarmers: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + tradeGoods);
-
 		// Build a list of all the workers, by finding all the cities and adding the coordinates of the city to the list the number
 		// of times for how many workers there are in the city that we could convert to farmers
 		final List<MapCoordinates3DEx> workerCoordinates = new ArrayList<MapCoordinates3DEx> ();
@@ -286,7 +277,6 @@ public final class CityAIImpl implements CityAI
 			modifiedDoubleRationsNeeded = modifiedDoubleRationsNeeded - getServerCityCalculations ().calculateDoubleFarmingRate (trueMap.getMap (), trueMap.getBuilding (), cityLocation, db);
 		}
 
-		log.trace ("Exiting findWorkersToConvertToFarmers = " + modifiedDoubleRationsNeeded);
 		return modifiedDoubleRationsNeeded;
 	}
 
@@ -309,8 +299,6 @@ public final class CityAIImpl implements CityAI
 		final PlayerServerDetails player, final CommonDatabase db, final MomSessionDescription sd)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering setOptionalFarmersInAllCities: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
 		// First find how many rations our current army needs
@@ -374,8 +362,6 @@ public final class CityAIImpl implements CityAI
 						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCity (trueMap.getMap (), players, cityLocation, sd.getFogOfWarSetting ());
 					}
 				}
-
-		log.trace ("Exiting setOptionalFarmersInAllCities");
 	}
 
 	/**
@@ -401,7 +387,6 @@ public final class CityAIImpl implements CityAI
 		final List<AIUnitType> wantedUnitTypes, final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering decideWhatToBuild: " + cityLocation);
 		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " deciding what to construct in " + (isUnitFactory ? "unit factory " : "city ") + cityLocation +
 			(isUnitFactory ? ", needMod = " + needForNewUnitsMod : ""));
 		
@@ -555,8 +540,6 @@ public final class CityAIImpl implements CityAI
 
 		log.debug ("AI Player ID " + cityData.getCityOwnerID () + " set city at " + cityLocation + " to construct " +
 			cityData.getCurrentlyConstructingBuildingID () + "/" + cityData.getCurrentlyConstructingUnitID ());
-		
-		log.trace ("Exiting decideWhatToBuild = " + cityData.getCurrentlyConstructingBuildingID () + ", " + cityData.getCurrentlyConstructingUnitID ()); 
 	}
 	
 	/**
@@ -574,8 +557,6 @@ public final class CityAIImpl implements CityAI
 		final MapVolumeOfMemoryGridCells knownTerrain, final List<MemoryBuilding> knownBuildings,
 		 final MomSessionDescription sd, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering tryToConstructBuildingOfType: " + cityLocation + ", " + buildingType);
-		
 		boolean decided = false;
 
 		// List out all buildings, except those that:
@@ -623,7 +604,6 @@ public final class CityAIImpl implements CityAI
 			}
 		}
 		
-		log.trace ("Exiting tryToConstructBuildingOfType = " + decided);
 		return decided;
 	}
 	
@@ -642,8 +622,6 @@ public final class CityAIImpl implements CityAI
 	public final void decideTaxRate (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering decideTaxRate: AI Player ID " + player.getPlayerDescription ().getPlayerID ());
-		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		String bestTaxRateID = null;
@@ -683,8 +661,6 @@ public final class CityAIImpl implements CityAI
 			log.debug ("AI player ID " + player.getPlayerDescription () + " choosing tax rate ID " + bestTaxRateID);
 			getCityProcessing ().changeTaxRate (player, bestTaxRateID, mom);
 		}
-		
-		log.trace ("Exiting decideTaxRate");
 	}
 	
 	/**
@@ -702,8 +678,6 @@ public final class CityAIImpl implements CityAI
 	public final void checkForRushBuying (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering checkForRushBuying: AI Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		final int goldPerTurn = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
@@ -783,8 +757,6 @@ public final class CityAIImpl implements CityAI
 					mom.getPlayers (), bestCityLocation, mom.getSessionDescription ().getFogOfWarSetting ());
 			}
 		}
-		
-		log.trace ("Exiting checkForRushBuying");
 	}
 	
 	/**
@@ -797,8 +769,6 @@ public final class CityAIImpl implements CityAI
 	@Override
 	public final List<MapCoordinates2DEx> listOurCitiesOnPlane (final int playerID, final int plane, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
 	{
-		log.trace ("Entering listOurCitiesOnPlane: AI Player ID " + playerID);
-		
 		final List<MapCoordinates2DEx> list = new ArrayList<MapCoordinates2DEx> ();
 
 		for (int y = 0; y < sys.getHeight (); y++)
@@ -809,7 +779,6 @@ public final class CityAIImpl implements CityAI
 					list.add (new MapCoordinates2DEx (x, y));
 			}
 		
-		log.trace ("Exiting listOurCitiesOnPlane = " + list.size ());
 		return list;
 	}
 	
@@ -823,8 +792,6 @@ public final class CityAIImpl implements CityAI
 	@Override
 	public final int findDistanceToClosestCity (final int x, final int y, final List<MapCoordinates2DEx> ourCitiesOnPlane, final CoordinateSystem sys)
 	{
-		log.trace ("Entering findDistanceToClosestCity: " + x + ", " + y);
-		
 		Integer closestDistance = null;
 		for (final MapCoordinates2DEx cityLocation : ourCitiesOnPlane)
 		{
@@ -833,7 +800,6 @@ public final class CityAIImpl implements CityAI
 				closestDistance = thisDistance;
 		}
 		
-		log.trace ("Exiting findDistanceToClosestCity = " + closestDistance);
 		return (closestDistance == null) ? 0 : closestDistance;
 	}
 

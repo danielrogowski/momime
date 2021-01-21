@@ -104,8 +104,6 @@ public final class AlchemyUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/alchemy/background.png");
 		final BufferedImage goldToManaButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/alchemy/goldToManaButtonNormal.png");
@@ -268,8 +266,6 @@ public final class AlchemyUI extends MomClientFrameUI
 			(new int [] {0, TL_CORNER, background.getWidth () - BR_CORNER, background.getWidth () , background.getWidth () , background.getWidth () - BR_CORNER, TL_CORNER, 0},
 			new int [] {TL_CORNER, 0, 0, TL_CORNER, background.getHeight () - BR_CORNER, background.getHeight () , background.getHeight () , background.getHeight () - BR_CORNER},
 			8));		
-		
-		log.trace ("Exiting init");
 	}		
 
 	/**
@@ -278,16 +274,12 @@ public final class AlchemyUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getAlchemyScreen ().getTitle ()));
 		
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 		cancelAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 		
 		directionChanged ();
-
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**
@@ -295,8 +287,6 @@ public final class AlchemyUI extends MomClientFrameUI
 	 */
 	private final void directionChanged ()
 	{
-		log.trace ("Entering directionChanged: " + fromProductionTypeID + " -> " + toProductionTypeID);
-		
 		try
 		{
 			final String fromProductionType = getLanguageHolder ().findDescription
@@ -314,8 +304,6 @@ public final class AlchemyUI extends MomClientFrameUI
 		}
 
 		updateSliderMaximum ();
-
-		log.trace ("Exiting directionChanged");
 	}
 	
 	/**
@@ -326,8 +314,6 @@ public final class AlchemyUI extends MomClientFrameUI
 	 */
 	public final void updateSliderMaximum ()
 	{
-		log.trace ("Entering updateSliderMaximum: " + fromProductionTypeID + " -> " + toProductionTypeID);
-
 		// This often gets called before we've ever used the screen and so before the controls exist
 		if (slider != null)
 		{		
@@ -357,8 +343,6 @@ public final class AlchemyUI extends MomClientFrameUI
 			// Update slider labels accordingly
 			sliderPositionChanged ();
 		}
-		
-		log.trace ("Exiting updateSliderMaximum");
 	}
 	
 	/**
@@ -366,8 +350,6 @@ public final class AlchemyUI extends MomClientFrameUI
 	 */
 	public final void sliderPositionChanged ()
 	{
-		log.trace ("Entering sliderPositionChanged");
-		
 		try
 		{
 			// First get the two numbers
@@ -415,8 +397,6 @@ public final class AlchemyUI extends MomClientFrameUI
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting sliderPositionChanged");
 	}
 
 	/**

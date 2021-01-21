@@ -68,11 +68,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering calculateCastingCostReduction: " + bookCount + ", " +
-			spellSettings.getSpellBooksToObtainFirstReduction () + ", " + spellSettings.getSpellBooksCastingReduction () + ", " +
-			spellSettings.getSpellBooksCastingReductionCombination () + ", " + spellSettings.getSpellBooksCastingReductionCap () + ", " +
-			((spell == null) ? null : spell.getSpellID ()) + ", " + ((picks == null) ? null : picks.toString ()));
-
 		// How many books do we have that will give a bonus?
 		final int booksThatGiveReduction = Math.max (bookCount - spellSettings.getSpellBooksToObtainFirstReduction () + 1, 0);
 
@@ -167,7 +162,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 		else
 			log.debug ("Final casting cost reduction = " + DECIMAL_FORMATTER.format (castingCostPercentageReduction) + "%");
 
-		log.trace ("Exiting calculateCastingCostReduction = " + castingCostPercentageReduction);
 		return castingCostPercentageReduction;
 	}
 
@@ -190,11 +184,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 		final List<PlayerPick> picks, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering calculateResearchBonus: " + bookCount + ", " +
-			spellSettings.getSpellBooksToObtainFirstReduction () + ", " + spellSettings.getSpellBooksResearchBonus () + ", " +
-			spellSettings.getSpellBooksResearchBonusCombination () + ", " + spellSettings.getSpellBooksResearchBonusCap () + ", " +
-			((spell == null) ? null : spell.getSpellID ()) + ", " + ((picks == null) ? null : picks.toString ()));
-
 		// How many books do we have that will give a bonus?
 		final int booksThatGiveBonus = Math.max (bookCount - spellSettings.getSpellBooksToObtainFirstReduction () + 1, 0);
 
@@ -284,7 +273,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 		else
 			log.debug ("Final research bonus = " + DECIMAL_FORMATTER.format (researchPercentageBonus) + "%");
 
-		log.trace ("Exiting calculateResearchBonus = " + researchPercentageBonus);
 		return researchPercentageBonus;
 	}
 
@@ -304,9 +292,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 	public final Integer calculateDoubleCombatCastingRangePenalty (final PlayerPublicDetails player, final MapCoordinates3DEx combatLocation,
 		final boolean allowEitherPlane, final MapVolumeOfMemoryGridCells map, final List<MemoryBuilding> buildings, final CoordinateSystem overlandMapCoordinateSystem)
 	{
-		log.trace ("Entering calculateDoubleCombatCastingRangePenalty: Player ID " +
-			player.getPlayerDescription ().getPlayerID () + ", " + combatLocation);
-			
 		// First need to find where the wizard's fortress is
 		Integer penalty;
 		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
@@ -338,7 +323,6 @@ public final class SpellCalculationsImpl implements SpellCalculations
 				penalty = 2;
 		}
 
-		log.trace ("Exiting calculateDoubleCombatCastingRangePenalty = " + penalty);
 		return penalty;
 	}
 	

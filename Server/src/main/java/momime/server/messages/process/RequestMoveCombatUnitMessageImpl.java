@@ -62,8 +62,6 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering process: Unit URN " + getUnitURN () + ", " + getMoveTo ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Find the unit being moved
@@ -125,8 +123,6 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 			// Proceed with move
 			getCombatProcessing ().okToMoveUnitInCombat (xu, (MapCoordinates2DEx) getMoveTo (), movementDirections, movementTypes, mom);
 		}
-		
-		log.trace ("Exiting process");
 	}
 
 	/**

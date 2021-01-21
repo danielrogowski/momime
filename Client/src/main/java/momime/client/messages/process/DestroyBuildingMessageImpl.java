@@ -44,14 +44,10 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Building URN " + getBuildingURN () + ", " + isUpdateBuildingSoldThisTurn ());
-		
 		processOneUpdate ();
 		
 		// Building may have been city walls and so affect the overland map view
 		getOverlandMapUI ().regenerateOverlandMapBitmaps ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**
@@ -60,8 +56,6 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 	 */
 	public final void processOneUpdate () throws RecordNotFoundException
 	{
-		log.trace ("Entering processOneUpdate: Building URN " + getBuildingURN () + ", " + isUpdateBuildingSoldThisTurn ());
-		
 		// Grab details about the building before we remove it
 		final MemoryBuilding building = getMemoryBuildingUtils ().findBuildingURN
 			(getBuildingURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), "DestroyBuildingMessageImpl");
@@ -98,8 +92,6 @@ public final class DestroyBuildingMessageImpl extends DestroyBuildingMessage imp
 			{
 				log.error (e, e);
 			}		
-		
-		log.trace ("Exiting processOneUpdate");
 	}
 	
 	/**

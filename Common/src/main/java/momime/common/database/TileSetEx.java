@@ -48,8 +48,6 @@ public final class TileSetEx extends TileSet
 	 */
 	public final void buildMaps () throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering buildMaps: " + getTileSetID ());
-		
 		// Have to do this in two passes, since we need all smoothing systems loaded before we can start loading smoothed tile types.
 		// i.e. one smoothing system may be shared by multiple tile types.
 		smoothingSystemsMap = getSmoothingSystems ().stream ().collect (Collectors.toMap (s -> s.getSmoothingSystemID (), s -> s));
@@ -61,7 +59,6 @@ public final class TileSetEx extends TileSet
 			tt.buildMap (findSmoothingSystem (tt.getSmoothingSystemID (), "buildMaps").getBitmasksMap ());
 		
 		log.info ("Processed all smoothing system rules for the " + getTileSetName () + " tile set");		
-		log.trace ("Exiting buildMaps");
 	}
 	
 	/**
@@ -74,8 +71,6 @@ public final class TileSetEx extends TileSet
 	 */
 	final void deriveAnimationFrameCountAndSpeed (final CommonDatabase db) throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering deriveAnimationFrameCountAndSpeed: " + getTileSetID ());
-		
 		for (final SmoothedTileType tt : getSmoothedTileType ())
 			for (final SmoothedTile tile : tt.getSmoothedTile ())
 				if (tile.getTileAnimation () != null)
@@ -106,7 +101,6 @@ public final class TileSetEx extends TileSet
 			animationFrameCount = 1;
 		
 		log.info (getTileSetName () + " tile set consistently has " + animationFrameCount + " frames at " + animationSpeed + " FPS");		
-		log.trace ("Exiting deriveAnimationFrameCountAndSpeed");
 	}
 	
 	/**
@@ -120,8 +114,6 @@ public final class TileSetEx extends TileSet
 	 */
 	final void deriveTileWidthAndHeight (final CommonDatabase db) throws IOException
 	{
-		log.trace ("Entering deriveTileWidthAndHeight: " + getTileSetID ());
-
 		boolean first = true;
 		
 		for (final SmoothedTileType tt : getSmoothedTileType ())
@@ -165,7 +157,6 @@ public final class TileSetEx extends TileSet
 						throw new MomException ("Tile set " + getTileSetID () + " includes a tile that neither includes an image filename or an animation ID");
 		
 		log.info (getTileSetName () + " tile set consistently has all tiles of size " + tileWidth + "x" + tileHeight);		
-		log.trace ("Exiting deriveTileWidthAndHeight");
 	}
 	
 	/**

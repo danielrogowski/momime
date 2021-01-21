@@ -52,8 +52,6 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering process: " + getCityLocation () + ", " + getOptionalFarmers ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = getCityServerUtils ().validateOptionalFarmers (sender, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
@@ -82,8 +80,6 @@ public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmer
 			// Tell the player how this will affect their global production
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

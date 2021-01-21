@@ -47,8 +47,6 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getPick ().size ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Validate the requested picks
@@ -97,8 +95,6 @@ public final class ChooseCustomPicksMessageImpl extends ChooseCustomPicksMessage
 			else
 				sender.getConnection ().sendMessageToClient (new ChooseYourRaceNowMessage ());
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

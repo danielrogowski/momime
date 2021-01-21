@@ -151,8 +151,6 @@ public final class ArmyListUI extends MomClientDialogUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/armyList.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button82x30goldBorderNormal.png");
@@ -315,8 +313,6 @@ public final class ArmyListUI extends MomClientDialogUI
 		
 		// Shortcut keys
 		contentPane.getActionMap ().put (Shortcut.HERO_ITEMS, heroItemsAction);
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -326,8 +322,6 @@ public final class ArmyListUI extends MomClientDialogUI
 	 */
 	public final void refreshArmyList (final MapCoordinates3DEx selectLocation) throws IOException
 	{
-		log.trace ("Entering refreshArmyList");
-		
 		if (unitStacksItems != null)
 		{
 			// Generate a map containing all of our units at every location on both planes,
@@ -422,8 +416,6 @@ public final class ArmyListUI extends MomClientDialogUI
 			final Integer rationsUpkeep = upkeepsMap.get (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 			rationsUpkeepLabel.setText ((rationsUpkeep == null) ? "" : getTextUtils ().intToStrCommas (rationsUpkeep));
 		}
-		
-		log.trace ("Ending refreshArmyList");
 	}
 
 	/**
@@ -432,8 +424,6 @@ public final class ArmyListUI extends MomClientDialogUI
 	 */
 	public final void regenerateMiniMapBitmaps () throws IOException
 	{
-		log.trace ("Entering regenerateMiniMapBitmaps");
-		
 		if ((unitStacksList != null) && (unitStacksList.getSelectedIndex () >= 0))
 		{
 			final MapCoordinates3DEx coords = unitStacksItems.get (unitStacksList.getSelectedIndex ()).getKey ();
@@ -459,8 +449,6 @@ public final class ArmyListUI extends MomClientDialogUI
 			miniMapBitmaps [1] = b;			
 			miniMapPanel.repaint ();
 		}
-		
-		log.trace ("Exiting regenerateMiniMapBitmaps");
 	}
 	
 	/**
@@ -469,8 +457,6 @@ public final class ArmyListUI extends MomClientDialogUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		// Title containing player name
 		String titleText = getLanguageHolder ().findDescription (getLanguages ().getArmyListScreen ().getTitle ());
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID ());
@@ -486,8 +472,6 @@ public final class ArmyListUI extends MomClientDialogUI
 		
 		// Shortcut keys
 		getLanguageHolder ().configureShortcutKeys (contentPane);
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

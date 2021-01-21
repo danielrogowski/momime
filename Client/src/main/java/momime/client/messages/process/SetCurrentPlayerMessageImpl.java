@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -28,9 +25,6 @@ import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
  */
 public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SetCurrentPlayerMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -66,8 +60,6 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Turn " + getTurnNumber () + ", player ID " + getCurrentPlayerID () + ", message count " + getMessage ().size () + ", expire? " + isExpireMessages ());
-		
 		// Even if we're just changing player, and not turn, update the turn number label anyway, because when loading a saved game
 		// it will appear that the turn number isn't changing, so we need to make sure the label gets set correctly then too.
 		getClient ().getGeneralPublicKnowledge ().setTurnNumber (getTurnNumber ());
@@ -105,8 +97,6 @@ public final class SetCurrentPlayerMessageImpl extends SetCurrentPlayerMessage i
 		
 		// This also sets whether the next turn button is visible or not
 		getOverlandMapProcessing ().updateMovementRemaining ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

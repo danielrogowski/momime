@@ -45,8 +45,6 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getRaceID ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = getPlayerPickServerUtils ().validateRaceChoice (sender, getRaceID (), mom.getServerDB ());
@@ -71,8 +69,6 @@ public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements Po
 			// If all players have chosen then start the game
 			getPlayerMessageProcessing ().checkIfCanStartGame (mom);
 		}
-
-		log.trace ("Exiting process");
 	}
 	
 	/**

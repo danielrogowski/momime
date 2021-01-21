@@ -15,9 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.sessionbase.BrowseSavePoints;
 import com.ndg.multiplayer.sessionbase.LoadGame;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
@@ -39,9 +36,6 @@ import momime.common.messages.MomSessionDescription;
  */
 public final class LoadGameUI extends MomClientFrameUI
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (LoadGameUI.class);
-
 	/** XML layout */
 	private XmlLayoutContainerEx joinGameLayout;
 
@@ -115,8 +109,6 @@ public final class LoadGameUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/sessionList.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button80x26goldNormal.png");
@@ -272,8 +264,6 @@ public final class LoadGameUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -282,8 +272,6 @@ public final class LoadGameUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getLoadGameScreen ().getTitle ()));
 		
 		deleteSavedGameAction.putValue	(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getLoadGameScreen ().getDeleteSavedGame ()));
@@ -293,7 +281,6 @@ public final class LoadGameUI extends MomClientFrameUI
 		cancelAction.putValue						(Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getCancel ()));
 
 		savedGamesTableModel.fireTableDataChanged ();
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

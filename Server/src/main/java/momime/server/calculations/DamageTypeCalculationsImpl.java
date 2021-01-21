@@ -1,8 +1,5 @@
 package momime.server.calculations;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -18,9 +15,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (DamageTypeCalculationsImpl.class);
-
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -36,8 +30,6 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	public final DamageType determineSkillDamageType (final ExpandedUnitDetails attacker, final String attackSkillID, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering determineSkillDamageType: " + attacker.getDebugIdentifier () + " skill " + attackSkillID);
-
 		// Look up basic damage type of skill - if it is the ranged attack skill, then the base damage type comes from the RAT instead
 		final String damageTypeID;
 		if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (attackSkillID))
@@ -61,7 +53,6 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 				damageType = db.findDamageType (damageType.getEnhancedVersion (), "determineSkillDamageType-E");
 		}
 		
-		log.trace ("Exiting determineSkillDamageType = " + damageType.getDamageTypeID ());
 		return damageType;
 	}
 	
@@ -76,8 +67,6 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	@Override
 	public final int getDefenderDefenceStrength (final ExpandedUnitDetails defender, final AttackDamage attackDamage, final int divisor) throws MomException
 	{
-		log.trace ("Entering getDefenderDefenceStrength: " + defender.getDebugIdentifier () + " hit by " + attackDamage);
-
 		// Work out basic stat
 		int defenderDefenceStrength = !defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE) ? 0 :
 			Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)) / divisor;
@@ -89,7 +78,6 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 			if ((imm.getBoostsDefenceTo () != null) && (defender.hasModifiedSkill (imm.getUnitSkillID ())))				
 				defenderDefenceStrength = Math.max (defenderDefenceStrength, imm.getBoostsDefenceTo ());
 		
-		log.trace ("Exiting getDefenderDefenceStrength = " + defenderDefenceStrength);
 		return defenderDefenceStrength;
 	}
 

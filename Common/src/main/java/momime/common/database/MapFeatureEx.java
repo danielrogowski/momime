@@ -3,9 +3,6 @@ package momime.common.database;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.swing.NdgUIUtils;
 
 import momime.common.MomException;
@@ -15,9 +12,6 @@ import momime.common.MomException;
  */
 public final class MapFeatureEx extends MapFeature
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MapFeatureEx.class);
-	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
 	
@@ -28,16 +22,12 @@ public final class MapFeatureEx extends MapFeature
 	 */
 	public final void checkWidthAndHeight (final TileSetEx overlandMapTileSet) throws IOException
 	{
-		log.trace ("Entering checkWidthAndHeight: " + getMapFeatureID ());
-		
 		final BufferedImage image = getUtils ().loadImage (getOverlandMapImageFile ());
 		if ((image.getWidth () != overlandMapTileSet.getTileWidth ()) || (image.getHeight () != overlandMapTileSet.getTileHeight ()))
 			
 			throw new MomException ("Overland map image for map feature " + getMapFeatureID () + " is the wrong size - " +
 				image.getWidth () + "x" + image.getHeight () + " when it should match the terrain tiles which are all " +
 				overlandMapTileSet.getTileWidth () + "x" + overlandMapTileSet.getTileHeight ());
-		
-		log.trace ("Exiting checkWidthAndHeight");
 	}
 
 	/**

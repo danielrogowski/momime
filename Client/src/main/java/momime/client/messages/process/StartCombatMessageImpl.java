@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
@@ -29,9 +26,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class StartCombatMessageImpl extends StartCombatMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (StartCombatMessageImpl.class);
-
 	/** Combat UI */
 	private CombatUI combatUI;
 	
@@ -58,8 +52,6 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		// Put all units into combat
 		for (final StartCombatMessageUnit unitLoc : getUnitPlacement ())
 		{
@@ -86,8 +78,6 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 		// Switch spell book to showing combat spells
 		getCreateArtifactUI ().setVisible (false);
 		getSpellBookUI ().setCastType (SpellCastType.COMBAT);
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

@@ -5,16 +5,13 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import momime.client.MomClient;
-import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.servertoclient.ReplacePicksMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
+
+import momime.client.MomClient;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.servertoclient.ReplacePicksMessage;
 
 /**
  * Server updating client with the complete list of picks that a particular player now has; this could change because:
@@ -24,9 +21,6 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
  */
 public final class ReplacePicksMessageImpl extends ReplacePicksMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ReplacePicksMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 
@@ -41,14 +35,10 @@ public final class ReplacePicksMessageImpl extends ReplacePicksMessage implement
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Player ID " + getPlayerID ());
-
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ReplacePicksMessageImpl");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		pub.getPick ().clear ();
 		pub.getPick ().addAll (getPick ());
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

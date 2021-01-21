@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
@@ -21,9 +18,6 @@ import momime.common.database.ProductionTypeEx;
  */
 public final class ResourceValueClientUtilsImpl implements ResourceValueClientUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ResourceValueClientUtilsImpl.class);
-	
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -66,8 +60,6 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	public final BufferedImage generateProductionImage (final String productionTypeID, final int productionValue, final int consumptionValue)
 		throws IOException
 	{
-		log.trace ("Entering generateProductionImage: " + productionTypeID + ", +" + productionValue + ", -" + consumptionValue);
-
 		BufferedImage image = null;
 
 		if ((productionValue > 0) || (consumptionValue > 0))
@@ -87,7 +79,6 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 			image = generateProductionImageFromLists (consumptionImages, productionImages);
 		}
 		
-		log.trace ("Exiting generateProductionImage = " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
 		return image;
 	}
 	
@@ -102,8 +93,6 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 	@Override
 	public final BufferedImage generateUpkeepImage (final List<ProductionTypeAndUndoubledValue> upkeeps, final boolean halveManaUpkeep) throws IOException
 	{
-		log.trace ("Entering generateUpkeepImage: " + ((upkeeps == null) ? "null" : Integer.valueOf (upkeeps.size ()).toString ()) + ", " + halveManaUpkeep);
-		
 		BufferedImage image = null;
 		if ((upkeeps != null) && (upkeeps.size () > 0))
 		{
@@ -133,7 +122,6 @@ public final class ResourceValueClientUtilsImpl implements ResourceValueClientUt
 			image = generateProductionImageFromLists (productionImages, null);
 		}
 		
-		log.trace ("Exiting generateUpkeepImage: " + ((image == null) ? "null" : (image.getWidth () + " x " + image.getHeight ())));
 		return image;
 	}
 

@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
@@ -58,9 +55,6 @@ import momime.common.messages.UnitStatusID;
  */
 public final class UnitUtilsImpl implements UnitUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitUtilsImpl.class);
-
 	/**
 	 * The majority of skills, if we don't have the skill at all, then bonuses don't apply to it.
 	 * e.g. Settlers have no melee attack - just because they might gain 20 exp doesn't mean they start attacking with their pitchforks.
@@ -90,8 +84,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final MemoryUnit findUnitURN (final int unitURN, final List<MemoryUnit> units)
 	{
-		log.trace ("Entering findUnitURN: Unit URN " + unitURN);
-
 		MemoryUnit result = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
 		while ((result == null) && (iter.hasNext ()))
@@ -101,7 +93,6 @@ public final class UnitUtilsImpl implements UnitUtils
 				result = thisUnit;
 		}
 
-		log.trace ("Exiting findUnitURN = " + result);
 		return result;
 	}
 
@@ -116,14 +107,11 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final MemoryUnit findUnitURN (final int unitURN, final List<MemoryUnit> units, final String caller)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering findUnitURN: Unit URN " + unitURN + ", " + caller);
-
 		final MemoryUnit result = findUnitURN (unitURN, units);
 
 		if (result == null)
 			throw new RecordNotFoundException (MemoryUnit.class, unitURN, caller);
 
-		log.trace ("Exiting findUnitURN = " + result);
 		return result;
 	}
 
@@ -136,8 +124,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void removeUnitURN (final int unitURN, final List<MemoryUnit> units)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering removeUnitURN: Unit URN " + unitURN);
-
 		boolean found = false;
 		final Iterator<MemoryUnit> iter = units.iterator ();
 		while ((!found) && (iter.hasNext ()))
@@ -152,8 +138,6 @@ public final class UnitUtilsImpl implements UnitUtils
 
 		if (!found)
 			throw new RecordNotFoundException (MemoryUnit.class, unitURN, "removeUnitURN");
-
-		log.trace ("Exiting removeUnitURN");
 	}
 
 	/**
@@ -170,8 +154,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final UnitEx initializeUnitSkills (final AvailableUnit unit, final Integer startingExperience, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering initializeUnitSkills: " + unit.getUnitID ());
-
 		final UnitEx unitDefinition = db.findUnit (unit.getUnitID (), "initializeUnitSkills");
 
 		// Check whether this type of unit gains experience (summoned units do not)
@@ -200,7 +182,6 @@ public final class UnitUtilsImpl implements UnitUtils
 			unit.getUnitHasSkill ().add (destSkill);
 		}
 
-		log.trace ("Entering initializeUnitSkills");
 		return unitDefinition;
 	}
 
@@ -231,8 +212,6 @@ public final class UnitUtilsImpl implements UnitUtils
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering expandUnitDetails: " + unit.getUnitID () + ", " + unit.getUnitHasSkill ().size ());
-
 		// STEP 1 - Get a list of all units in the same stack as this one - we need this to look to see if anyone has skills like Holy Bonus or Resistance to All
 		final List<AvailableUnit> unitStack = new ArrayList<AvailableUnit> ();
 		final List<Integer> unitStackUnitURNs = new ArrayList<Integer> ();
@@ -764,7 +743,6 @@ public final class UnitUtilsImpl implements UnitUtils
 		// Finally can build the unit object
 		final ExpandedUnitDetailsImpl container = new ExpandedUnitDetailsImpl (unit, unitDef, unitType, owningPlayer, magicRealmLifeformType,
 			weaponGrade, rangedAttackType, basicExpLvl, modifiedExpLvl, basicSkillValues, modifiedSkillValues, basicUpkeepValues, modifiedUpkeepValues, this);
-		log.trace ("Exiting expandUnitDetails = " + container);
 		return container;
 	}
 
@@ -788,8 +766,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final boolean doesCombatAreaEffectApplyToUnit (final AvailableUnit unit, final MemoryCombatAreaEffect effect, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering doesCombatAreaEffectApplyToUnit: " + unit.getUnitID () + ", " + effect.getCombatAreaEffectID ());
-
 		// Check if unit is in combat (available units can never be in combat)
 		final MapCoordinates3DEx combatLocation;
 		if (unit instanceof MemoryUnit)
@@ -861,7 +837,6 @@ public final class UnitUtilsImpl implements UnitUtils
 				applies = false;
 		}
 
-		log.trace ("Exiting doesCombatAreaEffectApplyToUnit = " + applies);
 		return applies;
 	}
 
@@ -906,8 +881,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final MemoryUnit findFirstAliveEnemyAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID)
 	{
-		log.trace ("Entering findFirstAliveEnemyAtLocation: (" + x + ", " + y + ", " + plane + "), Player ID " + exceptPlayerID);
-
 		// The reason this is done separately from countAliveEnemiesAtLocation is because this routine can exit as
 		// soon as it finds the first matching unit, whereas countAliveEnemiesAtLocation always has to run over the entire list
 
@@ -923,8 +896,6 @@ public final class UnitUtilsImpl implements UnitUtils
 				found = thisUnit;
 		}
 
-		log.trace ("Exiting findFirstAliveEnemyAtLocation = " +
-			((found == null) ? "Not Found" : "Unit URN" + found.getUnitURN ()));
 		return found;
 	}
 
@@ -939,8 +910,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final int countAliveEnemiesAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID)
 	{
-		log.trace ("Entering countAliveEnemiesAtLocation: (" + x + ", " + y + ", " + plane + "), Player ID " + exceptPlayerID);
-
 		int count = 0;
 		for (final MemoryUnit thisUnit : units)
 		{
@@ -950,7 +919,6 @@ public final class UnitUtilsImpl implements UnitUtils
 				count++;
 		}
 
-		log.trace ("Exiting countAliveEnemiesAtLocation = " + count);
 		return count;
 	}
 
@@ -964,8 +932,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final void beforeKillingUnit (final FogOfWarMemory mem, final int unitURN)
 	{
-		log.trace ("Entering beforeKillingUnit: " + unitURN);
-		
 		final Iterator<MemoryMaintainedSpell> iter = mem.getMaintainedSpell ().iterator ();
 		while (iter.hasNext ())
 		{
@@ -973,8 +939,6 @@ public final class UnitUtilsImpl implements UnitUtils
 			if ((spell.getUnitURN () != null) && (spell.getUnitURN () == unitURN))
 				iter.remove ();
 		}
-		
-		log.trace ("Exiting beforeKillingUnit");
 	}
 
 	/**
@@ -986,8 +950,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition)
 	{
-		log.trace ("Entering findAliveUnitInCombatAt: " + combatLocation + ", " + combatPosition);
-
 		MemoryUnit found = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
 		while ((found == null) && (iter.hasNext ()))
@@ -1000,7 +962,6 @@ public final class UnitUtilsImpl implements UnitUtils
 				found = thisUnit;
 		}
 
-		log.trace ("Exiting findAliveUnitInCombatAt = " + found);
 		return found;
 	}
 	
@@ -1013,8 +974,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final void copyUnitValues (final MemoryUnit source, final MemoryUnit dest, final boolean includeMovementFields)
 	{
-		log.trace ("Entering copyUnitValues: Unit URN" + source.getUnitURN ());
-		
 		// Destination values for a couple of movement related fields depend on input param
 		final int newDoubleOverlandMovesLeft = includeMovementFields ? source.getDoubleOverlandMovesLeft () : 0;
 		final Integer newDoubleCombatMovesLeft = includeMovementFields ? source.getDoubleCombatMovesLeft () : null;
@@ -1105,8 +1064,6 @@ public final class UnitUtilsImpl implements UnitUtils
 			destDamage.setDamageTaken (srcDamage.getDamageTaken ());
 			dest.getUnitDamage ().add (destDamage);
 		});
-		
-		log.trace ("Exiting copyUnitValues");
 	}
 	
 	/**
@@ -1116,11 +1073,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final int getTotalDamageTaken (final List<UnitDamage> damages)
 	{
-		log.trace ("Entering getTotalDamageTaken");
-		
 		final int total = damages.stream ().mapToInt (d -> d.getDamageTaken ()).sum ();
-		
-		log.trace ("Exiting getTotalDamageTaken = " + total);
 		return total;
 	}
 	
@@ -1131,11 +1084,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	@Override
 	public final int getHealableDamageTaken (final List<UnitDamage> damages)
 	{
-		log.trace ("Entering getHealableDamageTaken");
-		
 		final int total = damages.stream ().filter (d -> d.getDamageType () != StoredDamageTypeID.PERMANENT).mapToInt (d -> d.getDamageTaken ()).sum ();
-		
-		log.trace ("Exiting getHealableDamageTaken = " + total);
 		return total;
 	}
 	

@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -38,9 +35,6 @@ import momime.common.messages.UnitStatusID;
  */
 public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpellUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MemoryMaintainedSpellUtilsImpl.class);
-	
 	/** Spell utils */
 	private SpellUtils spellUtils;
 	
@@ -70,8 +64,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		final Integer castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
 		final MapCoordinates3DEx cityLocation, final String citySpellEffectID)
 	{
-		log.trace ("Entering findMaintainedSpell: " + castingPlayerID + ", " + spellID);
-
 		MemoryMaintainedSpell match = null;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
 
@@ -89,7 +81,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 				match = thisSpell;
 		}
 
-		log.trace ("Entering findMaintainedSpell = " + match);
 		return match;
 	}
 
@@ -101,8 +92,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final MemoryMaintainedSpell findSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells)
 	{
-		log.trace ("Entering findSpellURN: " + spellURN);
-
 		MemoryMaintainedSpell match = null;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
 
@@ -113,7 +102,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 				match = thisSpell;
 		}
 
-		log.trace ("Entering findSpellURN = " + match);
 		return match;
 	}
 
@@ -128,14 +116,11 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final MemoryMaintainedSpell findSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells, final String caller)
 		throws RecordNotFoundException
 	{
-			log.trace ("Entering findSpellURN: " + spellURN + ", " + caller);
-
 			final MemoryMaintainedSpell match = findSpellURN (spellURN, spells);
 
 			if (match == null)
 				throw new RecordNotFoundException (MemoryMaintainedSpell.class, spellURN, caller);
 			
-			log.trace ("Entering findSpellURN = " + match);
 			return match;
 	}
 
@@ -148,8 +133,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final void removeSpellURN (final int spellURN, final List<MemoryMaintainedSpell> spells)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering removeSpellURN: " + spellURN);
-
 		boolean found = false;
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
 		while ((!found) && (iter.hasNext ()))
@@ -164,8 +147,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 
 		if (!found)
 			throw new RecordNotFoundException (MemoryMaintainedSpell.class, spellURN, "removeSpellURN");
-
-		log.trace ("Exiting removeSpellURN");
 	}
 
 	/**
@@ -177,23 +158,14 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final void removeSpellsCastOnUnitStack (final List<MemoryMaintainedSpell> spells, final List<Integer> unitURNs)
 	{
-    	log.trace ("Entering removeSpellsCastOnUnitStack: " + unitURNs);
-
-    	int numberRemoved = 0;
-
 		final Iterator<MemoryMaintainedSpell> iter = spells.iterator ();
     	while (iter.hasNext ())
     	{
     		final Integer thisUnitURN = iter.next ().getUnitURN ();
 
     		if ((thisUnitURN != null) && (unitURNs.contains (thisUnitURN)))
-    		{
     			iter.remove ();
-    			numberRemoved++;
-    		}
     	}
-
-    	log.trace ("Exiting removeSpellsCastOnUnitStack = " + numberRemoved);
 	}
 
 	/**
@@ -210,8 +182,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final List<String> listUnitSpellEffectsNotYetCastOnUnit (final List<MemoryMaintainedSpell> spells, final Spell spell,
 		final int castingPlayerID, final int unitURN)
 	{
-    	log.trace ("Entering listUnitSpellEffectsNotYetCastOnUnit: " + spell.getSpellID () + ", Unit URN " + unitURN);
-    	
     	final List<String> unitSpellEffectIDs;
     	
     	if (spell.getUnitSpellEffect ().size () == 0)
@@ -228,7 +198,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     				unitSpellEffectIDs.add (effect.getUnitSkillID ());
     	}
 
-    	log.trace ("Exiting listUnitSpellEffectsNotYetCastOnUnit = " + unitSpellEffectIDs);
     	return unitSpellEffectIDs;
 	}
 	
@@ -247,8 +216,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final List<String> listCitySpellEffectsNotYetCastAtLocation (final List<MemoryMaintainedSpell> spells, final Spell spell,
 		final int castingPlayerID, final MapCoordinates3DEx cityLocation)
 	{
-    	log.trace ("Entering listCitySpellEffectsNotYetCastAtLocation: " + spell.getSpellID () + ", " + cityLocation);
-    	
     	final List<String> citySpellEffectIDs;
     	
     	if (spell.getSpellHasCityEffect ().size () == 0)
@@ -261,7 +228,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
    					citySpellEffectIDs.add (citySpellEffectID);
     	}
 
-    	log.trace ("Exiting listCitySpellEffectsNotYetCastAtLocation = " + citySpellEffectIDs);
     	return citySpellEffectIDs;
 	}
 
@@ -288,8 +254,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		final int castingPlayerID, final Integer variableDamage, final ExpandedUnitDetails unit,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-    	log.trace ("Entering isUnitValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID + ", " + combatLocation + ", " + unit);
-    	
     	final TargetSpellResult result;
     	final int unitURN = unit.getUnitURN ();
     	
@@ -378,7 +342,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		}
     	}
 
-    	log.trace ("Exiting isUnitValidTargetForSpell = " + result);
     	return result;
 	}
 
@@ -403,8 +366,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 		final MapCoordinates3DEx cityLocation, final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final List<MemoryBuilding> buildingsList)
 		throws RecordNotFoundException
 	{
-    	log.trace ("Entering isCityValidTargetForSpell: " + spell.getSpellID () + ", Player ID " + castingPlayerID);
-    	
     	final TargetSpellResult result;
     	
     	final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
@@ -444,7 +405,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			result = TargetSpellResult.VALID_TARGET;
     	}
 
-    	log.trace ("Exiting isCityValidTargetForSpell = " + result);
     	return result;
 	}
 
@@ -463,8 +423,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	public final TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final MapCoordinates3DEx targetLocation,
 		final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException
 	{
-    	log.trace ("Entering isOverlandLocationValidTargetForSpell: " + spell.getSpellID () + ", " + targetLocation);
-
     	final TargetSpellResult result;
 
     	// Earth Lore and Enchant Road can always be targeted anywhere, even in blackness where we've never seen before
@@ -499,7 +457,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    	}
     	}
     	
-    	log.trace ("Exiting isOverlandLocationValidTargetForSpell = " + result);
     	return result;
 	}
 	
@@ -515,8 +472,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	@Override
 	public final boolean isCombatLocationValidTargetForSpell (final Spell spell, final MapCoordinates2DEx targetLocation, final MapAreaOfCombatTiles map)
 	{
-    	log.trace ("Entering isCombatLocationValidTargetForSpell: " + spell.getSpellID () + ", " + targetLocation);
-    	
     	final boolean result;
 		final MomCombatTile tile = map.getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ());
     	
@@ -539,7 +494,6 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		}
     	}
     	
-    	log.trace ("Exiting isCombatLocationValidTargetForSpell = " + result);
     	return result;
 	}
 	

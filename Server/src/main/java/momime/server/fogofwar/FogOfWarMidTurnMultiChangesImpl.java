@@ -142,8 +142,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final MapCoordinates3DEx combatLocation, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients: " + combatLocation);
-		
 		// Copy the list, since we'll be removing spells from it as we go
 		final List<MemoryMaintainedSpell> copyOfTrueSpells = new ArrayList<MemoryMaintainedSpell> ();
 		copyOfTrueSpells.addAll (trueMap.getMaintainedSpell ());
@@ -151,8 +149,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryMaintainedSpell trueSpell : copyOfTrueSpells)
 			if ((trueSpell.isCastInCombat ()) && (combatLocation.equals (trueSpell.getCityLocation ())))
 				getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
-		
-		log.trace ("Exiting switchOffMaintainedSpellsCastInCombatLocation_OnServerAndClients");
 	}
 	
 	/**
@@ -172,8 +168,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final MapCoordinates3DEx combatLocation, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients: " + combatLocation);
-		
 		// Copy the list, since we'll be removing spells from it as we go
 		final List<MemoryMaintainedSpell> copyOfTrueSpells = new ArrayList<MemoryMaintainedSpell> ();
 		copyOfTrueSpells.addAll (trueMap.getMaintainedSpell ());
@@ -186,8 +180,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				if (combatLocation.equals (thisUnit.getCombatLocation ()))
 					getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
 			}
-		
-		log.trace ("Exiting switchOffMaintainedSpellsCastOnUnitsInCombat_OnServerAndClients");
 	}
 	
 	/**
@@ -209,8 +201,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering switchOffMaintainedSpellsInLocationOnServerAndClients: " + cityLocation);
-
 		// Copy the list, since we'll be removing spells from it as we go
 		final List<MemoryMaintainedSpell> copyOfTrueSpells = new ArrayList<MemoryMaintainedSpell> ();
 		copyOfTrueSpells.addAll (trueMap.getMaintainedSpell ());
@@ -220,8 +210,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				((castingPlayerID == 0) || (trueSpell.getCastingPlayerID () == castingPlayerID)))
 
 				getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
-		
-		log.trace ("Exiting switchOffMaintainedSpellsInLocationOnServerAndClients");
 	}
 	
 	/**
@@ -241,8 +229,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering removeCombatAreaEffectsFromLocalisedSpells: " + mapLocation);
-		
 		// Make a list of all CAEs caused by permanent city spells at this location, to make sure we don't remove them, e.g. Heavenly Light and Cloud of Darkness
 		final List<MemoryCombatAreaEffect> keepCAEs = new ArrayList<MemoryCombatAreaEffect> (); 
 		for (final MemoryMaintainedSpell trueSpell : trueMap.getMaintainedSpell ())
@@ -267,8 +253,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryCombatAreaEffect trueCAE : copyOftrueCAEs)
 			if ((!keepCAEs.contains (trueCAE)) && (mapLocation.equals (trueCAE.getMapLocation ())) && (trueCAE.getCastingPlayerID () != null))
 				getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
-		
-		log.trace ("Exiting removeCombatAreaEffectsFromLocalisedSpells");
 	}
 
 	/**
@@ -289,16 +273,13 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering destroyBuildingOnServerAndClients: " + cityLocation);
-		
 		// Better copy the list of buildings, since we'll be removing them as we go along
 		final List<MemoryBuilding> copyOfBuildingsList = new ArrayList<MemoryBuilding> ();
 		copyOfBuildingsList.addAll (trueMap.getBuilding ());
+		
 		for (final MemoryBuilding trueBuilding : copyOfBuildingsList)
 			if (cityLocation.equals (trueBuilding.getCityLocation ()))
 				getFogOfWarMidTurnChanges ().destroyBuildingOnServerAndClients (trueMap, players, trueBuilding.getBuildingURN (), false, sd, db);
-		
-		log.trace ("Exiting destroyBuildingOnServerAndClients");
 	}
 	
 	/**
@@ -319,8 +300,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering healUnitsAndGainExperience: Player ID " + onlyOnePlayerID);
-
 		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see (except summoned ones) - so collate the client messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
 		
@@ -363,8 +342,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "healUnitsAndGainExperience");
 			player.getConnection ().sendMessageToClient (entry.getValue ());
 		}
-
-		log.trace ("Exiting healUnitsAndGainExperience");
 	}
 	
 	/**
@@ -388,8 +365,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering grantExperienceToUnitsInCombat: " + combatLocation + ", " + combatSide);
-
 		// If 9 units gain experience, don't send out 9 separate messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
 		
@@ -423,8 +398,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		}
 		
 		getPlayerMessageProcessing ().sendNewTurnMessages (null, players, null);
-
-		log.trace ("Exiting grantExperienceToUnitsInCombat");
 	}
 	
 	/**
@@ -462,9 +435,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering moveUnitStackOneCellOnServerAndClients: " + unitStack.size () + ", Player ID " +
-			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom + ", " + moveTo);
-
 		// We need a list of the unit URNs
 		final List<Integer> unitURNList = new ArrayList<Integer> ();
 		for (final MemoryUnit tu : unitStack)
@@ -614,8 +584,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					unitStackOwner, players, db);
 			tc.setTreasureValue (null);
 		}
-		
-		log.trace ("Exiting moveUnitStackOneCellOnServerAndClients");
 	}
 
 	/**
@@ -649,9 +617,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final boolean forceAsPendingMovement, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering moveUnitStack: " + getUnitUtils ().listUnitURNs (selectedUnits) + ", Player ID " +
-			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + originalMoveFrom.toString () + ", " + moveTo.toString () + ", " + processCombats);
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (selectedUnits);
 
@@ -862,7 +827,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			getCombatStartAndEnd ().startCombat (defendingLocation, moveFrom, attackingUnitURNs, null, null, null, mom);
 		}
 
-		log.trace ("Exiting moveUnitStack = " + combatStarted);
 		return combatStarted;
 	}
 	
@@ -888,9 +852,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final MapCoordinates3DEx moveFrom = (MapCoordinates3DEx) pendingMovement.getMoveFrom ();
 		final MapCoordinates3DEx moveTo = (MapCoordinates3DEx) pendingMovement.getMoveTo ();
 		
-		log.trace ("Entering determineOneCellPendingMovement: " + getUnitUtils ().listUnitURNs (selectedUnits) + ", Player ID " +
-			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom.toString () + ", " + moveTo.toString ());
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
@@ -928,7 +889,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			result = new OneCellPendingMovement (unitStackOwner, pendingMovement, oneStep, combatInitiated);
 		}
 		
-		log.trace ("Exiting determineOneCellPendingMovement = " + result); 
 		return result;
 	}
 	
@@ -951,9 +911,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final MapCoordinates3DEx moveFrom, final MapCoordinates3DEx moveTo, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		log.trace ("Entering determineMovementPath: " + getUnitUtils ().listUnitURNs (selectedUnits) + ", Player ID " +
-			unitStackOwner.getPlayerDescription ().getPlayerID () + ", " + moveFrom.toString () + ", " + moveTo.toString ());
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) unitStackOwner.getPersistentPlayerPrivateKnowledge ();
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
@@ -1015,8 +972,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final FogOfWarMemory trueMap, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering resetUnitOverlandMovement: Player ID " + onlyOnePlayerID);
-
 		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see - so collate the client messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
 
@@ -1036,8 +991,6 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, entry.getKey (), "healUnitsAndGainExperience");
 			player.getConnection ().sendMessageToClient (entry.getValue ());
 		}
-		
-		log.trace ("Exiting resetUnitOverlandMovement");
 	}
 	
 	/**

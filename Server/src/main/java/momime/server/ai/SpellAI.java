@@ -38,14 +38,12 @@ public interface SpellAI
 	 * @param spells Pre-locked list of the player's spell
 	 * @param magicRealmID Magic Realm (e.g. chaos) to pick a spell from
 	 * @param spellRankID Spell rank (e.g. uncommon) to pick a spell of
-	 * @param aiPlayerID Player ID, for debug message
 	 * @param db Lookup lists built over the XML database
 	 * @return Spell AI chose to learn for free
 	 * @throws MomException If no eligible spells are available (e.g. player has them all researched already)
 	 * @throws RecordNotFoundException If the spell chosen couldn't be found in the player's spell list
 	 */
-	public SpellResearchStatus chooseFreeSpellAI (final List<SpellResearchStatus> spells, final String magicRealmID, final String spellRankID,
-		final int aiPlayerID, final CommonDatabase db)
+	public SpellResearchStatus chooseFreeSpellAI (final List<SpellResearchStatus> spells, final String magicRealmID, final String spellRankID, final CommonDatabase db)
 		throws MomException, RecordNotFoundException;
 
 	/**

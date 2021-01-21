@@ -4,17 +4,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Defines all the units available in the game
  */
 public final class UnitEx extends Unit
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitEx.class);
-	
 	/** Map of hero name IDs to plane hero name objects */
 	private Map<String, HeroName> heroNamesMap;
 
@@ -35,16 +29,12 @@ public final class UnitEx extends Unit
 	 */
 	public final void buildMaps ()
 	{
-		log.trace ("Entering buildMaps");
-
 		// Build lower levels maps
 		getUnitCombatActions ().forEach (a -> a.buildMap ());
 
 		// Create maps
 		heroNamesMap = getHeroName ().stream ().collect (Collectors.toMap (n -> n.getHeroNameID (), n -> n));
 		combatActionsMap = getUnitCombatActions ().stream ().collect (Collectors.toMap (a -> a.getCombatActionID (), a -> a));
-
-		log.trace ("Exiting buildMaps");
 	}
 
 	/**

@@ -7,9 +7,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.areas.storage.MapArea3DArrayListImpl;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -35,9 +32,6 @@ import momime.common.messages.servertoclient.UpdateTerrainMessageData;
  */
 public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisibleAreaChangedMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (FogOfWarVisibleAreaChangedMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -61,12 +55,6 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		if (log.isTraceEnabled ())
-			log.trace ("Entering start: " + getTriggeredFrom () + ", " + getTerrainUpdate ().size () + ", " + getCityUpdate ().size () + ", " +
-				getAddBuilding ().size () + ", " + getDestroyBuilding ().size () + ", " + getAddOrUpdateUnit ().size () + ", " + getKillUnit ().size () + ", " +
-				getAddMaintainedSpell ().size () + ", " + getSwitchOffMaintainedSpell ().size () + ", " +
-				getAddCombatAreaEffect ().size () + ", " + getCancelCombaAreaEffect ().size () + ", " + getFogOfWarUpdate ().size ());
-		
 		// Changes in Terrain
 		if (getTerrainUpdate ().size () > 0)
 		{
@@ -209,8 +197,6 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 			getCitiesListUI ().refreshCitiesList ();
 			getCitiesListUI ().regenerateMiniMapBitmaps ();
 		}
-
-		log.trace ("Exiting start");
 	}
 
 	/**

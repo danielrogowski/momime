@@ -3,9 +3,6 @@ package momime.server.calculations;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -34,9 +31,6 @@ import momime.common.utils.MemoryBuildingUtils;
  */
 public final class ServerCityCalculationsImpl implements ServerCityCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ServerCityCalculationsImpl.class);
-	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
 	
@@ -60,8 +54,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		final List<MemoryBuilding> buildings, final MapCoordinates3DEx cityLocation, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering calculateDoubleFarmingRate: " + cityLocation);
-
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		// Find the farmers for this race
@@ -97,7 +89,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 			getMemoryBuildingUtils ().totalBonusProductionPerPersonFromBuildings (buildings, cityLocation,
 				CommonDatabaseConstants.POPULATION_TASK_ID_FARMER, CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS, db);
 
-		log.trace ("Exiting calculateDoubleFarmingRate = " + doubleFarmingRate);
 		return doubleFarmingRate;
 	}
 
@@ -130,8 +121,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering calculateCitySizeIDAndMinimumFarmers: " + cityLocation);
-
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 
 		// First work out the Size ID - There should only be one entry in the DB which matches
@@ -173,9 +162,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 			// Now can do calculation, round up
 			cityData.setMinimumFarmers (((rationsNeeded * 2) + doubleFarmingRate - 1) / doubleFarmingRate);
 		}
-
-		log.trace ("Exiting calculateCitySizeIDAndMinimumFarmers = " +
-			cityData.getCitySizeID () + ", " + cityData.getMinimumFarmers ());
 	}
 
 	/**
@@ -198,8 +184,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	public final void ensureNotTooManyOptionalFarmers (final OverlandMapCityData city)
 		throws MomException
 	{
-		log.trace ("Entering ensureNotTooManyOptionalFarmers");
-
 		final boolean tooMany = (city.getMinimumFarmers () + city.getOptionalFarmers () + city.getNumberOfRebels () > city.getCityPopulation () / 1000);
 		if (tooMany)
 		{
@@ -209,8 +193,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 				throw new MomException ("EnsureNotTooManyOptionalFarmers set number of optional farmers to negative: " +
 					city.getCityPopulation () + " population, " + city.getMinimumFarmers () + " minimum farmers, " + city.getNumberOfRebels () + " rebels");
 		}
-
-		log.trace ("Exiting ensureNotTooManyOptionalFarmers = " + tooMany);
 	}
 
 	/**
@@ -224,8 +206,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 	public final int calculateCityScoutingRange (final List<MemoryBuilding> buildings,
 		final MapCoordinates3DEx cityLocation, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateCityScoutingRange: " + cityLocation);
-
 		// Check all buildings at this location
 		int result = -1;
 		for (final MemoryBuilding thisBuilding : buildings)
@@ -237,7 +217,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 					result = Math.max (result, scoutingRange);
 			}
 
-		log.trace ("Exiting calculateCityScoutingRange = " + result);
 		return result;
 	}
 
@@ -262,8 +241,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 		final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering canEventuallyConstructBuilding: " + cityLocation + ", " + building.getBuildingID ());
-
 		// Need to get the city race
 		final OverlandMapCityData cityData = map.getPlane ().get (cityLocation.getZ ()).getRow ().get (cityLocation.getY ()).getCell ().get (cityLocation.getX ()).getCityData ();
 		final Race race = db.findRace (cityData.getCityRaceID (), "canEventuallyConstructBuilding");
@@ -292,7 +269,6 @@ public final class ServerCityCalculationsImpl implements ServerCityCalculations
 					passes = false;
 		}
 
-		log.trace ("Exiting canEventuallyConstructBuilding = " + passes);
 		return passes;
 	}
 

@@ -53,11 +53,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Spell URN " + getSpellURN ());
-		
 		processOneUpdate ();
-		
-		log.trace ("Exiting start");		
 	}
 
 	/**
@@ -65,8 +61,6 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	 */
 	public final void processOneUpdate ()
 	{
-		log.trace ("Entering processOneUpdate: Spell URN " + getSpellURN ());
-
 		try
 		{
 			// Find the spell details before we remove it
@@ -115,8 +109,6 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting processOneUpdate");
 	}
 
 	/**

@@ -5,6 +5,8 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
@@ -12,20 +14,12 @@ import momime.client.ui.frames.SpellBookUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.messages.servertoclient.SpellResearchChangedMessage;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-
 /**
  * Server sends this back to a client who requested a change in research to let them know the change was OK.
  * This isn't used to set research to 'nothing', so safe to assume that SpellID is non-blank.
  */
 public final class SpellResearchChangedMessageImpl extends SpellResearchChangedMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpellResearchChangedMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -49,8 +43,6 @@ public final class SpellResearchChangedMessageImpl extends SpellResearchChangedM
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		// Store new value
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().setSpellIDBeingResearched (getSpellID ());
 		
@@ -65,8 +57,6 @@ public final class SpellResearchChangedMessageImpl extends SpellResearchChangedM
 		
 		// Perhaps enable the next turn button if it was blocked waiting for us to choose a spell to research
 		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

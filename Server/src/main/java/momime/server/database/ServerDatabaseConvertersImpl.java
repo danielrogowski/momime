@@ -89,8 +89,6 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	public final NewGameDatabaseMessage buildNewGameDatabase (final File xmlFolder, final Unmarshaller commonDatabaseUnmarshaller)
 		throws JAXBException, MomException, IOException
 	{
-		log.trace ("Entering buildNewGameDatabase");
-
 		// First put the list of all compatibly named XML databases in a string list, so we can sort it before we start trying to load them in and check them
 		// Strip the suffix off each one as we add it
 		log.info ("Generating list of all available server XML files in \"" + xmlFolder + "\"...");
@@ -122,8 +120,6 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		
 		// Call other method to do the guts of the work
 		final NewGameDatabaseMessage msg = buildNewGameDatabase (map, commonDatabaseUnmarshaller);
-		
-		log.trace ("Exiting buildNewGameDatabase");
 		return msg;
 	}
 	
@@ -142,8 +138,6 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 	final NewGameDatabaseMessage buildNewGameDatabase (final Map<String, File> xmlFiles, final Unmarshaller commonDatabaseUnmarshaller)
 		throws JAXBException, MomException
 	{
-		log.trace ("Entering buildNewGameDatabase");
-
 		// Now open up each one to check if it is compatible
 		final NewGameDatabase newGameDatabase = new NewGameDatabase ();
 
@@ -171,7 +165,6 @@ public final class ServerDatabaseConvertersImpl implements ServerDatabaseConvert
 		msg.setNewGameDatabase (newGameDatabase);
 
 		log.info ("Found " + newGameDatabase.getMomimeXmlDatabase ().size () + " compatible server XML file(s)");
-		log.trace ("Exiting buildNewGameDatabase = " + newGameDatabase.getMomimeXmlDatabase ().size ());
 		return msg;
 	}
 }

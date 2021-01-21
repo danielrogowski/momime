@@ -71,13 +71,9 @@ public final class AudioPlayerImpl implements AudioPlayer
 	@Override
 	public final void playAudioFile (final String aResourceName) throws JavaLayerException
 	{
-		log.trace ("Entering playAudioFile: " + aResourceName);
-		
 		final List<String> singleItemList = new ArrayList<String> ();
 		singleItemList.add (aResourceName);
 		playAudioFiles (singleItemList);
-		
-		log.trace ("Exiting playAudioFile");
 	}
 	
 	/**
@@ -89,8 +85,6 @@ public final class AudioPlayerImpl implements AudioPlayer
 	@Override
 	public final void playPlayList (final String playListID, final AnimationContainer container) throws JavaLayerException, RecordNotFoundException
 	{
-		log.trace ("Entering playPlayList: " + playListID);
-		
 		final PlayList playList = (container == AnimationContainer.GRAPHICS_XML) ? getGraphicsDB ().findPlayList (playListID, "playPlayList") :
 			getClient ().getClientDB ().findPlayList (playListID, "playPlayList");
 		
@@ -99,8 +93,6 @@ public final class AudioPlayerImpl implements AudioPlayer
 		audioFiles.addAll (playList.getAudioFile ());
 				
 		playAudioFiles (audioFiles);
-		
-		log.trace ("Exiting playPlayList");
 	}
 
 	/**
@@ -110,8 +102,6 @@ public final class AudioPlayerImpl implements AudioPlayer
 	@Override
 	public final void playAudioFiles (final List<String> aResourceNames) throws JavaLayerException
 	{
-		log.trace ("Entering playAudioFiles: " + aResourceNames);
-		
 		// Pick a file to play
 		resourceNames = aResourceNames;
 		if (resourceNames.size () > 0)
@@ -124,8 +114,6 @@ public final class AudioPlayerImpl implements AudioPlayer
 			
 			playThenResume (resourceNames.get (index));
 		}
-		
-		log.trace ("Exiting playAudioFiles");
 	}
 	
 	/**
@@ -137,8 +125,6 @@ public final class AudioPlayerImpl implements AudioPlayer
 	@Override
 	public final void playThenResume (final String resourceName) throws JavaLayerException
 	{
-		log.trace ("Entering playThenResume: " + resourceName);
-		
 		// Close out previous player if there was one
 		if ((player != null) && (!player.isFinished ()) && (isLoop ()))
 		{
@@ -189,8 +175,6 @@ public final class AudioPlayerImpl implements AudioPlayer
 				}
 			}
 		}.start ();
-		
-		log.trace ("Exiting playThenResume");
 	}
 
 	/**

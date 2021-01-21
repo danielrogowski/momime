@@ -143,8 +143,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final MemoryUnit createMemoryUnit (final String unitID, final int unitURN, final Integer weaponGrade, final Integer startingExperience,
 		final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering createMemoryUnit: " + unitID + ", Unit URN " + unitURN);
-
 		final MemoryUnit newUnit = new MemoryUnit ();
 		newUnit.setUnitURN (unitURN);
 		newUnit.setUnitID (unitID);
@@ -157,7 +155,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		for (int slotNumber = 0; slotNumber < unitDef.getHeroItemSlot ().size (); slotNumber++)
 			newUnit.getHeroItemSlot ().add (new MemoryUnitHeroItemSlot ());
 
-		log.trace ("Exiting createMemoryUnit");
 		return newUnit;
 	}
 
@@ -172,8 +169,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final void generateHeroNameAndRandomSkills (final MemoryUnit unit, final CommonDatabase db) throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering generateHeroNameAndRandomSkills: " + unit.getUnitID ());
-
 		final Unit unitDefinition = db.findUnit (unit.getUnitID (), "generateHeroNameAndRandomSkills");
 
 		// Pick a name at random
@@ -231,8 +226,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 
 		// Update status
 		unit.setStatus (UnitStatusID.GENERATED);
-
-		log.trace ("Exiting generateHeroNameAndRandomSkills");
 	}
 
 	/**
@@ -266,9 +259,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final MapVolumeOfMemoryGridCells trueTerrain, final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering setAndSendSpecialOrder: Player ID " + player.getPlayerDescription ().getPlayerID () +
-			", Unit URN " + trueUnit.getUnitURN () + ", " + specialOrder);
-
 		// Setting a special order cancels any other kind of move
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		getPendingMovementUtils ().removeUnitFromAnyPendingMoves (priv.getPendingMovement (), trueUnit.getUnitURN ());
@@ -278,8 +268,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 
 		// Update in player's memory and on clients
 		getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueTerrain, players, db, fogOfWarSettings, null);
-
-		log.trace ("Exiting setAndSendSpecialOrder");
 	}
 	
 	/**
@@ -302,8 +290,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering processSpecialOrder: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + specialOrder);
-		
 		// What skill do we need
 		final String necessarySkillID;
 		final boolean allowMultipleUnits;
@@ -459,7 +445,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
-		log.trace ("Exiting processSpecialOrder = " + error);
 		return error;
 	}
 
@@ -472,8 +457,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final MemoryUnit findUnitWithPlayerAndID (final List<MemoryUnit> units, final int playerID, final String unitID)
 	{
-		log.trace ("Entering findUnitWithPlayerAndID: Player ID " + playerID + ", "  + unitID);
-
 		MemoryUnit result = null;
 		final Iterator<MemoryUnit> iter = units.iterator ();
 		while ( (result == null) && (iter.hasNext ()))
@@ -483,7 +466,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				result = thisUnit;
 		}
 
-		log.trace ("Exiting findUnitWithPlayerAndID = " + result);
 		return result;
 	}
 
@@ -501,8 +483,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final ExpandedUnitDetails testUnit,
 		final FogOfWarMemory trueMap, final UnitSetting settings, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering canUnitBeAddedHere: " + addLocation + ", " + testUnit.getDebugIdentifier ());
-
 		// Any other units here?
 		final boolean unitCheckOk;
 		final MemoryUnit unitHere = getUnitUtils ().findFirstAliveEnemyAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getZ (), 0);
@@ -548,7 +528,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			}
 		}
 
-		log.trace ("Exiting canUnitBeAddedHere = " + okToAdd);
 		return okToAdd;
 	}
 
@@ -574,8 +553,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering findNearestLocationWhereUnitCanBeAdded: " + desiredLocation + ", " + unitID + ", Player ID + " + playerID);
-
 		// Create test unit
 		final AvailableUnit testUnit = new AvailableUnit ();
 		testUnit.setUnitID (unitID);
@@ -611,8 +588,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		}
 
 		final UnitAddLocation result = new UnitAddLocation (addLocation, bumpType);
-
-		log.trace ("Exiting findNearestLocationWhereUnitCanBeAdded = " + result);
 		return result;
 	}
 
@@ -624,14 +599,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final List<MemoryUnit> listUnitsWithSpecialOrder (final List<MemoryUnit> units, final UnitSpecialOrder order)
 	{
-		log.trace ("Entering listUnitsWithSpecialOrder: " + order);
-
 		final List<MemoryUnit> matches = new ArrayList<MemoryUnit> ();
 		for (final MemoryUnit thisUnit : units)
 			if ( (thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getSpecialOrder () == order))
 				matches.add (thisUnit);
 
-		log.trace ("Exiting listUnitsWithSpecialOrder = " + matches.size ());
 		return matches;
 	}
 
@@ -650,8 +622,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final int applyDamage (final ExpandedUnitDetails defender, final int hitsToApply, final int defenderDefenceStrength, final int chanceToDefend)
 		throws MomException
 	{
-		log.trace ("Entering applyDamage: Unit URN " + defender.getUnitURN () + " hit by " + hitsToApply + " vs defence " + defenderDefenceStrength + " at " + chanceToDefend + "0%");
-
 		// Dish out damage - See page 287 in the strategy guide
 		// We can't do all defending in one go, each figure only gets to use its shields if the previous figure dies.
 		// e.g. a unit of 8 spearmen has to take 2 hits, if all 8 spearmen get to try to block the 2 hits, they might not even lose 1 figure.
@@ -687,7 +657,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			}
 		}
 		
-		log.trace ("Exiting applyDamage = " + totalHits);
 		return totalHits;
 	}
 
@@ -701,8 +670,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final void addDamage (final List<UnitDamage> damages, final StoredDamageTypeID damageType, final int damageTaken)
 	{
-		log.trace ("Entering addDamage: adding " + damageTaken + " hit points of damage type " + damageType);
-		
 		if (damageTaken != 0)
 		{
 			UnitDamage entry = null;
@@ -732,8 +699,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				damages.add (entry);
 			}
 		}
-		
-		log.trace ("Exiting addDamage"); 
 	}
 	
 	/**
@@ -744,8 +709,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final int findDamageTakenOfType (final List<UnitDamage> damages, final StoredDamageTypeID damageType)
 	{
-		log.trace ("Entering findDamageTakenOfType: " + damageType);
-		
 		int value = 0;
 		boolean found = false;
 		final Iterator<UnitDamage> iter = damages.iterator ();
@@ -759,7 +722,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			}
 		}
 		
-		log.trace ("Exiting findDamageTakenOfType = " + value);
 		return value;
 	}
 	
@@ -775,8 +737,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final void healDamage (final List<UnitDamage> damages, final int amountToHeal, final boolean healPermanentDamage)
 	{
-		log.trace ("Entering healDamage: " + amountToHeal + ", " + healPermanentDamage);
-		
 		if ((amountToHeal > 0) && (damages.size () > 0))
 		{
 			// We always heal in a specific order of damage types, which is the order they're defined on the enum, not the order they are in the list passed into this method
@@ -792,8 +752,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 					}
 				}
 		}
-		
-		log.trace ("Exiting healDamage");
 	}
 	
 	/**
@@ -803,8 +761,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final StoredDamageTypeID whatKilledUnit (final List<UnitDamage> damages)
 	{
-		log.trace ("Entering whatKilledUnit");
-		
 		// First work out how many HP we have to have taken of one damage type in order for it to count
 		final int halfDamage = (getUnitUtils ().getTotalDamageTaken (damages) + 1) / 2;
 		
@@ -816,7 +772,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			if ((result == StoredDamageTypeID.HEALABLE) && (findDamageTakenOfType (damages, damageType) >= halfDamage))
 				result = damageType;
 		
-		log.trace ("Exiting whatKilledUnit = " + result);
 		return result;
 	}
 	
@@ -831,8 +786,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	@Override
 	public final void checkIfHeroGainedALevel (final int unitURN, final UnitType unitType, final PlayerServerDetails owningPlayer, final int experienceSkillValue)
 	{
-		log.trace ("Entering checkIfHeroGainedALevel: Unit URN " + unitURN);
-		
 		if ((unitType.isAnnounceWhenLevelGained ()) && (owningPlayer.getPlayerDescription ().isHuman ()))
 		{
 			if ((unitType.getExperienceLevel ().stream ().anyMatch (lvl -> experienceSkillValue == lvl.getExperienceRequired ())))
@@ -844,8 +797,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				((MomTransientPlayerPrivateKnowledge) owningPlayer.getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (ntm);
 			}
 		}
-		
-		log.trace ("Exiting checkIfHeroGainedALevel");
 	}
 	
 	/**
@@ -863,8 +814,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering findFreeCombatPositionClosestTo: " + combatLocation + ", " + startPosition);
-		
 		MapCoordinates2DEx found = null;
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (startPosition);
 		
@@ -901,7 +850,6 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			ringNumber++;
 		}
 		
-		log.trace ("Exiting findFreeCombatPositionClosestTo = " + found);
 		return found;
 	}
 	

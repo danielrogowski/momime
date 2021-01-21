@@ -83,8 +83,6 @@ public final class EditStringUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/editString298x76.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/okButton41x15Normal.png");
@@ -149,8 +147,6 @@ public final class EditStringUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -159,8 +155,6 @@ public final class EditStringUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-
 		// Title
 		final String useTitle;
 		if (getTitle () != null)
@@ -179,8 +173,6 @@ public final class EditStringUI extends MomClientFrameUI
 		promptLabel.setText (usePrompt);
 		
 		// No action text to set, because the button has OK on it as part of the image
-
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**

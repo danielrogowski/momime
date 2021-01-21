@@ -115,8 +115,6 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 	@Override
 	public final void preProcess () throws IOException
 	{
-		log.trace ("Entering preProcess: Unit URN " + getUnitURN ());
-		
 		final AvailableUnit unit;
 		if (getUnitURN () != null)
 			unit = getUnitUtils ().findUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
@@ -130,8 +128,6 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 		
 		xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-
-		log.trace ("Exiting preProcess");
 	}
 	
 	/**

@@ -9,9 +9,6 @@ import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.OverlandMapTerrainData;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Helper methods for dealing with MemoryGridCell objects
  *
@@ -22,9 +19,6 @@ import org.apache.commons.logging.LogFactory;
  */
 public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MemoryGridCellUtilsImpl.class);
-	
 	/**
 	 * This is used because the data structures hold blank for an unknown tile type that we can't see, but the XML files
 	 * define movement rate rules and descriptions for tiles within the fog of war, and these can't be defined as null so are defined as "FOW"
@@ -79,14 +73,10 @@ public final class MemoryGridCellUtilsImpl implements MemoryGridCellUtils
 	@Override
 	public final void blankBuildingsSoldThisTurn (final MapVolumeOfMemoryGridCells map)
 	{
-		log.trace ("Entering blankBuildingsSoldThisTurn");
-
 		for (final MapAreaOfMemoryGridCells plane : map.getPlane ())
 			for (final MapRowOfMemoryGridCells row : plane.getRow ())
 				for (final MemoryGridCell cell : row.getCell ())
 					cell.setBuildingIdSoldThisTurn (null);
-
-		log.trace ("Exiting blankBuildingsSoldThisTurn");
 	}
 	
 	/**

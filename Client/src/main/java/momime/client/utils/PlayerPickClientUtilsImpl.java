@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.random.RandomUtils;
 
 import momime.client.MomClient;
@@ -22,9 +19,6 @@ import momime.common.database.RecordNotFoundException;
  */
 public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (PlayerPickClientUtilsImpl.class);
-	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
@@ -45,8 +39,6 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 	@Override
 	public final String describePickPreRequisites (final Pick pick) throws RecordNotFoundException
 	{
-		log.trace ("Entering describePickPreRequisites: " + pick.getPickID ());
-
 		// This map of maps stores, for each pick type (i.e. books/retorts), how many times we need N picks
 		// e.g. for the example above, the first map key would be B, the second map key would be 2, and the value would be 3
 		final Map<String, Map<Integer, Integer>> genericPrerequisites = new HashMap<String, Map<Integer, Integer>> ();
@@ -117,7 +109,6 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 		}
 		
 		final String text = (result.length () == 0) ? null : getTextUtils ().replaceFinalCommaByAnd (result.toString ());
-		log.trace ("Exiting describePickPreRequisites = " + text);
 		return text;
 	}
 	
@@ -129,13 +120,10 @@ public final class PlayerPickClientUtilsImpl implements PlayerPickClientUtils
 	@Override
 	public final String chooseRandomBookImageFilename (final Pick pick) throws RecordNotFoundException	
 	{
-		log.trace ("Entering chooseRandomBookImageFilename");
-		
 		if (pick.getBookImageFile ().size () == 0)
 			throw new RecordNotFoundException ("BookImage", null, "chooseRandomBookImageFilename");
 		
 		final String filename = pick.getBookImageFile ().get (getRandomUtils ().nextInt (pick.getBookImageFile ().size ()));
-		log.trace ("Exiting chooseRandomBookImageFilename = " + filename);
 		return filename;
 	}
 

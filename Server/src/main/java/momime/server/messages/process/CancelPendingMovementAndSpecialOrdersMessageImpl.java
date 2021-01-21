@@ -54,8 +54,6 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", Unit URN " + getUnitURN ());
-		
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Find the unit and do some basic validation
@@ -91,8 +89,6 @@ public final class CancelPendingMovementAndSpecialOrdersMessageImpl extends Canc
 			if (recalcProduction)
 				getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
-		
-		log.trace ("Exiting process");
 	}
 
 	/**

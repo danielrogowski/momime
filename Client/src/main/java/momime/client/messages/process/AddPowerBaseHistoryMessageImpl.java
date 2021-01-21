@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -23,9 +20,6 @@ import momime.common.messages.servertoclient.PowerBaseHistoryPlayer;
  */
 public final class AddPowerBaseHistoryMessageImpl extends AddPowerBaseHistoryMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (AddPowerBaseHistoryMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -43,8 +37,6 @@ public final class AddPowerBaseHistoryMessageImpl extends AddPowerBaseHistoryMes
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-		
 		for (final PowerBaseHistoryPlayer value : getPlayer ())
 		{
 			final PlayerPublicDetails thisPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), value.getPlayerID ());
@@ -56,8 +48,6 @@ public final class AddPowerBaseHistoryMessageImpl extends AddPowerBaseHistoryMes
 		}
 		
 		getHistoryUI ().redrawChart ();
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

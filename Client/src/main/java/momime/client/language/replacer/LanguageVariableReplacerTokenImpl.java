@@ -1,16 +1,10 @@
 package momime.client.language.replacer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Processes standard tokens that consist of upper case letters, numbers and at least one underscore
  */
 public abstract class LanguageVariableReplacerTokenImpl extends LanguageVariableReplacerImpl
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (LanguageVariableReplacerTokenImpl.class);
-
 	/**
 	 * @param c Char to test 
 	 * @return True if this char is used for replacable codes
@@ -28,8 +22,6 @@ public abstract class LanguageVariableReplacerTokenImpl extends LanguageVariable
 	@Override
 	public final LanguageVariableReplacerCodePosition findCode (final String description)
 	{
-		log.trace ("Entering findCode: " + description);
-
 		final LanguageVariableReplacerCodePosition position;
 		int codeStart = description.indexOf ('_');
 		if (codeStart < 0)
@@ -48,7 +40,6 @@ public abstract class LanguageVariableReplacerTokenImpl extends LanguageVariable
 			position = new LanguageVariableReplacerCodePosition (codeStart, codeEnd);
 		}
 
-		log.trace ("Exiting findCode: " + position);
 		return position;
 	}
 }

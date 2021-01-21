@@ -2,9 +2,6 @@ package momime.client.utils;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import momime.common.MomException;
 import momime.common.database.HeroItemBonus;
 
@@ -13,9 +10,6 @@ import momime.common.database.HeroItemBonus;
  */
 public final class HeroItemClientUtilsImpl implements HeroItemClientUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (HeroItemClientUtilsImpl.class);
-	
 	/**
 	 * Given a list of attribute bonuses, slots in a null when we swap from a bonus to one attribute to a bonus to another
 	 * i.e. so we end up with for example Atk+1 Atk+2 Atk+3 ...gap... Def+1 Def+2 Def+3.
@@ -28,8 +22,6 @@ public final class HeroItemClientUtilsImpl implements HeroItemClientUtils
 	@Override
 	public final void insertGapsBetweenDifferentKindsOfAttributeBonuses (final List<HeroItemBonus> bonuses) throws MomException
 	{
-		log.trace ("Entering insertGapsBetweenDifferentKindsOfAttributeBonuses");
-		
 		String lastSkillID = null;
 		int index = 0;
 		while (index < bonuses.size ())
@@ -61,8 +53,6 @@ public final class HeroItemClientUtilsImpl implements HeroItemClientUtils
 				index = index + 2;
 			}
 		}
-		
-		log.trace ("Exiting insertGapsBetweenDifferentKindsOfAttributeBonuses");
 	}
 
 	/**
@@ -78,8 +68,6 @@ public final class HeroItemClientUtilsImpl implements HeroItemClientUtils
 	@Override
 	public final void shuffleSplitPoint (final List<HeroItemBonus> bonuses, final int count) throws MomException
 	{
-		log.trace ("Entering shuffleSplitPoint");
-
 		// If the list already fits in 1 column, then there's nothing to do
 		if (bonuses.size () <= count)
 		{}
@@ -104,7 +92,5 @@ public final class HeroItemClientUtilsImpl implements HeroItemClientUtils
 		
 		if (bonuses.size () > count * 2)
 			throw new MomException ("After all adjustments, list of hero item attribute bonuses spreads over more than 2 columns");
-		
-		log.trace ("Exiting shuffleSplitPoint");
 	}
 }

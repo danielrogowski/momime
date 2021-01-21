@@ -89,8 +89,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	public final void initializeNewGame () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering initializeNewGame: Session ID " + getSessionDescription ().getSessionID ());
-
 		// Load server XML
 		log.info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
@@ -117,7 +115,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 			getGeneralServerKnowledge ().getAvailableHeroItem ().add (getHeroItemServerUtils ().createNumberedHeroItem (item, getGeneralServerKnowledge ()));
 
 		log.info ("Session startup completed");
-		log.trace ("Exiting initializeNewGame");
 	}
 	
 	/**
@@ -130,8 +127,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	public final void preInitializeLoadedGame () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering preInitializeLoadedGame");
-
 		// Load server XML
 		log.info ("Loading server XML...");
 		final File fullFilename = new File (getPathToServerXmlDatabases () + "/" + getSessionDescription ().getXmlDatabaseName () +
@@ -143,8 +138,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		sdb.buildMaps ();
 		sdb.consistencyChecks ();
 		getGeneralPublicKnowledge ().setMomDatabase (sdb);
-
-		log.trace ("Exiting preInitializeLoadedGame");
 	}
 	
 	/**
@@ -157,12 +150,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	public final void initializeLoadedGame () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering initializeLoadedGame");
-
 		// If its a single player game, then start it immediately
 		getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);
-		
-		log.trace ("Exiting initializeLoadedGame");
 	}
 	
 	/**
@@ -174,17 +163,14 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	 * @throws XMLStreamException If there is a problem writing the reply to the XML stream
 	 * @throws IOException If there is a problem sending any reply back to the client
 	 */
+	@SuppressWarnings ("unused")
 	@Override
 	public final void playerAdded (final PlayerServerDetails player, final JoinSuccessfulReason reason)
 		throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering playerAdded: Player ID " + player.getPlayerDescription ().getPlayerID () + ", " + reason);
-		
 		// Only do this for *additional* players joining saved games - if we've loading a single player saved game, the player is added too early so these are handled above
 		if (reason == JoinSuccessfulReason.REJOINED_SESSION)
 			getPlayerMessageProcessing ().checkIfCanStartLoadedGame (this);
-		
-		log.trace ("Exiting playerAdded");
 	}
 	
 	/**
@@ -266,8 +252,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 	@Override
 	protected final PersistentPlayerPrivateKnowledge createPersistentPlayerPrivateKnowledge (final SessionDescription sd, final PlayerDescription pd)
 	{
-		log.trace ("Entering createPersistentPlayerPrivateKnowledge");
-		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
 
 		// Initialize all spell research statuses
@@ -350,7 +334,6 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 		fogOfWarMemory.setMap (fogOfWarMap);
 		priv.setFogOfWarMemory (fogOfWarMemory);
 
-		log.trace ("Exiting createPersistentPlayerPrivateKnowledge = " + priv);
 		return priv;
 	}
 

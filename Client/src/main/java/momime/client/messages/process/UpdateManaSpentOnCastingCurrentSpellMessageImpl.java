@@ -5,23 +5,17 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.MomClient;
 import momime.client.ui.frames.QueuedSpellsUI;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Server sends this to client to let them know progress on casting big spells
  */
 public final class UpdateManaSpentOnCastingCurrentSpellMessageImpl extends UpdateManaSpentOnCastingCurrentSpellMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UpdateManaSpentOnCastingCurrentSpellMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -36,12 +30,8 @@ public final class UpdateManaSpentOnCastingCurrentSpellMessageImpl extends Updat
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getManaSpentOnCastingCurrentSpell ());
-		
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().setManaSpentOnCastingCurrentSpell (getManaSpentOnCastingCurrentSpell ());
 		getQueuedSpellsUI ().updateQueuedSpells ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

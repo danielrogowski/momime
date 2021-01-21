@@ -2,9 +2,6 @@ package momime.server.fogofwar;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -31,9 +28,6 @@ import momime.server.calculations.FogOfWarCalculations;
  */
 public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisibility
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (FogOfWarMidTurnVisibilityImpl.class);
-	
 	/** Single cell FOW calculations */
 	private FogOfWarCalculations fogOfWarCalculations;
 
@@ -55,8 +49,6 @@ public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisib
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
-		log.trace ("Entering canSeeUnitMidTurn: Unit URN " + unit.getUnitURN () + ", Player ID " + player.getPlayerDescription ().getPlayerID ());
-		
 		final boolean canSee;
 
 		// Firstly we only know abouts that are alive
@@ -77,7 +69,6 @@ public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisib
 				((MapCoordinates3DEx) unit.getUnitLocation (), fogOfWarSettings.getUnits (), trueTerrain, priv.getFogOfWar (), db);
 		}
 
-		log.trace ("Exiting canSeeUnitMidTurn = " + canSee);
 		return canSee;
 	}
 
@@ -98,8 +89,6 @@ public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisib
 		final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws RecordNotFoundException, PlayerNotFoundException
 	{
-		log.trace ("Entering canSeeSpellMidTurn: Spell URN " + spell.getSpellURN () + ", Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final boolean canSee;
 
 		// Unit spell?
@@ -122,7 +111,6 @@ public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisib
 		else
 			canSee = true;
 
-		log.trace ("Exiting canSeeSpellMidTurn = " + canSee);
 		return canSee;
 	}
 
@@ -136,8 +124,6 @@ public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisib
 	public final boolean canSeeCombatAreaEffectMidTurn (final MemoryCombatAreaEffect cae,
 		final MapVolumeOfFogOfWarStates fogOfWarArea, final FogOfWarValue setting)
 	{
-		log.trace ("Entering canSeeCombatAreaEffectMidTurn: CAE URN " + cae.getCombatAreaEffectURN () + ", " + setting);
-
 		final boolean canSee;
 
 		// This is a lot simpler than the spell version, since CAEs can't be targetted on specific units, only on a map cell or globally
@@ -151,7 +137,6 @@ public final class FogOfWarMidTurnVisibilityImpl implements FogOfWarMidTurnVisib
 		else
 			canSee = true;
 
-		log.trace ("Exiting canSeeCombatAreaEffectMidTurn = " + canSee);
 		return canSee;
 	}
 

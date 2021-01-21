@@ -77,8 +77,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init: " + getUnit ().getUnitURN ());
-		
 		// Actions
 		// Only show the dismiss button for our own units
 		if (getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ())
@@ -156,8 +154,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 			(new int [] {0, panelSize.width - getUnitInfoPanel ().getBackgroundButtonsWidth (), panelSize.width - getUnitInfoPanel ().getBackgroundButtonsWidth (), panelSize.width, panelSize.width, 0},
 			new int [] {0, 0, panelSize.height - getUnitInfoPanel ().getBackgroundButtonsHeight (), panelSize.height - getUnitInfoPanel ().getBackgroundButtonsHeight (), panelSize.height, panelSize.height},
 			6));
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -165,11 +161,7 @@ public final class UnitInfoUI extends MomClientFrameUI
 	 */
 	public final void close ()
 	{
-		log.trace ("Entering close: " + getUnit ().getUnitURN ());
-		
 		getFrame ().dispose ();
-
-		log.trace ("Exiting close: " + getUnit ().getUnitURN ());
 	}
 	
 	/**
@@ -178,8 +170,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged: " + getUnit ().getUnitURN ());
-
 		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
 		if (dismissAction != null)
 			dismissAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getUnitInfoScreen ().getDismiss ()));
@@ -202,8 +192,6 @@ public final class UnitInfoUI extends MomClientFrameUI
 		{
 			log.error (e, e);
 		}
-		
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**

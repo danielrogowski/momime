@@ -119,8 +119,6 @@ public final class WizardsUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/wizards.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldNormal.png");
@@ -221,8 +219,6 @@ public final class WizardsUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-		
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -231,8 +227,6 @@ public final class WizardsUI extends MomClientFrameUI
 	 */
 	public final void updateWizards () throws IOException
 	{
-		log.trace ("Entering updateWizards");
-		
 		if (gems != null)
 			for (int n = 0; n < 14; n++)
 			{
@@ -269,8 +263,6 @@ public final class WizardsUI extends MomClientFrameUI
 					}
 				}
 			}
-		
-		log.trace ("Exiting updateWizards");
 	}
 	
 	/**
@@ -279,8 +271,6 @@ public final class WizardsUI extends MomClientFrameUI
 	 */
 	private final void updateBookshelfFromPicks () throws IOException
 	{
-		log.trace ("Entering updateBookshelfFromPicks: " + selectedWizard.getPlayerDescription ().getPlayerID ());
-
 		// Remove all the old books
 		for (final JLabel oldBook : bookImages)
 			bookshelf.remove (oldBook);
@@ -313,8 +303,6 @@ public final class WizardsUI extends MomClientFrameUI
 		// bookshelf.validate only redraws the new smaller area and leaves bits of the old books showing
 		contentPane.validate ();
 		contentPane.repaint ();
-
-		log.trace ("Exiting updateBookshelfFromPicks");
 	}
 	
 	/**
@@ -326,8 +314,6 @@ public final class WizardsUI extends MomClientFrameUI
 	 */
 	private final String updateRetortsFromPicks (final int charIndex) throws RecordNotFoundException
 	{
-		log.trace ("Entering updateRetortsFromPicks: " + selectedWizard.getPlayerDescription ().getPlayerID ());
-		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) selectedWizard.getPersistentPlayerPublicKnowledge ();
 		final StringBuffer desc = new StringBuffer ();
 		String result = null;
@@ -355,7 +341,6 @@ public final class WizardsUI extends MomClientFrameUI
 		}
 		retorts.setText (getTextUtils ().replaceFinalCommaByAnd (desc.toString ()));
 
-		log.trace ("Exiting updateRetortsFromPicks = " + result);
 		return result;
 	}	
 	
@@ -364,14 +349,10 @@ public final class WizardsUI extends MomClientFrameUI
 	 */
 	private final void updateWizardName ()
 	{
-		log.trace ("Entering updateWizardName");
-		
 		if (selectedWizard == null)
 			playerName.setText (null);
 		else
 			playerName.setText (getWizardClientUtils ().getPlayerName (selectedWizard));
-		
-		log.trace ("Exiting updateWizardName");
 	}
 	
 	/**
@@ -380,14 +361,10 @@ public final class WizardsUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged");
-		
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ()));
 		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
 		
 		updateWizardName ();
-		
-		log.trace ("Exiting languageChanged");
 	}
 	
 	/**

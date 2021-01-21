@@ -34,9 +34,6 @@ public final class SmoothedTileTypeEx extends SmoothedTileType
 	 */
 	public final void buildMap (final Map<String, List<String>> smoothingSystemBitmasksMap) throws RecordNotFoundException
 	{
-		log.trace ("Entering buildMap: " + getTileTypeID () + ", "+ getSecondaryTileTypeID () + ", " + getTertiaryTileTypeID () + ", " +
-			getCombatTileTypeID () + ", " + getSmoothingSystemID () + ", " + getPlaneNumber ());
-		
 		// For many tiles there are multiple possible images, e.g. there's multiple forest images so all large areas of forest don't look repetitive.
 		// So, step 1 is to put these in a map so we can go from a *smoothed* bitmask to all of its possible images.
 		// That way later on we don't have to re-search the entire ~200 tiles for every bitmask over and over.
@@ -75,8 +72,6 @@ public final class SmoothedTileTypeEx extends SmoothedTileType
 		final List<SmoothedTile> noSmoothImages = smoothedMap.get (CommonDatabaseConstants.TILE_BITMASK_NO_SMOOTHING);
 		if (noSmoothImages != null)
 			bitmasksMap.put (CommonDatabaseConstants.TILE_BITMASK_NO_SMOOTHING, noSmoothImages);
-		
-		log.trace ("Exiting buildMap = " + bitmasksMap.size ());
 	}
 	
 	/**

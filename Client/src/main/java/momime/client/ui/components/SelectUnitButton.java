@@ -64,19 +64,15 @@ public final class SelectUnitButton extends JToggleButton
 	 */
 	public final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load in all necessary images		
 		unitButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/unitHealthButtonNormal.png");
 		unitButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/unitHealthButtonPressed.png");
-		
+	
 		// Fix size
 		final Dimension buttonSize = new Dimension (unitButtonNormal.getWidth (), unitButtonNormal.getHeight ());
 		setMinimumSize (buttonSize);
 		setMaximumSize (buttonSize);
 		setPreferredSize (buttonSize);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**

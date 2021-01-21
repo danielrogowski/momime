@@ -280,8 +280,6 @@ public final class CityViewUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init: " + getCityLocation ());
-		
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/background.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/cityView/cityViewButtonNormal.png");
@@ -854,8 +852,6 @@ public final class CityViewUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -864,8 +860,6 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	public final void unitsChanged () throws IOException
 	{
-		log.trace ("Entering unitsChanged: " + getCityLocation ());
-		
 		for (final SelectUnitButton button : selectUnitButtons)
 			contentPane.remove (button);
 		
@@ -927,8 +921,6 @@ public final class CityViewUI extends MomClientFrameUI
 
 		contentPane.revalidate ();
 		contentPane.repaint ();
-		
-		log.trace ("Exiting unitsChanged");
 	}
 	
 	/**
@@ -936,14 +928,10 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	public final void spellsChanged ()
 	{
-		log.trace ("Entering spellsChanged");
-		
 		spellsItems.clear ();
 		for (final MemoryMaintainedSpell spell : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ())
 			if (getCityLocation ().equals (spell.getCityLocation ()))
 				spellsItems.addElement (spell);
-		
-		log.trace ("Exiting spellsChanged");
 	}
 
 	/**
@@ -952,8 +940,6 @@ public final class CityViewUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		log.trace ("Entering languageChanged: " + getCityLocation ());
-		
 		// Fixed labels
 		resourcesLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getResources ()));
 		enchantmentsLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getCityScreen ().getEnchantments ()));
@@ -972,8 +958,6 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		// Spell names are dynamically looked up by the ListCellRenderer, so just force a repaint
 		spellsList.repaint ();
-
-		log.trace ("Exiting languageChanged");
 	}
 
 	/**
@@ -984,7 +968,6 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	public final void cityDataChanged () throws IOException
 	{
-		log.trace ("Entering cityDataChanged: " + getCityLocation ());
 		civilianPanel.removeAll ();
 		productionPanel.removeAll ();
 
@@ -1160,8 +1143,6 @@ public final class CityViewUI extends MomClientFrameUI
 		getCityViewPanel ().setRenderCityData (getCityCalculations ().buildRenderCityData (getCityLocation (),
 			getClient ().getSessionDescription ().getOverlandMapSize (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ()));
 		getCityViewPanel ().init ();
-		
-		log.trace ("Exiting cityDataChanged");
 	}
 	
 	/**
@@ -1169,8 +1150,6 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	private final void languageOrCityDataChanged ()
 	{
-		log.trace ("Entering languageOrCityDataChanged");
-
 		// Get details about the city
 		final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 			(getCityLocation ().getZ ()).getRow ().get (getCityLocation ().getY ()).getCell ().get (getCityLocation ().getX ()).getCityData ();
@@ -1223,8 +1202,6 @@ public final class CityViewUI extends MomClientFrameUI
 			{
 				log.error (e, e);
 			}
-		
-		log.trace ("Exiting languageOrCityDataChanged");
 	}
 	
 	/**
@@ -1232,13 +1209,9 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	public final void productionSoFarChanged ()
 	{
-		log.trace ("Entering productionSoFarChanged");
-		
 		// Since the panel is transparent and doesn't completely draw itself, can end up with garbage
 		// showing if we literally just redraw the panel, so need to redraw the whole screen
 		getFrame ().repaint ();
-		
-		log.trace ("Exiting productionSoFarChanged");
 	}
 	
 	/**
@@ -1247,8 +1220,6 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	public final void recheckRushBuyEnabled () throws RecordNotFoundException
 	{
-		log.trace ("Entering recheckRushBuyEnabled");
-
 		boolean rushBuyEnabled = false;
 		if (!notOursPanel.isVisible ())
 		{
@@ -1271,8 +1242,6 @@ public final class CityViewUI extends MomClientFrameUI
 			}
 		}		
 		rushBuyAction.setEnabled (rushBuyEnabled);
-		
-		log.trace ("Exiting recheckRushBuyEnabled = " + rushBuyEnabled);
 	}
 
 	/**
@@ -1281,8 +1250,6 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	public final void regenerateCityViewMiniMapBitmaps () throws IOException
 	{
-		log.trace ("Entering regenerateCityViewMiniMapBitmaps: " + getCityLocation ());
-
 		// This might move us off the top or left of the map and get -ve coordinates if they aren't wrapping edges, but that's fine, the bitmap generator copes with that
 		final MapCoordinates3DEx mapTopLeft = new MapCoordinates3DEx (getCityLocation ());
 		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
@@ -1290,8 +1257,6 @@ public final class CityViewUI extends MomClientFrameUI
 		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
 		
 		miniMapBitmaps = getOverlandMapBitmapGenerator ().generateOverlandMapBitmaps (mapTopLeft.getZ (), mapTopLeft.getX (), mapTopLeft.getY (), 7, 7);
-		
-		log.trace ("Exiting regenerateCityViewMiniMapBitmaps");
 	}
 	
 	/**
@@ -1308,16 +1273,12 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	public final void regenerateCityViewMiniMapFogOfWar () throws IOException
 	{
-		log.trace ("Entering regenerateCityViewMiniMapFogOfWar: " + getCityLocation ());
-
 		final MapCoordinates3DEx mapTopLeft = new MapCoordinates3DEx (getCityLocation ());
 		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
 		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
 		getCoordinateSystemUtils ().move3DCoordinates (getClient ().getSessionDescription ().getOverlandMapSize (), mapTopLeft, SquareMapDirection.NORTHWEST.getDirectionID ());
 		
 		fogOfWarBitmap = getOverlandMapBitmapGenerator ().generateFogOfWarBitmap (mapTopLeft.getZ (), mapTopLeft.getX (), mapTopLeft.getY (), 7, 7);
-		
-		log.trace ("Exiting regenerateCityViewMiniMapFogOfWar");
 	}
 	
 	/**
@@ -1325,11 +1286,7 @@ public final class CityViewUI extends MomClientFrameUI
 	 */
 	public final void close ()
 	{
-		log.trace ("Entering close: " + getCityLocation ());
-		
 		getFrame ().dispose ();
-
-		log.trace ("Exiting close: " + getCityLocation ());
 	}
 	
 	/**

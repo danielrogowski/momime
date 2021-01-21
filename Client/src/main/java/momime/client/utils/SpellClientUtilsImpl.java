@@ -8,9 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
@@ -35,9 +32,6 @@ import momime.common.utils.PlayerPickUtils;
  */
 public final class SpellClientUtilsImpl implements SpellClientUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpellClientUtilsImpl.class);
-
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;
 	
@@ -68,8 +62,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	@Override
 	public final String listUpkeepsOfSpell (final Spell spell, final List<PlayerPick> picks) throws RecordNotFoundException
 	{
-		log.trace ("Entering listUpkeepsOfSpell: " + spell.getSpellID ());
-		
 		String upkeepList = null;
 		for (final ProductionTypeAndUndoubledValue upkeep : spell.getSpellUpkeep ())
 		{
@@ -98,7 +90,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		final String result = (upkeepList == null) ? null :
 			getLanguageHolder ().findDescription (getLanguages ().getHelpScreen ().getSpellUpkeepFixed ()).replaceAll ("UPKEEP_LIST", upkeepList);
 		
-		log.trace ("Exiting listUpkeepsOfSpell = \"" + result + "\"");
 		return result;
 	}
 
@@ -110,8 +101,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	@Override
 	public final String listValidMagicRealmLifeformTypeTargetsOfSpell (final Spell spell) throws RecordNotFoundException
 	{
-		log.trace ("Entering listValidMagicRealmLifeformTypeTargetsOfSpell: " + spell.getSpellID ());
-
 		final StringBuilder magicRealms = new StringBuilder ();
 		for (final SpellValidUnitTarget target : spell.getSpellValidUnitTarget ())
 			if (target.getTargetMagicRealmID () != null)
@@ -123,7 +112,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 			}
 		
 		final String result = magicRealms.toString ();
-		log.trace ("Exiting listValidMagicRealmLifeformTypeTargetsOfSpell = \"" + result + "\"");
 		return result;
 	}
 	
@@ -137,8 +125,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	@Override
 	public final String listSavingThrowsOfSpell (final Spell spell) throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering listSavingThrowsOfSpell: " + spell.getSpellID ());
-		
 		final List<Integer> savingThrowModifiers = new ArrayList<Integer> ();
 		String unitSkillID = null;
 		
@@ -180,7 +166,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 			}
 		}
 		
-		log.trace ("Exiting listSavingThrowsOfSpell = \"" + result + "\"");
 		return result;
 	}
 	
@@ -198,8 +183,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 	@Override
 	public final Image findImageForSpell (final String spellID, final Integer castingPlayerID) throws IOException
 	{
-		log.trace ("Entering findImageForSpell: " + spellID);
-		
 		// Get the details about the spell
 		final Spell spell = getClient ().getClientDB ().findSpell (spellID, "findImageForSpell");
 		
@@ -370,7 +353,6 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 		else
 			resizedImage = image.getScaledInstance (image.getWidth () / sizeDivisor, image.getHeight () / sizeDivisor, Image.SCALE_SMOOTH);
 		
-		log.trace ("Exiting findImageForSpell = " + resizedImage);
 		return resizedImage;
 	}
 

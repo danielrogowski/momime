@@ -47,8 +47,6 @@ public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNam
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", Unit URN " + getUnitURN ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 		
 		// Find the unit being dismissed
@@ -83,8 +81,6 @@ public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNam
 			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit,
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

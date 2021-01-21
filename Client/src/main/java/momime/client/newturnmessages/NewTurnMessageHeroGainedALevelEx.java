@@ -100,14 +100,10 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 	@Override
 	public final void preProcess () throws IOException
 	{
-		log.trace ("Entering preProcess: Unit URN " + getUnitURN ());
-		
 		final MemoryUnit unit = getUnitUtils ().findUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		if (unit != null)
 			xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-
-		log.trace ("Exiting preProcess");
 	}
 	
 	/**

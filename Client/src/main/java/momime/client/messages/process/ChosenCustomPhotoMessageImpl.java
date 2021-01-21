@@ -5,26 +5,20 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.client.MomClient;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
-import com.ndg.multiplayer.session.MultiplayerSessionUtils;
-import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 /**
  * Message server sends to players to tell them that a player chose a custom wizard with a custom photo and flag colour
  */
 public final class ChosenCustomPhotoMessageImpl extends ChosenCustomPhotoMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChosenCustomPhotoMessageImpl.class);
-
 	/** Multiplayer client */
 	private MomClient client;
 	
@@ -39,8 +33,6 @@ public final class ChosenCustomPhotoMessageImpl extends ChosenCustomPhotoMessage
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Player ID " + getPlayerID ());
-
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getPlayerID (), "ChosenCustomPhotoMessageImpl");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
@@ -51,8 +43,6 @@ public final class ChosenCustomPhotoMessageImpl extends ChosenCustomPhotoMessage
 		// Store flag colour
 		pub.setCustomFlagColour (getFlagColour ());
 		trans.setFlagColour (getFlagColour ());
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

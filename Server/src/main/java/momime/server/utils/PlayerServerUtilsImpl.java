@@ -3,21 +3,15 @@ package momime.server.utils;
 import java.util.Iterator;
 import java.util.List;
 
-import momime.common.messages.MomTransientPlayerPublicKnowledge;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
+
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
 /**
  * Server side only helper methods for dealing with players
  */
 public final class PlayerServerUtilsImpl implements PlayerServerUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (PlayerServerUtilsImpl.class);
-
 	/**
 	 * @param players List of players to check
 	 * @param turnNo Turn number to check
@@ -26,8 +20,6 @@ public final class PlayerServerUtilsImpl implements PlayerServerUtils
 	@Override
 	public final boolean allPlayersFinishedAllocatingMovement (final List<PlayerServerDetails> players, final int turnNo)
 	{
-		log.trace ("Entering allPlayersFinishedAllocatingMovement: Turn " + turnNo);
-		
 		boolean allAllocated = true;
 		final Iterator<PlayerServerDetails> iter = players.iterator ();
 		while ((allAllocated) && (iter.hasNext ()))
@@ -39,7 +31,6 @@ public final class PlayerServerUtilsImpl implements PlayerServerUtils
 				allAllocated = false;
 		}			
 
-		log.trace ("Exiting allPlayersFinishedAllocatingMovement = " + allAllocated);
 		return allAllocated;
 	}
 }

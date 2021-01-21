@@ -43,8 +43,6 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering process: " + getMapLocation () + ", " + getSpecialOrder () + ", " + getUnitURN ().size ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		final String error = getUnitServerUtils ().processSpecialOrder (getUnitURN (), getSpecialOrder (), (MapCoordinates3DEx) getMapLocation (), sender, mom);
@@ -57,8 +55,6 @@ public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessa
 			reply.setText (error);
 			sender.getConnection ().sendMessageToClient (reply);
 		}
-		
-		log.trace ("Exiting process");
 	}
 
 	/**

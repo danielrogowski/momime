@@ -138,8 +138,6 @@ public final class UnitAIImpl implements UnitAI
 		final List<MemoryUnit> trueUnits, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering listAllUnitsWeCanConstruct: Player ID " + player.getPlayerDescription ().getPlayerID ());
-
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 
@@ -211,8 +209,6 @@ public final class UnitAIImpl implements UnitAI
 		
 		// Sort the results
 		Collections.sort (results);
-		
-		log.trace ("Exiting listAllUnitsWeCanConstruct = " + results.size ());
 		return results;
 	}
 
@@ -234,8 +230,6 @@ public final class UnitAIImpl implements UnitAI
 		final int playerID, final FogOfWarMemory mem, final List<PlayerServerDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering calculateUnitRatingsAtEveryMapCell: AI Player ID " + playerID);
-		
 		for (final MemoryUnit mu : mem.getUnit ())
 			if (mu.getStatus () == UnitStatusID.ALIVE)
 			{
@@ -254,8 +248,6 @@ public final class UnitAIImpl implements UnitAI
 					getAiUnitRatingCalculations ().calculateUnitCurrentRating (mu, xu, players, mem, db),
 					getAiUnitCalculations ().calculateUnitAverageRating (mu, xu, players, mem, db)));
 			}
-
-		log.trace ("Exiting calculateUnitRatingsAtEveryMapCell");
 	}
 	
 	/**
@@ -280,8 +272,6 @@ public final class UnitAIImpl implements UnitAI
 		final List<AIUnitAndRatings> mobileUnits, final int playerID, final boolean isRaiders, final FogOfWarMemory mem, final int highestAverageRating, final int turnNumber,
 		final CoordinateSystem sys, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering evaluateCurrentDefence: AI Player ID " + playerID);
-		
 		final List<AIDefenceLocation> underdefendedLocations = new ArrayList<AIDefenceLocation> ();
 		
 		for (int z = 0; z < sys.getDepth (); z++)
@@ -371,8 +361,6 @@ public final class UnitAIImpl implements UnitAI
 				}
 		
 		Collections.sort (underdefendedLocations);
-
-		log.trace ("Exiting evaluateCurrentDefence");
 		return underdefendedLocations;
 	}
 	
@@ -387,8 +375,6 @@ public final class UnitAIImpl implements UnitAI
 	final boolean unitMatchesCategory (final ExpandedUnitDetails xu, final AiUnitCategory category, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering unitMatchesCategory: " + xu.getDebugIdentifier () + ", category " + category.getAiUnitCategoryID ());
-
 		// Do the relatively easy checks first
 		boolean matches = ((category.getUnitSkillID () == null) || (xu.hasModifiedSkill (category.getUnitSkillID ()))) &&
 			((category.isTransport () == null) || (!category.isTransport ()) || ((xu.getUnitDefinition ().getTransportCapacity () != null) && (xu.getUnitDefinition ().getTransportCapacity () > 0))) &&
@@ -420,7 +406,6 @@ public final class UnitAIImpl implements UnitAI
 			}
 		}
 		
-		log.trace ("Exiting unitMatchesCategory = " + matches);
 		return matches;
 	}
 	
@@ -438,8 +423,6 @@ public final class UnitAIImpl implements UnitAI
 	public final AiUnitCategory determineUnitCategory (final MemoryUnit mu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering determineUnitCategory: Unit URN " + mu.getUnitURN ());
-		
 		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, mem, db);
 
 		// Check categories from the bottom up, since the end categories are the most specific
@@ -459,7 +442,6 @@ public final class UnitAIImpl implements UnitAI
 		if (category == null)
 			throw new MomException ("No unit category matched for unit URN " + mu.getUnitURN ());
 
-		log.trace ("Exiting determineUnitCategory = " + category.getAiUnitCategoryID ());
 		return category;
 	}
 	
@@ -478,8 +460,6 @@ public final class UnitAIImpl implements UnitAI
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering categoriseAndStackUnits");		
-
 		// Process each unit in turn
 		final Map<String, List<AIUnitsAndRatings>> categories = new HashMap<String, List<AIUnitsAndRatings>> ();
 		for (final AIUnitAndRatings unit : units)
@@ -511,7 +491,6 @@ public final class UnitAIImpl implements UnitAI
 			location.add (unit);
 		}
 		
-		log.trace ("Exiting categoriseAndStackUnits = " + categories.size ());
 		return categories;
 	}
 	
@@ -526,8 +505,6 @@ public final class UnitAIImpl implements UnitAI
 	public final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> determineSpecialistUnitsOnEachPlane
 		(final int playerID, final List<AIUnitAndRatings> mobileUnits, final MapVolumeOfMemoryGridCells terrain, final CoordinateSystem sys)
 	{
-		log.trace ("Entering determineSpecialistUnitsOnEachPlane: AI player ID " + playerID);
-
 		final Map<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> specialistUnitsOnEachPlane = new HashMap<Integer, Map<AIUnitType, List<AIUnitAndRatings>>> ();
 		for (final AIUnitAndRatings mu : mobileUnits)
 			if (mu.getAiUnitType () != AIUnitType.COMBAT_UNIT)
@@ -563,7 +540,6 @@ public final class UnitAIImpl implements UnitAI
 					}
 			}
 		
-		log.trace ("Exiting determineSpecialistUnitsOnEachPlane");
 		return specialistUnitsOnEachPlane;
 	}
 
@@ -584,8 +560,6 @@ public final class UnitAIImpl implements UnitAI
 		final FogOfWarMemory fogOfWarMemory, final MapVolumeOfMemoryGridCells trueMap, final MomSessionDescription sd, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering determineDesiredSpecialUnitLocations: AI player ID " + playerID);
-		
 		final List<MapCoordinates3DEx> desiredCityLocations = new ArrayList<MapCoordinates3DEx> ();
 		final List<MapCoordinates3DEx> desiredRoadLocations = new ArrayList<MapCoordinates3DEx> ();
 		final List<MapCoordinates3DEx> desiredNodeLocations = new ArrayList<MapCoordinates3DEx> ();
@@ -629,7 +603,6 @@ public final class UnitAIImpl implements UnitAI
 		if (desiredNodeLocations.size () > 0)
 			desiredSpecialUnitLocations.put (AIUnitType.MELD_WITH_NODE, desiredNodeLocations);
 		
-		log.trace ("Exiting determineDesiredSpecialUnitLocations");
 		return desiredSpecialUnitLocations;
 	}
 	
@@ -658,8 +631,6 @@ public final class UnitAIImpl implements UnitAI
 		final boolean isRaiders, final CoordinateSystem sys, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		log.trace ("Entering decideUnitMovement");
-		
 		AIMovementDecision decision = null;
 		final Iterator<AiMovementCode> iter = movementCodes.iterator ();
 		while ((decision == null) && (iter.hasNext ()))
@@ -742,7 +713,6 @@ public final class UnitAIImpl implements UnitAI
 				((decision == null) ? " rejected" : (" accepted = " + decision)));
 		}
 		
-		log.trace ("Exiting decideUnitMovement = " + decision);
 		return decision;
 	}
 	
@@ -770,8 +740,6 @@ public final class UnitAIImpl implements UnitAI
 		final Map<AIUnitType, List<MapCoordinates3DEx>> desiredSpecialUnitLocations, final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering decideAndExecuteUnitMovement: AI Player ID " + player.getPlayerDescription ().getPlayerID () + ", first Unit URN " + units.get (0).getUnit ().getUnitURN ()); 
-		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
@@ -883,7 +851,6 @@ public final class UnitAIImpl implements UnitAI
 				result = AIMovementResult.DESTINATION_HAS_NO_VALUE_SET;
 		}
 		
-		log.trace ("Exiting decideAndExecuteUnitMovement = " + result);
 		return result;
 	}
 	
@@ -900,8 +867,6 @@ public final class UnitAIImpl implements UnitAI
 	public final List<MapCoordinates3DEx> listNodesWeDontOwnOnPlane (final int playerID, final Integer plane, final FogOfWarMemory fogOfWarMemory, final CoordinateSystem sys,
 		final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering listNodesWeDontOwnOnPlane: AI Player ID " + playerID + ", " + plane); 
-
 		final List<MapCoordinates3DEx> list = new ArrayList<MapCoordinates3DEx> ();
 
 		// Get a list of the locations of all of our units
@@ -928,7 +893,6 @@ public final class UnitAIImpl implements UnitAI
 						}
 					}
 		
-		log.trace ("Exiting listNodesWeDontOwnOnPlane = " + list.size ());
 		return list;
 	}
 	

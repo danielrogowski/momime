@@ -27,10 +27,8 @@ public final class AdvancedPlayerImpl implements AdvancedPlayer
 	@Override
 	public final void setInput (final String resourceName) throws JavaLayerException
 	{
-		log.trace ("Entering setInput: " + resourceName);
 		log.debug ("About to try to play audio file \"" + resourceName + "\"");
 		player = new javazoom.jl.player.advanced.AdvancedPlayer (getClass ().getResourceAsStream (resourceName));
-		log.trace ("Exiting setInput");
 	}
 	
 	/**
@@ -40,10 +38,8 @@ public final class AdvancedPlayerImpl implements AdvancedPlayer
 	@Override
 	public final void play () throws JavaLayerException
 	{
-		log.trace ("Entering play");
 		player.play ();
 		finished = true;
-		log.trace ("Exiting play");
 	}
 	
 	/**
@@ -52,9 +48,7 @@ public final class AdvancedPlayerImpl implements AdvancedPlayer
 	@Override
 	public final void stop ()
 	{
-		log.trace ("Entering stop");
 		player.stop ();
-		log.trace ("Exiting stop");
 	}
 	
 	/**
@@ -63,9 +57,7 @@ public final class AdvancedPlayerImpl implements AdvancedPlayer
 	@Override
 	public final void setPlayBackListener (final PlaybackListener listener)
 	{
-		log.trace ("Entering setPlayBackListener");
 		player.setPlayBackListener (listener);
-		log.trace ("Exiting setPlayBackListener");
 	}
 
 	/**

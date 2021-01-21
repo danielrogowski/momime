@@ -46,7 +46,7 @@ public final class TestSpellAIImpl extends ServerTestData
 		for (int n = 10; n < 20; n++)
 			spells.add (db.getSpell ().get (n));
 
-		assertEquals ("SP020", ai.chooseSpellToResearchAI (spells, -1).getSpellID ());
+		assertEquals ("SP020", ai.chooseSpellToResearchAI (spells).getSpellID ());
 	}
 
 	/**
@@ -57,7 +57,7 @@ public final class TestSpellAIImpl extends ServerTestData
 	public final void testChooseSpellToResearchAI_EmptyList () throws MomException
 	{
 		final SpellAIImpl ai = new SpellAIImpl ();
-		ai.chooseSpellToResearchAI (new ArrayList<Spell> (), -1);
+		ai.chooseSpellToResearchAI (new ArrayList<Spell> ());
 	}
 
 	/**
@@ -89,10 +89,10 @@ public final class TestSpellAIImpl extends ServerTestData
 		}
 
 		// Same magic realm/spell rank at the 10 from the previous test
-		assertEquals ("SP020", ai.chooseFreeSpellAI (spells, "MB04", "SR02", -1, db).getSpellID ());
+		assertEquals ("SP020", ai.chooseFreeSpellAI (spells, "MB04", "SR02", db).getSpellID ());
 
 		// If we give the player one of the spells, should always pick the other one
 		spells.get (19).setStatus (SpellResearchStatusID.AVAILABLE);
-		assertEquals ("SP013", ai.chooseFreeSpellAI (spells, "MB04", "SR02", -1, db).getSpellID ());
+		assertEquals ("SP013", ai.chooseFreeSpellAI (spells, "MB04", "SR02", db).getSpellID ());
 	}
 }

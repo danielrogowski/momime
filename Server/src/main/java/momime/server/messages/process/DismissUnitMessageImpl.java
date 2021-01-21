@@ -58,8 +58,6 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 	public final void process (final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", Unit URN " + getUnitURN ());
-
 		final MomSessionVariables mom = (MomSessionVariables) thread;
 
 		// Find the unit being dismissed
@@ -101,8 +99,6 @@ public final class DismissUnitMessageImpl extends DismissUnitMessage implements 
 			// Unit probably had some maintenance
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

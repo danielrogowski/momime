@@ -5,17 +5,11 @@ import java.util.List;
 
 import momime.common.messages.PendingMovement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  * Helper methods for dealing with pending movement paths
  */
 public final class PendingMovementUtilsImpl implements PendingMovementUtils
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (PendingMovementUtilsImpl.class);
-	
 	/**
 	 * Cancels any pending moves for this unit
 	 * If this is the last unit in any pending moves, then the pending move itself is removed
@@ -26,8 +20,6 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 	@Override
 	public final void removeUnitFromAnyPendingMoves (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.trace ("Entering removeUnitFromAnyPendingMoves: Unit URN + " + unitURN);
-		
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while (movesIter.hasNext ())
 		{
@@ -49,8 +41,6 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 			if (!anyUnitsLeft)
 				movesIter.remove ();
 		}
-		
-		log.trace ("Exiting removeUnitFromAnyPendingMoves");
 	}
 	
 	/**
@@ -62,8 +52,6 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 	@Override
 	public final void removeAnyPendingMovesThatIncludeUnit (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.trace ("Entering removeAnyPendingMovesThatIncludeUnit: Unit URN " + unitURN);
-		
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while (movesIter.hasNext ())
 		{
@@ -71,8 +59,6 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 			if (thisMove.getUnitURN ().contains (unitURN))
 				movesIter.remove ();
 		}
-		
-		log.trace ("Exiting removeAnyPendingMovesThatIncludeUnit");
 	}
 
 	/**
@@ -84,8 +70,6 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 	@Override
 	public final PendingMovement findPendingMoveForUnit (final List<PendingMovement> moves, final int unitURN)
 	{
-		log.trace ("Entering findPendingMoveForUnit: Unit URN " + unitURN);
-
 		PendingMovement found = null;
 		final Iterator<PendingMovement> movesIter = moves.iterator ();
 		while ((found == null) && (movesIter.hasNext ()))
@@ -95,7 +79,6 @@ public final class PendingMovementUtilsImpl implements PendingMovementUtils
 				found = thisMove;
 		}
 
-		log.trace ("Exiting findPendingMoveForUnit = " + found);
 		return found;
 	}
 }

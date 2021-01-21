@@ -7,9 +7,6 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -47,9 +44,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (OverlandMapProcessingImpl.class);
-	
 	/** Ordered list of units that we have to give orders to this turn */
 	private final List<MemoryUnit> unitsLeftToMoveOverland = new ArrayList<MemoryUnit> ();
 	
@@ -94,8 +88,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void buildUnitsLeftToMoveList ()
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering buildUnitsLeftToMoveList");
-		
 		// Rebuild the list
 		unitsLeftToMoveOverland.clear ();
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
@@ -118,8 +110,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		
 		// Ask for movement orders for the first unit
 		selectNextUnitToMoveOverland ();
-		
-		log.trace ("Exiting buildUnitsLeftToMoveList");
 	}
 	
 	/**
@@ -135,8 +125,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final boolean selectNextUnitToMoveOverland ()
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering selectNextUnitToMoveOverland");
-		
 		final boolean found = (unitsLeftToMoveOverland.size () > 0);
 		if (found)
 		{
@@ -154,7 +142,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			showSelectUnitBoxes (null);
 		}
 		
-		log.trace ("Exiting selectNextUnitToMoveOverland = " + found);
 		return found;
 	}
 
@@ -172,8 +159,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final boolean showSelectUnitBoxes (final MapCoordinates3DEx unitLocation)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering showSelectUnitBoxes: " + unitLocation);
-		
 		// Search for units at this location.  Note unlike buildUnitsLeftToMoveList, which ignores units with no movement, pending movement or
 		// special orders, here we want any unit as long as its alive and at the right location.
 		final Iterator<HideableComponent<SelectUnitButton>> buttonIter = getOverlandMapRightHandPanel ().getSelectUnitButtons ().iterator ();
@@ -221,7 +206,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			found = true;
 		}
 		
-		log.trace ("Exiting showSelectUnitBoxes = " + found);
 		return found;
 	}
 	
@@ -234,8 +218,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	@Override
 	public final void enableOrDisableSpecialOrderButtons () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering enableOrDisableSpecialOrderButtons");
-		
 		// Count the number of units with various types of skill
 		int settlerCount = 0;
 		int spiritCount = 0;
@@ -302,8 +284,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		// Can we build a road?
 		getOverlandMapRightHandPanel ().setBuildRoadEnabled ((engineerCount > 0) && (tileType != null) && (tileType.isLand () != null) && (tileType.isLand ()) &&
 			(terrainData != null) && (terrainData.getRoadTileTypeID () == null));
-		
-		log.trace ("Exiting enableOrDisableSpecialOrderButtons");
 	}
 	
 	/**
@@ -318,8 +298,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void updateMovementRemaining ()
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering updateMovementRemaining");
-		
 		final boolean ourTurn = (getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS) ||
 			(getClient ().getOurPlayerID ().equals (getClient ().getGeneralPublicKnowledge ().getCurrentPlayerID ()));
 		
@@ -398,8 +376,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			getOverlandMapUI ().setCanMoveToInOneTurn (canMoveToInOneTurn);
 		}			
 		getOverlandMapUI ().regenerateMovementTypesBitmap ();
-		
-		log.trace ("Exiting updateMovementRemaining");
 	}
 	
 	/**
@@ -449,15 +425,11 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	@Override
 	public final void selectedUnitsDone () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering selectedUnitsDone");
-
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				unitsLeftToMoveOverland.remove (button.getComponent ().getUnit ().getMemoryUnit ());
 		
 		selectNextUnitToMoveOverland ();
-		
-		log.trace ("Exiting selectedUnitsDone");
 	}
 	
 	/**
@@ -473,8 +445,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	@Override
 	public final void selectedUnitsWait () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering selectedUnitsWait");
-
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 			{
@@ -485,8 +455,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			}
 		
 		selectNextUnitToMoveOverland ();
-		
-		log.trace ("Exiting selectedUnitsWait");
 	}
 	
 	/**
@@ -501,8 +469,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	@Override
 	public final void selectedUnitsPatrol () throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
-		log.trace ("Entering selectedUnitsPatrol");
-
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 			{
@@ -511,8 +477,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			}
 		
 		selectNextUnitToMoveOverland ();
-		
-		log.trace ("Exiting selectedUnitsPatrol");
 	}
 	
 	/**
@@ -525,8 +489,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	@Override
 	public final void moveUnitStackTo (final MapCoordinates3DEx moveTo) throws JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering moveUnitStackTo: " + moveTo);
-
 		final List<Integer> movingUnitURNs = new ArrayList<Integer> ();
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if ((!button.isHidden ()) && (button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
@@ -541,8 +503,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 		}
-		
-		log.trace ("Exiting moveUnitStackTo");
 	}
 	
 	/**
@@ -557,8 +517,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	@Override
 	public final void specialOrderButton (final UnitSpecialOrder specialOrder) throws JAXBException, XMLStreamException, MomException
 	{
-		log.trace ("Entering specialOrderButton: " + specialOrder);
-
 		final List<Integer> movingUnitURNs = new ArrayList<Integer> ();
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 			if ((!button.isHidden ()) && (button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
@@ -573,8 +531,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			
 			getClient ().getServerConnection ().sendMessageToServer (msg);
 		}
-
-		log.trace ("Exiting specialOrderButton");
 	}
 	
 	/**
@@ -598,8 +554,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void nextTurnButton ()
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering nextTurn");
-
 		// Prevent doing anything with units after clicking next turn
 		for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 		{
@@ -615,8 +569,6 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		
 		// Send message to server
 		getClient ().getServerConnection ().sendMessageToServer (new NextTurnButtonMessage ());
-			
-		log.trace ("Exiting nextTurn");
 	}
 	
 	/**

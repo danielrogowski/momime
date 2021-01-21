@@ -43,8 +43,6 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 */
 	public final void buildMaps ()
 	{
-		log.trace ("Entering buildMaps");
-		
 		unitSkillComponentsMap = getUnitSkillComponentImage ().stream ().collect (Collectors.toMap (i -> i.getUnitSkillComponentID (), i -> i));
 		unitSpecialOrdersMap = getUnitSpecialOrderImage ().stream ().collect (Collectors.toMap (i -> i.getUnitSpecialOrderID (), i -> i));
 		figureCountsMap = getCombatTileFigurePositionsGfx ().stream ().collect (Collectors.toMap (p -> p.getFigureCount (), p -> p));
@@ -52,8 +50,6 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 		playListsMap = getPlayList ().stream ().collect (Collectors.toMap (p -> p.getPlayListID (), p -> p));
 		
 		getCombatTileFigurePositionsGfx ().forEach (p -> p.buildMap ());
-		
-		log.trace ("Exiting buildMaps");
 	}
 
 	/**
@@ -62,7 +58,6 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 */
 	public final void consistencyChecks () throws IOException
 	{
-		log.trace ("Entering consistencyChecks");
 		log.info ("Processing graphics XML file");
 		
 		// Check all animations have frames with consistent sizes
@@ -70,8 +65,6 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 			anim.deriveAnimationWidthAndHeight ();
 		
 		log.info ("All " + getAnimation ().size () + " graphics XML animations passed consistency checks");		
-		
-		log.trace ("Exiting consistencyChecks");
 	}
 
 	/**
@@ -80,12 +73,8 @@ public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements Gr
 	 */
 	public final void buildMapsAndRunConsistencyChecks () throws IOException
 	{
-		log.trace ("Entering buildMapsAndRunConsistencyChecks");
-
 		buildMaps ();
 		consistencyChecks ();
-
-		log.trace ("Exiting buildMapsAndRunConsistencyChecks");
 	}
 	
 	/**

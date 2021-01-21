@@ -3,6 +3,9 @@ package momime.server.process.resourceconsumer;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.server.session.PlayerServerDetails;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -12,20 +15,11 @@ import momime.common.messages.NewTurnMessageTypeID;
 import momime.server.MomSessionVariables;
 import momime.server.process.SpellProcessing;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.server.session.PlayerServerDetails;
-import com.ndg.multiplayer.session.PlayerNotFoundException;
-
 /**
  * Spell that consumes a particular type of resource
  */
 public final class MomResourceConsumerSpell implements MomResourceConsumer
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (MomResourceConsumerSpell.class);
-	
 	/** True map spell that is consuming resources */
 	private MemoryMaintainedSpell spell;
 
@@ -122,8 +116,6 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering kill: " + getSpell ().getSpellID ());
-
 		getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), getSpell ().getSpellURN (),
 			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
@@ -136,8 +128,6 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 
 			((MomTransientPlayerPrivateKnowledge) getPlayer ().getTransientPlayerPrivateKnowledge ()).getNewTurnMessage ().add (spellSwitchedOff);
 		}
-
-		log.trace ("Exiting kill");
 	}
 
 	/**

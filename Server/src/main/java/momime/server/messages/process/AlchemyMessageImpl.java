@@ -46,8 +46,6 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 	public final void process (@SuppressWarnings ("unused") final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getFromProductionTypeID () + ", " + getFromValue ());
-
 		String error = null;
 		String toProductionTypeID = null;
 
@@ -97,8 +95,6 @@ public final class AlchemyMessageImpl extends AlchemyMessage implements PostSess
 			// Send updated amounts to client
 			getServerResourceCalculations ().sendGlobalProductionValues (sender, null);
 		}
-
-		log.trace ("Exiting process");
 	}
 
 	/**

@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.MomClient;
@@ -21,9 +18,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class KillUnitMessageImpl extends KillUnitMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (KillUnitMessageImpl.class);
-
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 	
@@ -41,14 +35,10 @@ public final class KillUnitMessageImpl extends KillUnitMessage implements BaseSe
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: Unit URN " + getUnitURN () + ", " + getNewStatus ());
-
 		final MemoryUnit unit = getUnitUtils ().findUnitURN (unitURN,
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "KillUnitMessageImpl");
 		
 		getUnitClientUtils ().killUnit (unit, getNewStatus ());
-		
-		log.trace ("Exiting start");
 	}
 
 	/**

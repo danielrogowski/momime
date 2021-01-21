@@ -5,13 +5,10 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.ui.frames.NewGameUI;
 import momime.common.messages.servertoclient.ChooseYourRaceNowMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Message server sends to a player when they've finished picking free spells at the start of the game, since the
@@ -19,9 +16,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  */
 public final class ChooseYourRaceNowMessageImpl extends ChooseYourRaceNowMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChooseYourRaceNowMessageImpl.class);
-
 	/** New Game UI */
 	private NewGameUI newGameUI;
 
@@ -33,11 +27,7 @@ public final class ChooseYourRaceNowMessageImpl extends ChooseYourRaceNowMessage
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		getNewGameUI ().showRacePanel ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

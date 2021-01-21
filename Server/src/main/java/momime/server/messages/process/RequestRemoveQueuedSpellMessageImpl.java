@@ -37,8 +37,6 @@ public final class RequestRemoveQueuedSpellMessageImpl extends RequestRemoveQueu
 	public final void process (@SuppressWarnings ("unused") final MultiplayerSessionThread thread, final PlayerServerDetails sender)
 		throws JAXBException, XMLStreamException, RecordNotFoundException
 	{
-		log.trace ("Entering process: Player ID " + sender.getPlayerDescription ().getPlayerID () + ", " + getQueuedSpellIndex ());
-		
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) sender.getPersistentPlayerPrivateKnowledge ();
 		
 		// Validate the request
@@ -80,7 +78,5 @@ public final class RequestRemoveQueuedSpellMessageImpl extends RequestRemoveQueu
 				sender.getConnection ().sendMessageToClient (new UpdateManaSpentOnCastingCurrentSpellMessage ());
 			}
 		}
-		
-		log.trace ("Exiting process");
 	}
 }

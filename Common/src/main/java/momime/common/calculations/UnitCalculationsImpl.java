@@ -6,9 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemType;
 import com.ndg.map.CoordinateSystemUtils;
@@ -50,9 +47,6 @@ import momime.common.utils.UnitUtils;
  */
 public final class UnitCalculationsImpl implements UnitCalculations
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitCalculationsImpl.class);
-	
 	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
 	private static final int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
 
@@ -91,16 +85,12 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		log.trace ("Entering resetUnitCombatMovement: Player ID " + playerID + ", " + combatLocation);
-
 		for (final MemoryUnit thisUnit : mem.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					
 				thisUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db).getModifiedSkillValue
 					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
-
-		log.trace ("Exiting resetUnitCombatMovement");
 	}
 	
 	/**
@@ -118,8 +108,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		(final List<MemoryBuilding> buildings, final MapVolumeOfMemoryGridCells map, final MapCoordinates3DEx cityLocation,
 		final List<PlayerPick> picks, final CoordinateSystem overlandMapCoordinateSystem, final CommonDatabase db) throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort: " + cityLocation);
-
 		// First look for a building that grants magical weapons, i.e. an Alchemists' Guild
 		int bestWeaponGrade = 0;
 		for (final MemoryBuilding thisBuilding : buildings)
@@ -155,7 +143,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		if (weaponGradeFromPicks > bestWeaponGrade)
 			bestWeaponGrade = weaponGradeFromPicks;
 
-		log.trace ("Exiting calculateWeaponGradeFromBuildingsAndSurroundingTilesAndAlchemyRetort = " + bestWeaponGrade);
 		return bestWeaponGrade;
 	}
 
@@ -170,8 +157,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final int calculateDoubleMovementToEnterCombatTile (final MomCombatTile tile, final CommonDatabase db)
 		throws RecordNotFoundException
 	{
-		log.trace ("Entering calculateDoubleMovementToEnterCombatTile");
-
 		int result = -1;		// Impassable
 		
 		if (!tile.isOffMapEdge ())
@@ -206,7 +191,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			}
 		}
 		
-		log.trace ("Exiting calculateDoubleMovementToEnterCombatTile = " + result);
 		return result;
 	}
 
@@ -221,8 +205,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final void giveUnitFullRangedAmmoAndMana (final ExpandedUnitDetails unit) throws MomException
 	{
-		log.trace ("Entering giveUnitFullRangedAmmoAndMana: Unit URN " + unit.getUnitURN () + ", " + unit.getUnitID ());
-		
 		// Easy values
 		unit.setAmmoRemaining (unit.calculateFullRangedAttackAmmo ());
 		unit.setManaRemaining (unit.calculateManaTotal ());
@@ -254,8 +236,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			
 			unit.getMemoryUnit ().getHeroItemSpellChargesRemaining ().add (count);
 		}
-
-		log.trace ("Exiting giveUnitFullRangedAmmoAndMana");
 	}
 
 	/**
@@ -265,14 +245,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final void decreaseRangedAttackAmmo (final MemoryUnit unit)
 	{
-		log.trace ("Entering decreaseRangedAttackAmmo: Unit URN " + unit.getUnitURN () + ", " + unit.getAmmoRemaining () + ", " + unit.getManaRemaining ());
-		
 		if (unit.getAmmoRemaining () > 0)
 			unit.setAmmoRemaining (unit.getAmmoRemaining () - 1);
 		else
 			unit.setManaRemaining (unit.getManaRemaining () - 3);
-
-		log.trace ("Exiting decreaseRangedAttackAmmo = " + unit.getAmmoRemaining () + ", " + unit.getManaRemaining ());
 	}
 	
 	/**
@@ -286,8 +262,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final boolean canMakeRangedAttack (final ExpandedUnitDetails unit) throws MomException
 	{
-		log.trace ("Entering canMakeRangedAttack: Unit URN " + unit.getUnitURN ());
-		
 		final boolean result;
 		
 		// First we have to actually have a ranged attack
@@ -313,7 +287,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				result = (unit.getRangedAttackType ().getMagicRealmID () != null);
 		}
 		
-		log.trace ("Entering canMakeRangedAttack = " + result);
 		return result;
 	}
 
@@ -328,8 +301,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final boolean canMakeMeleeAttack (final ExpandedUnitDetails unit) throws MomException
 	{
-		log.trace ("Entering canMakeMeleeAttack: Unit URN " + unit.getUnitURN ());
-		
 		final boolean result;
 		
 		// First we have to actually have a ranged attack
@@ -340,7 +311,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		else
 			result = true;
 
-		log.trace ("Entering canMakeMeleeAttack = " + result);
 		return result;
 	}
 		
@@ -357,9 +327,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	public final boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units)
 	{
-		log.trace ("Entering willMovingHereResultInAnAttack: Player ID " + movingPlayerID +
-			", (" + x + ", " + y + ", " + plane + ")");
-
 		// Work out what plane to look for units on
 		final MemoryGridCell mc = map.getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
 		final int towerPlane;
@@ -379,7 +346,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		else
 			resultsInAttack = false;
 
-		log.trace ("Exiting willMovingHereResultInAnAttack = " + resultsInAttack);
 		return resultsInAttack;
 	}
 	
@@ -391,8 +357,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final Set<String> listAllSkillsInUnitStack (final List<ExpandedUnitDetails> unitStack) throws MomException
 	{
-		log.trace ("Entering listAllSkillsInUnitStack: " + getUnitUtils ().listUnitURNs (unitStack));
-
 		final Set<String> list = new HashSet<String> ();
 		String debugList = "";
 
@@ -409,7 +373,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 						debugList = debugList + thisSkillID;
 					}
 
-		log.trace ("Exiting listAllSkillsInUnitStack = " + debugList);
 		return list;
 	}
 
@@ -423,8 +386,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final Integer calculateDoubleMovementToEnterTileType (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final String tileTypeID, final CommonDatabase db)
 	{
-		log.trace ("Entering calculateDoubleMovementToEnterTileType: " + unit.getDebugIdentifier () + ", Player ID " + unit.getOwningPlayerID () + ", " + tileTypeID);
-
 		// We basically run down the movement rate rules and stop as soon as we find the first applicable one
 		// Terrain is impassable if we check every movement rule and none of them are applicable
 		Integer doubleMovement = null;
@@ -441,7 +402,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				doubleMovement = thisRule.getDoubleMovement ();
 		}
 
-		log.trace ("Exiting calculateDoubleMovementToEnterTileType = " + doubleMovement);
 		return doubleMovement;
 	}
 	
@@ -454,8 +414,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final boolean areAllTerrainTypesPassable (final ExpandedUnitDetails unit, final Set<String> unitStackSkills, final CommonDatabase db)
 	{
-		log.trace ("Entering areAllTerrainTypesPassable: " + unit.getUnitID ());
-
 		// Go through each tile type
 		boolean result = true;
 		final Iterator<TileTypeEx> iter = db.getTileTypes ().iterator ();
@@ -468,7 +426,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				result = false;
 		}
 
-		log.trace ("Exiting areAllTerrainTypesPassable = " + result);
 		return result;
 	}
 	
@@ -490,8 +447,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory fogOfWarMemory, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException, MomException
 	{
-		log.trace ("Entering createUnitStack: " + getUnitUtils ().listUnitURNs (selectedUnits));
-
 		// We need at least one unit, or we can't even figure out the location and owner
 		if (selectedUnits.size () == 0)
 			throw new MomException ("createUnitStack: Selected units list is empty");
@@ -569,7 +524,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			stack.getUnits ().addAll (selectedUnits); 
 		}
 		
-		log.trace ("Exiting createUnitStack = " + stack);
 		return stack;
 	}
 	
@@ -745,8 +699,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		log.trace ("Entering calculateCombatMovementDistances: Unit URN " + unitBeingMoved.getUnitURN ());
-
 		// Create other areas
 		final boolean [] [] ourUnits = new boolean [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
 		final boolean [] [] enemyUnits = new boolean [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
@@ -809,8 +761,6 @@ public final class UnitCalculationsImpl implements UnitCalculations
 						movementTypes [y] [x] = CombatMoveType.RANGED;
 						doubleMovementDistances [y] [x] = 999;
 					}
-		
-		log.trace ("Exiting calculateCombatMovementDistances");
 	}
 	
 	/**

@@ -5,9 +5,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 import momime.client.ui.dialogs.TreasureUI;
@@ -20,9 +17,6 @@ import momime.common.messages.servertoclient.TreasureRewardMessage;
  */
 public final class TreasureRewardMessageImpl extends TreasureRewardMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (TreasureRewardMessageImpl.class);
-
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 	
@@ -34,14 +28,9 @@ public final class TreasureRewardMessageImpl extends TreasureRewardMessage imple
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start: " + getHeroItem ().size () + ", " + getSpellID ().size () + ", " + getResource ().size () + ", " +
-			getPick ().size () + ", " + getPrisoner ().size ());
-
 		final TreasureUI treasureUI = getPrototypeFrameCreator ().createTreasureReward ();
 		treasureUI.setTreasureReward (this);
 		treasureUI.setVisible (true);
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

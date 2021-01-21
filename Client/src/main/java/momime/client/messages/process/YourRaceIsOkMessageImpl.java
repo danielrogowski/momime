@@ -5,13 +5,10 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+
 import momime.client.ui.frames.NewGameUI;
 import momime.common.messages.servertoclient.YourRaceIsOkMessage;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
 
 /**
  * Message server sends to a player to let them know their choice of race was OK,
@@ -19,9 +16,6 @@ import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
  */
 public final class YourRaceIsOkMessageImpl extends YourRaceIsOkMessage implements BaseServerToClientMessage
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (YourRaceIsOkMessageImpl.class);
-
 	/** New Game UI */
 	private NewGameUI newGameUI;
 
@@ -33,11 +27,7 @@ public final class YourRaceIsOkMessageImpl extends YourRaceIsOkMessage implement
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		log.trace ("Entering start");
-
 		getNewGameUI ().showWaitPanel ();
-		
-		log.trace ("Exiting start");
 	}
 	
 	/**

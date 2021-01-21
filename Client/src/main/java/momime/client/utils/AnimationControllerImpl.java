@@ -200,8 +200,6 @@ public final class AnimationControllerImpl implements AnimationController
 	public final void registerRepaintTrigger (final String animationID, final JComponent component, final AnimationContainer container)
 		throws RecordNotFoundException, MomException
 	{
-		log.trace ("Entering registerRepaintTrigger: " + animationID + ", " + component);
-		
 		if (component == null)
 			throw new MomException ("registerRepaintTrigger called for animationID " + animationID + " but component was null");
 		
@@ -236,8 +234,6 @@ public final class AnimationControllerImpl implements AnimationController
 				newCounter.timer.start ();
 			}
 		}
-
-		log.trace ("Exiting registerRepaintTrigger");		
 	}
 	
 	/**
@@ -259,8 +255,6 @@ public final class AnimationControllerImpl implements AnimationController
 	@Override
 	public final void unregisterRepaintTrigger (final String animationID, final JComponent component) throws MomException
 	{
-		log.trace ("Entering unregisterRepaintTrigger: " + animationID + ", " + component);
-
 		if (component == null)
 			throw new MomException ("unregisterRepaintTrigger called for animationID " + animationID + " but component was null");
 		
@@ -278,8 +272,6 @@ public final class AnimationControllerImpl implements AnimationController
 			while (iter.hasNext ())
 				unregisterRepaintTriggerInternal (iter.next (), component, iter);
 		}
-
-		log.trace ("Exiting unregisterRepaintTrigger");
 	}
 	
 	/**
@@ -291,8 +283,6 @@ public final class AnimationControllerImpl implements AnimationController
 	 */
 	final void unregisterRepaintTriggerInternal (final AnimationFrameCounter counter, final JComponent component, final Iterator<AnimationFrameCounter> iter)
 	{
-		log.trace ("Entering unregisterRepaintTriggerInternal: " + counter.anim.getAnimationID () + ", " + component);
-		
 		// Remove the component from the trigger list
 		if (counter.repaintTriggers.remove (component))
 		{
@@ -315,8 +305,6 @@ public final class AnimationControllerImpl implements AnimationController
 					animationFrames.remove (counter.anim.getAnimationID ());
 			}
 		}
-
-		log.trace ("Exiting unregisterRepaintTriggerInternal");
 	}
 	
 	/**

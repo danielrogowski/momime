@@ -14,9 +14,6 @@ import javax.swing.Action;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutComponent;
@@ -36,9 +33,6 @@ import momime.common.utils.PlayerKnowledgeUtils;
  */
 public final class HistoryUI extends MomClientFrameUI
 {
-	/** Class logger */
-	private static final Log log = LogFactory.getLog (HistoryUI.class);
-	
 	/** How spaced apart to draw score ticks */
 	private static final int SCORE_TICK = 100;
 
@@ -79,8 +73,6 @@ public final class HistoryUI extends MomClientFrameUI
 	@Override
 	protected final void init () throws IOException
 	{
-		log.trace ("Entering init");
-
 		// Load images
 		final BufferedImage background = getUtils ().loadImage ("/momime.client.graphics/ui/backgrounds/history.png");
 		final BufferedImage buttonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/okButton41x15Normal.png");
@@ -209,8 +201,6 @@ public final class HistoryUI extends MomClientFrameUI
 		// Lock frame size
 		getFrame ().setContentPane (contentPane);
 		getFrame ().setResizable (false);
-
-		log.trace ("Exiting init");
 	}
 	
 	/**
@@ -248,8 +238,6 @@ public final class HistoryUI extends MomClientFrameUI
 	 */
 	public final void updateTurnLabelText ()
 	{
-		log.trace ("Entering updateTurnLabelText");
-
 		if (turnLabel != null)
 		{
 			// Turn 1 is January 1400 - so last turn in 1400 is turn 12
@@ -269,8 +257,6 @@ public final class HistoryUI extends MomClientFrameUI
 				("MONTH", monthText).replaceAll ("YEAR", Integer.valueOf (year).toString ()).replaceAll
 				("TURN", Integer.valueOf (getClient ().getGeneralPublicKnowledge ().getTurnNumber ()).toString ()));
 		}
-
-		log.trace ("Exiting updateTurnLabelText");
 	}
 	
 	/**

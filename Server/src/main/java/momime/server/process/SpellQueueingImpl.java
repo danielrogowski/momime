@@ -60,7 +60,7 @@ import momime.server.utils.HeroItemServerUtils;
 public final class SpellQueueingImpl implements SpellQueueing
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpellQueueingImpl.class);
+	private final static Log log = LogFactory.getLog (SpellQueueingImpl.class);
 
 	/** Spell utils */
 	private SpellUtils spellUtils;

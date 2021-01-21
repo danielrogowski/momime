@@ -83,7 +83,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 public final class MomClientImpl extends MultiplayerSessionClient implements MomClient
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MomClientImpl.class);
+	private final static Log log = LogFactory.getLog (MomClientImpl.class);
 	
 	/** Name that we logged in using */
 	private String ourPlayerName;

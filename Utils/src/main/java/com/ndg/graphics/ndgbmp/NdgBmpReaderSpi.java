@@ -13,59 +13,59 @@ import javax.imageio.stream.ImageInputStream;
 public final class NdgBmpReaderSpi extends ImageReaderSpi
 {
 	/** Name of the vendor of the .ndgbmp format */
-	private static final String ndgbmpVendorName = "Nigel Gay";
+	private final static String ndgbmpVendorName = "Nigel Gay";
 
 	/** Version of the .ndgbmp file structure */
-	private static final String ndgbmpVersion = "1.0";
+	private final static String ndgbmpVersion = "1.0";
 
 	/** Class responsible for decoding .ndgbmp streams */
-	private static final String ndgbmpReaderClassName = "com.ndg.graphics.ndgbmp.NdgBmpReader";
+	private final static String ndgbmpReaderClassName = "com.ndg.graphics.ndgbmp.NdgBmpReader";
 
 	/** SPI for encoding .ndgbmp streams */
-	private static final String [] ndgbmpWriterSpiNames = { "com.ndg.graphics.ndgbmp.NdgBmpWriterSpi" };
+	private final static String [] ndgbmpWriterSpiNames = { "com.ndg.graphics.ndgbmp.NdgBmpWriterSpi" };
 
 	/** Accepts ImageInputStream only */
 	@SuppressWarnings ("rawtypes")
-	private static final Class [] ndgbmpInputTypes = {ImageInputStream.class};
+	private final static Class [] ndgbmpInputTypes = {ImageInputStream.class};
 
 	/** Descriptive list of the format(s) supported by this reader */
-	private static final String [] ndgbmpNames = { "NDG BMP", "ndg bmp" };
+	private final static String [] ndgbmpNames = { "NDG BMP", "ndg bmp" };
 
 	/** List of the file extension(s) supported by this reader */
-	private static final String [] ndgbmpSuffixes = { "NDGBMP", "ndgbmp" };
+	private final static String [] ndgbmpSuffixes = { "NDGBMP", "ndgbmp" };
 
 	/** List of the MIME type(s) supported by this reader */
-	private static final String [] ndgbmpMIMETypes = { "image/ndgbmp" };
+	private final static String [] ndgbmpMIMETypes = { "image/ndgbmp" };
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final boolean ndgbmpSupportsStandardStreamMetadataFormat = false;
+	private final static boolean ndgbmpSupportsStandardStreamMetadataFormat = false;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String ndgbmpNativeStreamMetadataFormatName = null;
+	private final static String ndgbmpNativeStreamMetadataFormatName = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String ndgbmpNativeStreamMetadataFormatClassName = null;
+	private final static String ndgbmpNativeStreamMetadataFormatClassName = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String [] ndgbmpExtraStreamMetadataFormatNames = null;
+	private final static String [] ndgbmpExtraStreamMetadataFormatNames = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String [] ndgbmpExtraStreamMetadataFormatClassNames = null;
+	private final static String [] ndgbmpExtraStreamMetadataFormatClassNames = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final boolean ndgbmpSupportsStandardImageMetadataFormat = false;
+	private final static boolean ndgbmpSupportsStandardImageMetadataFormat = false;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String ndgbmpNativeImageMetadataFormatName = null;
+	private final static String ndgbmpNativeImageMetadataFormatName = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String ndgbmpNativeImageMetadataFormatClassName = null;
+	private final static String ndgbmpNativeImageMetadataFormatClassName = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String [] ndgbmpExtraImageMetadataFormatNames = null;
+	private final static String [] ndgbmpExtraImageMetadataFormatNames = null;
 
 	/** .ndgbmp reader currently doesn't support any metadata */
-	private static final String [] ndgbmpExtraImageMetadataFormatClassNames = null;
+	private final static String [] ndgbmpExtraImageMetadataFormatClassNames = null;
 
 	/**
 	 * Fills in all the details about the .ndgbmp format

@@ -38,7 +38,7 @@ import momime.common.messages.NumberedHeroItem;
 public final class HeroTableCellRenderer extends JPanel implements TableCellRenderer
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (HeroTableCellRenderer.class);
+	private final static Log log = LogFactory.getLog (HeroTableCellRenderer.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx heroLayout;

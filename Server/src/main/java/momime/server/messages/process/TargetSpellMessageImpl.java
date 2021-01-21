@@ -38,7 +38,7 @@ import momime.server.process.SpellProcessing;
 public final class TargetSpellMessageImpl extends TargetSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (TargetSpellMessageImpl.class);
+	private final static Log log = LogFactory.getLog (TargetSpellMessageImpl.class);
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;

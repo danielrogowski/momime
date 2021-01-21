@@ -52,7 +52,7 @@ import momime.common.utils.UnitUtils;
 public final class UnitRowDisplayUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitRowDisplayUI.class);
+	private final static Log log = LogFactory.getLog (UnitRowDisplayUI.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx unitRowDisplayLayout;

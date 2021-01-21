@@ -24,7 +24,7 @@ import momime.common.utils.HeroItemUtils;
 public final class RemoveUnassignedHeroItemMessageImpl extends RemoveUnassignedHeroItemMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (RemoveUnassignedHeroItemMessageImpl.class);
+	private final static Log log = LogFactory.getLog (RemoveUnassignedHeroItemMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

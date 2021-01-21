@@ -15,7 +15,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionXsdResourceResolver;
 public class CommonXsdResourceResolver extends MultiplayerSessionXsdResourceResolver
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CommonXsdResourceResolver.class);
+	private final static Log log = LogFactory.getLog (CommonXsdResourceResolver.class);
 	
 	/**
 	 * Creates a resolver to allow finding referenced MoM IME XSD files

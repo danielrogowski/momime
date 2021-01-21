@@ -31,7 +31,7 @@ import momime.server.process.CityProcessing;
 public final class SellBuildingMessageImpl extends SellBuildingMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SellBuildingMessageImpl.class);
+	private final static Log log = LogFactory.getLog (SellBuildingMessageImpl.class);
 
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;

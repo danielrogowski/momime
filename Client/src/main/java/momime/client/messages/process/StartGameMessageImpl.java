@@ -24,7 +24,7 @@ import momime.common.messages.servertoclient.StartGameMessage;
 public final class StartGameMessageImpl extends StartGameMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (StartGameMessageImpl.class);
+	private final static Log log = LogFactory.getLog (StartGameMessageImpl.class);
 
 	/** New Game UI */
 	private NewGameUI newGameUI;

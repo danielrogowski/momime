@@ -28,7 +28,7 @@ import momime.common.utils.UnitUtils;
 public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintainedSpellMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SwitchOffMaintainedSpellMessageImpl.class);
+	private final static Log log = LogFactory.getLog (SwitchOffMaintainedSpellMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

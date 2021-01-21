@@ -33,16 +33,16 @@ import momime.common.messages.SpellResearchStatusID;
 public final class TestSpellUtilsImpl
 {
 	/** Life creature */
-	private static final String LIFE_CREATURE = "LT01";
+	private final static String LIFE_CREATURE = "LT01";
 
 	/** Chaos channeled creature */
-	private static final String CHAOS_CHANNELED_CREATURE = "LTCC";
+	private final static String CHAOS_CHANNELED_CREATURE = "LTCC";
 
 	/** Undead creature */
-	private static final String UNDEAD_CREATURE = "LTU";
+	private final static String UNDEAD_CREATURE = "LTU";
 
 	/** Resistance attribute */
-	private static final String RESISTANCE = "UA05";
+	private final static String RESISTANCE = "UA05";
 
 	// Methods dealing with a single spell
 

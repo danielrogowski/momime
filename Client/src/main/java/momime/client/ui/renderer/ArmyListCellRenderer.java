@@ -29,13 +29,13 @@ import momime.common.messages.MemoryUnit;
 public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoordinates3DEx, List<MemoryUnit>>>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ArmyListCellRenderer.class);
+	private final static Log log = LogFactory.getLog (ArmyListCellRenderer.class);
 	
 	/** Border between the top of the image and the unit icons */
-	public static final int TOP_BORDER = 2;
+	public final static int TOP_BORDER = 2;
 
 	/** Border between the left of the image and the first unit icon */
-	public static final int LEFT_BORDER = 4;
+	public final static int LEFT_BORDER = 4;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;

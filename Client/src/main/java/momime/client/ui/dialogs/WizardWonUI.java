@@ -36,10 +36,10 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 public final class WizardWonUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (WizardWonUI.class);
+	private final static Log log = LogFactory.getLog (WizardWonUI.class);
 	
 	/** Milliseconds between animation frames */
-	private static final int TIMER_TICKS_MS = 150;
+	private final static int TIMER_TICKS_MS = 150;
 
 	/** XML layout */
 	private XmlLayoutContainerEx wizardWonLayout;

@@ -67,7 +67,7 @@ import momime.common.utils.SpellUtils;
 public final class HelpUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (HelpUI.class);
+	private final static Log log = LogFactory.getLog (HelpUI.class);
 
 	/** Typical inset used by this layout */
 	private final static int NO_INSET = 0;

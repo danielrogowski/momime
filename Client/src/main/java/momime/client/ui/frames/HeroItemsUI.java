@@ -66,7 +66,7 @@ import momime.common.utils.ResourceValueUtils;
 public final class HeroItemsUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (HeroItemsUI.class);
+	private final static Log log = LogFactory.getLog (HeroItemsUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx heroItemsLayout;

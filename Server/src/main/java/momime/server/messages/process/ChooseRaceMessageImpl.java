@@ -26,7 +26,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseRaceMessageImpl extends ChooseRaceMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChooseRaceMessageImpl.class);
+	private final static Log log = LogFactory.getLog (ChooseRaceMessageImpl.class);
 	
 	/** Server-only pick utils */
 	private PlayerPickServerUtils playerPickServerUtils;

@@ -12,7 +12,7 @@ import org.apache.commons.logging.LogFactory;
 public final class AdvancedPlayerImpl implements AdvancedPlayer
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (AdvancedPlayerImpl.class);
+	private final static Log log = LogFactory.getLog (AdvancedPlayerImpl.class);
 	
 	/** Underlying player, created once we set a stream */
 	private javazoom.jl.player.advanced.AdvancedPlayer player;

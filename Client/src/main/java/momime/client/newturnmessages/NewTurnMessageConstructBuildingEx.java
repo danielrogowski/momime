@@ -44,7 +44,7 @@ public final class NewTurnMessageConstructBuildingEx extends NewTurnMessageConst
 	implements NewTurnMessageExpiration, NewTurnMessageComplexUI, NewTurnMessageClickable, NewTurnMessageAnimated, NewTurnMessageRepaintOnCityDataChanged, NewTurnMessageMusic
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewTurnMessageConstructBuildingEx.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageConstructBuildingEx.class);
 	
 	/** Space left around each text column */
 	private final static int INSET = 2;

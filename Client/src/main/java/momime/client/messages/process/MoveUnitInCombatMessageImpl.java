@@ -35,7 +35,7 @@ import momime.common.utils.UnitUtils;
 public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
+	private final static Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
 
 	/** Time, in seconds, a unit takes to walk from tile to tile in combat */
 	private final static double COMBAT_WALK_TIMING = 1;

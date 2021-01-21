@@ -41,13 +41,13 @@ import momime.common.utils.PlayerKnowledgeUtils;
 public final class WizardBanishedUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (WizardBanishedUI.class);
+	private final static Log log = LogFactory.getLog (WizardBanishedUI.class);
 	
 	/** Number of animation frames */
-	private static final int TICK_COUNT = 27;
+	private final static int TICK_COUNT = 27;
 	
 	/** Number of seconds to display the animation over */
-	private static final double DURATION = 7;
+	private final static double DURATION = 7;
 
 	/** XML layout */
 	private XmlLayoutContainerEx wizardBanishedLayout;

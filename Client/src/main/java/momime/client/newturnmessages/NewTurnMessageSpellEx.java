@@ -35,7 +35,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageClickable, NewTurnMessageMusic, NewTurnMessageMustBeAnswered
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewTurnMessageSpellEx.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageSpellEx.class);
 	
 	/** Current status of this NTM */
 	private NewTurnMessageStatus status;

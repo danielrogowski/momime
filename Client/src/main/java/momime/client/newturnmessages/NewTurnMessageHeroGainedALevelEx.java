@@ -30,7 +30,7 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageMusic, NewTurnMessagePreProcess
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewTurnMessageHeroGainedALevelEx.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageHeroGainedALevelEx.class);
 
 	/** Current status of this NTM */
 	private NewTurnMessageStatus status;

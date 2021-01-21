@@ -33,10 +33,10 @@ import momime.common.utils.ExpandedUnitDetails;
 public final class UnitSkillListCellRenderer extends JLabel implements ListCellRenderer<UnitSkillOrHeroItemSlot>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitSkillListCellRenderer.class);
+	private final static Log log = LogFactory.getLog (UnitSkillListCellRenderer.class);
 	
 	/** Value to multiply icon images by in order to dark them */
-	private static final int DARKEN_IMAGE = 0xA0A0A0;
+	private final static int DARKEN_IMAGE = 0xA0A0A0;
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

@@ -25,7 +25,7 @@ import momime.common.database.LanguageText;
 public final class LanguageDatabaseHolder
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (LanguageDatabaseHolder.class);
+	private final static Log log = LogFactory.getLog (LanguageDatabaseHolder.class);
 	
 	/** Currently chosen language */
 	private Language language;

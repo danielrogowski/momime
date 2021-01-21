@@ -41,7 +41,7 @@ import momime.common.messages.UnitStatusID;
 public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ExpandedUnitDetailsImpl.class);
+	private final static Log log = LogFactory.getLog (ExpandedUnitDetailsImpl.class);
 	
 	/** The unit whose details we are storing */
 	private final AvailableUnit unit;

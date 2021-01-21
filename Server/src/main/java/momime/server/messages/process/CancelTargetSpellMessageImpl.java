@@ -25,7 +25,7 @@ import momime.server.process.SpellProcessing;
 public final class CancelTargetSpellMessageImpl extends CancelTargetSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CancelTargetSpellMessageImpl.class);
+	private final static Log log = LogFactory.getLog (CancelTargetSpellMessageImpl.class);
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;

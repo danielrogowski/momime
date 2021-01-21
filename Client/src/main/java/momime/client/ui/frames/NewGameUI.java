@@ -133,10 +133,10 @@ import momime.common.utils.PlayerPickUtils;
 public final class NewGameUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewGameUI.class);
+	private final static Log log = LogFactory.getLog (NewGameUI.class);
 
 	/** White with some alpha to make the bar brighten the background colour */
-	private static final Color SLIDER_BAR_COLOUR = new Color (255, 255, 255, 80);
+	private final static Color SLIDER_BAR_COLOUR = new Color (255, 255, 255, 80);
 	
 	/** XML layout of the main form */
 	private XmlLayoutContainerEx newGameLayoutMain;

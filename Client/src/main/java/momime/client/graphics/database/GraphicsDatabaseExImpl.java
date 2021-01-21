@@ -21,7 +21,7 @@ import momime.common.database.UnitSpecialOrder;
 public final class GraphicsDatabaseExImpl extends GraphicsDatabase implements GraphicsDatabaseEx
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (GraphicsDatabaseExImpl.class);
+	private final static Log log = LogFactory.getLog (GraphicsDatabaseExImpl.class);
 	
 	/** Map of unit attribute component IDs to unit attribute component objects */
 	private Map<UnitSkillComponent, UnitSkillComponentImage> unitSkillComponentsMap;

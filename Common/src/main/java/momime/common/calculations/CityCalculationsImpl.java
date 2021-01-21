@@ -94,7 +94,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * Note this is different from the Delphi list TRACE_CITY_DIRECTION is in MomMap.pas in that the list here DOES include the tile the city itself is on, the Delphi code (unnecessarily) deals with the centre tile separately
 	 * We do not end up back where we started (in either version)
 	 */
-	public static final SquareMapDirection [] DIRECTIONS_TO_TRAVERSE_CITY_RADIUS = {
+	public final static SquareMapDirection [] DIRECTIONS_TO_TRAVERSE_CITY_RADIUS = {
 
 		// Go around the 1st ring around the city (radius = 1)
 		SquareMapDirection.NORTHWEST, SquareMapDirection.EAST, SquareMapDirection.EAST, SquareMapDirection.SOUTH, SquareMapDirection.SOUTH, SquareMapDirection.WEST, SquareMapDirection.WEST,

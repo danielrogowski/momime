@@ -26,19 +26,19 @@ import momime.common.utils.ExpandedUnitDetails;
 public final class SelectUnitButton extends JToggleButton
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SelectUnitButton.class);
+	private final static Log log = LogFactory.getLog (SelectUnitButton.class);
 	
 	/** Diameter of experience rings */
-	private static final int EXPERIENCE_RING_SIZE = 4;
+	private final static int EXPERIENCE_RING_SIZE = 4;
 
 	/** Colour of health bar for units with over 50% health */
-	private static final Color HEALTH_BAR_GREEN = new Color (0x00A400);
+	private final static Color HEALTH_BAR_GREEN = new Color (0x00A400);
 	
 	/** Colour of health bar for units with between 25% and 50% health */
-	private static final Color HEALTH_BAR_AMBER = new Color (0xE4D000);
+	private final static Color HEALTH_BAR_AMBER = new Color (0xE4D000);
 	
 	/** Colour of health bar for units with under 25% health */
-	private static final Color HEALTH_BAR_RED = new Color (0xD40000);
+	private final static Color HEALTH_BAR_RED = new Color (0xD40000);
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;

@@ -31,7 +31,7 @@ import momime.server.utils.SpellServerUtils;
 public final class RequestResearchSpellMessageImpl extends RequestResearchSpellMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (RequestResearchSpellMessageImpl.class);
+	private final static Log log = LogFactory.getLog (RequestResearchSpellMessageImpl.class);
 
 	/** Spell utils */
 	private SpellUtils spellUtils;

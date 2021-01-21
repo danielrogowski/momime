@@ -30,7 +30,7 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageMusic, NewTurnMessagePreProcess
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewTurnMessageSummonUnitEx.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageSummonUnitEx.class);
 
 	/** Current status of this NTM */
 	private NewTurnMessageStatus status;

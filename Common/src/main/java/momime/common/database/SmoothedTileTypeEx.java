@@ -18,7 +18,7 @@ import com.ndg.random.RandomUtils;
 public final class SmoothedTileTypeEx extends SmoothedTileType
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SmoothedTileTypeEx.class);
+	private final static Log log = LogFactory.getLog (SmoothedTileTypeEx.class);
 
 	/** Map of unsmoothed bitmasks to sets of possible images */
 	private final Map<String, List<SmoothedTile>> bitmasksMap = new HashMap<String, List<SmoothedTile>> ();

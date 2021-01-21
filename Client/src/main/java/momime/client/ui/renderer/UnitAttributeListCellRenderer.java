@@ -23,7 +23,7 @@ import momime.client.language.database.MomLanguagesEx;
 public final class UnitAttributeListCellRenderer extends JPanel implements ListCellRenderer<UnitAttributeWithBreakdownImage>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitAttributeListCellRenderer.class);
+	private final static Log log = LogFactory.getLog (UnitAttributeListCellRenderer.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

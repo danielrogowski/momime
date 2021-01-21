@@ -49,7 +49,7 @@ import momime.common.database.LanguageText;
 public final class ConnectToServerUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ConnectToServerUI.class);
+	private final static Log log = LogFactory.getLog (ConnectToServerUI.class);
 	
 	/** Large font */
 	private Font largeFont;

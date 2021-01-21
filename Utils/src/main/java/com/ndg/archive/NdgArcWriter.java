@@ -29,7 +29,7 @@ import com.ndg.utils.StreamUtils;
 public final class NdgArcWriter
 {
 	/** Extension of .ndgarc archives */
-	public static final String NDGARC_EXTENSION = ".ndgarc";
+	public final static String NDGARC_EXTENSION = ".ndgarc";
 
 	/**
 	 * Creates a .ndgarc archive

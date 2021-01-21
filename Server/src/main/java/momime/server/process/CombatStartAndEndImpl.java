@@ -53,31 +53,31 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	// NB. These aren't private so that the unit tests can use them too
 	
 	/** X coord of centre location around which defenders are placed */
-	static final int COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X = 4;
+	final static int COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X = 4;
 	
 	/** Y coord of centre location around which defenders are placed */
-	static final int COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y = 11;
+	final static int COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y = 11;
 	
 	/** Direction that defenders initially face */
-	static final int COMBAT_SETUP_DEFENDER_FACING = 4;
+	final static int COMBAT_SETUP_DEFENDER_FACING = 4;
 
 	/** Defenders may require 5 rows to fit 20 units if they're in a city with city walls */
-	static final int COMBAT_SETUP_DEFENDER_ROWS = 5;
+	final static int COMBAT_SETUP_DEFENDER_ROWS = 5;
 
 	/** X coord of centre location around which attackers are placed */
-	static final int COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X = 7;
+	final static int COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X = 7;
 	
 	/** Y coord of centre location around which attackers are placed */
-	static final int COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y = 17;
+	final static int COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y = 17;
 	
 	/** Direction that attackers initially face */
-	static final int COMBAT_SETUP_ATTACKER_FACING = 8;
+	final static int COMBAT_SETUP_ATTACKER_FACING = 8;
 
 	/** Attackers never have any obstructions so 4 rows x5 per row is always enough to fit 20 units */
-	static final int COMBAT_SETUP_ATTACKER_ROWS = 4;
+	final static int COMBAT_SETUP_ATTACKER_ROWS = 4;
 	
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CombatStartAndEndImpl.class);
+	private final static Log log = LogFactory.getLog (CombatStartAndEndImpl.class);
 
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;

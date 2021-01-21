@@ -23,7 +23,7 @@ import momime.client.newturnmessages.NewTurnMessageUI;
 public final class NewTurnMessageRenderer implements ListCellRenderer<NewTurnMessageUI>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewTurnMessageRenderer.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageRenderer.class);
 	
 	/** Label used to display SimpleUIs */
 	private JLabel simpleUILabel = new JLabel ();

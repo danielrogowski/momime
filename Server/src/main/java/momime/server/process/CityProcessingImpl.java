@@ -83,7 +83,7 @@ import momime.server.utils.UnitServerUtils;
 public final class CityProcessingImpl implements CityProcessing
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CityProcessingImpl.class);
+	private final static Log log = LogFactory.getLog (CityProcessingImpl.class);
 	
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;

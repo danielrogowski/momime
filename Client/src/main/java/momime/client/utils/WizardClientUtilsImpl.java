@@ -16,7 +16,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 public final class WizardClientUtilsImpl implements WizardClientUtils
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (WizardClientUtilsImpl.class);
+	private final static Log log = LogFactory.getLog (WizardClientUtilsImpl.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

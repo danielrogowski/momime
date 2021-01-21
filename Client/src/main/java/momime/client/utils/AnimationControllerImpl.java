@@ -65,7 +65,7 @@ import momime.common.database.RecordNotFoundException;
 public final class AnimationControllerImpl implements AnimationController
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (AnimationControllerImpl.class);
+	private final static Log log = LogFactory.getLog (AnimationControllerImpl.class);
 	
 	/** Graphics database */
 	private GraphicsDatabaseEx graphicsDB;

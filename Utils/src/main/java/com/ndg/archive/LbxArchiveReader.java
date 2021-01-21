@@ -15,10 +15,10 @@ import com.ndg.utils.StreamUtils;
 public final class LbxArchiveReader
 {
 	/** Extension of .lbx archives */
-	public static final String LBX_EXTENSION = ".lbx";
+	public final static String LBX_EXTENSION = ".lbx";
 
 	/** Expected signature of LBX files in bytes 3 thru 6 */
-	private static final int LBX_SIGNATURE = 0xFEAD;
+	private final static int LBX_SIGNATURE = 0xFEAD;
 
 	/**
 	 * Reads the LBX archive header from an open stream, and checks the requested sub file number is valid
@@ -55,7 +55,7 @@ public final class LbxArchiveReader
 	 * @param subFileNumber Entry number within the .lbx file, with the first sub file being 0 (note each "entry" can contain multiple frames)
 	 * @throws IOException If there is a problem reading the file, or it doesn't have the expected LBX archive header
 	 */
-	public static final void positionToSubFile (final InputStream in, final int subFileNumber)
+	public final static void positionToSubFile (final InputStream in, final int subFileNumber)
 		throws IOException
 	{
 		readLbxArchiveHeader (in, subFileNumber);
@@ -87,7 +87,7 @@ public final class LbxArchiveReader
 	 * @return Stream positioned to the start of the requested subfile
 	 * @throws IOException if there is a problem reading the file, or the file identifier doesn't match
 	 */
-	public static final ImageInputStream getSubFileImageInputStream (final InputStream in, final int subFileNumber)
+	public final static ImageInputStream getSubFileImageInputStream (final InputStream in, final int subFileNumber)
 		throws IOException
 	{
 		readLbxArchiveHeader (in, subFileNumber);

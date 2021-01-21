@@ -29,7 +29,7 @@ import momime.common.utils.SpellUtils;
 public final class QueuedSpellListCellRenderer extends JPanel implements ListCellRenderer<QueuedSpell>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (QueuedSpellListCellRenderer.class);
+	private final static Log log = LogFactory.getLog (QueuedSpellListCellRenderer.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

@@ -28,7 +28,7 @@ import momime.server.utils.CityServerUtils;
 public final class ChangeCityConstructionMessageImpl extends ChangeCityConstructionMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChangeCityConstructionMessageImpl.class);
+	private final static Log log = LogFactory.getLog (ChangeCityConstructionMessageImpl.class);
 	
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;

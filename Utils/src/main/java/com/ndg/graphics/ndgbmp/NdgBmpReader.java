@@ -21,10 +21,10 @@ import javax.imageio.stream.ImageInputStream;
 public final class NdgBmpReader extends ImageReader
 {
 	/** Image type for 32 bit colour ARGB images */
-	public static final ImageTypeSpecifier IMAGE_TYPE_ARGB = ImageTypeSpecifier.createInterleaved (ColorSpace.getInstance (ColorSpace.CS_sRGB), new int [] {3, 2, 1, 0}, DataBuffer.TYPE_BYTE, true, false);
+	public final static ImageTypeSpecifier IMAGE_TYPE_ARGB = ImageTypeSpecifier.createInterleaved (ColorSpace.getInstance (ColorSpace.CS_sRGB), new int [] {3, 2, 1, 0}, DataBuffer.TYPE_BYTE, true, false);
 
 	/** Image type for 24 bit colour RGB images (no transparency) */
-	public static final ImageTypeSpecifier IMAGE_TYPE_RGB = ImageTypeSpecifier.createInterleaved (ColorSpace.getInstance (ColorSpace.CS_sRGB), new int [] {2, 1, 0}, DataBuffer.TYPE_BYTE, false, false);
+	public final static ImageTypeSpecifier IMAGE_TYPE_RGB = ImageTypeSpecifier.createInterleaved (ColorSpace.getInstance (ColorSpace.CS_sRGB), new int [] {2, 1, 0}, DataBuffer.TYPE_BYTE, false, false);
 
     /** The input stream where reads from */
     private ImageInputStream iis = null;

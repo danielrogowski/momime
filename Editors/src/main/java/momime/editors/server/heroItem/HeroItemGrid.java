@@ -33,13 +33,13 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 public final class HeroItemGrid extends MoMEditorGridWithImport
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (HeroItemGrid.class);
+	private final static Log log = LogFactory.getLog (HeroItemGrid.class);
 	
 	/** If we generate this in the skill list, then don't output the item at all - this is to filter out the 2 items with the deactivated merging skill */
-	private static final String DONT_OUTPUT_ITEM = "X";
+	private final static String DONT_OUTPUT_ITEM = "X";
 	
 	/** Item bonus IDs for all the bit flags - the 3 nulls I assume are Lionheart, Pathfinding and Invisibility, but no predefined items have these skills */
-	private static final String [] ITEM_BONUS_ID = new String []
+	private final static String [] ITEM_BONUS_ID = new String []
 		{"IB38", "IB48", "IB35", "IB53", "IB37", "IB52", "IB61", null,
 		"IB60", "IB43", "IB44", "IB36", "IB46", "IB57", "IB49", null,
 		"IB39", "IB63", "IB50", "IB51", "IB34", "IB41", "IB42", "IB47",

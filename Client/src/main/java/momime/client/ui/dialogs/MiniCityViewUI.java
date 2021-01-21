@@ -45,7 +45,7 @@ import momime.common.messages.servertoclient.RenderCityData;
 public final class MiniCityViewUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MiniCityViewUI.class);
+	private final static Log log = LogFactory.getLog (MiniCityViewUI.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx miniCityViewLayout;

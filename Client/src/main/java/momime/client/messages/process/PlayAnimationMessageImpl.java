@@ -24,7 +24,7 @@ import momime.common.messages.servertoclient.PlayAnimationMessage;
 public final class PlayAnimationMessageImpl extends PlayAnimationMessage implements CustomDurationServerToClientMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (PlayAnimationMessageImpl.class);
+	private final static Log log = LogFactory.getLog (PlayAnimationMessageImpl.class);
 
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;

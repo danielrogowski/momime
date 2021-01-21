@@ -41,7 +41,7 @@ import momime.common.utils.ResourceValueUtils;
 public final class AlchemyUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (AlchemyUI.class);
+	private final static Log log = LogFactory.getLog (AlchemyUI.class);
 
 	/** Typical inset used on this screen layout */
 	private final static int INSET = 0;

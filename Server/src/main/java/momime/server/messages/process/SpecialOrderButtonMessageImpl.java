@@ -25,7 +25,7 @@ import momime.server.utils.UnitServerUtils;
 public final class SpecialOrderButtonMessageImpl extends SpecialOrderButtonMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpecialOrderButtonMessageImpl.class);
+	private final static Log log = LogFactory.getLog (SpecialOrderButtonMessageImpl.class);
 
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;

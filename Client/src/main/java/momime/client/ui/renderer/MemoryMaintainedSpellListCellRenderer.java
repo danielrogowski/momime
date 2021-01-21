@@ -26,7 +26,7 @@ import momime.common.messages.MomTransientPlayerPublicKnowledge;
 public final class MemoryMaintainedSpellListCellRenderer extends JLabel implements ListCellRenderer<MemoryMaintainedSpell>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MemoryMaintainedSpellListCellRenderer.class);
+	private final static Log log = LogFactory.getLog (MemoryMaintainedSpellListCellRenderer.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

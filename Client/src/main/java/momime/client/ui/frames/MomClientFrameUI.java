@@ -26,7 +26,7 @@ import momime.client.language.LanguageVariableUIImpl;
 public abstract class MomClientFrameUI extends LanguageVariableUIImpl
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MomClientFrameUI.class);
+	private final static Log log = LogFactory.getLog (MomClientFrameUI.class);
 	
 	/** The actual frame */
 	private JFrame frame;

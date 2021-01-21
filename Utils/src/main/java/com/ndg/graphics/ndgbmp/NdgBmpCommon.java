@@ -6,13 +6,13 @@ package com.ndg.graphics.ndgbmp;
 public class NdgBmpCommon
 {
 	/** Byte values for "ndgbmp", the file format identifier */
-	public static final byte [] NDGBMP_FORMAT_IDENTIFIER = {0x6E, 0x64, 0x67, 0x62, 0x6D, 0x70};
+	public final static byte [] NDGBMP_FORMAT_IDENTIFIER = {0x6E, 0x64, 0x67, 0x62, 0x6D, 0x70};
 
 	/** Major version of the current .ndgbmp format */
-	public static final int NDGBMP_MAJOR_VERSION = 1;
+	public final static int NDGBMP_MAJOR_VERSION = 1;
 
 	/** Minor version of the current .ndgbmp format */
-	public static final int NDGBMP_MINOR_VERSION = 0;
+	public final static int NDGBMP_MINOR_VERSION = 0;
 
 	/**
 	 * @param b Byte array to test

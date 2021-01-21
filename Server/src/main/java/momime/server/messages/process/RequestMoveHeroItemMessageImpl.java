@@ -40,7 +40,7 @@ import momime.server.fogofwar.FogOfWarMidTurnChanges;
 public final class RequestMoveHeroItemMessageImpl extends RequestMoveHeroItemMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (RequestMoveHeroItemMessageImpl.class);
+	private final static Log log = LogFactory.getLog (RequestMoveHeroItemMessageImpl.class);
 
 	/** Hero item utils */
 	private HeroItemUtils heroItemUtils;

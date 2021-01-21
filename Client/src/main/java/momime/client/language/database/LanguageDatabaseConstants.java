@@ -6,7 +6,7 @@ package momime.client.language.database;
 public class LanguageDatabaseConstants
 {
 	/** Path and name to locate the new languages XSD file */
-	public static final String LANGUAGES_XSD_LOCATION = "/momime.client.language/MoMIMELanguagesDatabase.xsd";
+	public final static String LANGUAGES_XSD_LOCATION = "/momime.client.language/MoMIMELanguagesDatabase.xsd";
 	
 	/**
 	 * Prevent instatiation of this class

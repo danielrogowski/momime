@@ -35,7 +35,7 @@ import momime.common.messages.clienttoserver.RequestUpdateUnitNameMessage;
 public final class EditStringUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (EditStringUI.class);
+	private final static Log log = LogFactory.getLog (EditStringUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx editStringLayout;

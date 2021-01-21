@@ -61,7 +61,7 @@ import momime.server.utils.CityServerUtils;
 public final class CityAIImpl implements CityAI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CityAIImpl.class);
+	private final static Log log = LogFactory.getLog (CityAIImpl.class);
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;

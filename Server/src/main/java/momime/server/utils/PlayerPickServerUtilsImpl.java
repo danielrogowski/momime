@@ -42,7 +42,7 @@ import momime.server.ai.SpellAI;
 public final class PlayerPickServerUtilsImpl implements PlayerPickServerUtils
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (PlayerPickServerUtilsImpl.class);
+	private final static Log log = LogFactory.getLog (PlayerPickServerUtilsImpl.class);
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;

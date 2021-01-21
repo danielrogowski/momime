@@ -28,37 +28,37 @@ import momime.common.database.ProductionTypeImage;
 public final class TestResourceValueClientUtilsImpl extends ClientTestData
 {
 	/** Colour for a transparent pixel */
-	private static final int TRANSPARENT = 0;
+	private final static int TRANSPARENT = 0;
 	
 	/** Colour for a '1' pixel */
-	private static final int PLUS_ONE = 0xFFFF0000;
+	private final static int PLUS_ONE = 0xFFFF0000;
 
 	/** Colour for a '-1' pixel */
-	private static final int MINUS_ONE = 0xFF800000;
+	private final static int MINUS_ONE = 0xFF800000;
 	
 	/** Colour for a '10' pixel */
-	private static final int PLUS_TEN = 0xFF00FF00;
+	private final static int PLUS_TEN = 0xFF00FF00;
 
 	/** Colour for a '-10' pixel */
-	private static final int MINUS_TEN = 0xFF008000;
+	private final static int MINUS_TEN = 0xFF008000;
 
 	/** Colour for a half pixel */
-	private static final int PLUS_HALF = 0xFF0000FF;
+	private final static int PLUS_HALF = 0xFF0000FF;
 	
 	/** Colour for a '1' mana pixel */
-	private static final int PLUS_ONE_MANA = 0xFFEE0000;
+	private final static int PLUS_ONE_MANA = 0xFFEE0000;
 
 	/** Colour for a '-1' mana pixel */
-	private static final int MINUS_ONE_MANA = 0xFF700000;
+	private final static int MINUS_ONE_MANA = 0xFF700000;
 	
 	/** Colour for a '10' mana pixel */
-	private static final int PLUS_TEN_MANA = 0xFF00EE00;
+	private final static int PLUS_TEN_MANA = 0xFF00EE00;
 
 	/** Colour for a '-10' mana pixel */
-	private static final int MINUS_TEN_MANA = 0xFF007000;
+	private final static int MINUS_TEN_MANA = 0xFF007000;
 
 	/** Colour for a half mana pixel */
-	private static final int PLUS_HALF_MANA = 0xFF0000EE;
+	private final static int PLUS_HALF_MANA = 0xFF0000EE;
 	
 	/**
 	 * Tests the generateProductionImage method when we don't supply images for +10 or -10

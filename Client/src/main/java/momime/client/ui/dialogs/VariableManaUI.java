@@ -50,7 +50,7 @@ import momime.common.utils.SpellUtils;
 public final class VariableManaUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (VariableManaUI.class);
+	private final static Log log = LogFactory.getLog (VariableManaUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx variableManaLayout;

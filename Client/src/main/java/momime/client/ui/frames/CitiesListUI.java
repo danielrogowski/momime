@@ -66,7 +66,7 @@ import momime.common.utils.MemoryBuildingUtils;
 public final class CitiesListUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CitiesListUI.class);
+	private final static Log log = LogFactory.getLog (CitiesListUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx citiesListLayout;

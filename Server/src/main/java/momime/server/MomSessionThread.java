@@ -59,7 +59,7 @@ import momime.server.utils.HeroItemServerUtils;
 public final class MomSessionThread extends MultiplayerSessionThread implements MomSessionVariables
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MomSessionThread.class);
+	private final static Log log = LogFactory.getLog (MomSessionThread.class);
 
 	/** Overland map generator for this session */
 	private OverlandMapGenerator overlandMapGenerator;	

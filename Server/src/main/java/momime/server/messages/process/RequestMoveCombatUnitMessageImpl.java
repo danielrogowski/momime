@@ -38,7 +38,7 @@ import momime.server.process.CombatProcessing;
 public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUnitMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (RequestMoveCombatUnitMessageImpl.class);
+	private final static Log log = LogFactory.getLog (RequestMoveCombatUnitMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

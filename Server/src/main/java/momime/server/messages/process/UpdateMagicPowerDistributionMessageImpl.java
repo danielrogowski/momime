@@ -21,7 +21,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class UpdateMagicPowerDistributionMessageImpl extends UpdateMagicPowerDistributionMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UpdateMagicPowerDistributionMessageImpl.class);
+	private final static Log log = LogFactory.getLog (UpdateMagicPowerDistributionMessageImpl.class);
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc

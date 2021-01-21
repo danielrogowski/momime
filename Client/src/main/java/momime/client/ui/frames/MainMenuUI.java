@@ -41,7 +41,7 @@ import momime.client.utils.AnimationController;
 public final class MainMenuUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MainMenuUI.class);
+	private final static Log log = LogFactory.getLog (MainMenuUI.class);
 	
 	/** Animation for the big red 'Master of Magic' animated title */
 	final static String ANIM_MAIN_MENU_TITLE = "MAIN_MENU_TITLE";

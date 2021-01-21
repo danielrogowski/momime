@@ -101,7 +101,7 @@ import momime.server.utils.UnitServerUtils;
 public final class SpellProcessingImpl implements SpellProcessing
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpellProcessingImpl.class);
+	private final static Log log = LogFactory.getLog (SpellProcessingImpl.class);
 
 	/** Spell utils */
 	private SpellUtils spellUtils;

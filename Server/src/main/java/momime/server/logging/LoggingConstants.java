@@ -8,8 +8,8 @@ import java.text.SimpleDateFormat;
 public final class LoggingConstants
 {
 	/** Full date and time format showing every value */
-	public static final String FULL_DATE_TIME_FORMAT_STRING = "d MMM yyyy H:mm:ss";
+	public final static String FULL_DATE_TIME_FORMAT_STRING = "d MMM yyyy H:mm:ss";
 
 	/** Full date and time format showing every value */
-	public static final SimpleDateFormat FULL_DATE_TIME_FORMAT = new SimpleDateFormat (FULL_DATE_TIME_FORMAT_STRING);
+	public final static SimpleDateFormat FULL_DATE_TIME_FORMAT = new SimpleDateFormat (FULL_DATE_TIME_FORMAT_STRING);
 }

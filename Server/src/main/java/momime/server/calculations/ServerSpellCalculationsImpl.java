@@ -25,7 +25,7 @@ import momime.common.utils.SpellUtils;
 public final class ServerSpellCalculationsImpl implements ServerSpellCalculations
 {
 	/** The number of choices we're offered from which to pick a spell to research */
-	private static final int SPELL_COUNT_TO_PICK_RESEARCH_FROM = 8;
+	private final static int SPELL_COUNT_TO_PICK_RESEARCH_FROM = 8;
 
 	/** Spell utils */
 	private SpellUtils spellUtils;

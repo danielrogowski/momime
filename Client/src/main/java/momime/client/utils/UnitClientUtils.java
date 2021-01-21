@@ -22,19 +22,19 @@ import momime.common.utils.ExpandedUnitDetails;
 public interface UnitClientUtils
 {
 	/** Array column index in output from calcUnitFigurePositions for the x coord including the offsetX value */
-	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET = 0;
+	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_EXCL_OFFSET = 0;
 	
 	/** Array column index in output from calcUnitFigurePositions for the y coord including the offsetY value */
-	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET = 1;
+	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET = 1;
 	
 	/** Array column index in output from calcUnitFigurePositions for the x coord excluding the offsetX value */
-	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET = 2;
+	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET = 2;
 	
 	/** Array column index in output from calcUnitFigurePositions for the y coord excluding the offsetY value */
-	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET = 3;
+	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET = 3;
 	
 	/** Array column index in output from calcUnitFigurePositions for the size to multiply the unit images up by */
-	public static final int CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER = 4;
+	public final static int CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER = 4;
 	
 	/**
 	 * Note the generated unit names are obviously very dependant on the selected language, but the names themselves don't get notified

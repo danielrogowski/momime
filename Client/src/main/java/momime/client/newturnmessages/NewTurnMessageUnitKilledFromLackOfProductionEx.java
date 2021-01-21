@@ -27,7 +27,7 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 	implements NewTurnMessageSimpleUI, NewTurnMessageExpiration, NewTurnMessagePreProcess
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewTurnMessageUnitKilledFromLackOfProductionEx.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageUnitKilledFromLackOfProductionEx.class);
 	
 	/** Current status of this NTM */
 	private NewTurnMessageStatus status;

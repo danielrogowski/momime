@@ -56,22 +56,22 @@ public final class LbxImageReader extends ImageReader
 	private int RLE_val;
 	
 	/** Size of the LBX image header */
-	private static final int LBX_IMAGE_HEADER_SIZE = 18;
+	private final static int LBX_IMAGE_HEADER_SIZE = 18;
 	
 	/** Size of the TERRAIN.LBX image header */
-	private static final int TERRAIN_LBX_IMAGE_HEADER_SIZE = 16;
+	private final static int TERRAIN_LBX_IMAGE_HEADER_SIZE = 16;
 	
 	/** Size of the TERRAIN.LBX image footer */
-	private static final int TERRAIN_LBX_IMAGE_FOOTER_SIZE = 8;
+	private final static int TERRAIN_LBX_IMAGE_FOOTER_SIZE = 8;
 	
 	/** Width of terrain images */
-	private static final int TERRAIN_IMAGE_WIDTH = 20;
+	private final static int TERRAIN_IMAGE_WIDTH = 20;
 	
 	/** Height of terrain images */
-	private static final int TERRAIN_IMAGE_HEIGHT = 18;
+	private final static int TERRAIN_IMAGE_HEIGHT = 18;
 	
 	/** Size of each TERRAIN.LBX image including the header and footer */
-	private static final int TERRAIN_IMAGE_SIZE = LbxImageReader.TERRAIN_LBX_IMAGE_HEADER_SIZE +
+	private final static int TERRAIN_IMAGE_SIZE = LbxImageReader.TERRAIN_LBX_IMAGE_HEADER_SIZE +
 		LbxImageReader.TERRAIN_LBX_IMAGE_FOOTER_SIZE +
 		(LbxImageReader.TERRAIN_IMAGE_WIDTH * LbxImageReader.TERRAIN_IMAGE_HEIGHT);
 	
@@ -88,7 +88,7 @@ public final class LbxImageReader extends ImageReader
 	 * Red font (some values appear wrong)	$360
 	 * White font											$390
 	 */
-	protected static final short [] [] MOM_PALETTE =
+	protected final static short [] [] MOM_PALETTE =
 	{
 		{0x0, 0x0, 0x0},		// This first entry is transparent, not black - determined by checking Armourers' Guild frame 1 closely
 		{0x8, 0x4, 0x4},

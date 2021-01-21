@@ -46,7 +46,7 @@ public final class ServerDatabaseValues
 	// tax rates
 
 	/** Default tax rate of 1 gold, 20% unrest */
-	public static final String TAX_RATE_DEFAULT = "TR03";
+	public final static String TAX_RATE_DEFAULT = "TR03";
 
 	// skills
 
@@ -68,12 +68,12 @@ public final class ServerDatabaseValues
 	// hero skills
 
 	/** Hero item skill that penalises target's resistance attribute by the specified amount */
-	public static final String UNIT_SKILL_ID_SAVING_THROW_PENALTY = "HS15";
+	public final static String UNIT_SKILL_ID_SAVING_THROW_PENALTY = "HS15";
 	
 	// damage types
 	
 	/** Life stealing / create undead damage */
-	public static final String DAMAGE_TYPE_ID_LIFE_STEALING = "DT13";
+	public final static String DAMAGE_TYPE_ID_LIFE_STEALING = "DT13";
 	
 	// spells
 

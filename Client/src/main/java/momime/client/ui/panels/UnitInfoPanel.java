@@ -86,7 +86,7 @@ import momime.common.utils.UnitUtils;
 public final class UnitInfoPanel extends MomClientPanelUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitInfoPanel.class);
+	private final static Log log = LogFactory.getLog (UnitInfoPanel.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx unitInfoLayout;

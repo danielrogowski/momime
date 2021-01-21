@@ -32,10 +32,10 @@ import com.ndg.multiplayer.session.PlayerPublicDetails;
 public final class SpellCalculationsImpl implements SpellCalculations
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpellCalculationsImpl.class);
+	private final static Log log = LogFactory.getLog (SpellCalculationsImpl.class);
 	
 	/** Format used for doubles in debug messages */
-	private static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");
+	private final static DecimalFormat DECIMAL_FORMATTER = new DecimalFormat ("0.000");
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;

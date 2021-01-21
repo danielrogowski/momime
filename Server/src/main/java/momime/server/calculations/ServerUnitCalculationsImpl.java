@@ -47,7 +47,7 @@ import momime.server.utils.UnitServerUtils;
 public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ServerUnitCalculationsImpl.class);
+	private final static Log log = LogFactory.getLog (ServerUnitCalculationsImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;

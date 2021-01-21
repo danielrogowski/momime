@@ -36,10 +36,10 @@ import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 public final class ServerDatabaseConvertersImpl implements ServerDatabaseConverters
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ServerDatabaseConvertersImpl.class);
+	private final static Log log = LogFactory.getLog (ServerDatabaseConvertersImpl.class);
 	
 	/** Extension that XML files for the server must have */
-	public static final String SERVER_XML_FILE_EXTENSION = ".momime.xml";
+	public final static String SERVER_XML_FILE_EXTENSION = ".momime.xml";
 
 	/**
 	 * @param src Server XML to extract from

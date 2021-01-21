@@ -371,7 +371,7 @@ public final class NdgBmpWriter extends ImageWriter
 	 * @return Number of bits written
 	 * @throws IOException If there is a problem
 	 */
-	private static final long writeRle (final long runLength, final int colourIndex, final int colourBitLength, final int rleBitLength, final int uniqueColours, final ImageOutputStream stream)
+	private final static long writeRle (final long runLength, final int colourIndex, final int colourBitLength, final int rleBitLength, final int uniqueColours, final ImageOutputStream stream)
 		throws IOException
 	{
 		long bitsWritten = 0;

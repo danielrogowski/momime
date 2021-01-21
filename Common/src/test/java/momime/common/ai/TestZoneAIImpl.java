@@ -36,7 +36,7 @@ import momime.common.messages.UnitStatusID;
 public final class TestZoneAIImpl
 {
 	/** Locations of our cities to test with */
-	private static final MapCoordinates3DEx [] OUR_CITY_LOCATIONS = new MapCoordinates3DEx []
+	private final static MapCoordinates3DEx [] OUR_CITY_LOCATIONS = new MapCoordinates3DEx []
 	{
 		new MapCoordinates3DEx (14, 8, 0), new MapCoordinates3DEx (20, 9, 0), new MapCoordinates3DEx (17, 14, 0),
 		new MapCoordinates3DEx (26, 13, 0), new MapCoordinates3DEx (25, 18, 0),

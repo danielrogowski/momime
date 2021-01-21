@@ -36,7 +36,7 @@ import momime.server.utils.UnitSkillDirectAccessImpl;
 public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (TestAIUnitRatingCalculationsImpl.class);
+	private final static Log log = LogFactory.getLog (TestAIUnitRatingCalculationsImpl.class);
 	
 	/**
 	 * Tests the calculateUnitRating method on a relatively simple unit with some skills with no value,

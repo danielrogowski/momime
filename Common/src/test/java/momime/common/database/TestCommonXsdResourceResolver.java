@@ -18,7 +18,7 @@ import org.xml.sax.SAXParseException;
 public final class TestCommonXsdResourceResolver
 {
 	/** Path and name to locate the dummy XSD file on the classpath */
-	private static final String DUMMY_XSD_LOCATION = "/MoMIMEDummyCommonDatabase.xsd";
+	private final static String DUMMY_XSD_LOCATION = "/MoMIMEDummyCommonDatabase.xsd";
 
 	/**
 	 * Tests that when loading an XSD that includes an import to the common XSD, that the resource resolver is able to locate the common XSD

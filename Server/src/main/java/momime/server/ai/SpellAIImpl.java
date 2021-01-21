@@ -62,7 +62,7 @@ import momime.server.utils.UnitServerUtils;
 public final class SpellAIImpl implements SpellAI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SpellAIImpl.class);
+	private final static Log log = LogFactory.getLog (SpellAIImpl.class);
 	
 	/** Spell utils */
 	private SpellUtils spellUtils;

@@ -29,7 +29,7 @@ public final class NdgArcReader
 	/**
 	 * Extension of .ndgarc archives
 	 */
-	public static final String NDGARC_EXTENSION = ".ndgarc";
+	public final static String NDGARC_EXTENSION = ".ndgarc";
 
 	/**
 	 * Creates a stream object positioned to a particular subfile in a .ndgarc file

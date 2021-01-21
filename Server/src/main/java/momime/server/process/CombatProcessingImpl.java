@@ -66,10 +66,10 @@ import momime.server.utils.UnitServerUtils;
 public final class CombatProcessingImpl implements CombatProcessing
 {
 	/** Max number of units to fill each row during combat set up */ 
-	private static final int COMBAT_SETUP_UNITS_PER_ROW = 5;
+	private final static int COMBAT_SETUP_UNITS_PER_ROW = 5;
 	
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CombatProcessingImpl.class);
+	private final static Log log = LogFactory.getLog (CombatProcessingImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

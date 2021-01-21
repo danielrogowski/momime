@@ -32,7 +32,7 @@ import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOverlandUnitStackMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (RequestMoveOverlandUnitStackMessageImpl.class);
+	private final static Log log = LogFactory.getLog (RequestMoveOverlandUnitStackMessageImpl.class);
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;

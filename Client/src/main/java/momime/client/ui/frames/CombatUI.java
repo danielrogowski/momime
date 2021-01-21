@@ -124,7 +124,7 @@ public final class CombatUI extends MomClientFrameUI
 	public final static Color NO_FLASH_COLOUR = new Color (0, 0, 0, 0);
 	
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CombatUI.class);
+	private final static Log log = LogFactory.getLog (CombatUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx combatLayoutMain;

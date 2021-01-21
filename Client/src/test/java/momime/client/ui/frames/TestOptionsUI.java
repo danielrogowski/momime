@@ -42,7 +42,7 @@ import momime.common.database.UnitSkillTypeID;
 public final class TestOptionsUI extends ClientTestData
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (TestOptionsUI.class);
+	private final static Log log = LogFactory.getLog (TestOptionsUI.class);
 	
 	/**
 	 * Tests the OptionsUI form

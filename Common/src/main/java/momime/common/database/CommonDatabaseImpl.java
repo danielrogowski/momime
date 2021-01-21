@@ -26,7 +26,7 @@ import momime.common.utils.MemoryBuildingUtils;
 public final class CommonDatabaseImpl extends MomDatabase implements CommonDatabase
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CommonDatabaseImpl.class);
+	private final static Log log = LogFactory.getLog (CommonDatabaseImpl.class);
 	
 	/** Map of plane numbers to plane XML objects */
 	private Map<Integer, Plane> planesMap;

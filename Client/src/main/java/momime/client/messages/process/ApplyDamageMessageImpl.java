@@ -53,22 +53,22 @@ import momime.common.utils.UnitUtils;
 public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
+	private final static Log log = LogFactory.getLog (MoveUnitStackOverlandMessageImpl.class);
 	
 	/** FPS that we show ranged missiles at */
-	private static final int RANGED_ATTACK_FPS = 10;
+	private final static int RANGED_ATTACK_FPS = 10;
 	
 	/** How many ticks at the above FPS we show the unit firing a ranged attack for */
-	private static final int RANGED_ATTACK_LAUNCH_TICKS = 2;
+	private final static int RANGED_ATTACK_LAUNCH_TICKS = 2;
 
 	/** How many ticks at the above FPS we show the unit being hit by a ranged attack for */
-	private static final int RANGED_ATTACK_IMPACT_TICKS = 2;
+	private final static int RANGED_ATTACK_IMPACT_TICKS = 2;
 	
 	/** How many ticks an incoming spell makes prior to hitting its target */
-	private static final int INCOMING_SPELL_TICKS = 10;
+	private final static int INCOMING_SPELL_TICKS = 10;
 	
 	/** How many pixels incoming spells move each tick */
-	private static final int INCOMING_SPELL_TICK_DISTANCE = 120 / INCOMING_SPELL_TICKS;
+	private final static int INCOMING_SPELL_TICK_DISTANCE = 120 / INCOMING_SPELL_TICKS;
 
 	/** Multiplayer client */
 	private MomClient client;

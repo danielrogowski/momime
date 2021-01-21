@@ -21,7 +21,7 @@ import momime.common.utils.CompareUtils;
 public final class TileSetEx extends TileSet
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (TileSetEx.class);
+	private final static Log log = LogFactory.getLog (TileSetEx.class);
 	
 	/** All animations used by tiles in the same tile set must share the same number of frames, which gets set here; if tile set is all static images, will be set to 1 */
 	private int animationFrameCount;

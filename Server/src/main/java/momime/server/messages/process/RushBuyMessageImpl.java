@@ -30,7 +30,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class RushBuyMessageImpl extends RushBuyMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (RushBuyMessageImpl.class);
+	private final static Log log = LogFactory.getLog (RushBuyMessageImpl.class);
 
 	/** City calculations */
 	private CityCalculations cityCalculations;

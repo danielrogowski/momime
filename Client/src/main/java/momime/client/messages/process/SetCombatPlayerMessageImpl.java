@@ -25,7 +25,7 @@ import momime.common.messages.servertoclient.SetCombatPlayerMessage;
 public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage implements BaseServerToClientMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (SetCombatPlayerMessageImpl.class);
+	private final static Log log = LogFactory.getLog (SetCombatPlayerMessageImpl.class);
 
 	/** Combat UI */
 	private CombatUI combatUI;

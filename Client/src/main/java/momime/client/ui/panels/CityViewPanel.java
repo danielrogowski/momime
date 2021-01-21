@@ -32,7 +32,7 @@ import momime.common.messages.servertoclient.RenderCityData;
 public final class CityViewPanel extends JPanel
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CityViewPanel.class);
+	private final static Log log = LogFactory.getLog (CityViewPanel.class);
 
 	/** Multiplayer client */
 	private MomClient client;

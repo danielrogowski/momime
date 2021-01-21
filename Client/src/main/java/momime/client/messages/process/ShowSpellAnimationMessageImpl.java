@@ -30,7 +30,7 @@ import momime.common.utils.UnitUtils;
 public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ShowSpellAnimationMessageImpl.class);
+	private final static Log log = LogFactory.getLog (ShowSpellAnimationMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

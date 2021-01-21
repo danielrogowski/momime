@@ -31,7 +31,7 @@ import momime.common.utils.ExpandedUnitDetails;
 public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnitDetails>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitListCellRenderer.class);
+	private final static Log log = LogFactory.getLog (UnitListCellRenderer.class);
 	
 	/** Size of the image portion of the panel */
 	private final static Dimension PANEL_SIZE = new Dimension (60, 56);

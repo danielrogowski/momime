@@ -17,10 +17,10 @@ import javax.swing.JPanel;
 public final class HideableComponent<C extends Component> extends JPanel
 {
 	/** Card layout key for showing the real component */
-	private static final String COMPONENT_PANEL = "C";
+	private final static String COMPONENT_PANEL = "C";
 
 	/** Card layout key for showing a panel to hide the component */
-	private static final String HIDDEN_PANEL = "P";
+	private final static String HIDDEN_PANEL = "P";
 	
 	/** The underlying component */
 	private C component;

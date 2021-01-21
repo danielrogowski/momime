@@ -28,7 +28,7 @@ import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
 public final class ChooseInitialSpellsMessageImpl extends ChooseInitialSpellsMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChooseInitialSpellsMessageImpl.class);
+	private final static Log log = LogFactory.getLog (ChooseInitialSpellsMessageImpl.class);
 	
 	/** Server-only pick utils */
 	private PlayerPickServerUtils playerPickServerUtils;

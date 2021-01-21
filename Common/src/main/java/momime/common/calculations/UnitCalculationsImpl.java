@@ -48,10 +48,10 @@ import momime.common.utils.UnitUtils;
 public final class UnitCalculationsImpl implements UnitCalculations
 {
 	/** Marks locations in the doubleMovementDistances array that we haven't checked yet */
-	private static final int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
+	private final static int MOVEMENT_DISTANCE_NOT_YET_CHECKED = -1;
 
 	/** Marks locations in the doubleMovementDistances array that we've proved that we cannot move to */
-	private static final int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
+	private final static int MOVEMENT_DISTANCE_CANNOT_MOVE_HERE = -2;
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;

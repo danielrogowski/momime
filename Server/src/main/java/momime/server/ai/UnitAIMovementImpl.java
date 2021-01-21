@@ -31,7 +31,7 @@ import momime.common.utils.MemoryGridCellUtils;
 public final class UnitAIMovementImpl implements UnitAIMovement
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitAIMovementImpl.class);
+	private final static Log log = LogFactory.getLog (UnitAIMovementImpl.class);
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;

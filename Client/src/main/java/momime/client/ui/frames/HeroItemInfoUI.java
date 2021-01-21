@@ -34,7 +34,7 @@ import momime.common.messages.NumberedHeroItem;
 public final class HeroItemInfoUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (HeroItemInfoUI.class);
+	private final static Log log = LogFactory.getLog (HeroItemInfoUI.class);
 	
 	/** XML layout */
 	private XmlLayoutContainerEx heroItemInfoLayout;

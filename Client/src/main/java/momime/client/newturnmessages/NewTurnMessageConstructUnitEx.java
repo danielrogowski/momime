@@ -42,7 +42,7 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 	implements NewTurnMessageExpiration, NewTurnMessageComplexUI, NewTurnMessageClickable, NewTurnMessageAnimated, NewTurnMessageRepaintOnCityDataChanged
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewTurnMessageConstructUnitEx.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageConstructUnitEx.class);
 	
 	/** Space left around each text column */
 	private final static int INSET = 2;

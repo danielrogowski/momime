@@ -25,7 +25,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class EndCombatTurnMessageImpl extends EndCombatTurnMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (EndCombatTurnMessageImpl.class);
+	private final static Log log = LogFactory.getLog (EndCombatTurnMessageImpl.class);
 
 	/** Combat processing */
 	private CombatProcessing combatProcessing;

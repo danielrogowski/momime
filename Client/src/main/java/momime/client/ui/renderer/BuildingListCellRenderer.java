@@ -28,7 +28,7 @@ import momime.common.database.CityViewElement;
 public final class BuildingListCellRenderer extends JPanel implements ListCellRenderer<Building>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (BuildingListCellRenderer.class);
+	private final static Log log = LogFactory.getLog (BuildingListCellRenderer.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

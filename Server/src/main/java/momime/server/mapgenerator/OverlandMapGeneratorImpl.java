@@ -58,7 +58,7 @@ import momime.server.messages.MomGeneralServerKnowledge;
 public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (OverlandMapGeneratorImpl.class);
+	private final static Log log = LogFactory.getLog (OverlandMapGeneratorImpl.class);
 	
 	/** Where to write the generated map to */
 	private MomGeneralServerKnowledge gsk;
@@ -85,7 +85,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/** Blobs expand out only in north/south/east/west directions - no diagonals */
-	private static final int [] BLOB_EXPANSION_DIRECTIONS = new int [] {1, 3, 5, 7};
+	private final static int [] BLOB_EXPANSION_DIRECTIONS = new int [] {1, 3, 5, 7};
 
 	/**
 	 * Describes the order that the smoothing tiles appear in TERRAIN.LBX where the smoothing takes all 8 adjacent tiles into consideration
@@ -95,7 +95,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * Since this is only used for river generation now, it could be optimized by keeping only the entries which actually have valid river possibilities
 	 * However then there'd be less protection against the smoothing rules generating an unrecognized bitmask
 	 */
-	private static final String [] TERRAIN_BORDER8_NEIGHBOURING_TILES = new String []
+	private final static String [] TERRAIN_BORDER8_NEIGHBOURING_TILES = new String []
 		{"00010000",
 		"00011000",
 		"00011100",
@@ -262,7 +262,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * Stores, for each shore tile, up to 4 possible oceanside river mouth tiles (stored here as river directions) we can consider converting them into
 	 * For example a corner shore tile (with shore in directions 3 & 5) might sprout a river in either direction 3 only, direction 5 only, or both
 	 */
-	private static final String [] [] RIVER_MOUTH_DIRECTIONS = new String [] []
+	private final static String [] [] RIVER_MOUTH_DIRECTIONS = new String [] []
 		{{null, null, null, null},
 		{"5", null, null, null},
 		{"5", null, null, null},
@@ -433,7 +433,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 	 * Describes the directions that each river tile has river branching off to
 	 * The client decides the actual tile numbers, so this is now just a quick list of all the binary numbers 1..15
 	 */
-	private static final String [] RIVER_TILES = new String []
+	private final static String [] RIVER_TILES = new String []
 		{"0001",
 		"0010",
 		"0011",

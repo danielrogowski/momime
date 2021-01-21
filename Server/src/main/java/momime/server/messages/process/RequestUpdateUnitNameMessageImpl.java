@@ -26,7 +26,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class RequestUpdateUnitNameMessageImpl extends RequestUpdateUnitNameMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (RequestUpdateUnitNameMessageImpl.class);
+	private final static Log log = LogFactory.getLog (RequestUpdateUnitNameMessageImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

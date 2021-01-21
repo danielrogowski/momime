@@ -40,7 +40,7 @@ import momime.common.utils.SpellUtils;
 public final class TestSpellCalculationsImpl
 {
 	/** How much we tolerate floating point results to be wrong by because of rounding errors */
-	private static final double DOUBLE_TOLERANCE = 0.0000000000001;
+	private final static double DOUBLE_TOLERANCE = 0.0000000000001;
 
 	/**
 	 * Tests the calculateCastingCostReduction method with adding bonuses together

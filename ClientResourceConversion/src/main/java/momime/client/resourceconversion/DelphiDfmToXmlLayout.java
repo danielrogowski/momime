@@ -262,7 +262,7 @@ public final class DelphiDfmToXmlLayout
 	/**
 	 * @param args Command line arguments, ignored
 	 */
-	public static final void main (final String [] args)
+	public final static void main (final String [] args)
 	{
 		try
 		{

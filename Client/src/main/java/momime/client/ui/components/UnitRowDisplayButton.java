@@ -24,7 +24,7 @@ import momime.common.messages.MemoryUnit;
 public final class UnitRowDisplayButton extends JButton
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitRowDisplayButton.class);
+	private final static Log log = LogFactory.getLog (UnitRowDisplayButton.class);
 
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;

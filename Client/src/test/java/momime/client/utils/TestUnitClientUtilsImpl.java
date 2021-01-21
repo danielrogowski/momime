@@ -72,28 +72,28 @@ import momime.common.utils.UnitUtils;
 public final class TestUnitClientUtilsImpl extends ClientTestData
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (TestUnitClientUtilsImpl.class);
+	private final static Log log = LogFactory.getLog (TestUnitClientUtilsImpl.class);
 	
 	/** Colour for a transparent pixel */
-	private static final int TRANSPARENT = 0;
+	private final static int TRANSPARENT = 0;
 	
 	/** Background colour for basic stats */
-	private static final int BACKGROUND_BASIC = 0xFF800000;
+	private final static int BACKGROUND_BASIC = 0xFF800000;
 	
 	/** Background colour for weapon grade bonuses */
-	private static final int BACKGROUND_WEAPON_GRADE = 0xFF00FF00;
+	private final static int BACKGROUND_WEAPON_GRADE = 0xFF00FF00;
 
 	/** Background colour for experience bonuses */
-	private static final int BACKGROUND_EXPERIENCE = 0xFF008000;
+	private final static int BACKGROUND_EXPERIENCE = 0xFF008000;
 
 	/** Background colour for hero skill bonuses */
-	private static final int BACKGROUND_HERO_SKILLS = 0xFF0000FF;
+	private final static int BACKGROUND_HERO_SKILLS = 0xFF0000FF;
 	
 	/** Background colour for CAE bonuses */
-	private static final int BACKGROUND_CAE = 0xFFEE0000;
+	private final static int BACKGROUND_CAE = 0xFFEE0000;
 	
 	/** Colour for a skill icon pixel */
-	private static final int SKILL_ICON = 0xFF00EE00;
+	private final static int SKILL_ICON = 0xFF00EE00;
 	
 	/**
 	 * Tests the getUnitName method

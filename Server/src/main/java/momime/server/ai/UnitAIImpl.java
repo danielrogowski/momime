@@ -67,7 +67,7 @@ import momime.server.utils.UnitServerUtils;
 public final class UnitAIImpl implements UnitAI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (UnitAIImpl.class);
+	private final static Log log = LogFactory.getLog (UnitAIImpl.class);
 
 	/** Unit utils */
 	private UnitUtils unitUtils;

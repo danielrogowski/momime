@@ -25,7 +25,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 public final class MemoryMaintainedSpellTableCellRenderer extends JLabel implements TableCellRenderer
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MemoryMaintainedSpellTableCellRenderer.class);
+	private final static Log log = LogFactory.getLog (MemoryMaintainedSpellTableCellRenderer.class);
 	
 	/** Multiplayer client */
 	private MomClient client;

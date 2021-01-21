@@ -29,10 +29,10 @@ import momime.editors.server.ServerEditorDatabaseConstants;
 public final class SpellGrid extends MoMEditorGridWithImport
 {
 	/** Amount of data for each spell in SPELLDAT.LBX (rest of each record is the spell name) */
-	private static final int SPELL_DATA_LENGTH = 17;
+	private final static int SPELL_DATA_LENGTH = 17;
 
 	/** Length of the ID for each help text item, e.g. "WAR BEARS" (rest of each record is the actual help text) */
-	private static final int HELP_TEXT_ID_LENGTH = 48;
+	private final static int HELP_TEXT_ID_LENGTH = 48;
 
 	/**
 	 * Adds a special column listing out all the units that a spell can summon

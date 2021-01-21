@@ -38,10 +38,10 @@ public final class UnitGrid extends MoMEditorGridWithImport
 	private JComboBox<String> namesOffsetCombo;
 
 	/** Number of unit names to read */
-	private static final int UNIT_COUNT = 198;
+	private final static int UNIT_COUNT = 198;
 
 	/** Size of each block of unit data (2 bytes of name offset followed by 36 bytes of data) */
-	private static final int UNIT_DATA_BLOCK_SIZE = 36;
+	private final static int UNIT_DATA_BLOCK_SIZE = 36;
 
 	/**
 	 * Creates a grid for displaying and editing hero names names

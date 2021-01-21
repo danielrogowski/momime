@@ -22,7 +22,7 @@ import org.apache.commons.logging.LogFactory;
 public final class NewTurnMessageProcessingImpl implements NewTurnMessageProcessing
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (NewTurnMessageProcessingImpl.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageProcessingImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;

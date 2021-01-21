@@ -67,7 +67,7 @@ import momime.common.utils.UnitUtils;
 public final class ArmyListUI extends MomClientDialogUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ArmyListUI.class);
+	private final static Log log = LogFactory.getLog (ArmyListUI.class);
 
 	/** XML layout */
 	private XmlLayoutContainerEx armyListLayout;

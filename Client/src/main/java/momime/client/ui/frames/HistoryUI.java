@@ -34,13 +34,13 @@ import momime.common.utils.PlayerKnowledgeUtils;
 public final class HistoryUI extends MomClientFrameUI
 {
 	/** How spaced apart to draw score ticks */
-	private static final int SCORE_TICK = 100;
+	private final static int SCORE_TICK = 100;
 
 	/** How spaced apart to draw turn ticks */
-	private static final int TURN_TICK = 12;
+	private final static int TURN_TICK = 12;
 	
 	/** Length in pixels of axes ticks */
-	private static final int TICK_SIZE = 6;
+	private final static int TICK_SIZE = 6;
 
 	/** XML layout */
 	private XmlLayoutContainerEx historyLayout;

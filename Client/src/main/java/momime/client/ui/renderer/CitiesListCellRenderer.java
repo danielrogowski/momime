@@ -29,7 +29,7 @@ import momime.client.ui.MomUIConstants;
 public final class CitiesListCellRenderer extends JPanel implements ListCellRenderer<CitiesListEntry>
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (CitiesListCellRenderer.class);
+	private final static Log log = LogFactory.getLog (CitiesListCellRenderer.class);
 	
 	/** Language database holder */
 	private LanguageDatabaseHolder languageHolder;

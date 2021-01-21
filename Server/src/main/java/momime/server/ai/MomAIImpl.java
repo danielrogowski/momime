@@ -44,7 +44,7 @@ import momime.server.utils.CityServerUtils;
 public final class MomAIImpl implements MomAI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (MomAIImpl.class);
+	private final static Log log = LogFactory.getLog (MomAIImpl.class);
 	
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;

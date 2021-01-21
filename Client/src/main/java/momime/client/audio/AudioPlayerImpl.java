@@ -23,7 +23,7 @@ import momime.common.database.RecordNotFoundException;
 public final class AudioPlayerImpl implements AudioPlayer
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (AudioPlayerImpl.class);
+	private final static Log log = LogFactory.getLog (AudioPlayerImpl.class);
 	
 	/** Multiplayer client */
 	private MomClient client;

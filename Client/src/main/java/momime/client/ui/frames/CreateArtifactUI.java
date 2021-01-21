@@ -58,7 +58,7 @@ import momime.common.utils.SpellUtils;
 public final class CreateArtifactUI extends MomClientFrameUI
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (QueuedSpellsUI.class);
+	private final static Log log = LogFactory.getLog (QueuedSpellsUI.class);
 
 	/** Number of rows of buttons of attribute bonuses */
 	private final static int ATTRIBUTE_BONUS_ROWS = 16;

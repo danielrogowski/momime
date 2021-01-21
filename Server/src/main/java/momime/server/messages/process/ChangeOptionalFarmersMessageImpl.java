@@ -28,7 +28,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 public final class ChangeOptionalFarmersMessageImpl extends ChangeOptionalFarmersMessage implements PostSessionClientToServerMessage
 {
 	/** Class logger */
-	private static final Log log = LogFactory.getLog (ChangeOptionalFarmersMessageImpl.class);
+	private final static Log log = LogFactory.getLog (ChangeOptionalFarmersMessageImpl.class);
 
 	/** Server-only city utils */
 	private CityServerUtils cityServerUtils;

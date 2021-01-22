@@ -340,10 +340,14 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 					final MemoryUnit u = getUnitUtils ().findUnitURN (getMaintainedSpell ().getUnitURN (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "AddMaintainedSpellMessageImpl.processOneUpdate (C)");
 					
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (u, null, null, null,
-						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-					
-					getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);
+					// We might be witnessing the combat from an adjacent tile so can see the spell being cast, but not know the unit's exact location if we're not directly involved
+					if (u.getCombatPosition () != null)
+					{
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (u, null, null, null,
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+						
+						getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);
+					}
 				}
 			}
 		}

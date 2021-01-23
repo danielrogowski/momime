@@ -682,6 +682,11 @@ public final class SpellAIImpl implements SpellAI
 									valid = false;
 								break;
 								
+							// Earth to Mud and Disrupt Wall aren't useful enough to bother teaching the AI there to target them
+							case SPECIAL_COMBAT_SPELLS:
+								valid = false;
+								break;
+								
 							default:
 						}
 						

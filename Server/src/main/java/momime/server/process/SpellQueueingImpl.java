@@ -162,6 +162,10 @@ public final class SpellQueueingImpl implements SpellQueueing
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING))
 			msg = "You must specify a target location when casting summoning spells in combat.";
 
+		else if ((combatLocation != null) && (combatTargetLocation == null) &&
+			(spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS))
+			msg = "You must specify a target location when casting special combat spells.";
+		
 		else if ((combatLocation != null) && (combatTargetUnitURN == null) &&
 			(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null))
 			msg = "You must specify which unit you want to raise from the dead.";

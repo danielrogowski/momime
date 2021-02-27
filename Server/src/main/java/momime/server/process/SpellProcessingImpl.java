@@ -620,9 +620,11 @@ public final class SpellProcessingImpl implements SpellProcessing
 		{
 			// Does the spell attack a specific unit or ALL enemy units? e.g. Flame Strike or Death Spell
 			final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+			final List<MemoryMaintainedSpell> targetSpells = new ArrayList<MemoryMaintainedSpell> ();
 			if (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)
 				targetUnits.add (targetUnit);
 			else
+			{
 				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 				{
 					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
@@ -633,8 +635,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 						
 						targetUnits.add (thisUnit);
 				}
+				
+				// Disenchant Area / True will target spells cast on the combat as well
+				if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
+					targetSpells.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+						(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
+							(combatLocation.equals (s.getCityLocation ()))).collect (Collectors.toList ()));
+			}
 			
-			if (targetUnits.size () > 0)
+			if ((targetUnits.size () > 0) || (targetSpells.size () > 0))
 			{
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
 					combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
@@ -683,10 +692,26 @@ public final class SpellProcessingImpl implements SpellProcessing
 				}
 				else
 				{
-					// Dispel magic or similar - first get a list of all enchantments cast on all the units in the list by other wizards
+					// Dispel magic or similar - before we start rolling, send animation for it
+					final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
+					anim.setSpellID (spell.getSpellID ());
+					anim.setCastInCombat (true);
+					anim.setCombatTargetLocation (targetLocation);
+					
+					if ((spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT) && (targetUnits.size () > 0))
+						anim.setCombatTargetUnitURN (targetUnits.get (0).getUnitURN ());
+
+					if (attackingPlayer.getPlayerDescription ().isHuman ())
+						attackingPlayer.getConnection ().sendMessageToClient (anim);
+
+					if (defendingPlayer.getPlayerDescription ().isHuman ())
+						defendingPlayer.getConnection ().sendMessageToClient (anim);
+					
+					// Now get a list of all enchantments cast on all the units in the list by other wizards
 					final List<Integer> targetUnitURNs = targetUnits.stream ().map (u -> u.getUnitURN ()).collect (Collectors.toList ());
 					final List<MemoryMaintainedSpell> spellsToDispel = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
 						(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
+					spellsToDispel.addAll (targetSpells);
 					
 					// Build up a map so we remember which results we have to send to which players
 					final Map<Integer, List<DispelMagicResult>> resultsMap = new HashMap<Integer, List<DispelMagicResult>> ();

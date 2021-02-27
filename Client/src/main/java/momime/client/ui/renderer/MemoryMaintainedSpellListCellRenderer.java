@@ -50,6 +50,7 @@ public final class MemoryMaintainedSpellListCellRenderer extends JLabel implemen
 			// Get city spell effect name
 			final String effectName = getLanguageHolder ().findDescription
 				(getClient ().getClientDB ().findCitySpellEffect (spell.getCitySpellEffectID (), "MemoryMaintainedSpellListCellRenderer").getCitySpellEffectName ());
+			setText (effectName);
 			
 			// Get wizard colour
 			final PlayerPublicDetails pub = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), spell.getCastingPlayerID ());

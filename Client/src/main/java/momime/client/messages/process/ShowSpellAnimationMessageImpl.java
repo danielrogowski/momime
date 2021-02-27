@@ -1,5 +1,6 @@
 package momime.client.messages.process;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.io.IOException;
 
@@ -18,7 +19,10 @@ import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.frames.CombatUI;
 import momime.common.database.AnimationEx;
+import momime.common.database.AttackSpellCombatTargetID;
+import momime.common.database.Pick;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileSetEx;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.utils.UnitUtils;
@@ -47,8 +51,11 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	/** Bitmap generator includes routines for calculating pixel coords */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
 
-	/** Animation to display; null to process message instantly, or if animation is being handled by another frame */
+	/** Animation to display; null to just flash a colour or process message instantly, or if animation is being handled by another frame */
 	private AnimationEx anim;
+	
+	/** Magic realm colour to flash the screen; null if have an actual animation to display or to process message instantly */
+	private Color flashColour;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -61,28 +68,46 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 		final Spell spell = getClient ().getClientDB ().findSpell (getSpellID (), "ShowSpellAnimationMessageImpl");
 		
 		anim = null;
-		if ((spell.getCombatCastAnimation () != null) && (isCastInCombat ()) && ((getCombatTargetUnitURN () != null) || getCombatTargetLocation () != null))
+		flashColour = null;
+		if (isCastInCombat ())
 		{
-			// Figure out the location to display it
-			final MapCoordinates2DEx targetPosition = (MapCoordinates2DEx) ((getCombatTargetLocation () != null) ? getCombatTargetLocation () :
-				getUnitUtils ().findUnitURN (getCombatTargetUnitURN (),
-					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ShowSpellAnimationMessageImpl").getCombatPosition ());
-
-			anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "ShowSpellAnimationMessageImpl");
-
-			// Show anim on CombatUI
-			final TileSetEx combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ShowSpellAnimationMessageImpl");
+			if ((spell.getCombatCastAnimation () != null) && ((getCombatTargetUnitURN () != null) || getCombatTargetLocation () != null))
+			{
+				// Figure out the location to display it
+				final MapCoordinates2DEx targetPosition = (MapCoordinates2DEx) ((getCombatTargetLocation () != null) ? getCombatTargetLocation () :
+					getUnitUtils ().findUnitURN (getCombatTargetUnitURN (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "ShowSpellAnimationMessageImpl").getCombatPosition ());
+	
+				anim = getClient ().getClientDB ().findAnimation (spell.getCombatCastAnimation (), "ShowSpellAnimationMessageImpl");
+	
+				// Show anim on CombatUI
+				final TileSetEx combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ShowSpellAnimationMessageImpl");
+				
+				final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
+				final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
+				
+				getCombatUI ().getCombatCastAnimationPositions ().add (new Point
+					(adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX (targetPosition.getX (), targetPosition.getY (), combatMapTileSet),
+					adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY (targetPosition.getX (), targetPosition.getY (), combatMapTileSet)));
+	
+				getCombatUI ().setCombatCastAnimationFrame (0);
+				getCombatUI ().setCombatCastAnimation (anim);
+				getCombatUI ().setCombatCastAnimationInFront (true);
+			}
 			
-			final int adjustX = (anim.getCombatCastOffsetX () == null) ? 0 : 2 * anim.getCombatCastOffsetX ();
-			final int adjustY = (anim.getCombatCastOffsetY () == null) ? 0 : 2 * anim.getCombatCastOffsetY ();
-			
-			getCombatUI ().getCombatCastAnimationPositions ().add (new Point
-				(adjustX + getCombatMapBitmapGenerator ().combatCoordinatesX (targetPosition.getX (), targetPosition.getY (), combatMapTileSet),
-				adjustY + getCombatMapBitmapGenerator ().combatCoordinatesY (targetPosition.getX (), targetPosition.getY (), combatMapTileSet)));
-
-			getCombatUI ().setCombatCastAnimationFrame (0);
-			getCombatUI ().setCombatCastAnimation (anim);
-			getCombatUI ().setCombatCastAnimationInFront (true);
+			// Disenchant Area / True flash the screen white/blue just like adding a CAE
+			// Maybe need to loosen these conditions if we need to use this for other spells later on
+			else if ((spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.ALL_UNITS) && (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
+			{
+				if (spell.getSpellRealm () != null)
+				{
+					// Now look up the magic realm in the graphics XML file
+					final Pick magicRealm = getClient ().getClientDB ().findPick (spell.getSpellRealm (), "ShowSpellAnimationMessageImpl");
+					flashColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
+				}
+				else
+					flashColour = Color.WHITE;
+			}
 		}
 
 		// See if there's a sound effect defined in the graphics XML file
@@ -103,7 +128,15 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	@Override
 	public final int getTickCount ()
 	{
-		return (anim == null) ? 0 : anim.getFrame ().size ();
+		final int tickCount;
+		if (anim != null)
+			tickCount = anim.getFrame ().size ();
+		else if (flashColour != null)
+			tickCount = 30;
+		else
+			tickCount = 0;
+		
+		return tickCount;
 	}
 	
 	/**
@@ -112,7 +145,15 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	@Override
 	public final double getDuration ()
 	{
-		return (anim == null) ? 0 : (anim.getFrame ().size () / anim.getAnimationSpeed ());
+		final double duration;
+		if (anim != null)
+			duration = anim.getFrame ().size () / anim.getAnimationSpeed ();
+		else if (flashColour != null)
+			duration = 1;
+		else
+			duration = 0;
+		
+		return duration;
 	}
 	
 	/**
@@ -122,7 +163,23 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	public final void tick (final int tickNumber)
 	{
 		if (isCastInCombat ())
-			getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
+		{
+			if (anim != null)
+				getCombatUI ().setCombatCastAnimationFrame (tickNumber - 1);
+			
+			else if (flashColour != null)
+			{
+				// Work out value between 0..1 for how much we are flashed up or down
+				final double v;
+				if (tickNumber < getTickCount () / 2)
+					v = ((double) tickNumber) / (getTickCount () / 2);
+				else
+					v = ((double) (getTickCount () - tickNumber)) / (getTickCount () / 2);
+				
+				// Work out colour
+				getCombatUI ().setFlashColour (new Color (flashColour.getRed (), flashColour.getGreen (), flashColour.getBlue (), (int) (v * 200)));
+			}
+		}
 	}
 	
 	/**
@@ -140,14 +197,18 @@ public final class ShowSpellAnimationMessageImpl extends ShowSpellAnimationMessa
 	@Override
 	public final void finish ()
 	{
-		// Remove the anim
-		if (anim != null)
+		if (isCastInCombat ())
 		{
-			if (isCastInCombat ())
+			// Remove the anim
+			if (anim != null)
 			{
 				getCombatUI ().setCombatCastAnimation (null);
 				getCombatUI ().getCombatCastAnimationPositions ().clear ();
 			}
+			
+			// Make sure the combat screen isn't showing any colour
+			else if (flashColour != null)
+				getCombatUI ().setFlashColour (CombatUI.NO_FLASH_COLOUR);
 		}
 	}
 

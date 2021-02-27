@@ -591,6 +591,13 @@ happened yet, e.g. so if we scout a node and look at the stats of the creatures 
     				<xsd:documentation>Optional - omitted for natural map effects that are not the result of spells, such as node auras.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="castingCost" type="momimecommon:spellCastingCost">
+			    <xsd:annotation>
+    				<xsd:documentation>Optional - omitted for natural map effects that are not the result of spells, such as node auras.
+For CAEs from spells, this is how much the spell cost to cast.  For Counter Magic, this is also the remaining dispelling power of the spell
+and will decrease each time the opponent attempts to cast a spell until it reaches 0 and fizzles out.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
         </xsd:sequence>
 	</xsd:complexType>
 

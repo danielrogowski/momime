@@ -162,6 +162,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Spell to cast
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
+		spell.setOverlandCastingCost (22);
 		
 		// It grants one of 5 possible effects
 		for (int n = 1; n <= 5; n++)
@@ -196,7 +197,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		verify (midTurn, times (1)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP001", null, null, false, null, null, players, db, sd);
 		
 		// CAE should get added also
-		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", pd3.getPlayerID (), null, players, sd);
+		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", pd3.getPlayerID (), 22, null, players, sd);
 		
 		// Human players won't get any NTMs about it
 		assertEquals (0, trans1.getNewTurnMessage ().size ());
@@ -264,6 +265,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Spell to cast
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
+		spell.setOverlandCastingCost (22);
 		
 		// We know the spell
 		final SpellResearchStatus researchStatus = new SpellResearchStatus ();
@@ -292,7 +294,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		verify (midTurn, times (0)).addMaintainedSpellOnServerAndClients (gsk, pd3.getPlayerID (), "SP158", null, null, false, null, null, players, db, sd);
 		
 		// CAE shouldn't be added either
-		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", null, pd3.getPlayerID (), null, players, sd);
+		verify (midTurn, times (0)).addCombatAreaEffectOnServerAndClients (gsk, "CSE158", null, pd3.getPlayerID (), 22, null, players, sd);
 		
 		// Human players won't get any NTMs about it
 		assertEquals (0, trans1.getNewTurnMessage ().size ());
@@ -767,6 +769,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final Spell spell = new Spell ();
 		spell.setSpellID ("SP001");
 		spell.setSpellBookSectionID (SpellBookSectionID.COMBAT_ENCHANTMENTS);
+		spell.setCombatCastingCost (22);
 		
 		// It grants one of 5 possible effects
 		final List<String> combatAreaEffectIDs = new ArrayList<String> ();
@@ -826,7 +829,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
 		
 		// Prove right effect was added
-		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", attackingPd.getPlayerID (), combatLocation, players, sd);
+		verify (midTurn, times (1)).addCombatAreaEffectOnServerAndClients (gsk, "CSE004", "SP001", attackingPd.getPlayerID (), 22, combatLocation, players, sd);
 		
 		// We were charged MP for it
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);

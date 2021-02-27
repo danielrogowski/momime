@@ -78,7 +78,7 @@ public interface FogOfWarDuplication
 	 * Copies a CAE from source into the destination list
 	 * @param source The CAE to copy from (i.e. the true CAE details)
 	 * @param destination The CAE list to copy into (i.e. the player's memory of CAEs)
-	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
+	 * @return Whether any update actually happened (i.e. false if the CAE was already in the list AND all the details already exactly matched)
 	 */
 	public boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination);
 }

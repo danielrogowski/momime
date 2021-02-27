@@ -388,31 +388,40 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	 * Copies a CAE from source into the destination list
 	 * @param source The CAE to copy from (i.e. the true CAE details)
 	 * @param destination The CAE list to copy into (i.e. the player's memory of CAEs)
-	 * @return Whether any update actually happened (i.e. false if the building was already in the list)
+	 * @return Whether any update actually happened (i.e. false if the CAE was already in the list AND all the details already exactly matched)
 	 */
 	@Override
 	public final boolean copyCombatAreaEffect (final MemoryCombatAreaEffect source, final List<MemoryCombatAreaEffect> destination)
 	{
-		// Since CAEs can't change, only be added or destroyed, we don't need to worry about whether the
-		// CAE in the list but somehow changed, that's can't happen
-		final boolean needToAdd = (getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (source.getCombatAreaEffectURN (), destination) == null);
-
-		if (needToAdd)
+		// First see if the CAE is in the destination list at all
+		boolean needToUpdate;
+		MemoryCombatAreaEffect dest = getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (source.getCombatAreaEffectURN (), destination);
+		if (dest == null)
 		{
-			final MemoryCombatAreaEffect destinationCAE = new MemoryCombatAreaEffect ();
-			destinationCAE.setCombatAreaEffectURN (source.getCombatAreaEffectURN ());
-			destinationCAE.setCombatAreaEffectID (source.getCombatAreaEffectID ());
-			destinationCAE.setCastingPlayerID (source.getCastingPlayerID ());
-
-			if (source.getMapLocation () == null)
-				destinationCAE.setMapLocation (null);
-			else
-				destinationCAE.setMapLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getMapLocation ()));
-
-			destination.add (destinationCAE);
+			dest = new MemoryCombatAreaEffect ();
+			destination.add (dest);
+			needToUpdate = true;
+		}
+		else
+		{
+			// The only value that can actually change is castingCost
+			needToUpdate = !CompareUtils.safeIntegerCompare (source.getCastingCost (), dest.getCastingCost ());
 		}
 
-		return needToAdd;
+		if (needToUpdate)
+		{
+			dest.setCombatAreaEffectURN (source.getCombatAreaEffectURN ());
+			dest.setCombatAreaEffectID (source.getCombatAreaEffectID ());
+			dest.setCastingPlayerID (source.getCastingPlayerID ());
+			dest.setCastingCost (source.getCastingCost ());
+
+			if (source.getMapLocation () == null)
+				dest.setMapLocation (null);
+			else
+				dest.setMapLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getMapLocation ()));
+		}
+
+		return needToUpdate;
 	}
 
 	/**

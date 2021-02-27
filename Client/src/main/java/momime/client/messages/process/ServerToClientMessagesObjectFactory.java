@@ -3,7 +3,7 @@ package momime.client.messages.process;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.common.messages.servertoclient.AddBuildingMessage;
-import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
+import momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
@@ -251,9 +251,9 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final AddCombatAreaEffectMessage createAddCombatAreaEffectMessage ()
+	public final AddOrUpdateCombatAreaEffectMessage createAddOrUpdateCombatAreaEffectMessage ()
 	{
-		return getFactory ().createAddCombatAreaEffectMessage ();
+		return getFactory ().createAddOrUpdateCombatAreaEffectMessage ();
 	}
 
 	/**

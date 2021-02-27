@@ -82,7 +82,7 @@ public interface FogOfWarMidTurnMultiChanges
 	
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
+	 * @param mapLocation Location the combat is taking place
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description

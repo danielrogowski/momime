@@ -107,7 +107,7 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public AddCombatAreaEffectMessageImpl createAddCombatAreaEffectMessage ();
+	public AddOrUpdateCombatAreaEffectMessageImpl createAddOrUpdateCombatAreaEffectMessage ();
 
 	/**
 	 * @return Newly created message

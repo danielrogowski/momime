@@ -760,10 +760,15 @@ public final class SpellBookUI extends MomClientFrameUI
 						found = true;
 				}
 				
-				// Disenchant Area / True will also affect spells at the location that aren't cast on units, like Wall of Fire or Prayer
+				// Disenchant Area / True will also affect spells at the location that aren't cast on units, like Wall of Fire or Heavenly Light
 				if ((!found) && (sectionID == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.ALL_UNITS))
-					found = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
-						(s -> (s.getCastingPlayerID () != getClient ().getOurPlayerID ()) && (getCombatUI ().getCombatLocation ().equals (s.getCityLocation ())));
+					found = (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().stream ().anyMatch
+						(s -> (s.getCastingPlayerID () != getClient ().getOurPlayerID ()) && (getCombatUI ().getCombatLocation ().equals (s.getCityLocation ())))) ||
+					
+						// Or CAEs like Prayer
+						(getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells
+							(getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatUI ().getCombatLocation (), getClient ().getClientDB ()).stream ().anyMatch
+								(cae -> !cae.getCastingPlayerID ().equals (getClient ().getOurPlayerID ())));
 				
 				proceed = found;
 				if (!proceed)

@@ -459,11 +459,12 @@ public final class TestFogOfWarDuplicationImpl
 			combatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
 			combatAreaEffect.setMapLocation (combatAreaEffectCoords);
 			combatAreaEffect.setCastingPlayerID (n);
+			combatAreaEffect.setCastingCost (n * 2);
 
 			destination.add (combatAreaEffect);
 		}
 
-		// Test a combatAreaEffect already in the list
+		// Test a combatAreaEffect already in the list and is unchanged
 		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
 
 		final MemoryCombatAreaEffect existingCombatAreaEffect = new MemoryCombatAreaEffect ();
@@ -471,17 +472,27 @@ public final class TestFogOfWarDuplicationImpl
 		existingCombatAreaEffect.setCombatAreaEffectID ("CAE02");
 		existingCombatAreaEffect.setMapLocation (existingCoords);
 		existingCombatAreaEffect.setCastingPlayerID (2);
+		existingCombatAreaEffect.setCastingCost (4);
 
 		assertEquals (3, destination.size ());
 		assertFalse (dup.copyCombatAreaEffect (existingCombatAreaEffect, destination));
 		assertEquals (3, destination.size ());
-
-		// Test a combatAreaEffect already in the list (location same but different combatAreaEffect ID)
+		
+		// Test a combatAreaEffect already in the list but has unchanged
+		existingCombatAreaEffect.setCastingCost (10);
+		
+		assertEquals (3, destination.size ());
+		assertTrue (dup.copyCombatAreaEffect (existingCombatAreaEffect, destination));
+		assertEquals (3, destination.size ());
+		assertEquals (10, destination.get (1).getCastingCost ().intValue ());
+		
+		// Test a combatAreaEffect not already in the list (location same but different combatAreaEffect ID)
 		final MemoryCombatAreaEffect newCombatAreaEffect = new MemoryCombatAreaEffect ();
 		newCombatAreaEffect.setCombatAreaEffectURN (4);
 		newCombatAreaEffect.setCombatAreaEffectID ("CAE03");
 		newCombatAreaEffect.setMapLocation (existingCoords);
 		newCombatAreaEffect.setCastingPlayerID (3);
+		newCombatAreaEffect.setCastingCost (6);
 
 		assertEquals (3, destination.size ());
 		assertTrue (dup.copyCombatAreaEffect (newCombatAreaEffect, destination));

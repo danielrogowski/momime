@@ -227,7 +227,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					// Pick one at random
 					final String combatAreaEffectID = spell.getSpellHasCombatEffect ().get (getRandomUtils ().nextInt (spell.getSpellHasCombatEffect ().size ()));
 					getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID, spell.getSpellID (),
-						player.getPlayerDescription ().getPlayerID (), null, mom.getPlayers (), mom.getSessionDescription ());
+						player.getPlayerDescription ().getPlayerID (), spell.getOverlandCastingCost (), null, mom.getPlayers (), mom.getSessionDescription ());
 				}
 			}
 		}
@@ -420,7 +420,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 			log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
 				
 			getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID,
-				spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation, mom.getPlayers (), mom.getSessionDescription ());
+				spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
+				(variableDamage != null) ? variableDamage : spell.getCombatCastingCost (),		// For putting extra MP into Counter Magic
+				combatLocation, mom.getPlayers (), mom.getSessionDescription ());
 		}
 		
 		// Unit enchantments or curses
@@ -622,6 +624,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// Does the spell attack a specific unit or ALL enemy units? e.g. Flame Strike or Death Spell
 			final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
 			final List<MemoryMaintainedSpell> targetSpells = new ArrayList<MemoryMaintainedSpell> ();
+			final List<MemoryCombatAreaEffect> targetCAEs = new ArrayList<MemoryCombatAreaEffect> ();
 			if (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)
 				targetUnits.add (targetUnit);
 			else
@@ -639,12 +642,19 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				// Disenchant Area / True will target spells cast on the combat as well
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
+				{
 					targetSpells.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
 						(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
 							(combatLocation.equals (s.getCityLocation ()))).collect (Collectors.toList ()));
+					
+					// Also CAEs which have no underlying maintained spell, like Prayer (method gets all CAEs in combat, so just need to restrict to ones cast by the opponent)
+					targetCAEs.addAll (getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells
+						(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ()).stream ().filter
+							(cae -> !cae.getCastingPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ())).collect (Collectors.toList ()));
+				}
 			}
 			
-			if ((targetUnits.size () > 0) || (targetSpells.size () > 0))
+			if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0))
 			{
 				if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
 					combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
@@ -719,7 +729,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					if (castingPlayer.getPlayerDescription ().isHuman ())
 						resultsMap.put (castingPlayer.getPlayerDescription ().getPlayerID (), new ArrayList<DispelMagicResult> ());
 					
-					// Now go through trying to dispel each one
+					// Now go through trying to dispel each spell
 					final Integer dispellingPower = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
 					for (final MemoryMaintainedSpell spellToDispel : spellsToDispel)
 					{
@@ -753,6 +763,36 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 					}
 					
+					// Also go through trying to dispel each CAE
+					for (final MemoryCombatAreaEffect cae : targetCAEs)
+					{
+						final DispelMagicResult result = new DispelMagicResult ();
+						result.setOwningPlayerID (cae.getCastingPlayerID ());
+						result.setCombatAreaEffectID (cae.getCombatAreaEffectID ());
+						result.setCastingCost (cae.getCastingCost ());
+						result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
+						result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
+
+						if (result.isDispelled ())
+							getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+								cae.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
+
+						if (castingPlayer.getPlayerDescription ().isHuman ())
+							resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+						
+						final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cae.getCastingPlayerID (), "castCombatNow (D2)");
+						if (spellOwner.getPlayerDescription ().isHuman ())
+						{
+							List<DispelMagicResult> results = resultsMap.get (cae.getCastingPlayerID ());
+							if (results == null)
+							{
+								results = new ArrayList<DispelMagicResult> ();
+								resultsMap.put (cae.getCastingPlayerID (), results);
+							}
+							results.add (result);
+						}
+					}
+					
 					// Send the results to each human player invovled
 					if (resultsMap.size () > 0)
 					{
@@ -765,7 +805,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 							msg.getDispelMagicResult ().clear ();
 							msg.getDispelMagicResult ().addAll (entry.getValue ());
 							
-							final PlayerServerDetails entryPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castCombatNow (D2)");
+							final PlayerServerDetails entryPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castCombatNow (D3)");
 							entryPlayer.getConnection ().sendMessageToClient (msg);
 						}
 					}

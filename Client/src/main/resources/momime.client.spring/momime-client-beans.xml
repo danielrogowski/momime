@@ -474,10 +474,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatUI" ref="combatUI" />
 	</bean>
 
-	<bean id="addCombatAreaEffectMessage" class="momime.client.messages.process.AddCombatAreaEffectMessageImpl" scope="prototype">
+	<bean id="addOrUpdateCombatAreaEffectMessage" class="momime.client.messages.process.AddOrUpdateCombatAreaEffectMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
 
 	<bean id="cancelCombatAreaEffectMessage" class="momime.client.messages.process.CancelCombatAreaEffectMessageImpl" scope="prototype">

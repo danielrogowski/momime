@@ -1265,10 +1265,10 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		mapGen.generateInitialCombatAreaEffects ();
 		
 		// Check results
-		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, null, new MapCoordinates3DEx (39, 10, 0), null, sd);
-		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE01", null, null, new MapCoordinates3DEx (40, 10, 0), null, sd);
-		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, null, new MapCoordinates3DEx (40, 10, 0), null, sd);
-		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, null, new MapCoordinates3DEx (41, 10, 0), null, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, null, null, new MapCoordinates3DEx (39, 10, 0), null, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE01", null, null, null, new MapCoordinates3DEx (40, 10, 0), null, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, null, null, new MapCoordinates3DEx (40, 10, 0), null, sd);
+		verify (midTurn).addCombatAreaEffectOnServerAndClients (gsk, "CAE02", null, null, null, new MapCoordinates3DEx (41, 10, 0), null, sd);
 	}
 
 	/**

@@ -24,7 +24,6 @@ import momime.common.calculations.CityCalculations;
 import momime.common.calculations.UnitCalculations;
 import momime.common.calculations.UnitMovement;
 import momime.common.calculations.UnitStack;
-import momime.common.database.CitySpellEffect;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -214,7 +213,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
-	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
+	 * @param mapLocation Location the combat is taking place
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -229,30 +228,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
-		// Make a list of all CAEs caused by permanent city spells at this location, to make sure we don't remove them, e.g. Heavenly Light and Cloud of Darkness
-		final List<MemoryCombatAreaEffect> keepCAEs = new ArrayList<MemoryCombatAreaEffect> (); 
-		for (final MemoryMaintainedSpell trueSpell : trueMap.getMaintainedSpell ())
-			if ((mapLocation.equals (trueSpell.getCityLocation ())) && (trueSpell.getCitySpellEffectID () != null))
-			{
-				final CitySpellEffect citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "removeCombatAreaEffectsFromLocalisedSpells");
-				if (citySpellEffect.getCombatAreaEffectID () != null)
-				{
-					final MemoryCombatAreaEffect trueCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-						(trueMap.getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
-						
-					if (trueCAE != null)
-						keepCAEs.add (trueCAE);
-				}
-			}
-		
-		// Better copy the list of CAEs, since we'll be removing them as we go along
-		final List<MemoryCombatAreaEffect> copyOftrueCAEs = new ArrayList<MemoryCombatAreaEffect> ();
-		copyOftrueCAEs.addAll (trueMap.getCombatAreaEffect ());
-	
-		// CAE must be localised at this combat location (so we don't remove global enchantments like Crusade) and must be owned by a player (so we don't remove node auras)
-		for (final MemoryCombatAreaEffect trueCAE : copyOftrueCAEs)
-			if ((!keepCAEs.contains (trueCAE)) && (mapLocation.equals (trueCAE.getMapLocation ())) && (trueCAE.getCastingPlayerID () != null))
-				getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
+		// Other method finds the relevant CAEs for us, so we only need to remove them
+		final List<MemoryCombatAreaEffect> CAEsToRemove = getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells (trueMap, mapLocation, db);
+		for (final MemoryCombatAreaEffect trueCAE : CAEsToRemove)
+			getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
 	}
 
 	/**

@@ -157,7 +157,7 @@
     			<value>momime.common.messages.servertoclient.KillUnitMessage</value>
     			<value>momime.common.messages.servertoclient.AddMaintainedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage</value>
-    			<value>momime.common.messages.servertoclient.AddCombatAreaEffectMessage</value>
+    			<value>momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage</value>
     			<value>momime.common.messages.servertoclient.CancelCombatAreaEffectMessage</value>
     			<value>momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage</value>
     		</list>

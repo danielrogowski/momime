@@ -230,6 +230,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param combatAreaEffectID Which CAE is it
 	 * @param spellID Which spell was cast to produce this CAE; null for CAEs that aren't from spells, like node auras
 	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
+	 * @param castingCost Amount of MP put into the spell, prior to any reductions the caster got; null for natural CAEs (like node auras)
 	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
 	 * @param players List of players in the session, this can be passed in null for when CAEs are being added to the map pre-game
 	 * @param sd Session description
@@ -237,7 +238,7 @@ public interface FogOfWarMidTurnChanges
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	public void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
+		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final Integer castingCost, final MapCoordinates3DEx mapLocation,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException;
 

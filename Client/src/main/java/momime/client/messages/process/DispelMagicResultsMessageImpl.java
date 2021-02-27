@@ -77,7 +77,13 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 				languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getTheirDispelMagicSuccess () : getLanguages ().getDispelMagic ().getTheirDispelMagicFail ();
 				
 			// This is the spell that was dispelled (or not)
-			final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (result.getSpellID (), "DispelMagicResultsMessageImpl (R)").getSpellName ());
+			final String spellName;
+			if (result.getSpellID () != null)
+				spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell
+					(result.getSpellID (), "DispelMagicResultsMessageImpl (R)").getSpellName ());
+			else
+				spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findCombatAreaEffect
+					(result.getCombatAreaEffectID (), "DispelMagicResultsMessageImpl (S)").getCombatAreaEffectDescription ());
 			
 			String line = getLanguageHolder ().findDescription (languageText).replaceAll
 				("SPELL_NAME", spellName).replaceAll

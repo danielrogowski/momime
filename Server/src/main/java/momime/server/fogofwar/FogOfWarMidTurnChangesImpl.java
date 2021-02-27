@@ -45,7 +45,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddBuildingMessage;
-import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
+import momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
@@ -619,8 +619,13 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		{
 			final CitySpellEffect citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "addExistingTrueMaintainedSpellToClients");
 			if (citySpellEffect.getCombatAreaEffectID () != null)
+			{
+				final Spell spellDef = db.findSpell (trueSpell.getSpellID (), "addExistingTrueMaintainedSpellToClients");
+				
+				// We can assume casting cost is overland casting cost, as CAEs cast in combat generate the CAE only without a maintained spell
 				addCombatAreaEffectOnServerAndClients (gsk, citySpellEffect.getCombatAreaEffectID (), trueSpell.getSpellID (), trueSpell.getCastingPlayerID (),
-					(MapCoordinates3DEx) trueSpell.getCityLocation (), players, sd);
+					spellDef.getOverlandCastingCost (), (MapCoordinates3DEx) trueSpell.getCityLocation (), players, sd);
+			}
 		}
 
 		// The new spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
@@ -800,6 +805,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param combatAreaEffectID Which CAE is it
 	 * @param spellID Which spell was cast to produce this CAE; null for CAEs that aren't from spells, like node auras
 	 * @param castingPlayerID Player who cast the CAE if it was created via a spell; null for natural CAEs (like node auras)
+	 * @param castingCost Amount of MP put into the spell, prior to any reductions the caster got; null for natural CAEs (like node auras)
 	 * @param mapLocation Indicates which city the CAE is cast on; null for CAEs not cast on cities
 	 * @param players List of players in the session, this can be passed in null for when CAEs are being added to the map pre-game
 	 * @param sd Session description
@@ -808,7 +814,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 */
 	@Override
 	public final void addCombatAreaEffectOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final MapCoordinates3DEx mapLocation,
+		final String combatAreaEffectID, final String spellID, final Integer castingPlayerID, final Integer castingCost, final MapCoordinates3DEx mapLocation,
 		final List<PlayerServerDetails> players, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException
 	{
@@ -822,6 +828,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final MemoryCombatAreaEffect trueCAE = new MemoryCombatAreaEffect ();
 		trueCAE.setCombatAreaEffectID (combatAreaEffectID);
 		trueCAE.setCastingPlayerID (castingPlayerID);
+		trueCAE.setCastingCost (castingCost);
 		trueCAE.setMapLocation (caeLocation);
 		trueCAE.setCombatAreaEffectURN (gsk.getNextFreeCombatAreaEffectURN ());
 
@@ -829,7 +836,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		gsk.getTrueMap ().getCombatAreaEffect ().add (trueCAE);
 
 		// Build the message ready to send it to whoever can see the CAE
-		final AddCombatAreaEffectMessage msg = new AddCombatAreaEffectMessage ();
+		final AddOrUpdateCombatAreaEffectMessage msg = new AddOrUpdateCombatAreaEffectMessage ();
 		msg.setMemoryCombatAreaEffect (trueCAE);
 		msg.setSpellID (spellID);
 

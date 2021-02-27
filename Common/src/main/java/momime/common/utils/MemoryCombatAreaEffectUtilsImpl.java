@@ -3,12 +3,17 @@ package momime.common.utils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 
+import momime.common.database.CitySpellEffect;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
 
 /**
  * Helper methods for dealing with MemoryCombatAreaEffect objects
@@ -136,5 +141,38 @@ public final class MemoryCombatAreaEffectUtilsImpl implements MemoryCombatAreaEf
     	}
 
     	return combatAreaEffectIDs;
+	}
+	
+	/**
+	 * @param mem Player knowledge of spells and CAEs
+	 * @param mapLocation Location the combat is taking place
+	 * @param db Lookup lists built over the XML database
+	 * @return List of CAEs cast in the combat at this location
+	 * @throws RecordNotFoundException If we can't find the definition for one of the city spell effects
+	 */
+	@Override
+	public final List<MemoryCombatAreaEffect> listCombatAreaEffectsFromLocalisedSpells
+		(final FogOfWarMemory mem, final MapCoordinates3DEx mapLocation, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		// Make a list of all CAEs caused by permanent city spells at this location, to make sure we ignore them, e.g. Heavenly Light and Cloud of Darkness
+		final List<MemoryCombatAreaEffect> keepCAEs = new ArrayList<MemoryCombatAreaEffect> (); 
+		for (final MemoryMaintainedSpell trueSpell : mem.getMaintainedSpell ())
+			if ((mapLocation.equals (trueSpell.getCityLocation ())) && (trueSpell.getCitySpellEffectID () != null))
+			{
+				final CitySpellEffect citySpellEffect = db.findCitySpellEffect (trueSpell.getCitySpellEffectID (), "listCombatAreaEffectsFromLocalisedSpells");
+				if (citySpellEffect.getCombatAreaEffectID () != null)
+				{
+					final MemoryCombatAreaEffect thisCAE = findCombatAreaEffect
+						(mem.getCombatAreaEffect (), (MapCoordinates3DEx) trueSpell.getCityLocation (), citySpellEffect.getCombatAreaEffectID (), trueSpell.getCastingPlayerID ());
+						
+					if (thisCAE != null)
+						keepCAEs.add (thisCAE);
+				}
+			}
+		
+		// CAE must be localised at this combat location (so we don't remove global enchantments like Crusade) and must be owned by a player (so we don't list node auras)
+		return mem.getCombatAreaEffect ().stream ().filter (cae ->
+			((!keepCAEs.contains (cae)) && (mapLocation.equals (cae.getMapLocation ())) && (cae.getCastingPlayerID () != null))).collect (Collectors.toList ());
 	}
 }

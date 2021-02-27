@@ -13,14 +13,16 @@ import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.database.Pick;
 import momime.common.database.Spell;
-import momime.common.messages.servertoclient.AddCombatAreaEffectMessage;
+import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage;
+import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.UnitUtils;
 
 /**
  * Server sends this to notify clients of new CAEs, or those that have newly come into view.
  * Besides the info we remember, the client also needs the spell ID for animation purposes
  */
-public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMessage implements AnimatedServerToClientMessage
+public final class AddOrUpdateCombatAreaEffectMessageImpl extends AddOrUpdateCombatAreaEffectMessage implements AnimatedServerToClientMessage
 {
 	/** Multiplayer client */
 	private MomClient client;
@@ -30,6 +32,9 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+
+	/** Memory CAE utils */
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/** Whether adding this CAE is showing an animation or not */
 	private boolean animated;
@@ -45,8 +50,13 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
-		// First add the CAE
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ().add (getMemoryCombatAreaEffect ());
+		// First add or update the CAE
+		final MemoryCombatAreaEffect oldCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (getMemoryCombatAreaEffect ().getCombatAreaEffectURN (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ());
+		if (oldCAE != null)
+			oldCAE.setCastingCost (getMemoryCombatAreaEffect ().getCastingCost ());
+		else
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ().add (getMemoryCombatAreaEffect ());
 		
 		// Check out whether we need an animation
 		animated = (getMemoryCombatAreaEffect ().getCastingPlayerID () != null) && (getCombatUI ().isVisible ()) &&
@@ -56,11 +66,11 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 		flashColour = Color.WHITE;
 		if (animated)
 		{
-			final Spell spell = getClient ().getClientDB ().findSpell (getSpellID (), "AddCombatAreaEffectMessageImpl");
+			final Spell spell = getClient ().getClientDB ().findSpell (getSpellID (), "AddOrUpdateCombatAreaEffectMessageImpl");
 			if (spell.getSpellRealm () != null)
 			{
 				// Now look up the magic realm in the graphics XML file
-				final Pick magicRealm = getClient ().getClientDB ().findPick (spell.getSpellRealm (), "AddCombatAreaEffectMessageImpl");
+				final Pick magicRealm = getClient ().getClientDB ().findPick (spell.getSpellRealm (), "AddOrUpdateCombatAreaEffectMessageImpl");
 				flashColour = new Color (Integer.parseInt (magicRealm.getPickBookshelfTitleColour (), 16));
 			}
 		}
@@ -177,5 +187,21 @@ public final class AddCombatAreaEffectMessageImpl extends AddCombatAreaEffectMes
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
 	}
 }

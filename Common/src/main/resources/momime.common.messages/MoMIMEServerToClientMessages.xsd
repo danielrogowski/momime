@@ -948,7 +948,7 @@ they can show an animation for it and sort out the target spell NTM.</xsd:docume
 		</xsd:complexType>
 	</xsd:element>
 
-	<xsd:element name="addCombatAreaEffectMessage">
+	<xsd:element name="addOrUpdateCombatAreaEffectMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Server sends this to notify clients of new CAEs, or those that have newly come into view.
 Besides the info we remember, the client also needs the spell ID for animation purposes..</xsd:documentation>
@@ -1179,11 +1179,13 @@ This is purely informational, like NTMs.  Other messages (e.g. add hero item, fu
 
 	<xsd:complexType name="dispelMagicResult">
 	    <xsd:annotation>
-    		<xsd:documentation>The result of attempting to dispel one spell.  See dispelMagicResultsMessage for more info.</xsd:documentation>
+    		<xsd:documentation>The result of attempting to dispel one spell.  See dispelMagicResultsMessage for more info.
+Either spellID or combatAreaEffectID will be filled in but never both.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="owningPlayerID" type="mps:playerID" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="castingCost" type="momimecommon:spellCastingCost" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="chance" type="xsd:double" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="dispelled" type="xsd:boolean" />

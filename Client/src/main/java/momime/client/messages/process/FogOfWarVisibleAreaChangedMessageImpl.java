@@ -156,7 +156,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		// CAEs added or come into view
 		if (getAddCombatAreaEffect ().size () > 0)
 		{
-			final AddCombatAreaEffectMessageImpl proc = getFactory ().createAddCombatAreaEffectMessage ();
+			final AddOrUpdateCombatAreaEffectMessageImpl proc = getFactory ().createAddOrUpdateCombatAreaEffectMessage ();
 			for (final MemoryCombatAreaEffect thisCAE : getAddCombatAreaEffect ())
 			{
 				proc.setMemoryCombatAreaEffect (thisCAE);

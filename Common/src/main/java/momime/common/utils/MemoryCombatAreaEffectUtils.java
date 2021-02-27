@@ -2,8 +2,10 @@ package momime.common.utils;
 
 import java.util.List;
 
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -62,4 +64,15 @@ public interface MemoryCombatAreaEffectUtils
 	 */
 	public List<String> listCombatEffectsNotYetCastAtLocation (final List<MemoryCombatAreaEffect> CAEs, final Spell spell,
 		final int castingPlayerID, final MapCoordinates3DEx combatLocation);
+
+	/**
+	 * @param mem Player knowledge of spells and CAEs
+	 * @param mapLocation Location the combat is taking place
+	 * @param db Lookup lists built over the XML database
+	 * @return List of CAEs cast in the combat at this location
+	 * @throws RecordNotFoundException If we can't find the definition for one of the city spell effects
+	 */
+	public List<MemoryCombatAreaEffect> listCombatAreaEffectsFromLocalisedSpells
+		(final FogOfWarMemory mem, final MapCoordinates3DEx mapLocation, final CommonDatabase db)
+		throws RecordNotFoundException;
 }

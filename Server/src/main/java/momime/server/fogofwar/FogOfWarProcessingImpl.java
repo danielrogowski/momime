@@ -698,10 +698,15 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			if ((thisSpell.getUnitURN () != null) || (thisSpell.getCityLocation () != null))
 			{
 				// If a unit has come into view, then any spells cast on it also come into view - we recorded a list of all units that
-				// came into view above, so that we don't have to work it out again here
+				// came into view above, so that we don't have to work it out again here.
+				
+				// Other thing that can happen here is we previously saw a unit with spells cast on it - then it moved away, lost some of those spells while we couldn't
+				// see it happen so we still remember those old spells, and now we're seeing the unit again.
+				// So the fact that we can see an updated version of the unit may mean we need to remove some spells.
 				final boolean needToRemoveSpell;
 				if (thisSpell.getUnitURN () != null)
-					needToRemoveSpell = removedUnitURNs.contains (thisSpell.getUnitURN ());
+					needToRemoveSpell = (removedUnitURNs.contains (thisSpell.getUnitURN ())) ||
+						((updatedUnitURNs.contains (thisSpell.getUnitURN ())) && (getMemoryMaintainedSpellUtils ().findSpellURN (thisSpell.getSpellURN (), trueMap.getMaintainedSpell ()) == null));
 				else
 				{
 					// This can happen one of two ways:

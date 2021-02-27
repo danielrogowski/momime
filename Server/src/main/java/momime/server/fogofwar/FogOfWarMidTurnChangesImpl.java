@@ -28,6 +28,8 @@ import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.FogOfWarStateID;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -55,8 +57,11 @@ import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.UpdateCityMessage;
 import momime.common.messages.servertoclient.UpdateCityMessageData;
+import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessageData;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -65,6 +70,7 @@ import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.knowledge.ServerGridCellEx;
+import momime.server.mapgenerator.CombatMapGenerator;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.UnitServerUtils;
 
@@ -115,6 +121,12 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
+	
+	/** Map generator */
+	private CombatMapGenerator combatMapGenerator;
 	
 	/**
 	 * After setting the various terrain values in the True Map, this routine copies and sends the new value to players who can see it
@@ -724,6 +736,40 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				
 				if (trueCAE != null)
 					removeCombatAreaEffectFromServerAndClients (trueMap, trueCAE.getCombatAreaEffectURN (), players, sd);
+			}
+			
+			// The only spells with a citySpellEffectID that can be cast in combat are Wall of Fire / Wall of Darkness.
+			// If these get cancelled, we need to regnerate the combat map.
+			else
+			{
+				final Spell spellDef = db.findSpell (trueSpell.getSpellID (), "switchOffMaintainedSpellOnServerAndClients");
+				if (((spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spellDef.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES)) &&
+					spellDef.getCombatCastingCost () != null)
+				{
+					final CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
+						((MapCoordinates3DEx) trueSpell.getCityLocation (), trueMap.getUnit (), players);
+					if (combatPlayers.bothFound ())
+					{
+						final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
+						final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
+					
+						final ServerGridCellEx gc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get
+							(trueSpell.getCityLocation ().getZ ()).getRow ().get (trueSpell.getCityLocation ().getY ()).getCell ().get (trueSpell.getCityLocation ().getX ());
+						
+						getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), db, trueMap, (MapCoordinates3DEx) trueSpell.getCityLocation ());
+						
+						// Send the updated map
+						final UpdateCombatMapMessage combatMapMsg = new UpdateCombatMapMessage ();
+						combatMapMsg.setCombatLocation (trueSpell.getCityLocation ());
+						combatMapMsg.setCombatTerrain (gc.getCombatMap ());
+						
+						if (attackingPlayer.getPlayerDescription ().isHuman ())
+							attackingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
+
+						if (defendingPlayer.getPlayerDescription ().isHuman ())
+							defendingPlayer.getConnection ().sendMessageToClient (combatMapMsg);
+					}
+				}
 			}
 		}
 		
@@ -1516,5 +1562,37 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
+	}
+
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+	
+	/**
+	 * @param utils Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils utils)
+	{
+		combatMapUtils = utils;
+	}
+
+	/**
+	 * @return Map generator
+	 */
+	public final CombatMapGenerator getCombatMapGenerator ()
+	{
+		return combatMapGenerator;
+	}
+
+	/**
+	 * @param gen Map generator
+	 */
+	public final void setCombatMapGenerator (final CombatMapGenerator gen)
+	{
+		combatMapGenerator = gen;
 	}
 }

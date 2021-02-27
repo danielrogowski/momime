@@ -786,6 +786,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="pendingMovementUtils" ref="pendingMovementUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="combatMapGenerator" ref="combatMapGenerator" />
 	</bean>
 
 	<bean id="fogOfWarMidTurnMultiChanges" class="momime.server.fogofwar.FogOfWarMidTurnMultiChangesImpl">

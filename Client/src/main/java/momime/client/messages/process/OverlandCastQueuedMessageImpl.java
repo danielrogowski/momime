@@ -38,6 +38,7 @@ public final class OverlandCastQueuedMessageImpl extends OverlandCastQueuedMessa
 		final QueuedSpell queued = new QueuedSpell ();
 		queued.setQueuedSpellID (getSpellID ());
 		queued.setHeroItem (getHeroItem ());
+		queued.setVariableDamage (getVariableDamage ());
 		
 		final int previousSize = getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().size ();
 		getClient ().getOurPersistentPlayerPrivateKnowledge ().getQueuedSpell ().add (queued);

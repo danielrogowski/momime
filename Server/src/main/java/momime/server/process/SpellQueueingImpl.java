@@ -293,16 +293,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 
 			// Work out unmodified casting cost
-			final int unmodifiedCombatCastingCost;
-			if (variableDamage == null)
-				unmodifiedCombatCastingCost = spell.getCombatCastingCost ();
-			else if (spell.getCombatManaPerAdditionalDamagePoint () != null)
-				unmodifiedCombatCastingCost = spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) * spell.getCombatManaPerAdditionalDamagePoint ());
-			else if (spell.getCombatAdditionalDamagePointsPerMana () != null)
-				unmodifiedCombatCastingCost = spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) / spell.getCombatAdditionalDamagePointsPerMana ());
-			else
-				throw new MomException ("requestCastSpell " + spell.getSpellID () + " sent with variable damage, but neither variable amount is defined for the spell");
-			
 			if (!combatPlayers.bothFound ())
 				msg = "You cannot cast combat spells if one side has been wiped out in the combat.";
 			
@@ -314,8 +304,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 				else
 				{
 					// Apply books/retorts that make spell cheaper to cast
-					reducedCombatCastingCost = getSpellUtils ().getReducedCastingCost
-						(spell, unmodifiedCombatCastingCost, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+					reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
+						(spell, variableDamage, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 					
 					// What our remaining skill?
 					final int ourSkill;
@@ -358,8 +348,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// Validate unit or hero casting
 				// Reductions for number of spell books, or certain retorts, only apply when the wizard is casting, but on the plus side, the range penalty doesn't apply
-				reducedCombatCastingCost = unmodifiedCombatCastingCost;
-				multipliedManaCost = unmodifiedCombatCastingCost;
+				reducedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage);
+				multipliedManaCost = reducedCombatCastingCost;
 				
 				if (multipliedManaCost > combatCastingUnit.getManaRemaining ())
 					msg = "This unit or hero doesn't have enough mana remaining to cast the spell.";
@@ -506,7 +496,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		else
 		{
 			// Overland spell - need to see if we can instant cast it or need to queue it up
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, heroItem, pub.getPick (),
+			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, heroItem, variableDamage, pub.getPick (),
 				mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			
 			if ((priv.getQueuedSpell ().size () == 0) && (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (),
@@ -527,7 +517,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(player.getPlayerDescription ().getPlayerID (), false, mom);
 			}
 			else
-				queueSpell (player, spellID, heroItem);
+				queueSpell (player, spellID, heroItem, variableDamage);
 		}
 		
 		return combatEnded;
@@ -540,11 +530,12 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @param player Player casting the spell
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem If create item/artifact, the details of the item to create
+	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem)
+	public final void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem, final Integer variableDamage)
 		throws JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
@@ -553,6 +544,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		final QueuedSpell queued = new QueuedSpell ();
 		queued.setQueuedSpellID (spellID);
 		queued.setHeroItem (heroItem);
+		queued.setVariableDamage (variableDamage);
 		
 		priv.getQueuedSpell ().add (queued);
 		
@@ -562,6 +554,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			final OverlandCastQueuedMessage reply = new OverlandCastQueuedMessage ();
 			reply.setSpellID (spellID);
 			reply.setHeroItem (heroItem);
+			reply.setVariableDamage (variableDamage);
 			
 			player.getConnection ().sendMessageToClient (reply);
 		}
@@ -595,7 +588,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// How much to put towards this spell?
 			final QueuedSpell queued = priv.getQueuedSpell ().get (0);
 			final Spell spell = mom.getServerDB ().findSpell (queued.getQueuedSpellID (), "progressOverlandCasting");
-			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), pub.getPick (),
+			final int reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spell, queued.getHeroItem (), queued.getVariableDamage (), pub.getPick (),
 				mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 			final int leftToCast = Math.max (0, reducedCastingCost - priv.getManaSpentOnCastingCurrentSpell ());
 			final int manaAmount = Math.min (Math.min (trans.getOverlandCastingSkillRemainingThisTurn (), manaRemaining), leftToCast);

@@ -444,7 +444,7 @@ public final class HelpUI extends MomClientFrameUI
 					if (castingPub == null)
 						reducedCastingCost = spellDef.getOverlandCastingCost ();		// No info on caster's picks, so just assume no reduction
 					else
-						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, null, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+						reducedCastingCost = getSpellUtils ().getReducedOverlandCastingCost (spellDef, null, null, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
 					final List<LanguageText> languageText = (spellDef.getOverlandCastingCost () == reducedCastingCost) ?
 						getLanguages ().getHelpScreen ().getSpellBookOverlandCostFull () : getLanguages ().getHelpScreen ().getSpellBookOverlandCostReduced ();
@@ -462,7 +462,7 @@ public final class HelpUI extends MomClientFrameUI
 					if (castingPub == null)
 						reducedCastingCost = spellDef.getCombatCastingCost ();		// No info on caster's picks, so just assume no reduction
 					else
-						reducedCastingCost = getSpellUtils ().getReducedCombatCastingCost (spellDef, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
+						reducedCastingCost = getSpellUtils ().getReducedCombatCastingCost (spellDef, null, castingPub.getPick (), getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 					
 					final List<LanguageText> languageText = (spellDef.getCombatCastingCost () == reducedCastingCost) ?
 						getLanguages ().getHelpScreen ().getSpellBookCombatCostFull () : getLanguages ().getHelpScreen ().getSpellBookCombatCostReduced ();

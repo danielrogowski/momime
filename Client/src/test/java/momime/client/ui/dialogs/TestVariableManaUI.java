@@ -103,10 +103,10 @@ public final class TestVariableManaUI extends ClientTestData
 		
 		// Example spell
 		final Spell spell = new Spell ();
-		spell.setCombatBaseDamage (5);
-		spell.setCombatMaxDamage (25);
-		spell.setCombatManaPerAdditionalDamagePoint (2);
-		spell.setCombatCastingCost (20);
+		spell.setOverlandBaseDamage (5);
+		spell.setOverlandMaxDamage (25);
+		spell.setOverlandManaPerAdditionalDamagePoint (2);
+		spell.setOverlandCastingCost (20);
 
 		// Spell casting reduction
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
@@ -204,10 +204,10 @@ public final class TestVariableManaUI extends ClientTestData
 		
 		// Example spell; so for 20 MP we get 30 attack; for each additional +1 MP we get +3 attack; for maximum of 60 MP giving 150 attack
 		final Spell spell = new Spell ();
-		spell.setCombatBaseDamage (30);
-		spell.setCombatMaxDamage (150);
-		spell.setCombatAdditionalDamagePointsPerMana (3);
-		spell.setCombatCastingCost (20);
+		spell.setOverlandBaseDamage (30);
+		spell.setOverlandMaxDamage (150);
+		spell.setOverlandAdditionalDamagePointsPerMana (3);
+		spell.setOverlandCastingCost (20);
 
 		// Spell casting reduction
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);

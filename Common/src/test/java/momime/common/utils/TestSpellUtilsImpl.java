@@ -13,9 +13,11 @@ import java.util.List;
 import org.junit.Test;
 
 import momime.common.MomException;
+import momime.common.calculations.HeroItemCalculations;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.HeroItem;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -230,95 +232,212 @@ public final class TestSpellUtilsImpl
 		assertTrue (utils.spellCanBeCastIn (spell, SpellCastType.OVERLAND));
 		assertFalse (utils.spellCanBeCastIn (spell, SpellCastType.COMBAT));
 	}
-
+	
 	/**
-	 * Tests the getReducedOverlandCastingCost method
+	 * Tests the getUnmodifiedCombatCastingCost method on a normal spell without variable damage
 	 * @throws MomException If there is a problem
-	 * @throws RecordNotFoundException If the test db doesn't include an entry that we reference
 	 */
 	@Test
-	public final void testGetReducedOverlandCastingCost () throws MomException, RecordNotFoundException
+	public final void testGetUnmodifiedCombatCastingCost_Normal () throws MomException
+	{
+		final Spell spell = new Spell ();
+		spell.setCombatCastingCost (30);
+		
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		assertEquals (30, utils.getUnmodifiedCombatCastingCost (spell, null)); 
+	}
+	
+	/**
+	 * Tests the getUnmodifiedCombatCastingCost where each additional dmg point costs multiple MP
+	 * @throws MomException If there is a problem
+	 */
+	@Test
+	public final void testGetUnmodifiedCombatCastingCost_ManaPerDamage () throws MomException
+	{
+		final Spell spell = new Spell ();
+		spell.setCombatCastingCost (30);
+		spell.setCombatBaseDamage (20);
+		spell.setCombatMaxDamage (110);
+		spell.setCombatManaPerAdditionalDamagePoint (3);
+		
+		// So we want to do 80 damage, which is base + 60
+		// Each of those +60 costs 3 MP so total of +180
+		// plus the base casting cost of 30 = 210
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		assertEquals (210, utils.getUnmodifiedCombatCastingCost (spell, 80)); 
+	}
+	
+	/**
+	 * Tests the getUnmodifiedCombatCastingCost where each additional MP grant multiple dmg
+	 * @throws MomException If there is a problem
+	 */
+	@Test
+	public final void testGetUnmodifiedCombatCastingCost_DamagePerMana () throws MomException
+	{
+		final Spell spell = new Spell ();
+		spell.setCombatCastingCost (30);
+		spell.setCombatBaseDamage (20);
+		spell.setCombatMaxDamage (110);
+		spell.setCombatAdditionalDamagePointsPerMana (3);
+		
+		// So we want to do 80 damage, which is base + 60
+		// We get +3 for each additional MP so +60 dmg costs +20 MP
+		// plus the base casting cost of 30 = 50
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		assertEquals (50, utils.getUnmodifiedCombatCastingCost (spell, 80)); 
+	}
+	
+	/**
+	 * Tests the getUnmodifiedCombatCastingCost where the spell doesn't define whether
+	 * its "MP per dmg" or "dmg per MP"
+	 * @throws MomException If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testGetUnmodifiedCombatCastingCost_Error () throws MomException
+	{
+		final Spell spell = new Spell ();
+		spell.setCombatCastingCost (30);
+		spell.setCombatBaseDamage (20);
+		spell.setCombatMaxDamage (110);
+		
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		utils.getUnmodifiedCombatCastingCost (spell, 80); 
+	}
+	
+	/**
+	 * Tests the getUnmodifiedOverlandCastingCost method on a normal spell without variable damage
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetUnmodifiedOverlandCastingCost_Normal () throws Exception
+	{
+		final Spell spell = new Spell ();
+		spell.setOverlandCastingCost (30);
+		
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		assertEquals (30, utils.getUnmodifiedOverlandCastingCost (spell, null, null, null)); 
+	}
+	
+	/**
+	 * Tests the getUnmodifiedOverlandCastingCost method on a create artifact spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetUnmodifiedOverlandCastingCost_CreateArtifact () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 
-		// Numbers of books that we have
-		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-
-		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
-		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (4);
-		when (playerPickUtils.getQuantityOfPick (picks, "MB02")).thenReturn (6);
-		
-		// Casting cost reduction
-		final SpellCalculations calc = mock (SpellCalculations.class);
-		final SpellSetting spellSettings = new SpellSetting ();
+		// Spell and item being crafted
 		final Spell spell = new Spell ();
 		
-		when (calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db)).thenReturn (10d);
-		when (calc.calculateCastingCostReduction (6, spellSettings, spell, picks, db)).thenReturn (20d);
+		final HeroItem item = new HeroItem ();
 		
-		// Set up object to test
+		// Mock the cost
+		final HeroItemCalculations calc = mock (HeroItemCalculations.class);
+		when (calc.calculateCraftingCost (item, db)).thenReturn (200);
+		
+		// Call method
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		utils.setPlayerPickUtils (playerPickUtils);
-		utils.setSpellCalculations (calc);
-
-		// Arcane spell gives no bonus
-		spell.setOverlandCastingCost (80);
-		spell.setCombatCastingCost (100);
-		assertEquals (80, utils.getReducedOverlandCastingCost (spell, null, picks, spellSettings, db));
-		
-		// Now try spells with magic realms that get a reduction
-		spell.setSpellRealm ("MB01");
-		assertEquals (80-8, utils.getReducedOverlandCastingCost (spell, null, picks, spellSettings, db));
-		
-		spell.setSpellRealm ("MB02");
-		assertEquals (80-16, utils.getReducedOverlandCastingCost (spell, null, picks, spellSettings, db));
+		utils.setHeroItemCalculations (calc);
+		assertEquals (200, utils.getUnmodifiedOverlandCastingCost (spell, item, null, db)); 
 	}
-
+	
 	/**
-	 * Tests the getReducedCombatCastingCost method
-	 * @throws MomException If there is a problem
-	 * @throws RecordNotFoundException If the test db doesn't include an entry that we reference
+	 * Tests the getUnmodifiedOverlandCastingCost where each additional dmg point costs multiple MP
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testGetReducedCombatCastingCost () throws MomException, RecordNotFoundException
+	public final void testGetUnmodifiedOverlandCastingCost_ManaPerDamage () throws Exception
+	{
+		final Spell spell = new Spell ();
+		spell.setOverlandCastingCost (30);
+		spell.setOverlandBaseDamage (20);
+		spell.setOverlandMaxDamage (110);
+		spell.setOverlandManaPerAdditionalDamagePoint (3);
+		
+		// So we want to do 80 damage, which is base + 60
+		// Each of those +60 costs 3 MP so total of +180
+		// plus the base casting cost of 30 = 210
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		assertEquals (210, utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null)); 
+	}
+	
+	/**
+	 * Tests the getUnmodifiedOverlandCastingCost where each additional MP grant multiple dmg
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetUnmodifiedOverlandCastingCost_DamagePerMana () throws Exception
+	{
+		final Spell spell = new Spell ();
+		spell.setOverlandCastingCost (30);
+		spell.setOverlandBaseDamage (20);
+		spell.setOverlandMaxDamage (110);
+		spell.setOverlandAdditionalDamagePointsPerMana (3);
+		
+		// So we want to do 80 damage, which is base + 60
+		// We get +3 for each additional MP so +60 dmg costs +20 MP
+		// plus the base casting cost of 30 = 50
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		assertEquals (50, utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null)); 
+	}
+	
+	/**
+	 * Tests the getUnmodifiedOverlandCastingCost where the spell doesn't define whether
+	 * its "MP per dmg" or "dmg per MP"
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=Exception.class)
+	public final void testGetUnmodifiedOverlandCastingCost_Error () throws Exception
+	{
+		final Spell spell = new Spell ();
+		spell.setOverlandCastingCost (30);
+		spell.setOverlandBaseDamage (20);
+		spell.setOverlandMaxDamage (110);
+		
+		final SpellUtilsImpl utils = new SpellUtilsImpl ();
+		utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null); 
+	}
+	
+	/**
+	 * Tests the getReducedCastingCost method.  Just test this directly with mocks.
+	 * getReducedCombatCastingCost and getReducedOverlandCastingCost are then just simple
+	 * combinations of other methods that have unit tests, so don't need their own tests.
+	 * 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetReducedCastingCost () throws Exception
 	{
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Spell to test
+		final Spell spell = new Spell ();
+		spell.setSpellRealm ("MB01");
 
-		// Numbers of books that we have
-		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
-
+		// Number of picks we have in the magic realm of the spell
 		final List<PlayerPick> picks = new ArrayList<PlayerPick> ();
-		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (4);
-		when (playerPickUtils.getQuantityOfPick (picks, "MB02")).thenReturn (6);
+		
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
+		when (playerPickUtils.getQuantityOfPick (picks, "MB01")).thenReturn (8);
 		
 		// Casting cost reduction
-		final SpellCalculations calc = mock (SpellCalculations.class);
 		final SpellSetting spellSettings = new SpellSetting ();
-		final Spell spell = new Spell ();
 		
-		when (calc.calculateCastingCostReduction (4, spellSettings, spell, picks, db)).thenReturn (10d);
-		when (calc.calculateCastingCostReduction (6, spellSettings, spell, picks, db)).thenReturn (20d);
+		final SpellCalculations spellCalculations = mock (SpellCalculations.class);
+		when (spellCalculations.calculateCastingCostReduction (8, spellSettings, spell, picks, db)).thenReturn (15.5);
 		
 		// Set up object to test
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		utils.setPlayerPickUtils (playerPickUtils);
-		utils.setSpellCalculations (calc);
-
-		// Arcane spell gives no bonus
-		spell.setOverlandCastingCost (100);
-		spell.setCombatCastingCost (80);
-		assertEquals (80, utils.getReducedCombatCastingCost (spell, picks, spellSettings, db));
+		utils.setSpellCalculations (spellCalculations);
 		
-		// Now try spells with magic realms that get a reduction
-		spell.setSpellRealm ("MB01");
-		assertEquals (80-8, utils.getReducedCombatCastingCost (spell, picks, spellSettings, db));
-		
-		spell.setSpellRealm ("MB02");
-		assertEquals (80-16, utils.getReducedCombatCastingCost (spell, picks, spellSettings, db));
+		// 15.5% of 2000 is 310
+		assertEquals (2000 - 310, utils.getReducedCastingCost (spell, 2000, picks, spellSettings, db));
 	}
-
+	
 	/**
 	 * Tests the getModifiedSectionID method when we pass flag to say don't modify it
 	 * @throws MomException if the status is invalid

@@ -623,12 +623,12 @@ public final class SpellAIImpl implements SpellAI
 				{
 					// Now validate we have enough remaining MP and casting skill to cast it
 					final boolean canAffordSpell;
-					final int unmodifiedCombatCastingCost = spell.getCombatCastingCost ();
+					final Integer variableDamage = null;		// Until AI is clever enough to set this properly
 					if (combatCastingUnit == null)
 					{
 						// Wizards get range penalty depending where the combat is in relation to their Fortress; units participating in the combat don't get this
-						final int reducedCombatCastingCost = getSpellUtils ().getReducedCastingCost
-							(spell, unmodifiedCombatCastingCost, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
+						final int reducedCombatCastingCost = getSpellUtils ().getReducedCombatCastingCost
+							(spell, variableDamage, pub.getPick (), mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 
 						final Integer doubleRangePenalty = getSpellCalculations ().calculateDoubleCombatCastingRangePenalty (player, combatLocation,
 							getMemoryGridCellUtils ().isTerrainTowerOfWizardry (gc.getTerrainData ()),
@@ -656,6 +656,7 @@ public final class SpellAIImpl implements SpellAI
 					else
 					{
 						// Validation for units casting is much simpler, as reductions for number of spell books or certain retorts and the range penalty all don't apply
+						final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage);
 						canAffordSpell = (unmodifiedCombatCastingCost <= combatCastingUnit.getManaRemaining ());
 					}
 

@@ -56,10 +56,11 @@ public interface SpellQueueing
 	 * @param player Player casting the spell
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem If create item/artifact, the details of the item to create
+	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem)
+	public void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem, final Integer variableDamage)
 		throws JAXBException, XMLStreamException;
 	
 	/**

@@ -739,6 +739,7 @@ This isn't used to set research to 'nothing', so safe to assume that SpellID is 
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="heroItem" type="momimecommon:heroItem" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="variableDamage" type="momimecommon:unitSkillValue" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

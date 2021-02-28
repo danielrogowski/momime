@@ -127,47 +127,101 @@ public final class SpellUtilsImpl implements SpellUtils
 
 		return result;
 	}
-
+	
 	/**
 	 * @param spell Spell we want to cast
-	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
-	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
-	 * @param db Lookup lists built over the XML database
-	 * @return Overland casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
-	 * @throws MomException If SpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
-	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
+	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
+	 * @return Combat casting cost, taking into account additional MP for variable damage spells, not taking into account reductions from 8 or more spell books or similar
+	 * @throws MomException If variable damage is supplied for a spell that doesn't support it
 	 */
 	@Override
-	public final int getReducedCombatCastingCost (final Spell spell, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
-		throws MomException, RecordNotFoundException
+	public final int getUnmodifiedCombatCastingCost (final Spell spell, final Integer variableDamage) throws MomException
 	{
-		return getReducedCastingCost (spell, spell.getCombatCastingCost (), picks, spellSettings, db);
+		final int unmodifiedCombatCastingCost;
+		if (variableDamage == null)
+			unmodifiedCombatCastingCost = spell.getCombatCastingCost ();
+		else if (spell.getCombatManaPerAdditionalDamagePoint () != null)
+			unmodifiedCombatCastingCost = spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) * spell.getCombatManaPerAdditionalDamagePoint ());
+		else if (spell.getCombatAdditionalDamagePointsPerMana () != null)
+			unmodifiedCombatCastingCost = spell.getCombatCastingCost () + ((variableDamage - spell.getCombatBaseDamage ()) / spell.getCombatAdditionalDamagePointsPerMana ());
+		else
+			throw new MomException ("getUnmodifiedCombatCastingCost spell ID " + spell.getSpellID () + " has variable damage value, but neither variable amount is defined for the spell");
+		
+		return unmodifiedCombatCastingCost;
 	}
 
 	/**
 	 * @param spell Spell we want to cast
 	 * @param heroItem If this spell is Enchant Item or Create Artifact then the item being made; for all other spells pass null
+	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
+	 * @param db Lookup lists built over the XML database
+	 * @return Overland casting cost, taking into account additional MP for variable damage spells, not taking into account reductions from 8 or more spell books or similar
+	 * @throws MomException If variable damage is supplied for a spell that doesn't support it
+	 * @throws RecordNotFoundException If the item type, one of the bonuses or spell charges can't be found in the XML
+	 */
+	@Override
+	public final int getUnmodifiedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final Integer variableDamage, final CommonDatabase db)
+		throws MomException, RecordNotFoundException
+	{
+		final int unmodifiedOverlandCastingCost;
+		if (heroItem != null)
+			unmodifiedOverlandCastingCost = getHeroItemCalculations ().calculateCraftingCost (heroItem, db);
+		else if (variableDamage == null)
+			unmodifiedOverlandCastingCost = spell.getOverlandCastingCost ();
+		else if (spell.getOverlandManaPerAdditionalDamagePoint () != null)
+			unmodifiedOverlandCastingCost = spell.getOverlandCastingCost () + ((variableDamage - spell.getOverlandBaseDamage ()) * spell.getOverlandManaPerAdditionalDamagePoint ());
+		else if (spell.getOverlandAdditionalDamagePointsPerMana () != null)
+			unmodifiedOverlandCastingCost = spell.getOverlandCastingCost () + ((variableDamage - spell.getOverlandBaseDamage ()) / spell.getOverlandAdditionalDamagePointsPerMana ());
+		else
+			throw new MomException ("getUnmodifiedOverlandCastingCost spell ID " + spell.getSpellID () + " has variable damage value, but neither variable amount is defined for the spell");
+		
+		return unmodifiedOverlandCastingCost;
+	}
+
+	/**
+	 * This should only be used when the wizard is casting a combat spell himself.  Heroes or monsters with inherent casting
+	 * ability such as Efreets don't get reduced casting costs.
+	 * 
+	 * @param spell Spell we want to cast
+	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
+	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
+	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Combat casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
+	 * @throws MomException If there is a problem
+	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
+	 */
+	@Override
+	public int getReducedCombatCastingCost (final Spell spell, final Integer variableDamage, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException
+	{
+		return getReducedCastingCost (spell, getUnmodifiedCombatCastingCost (spell, variableDamage), picks, spellSettings, db);
+	}
+
+	/**
+	 * @param spell Spell we want to cast
+	 * @param heroItem If this spell is Enchant Item or Create Artifact then the item being made; for all other spells pass null
+	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions
 	 * @param spellSettings Spell combination settings, either from the server XML cache or the Session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Overland casting cost, modified (reduced) by us having 8 or more spell books, Chaos/Nature/Sorcery Mastery, and so on
-	 * @throws MomException If SpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
+	 * @throws MomException If MomSpellCastType.OVERLAND is unexpected by getCastingCostForCastingType (this should never happen)
 	 * @throws RecordNotFoundException If there is a pick in the list that we can't find in the DB
 	 */
 	@Override
-	public final int getReducedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
+	public int getReducedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final Integer variableDamage,
+		final List<PlayerPick> picks, final SpellSetting spellSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException
 	{
-		final int castingCost;
-		if (heroItem != null)
-			castingCost = getHeroItemCalculations ().calculateCraftingCost (heroItem, db);
-		else
-			castingCost = spell.getOverlandCastingCost ();
-		
-		return getReducedCastingCost (spell, castingCost, picks, spellSettings, db);
+		return getReducedCastingCost (spell, getUnmodifiedOverlandCastingCost (spell, heroItem, variableDamage, db), picks, spellSettings, db);
 	}
 
 	/**
+	 * Should almost always call getReducedCombatCastingCost or getReducedOverlandCastingCost instead of this.  The only reason
+	 * this is public and declared on the interface is for VariableManaUI which has some odd limitations to allow it to work sometimes
+	 * even without the sliders being shown.
+	 * 
 	 * @param spell Spell we want to cast
 	 * @param castingCost The casting cost of the spell (base, or possibly increased if a variable mana spell e.g. fire bolt)
 	 * @param picks Books and retorts the player has, so we can check them for any which give casting cost reductions

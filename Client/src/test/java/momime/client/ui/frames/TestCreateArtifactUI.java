@@ -151,7 +151,7 @@ public final class TestCreateArtifactUI extends ClientTestData
 		when (heroItemCalculations.calculateCraftingCost (any (HeroItem.class), eq (db))).thenReturn (9999);
 		
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getReducedOverlandCastingCost (any (Spell.class), any (HeroItem.class), eq (pub.getPick ()), eq (spellSetting), eq (db))).thenReturn (9999);
+		when (spellUtils.getReducedOverlandCastingCost (any (Spell.class), any (HeroItem.class), eq (null), eq (pub.getPick ()), eq (spellSetting), eq (db))).thenReturn (9999);
 
 		// The spell being cast
 		final Spell spellDef = new Spell ();

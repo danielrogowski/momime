@@ -106,7 +106,7 @@ public final class TestQueuedSpellsUI extends ClientTestData
 			spell.getSpellName ().add (createLanguageText (Language.ENGLISH, "Spell SP00" + n));
 
 			when (db.findSpell (eq ("SP00" + n), anyString ())).thenReturn (spell);
-			when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 100);
+			when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), spellSettings, db)).thenReturn (n * 100);
 		}
 		
 		// Mock queued spells

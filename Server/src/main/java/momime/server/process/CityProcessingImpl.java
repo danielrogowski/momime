@@ -989,7 +989,7 @@ public final class CityProcessingImpl implements CityProcessing
 			
 			// If they are only banished, then begin casting spell of return
 			if (wizardState == WizardState.BANISHED)
-				getSpellQueueing ().queueSpell (defendingPlayer, CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN, null);
+				getSpellQueueing ().queueSpell (defendingPlayer, CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN, null, null);
 		}
 	}
 	

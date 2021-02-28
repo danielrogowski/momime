@@ -193,7 +193,7 @@ public final class TestMagicSlidersUI extends ClientTestData
 		priv.getQueuedSpell ().add (queued);
 		priv.setManaSpentOnCastingCurrentSpell (70);
 		
-		when (spellUtils.getReducedOverlandCastingCost (spell2, null, pub.getPick (), spellSettings, db)).thenReturn (80);
+		when (spellUtils.getReducedOverlandCastingCost (spell2, null, null, pub.getPick (), spellSettings, db)).thenReturn (80);
 		
 		// Component factory
 		final UIComponentFactory uiComponentFactory = mock (UIComponentFactory.class);

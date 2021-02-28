@@ -149,8 +149,8 @@ public final class TestSpellBookUI extends ClientTestData
 			spell.setResearchCost (n * 10);
 			spells.add (spell);
 			
-			when (spellUtils.getReducedOverlandCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
-			when (spellUtils.getReducedCombatCastingCost (spell, pub.getPick (), spellSettings, db)).thenReturn (n * 2);
+			when (spellUtils.getReducedOverlandCastingCost (spell, null, null, pub.getPick (), spellSettings, db)).thenReturn (n * 5);
+			when (spellUtils.getReducedCombatCastingCost (spell, null, pub.getPick (), spellSettings, db)).thenReturn (n * 2);
 		}
 		doReturn (spells).when (db).getSpell ();
 		

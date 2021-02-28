@@ -881,9 +881,10 @@ public final class SpellBookUI extends MomClientFrameUI
 		if (proceed)
 		{
 			// Is it a spell with variable MP cost so we need to pop up a window with a slider to choose how much to put into it?
-			if ((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null) &&
+			if (((getCastType () == SpellCastType.COMBAT) && (spell.getCombatMaxDamage () != null) &&
 				(getCombatUI ().getCastingSource ().getHeroItemSlotNumber () == null) &&		// Can't put additional power into spells imbued into items
-				(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))				// or casting fixed spells like Magicians' Fireball spell
+				(getCombatUI ().getCastingSource ().getFixedSpellNumber () == null))	||			// or casting fixed spells like Magicians' Fireball spell
+				((getCastType () == SpellCastType.OVERLAND) && (spell.getOverlandMaxDamage () != null)))				
 			{
 				getVariableManaUI ().setSpellBeingTargetted (spell);
 				

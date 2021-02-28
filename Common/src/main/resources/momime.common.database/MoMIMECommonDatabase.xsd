@@ -3139,16 +3139,20 @@ spell upkeep, but cannot switch off the spell that's costing the upkeep)</xsd:do
 			<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellDamageResolutionTypeID" type="momimecommon:damageResolutionTypeID" nxe:label="Damage Res. Type" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatBaseDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Base Dmg" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatMaxDamage" type="momimecommon:unitSkillValue" nxe:label="Combat Max Dmg" nxe:gridwidth="100" />
-			<xsd:element minOccurs="0" maxOccurs="1" name="combatManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="MP per +1 dmg" nxe:gridwidth="100">
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="Combat MP per +1 dmg" nxe:gridwidth="100">
 		        <xsd:annotation>
 		        	<xsd:documentation>The usual case is that it costs several mana to raise the damage by 1 point, in which case a value is set here.</xsd:documentation>
 		        </xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="combatAdditionalDamagePointsPerMana" type="momimecommon:unitSkillValue" nxe:label="Dmg per +1 MP" nxe:gridwidth="100">
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatAdditionalDamagePointsPerMana" type="momimecommon:unitSkillValue" nxe:label="Combat Dmg per +1 MP" nxe:gridwidth="100">
 		        <xsd:annotation>
 		        	<xsd:documentation>The rare case where a single 1 mana is enough to boost damage by more than 1 point.</xsd:documentation>
 		        </xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandBaseDamage" type="momimecommon:unitSkillValue" nxe:label="Overland Base Dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandMaxDamage" type="momimecommon:unitSkillValue" nxe:label="Overland Max Dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandManaPerAdditionalDamagePoint" type="momimecommon:spellCastingCost" nxe:label="Overland MP per +1 dmg" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandAdditionalDamagePointsPerMana" type="momimecommon:unitSkillValue" nxe:label="Overland Dmg per +1 MP" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="heroItemBonusMaximumCraftingCost" type="momimecommon:spellCastingCost" nxe:label="Item Bonus Max Cost" nxe:gridwidth="150">
 		        <xsd:annotation>
 		        	<xsd:documentation>For summoning spells, identifies that the spell summons hero items (i.e. Enchant Item or Create Artifact).  The value indicates the most

@@ -329,7 +329,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Any kind of overland spell that needs the player to choose a target
 		else if ((sectionID == SpellBookSectionID.CITY_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
 			(sectionID == SpellBookSectionID.CITY_CURSES) || (sectionID == SpellBookSectionID.UNIT_CURSES) || (sectionID == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-			(sectionID == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS))
+			(sectionID == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS))
 		{
 			// Add it on server - note we add it without a target chosen and without adding it on any
 			// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.

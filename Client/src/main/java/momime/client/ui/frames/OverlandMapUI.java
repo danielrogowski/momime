@@ -901,11 +901,12 @@ public final class OverlandMapUI extends MomClientFrameUI
 								}
 							}
 
-							else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
+							else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
+								(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
 							{
 								// Use common routine to do all the validation
-								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, mapLocation,
-									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
+								final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, getClient ().getOurPlayerID (),
+									mapLocation, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWar (), getClient ().getClientDB ());
 								
 								if (validTarget == TargetSpellResult.VALID_TARGET)

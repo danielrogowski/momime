@@ -189,7 +189,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				}
 			}
 			
-			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
+				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
 			{
 				// Just validate that we got a location
 				if (getOverlandTargetUnitURN () != null)
@@ -208,8 +209,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				else
 				{
 					// Common routine used by both the client and server does the guts of the validation work
-					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, (MapCoordinates3DEx) getOverlandTargetLocation (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), priv.getFogOfWar (), mom.getServerDB ());
+					final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isOverlandLocationValidTargetForSpell (spell, sender.getPlayerDescription ().getPlayerID (), 
+						(MapCoordinates3DEx) getOverlandTargetLocation (), mom.getGeneralServerKnowledge ().getTrueMap (), priv.getFogOfWar (), mom.getServerDB ());
 					if (reason == TargetSpellResult.VALID_TARGET)
 						error = null;
 					else

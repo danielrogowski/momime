@@ -144,18 +144,22 @@ public interface MemoryMaintainedSpellUtils
 		throws RecordNotFoundException; 
 
 	/**
-	 * Checks whether the specified spell can be targetted at the specified overland map location
+	 * Checks whether the specified spell can be targetted at the specified overland map location.  Spells targetted specifically at
+	 * cities have their own isCityValidTargetForSpell validation routine, so this is only used for spells that are targetted at a location
+	 * and non-city locations are equally valid targets.  This is currently used for:
+	 * Earth Lore, Enchant Road, Corruption, Disenchant Area/True.
 	 * 
 	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
 	 * @param targetLocation Location we want to cast the spell at 
-	 * @param map Known terrain
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param fow Area we can currently see
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
 	 */
-	public TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final MapCoordinates3DEx targetLocation,
-		final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException;
+	public TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final int castingPlayerID, final MapCoordinates3DEx targetLocation,
+		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
 	 * Checks whether the specified spell can be targetted at the specified combat map location.

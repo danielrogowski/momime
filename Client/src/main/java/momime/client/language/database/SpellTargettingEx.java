@@ -144,6 +144,10 @@ public final class SpellTargettingEx extends SpellTargetting
 				languageText = getCannotTargetNodes ();
 				break;
 			 
+			case NOTHING_TO_DISPEL:
+				languageText = getNoEnemySpellsLocation ();
+				break;
+			 
 			default:
 				throw new MomException ("NewTurnMessagesEx.getLocationLanguageText doesn't know what to do with enum value " + targetSpellResult);
 		 }

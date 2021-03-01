@@ -973,6 +973,9 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <noEnemySpellsUnit language="en">
             <text>This unit has no enchantments or curses cast by an enemy wizard for you to try to dispel.</text>
         </noEnemySpellsUnit>
+        <noEnemySpellsLocation language="en">
+            <text>There are no enchantments or curses cast by an enemy wizard at this location for you to try to dispel.</text>
+        </noEnemySpellsLocation>
         <cannotSeeLocation language="en">
             <text>SPELL_NAME can only be targetted at locations you can see.</text>
         </cannotSeeLocation>

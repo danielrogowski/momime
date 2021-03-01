@@ -3,6 +3,7 @@ package momime.common.utils;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -409,34 +410,41 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	}
 
 	/**
-	 * Checks whether the specified spell can be targetted at the specified overland map location
+	 * Checks whether the specified spell can be targetted at the specified overland map location.  Spells targetted specifically at
+	 * cities have their own isCityValidTargetForSpell validation routine, so this is only used for spells that are targetted at a location
+	 * and non-city locations are equally valid targets.  This is currently used for:
+	 * Earth Lore, Enchant Road, Corruption, Disenchant Area/True.
 	 * 
 	 * @param spell Spell being cast
+	 * @param castingPlayerID Player casting the spell
 	 * @param targetLocation Location we want to cast the spell at 
-	 * @param map Known terrain
+	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param fow Area we can currently see
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
 	 * @throws RecordNotFoundException If we encounter a tile type that can't be found in the db
 	 */
 	@Override
-	public final TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final MapCoordinates3DEx targetLocation,
-		final MapVolumeOfMemoryGridCells map, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException
+	public final TargetSpellResult isOverlandLocationValidTargetForSpell (final Spell spell, final int castingPlayerID, final MapCoordinates3DEx targetLocation,
+		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException
 	{
     	final TargetSpellResult result;
 
     	// Earth Lore and Enchant Road can always be targeted anywhere, even in blackness where we've never seen before
     	if (spell.getSpellRadius () != null)
     		result = TargetSpellResult.VALID_TARGET;
-    	else
+    	
+    	// Every other kind of spell must be targetted at a location we can see - you can't blindy throw Disenchant Area or
+    	// Corruption at map cells with out of date info about enemy spells that may or may not still be there
+    	else if (fow.getPlane ().get (targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()) != FogOfWarStateID.CAN_SEE)
+    		result = TargetSpellResult.CANNOT_SEE_TARGET;
+    	
+    	else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS)
     	{
-    		// Corruption spell must be targetted on land that we can see
-	    	final OverlandMapTerrainData terrainData = map.getPlane ().get (targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
-	    	
-	    	if (fow.getPlane ().get (targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()) != FogOfWarStateID.CAN_SEE)
-	    		result = TargetSpellResult.CANNOT_SEE_TARGET;
-	    	
-	    	else if ((terrainData == null) || (terrainData.getTileTypeID () == null))
+    		// Cannot corrupt water tiles
+	    	final OverlandMapTerrainData terrainData = mem.getMap ().getPlane ().get
+	    		(targetLocation.getZ ()).getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).getTerrainData ();
+	    	if ((terrainData == null) || (terrainData.getTileTypeID () == null))
 	    		result = TargetSpellResult.MUST_TARGET_LAND;
 	    	
 	    	else if (terrainData.getCorrupted () != null)
@@ -444,7 +452,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    	
 	    	else
 	    	{
-	    		final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "isLocationValidTargetForSpell");
+	    		final TileType tileType = db.findTileType (terrainData.getTileTypeID (), "isOverlandLocationValidTargetForSpell");
 	    		if ((tileType.isLand () == null) || (!tileType.isLand ()))
 	    			result = TargetSpellResult.MUST_TARGET_LAND;
 	    		
@@ -455,6 +463,20 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    		else
 	    			result = TargetSpellResult.VALID_TARGET;
 	    	}
+    	}
+    	
+    	else
+    	{
+    		// Get a list of units at the location (ours as well)
+    		final List<Integer> unitURNs = mem.getUnit ().stream ().filter (u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
+    		
+    		// Now look for any spells cast by somebody else either targetted directly on the location, or on a unit at the location
+    		if (mem.getMaintainedSpell ().stream ().anyMatch (s -> (s.getCastingPlayerID () != castingPlayerID) &&
+    			((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))))
+    			
+    			result = TargetSpellResult.VALID_TARGET;
+    		else
+    			result = TargetSpellResult.NOTHING_TO_DISPEL;
     	}
     	
     	return result;

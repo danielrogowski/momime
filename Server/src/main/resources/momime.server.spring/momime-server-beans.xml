@@ -557,6 +557,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellAI" ref="spellAI" />
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="spellDispelling" ref="spellDispelling" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -573,6 +574,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
+	</bean>
+
+	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">

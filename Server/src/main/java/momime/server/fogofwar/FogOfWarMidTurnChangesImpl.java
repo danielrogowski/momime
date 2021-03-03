@@ -644,6 +644,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param castInCombat Whether this spell was cast in combat or not
 	 * @param cityLocation Indicates which city the spell is cast on; null for spells not cast on cities
 	 * @param citySpellEffectID If a spell cast on a city, indicates the specific effect that this spell grants the city
+	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param players List of players in the session, this can be passed in null for when spells that require a target are added initially only on the server
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
@@ -657,7 +658,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	@Override
 	public final MemoryMaintainedSpell addMaintainedSpellOnServerAndClients (final MomGeneralServerKnowledge gsk,
 		final int castingPlayerID, final String spellID, final Integer unitURN, final String unitSkillID,
-		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final List<PlayerServerDetails> players,
+		final boolean castInCombat, final MapCoordinates3DEx cityLocation, final String citySpellEffectID, final Integer variableDamage, final List<PlayerServerDetails> players,
 		final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -676,6 +677,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		trueSpell.setCastInCombat (castInCombat);
 		trueSpell.setCityLocation (spellLocation);
 		trueSpell.setCitySpellEffectID (citySpellEffectID);
+		trueSpell.setVariableDamage (variableDamage);
 		trueSpell.setSpellURN (gsk.getNextFreeSpellURN ());
 
 		gsk.setNextFreeSpellURN (gsk.getNextFreeSpellURN () + 1);
@@ -694,6 +696,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param sd Session description
+	 * @return Whether switching off the spell resulted in the death of the unit it was cast on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -701,7 +704,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap, final int spellURN,
+	public final boolean switchOffMaintainedSpellOnServerAndClients (final FogOfWarMemory trueMap, final int spellURN,
 		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -781,11 +784,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// If spell was cast on a unit, then see if removing the spell killed it
 		// e.g. Unit has 5 HP, cast Lionheart on it in combat gives +3 so now has 8 HP.  Unit takes 6 HP damage, then wins the combat.
 		// Lionheart gets cancelled so now unit has -1 HP.
+		boolean killed = false;
 		if (trueSpell.getUnitURN () != null)
 		{
 			final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellOnServerAndClients");
 			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
 			if (xu.calculateAliveFigureCount () <= 0)
+			{
+				killed = true;
 				
 				// Damage type here is dubious as we don't have any context as to why + when the spell was switched off.  If we assume this is most
 				// likely to happen with Lionheart in combat being dispelled at the end of combat then either combat or overland damage is fine.
@@ -793,11 +799,14 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 				// units left laying around at DEAD status.  So I'm kind of assuming that nobody's going to willingly turn off their Lionheart spell
 				// in the middle of a combat and kill their own unit by doing so, but if they do then it won't be available for Raise/Animate dead.
 				killUnitOnServerAndClients (mu, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+			}
 		}
 
 		// The removed spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of war of the player who cast it
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffMaintainedSpellOnServerAndClients");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (trueMap, castingPlayer, players, "switchOffMaintainedSpellOnServerAndClients", sd, db);
+		
+		return killed;
 	}
 
 	/**

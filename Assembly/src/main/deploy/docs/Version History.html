@@ -37,8 +37,59 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.8.5</b></td>
-			<td align=left><b>24 Sep 2020</b></td>
+			<td align=left><b>Current version: 0.9.9.0</b></td>
+			<td align=left><b>?</b></td>
+			<td align=left>
+				<b>Spells that now work correctly:</b>
+				<ul>
+					<li>Dispel Magic, Dispel Magic true (worked before, but added sound+graphics)
+					<li>Disenchant Area, Disenchant True
+				</ul>
+				
+				<b>Minor new features:</b>
+				<ul>
+					<li>If client language is set to other than English, but no translation exists for a particular name or piece of text, will now default that text to English rather than displaying the language entry key, so at least the game is still playable
+				</ul>
+			
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>If we previously saw a unit and it had spells cast on it, then while we couldn't see it lost some of those spells, and now we walk up to it and see the unit again, we can now see the spells are gone
+				</ul>
+			
+				<b>Removed features:</b>
+				<ul>
+					<li>Removed "unit scale" option which would show 4x number of figures instead of double pixel size of combat units so just works like original MoM
+				</ul>
+
+				<b>Name changes:</b>
+				<ul>
+					<li>Previously there was both a sword and wand both called "White Lightning".  Renamed the wand to "Wand of Lightning" so they're unique.
+					<li>Previously there was both a shield and axe both called "The Resistor".  Renamed the axe to "Axe of Resistance" so they're unique.
+				</ul>
+
+				<b>Technical changes:</b>
+				<ul>
+					<li>Huge refactoring of XSD/XML files so all data about a wizard, unit, or any other game element is all kept in one place rather than split across 3 different files (+additional language files)
+					<li>A side effect of the XML refactoring is that now the client starts up much faster, but it takes longer to start, join or reload a game
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>Current version: 0.9.8.6</td>
+			<td align=left>22 Jan 2021</td>
+			<td align=left>
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Fixed error when a spell gets cast on or removed from a unit in a combat that you aren't involved in, but are close enough to see the spell being cast
+					<li>Fixed missing validation that allowed trying to cast Earth to Mud / Disrupt Wall without picking a target combat tile
+					<li>Stopped AI trying to cast Earth to Mud / Disrupt Wall as they aren't very useful and it doesn't understand how to target them
+					<li>New game setting to stop the same wizard being chosen by more than one player (which is on by default) now doesn't stop more than one player from picking Custom
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.8.5</td>
+			<td align=left>24 Sep 2020</td>
 			<td align=left>
 				<b>AI improvements:</b>
 				<ul>

@@ -504,7 +504,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)) >= reducedCastingCost))
 			{
 				// Cast instantly, and show the casting message instantly too
-				getSpellProcessing ().castOverlandNow (player, spell, heroItem, mom);
+				getSpellProcessing ().castOverlandNow (player, spell, variableDamage, heroItem, mom);
 				getPlayerMessageProcessing ().sendNewTurnMessages (null, mom.getPlayers (), null);
 				
 				// Charge player the skill/mana
@@ -615,7 +615,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				}
 
 				// Cast it
-				getSpellProcessing ().castOverlandNow (player, spell, queued.getHeroItem (), mom);
+				getSpellProcessing ().castOverlandNow (player, spell, queued.getVariableDamage (), queued.getHeroItem (), mom);
 				anySpellsCast = true;
 			}
 

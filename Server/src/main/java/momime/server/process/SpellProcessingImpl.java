@@ -1,10 +1,7 @@
 package momime.server.process;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
@@ -63,8 +60,6 @@ import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
-import momime.common.messages.servertoclient.DispelMagicResult;
-import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
@@ -187,11 +182,15 @@ public final class SpellProcessingImpl implements SpellProcessing
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
 	
+	/** Dispel magic processing */
+	private SpellDispelling spellDispelling;
+	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
 	 *
 	 * @param player Player who is casting the spell
 	 * @param spell Which spell is being cast
+	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
 	 * @param heroItem The item being created; null for spells other than Enchant Item or Create Artifact
 	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws MomException If there is a problem with any of the calculations
@@ -201,7 +200,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void castOverlandNow (final PlayerServerDetails player, final Spell spell, final HeroItem heroItem, final MomSessionVariables mom)
+	public final void castOverlandNow (final PlayerServerDetails player, final Spell spell, final Integer variableDamage, final HeroItem heroItem, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
 		// Modifying this by section is really only a safeguard to protect against casting spells which we don't have researched yet
@@ -218,8 +217,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 			if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null, null, null) == null)
 			{
 				// Add it on server and anyone who can see it (which, because its an overland enchantment, will be everyone)
-				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-					null, null, false, null, null, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
+					(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
+						null, null, false, null, null, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 
 				// Does this overland enchantment give a global combat area effect? (Not all do)
 				if (spell.getSpellHasCombatEffect ().size () > 0)
@@ -335,7 +335,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// clients - clients don't know about spells until the target has been chosen, since they might hit cancel or have no appropriate target.
 			final MemoryMaintainedSpell maintainedSpell = getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients
 				(mom.getGeneralServerKnowledge (), player.getPlayerDescription ().getPlayerID (), spell.getSpellID (),
-				null, null, false, null, null, null, mom.getServerDB (), mom.getSessionDescription ());
+				null, null, false, null, null, variableDamage, null, mom.getServerDB (), mom.getSessionDescription ());
 
 			if (player.getPlayerDescription ().isHuman ())
 			{
@@ -442,7 +442,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			final String unitSpellEffectID = unitSpellEffectIDs.get (getRandomUtils ().nextInt (unitSpellEffectIDs.size ()));
 			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
 				castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
-				true, null, null, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				true, null, null, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 		}
 		
 		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
@@ -460,7 +460,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			final String citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
 			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
 				castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null,
-				true, combatLocation, citySpellEffectID, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				true, combatLocation, citySpellEffectID, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
 			
 			// The new enchantment presumably requires the combat map to be regenerated so we can see it
 			// (the only city enchantments/curses that can be cast in combat are Wall of Fire / Wall of Darkness)
@@ -724,91 +724,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
 					spellsToDispel.addAll (targetSpells);
 					
-					// Build up a map so we remember which results we have to send to which players
-					final Map<Integer, List<DispelMagicResult>> resultsMap = new HashMap<Integer, List<DispelMagicResult>> ();
-					if (castingPlayer.getPlayerDescription ().isHuman ())
-						resultsMap.put (castingPlayer.getPlayerDescription ().getPlayerID (), new ArrayList<DispelMagicResult> ());
-					
-					// Now go through trying to dispel each spell
-					final Integer dispellingPower = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
-					for (final MemoryMaintainedSpell spellToDispel : spellsToDispel)
-					{
-						// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
-						final Spell spellToDispelDef = mom.getServerDB ().findSpell (spellToDispel.getSpellID (), "castCombatNow (D)");
-						
-						final DispelMagicResult result = new DispelMagicResult ();
-						result.setOwningPlayerID (spellToDispel.getCastingPlayerID ());
-						result.setSpellID (spellToDispel.getSpellID ());
-						result.setCastingCost (spellToDispel.isCastInCombat () ? spellToDispelDef.getCombatCastingCost () : spellToDispelDef.getOverlandCastingCost ());
-						result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
-						result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
-						
-						if (result.isDispelled ())
-							getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-								spellToDispel.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-						
-						if (castingPlayer.getPlayerDescription ().isHuman ())
-							resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
-						
-						final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "castCombatNow (D1)");
-						if (spellOwner.getPlayerDescription ().isHuman ())
-						{
-							List<DispelMagicResult> results = resultsMap.get (spellToDispel.getCastingPlayerID ());
-							if (results == null)
-							{
-								results = new ArrayList<DispelMagicResult> ();
-								resultsMap.put (spellToDispel.getCastingPlayerID (), results);
-							}
-							results.add (result);
-						}
-					}
-					
-					// Also go through trying to dispel each CAE
-					for (final MemoryCombatAreaEffect cae : targetCAEs)
-					{
-						final DispelMagicResult result = new DispelMagicResult ();
-						result.setOwningPlayerID (cae.getCastingPlayerID ());
-						result.setCombatAreaEffectID (cae.getCombatAreaEffectID ());
-						result.setCastingCost (cae.getCastingCost ());
-						result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
-						result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
-
-						if (result.isDispelled ())
-							getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-								cae.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
-
-						if (castingPlayer.getPlayerDescription ().isHuman ())
-							resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
-						
-						final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cae.getCastingPlayerID (), "castCombatNow (D2)");
-						if (spellOwner.getPlayerDescription ().isHuman ())
-						{
-							List<DispelMagicResult> results = resultsMap.get (cae.getCastingPlayerID ());
-							if (results == null)
-							{
-								results = new ArrayList<DispelMagicResult> ();
-								resultsMap.put (cae.getCastingPlayerID (), results);
-							}
-							results.add (result);
-						}
-					}
-					
-					// Send the results to each human player invovled
-					if (resultsMap.size () > 0)
-					{
-						final DispelMagicResultsMessage msg = new DispelMagicResultsMessage ();
-						msg.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
-						msg.setSpellID (spell.getSpellID ());
-						
-						for (final Entry<Integer, List<DispelMagicResult>> entry : resultsMap.entrySet ())
-						{
-							msg.getDispelMagicResult ().clear ();
-							msg.getDispelMagicResult ().addAll (entry.getValue ());
-							
-							final PlayerServerDetails entryPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castCombatNow (D3)");
-							entryPlayer.getConnection ().sendMessageToClient (msg);
-						}
-					}
+					// Common method does the rest
+					getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, targetSpells, targetCAEs, mom);
 				}
 			}
 		}
@@ -976,7 +893,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), maintainedSpell.getCastingPlayerID (), "targetOverlandSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
 		
-		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS))
+		if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_OVERLAND_SPELLS) ||
+			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
 		{
 			// Transient spell that performs some immediate action, then the temporary untargetted spell on the server gets removed
 			// So the spell never does get added to any clients
@@ -1012,6 +930,20 @@ public final class SpellProcessingImpl implements SpellProcessing
 						(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 				}
+			}
+			
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
+			{
+				// Disenchant Area / True - get a list of units at the location (ours as well)
+	    		final List<Integer> unitURNs = mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
+	    			(u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
+	    		
+	    		// Now look for any spells cast by somebody else either targetted directly on the location, or on a unit at the location
+	    		final List<MemoryMaintainedSpell> targetSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+	    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
+	    				((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))).collect (Collectors.toList ());
+
+	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null, mom);
 			}
 			
 			else if (spell.getSpellRadius () == null)
@@ -1741,5 +1673,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Dispel magic processing
+	 */
+	public final SpellDispelling getSpellDispelling ()
+	{
+		return spellDispelling;
+	}
+
+	/**
+	 * @param p Dispel magic processing
+	 */
+	public final void setSpellDispelling (final SpellDispelling p)
+	{
+		spellDispelling = p;
 	}
 }

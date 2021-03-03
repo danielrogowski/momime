@@ -627,6 +627,7 @@ Spell Ward is SP072, but it provides one of the effects SE072C,D,L,N,S (player's
 			
 			<xsd:element minOccurs="0" maxOccurs="1" name="cityLocation" type="map:mapCoordinates3D" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySpellEffectID" type="momimecommon:citySpellEffectID" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="variableDamage" type="momimecommon:unitSkillValue" />
         </xsd:sequence>
 	</xsd:complexType>
 

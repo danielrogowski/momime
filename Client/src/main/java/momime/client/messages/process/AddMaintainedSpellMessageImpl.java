@@ -211,6 +211,7 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				break;
 				
 			case SPECIAL_OVERLAND_SPELLS:
+			case DISPEL_SPELLS:
 				// If we cast it, then update the entry on the NTM scroll that's telling us to choose a target for it
 				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))

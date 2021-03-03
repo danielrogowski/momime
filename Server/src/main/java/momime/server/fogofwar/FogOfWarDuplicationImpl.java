@@ -372,6 +372,7 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 			destinationSpell.setUnitSkillID (source.getUnitSkillID ());
 			destinationSpell.setCastInCombat (source.isCastInCombat ());
 			destinationSpell.setCitySpellEffectID (source.getCitySpellEffectID ());
+			destinationSpell.setVariableDamage (source.getVariableDamage ());
 
 			if (source.getCityLocation () == null)
 				destinationSpell.setCityLocation (null);

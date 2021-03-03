@@ -552,7 +552,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		proc.requestCastSpell (player, null, null, null, "SP001", null, null, null, null, null, mom);
 		
 		// Check it was cast
-		verify (spellProcessing, times (1)).castOverlandNow (player, spell, null, mom);
+		verify (spellProcessing, times (1)).castOverlandNow (player, spell, null, null, mom);
 		verify (msgProc, times (1)).sendNewTurnMessages (null, players, null);
 		
 		// Check we were charged skill and mana
@@ -2439,7 +2439,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		assertEquals (0, priv.getQueuedSpell ().size ());
 		
 		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -10);
-		verify (spellProcessing, times (1)).castOverlandNow (player, spell, null, mom);
+		verify (spellProcessing, times (1)).castOverlandNow (player, spell, null, null, mom);
 		
 		// Messages sent to client
 		assertEquals (2, msgs.getMessages ().size ());
@@ -2534,7 +2534,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -3);
 		verify (resourceValueUtils, times (2)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -5);
 		verify (resourceValueUtils, times (1)).addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -1);
-		verify (spellProcessing, times (3)).castOverlandNow (player, spell, null, mom);
+		verify (spellProcessing, times (3)).castOverlandNow (player, spell, null, null, mom);
 		
 		// Messages sent to client
 		// #0, #2, #4 will be removing queued spells

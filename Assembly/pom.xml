@@ -1,27 +1,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-assembly</artifactId>
-	<version>0.9.9.0-SNAPSHOT</version>
 	<name>momimeAssembly</name>
 	<description>MoM IME zip assembly</description>
 
-	<scm>
-		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMEAssembly/trunk</connection>
-	</scm>
-
 	<parent>
-		<groupId>com.ndg.common</groupId>
-		<artifactId>parent</artifactId>
-		<version>0.4.1</version>
+		<groupId>com.ndg.momime</groupId>
+		<artifactId>momime-parent</artifactId>
+		<version>0.9.9.0-SNAPSHOT</version>
 	</parent>
 
 	<properties>
-		<!-- These are needed to generate the .bat files correctly -->
-		<momime.client.version>0.9.9.0-SNAPSHOT</momime.client.version>
-		<momime.server.version>0.9.9.0-SNAPSHOT</momime.server.version>
-		<momime.editors.version>0.9.9.0-SNAPSHOT</momime.editors.version>
-		
 		<jre.version>11.0.8</jre.version>
 		<jre.build>10</jre.build>
 	</properties>
@@ -218,64 +207,64 @@
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-editors</artifactId>
-			<version>${momime.editors.version}</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- Get the classpath and XML files  included as 'dependencies' -->
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-editors</artifactId>
-			<version>${momime.editors.version}</version>
+			<version>${project.version}</version>
 			<classifier>classpath</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-server</artifactId>
-			<version>${momime.server.version}</version>
+			<version>${project.version}</version>
 			<classifier>classpath</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>${momime.client.version}</version>
+			<version>${project.version}</version>
 			<classifier>classpath</classifier>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-server</artifactId>
-			<version>${momime.server.version}</version>
+			<version>${project.version}</version>
 			<classifier>databases</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>${momime.client.version}</version>
+			<version>${project.version}</version>
 			<classifier>graphics</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>${momime.client.version}</version>
+			<version>${project.version}</version>
 			<classifier>languages</classifier>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-server</artifactId>
-			<version>${momime.server.version}</version>
+			<version>${project.version}</version>
 			<classifier>config</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-client</artifactId>
-			<version>${momime.client.version}</version>
+			<version>${project.version}</version>
 			<classifier>config</classifier>
 		</dependency>
 		<dependency>
 			<groupId>com.ndg.momime</groupId>
 			<artifactId>momime-editors</artifactId>
-			<version>${momime.editors.version}</version>
+			<version>${project.version}</version>
 			<classifier>config</classifier>
 		</dependency>
 		<dependency>

@@ -1,19 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-common</artifactId>
-	<version>0.9.9.0-SNAPSHOT</version>
 	<name>momimeCommon</name>
 	<description>MoM IME common database definitions and classes needed both by client and server</description>
 
-	<scm>
-		<connection>scm:svn:svn+ssh://nigelgay@svn.code.sf.net/p/momime/code/Java/MoMIMECommon/trunk</connection>
-	</scm>
-
 	<parent>
-		<groupId>com.ndg.common</groupId>
-		<artifactId>parent</artifactId>
-		<version>0.4.1</version>
+		<groupId>com.ndg.momime</groupId>
+		<artifactId>momime-parent</artifactId>
+		<version>0.9.9.0-SNAPSHOT</version>
 	</parent>
 
 	<build>
@@ -50,7 +44,7 @@
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.common.database</directory>
+										<directory>${project.basedir}/src/main/resources/momime.common.database</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>
@@ -76,7 +70,7 @@
 								</binding>
 								<binding>
 									<fileset>
-										<directory>target/generated-sources/xjc-momime-commondb/META-INF</directory>
+										<directory>${project.build.directory}/generated-sources/xjc-momime-commondb/META-INF</directory>
 										<includes><include>*.episode</include></includes>
 									</fileset>
 								</binding>
@@ -91,7 +85,7 @@
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.common.database</directory>
+										<directory>${project.basedir}/src/main/resources/momime.common.database</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>
@@ -131,13 +125,13 @@
 								</binding>
 								<binding>
 									<fileset>
-										<directory>target/generated-sources/xjc-momime-commondb/META-INF</directory>
+										<directory>${project.build.directory}/generated-sources/xjc-momime-commondb/META-INF</directory>
 										<includes><include>*.episode</include></includes>
 									</fileset>
 								</binding>
 								<binding>
 									<fileset>
-										<directory>target/generated-sources/xjc-momime-clientdb/META-INF</directory>
+										<directory>${project.build.directory}/generated-sources/xjc-momime-clientdb/META-INF</directory>
 										<includes><include>*.episode</include></includes>
 									</fileset>
 								</binding>
@@ -166,19 +160,19 @@
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.common.database</directory>
+										<directory>${project.basedir}/src/main/resources/momime.common.database</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.client.database</directory>
+										<directory>${project.basedir}/src/main/resources/momime.client.database</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.common.messages</directory>
+										<directory>${project.basedir}/src/main/resources/momime.common.messages</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>
@@ -203,7 +197,7 @@
 								</binding>
 								<binding>
 									<fileset>
-										<directory>target/generated-sources/xjc-momime-commondb/META-INF</directory>
+										<directory>${project.build.directory}/generated-sources/xjc-momime-commondb/META-INF</directory>
 										<includes><include>*.episode</include></includes>
 									</fileset>
 								</binding>
@@ -218,7 +212,7 @@
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.common.database</directory>
+										<directory>${project.basedir}/src/main/resources/momime.common.database</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>
@@ -259,19 +253,19 @@
 								</binding>
 								<binding>
 									<fileset>
-										<directory>target/generated-sources/xjc-momime-commondb/META-INF</directory>
+										<directory>${project.build.directory}/generated-sources/xjc-momime-commondb/META-INF</directory>
 										<includes><include>*.episode</include></includes>
 									</fileset>
 								</binding>
 								<binding>
 									<fileset>
-										<directory>target/generated-sources/xjc-momime-clientdb/META-INF</directory>
+										<directory>${project.build.directory}/generated-sources/xjc-momime-clientdb/META-INF</directory>
 										<includes><include>*.episode</include></includes>
 									</fileset>
 								</binding>
 								<binding>
 									<fileset>
-										<directory>target/generated-sources/xjc-momime-commonmsgs/META-INF</directory>
+										<directory>${project.build.directory}/generated-sources/xjc-momime-commonmsgs/META-INF</directory>
 										<includes><include>*.episode</include></includes>
 									</fileset>
 								</binding>
@@ -300,19 +294,19 @@
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.common.database</directory>
+										<directory>${project.basedir}/src/main/resources/momime.common.database</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.client.database</directory>
+										<directory>${project.basedir}/src/main/resources/momime.client.database</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>
 								<catalog>
 									<fileset>
-										<directory>src/main/resources/momime.common.messages</directory>
+										<directory>${project.basedir}/src/main/resources/momime.common.messages</directory>
 										<includes><include>catalog.txt</include></includes>
 									</fileset>
 								</catalog>

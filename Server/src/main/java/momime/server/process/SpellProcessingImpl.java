@@ -725,7 +725,14 @@ public final class SpellProcessingImpl implements SpellProcessing
 					spellsToDispel.addAll (targetSpells);
 					
 					// Common method does the rest
-					getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, targetSpells, targetCAEs, mom);
+					if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs, mom))
+						
+						// Its possible we dispelled Lionheart on the last enemy unit thereby winning the combat, so check to be sure
+						if (getDamageProcessor ().countUnitsInCombat (combatLocation,
+							(castingSide == UnitCombatSideID.ATTACKER) ? UnitCombatSideID.DEFENDER : UnitCombatSideID.ATTACKER,
+							mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+								winningPlayer = castingPlayer;
+
 				}
 			}
 		}

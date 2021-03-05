@@ -792,13 +792,11 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			if (xu.calculateAliveFigureCount () <= 0)
 			{
 				killed = true;
+
+				// Work out if this is happening in combat or not
+				final KillUnitActionID action = (mu.getCombatLocation () == null) ? KillUnitActionID.HEALABLE_OVERLAND_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
 				
-				// Damage type here is dubious as we don't have any context as to why + when the spell was switched off.  If we assume this is most
-				// likely to happen with Lionheart in combat being dispelled at the end of combat then either combat or overland damage is fine.
-				// But the player could willfully turn the spell off themseleves too, either in combat or overland, and if overland then we don't want
-				// units left laying around at DEAD status.  So I'm kind of assuming that nobody's going to willingly turn off their Lionheart spell
-				// in the middle of a combat and kill their own unit by doing so, but if they do then it won't be available for Raise/Animate dead.
-				killUnitOnServerAndClients (mu, KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, sd.getFogOfWarSetting (), db);
+				killUnitOnServerAndClients (mu, action, trueMap, players, sd.getFogOfWarSetting (), db);
 			}
 		}
 

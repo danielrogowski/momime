@@ -15,10 +15,8 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 
 /**
@@ -85,19 +83,15 @@ public interface SpellProcessing
 	 * 
 	 * NB. Delphi method was called OkToSwitchOffMaintainedSpell
 	 *
-	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param spellURN Which spell it is
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void switchOffSpell (final FogOfWarMemory trueMap, final int spellURN,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public void switchOffSpell (final int spellURN, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**

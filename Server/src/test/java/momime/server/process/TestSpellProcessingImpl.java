@@ -1119,6 +1119,16 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell (), "switchOffSpell")).thenReturn (trueSpell);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
@@ -1129,7 +1139,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		proc.switchOffSpell (trueMap, trueSpell.getSpellURN (), players, db, sd);
+		proc.switchOffSpell (trueSpell.getSpellURN (), mom);
 		
 		// Check spell was switched off
 		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
@@ -1193,6 +1203,16 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
 		when (memoryMaintainedSpellUtils.findSpellURN (trueSpell.getSpellURN (), trueMap.getMaintainedSpell (), "switchOffSpell")).thenReturn (trueSpell);
 		
+		// Session variables
+		final MomGeneralServerKnowledge gsk = new MomGeneralServerKnowledge ();
+		gsk.setTrueMap (trueMap);
+		
+		final MomSessionVariables mom = mock (MomSessionVariables.class);
+		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
+		when (mom.getPlayers ()).thenReturn (players);
+		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
+		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		
@@ -1204,7 +1224,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
 		
 		// Run test
-		proc.switchOffSpell (trueMap, trueSpell.getSpellURN (), players, db, sd);
+		proc.switchOffSpell (trueSpell.getSpellURN (), mom);
 		
 		// Check spell was switched off
 		verify (midTurn, times (1)).switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);

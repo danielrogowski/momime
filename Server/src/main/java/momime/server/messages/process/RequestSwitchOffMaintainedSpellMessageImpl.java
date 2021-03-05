@@ -85,8 +85,7 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		else
 		{
 			// Switch off spell + associated CAEs
-			getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), getSpellURN (),
-				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			getSpellProcessing ().switchOffSpell (getSpellURN (), mom);
 			
 			// Spell no longer using mana
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);

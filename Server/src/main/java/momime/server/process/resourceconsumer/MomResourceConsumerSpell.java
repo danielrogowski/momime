@@ -116,8 +116,7 @@ public final class MomResourceConsumerSpell implements MomResourceConsumer
 	public final void kill (final MomSessionVariables mom)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		getSpellProcessing ().switchOffSpell (mom.getGeneralServerKnowledge ().getTrueMap (), getSpell ().getSpellURN (),
-			mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+		getSpellProcessing ().switchOffSpell (getSpell ().getSpellURN (), mom);
 
 		if (getPlayer ().getPlayerDescription ().isHuman ())
 		{

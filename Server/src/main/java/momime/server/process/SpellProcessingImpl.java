@@ -36,7 +36,6 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSpellEffect;
-import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -44,7 +43,6 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
-import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageConstructBuilding;
 import momime.common.messages.NewTurnMessageCreateArtifact;
@@ -64,6 +62,8 @@ import momime.common.messages.servertoclient.FullSpellListMessage;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -184,6 +184,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 	/** Dispel magic processing */
 	private SpellDispelling spellDispelling;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
 	
 	/**
 	 * Handles casting an overland spell, i.e. when we've finished channeling sufficient mana in to actually complete the casting
@@ -827,11 +830,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * 
 	 * NB. Delphi method was called OkToSwitchOffMaintainedSpell
 	 *
-	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param spellURN Which spell it is
-	 * @param players List of players in the session
-	 * @param db Lookup lists built over the XML database
-	 * @param sd Session description
+	 * @param mom Allows accessing server knowledge structures, player list and so on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
@@ -839,16 +839,16 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void switchOffSpell (final FogOfWarMemory trueMap, final int spellURN,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+	public final void switchOffSpell (final int spellURN, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		// First find the spell
-		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN (spellURN, trueMap.getMaintainedSpell (), "switchOffSpell");
+		final MemoryMaintainedSpell trueSpell = getMemoryMaintainedSpellUtils ().findSpellURN
+			(spellURN, mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), "switchOffSpell");
 		
 		// Any secondary effects we also need to switch off?
-		final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "switchOffSpell");
-		final Spell spell = db.findSpell (trueSpell.getSpellID (), "switchOffSpell");
+		final PlayerServerDetails player = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), trueSpell.getCastingPlayerID (), "switchOffSpell");
+		final Spell spell = mom.getServerDB ().findSpell (trueSpell.getSpellID (), "switchOffSpell");
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), trueSpell.getSpellID ());
 		final SpellBookSectionID sectionID = getSpellUtils ().getModifiedSectionID (spell, researchStatus.getStatus (), true);
@@ -860,15 +860,41 @@ public final class SpellProcessingImpl implements SpellProcessing
 			for (final String combatAreaEffectID: spell.getSpellHasCombatEffect ())
 			{
 				final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-					(trueMap.getCombatAreaEffect (), null, combatAreaEffectID, trueSpell.getCastingPlayerID ());
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), null, combatAreaEffectID, trueSpell.getCastingPlayerID ());
 				
 				if (cae != null)
-					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, sd);
+					getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients
+						(mom.getGeneralServerKnowledge ().getTrueMap (), cae.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
 			}
 		}
+		
+		// If the spell is cast on a unit then grab it now, because we could potentially kill it when we turn the spell off
+		final MemoryUnit trueUnit = (trueSpell.getUnitURN () == null) ? null : getUnitUtils ().findUnitURN
+			(trueSpell.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "switchOffSpell");
+		
+		// Once its dead we also won't be able to figure out who the players in combat were
+		final CombatPlayers combatPlayers = ((trueUnit == null) || (trueUnit.getCombatLocation () == null)) ? null :
+			getCombatMapUtils ().determinePlayersInCombatFromLocation ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ()); 
 
 		// Remove spell itself
-		getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (trueMap, trueSpell.getSpellURN (), players, db, sd);
+		if (getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+			trueSpell.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ()))
+		{
+			// Unit died - if it was in combat, did switching off the spell lose the combat?
+			if ((combatPlayers != null) && (combatPlayers.bothFound ()))
+				if (getDamageProcessor ().countUnitsInCombat ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
+					trueUnit.getCombatSide (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+				{
+					final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
+					final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
+					
+					getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
+						attackingPlayer, defendingPlayer,
+						(trueUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer,
+						null, mom);
+				}
+		}
 	}
 	
 	/**
@@ -1696,5 +1722,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 	public final void setSpellDispelling (final SpellDispelling p)
 	{
 		spellDispelling = p;
+	}
+
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+
+	/**
+	 * @param util Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils util)
+	{
+		combatMapUtils = util;
 	}
 }

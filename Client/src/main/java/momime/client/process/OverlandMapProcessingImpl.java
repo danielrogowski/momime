@@ -403,7 +403,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		while ((!found) && (iter.hasNext ()))
 		{
 			final HideableComponent<SelectUnitButton> button = iter.next ();
-			if (button.getComponent ().getUnit ().getUnit () == unit)
+			if ((button.getComponent ().getUnit () != null) && (button.getComponent ().getUnit ().getUnit () == unit))
 			{
 				found = true;
 				selected = button.getComponent ().isSelected ();

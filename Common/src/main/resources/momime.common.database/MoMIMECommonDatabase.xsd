@@ -4417,7 +4417,8 @@ about what a spell must be targetted on.  e.g. Unit enchantments must be targett
         </xsd:annotation>
 		<xsd:restriction base="xsd:normalizedString">
 			<xsd:enumeration value="SC01"><xsd:annotation>
-				<xsd:documentation>Summoning spells</xsd:documentation>
+				<xsd:documentation>Summoning spells; if resurrectedHealthPercentage is set then its a raise dead-type spell and spellValidUnitTarget entries apply,
+otherwise its a standard summoning spell</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SUMMONING" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC02"><xsd:annotation>
@@ -4463,7 +4464,8 @@ the exact type of spell is currently dictated by whether there any spellValidBor
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_COMBAT_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC12"><xsd:annotation>
-				<xsd:documentation>Dispelling spells</xsd:documentation>
+				<xsd:documentation>Dispelling spells; if attackSpellCombatTarget is single unit then this is Dispel Magic / True; if attackSpellCombatTarget is all units then
+this is Disenchant Area / True; if cannot be cast in combat then this is Disjunction / True.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DISPEL_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC98"><xsd:annotation>

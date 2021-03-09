@@ -11,6 +11,9 @@ public enum TargetSpellResult
 	/** Can't cast a beneficial enchantment on an enemy city or unit */
 	ENCHANTING_OR_HEALING_ENEMY,
 	
+	/** Can't raise dead an enemy unit, if the spell doesn't explicitly allow this */
+	RAISING_ENEMY,
+	
 	/** Can't cast a curse on our own city or unit, or target an attack spell like fire bolt on it */
 	CURSING_OR_ATTACKING_OWN,
 	
@@ -40,6 +43,9 @@ public enum TargetSpellResult
 	
 	/** Unit's status is not ALIVE */
 	UNIT_DEAD,
+	
+	/** Unit's status is not DEAD (used for raise dead-type spells) */
+	UNIT_NOT_DEAD,
 	
 	/** Trying to heal a unit that has taken no damage */
 	UNDAMAGED,

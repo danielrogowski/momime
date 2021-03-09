@@ -697,7 +697,7 @@ public final class SpellAIImpl implements SpellAI
 							if ((spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS) ||
 								((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getSummonedUnit ().size () > 0)))
 							{
-								log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " (" + spell.getSpellName () + ") in combat which requires no unit checks");
+								log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat which requires no unit checks");
 								final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, null);
 								choices.add (choice.getWeighting (), choice);
 							}
@@ -719,13 +719,16 @@ public final class SpellAIImpl implements SpellAI
 								{
 									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+									if (spell.getSpellID ().equals ("SP137"))
+										System.out.println ("Here");
 									
 									if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, player.getPlayerDescription ().getPlayerID (),
 										null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 									{
 										if (targetCount == null)
 										{
-											log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " (" + spell.getSpellName () + ") in combat at Unit URN " + targetUnit.getUnitURN ());
+											log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat at Unit URN " + targetUnit.getUnitURN ());
 											final CombatAISpellChoice choice = new CombatAISpellChoice (spell, xu, null);
 											choices.add (choice.getWeighting (), choice);
 										}
@@ -737,7 +740,7 @@ public final class SpellAIImpl implements SpellAI
 								// Is it a spell that hits all units, and found some targets?
 								if ((targetCount != null) && (targetCount > 0))
 								{
-									log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " (" + spell.getSpellName () + ") in combat which will hit " + targetCount + " target(s)");
+									log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat which will hit " + targetCount + " target(s)");
 									final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, targetCount);
 									choices.add (choice.getWeighting (), choice);
 								}

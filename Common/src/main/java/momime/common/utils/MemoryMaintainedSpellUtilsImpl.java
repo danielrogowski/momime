@@ -258,22 +258,37 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     	final TargetSpellResult result;
     	final int unitURN = unit.getUnitURN ();
     	
-    	// Do easy checks first
+    	// Simpify identifying some kinds of spells so don't have to repeat this all over the place
+    	final boolean raiseDead = (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null);
+    	final boolean healingSpell = (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null);
+    	
+    	// If we're trying to cast a combat spell, then the unit must be in the right combat
     	if ((combatLocation != null) && ((!combatLocation.equals (unit.getCombatLocation ())) ||
     		(unit.getCombatPosition () == null) || (unit.getCombatSide () == null) || (unit.getCombatHeading () == null)))
     		
     		result = TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT;
     	
-    	else if (unit.getStatus () != UnitStatusID.ALIVE)
+    	// For anything other than raise dead-type spell, target unit must be alive
+    	else if ((!raiseDead) && (unit.getStatus () != UnitStatusID.ALIVE))
     		result = TargetSpellResult.UNIT_DEAD;
+
+    	// For raise dead-type spells, target unit must be dead
+    	else if ((raiseDead) && (unit.getStatus () != UnitStatusID.DEAD))
+       		result = TargetSpellResult.UNIT_NOT_DEAD;
     	
+    	// Casting something beneficial on an enemy unit
     	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
     		(unit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY; 
 
+    	// Casting something nasty on a friendly unit
     	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) || (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)) &&
     		(unit.getOwningPlayerID () == castingPlayerID))
     		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
+    	
+    	// Trying to raise dead an enemy unit with a spell that doesn't explicitly allow this
+    	else if ((raiseDead) && ((spell.isResurrectEnemyUnits () == null) || (!spell.isResurrectEnemyUnits ())) && (unit.getOwningPlayerID () != castingPlayerID))
+    		result = TargetSpellResult.RAISING_ENEMY;
     	
     	else
     	{
@@ -292,10 +307,10 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
     		
     		// combatBaseDamage being not null is what identifies a special unit spell to be a healing spell
-    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null) && (getUnitUtils ().getTotalDamageTaken (unit.getUnitDamage ()) == 0)) 
+    		else if ((healingSpell) && (getUnitUtils ().getTotalDamageTaken (unit.getUnitDamage ()) == 0)) 
     			result = TargetSpellResult.UNDAMAGED;
 
-    		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null) && (getUnitUtils ().getHealableDamageTaken (unit.getUnitDamage ()) == 0))
+    		else if ((healingSpell) && (getUnitUtils ().getHealableDamageTaken (unit.getUnitDamage ()) == 0))
     			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
     		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&

@@ -179,7 +179,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		// Display form
 		ench.setModal (false);
 		ench.setVisible (true);
-		Thread.sleep (5000);
+		Thread.sleep (10000);
 		ench.setVisible (false);
 	}
 

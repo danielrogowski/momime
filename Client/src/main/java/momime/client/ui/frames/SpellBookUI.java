@@ -67,7 +67,6 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
-import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestResearchSpellMessage;
@@ -838,19 +837,18 @@ public final class SpellBookUI extends MomClientFrameUI
 			else if ((getCastType () == SpellCastType.COMBAT) && (sectionID == SpellBookSectionID.SUMMONING) &&
 				(spell.getResurrectedHealthPercentage () != null))
 			{
-				// This is a bit of a special case so we don't use isUnitValidTargetForSpell 
+				// This is basically the same loop as above, except now we need a list of the dead units, not simply to find one and exit the loop 
 				for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-					if ((thisUnit.getStatus () == UnitStatusID.DEAD) && (getCombatUI ().getCombatLocation ().equals (thisUnit.getCombatLocation ())) &&
-						((thisUnit.getOwningPlayerID () == getClient ().getOurPlayerID ()) || ((spell.isResurrectEnemyUnits () != null) && (spell.isResurrectEnemyUnits ()))))
-					{
-						// Make sure this type of unit can be resurrected by this spell
-						final String magicRealmLifeformTypeID = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
-							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
-								getClient ().getClientDB ()).getModifiedUnitMagicRealmLifeformType ().getPickID ();
-								
-						if (spell.getSpellValidUnitTarget ().stream ().anyMatch (t -> magicRealmLifeformTypeID.equals (t.getTargetMagicRealmID ())))
-							deadUnits.add (thisUnit);
-					};						
+				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
+					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
+						(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, xu,
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
+						
+						deadUnits.add (thisUnit);
+				};						
 						
 				proceed = (deadUnits.size () > 0);
 				if (!proceed)

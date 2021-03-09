@@ -361,6 +361,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				// Do nothing - more serious message already generated
 			}
 			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
+				((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null)) ||
 				(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
 					(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) &&
 					(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
@@ -421,35 +422,6 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(gc.getCombatMap ().getRow ().get (combatTargetLocation.getY ()).getCell ().get (combatTargetLocation.getX ()), mom.getServerDB ()) < 0)
 					
 					msg = "The terrain at your chosen location is impassable so you cannot summon a unit there.";
-				
-				// If a raise dead-type spell, check the unit we want to raise
-				else if (spell.getResurrectedHealthPercentage () != null)
-				{
-					combatTargetUnit = getUnitUtils ().findUnitURN (combatTargetUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-					if (combatTargetUnit == null)
-						msg = "Cannot find the unit you are trying to raise from the dead.";
-					
-					else if (!combatLocation.equals (combatTargetUnit.getCombatLocation ()))
-						msg = "The unit you are trying to raise from the dead did not die in this combat.";
-					
-					else if (combatTargetUnit.getStatus () != UnitStatusID.DEAD)
-						msg = "This unit is not dead.";
-					
-					else if (((spell.isResurrectEnemyUnits () == null) || (!spell.isResurrectEnemyUnits ())) &&
-						(combatTargetUnit.getOwningPlayerID () != player.getPlayerDescription ().getPlayerID ()))
-						msg = "This spell can only be used to resurrect your own units.";
-					
-					else
-					{
-						final ExpandedUnitDetails xuCombatTargetUnit = getUnitUtils ().expandUnitDetails (combatTargetUnit, null, null, null,
-							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-						
-						final String unitMagicRealmID = xuCombatTargetUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ();
-						
-						if (spell.getSpellValidUnitTarget ().stream ().noneMatch (t -> unitMagicRealmID.equals (t.getTargetMagicRealmID ())))
-							msg = "This spell cannot resurrect this type of unit.";
-					}
-				}
 			}
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 			{

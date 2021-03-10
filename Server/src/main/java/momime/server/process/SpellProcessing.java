@@ -105,6 +105,7 @@ public interface SpellProcessing
 	 *		record of it, just a special entry on their new turn messages scroll telling them to pick a target for it.
 	 * @param targetLocation If the spell is targetted at a city or a map location, then sets that location; null for spells targetted on other things
 	 * @param targetUnit If the spell is targetted at a unit, then the true unit to aim at; null for spells targetted on other things
+	 * @param targetSpell If the spell is targetted at another spell, then the true spell to aim at; null for spells targetted on other things
 	 * @param citySpellEffectID If spell creates a city spell effect, then which one - currently chosen at random, but supposed to be player choosable for Spell Ward
 	 * @param unitSkillID If spell creates a unit skill, then which one - chosen at random for Chaos Channels
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -115,7 +116,7 @@ public interface SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell,
-		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit,
+		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit, final MemoryMaintainedSpell targetSpell,
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 

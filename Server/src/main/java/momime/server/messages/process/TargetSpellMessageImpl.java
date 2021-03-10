@@ -83,6 +83,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 		String unitSkillID = null;
 		MemoryUnit unit = null;
 		ExpandedUnitDetails xu = null;
+		MemoryMaintainedSpell targetSpell = null;
+		
 		if (maintainedSpell == null)
 			error = "Can't find an instance of this spell awaiting targetting";
 		
@@ -97,6 +99,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				// Find the city we're aiming at
 				if (getOverlandTargetUnitURN () != null)
 					error = "You chose a unit as the target for a city enchantment or curse";
+				
+				else if (getOverlandTargetSpellURN () != null)
+					error = "You chose a spell as the target for a city enchantment or curse";
 				
 				else if (getOverlandTargetLocation () == null)
 					error = "You didn't provide a target for a city enchantment or curse";
@@ -143,6 +148,9 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 				// Find the unit we're aiming at
 				if (getOverlandTargetLocation () != null)
 					error = "You chose a location as the target for a unit spell";
+
+				else if (getOverlandTargetSpellURN () != null)
+					error = "You chose a spell as the target for a unit spell";
 				
 				else if (getOverlandTargetUnitURN () == null)
 					error = "You didn't provide a target for a unit spell";
@@ -185,6 +193,37 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 						else
 							// Using the enum name isn't that great, but the client will already have performed this validation so should never see any message generated here anyway
 							error = "This unit is not a valid target for this spell for reason " + reason;
+					}
+				}
+			}
+
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == null))
+			{
+				// Find the spell we're aiming at
+				if (getOverlandTargetUnitURN () != null)
+					error = "You chose a unit as the target for a disjunction spell";
+
+				else if (getOverlandTargetLocation () != null)
+					error = "You chose a location as the target for a disjunction spell";
+				
+				else if (getOverlandTargetSpellURN () == null)
+					error = "You didn't provide a target for a disjunction spell";
+				
+				else
+				{
+					targetSpell = getMemoryMaintainedSpellUtils ().findSpellURN (getOverlandTargetSpellURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ());
+					if (targetSpell == null)
+						error = "Could not find the spell you're trying to disjunct";
+					
+					else
+					{
+						// Common routine used by both the client and server does the guts of the validation work
+						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isSpellValidTargetForSpell
+							(sender.getPlayerDescription ().getPlayerID (), targetSpell, mom.getServerDB ());
+						if (reason == TargetSpellResult.VALID_TARGET)
+							error = null;
+						else
+							error = "This spell is not a valid target for disjunction for reason " + reason; 
 					}
 				}
 			}
@@ -234,7 +273,8 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 			sender.getConnection ().sendMessageToClient (reply);
 		}
 		else
-			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, (MapCoordinates3DEx) getOverlandTargetLocation (), unit, citySpellEffectID, unitSkillID, mom);
+			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, (MapCoordinates3DEx) getOverlandTargetLocation (), unit, targetSpell,
+				citySpellEffectID, unitSkillID, mom);
 	}		
 
 	/**

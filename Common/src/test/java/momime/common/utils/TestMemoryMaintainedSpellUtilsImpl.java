@@ -3766,7 +3766,85 @@ public final class TestMemoryMaintainedSpellUtilsImpl
 		// Any location is valid
 		assertEquals (TargetSpellResult.VALID_TARGET, utils.isOverlandLocationValidTargetForSpell (spell, 2, new MapCoordinates3DEx (20, 10, 1), mem, fow, null));
 	}
+	
+	/**
+	 * Tests the isSpellValidTargetForSpell method on a valid enemy overland enchantment
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsSpellValidTargetForSpell_Valid () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final Spell targetSpellDef = new Spell ();
+		targetSpellDef.setSpellBookSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		when (db.findSpell ("SP001", "isSpellValidTargetForSpell")).thenReturn (targetSpellDef);
+		
+		// Overland enchantment
+		final MemoryMaintainedSpell targetSpell = new MemoryMaintainedSpell ();
+		targetSpell.setSpellID ("SP001");
+		targetSpell.setCastingPlayerID (2);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertEquals (TargetSpellResult.VALID_TARGET, utils.isSpellValidTargetForSpell (1, targetSpell, db));
+	}
+		
+	/**
+	 * Tests the isSpellValidTargetForSpell method on enemy spell that isn't an overland enchantment
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsSpellValidTargetForSpell_WrongSection () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Spell targetSpellDef = new Spell ();
+		targetSpellDef.setSpellBookSectionID (SpellBookSectionID.SUMMONING);
+		when (db.findSpell ("SP001", "isSpellValidTargetForSpell")).thenReturn (targetSpellDef);
+		
+		// Overland enchantment
+		final MemoryMaintainedSpell targetSpell = new MemoryMaintainedSpell ();
+		targetSpell.setSpellID ("SP001");
+		targetSpell.setCastingPlayerID (2);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertEquals (TargetSpellResult.OVERLAND_ENCHANTMENTS_ONLY, utils.isSpellValidTargetForSpell (1, targetSpell, db));
+	}
+	
+	/**
+	 * Tests the isSpellValidTargetForSpell method on our own spell
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testIsSpellValidTargetForSpell_Ours () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		final Spell targetSpellDef = new Spell ();
+		targetSpellDef.setSpellBookSectionID (SpellBookSectionID.OVERLAND_ENCHANTMENTS);
+		when (db.findSpell ("SP001", "isSpellValidTargetForSpell")).thenReturn (targetSpellDef);
+		
+		// Overland enchantment
+		final MemoryMaintainedSpell targetSpell = new MemoryMaintainedSpell ();
+		targetSpell.setSpellID ("SP001");
+		targetSpell.setCastingPlayerID (1);
+		
+		// Set up object to test
+		final MemoryMaintainedSpellUtilsImpl utils = new MemoryMaintainedSpellUtilsImpl ();
+		
+		// Call method
+		assertEquals (TargetSpellResult.CURSING_OR_ATTACKING_OWN, utils.isSpellValidTargetForSpell (1, targetSpell, db));
+	}
+	
 	/**
 	 * Tests the isCombatLocationValidTargetForSpell method
 	 */

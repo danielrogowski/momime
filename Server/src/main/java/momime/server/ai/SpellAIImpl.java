@@ -427,6 +427,7 @@ public final class SpellAIImpl implements SpellAI
 		
 		MapCoordinates3DEx targetLocation = null;
 		MemoryUnit targetUnit = null;
+		MemoryMaintainedSpell targetSpell = null;
 		String citySpellEffectID = null;
 		String unitSkillID = null;
 		
@@ -548,7 +549,7 @@ public final class SpellAIImpl implements SpellAI
 			}
 			
 			// Target it
-			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, targetLocation, targetUnit, citySpellEffectID, unitSkillID, mom);
+			getSpellProcessing ().targetOverlandSpell (spell, maintainedSpell, targetLocation, targetUnit, targetSpell, citySpellEffectID, unitSkillID, mom);
 		}
 	}
 

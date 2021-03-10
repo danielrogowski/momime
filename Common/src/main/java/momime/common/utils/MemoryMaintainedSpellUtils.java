@@ -162,6 +162,18 @@ public interface MemoryMaintainedSpellUtils
 		final FogOfWarMemory mem, final MapVolumeOfFogOfWarStates fow, final CommonDatabase db) throws RecordNotFoundException;
 
 	/**
+	 * Used for disjunction type spells being targetted at overland enchantments
+	 * 
+	 * @param castingPlayerID Player casting the disjunction spell
+	 * @param targetSpell Overland enchantment they want to aim at
+	 * @param db Lookup lists built over the XML database
+	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
+	 * @throws RecordNotFoundException If we can't find the definition for the target spell in the DB
+	 */
+	public TargetSpellResult isSpellValidTargetForSpell (final int castingPlayerID, final MemoryMaintainedSpell targetSpell, final CommonDatabase db)
+		throws RecordNotFoundException;
+	
+	/**
 	 * Checks whether the specified spell can be targetted at the specified combat map location.
 	 * This is only called for spells that are targetted at a location - section SPECIAL_COMBAT_SPELLS
 	 * 

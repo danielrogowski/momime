@@ -40,6 +40,7 @@ import com.ndg.map.areas.storage.MapArea;
 import com.ndg.map.areas.storage.MapArea3D;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.GridBagConstraintsNoFill;
 import com.ndg.swing.actions.LoggingAction;
@@ -64,6 +65,7 @@ import momime.common.ai.ZoneAI;
 import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.OverlandMapSize;
+import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileSetEx;
@@ -1404,6 +1406,30 @@ public final class OverlandMapUI extends MomClientFrameUI
 		{
 			log.error (e, e);
 		}
+	}
+	
+	/**
+	 * Called when player clicks an Overland Enchantment on the magic sliders screen to target a Disjunction-type spell at
+	 * 
+	 * @param spellURN Overland Enchantment to target
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If a unit, weapon grade, skill or so on can't be found in the XML database
+	 * @throws PlayerNotFoundException If we can't find the player who owns a unit
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
+	 */
+	public final void targetOverlandSpellURN (final int spellURN)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		final Spell spell = getClient ().getClientDB ().findSpell (getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID (), "targetOverlandSpellURN");
+
+		final TargetSpellMessage msg = new TargetSpellMessage ();
+		msg.setSpellID (spell.getSpellID ());
+		msg.setOverlandTargetSpellURN (spellURN);
+		getClient ().getServerConnection ().sendMessageToServer (msg);
+		
+		// Close out the "Target Spell" right hand panel
+		getOverlandMapProcessing ().updateMovementRemaining ();
 	}
 
 	/**

@@ -68,6 +68,7 @@ import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSection;
+import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileType;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.internal.CityProductionBreakdown;
@@ -831,9 +832,29 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
 				
 				final SpellBookSection section = getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "OverlandMapRightHandPanel");
-				final String target = getLanguageHolder ().findDescription (section.getSpellTargetPrompt ());
+				String target = getLanguageHolder ().findDescription (section.getSpellTargetPrompt ());
 				
-				targetSpellText.setText (target.replaceAll ("SPELL_NAME", spellName));
+				target = target.replaceAll ("SPELL_NAME", spellName);
+				
+				if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
+				{
+					List<LanguageText> targetType = getLanguages ().getSpellCasting ().getTargetTypeOverlandEnchantment ();
+					if (spell.getAttackSpellCombatTarget () != null)
+						switch (spell.getAttackSpellCombatTarget ())
+						{
+							case SINGLE_UNIT:
+								targetType = getLanguages ().getSpellCasting ().getTargetTypeUnit ();
+								break;
+								
+							case ALL_UNITS:
+								targetType = getLanguages ().getSpellCasting ().getTargetTypeLocation ();
+								break;
+						}
+
+					target = target.replaceAll ("TARGET_TYPE", getLanguageHolder ().findDescription (targetType));
+				}
+				
+				targetSpellText.setText (target);
 			}
 			catch (final Exception e)
 			{

@@ -63,5 +63,8 @@ public enum TargetSpellResult
 	MUST_TARGET_LAND,
 	
 	/** Spell cannot be targetted at certain tile types */
-	INVALID_TILE_TYPE;
+	INVALID_TILE_TYPE,
+	
+	/** Can only disjunct overland enchantments */
+	OVERLAND_ENCHANTMENTS_ONLY;
 }

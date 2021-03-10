@@ -107,6 +107,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	/** Help text scroll */
 	private HelpUI helpUI;
 	
+	/** Overland map UI */
+	private OverlandMapUI overlandMapUI;
+	
 	/** Mana title above the slider */
 	private JLabel manaTitle;
 	
@@ -175,6 +178,9 @@ public final class MagicSlidersUI extends MomClientFrameUI
 
 	/** Content pane */
 	private JPanel contentPane;
+	
+	/** Whether we are in the special mode of clicking an overland enchantment to target */
+	private boolean targettingOverlandEnchantment;
 	
 	/**
 	 * Sets up the frame once all values have been injected
@@ -467,8 +473,8 @@ public final class MagicSlidersUI extends MomClientFrameUI
 		contentPane.add (spellsScrollPane, "frmMagicOverlandEnchantments");
 
 		spellsChanged ();
-		
-		// Clicking a spell asks about cancelling it
+
+		// Handle clicks on overland enchantments
 		final MouseListener spellSelectionListener = new MouseAdapter ()
 		{
 			@Override
@@ -490,6 +496,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 						}
 						else if (spell.getCastingPlayerID () == getClient ().getOurPlayerID ())
 						{
+							// Left clicking one of our spells asks about cancelling it
 							final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (spell.getSpellID (), "MagicSlidersUI").getSpellName ());
 							
 							final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
@@ -497,6 +504,13 @@ public final class MagicSlidersUI extends MomClientFrameUI
 							msg.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getSwitchOffSpell ()).replaceAll ("SPELL_NAME", spellName));
 							msg.setSwitchOffSpell (spell);
 							msg.setVisible (true);
+						}
+						
+						else if (isTargettingOverlandEnchantment ())
+						{
+							// Left clicking on a spell owned by another player to target a disjunction-type spell at it
+							getOverlandMapUI ().targetOverlandSpellURN (spell.getSpellURN ());
+							setTargettingOverlandEnchantment (false);
 						}
 					}
 					catch (final Exception e)
@@ -521,24 +535,31 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	@Override
 	public final void languageChanged ()
 	{
-		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getTitle ()));
-		
-		manaTitle.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getManaTitle ()));
-		researchTitle.setText	(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchTitle ()));
-		skillTitle.setText			(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getSkillTitle ()));
-		manaLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getManaLabel ()) + ":");
-		researchLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchLabel ()) + ":");
-		skillLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getSkillLabel ()) + ":");
-		
-		overlandEnchantmentsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getOverlandEnchantments ()));
-		alchemyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getAlchemy ()));
-		okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
-		applyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getApply ()));
-		
-		updateProductionLabels ();
-		
-		// Shortcut keys
-		getLanguageHolder ().configureShortcutKeys (contentPane);
+		if (manaTitle != null)
+		{
+			getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getTitle ()));
+			
+			manaTitle.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getManaTitle ()));
+			researchTitle.setText	(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchTitle ()));
+			skillTitle.setText			(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getSkillTitle ()));
+			manaLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getManaLabel ()) + ":");
+			researchLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getResearchLabel ()) + ":");
+			skillLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getSkillLabel ()) + ":");
+			
+			if (isTargettingOverlandEnchantment ())
+				overlandEnchantmentsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getTargetOverlandEnchantment ()));
+			else
+				overlandEnchantmentsTitle.setText (getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getOverlandEnchantments ()));
+			
+			alchemyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getAlchemy ()));
+			okAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getOk ()));
+			applyAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getMagicSlidersScreen ().getApply ()));
+			
+			updateProductionLabels ();
+			
+			// Shortcut keys
+			getLanguageHolder ().configureShortcutKeys (contentPane);
+		}
 	}
 	
 	/**
@@ -851,14 +872,6 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Renderer for the enchantments table
-	 */
-	public final MemoryMaintainedSpellTableCellRenderer getMemoryMaintainedSpellTableCellRenderer ()
-	{
-		return memoryMaintainedSpellTableCellRenderer;
-	}
-
-	/**
 	 * @return Prototype frame creator
 	 */
 	public final PrototypeFrameCreator getPrototypeFrameCreator ()
@@ -891,11 +904,52 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @return Renderer for the enchantments table
+	 */
+	public final MemoryMaintainedSpellTableCellRenderer getMemoryMaintainedSpellTableCellRenderer ()
+	{
+		return memoryMaintainedSpellTableCellRenderer;
+	}
+
+	/**
 	 * @param renderer Renderer for the enchantments table
 	 */
 	public final void setMemoryMaintainedSpellTableCellRenderer (final MemoryMaintainedSpellTableCellRenderer renderer)
 	{
 		memoryMaintainedSpellTableCellRenderer = renderer;
+	}
+	
+	/**
+	 * @return Overland map UI
+	 */
+	public final OverlandMapUI getOverlandMapUI ()
+	{
+		return overlandMapUI;
+	}
+
+	/**
+	 * @param ui Overland map UI
+	 */
+	public final void setOverlandMapUI (final OverlandMapUI ui)
+	{
+		overlandMapUI = ui;
+	}
+	
+	/**
+	 * @return Whether we are in the special mode of clicking an overland enchantment to target
+	 */
+	public final boolean isTargettingOverlandEnchantment ()
+	{
+		return targettingOverlandEnchantment;
+	}
+
+	/**
+	 * @param t Whether we are in the special mode of clicking an overland enchantment to target
+	 */
+	public final void setTargettingOverlandEnchantment (final boolean t)
+	{
+		targettingOverlandEnchantment = t;
+		languageChanged ();
 	}
 	
 	/**

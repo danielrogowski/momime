@@ -15,6 +15,7 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.SpellBookUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.OverlandMapRightHandPanelBottom;
@@ -22,6 +23,8 @@ import momime.client.ui.panels.OverlandMapRightHandPanelTop;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.common.database.LanguageText;
+import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.NewTurnMessageSpell;
 import momime.common.messages.NewTurnMessageTypeID;
@@ -69,6 +72,9 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	
 	/** Chosen unit target */
 	private Integer targettedUnitURN;
+	
+	/** Magic sliders screen */
+	private MagicSlidersUI magicSlidersUI;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -156,7 +162,7 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 					else
 					{
 						// Does the target have a name, or is it a nameless location?
-						if (getTargettedCity () != null)
+						if ((getTargettedCity () != null) && (getTargettedCity ().getX () >= 0) && (getTargettedCity ().getY () >= 0) && (getTargettedCity ().getZ () >= 0))
 						{
 							final OverlandMapCityData cityData = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
 								(getTargettedCity ().getZ ()).getRow ().get (getTargettedCity ().getY ()).getCell ().get (getTargettedCity ().getX ()).getCityData ();
@@ -256,6 +262,15 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 					getOverlandMapRightHandPanel ().setTargetSpell (this);
 					getOverlandMapRightHandPanel ().setTop (OverlandMapRightHandPanelTop.TARGET_SPELL);
 					getOverlandMapRightHandPanel ().setBottom (OverlandMapRightHandPanelBottom.CANCEL);
+					
+					// Anything special to do for this particular spell?
+					final Spell spell = getClient ().getClientDB ().findSpell (getSpellID (), "NewTurnMessageSpellEx (C)");
+					if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) && (spell.getAttackSpellCombatTarget () == null))
+					{
+						// Disjunction type spell that targets an overland enchantment rather than something on the map
+						getMagicSlidersUI ().setTargettingOverlandEnchantment (true);
+						getMagicSlidersUI ().setVisible (true);
+					}
 				}
 				break;
 				
@@ -454,5 +469,21 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	{
 		targettedUnitURN = unitURN;
 		getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
+	}
+
+	/**
+	 * @return Magic sliders screen
+	 */
+	public final MagicSlidersUI getMagicSlidersUI ()
+	{
+		return magicSlidersUI;
+	}
+
+	/**
+	 * @param ui Magic sliders screen
+	 */
+	public final void setMagicSlidersUI (final MagicSlidersUI ui)
+	{
+		magicSlidersUI = ui;
 	}
 }

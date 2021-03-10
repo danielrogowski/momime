@@ -597,6 +597,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
 	</bean>
 
 	<bean id="newTurnMessageSummonUnit" class="momime.client.newturnmessages.NewTurnMessageSummonUnitEx" scope="prototype">
@@ -1224,6 +1225,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellTableCellRenderer" ref="memoryMaintainedSpellTableCellRenderer" />
 		<property name="helpUI" ref="helpUI" />
+		<property name="overlandMapUI" ref="overlandMapUI" />
 	</bean>
 
 	<bean id="alchemyUI" class="momime.client.ui.frames.AlchemyUI">

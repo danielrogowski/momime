@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -908,6 +909,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 *		record of it, just a special entry on their new turn messages scroll telling them to pick a target for it.
 	 * @param targetLocation If the spell is targetted at a city or a map location, then sets that location; null for spells targetted on other things
 	 * @param targetUnit If the spell is targetted at a unit, then the true unit to aim at; null for spells targetted on other things
+	 * @param targetSpell If the spell is targetted at another spell, then the true spell to aim at; null for spells targetted on other things
 	 * @param citySpellEffectID If spell creates a city spell effect, then which one - currently chosen at random, but supposed to be player choosable for Spell Ward
 	 * @param unitSkillID If spell creates a unit skill, then which one - chosen at random for Chaos Channels
 	 * @param mom Allows accessing server knowledge structures, player list and so on
@@ -919,7 +921,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 */
 	@Override
 	public final void targetOverlandSpell (final Spell spell, final MemoryMaintainedSpell maintainedSpell,
-		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit,
+		final MapCoordinates3DEx targetLocation, final MemoryUnit targetUnit, final MemoryMaintainedSpell targetSpell,
 		final String citySpellEffectID, final String unitSkillID, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
@@ -967,15 +969,24 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
 			{
-				// Disenchant Area / True - get a list of units at the location (ours as well)
-	    		final List<Integer> unitURNs = mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
-	    			(u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
-	    		
-	    		// Now look for any spells cast by somebody else either targetted directly on the location, or on a unit at the location
-	    		final List<MemoryMaintainedSpell> targetSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-	    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
-	    				((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))).collect (Collectors.toList ());
-
+				final List<MemoryMaintainedSpell> targetSpells;
+				if (spell.getAttackSpellCombatTarget () == null)
+				{
+					// Disjunction is easy - just targetted at one single spell, and we've already got it
+					targetSpells = Arrays.asList (targetSpell);
+				}
+				else
+				{
+					// Disenchant Area / True - get a list of units at the location (ours as well)
+		    		final List<Integer> unitURNs = mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ().stream ().filter
+		    			(u -> targetLocation.equals (u.getUnitLocation ())).map (u -> u.getUnitURN ()).collect (Collectors.toList ());
+		    		
+		    		// Now look for any spells cast by somebody else either targetted directly on the location, or on a unit at the location
+		    		targetSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+		    			(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
+		    				((targetLocation.equals (s.getCityLocation ())) || (unitURNs.contains (s.getUnitURN ())))).collect (Collectors.toList ());
+				}
+				
 	    		getSpellDispelling ().processDispelling (spell, maintainedSpell.getVariableDamage (), castingPlayer, targetSpells, null, mom);
 			}
 			

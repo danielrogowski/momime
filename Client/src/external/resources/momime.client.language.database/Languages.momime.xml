@@ -863,6 +863,15 @@
         <whoWillCastTitle language="en">
             <text>Select who, or which item, will cast a spell</text>
         </whoWillCastTitle>
+        <targetTypeUnit language="en">
+            <text>unit with enchantments or curses</text>
+        </targetTypeUnit>
+        <targetTypeLocation language="en">
+            <text>location with enchantments or curses</text>
+        </targetTypeLocation>
+        <targetTypeOverlandEnchantment language="en">
+            <text>overland enchantment</text>
+        </targetTypeOverlandEnchantment>
     </spellCasting>
     <dispelMagic>
         <ourDispelMagicHeading language="en">
@@ -3815,6 +3824,9 @@ Bonus Or +GOLD_BONUS%</text>
         <overlandEnchantments language="en">
             <text>Overland Enchantments</text>
         </overlandEnchantments>
+        <targetOverlandEnchantment language="en">
+            <text>Select a spell to target</text>
+        </targetOverlandEnchantment>
         <alchemy language="en">
             <text>Alchemy</text>
         </alchemy>

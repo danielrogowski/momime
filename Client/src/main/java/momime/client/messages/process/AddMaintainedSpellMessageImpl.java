@@ -216,7 +216,11 @@ public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessa
 				if ((getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()) && (getOverlandMapRightHandPanel ().getTargetSpell () != null) &&
 					(getOverlandMapRightHandPanel ().getTargetSpell ().getSpellID ().equals (getMaintainedSpell ().getSpellID ())))
 				{
-					getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+					if (getMaintainedSpell ().getCityLocation () != null)
+						getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity ((MapCoordinates3DEx) getMaintainedSpell ().getCityLocation ());
+					else
+						// Just stick a value in there to stop asking about targetting disjunction spells
+						getOverlandMapRightHandPanel ().getTargetSpell ().setTargettedCity (new MapCoordinates3DEx (-1, -1, -1));
 					
 					// Redraw the NTMs
 					getNewTurnMessagesUI ().languageChanged ();

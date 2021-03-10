@@ -137,6 +137,18 @@
 						<xsd:selector xpath="whoWillCastTitle" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellCastingTargetTypeUnitPK">
+						<xsd:selector xpath="targetTypeUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingTargetTypeLocationPK">
+						<xsd:selector xpath="targetTypeLocation" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingTargetTypeOverlandEnchantmentPK">
+						<xsd:selector xpath="targetTypeOverlandEnchantment" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="dispelMagic" type="momimelangs:dispelMagic">
 					<xsd:key name="dispelMagicOurDispelMagicHeadingPK">
@@ -1549,6 +1561,10 @@
 						<xsd:selector xpath="overlandEnchantments" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="magicSlidersScreenTargetOverlandEnchantmentPK">
+						<xsd:selector xpath="targetOverlandEnchantment" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="magicSlidersScreenAlchemyPK">
 						<xsd:selector xpath="alchemy" />
 						<xsd:field xpath="@language" />
@@ -2342,6 +2358,9 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchOffSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchOffSpellNotOurs" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="whoWillCastTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetTypeUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetTypeLocation" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetTypeOverlandEnchantment" />
 		</xsd:sequence>
     </xsd:complexType>
 	
@@ -3685,6 +3704,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="skillLabel" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="researchingNothing" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="overlandEnchantments" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetOverlandEnchantment" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="alchemy" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="apply" />
 		</xsd:sequence>

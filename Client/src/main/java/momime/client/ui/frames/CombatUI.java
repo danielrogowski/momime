@@ -1804,7 +1804,8 @@ public final class CombatUI extends MomClientFrameUI
 		final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "setSpellBeingTargetted").getSpellName ());
 		final String target = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpellBookSection (spell.getSpellBookSectionID (), "setSpellBeingTargetted").getSpellTargetPrompt ());
 		
-		spellPrompt.setText (target.replaceAll ("SPELL_NAME", spellName));
+		spellPrompt.setText (target.replaceAll ("SPELL_NAME", spellName).replaceAll ("TARGET_TYPE",
+			getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getTargetTypeUnit ())));
 		
 		playerName.setVisible (false);
 		spellCancel.setVisible (true);

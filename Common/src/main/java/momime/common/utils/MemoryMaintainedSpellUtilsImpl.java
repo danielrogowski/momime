@@ -498,6 +498,34 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	}
 	
 	/**
+	 * Used for disjunction type spells being targetted at overland enchantments
+	 * 
+	 * @param castingPlayerID Player casting the disjunction spell
+	 * @param targetSpell Overland enchantment they want to aim at
+	 * @param db Lookup lists built over the XML database
+	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
+	 * @throws RecordNotFoundException If we can't find the definition for the target spell in the DB
+	 */
+	@Override
+	public final TargetSpellResult isSpellValidTargetForSpell (final int castingPlayerID, final MemoryMaintainedSpell targetSpell, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		final Spell spell = db.findSpell (targetSpell.getSpellID (), "isSpellValidTargetForSpell");
+		
+    	final TargetSpellResult result;
+    	if (targetSpell.getCastingPlayerID () == castingPlayerID)
+    		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
+    	
+    	else if (spell.getSpellBookSectionID () != SpellBookSectionID.OVERLAND_ENCHANTMENTS)
+    		result = TargetSpellResult.OVERLAND_ENCHANTMENTS_ONLY;
+    	
+    	else
+    		result = TargetSpellResult.VALID_TARGET;
+    	
+    	return result;
+	}
+	
+	/**
 	 * Checks whether the specified spell can be targetted at the specified combat map location.
 	 * This is only called for spells that are targetted at a location - section SPECIAL_COMBAT_SPELLS
 	 * 

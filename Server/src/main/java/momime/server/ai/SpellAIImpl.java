@@ -675,6 +675,13 @@ public final class SpellAIImpl implements SpellAI
 									valid = false;
 								break;
 								
+							// Only allow Wall of Fire/Darkness/Stone if we don't already have it
+							case CITY_ENCHANTMENTS:
+								valid = (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+									spell, player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+									priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET);
+								break;
+								
 							// Can't summon (including raise dead-type spells) if already max number of units
 							case SUMMONING:
 								if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&

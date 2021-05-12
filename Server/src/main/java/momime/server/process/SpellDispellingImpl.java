@@ -21,6 +21,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -31,6 +32,9 @@ public final class SpellDispellingImpl implements SpellDispelling
 {
 	/** Methods for updating true map + players' memory */
 	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
@@ -110,9 +114,11 @@ public final class SpellDispellingImpl implements SpellDispelling
 			if (result.isDispelled ())
 			{
 				// Do we take over the spell or just cancel it?
-				if ((spell.getOverlandMaxDamage () == null) && (spell.getCombatMaxDamage () == null))
+				// However, also check if we already have this overland enchantment - if we do, treat Spell Binding just like regular Disjunction
+				if ((spell.getOverlandMaxDamage () == null) && (spell.getCombatMaxDamage () == null) &&
+					(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+						castingPlayer.getPlayerDescription ().getPlayerID (), spellToDispel.getSpellID (), null, null, null, null) == null)) 
 				{
-					// What about if they already have the overland enchantment?  In that case we should cancel it instead of changing ownership
 					spellToDispel.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 					
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spellToDispel, mom.getGeneralServerKnowledge (),
@@ -193,6 +199,22 @@ public final class SpellDispellingImpl implements SpellDispelling
 		fogOfWarMidTurnChanges = obj;
 	}
 
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
+	}
+	
 	/**
 	 * @return Server only helper methods for dealing with players in a session
 	 */

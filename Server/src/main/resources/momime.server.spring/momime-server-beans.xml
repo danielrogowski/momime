@@ -579,6 +579,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 	</bean>

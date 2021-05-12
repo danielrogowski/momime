@@ -134,7 +134,7 @@ public final class FogOfWarVisibleAreaChangedMessageImpl extends FogOfWarVisible
 		// Maintained spells added or come into view
 		if (getAddMaintainedSpell ().size () > 0)
 		{
-			final AddMaintainedSpellMessageImpl proc = getFactory ().createAddMaintainedSpellMessage ();
+			final AddOrUpdateMaintainedSpellMessageImpl proc = getFactory ().createAddOrUpdateMaintainedSpellMessage ();
 			for (final MemoryMaintainedSpell thisSpell : getAddMaintainedSpell ())
 			{				
 				proc.setMaintainedSpell (thisSpell);

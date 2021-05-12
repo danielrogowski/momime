@@ -17,6 +17,7 @@ import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.LanguageText;
+import momime.common.database.Spell;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 
@@ -58,23 +59,53 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 	@Override
 	public final void start () throws JAXBException, XMLStreamException, IOException
 	{
+		// What type of dispelling spell is it
+		final Spell dispelSpell = getClient ().getClientDB ().findSpell (getSpellID (), "DispelMagicResultsMessageImpl (C)");
+		final boolean isSpellBinding = (dispelSpell.getOverlandMaxDamage () == null) && (dispelSpell.getCombatMaxDamage () == null);
+		
 		// Work out main text
 		final StringBuilder text = new StringBuilder ();
 		
-		if (getCastingPlayerID () == getClient ().getOurPlayerID ())
-			text.append (getLanguageHolder ().findDescription (getLanguages ().getDispelMagic ().getOurDispelMagicHeading ()));
+		if (isSpellBinding)
+		{
+			// Spell binding
+			if (getCastingPlayerID () == getClient ().getOurPlayerID ())
+				text.append (getLanguageHolder ().findDescription (getLanguages ().getDispelMagic ().getOurSpellBindingHeading ()));
+			else
+				text.append (getLanguageHolder ().findDescription (getLanguages ().getDispelMagic ().getTheirSpellBindingHeading ()).replaceAll
+					("PLAYER_NAME", getWizardClientUtils ().getPlayerName (getMultiplayerSessionUtils ().findPlayerWithID
+						(getClient ().getPlayers (), getCastingPlayerID (), "DispelMagicResultsMessageImpl (C)"))));
+		}
 		else
-			text.append (getLanguageHolder ().findDescription (getLanguages ().getDispelMagic ().getTheirDispelMagicHeading ()).replaceAll
-				("PLAYER_NAME", getWizardClientUtils ().getPlayerName (getMultiplayerSessionUtils ().findPlayerWithID
-					(getClient ().getPlayers (), getCastingPlayerID (), "DispelMagicResultsMessageImpl (C)"))));
+		{
+			// Normal dispel spell
+			if (getCastingPlayerID () == getClient ().getOurPlayerID ())
+				text.append (getLanguageHolder ().findDescription (getLanguages ().getDispelMagic ().getOurDispelMagicHeading ()));
+			else
+				text.append (getLanguageHolder ().findDescription (getLanguages ().getDispelMagic ().getTheirDispelMagicHeading ()).replaceAll
+					("PLAYER_NAME", getWizardClientUtils ().getPlayerName (getMultiplayerSessionUtils ().findPlayerWithID
+						(getClient ().getPlayers (), getCastingPlayerID (), "DispelMagicResultsMessageImpl (C)"))));
+		}
 		
 		for (final DispelMagicResult result : getDispelMagicResult ())
 		{
 			final List<LanguageText> languageText;
-			if (getCastingPlayerID () == getClient ().getOurPlayerID ())
-				languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getOurDispelMagicSuccess () : getLanguages ().getDispelMagic ().getOurDispelMagicFail ();
+			if (isSpellBinding)
+			{
+				// Spell binding
+				if (getCastingPlayerID () == getClient ().getOurPlayerID ())
+					languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getOurSpellBindingSuccess () : getLanguages ().getDispelMagic ().getOurSpellBindingFail ();
+				else
+					languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getTheirSpellBindingSuccess () : getLanguages ().getDispelMagic ().getTheirSpellBindingFail ();
+			}
 			else
-				languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getTheirDispelMagicSuccess () : getLanguages ().getDispelMagic ().getTheirDispelMagicFail ();
+			{
+				// Normal dispel spell
+				if (getCastingPlayerID () == getClient ().getOurPlayerID ())
+					languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getOurDispelMagicSuccess () : getLanguages ().getDispelMagic ().getOurDispelMagicFail ();
+				else
+					languageText = result.isDispelled () ? getLanguages ().getDispelMagic ().getTheirDispelMagicSuccess () : getLanguages ().getDispelMagic ().getTheirDispelMagicFail ();
+			}
 				
 			// This is the spell that was dispelled (or not)
 			final String spellName;
@@ -98,8 +129,7 @@ public final class DispelMagicResultsMessageImpl extends DispelMagicResultsMessa
 		}
 		
 		// Set up message box
-		// This is the dispel magic-type spell
-		final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getSpellID (), "DispelMagicResultsMessageImpl (C)").getSpellName ());
+		final String spellName = getLanguageHolder ().findDescription (dispelSpell.getSpellName ());
 		
 		final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
 		msg.setTitle (spellName);

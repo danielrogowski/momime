@@ -851,6 +851,12 @@
         <enemyOverlandEnchantment language="en">
             <text>PLAYER_NAME has completed casting...</text>
         </enemyOverlandEnchantment>
+        <bindingOurOverlandEnchantment language="en">
+            <text>You have successfully bound...</text>
+        </bindingOurOverlandEnchantment>
+        <bindingEnemyOverlandEnchantment language="en">
+            <text>PLAYER_NAME has successfully bound...</text>
+        </bindingEnemyOverlandEnchantment>
         <switchOffSpellTitle language="en">
             <text>Cancel spell?</text>
         </switchOffSpellTitle>
@@ -892,6 +898,24 @@
         <theirDispelMagicFail language="en">
             <text>SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - dispel failed</text>
         </theirDispelMagicFail>
+        <ourSpellBindingHeading language="en">
+            <text>You attempted to bind:</text>
+        </ourSpellBindingHeading>
+        <ourSpellBindingSuccess language="en">
+            <text>PLAYER_NAME's SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - bound</text>
+        </ourSpellBindingSuccess>
+        <ourSpellBindingFail language="en">
+            <text>PLAYER_NAME's SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - binding failed</text>
+        </ourSpellBindingFail>
+        <theirSpellBindingHeading language="en">
+            <text>PLAYER_NAME attempted to bind:</text>
+        </theirSpellBindingHeading>
+        <theirSpellBindingSuccess language="en">
+            <text>SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - bound</text>
+        </theirSpellBindingSuccess>
+        <theirSpellBindingFail language="en">
+            <text>SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - binding failed</text>
+        </theirSpellBindingFail>
     </dispelMagic>
     <variableMana>
         <title language="en">

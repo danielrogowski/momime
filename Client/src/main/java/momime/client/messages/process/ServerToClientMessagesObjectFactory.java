@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.common.messages.servertoclient.AddBuildingMessage;
 import momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
+import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
 import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
@@ -260,9 +260,9 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	 * @return Newly created message
 	 */
 	@Override
-	public final AddMaintainedSpellMessage createAddMaintainedSpellMessage ()
+	public final AddOrUpdateMaintainedSpellMessage createAddOrUpdateMaintainedSpellMessage ()
 	{
-		return getFactory ().createAddMaintainedSpellMessage ();
+		return getFactory ().createAddOrUpdateMaintainedSpellMessage ();
 	}
 
 	/**

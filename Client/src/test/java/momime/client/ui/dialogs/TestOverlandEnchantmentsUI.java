@@ -26,7 +26,7 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.SpellCasting;
-import momime.client.messages.process.AddMaintainedSpellMessageImpl;
+import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.frames.MagicSlidersUI;
@@ -148,7 +148,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		spell.setCastingPlayerID (anotherWizard ? 2 : 1);
 		spell.setSpellID ("SP001");
 		
-		final AddMaintainedSpellMessageImpl spellMessage = new AddMaintainedSpellMessageImpl ();
+		final AddOrUpdateMaintainedSpellMessageImpl spellMessage = new AddOrUpdateMaintainedSpellMessageImpl ();
 		spellMessage.setMaintainedSpell (spell);
 
 		// Using the real image generator is easier than mocking it out

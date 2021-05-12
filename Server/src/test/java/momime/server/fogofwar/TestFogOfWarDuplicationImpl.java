@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotSame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -383,125 +385,182 @@ public final class TestFogOfWarDuplicationImpl
 	}
 
 	/**
-	 * Tests the copyMaintainedSpell method
+	 * Tests the copyMaintainedSpell method when the spell doesn't exist in the destination list
 	 */
 	@Test
-	public final void testCopyMaintainedSpell ()
+	public final void testCopyMaintainedSpell_New ()
 	{
+		// Source CAE
+		final MemoryMaintainedSpell source = new MemoryMaintainedSpell ();
+		source.setSpellURN (1);
+		source.setCastingPlayerID (2);
+		
+		// Destination list
+		final List<MemoryMaintainedSpell> list = new ArrayList<MemoryMaintainedSpell> (); 		
+		
+		// Set up object to test
 		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();
 		dup.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
-
-		final List<MemoryMaintainedSpell> destination = new ArrayList<MemoryMaintainedSpell> ();
-
-		// Put 3 spells into the list
-		for (int n = 1; n <= 3; n++)
-		{
-			final MapCoordinates3DEx spellCoords = new MapCoordinates3DEx (20 + n, 10 + n, 1);
-
-			final MemoryMaintainedSpell spell = new MemoryMaintainedSpell ();
-			spell.setSpellURN (n);
-			spell.setSpellID ("SP00" + n);
-			spell.setCityLocation (spellCoords);
-			spell.setCastingPlayerID (n);
-
-			destination.add (spell);
-		}
-
-		// Test a spell already in the list
-		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
-
-		final MemoryMaintainedSpell existingSpell = new MemoryMaintainedSpell ();
-		existingSpell.setSpellURN (2);
-		existingSpell.setSpellID ("SP002");
-		existingSpell.setCityLocation (existingCoords);
-		existingSpell.setCastingPlayerID (2);
-
-		assertEquals (3, destination.size ());
-		assertFalse (dup.copyMaintainedSpell (existingSpell, destination));
-		assertEquals (3, destination.size ());
-
-		// Test a spell already in the list (location same but different spell ID)
-		final MemoryMaintainedSpell newSpell = new MemoryMaintainedSpell ();
-		newSpell.setSpellURN (4);
-		newSpell.setSpellID ("SP003");
-		newSpell.setCityLocation (existingCoords);
-		newSpell.setCastingPlayerID (3);
-
-		assertEquals (3, destination.size ());
-		assertTrue (dup.copyMaintainedSpell (newSpell, destination));
-
-		assertEquals (4, destination.size ());
-		assertEquals ("SP003", destination.get (3).getSpellID ());
-		assertEquals (3, destination.get (3).getCastingPlayerID ());
-		assertEquals (22, destination.get (3).getCityLocation ().getX ());
-		assertEquals (12, destination.get (3).getCityLocation ().getY ());
-		assertEquals (1, destination.get (3).getCityLocation ().getZ ());
+		
+		// Run method
+		assertTrue (dup.copyMaintainedSpell (source, list));
+		
+		// Check results
+		assertEquals (1, list.size ());
+		assertNotSame (source, list.get (0));
+		assertEquals (source.getSpellURN (), list.get (0).getSpellURN ());
 	}
-
+	
 	/**
-	 * Tests the copyCombatAreaEffect method
+	 * Tests the copyMaintainedSpell method when the spell already exists in the destination list and hasn't changed
 	 */
 	@Test
-	public final void testCopyCombatAreaEffect ()
+	public final void testCopyMaintainedSpell_Same ()
 	{
+		// Source CAE
+		final MemoryMaintainedSpell source = new MemoryMaintainedSpell ();
+		source.setSpellURN (1);
+		source.setCastingPlayerID (2);
+		
+		// Destination list
+		final MemoryMaintainedSpell dest = new MemoryMaintainedSpell ();
+		dest.setSpellURN (1);
+		dest.setCastingPlayerID (2);
+		
+		final List<MemoryMaintainedSpell> list = new ArrayList<MemoryMaintainedSpell> ();
+		list.add (dest);
+		
+		// Set up object to test
+		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();
+		dup.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
+		
+		// Run method
+		assertFalse (dup.copyMaintainedSpell (source, list));
+		
+		// Check results
+		assertEquals (1, list.size ());
+		assertSame (dest, list.get (0));
+	}
+	
+	/**
+	 * Tests the copyMaintainedSpell method when the spell already exists in the destination list but has changed
+	 */
+	@Test
+	public final void testCopyMaintainedSpell_Changed ()
+	{
+		// Source CAE
+		final MemoryMaintainedSpell source = new MemoryMaintainedSpell ();
+		source.setSpellURN (1);
+		source.setCastingPlayerID (2);
+		
+		// Destination list
+		final MemoryMaintainedSpell dest = new MemoryMaintainedSpell ();
+		dest.setSpellURN (1);
+		dest.setCastingPlayerID (3);
+		
+		final List<MemoryMaintainedSpell> list = new ArrayList<MemoryMaintainedSpell> ();
+		list.add (dest);
+		
+		// Set up object to test
+		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();
+		dup.setMemoryMaintainedSpellUtils (new MemoryMaintainedSpellUtilsImpl ());
+		
+		// Run method
+		assertTrue (dup.copyMaintainedSpell (source, list));
+		
+		// Check results
+		assertEquals (1, list.size ());
+		assertSame (dest, list.get (0));
+		assertEquals (2, dest.getCastingPlayerID ());
+	}
+	
+	/**
+	 * Tests the copyCombatAreaEffect method when the CAE doesn't exist in the destination list
+	 */
+	@Test
+	public final void testCopyCombatAreaEffect_New ()
+	{
+		// Source CAE
+		final MemoryCombatAreaEffect source = new MemoryCombatAreaEffect ();
+		source.setCombatAreaEffectURN (1);
+		source.setCastingPlayerID (2);
+		
+		// Destination list
+		final List<MemoryCombatAreaEffect> list = new ArrayList<MemoryCombatAreaEffect> (); 		
+		
+		// Set up object to test
 		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();
 		dup.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
-
-		final List<MemoryCombatAreaEffect> destination = new ArrayList<MemoryCombatAreaEffect> ();
-
-		// Put 3 combatAreaEffects into the list
-		for (int n = 1; n <= 3; n++)
-		{
-			final MapCoordinates3DEx combatAreaEffectCoords = new MapCoordinates3DEx (20 + n, 10 + n, 1);
-
-			final MemoryCombatAreaEffect combatAreaEffect = new MemoryCombatAreaEffect ();
-			combatAreaEffect.setCombatAreaEffectURN (n);
-			combatAreaEffect.setCombatAreaEffectID ("CAE0" + n);
-			combatAreaEffect.setMapLocation (combatAreaEffectCoords);
-			combatAreaEffect.setCastingPlayerID (n);
-			combatAreaEffect.setCastingCost (n * 2);
-
-			destination.add (combatAreaEffect);
-		}
-
-		// Test a combatAreaEffect already in the list and is unchanged
-		final MapCoordinates3DEx existingCoords = new MapCoordinates3DEx (22, 12, 1);
-
-		final MemoryCombatAreaEffect existingCombatAreaEffect = new MemoryCombatAreaEffect ();
-		existingCombatAreaEffect.setCombatAreaEffectURN (2);
-		existingCombatAreaEffect.setCombatAreaEffectID ("CAE02");
-		existingCombatAreaEffect.setMapLocation (existingCoords);
-		existingCombatAreaEffect.setCastingPlayerID (2);
-		existingCombatAreaEffect.setCastingCost (4);
-
-		assertEquals (3, destination.size ());
-		assertFalse (dup.copyCombatAreaEffect (existingCombatAreaEffect, destination));
-		assertEquals (3, destination.size ());
 		
-		// Test a combatAreaEffect already in the list but has unchanged
-		existingCombatAreaEffect.setCastingCost (10);
+		// Run method
+		assertTrue (dup.copyCombatAreaEffect (source, list));
 		
-		assertEquals (3, destination.size ());
-		assertTrue (dup.copyCombatAreaEffect (existingCombatAreaEffect, destination));
-		assertEquals (3, destination.size ());
-		assertEquals (10, destination.get (1).getCastingCost ().intValue ());
+		// Check results
+		assertEquals (1, list.size ());
+		assertNotSame (source, list.get (0));
+		assertEquals (source.getCombatAreaEffectURN (), list.get (0).getCombatAreaEffectURN ());
+	}
+	
+	/**
+	 * Tests the copyCombatAreaEffect method when the CAE already exists in the destination list and hasn't changed
+	 */
+	@Test
+	public final void testCopyCombatAreaEffect_Same ()
+	{
+		// Source CAE
+		final MemoryCombatAreaEffect source = new MemoryCombatAreaEffect ();
+		source.setCombatAreaEffectURN (1);
+		source.setCastingPlayerID (2);
 		
-		// Test a combatAreaEffect not already in the list (location same but different combatAreaEffect ID)
-		final MemoryCombatAreaEffect newCombatAreaEffect = new MemoryCombatAreaEffect ();
-		newCombatAreaEffect.setCombatAreaEffectURN (4);
-		newCombatAreaEffect.setCombatAreaEffectID ("CAE03");
-		newCombatAreaEffect.setMapLocation (existingCoords);
-		newCombatAreaEffect.setCastingPlayerID (3);
-		newCombatAreaEffect.setCastingCost (6);
-
-		assertEquals (3, destination.size ());
-		assertTrue (dup.copyCombatAreaEffect (newCombatAreaEffect, destination));
-
-		assertEquals (4, destination.size ());
-		assertEquals ("CAE03", destination.get (3).getCombatAreaEffectID ());
-		assertEquals (3, destination.get (3).getCastingPlayerID ().intValue ());
-		assertEquals (22, destination.get (3).getMapLocation ().getX ());
-		assertEquals (12, destination.get (3).getMapLocation ().getY ());
-		assertEquals (1, destination.get (3).getMapLocation ().getZ ());
+		// Destination list
+		final MemoryCombatAreaEffect dest = new MemoryCombatAreaEffect ();
+		dest.setCombatAreaEffectURN (1);
+		dest.setCastingPlayerID (2);
+		
+		final List<MemoryCombatAreaEffect> list = new ArrayList<MemoryCombatAreaEffect> ();
+		list.add (dest);
+		
+		// Set up object to test
+		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();
+		dup.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
+		
+		// Run method
+		assertFalse (dup.copyCombatAreaEffect (source, list));
+		
+		// Check results
+		assertEquals (1, list.size ());
+		assertSame (dest, list.get (0));
+	}
+	
+	/**
+	 * Tests the copyCombatAreaEffect method when the CAE already exists in the destination list but has changed
+	 */
+	@Test
+	public final void testCopyCombatAreaEffect_Changed ()
+	{
+		// Source CAE
+		final MemoryCombatAreaEffect source = new MemoryCombatAreaEffect ();
+		source.setCombatAreaEffectURN (1);
+		source.setCastingPlayerID (2);
+		
+		// Destination list
+		final MemoryCombatAreaEffect dest = new MemoryCombatAreaEffect ();
+		dest.setCombatAreaEffectURN (1);
+		dest.setCastingPlayerID (3);
+		
+		final List<MemoryCombatAreaEffect> list = new ArrayList<MemoryCombatAreaEffect> ();
+		list.add (dest);
+		
+		// Set up object to test
+		final FogOfWarDuplicationImpl dup = new FogOfWarDuplicationImpl ();
+		dup.setMemoryCombatAreaEffectUtils (new MemoryCombatAreaEffectUtilsImpl ());
+		
+		// Run method
+		assertTrue (dup.copyCombatAreaEffect (source, list));
+		
+		// Check results
+		assertEquals (1, list.size ());
+		assertSame (dest, list.get (0));
+		assertEquals (2, dest.getCastingPlayerID ().intValue ());
 	}
 }

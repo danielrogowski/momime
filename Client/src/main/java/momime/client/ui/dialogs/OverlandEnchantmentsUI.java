@@ -29,7 +29,7 @@ import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.messages.process.AddMaintainedSpellMessageImpl;
+import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.utils.WizardClientUtils;
@@ -37,8 +37,11 @@ import momime.common.MomException;
 import momime.common.database.AnimationEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.database.SpellBookSectionID;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 
 /**
  * Animation of the swirly mirror when someone casts an overland enchantment
@@ -85,8 +88,11 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/** Wizard client utils */
 	private WizardClientUtils wizardClientUtils;
 	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
 	/** The spell being drawn */
-	private AddMaintainedSpellMessageImpl addSpellMessage;
+	private AddOrUpdateMaintainedSpellMessageImpl addSpellMessage;
 	
 	/** Text underneath */
 	private JLabel spellText;
@@ -230,15 +236,31 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		spellText = getUtils ().createLabel (new Color (Integer.parseInt (trans.getFlagColour (), 16)), getLargeFont ());
 		contentPane.add (spellText, "frmOverlandEnchantmentsText");
 
-		// Actually add the spell
-		getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getAddSpellMessage ().getMaintainedSpell ());
+		// Add or update the spell
+		final MemoryMaintainedSpell existingSpell = getMemoryMaintainedSpellUtils ().findSpellURN
+			(getAddSpellMessage ().getMaintainedSpell ().getSpellURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ());
+		
+		if (existingSpell == null)
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell ().add (getAddSpellMessage ().getMaintainedSpell ());
+		else
+			existingSpell.setCastingPlayerID (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
+					
 		getMagicSlidersUI ().spellsChanged ();
+		
+		// If spell binding, use special music for it
+		Spell musicSpell = spell;
+		if (!getAddSpellMessage ().isNewlyCast ())
+			for (final Spell spellBinding : getClient ().getClientDB ().getSpell ())
+				if ((spellBinding.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&
+					(spellBinding.getOverlandMaxDamage () == null) && (spellBinding.getCombatMaxDamage () == null))
+					
+					musicSpell = spellBinding;
 		
 		// Any music to play?
 		try
 		{
-			if (spell.getSpellMusicFile () != null)
-				getMusicPlayer ().playThenResume (spell.getSpellMusicFile ());
+			if (musicSpell.getSpellMusicFile () != null)
+				getMusicPlayer ().playThenResume (musicSpell.getSpellMusicFile ());
 		}
 		catch (final Exception e)
 		{
@@ -318,17 +340,26 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 			}
 		}
 		
+		// Us binding
+		else if ((!getAddSpellMessage ().isNewlyCast ()) && (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ()))
+			spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getBindingOurOverlandEnchantment ()));
+		
 		// Us casting
 		else if (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID () == getClient ().getOurPlayerID ())
 			spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getOurOverlandEnchantment ()));
 		
-		// Someone else casting
+		// Someone else binding or casting
 		else
 		{
 			final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
 			final String playerName = (player != null) ? getWizardClientUtils ().getPlayerName (player) : null;
-			spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getEnemyOverlandEnchantment ()).replaceAll
-				("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
+			
+			if (!getAddSpellMessage ().isNewlyCast ())
+				spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getBindingEnemyOverlandEnchantment ()).replaceAll
+					("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
+			else
+				spellText.setText (getLanguageHolder ().findDescription (getLanguages ().getSpellCasting ().getEnemyOverlandEnchantment ()).replaceAll
+					("PLAYER_NAME", (playerName != null) ? playerName : ("Player " + getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ())));
 		}
 	}
 	
@@ -431,7 +462,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/**
 	 * @return The spell being drawn
 	 */
-	public final AddMaintainedSpellMessageImpl getAddSpellMessage ()
+	public final AddOrUpdateMaintainedSpellMessageImpl getAddSpellMessage ()
 	{
 		return addSpellMessage;
 	}
@@ -439,7 +470,7 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	/**
 	 * @param spl The spell being drawn
 	 */
-	public final void setAddSpellMessage (final AddMaintainedSpellMessageImpl spl)
+	public final void setAddSpellMessage (final AddOrUpdateMaintainedSpellMessageImpl spl)
 	{
 		addSpellMessage = spl;
 	}
@@ -490,5 +521,21 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	public final void setWizardClientUtils (final WizardClientUtils util)
 	{
 		wizardClientUtils = util;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param utils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
+	{
+		memoryMaintainedSpellUtils = utils;
 	}
 }

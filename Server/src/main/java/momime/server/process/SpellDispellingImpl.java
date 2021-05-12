@@ -63,10 +63,21 @@ public final class SpellDispellingImpl implements SpellDispelling
 		final Map<Integer, List<DispelMagicResult>> resultsMap = new HashMap<Integer, List<DispelMagicResult>> ();
 		if (castingPlayer.getPlayerDescription ().isHuman ())
 			resultsMap.put (castingPlayer.getPlayerDescription ().getPlayerID (), new ArrayList<DispelMagicResult> ());
+
+		// Work out dispelling power - this is a bit of a cheat to just check combatBaseDamage first, we should know for certain if being cast in combat or overland.
+		// However all dispel spells have the same combat and overland stats, so this is fine.
+		final Integer dispellingPower;
+		if (variableDamage != null)
+			dispellingPower = variableDamage;
+		else if (spell.getCombatBaseDamage () != null)
+			dispellingPower = spell.getCombatBaseDamage ();
+		else if (spell.getOverlandBaseDamage () != null)
+			dispellingPower = spell.getOverlandBaseDamage ();
+		else
+			throw new MomException ("processDispelling trying to process spell ID " + spell.getSpellID () + " but no dispelling power is defined");
 		
 		// Now go through trying to dispel each spell
 		boolean anyKilled = false;
-		final Integer dispellingPower = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
 		for (final MemoryMaintainedSpell spellToDispel : targetSpells)
 		{
 			// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
@@ -78,12 +89,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 			result.setCastingCost (spellToDispel.isCastInCombat () ? spellToDispelDef.getCombatCastingCost () : spellToDispelDef.getOverlandCastingCost ());
 			result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
 			result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
-			
-			if (result.isDispelled ())
-				if (getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-					spellToDispel.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ()))
-						anyKilled = true;
-			
+
+			// Add it to the messages first, because we might update who owns it
 			if (castingPlayer.getPlayerDescription ().isHuman ())
 				resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 			
@@ -98,6 +105,25 @@ public final class SpellDispellingImpl implements SpellDispelling
 				}
 				results.add (result);
 			}
+
+			// Process dispelling or capturing it
+			if (result.isDispelled ())
+			{
+				// Do we take over the spell or just cancel it?
+				if ((spell.getOverlandMaxDamage () == null) && (spell.getCombatMaxDamage () == null))
+				{
+					// What about if they already have the overland enchantment?  In that case we should cancel it instead of changing ownership
+					spellToDispel.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+					
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spellToDispel, mom.getGeneralServerKnowledge (),
+						mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				}
+				
+				// Regular dispel
+				else if (getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+					spellToDispel.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ()))
+						anyKilled = true;
+			}			
 		}
 		
 		// Also go through trying to dispel each CAE

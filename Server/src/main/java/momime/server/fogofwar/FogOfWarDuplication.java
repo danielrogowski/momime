@@ -70,7 +70,7 @@ public interface FogOfWarDuplication
 	 * Copies a spell from source into the destination list
 	 * @param source The spell to copy from (i.e. the true spell details)
 	 * @param destination The spell list to copy into (i.e. the player's memory of spells)
-	 * @return Whether any update actually happened (i.e. false if the spell was already in the list)
+	 * @return Whether any update actually happened (i.e. false if the spell was already in the list AND all the details already exactly matched)
 	 */
 	public boolean copyMaintainedSpell (final MemoryMaintainedSpell source, final List<MemoryMaintainedSpell> destination);
 

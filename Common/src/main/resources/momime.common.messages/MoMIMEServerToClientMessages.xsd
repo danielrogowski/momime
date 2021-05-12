@@ -907,9 +907,9 @@ e.g. a hero dying must be updated to status DEAD on the client of its owner sinc
 		</xsd:complexType>
 	</xsd:element>
 	
-	<xsd:element name="addMaintainedSpellMessage">
+	<xsd:element name="addOrUpdateMaintainedSpellMessage">
 	    <xsd:annotation>
-    		<xsd:documentation>Server sends this to notify clients of new maintained spells cast, or those that have newly come into view.
+    		<xsd:documentation>Server sends this to notify clients of new maintained spells cast, an update to an existing spell, or those that have newly come into view.
 Sends the complete spell object so the client can just add it as-is.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>

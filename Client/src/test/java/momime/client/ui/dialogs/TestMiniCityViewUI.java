@@ -22,7 +22,7 @@ import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.SpellCasting;
-import momime.client.messages.process.AddMaintainedSpellMessageImpl;
+import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.panels.CityViewPanel;
 import momime.client.utils.AnimationControllerImpl;
@@ -153,7 +153,7 @@ public final class TestMiniCityViewUI extends ClientTestData
 		spell.setCityLocation (new MapCoordinates3DEx (20, 10, 0));
 		spell.setCastingPlayerID (pd1.getPlayerID ());
 		
-		final AddMaintainedSpellMessageImpl msg = new AddMaintainedSpellMessageImpl (); 
+		final AddOrUpdateMaintainedSpellMessageImpl msg = new AddOrUpdateMaintainedSpellMessageImpl (); 
 		msg.setMaintainedSpell (spell);
 		
 		// Set up animation controller

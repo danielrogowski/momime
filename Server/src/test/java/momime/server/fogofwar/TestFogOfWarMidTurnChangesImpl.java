@@ -40,7 +40,7 @@ import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddBuildingMessage;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
+import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.KillUnitMessage;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
@@ -1983,7 +1983,7 @@ public final class TestFogOfWarMidTurnChangesImpl extends ServerTestData
 				{
 					assertEquals (1, conn.getMessages ().size ());
 					
-					final AddMaintainedSpellMessage addMsg = (AddMaintainedSpellMessage) conn.getMessages ().get (0);
+					final AddOrUpdateMaintainedSpellMessage addMsg = (AddOrUpdateMaintainedSpellMessage) conn.getMessages ().get (0);
 					assertSame (trueSpell, addMsg.getMaintainedSpell ());
 				}
 			}

@@ -66,6 +66,24 @@ public interface FogOfWarMidTurnChanges
 		throws JAXBException, XMLStreamException;
 
 	/**
+	 * After updating the true copy of a spell, this routine copies and sends the new value to players who can see it
+	 *
+	 * @param trueSpell True spell that was updated
+	 * @param gsk Server knowledge structure
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 */
+	public void updatePlayerMemoryOfSpell (final MemoryMaintainedSpell trueSpell, final MomGeneralServerKnowledge gsk,
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
+	
+	/**
 	 * Adds a unit to the server's true memory, and checks who can see it - sending a message to update the client of any human players who can see it
 	 *
 	 * Heroes are added using this method during game startup - at which point they're added only on the server and they're off

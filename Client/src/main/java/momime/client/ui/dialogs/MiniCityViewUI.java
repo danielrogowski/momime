@@ -26,7 +26,7 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
 import momime.client.messages.process.AddBuildingMessageImpl;
-import momime.client.messages.process.AddMaintainedSpellMessageImpl;
+import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
 import momime.client.messages.process.UpdateWizardStateMessageImpl;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.ChangeConstructionUI;
@@ -84,7 +84,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	private JLabel textLabel;
 	
 	/** Spell that we're displaying this popup for; null if we're not displaying a spell */
-	private AddMaintainedSpellMessageImpl addSpellMessage;
+	private AddOrUpdateMaintainedSpellMessageImpl addSpellMessage;
 	
 	/** Building that we're displaying this popup for; null if we're not displaying a building */
 	private AddBuildingMessageImpl buildingMessage;
@@ -540,7 +540,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/**
 	 * @return Spell that we're displaying this popup for; null if we're not displaying a spell
 	 */
-	public final AddMaintainedSpellMessageImpl getAddSpellMessage ()
+	public final AddOrUpdateMaintainedSpellMessageImpl getAddSpellMessage ()
 	{
 		return addSpellMessage;
 	}
@@ -548,7 +548,7 @@ public final class MiniCityViewUI extends MomClientDialogUI
 	/**
 	 * @param msg Spell that we're displaying this popup for; null if we're not displaying a spell
 	 */
-	public final void setAddSpellMessage (final AddMaintainedSpellMessageImpl msg)
+	public final void setAddSpellMessage (final AddOrUpdateMaintainedSpellMessageImpl msg)
 	{
 		addSpellMessage = msg;
 	}

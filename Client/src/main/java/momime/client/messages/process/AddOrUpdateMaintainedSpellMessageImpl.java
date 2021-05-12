@@ -32,17 +32,17 @@ import momime.common.database.Spell;
 import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
+import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
 /**
  * Server sends this to notify clients of new maintained spells cast, or those that have newly come into view
  */
-public final class AddMaintainedSpellMessageImpl extends AddMaintainedSpellMessage implements AnimatedServerToClientMessage
+public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMaintainedSpellMessage implements AnimatedServerToClientMessage
 {
 	/** Class logger */
-	private final static Log log = LogFactory.getLog (AddMaintainedSpellMessageImpl.class);
+	private final static Log log = LogFactory.getLog (AddOrUpdateMaintainedSpellMessageImpl.class);
 
 	/** Multiplayer client */
 	private MomClient client;

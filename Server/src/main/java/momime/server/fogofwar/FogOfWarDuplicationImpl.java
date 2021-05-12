@@ -353,36 +353,44 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 	 * Copies a spell from source into the destination list
 	 * @param source The spell to copy from (i.e. the true spell details)
 	 * @param destination The spell list to copy into (i.e. the player's memory of spells)
-	 * @return Whether any update actually happened (i.e. false if the spell was already in the list)
+	 * @return Whether any update actually happened (i.e. false if the spell was already in the list AND all the details already exactly matched)
 	 */
 	@Override
 	public final boolean copyMaintainedSpell (final MemoryMaintainedSpell source, final List<MemoryMaintainedSpell> destination)
 	{
-		// Since spells can't change, only be cast or cancelled, we don't need to worry about whether the
-		// spell in the list but somehow changed, that's can't happen
-		final boolean needToAdd = (getMemoryMaintainedSpellUtils ().findSpellURN (source.getSpellURN (), destination) == null);
-
-		if (needToAdd)
+		// First see if the spell is in the detination list at all
+		boolean needToUpdate;
+		MemoryMaintainedSpell dest = getMemoryMaintainedSpellUtils ().findSpellURN (source.getSpellURN (), destination);
+		if (dest == null)
 		{
-			final MemoryMaintainedSpell destinationSpell = new MemoryMaintainedSpell ();
-			destinationSpell.setSpellURN (source.getSpellURN ());
-			destinationSpell.setCastingPlayerID (source.getCastingPlayerID ());
-			destinationSpell.setSpellID (source.getSpellID ());
-			destinationSpell.setUnitURN (source.getUnitURN ());
-			destinationSpell.setUnitSkillID (source.getUnitSkillID ());
-			destinationSpell.setCastInCombat (source.isCastInCombat ());
-			destinationSpell.setCitySpellEffectID (source.getCitySpellEffectID ());
-			destinationSpell.setVariableDamage (source.getVariableDamage ());
-
-			if (source.getCityLocation () == null)
-				destinationSpell.setCityLocation (null);
-			else
-				destinationSpell.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getCityLocation ()));
-
-			destination.add (destinationSpell);
+			dest = new MemoryMaintainedSpell ();
+			destination.add (dest);
+			needToUpdate = true;
+		}
+		else
+		{
+			// The only value that can actually change is castingPlayerID, when a spell is taken over with Spell Binding
+			needToUpdate = (source.getCastingPlayerID () != dest.getCastingPlayerID ());
 		}
 
-		return needToAdd;
+		if (needToUpdate);
+		{
+			dest.setSpellURN (source.getSpellURN ());
+			dest.setCastingPlayerID (source.getCastingPlayerID ());
+			dest.setSpellID (source.getSpellID ());
+			dest.setUnitURN (source.getUnitURN ());
+			dest.setUnitSkillID (source.getUnitSkillID ());
+			dest.setCastInCombat (source.isCastInCombat ());
+			dest.setCitySpellEffectID (source.getCitySpellEffectID ());
+			dest.setVariableDamage (source.getVariableDamage ());
+
+			if (source.getCityLocation () == null)
+				dest.setCityLocation (null);
+			else
+				dest.setCityLocation (new MapCoordinates3DEx ((MapCoordinates3DEx) source.getCityLocation ()));
+		}
+
+		return needToUpdate;
 	}
 
 	/**
@@ -405,8 +413,10 @@ public final class FogOfWarDuplicationImpl implements FogOfWarDuplication
 		}
 		else
 		{
-			// The only value that can actually change is castingCost
-			needToUpdate = !CompareUtils.safeIntegerCompare (source.getCastingCost (), dest.getCastingCost ());
+			// The only values that can actually change are castingCost (Counter Magic strength reducing over time) and
+			// castingPlayerID (when spells are taken over with Spell Binding)
+			needToUpdate = (!CompareUtils.safeIntegerCompare (source.getCastingCost (), dest.getCastingCost ())) ||
+				(!CompareUtils.safeIntegerCompare (source.getCastingPlayerID (), dest.getCastingPlayerID ()));
 		}
 
 		if (needToUpdate)

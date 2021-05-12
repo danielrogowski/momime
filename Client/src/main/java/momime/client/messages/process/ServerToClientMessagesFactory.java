@@ -112,7 +112,7 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
-	public AddMaintainedSpellMessageImpl createAddMaintainedSpellMessage ();
+	public AddOrUpdateMaintainedSpellMessageImpl createAddOrUpdateMaintainedSpellMessage ();
 
 	/**
 	 * @return Newly created message

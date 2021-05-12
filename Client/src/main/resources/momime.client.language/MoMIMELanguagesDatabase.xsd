@@ -121,6 +121,14 @@
 						<xsd:selector xpath="enemyOverlandEnchantment" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="spellCastingBindingOurOverlandEnchantmentPK">
+						<xsd:selector xpath="bindingOurOverlandEnchantment" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellCastingBindingEnemyOverlandEnchantmentPK">
+						<xsd:selector xpath="bindingEnemyOverlandEnchantment" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="spellCastingSwitchOffSpellTitlePK">
 						<xsd:selector xpath="switchOffSpellTitle" />
 						<xsd:field xpath="@language" />
@@ -173,6 +181,30 @@
 					</xsd:key>
 					<xsd:key name="dispelMagicTheirDispelMagicFailPK">
 						<xsd:selector xpath="theirDispelMagicFail" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="SpellBindingOurSpellBindingHeadingPK">
+						<xsd:selector xpath="ourSpellBindingHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="SpellBindingOurSpellBindingSuccessPK">
+						<xsd:selector xpath="ourSpellBindingSuccess" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="SpellBindingOurSpellBindingFailPK">
+						<xsd:selector xpath="ourSpellBindingFail" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="SpellBindingTheirSpellBindingHeadingPK">
+						<xsd:selector xpath="theirSpellBindingHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="SpellBindingTheirSpellBindingSuccessPK">
+						<xsd:selector xpath="theirSpellBindingSuccess" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="SpellBindingTheirSpellBindingFailPK">
+						<xsd:selector xpath="theirSpellBindingFail" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -2354,6 +2386,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="someoneElseHasCast" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourOverlandEnchantment" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="enemyOverlandEnchantment" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="bindingOurOverlandEnchantment" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="bindingEnemyOverlandEnchantment" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchOffSpellTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchOffSpell" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="switchOffSpellNotOurs" />
@@ -2372,6 +2406,12 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirDispelMagicHeading" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirDispelMagicSuccess" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirDispelMagicFail" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourSpellBindingHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourSpellBindingSuccess" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourSpellBindingFail" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirSpellBindingHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirSpellBindingSuccess" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirSpellBindingFail" />
 		</xsd:sequence>
     </xsd:complexType>
 	

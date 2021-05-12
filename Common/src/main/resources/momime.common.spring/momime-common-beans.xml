@@ -155,7 +155,7 @@
     			<value>momime.common.messages.servertoclient.DestroyBuildingMessage</value>
     			<value>momime.common.messages.servertoclient.AddOrUpdateUnitMessage</value>
     			<value>momime.common.messages.servertoclient.KillUnitMessage</value>
-    			<value>momime.common.messages.servertoclient.AddMaintainedSpellMessage</value>
+    			<value>momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage</value>
     			<value>momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage</value>
     			<value>momime.common.messages.servertoclient.CancelCombatAreaEffectMessage</value>

@@ -46,7 +46,7 @@ import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.AddBuildingMessage;
 import momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage;
-import momime.common.messages.servertoclient.AddMaintainedSpellMessage;
+import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
 import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
@@ -239,6 +239,51 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		}
 	}
 
+	/**
+	 * After updating the true copy of a spell, this routine copies and sends the new value to players who can see it
+	 *
+	 * @param trueSpell True spell that was updated
+	 * @param gsk Server knowledge structure
+	 * @param players List of players in the session
+	 * @param db Lookup lists built over the XML database
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
+	 * @throws MomException If there is a problem with any of the calculations
+	 */
+	@Override
+	public final void updatePlayerMemoryOfSpell (final MemoryMaintainedSpell trueSpell, final MomGeneralServerKnowledge gsk,
+		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		// First build the message
+		final AddOrUpdateMaintainedSpellMessage spellMsg = new AddOrUpdateMaintainedSpellMessage ();
+		spellMsg.setMaintainedSpell (trueSpell);
+
+		// Check which players can see the terrain
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			
+			if (getFogOfWarMidTurnVisibility ().canSeeSpellMidTurn (trueSpell, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), thisPlayer, db, sd.getFogOfWarSetting ()))
+			{
+				// Update player's memory on server
+				if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
+
+					// Update player's memory on client
+					if (thisPlayer.getPlayerDescription ().isHuman ())
+						thisPlayer.getConnection ().sendMessageToClient (spellMsg);
+			}
+		}
+
+		// The stolen spell might be Awareness, Nature Awareness, Nature's Eye, or a curse on an enemy city, so might affect the fog of wag of the player who cast it.
+		// Technically we should also do this for the old player who lost the spell, but its fine, they will end up losing sight of it soon enough.
+		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "updatePlayerMemoryOfSpell");
+		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), castingPlayer, players, "updatePlayerMemoryOfSpell", sd, db);
+	}
+	
 	/**
 	 * Adds a unit to the server's true memory, and checks who can see it - sending a message to update the client of any human players who can see it
 	 *
@@ -554,7 +599,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		// Build the message ready to send it to whoever can see the spell
-		final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
+		final AddOrUpdateMaintainedSpellMessage msg = new AddOrUpdateMaintainedSpellMessage ();
 		msg.setMaintainedSpell (transientSpell);
 		msg.setNewlyCast (true);
 		msg.setSpellTransient (true);
@@ -594,7 +639,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException
 	{
 		// Build the message ready to send it to whoever can see the spell
-		final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
+		final AddOrUpdateMaintainedSpellMessage msg = new AddOrUpdateMaintainedSpellMessage ();
 		msg.setMaintainedSpell (trueSpell);
 		msg.setNewlyCast (true);		// Spells added via this method must be new, or just being targetted, so either way from the client's point of view they must be newly cast
 		msg.setSpellTransient (false);
@@ -1263,7 +1308,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 					if (getFogOfWarDuplication ().copyMaintainedSpell (trueSpell, priv.getFogOfWarMemory ().getMaintainedSpell ()))
 						if (player.getPlayerDescription ().isHuman ())
 						{
-							final AddMaintainedSpellMessage msg = new AddMaintainedSpellMessage ();
+							final AddOrUpdateMaintainedSpellMessage msg = new AddOrUpdateMaintainedSpellMessage ();
 							msg.setMaintainedSpell (trueSpell);
 							msg.setNewlyCast (false);
 							msg.setSpellTransient (false);

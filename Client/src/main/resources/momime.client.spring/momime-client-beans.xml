@@ -453,7 +453,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 	</bean>
 
-	<bean id="addMaintainedSpellMessage" class="momime.client.messages.process.AddMaintainedSpellMessageImpl" scope="prototype">
+	<bean id="addOrUpdateMaintainedSpellMessage" class="momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
@@ -1852,6 +1852,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	
 	<bean id="combatEndedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

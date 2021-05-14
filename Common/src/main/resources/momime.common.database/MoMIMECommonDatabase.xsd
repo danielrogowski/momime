@@ -1081,9 +1081,9 @@
 			<xsd:selector xpath="tileType/tileTypeAreaEffect" />
 			<xsd:field xpath="@combatAreaEffectID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:pickPK" name="combatAreaEffectAttributeBonusFKpick">
-			<xsd:selector xpath="combatAreaEffect/combatAreaEffectAttributeBonus" />
-			<xsd:field xpath="effectMagicRealm" />
+		<xsd:keyref refer="momimecommon:pickPK" name="combatAreaEffectFKpick">
+			<xsd:selector xpath="combatAreaEffect" />
+			<xsd:field xpath="combatAreaEffectMagicRealm" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:pickPK" name="combatAreaEffectSkillBonusFKpick">
 			<xsd:selector xpath="combatAreaEffect/combatAreaEffectSkillBonus" />
@@ -3030,6 +3030,19 @@ but kept these separate to make it totally clear when production values are reco
 					<xsd:appinfo>
 						<nxe:showreferencedfield>combatAreaEffectsPlayersDescription</nxe:showreferencedfield>
 					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectMagicRealm" type="momimecommon:pickID" nxe:label="CAE magic realm" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="dispellingPower" type="momimecommon:unitSkillValue">
+				<xsd:annotation>
+		        	<xsd:documentation>If positive then dispelling power is fixed (nodes); if negative, dispelling power is taken from spell damage and reduced by
+this value each time a dispel attempt is made (counter magic).</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAreaEffectSkillBonus" type="momimecommon:combatAreaEffectSkillBonus" />

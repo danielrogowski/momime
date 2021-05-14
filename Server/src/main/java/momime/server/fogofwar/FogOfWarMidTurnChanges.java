@@ -20,6 +20,7 @@ import momime.common.database.FogOfWarValue;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
@@ -82,6 +83,18 @@ public interface FogOfWarMidTurnChanges
 	public void updatePlayerMemoryOfSpell (final MemoryMaintainedSpell trueSpell, final MomGeneralServerKnowledge gsk,
 		final List<PlayerServerDetails> players, final CommonDatabase db, final MomSessionDescription sd)
 		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
+	
+	/**
+	 * After updating the true copy of a CAE, this routine copies and sends the new value to players who can see it
+	 *
+	 * @param trueCAE True CAE that was updated
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void updatePlayerMemoryOfCombatAreaEffect (final MemoryCombatAreaEffect trueCAE, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd) throws JAXBException, XMLStreamException;
 	
 	/**
 	 * Adds a unit to the server's true memory, and checks who can see it - sending a message to update the client of any human players who can see it

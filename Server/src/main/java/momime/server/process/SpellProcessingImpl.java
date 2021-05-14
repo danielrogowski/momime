@@ -390,9 +390,6 @@ public final class SpellProcessingImpl implements SpellProcessing
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException
 	{
-		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		
 		// Which side is casting the spell
 		final UnitCombatSideID castingSide;
 		if (castingPlayer == attackingPlayer)
@@ -401,421 +398,430 @@ public final class SpellProcessingImpl implements SpellProcessing
 			castingSide = UnitCombatSideID.DEFENDER;
 		else
 			throw new MomException ("castCombatNow: Casting player is neither the attacker nor defender");
-		
-		// Set this if we need to call combatEnded at the end
-		PlayerServerDetails winningPlayer = null;
-		
+
 		// Keep track of if we, or if resolveAttack, called combatEnded
 		boolean combatEnded = false;
-		
-		// Combat enchantments
-		if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
-		{
-			// What effects doesn't the combat already have
-			final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation
-				(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (),
-				spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation);
 
-			if ((combatAreaEffectIDs == null) || (combatAreaEffectIDs.size () == 0))
-				throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " in combat " + combatLocation +
-					" but combatAreaEffectIDs list came back empty");
-			
-			final String combatAreaEffectID = combatAreaEffectIDs.get (getRandomUtils ().nextInt (combatAreaEffectIDs.size ()));
-			log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
-				
-			getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID,
-				spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
-				(variableDamage != null) ? variableDamage : spell.getCombatCastingCost (),		// For putting extra MP into Counter Magic
-				combatLocation, mom.getPlayers (), mom.getSessionDescription ());
-		}
-		
-		// Unit enchantments or curses
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
+		// See if node aura or Counter Magic blocks it
+		final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage);
+		if (getSpellDispelling ().processCountering (castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer,
+			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
 		{
-			// What effects doesn't the unit already have - can cast Warp Creature multiple times
-			final List<String> unitSpellEffectIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
-				(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				spell, castingPlayer.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
+			final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
 			
-			if ((unitSpellEffectIDs == null) || (unitSpellEffectIDs.size () == 0))
-				throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " on unit URN " + targetUnit.getUnitURN () +
-					" but unitSpellEffectIDs list came back empty");
+			// Set this if we need to call combatEnded at the end
+			PlayerServerDetails winningPlayer = null;
 			
-			// Pick an actual effect at random
-			final String unitSpellEffectID = unitSpellEffectIDs.get (getRandomUtils ().nextInt (unitSpellEffectIDs.size ()));
-			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
-				castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
-				true, null, null, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-		}
-		
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
-		{
-			// What effects doesn't the city already have
-			final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
-				(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-				spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation);
-			
-			if ((citySpellEffectIDs == null) || (citySpellEffectIDs.size () == 0))
-				throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " at location " + combatLocation +
-					" but citySpellEffectIDs list came back empty");
-			
-			// Pick an actual effect at random
-			final String citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
-			getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
-				castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null,
-				true, combatLocation, citySpellEffectID, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
-			
-			// The new enchantment presumably requires the combat map to be regenerated so we can see it
-			// (the only city enchantments/curses that can be cast in combat are Wall of Fire / Wall of Darkness)
-			getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
-			
-			// Send the updated map
-			final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
-			msg.setCombatLocation (combatLocation);
-			msg.setCombatTerrain (gc.getCombatMap ());
-			
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
-				attackingPlayer.getConnection ().sendMessageToClient (msg);
-
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
-				defendingPlayer.getConnection ().sendMessageToClient (msg);
-		}
-		
-		// Spells aimed at a location
-		else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS)
-		{
-			if (spell.getSpellValidBorderTarget ().size () > 0)
+			// Combat enchantments
+			if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 			{
-				// Wreck one tile
-				gc.getCombatMap ().getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).setWrecked (true);
-			}
-			else
-			{
-				// Make an area muddy, the size of the area is set in the radius field
-				final CombatMapArea areaBridge = new CombatMapArea ();
-				areaBridge.setArea (gc.getCombatMap ());
-				areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
+				// What effects doesn't the combat already have
+				final List<String> combatAreaEffectIDs = getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (),
+					spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation);
+	
+				if ((combatAreaEffectIDs == null) || (combatAreaEffectIDs.size () == 0))
+					throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " in combat " + combatLocation +
+						" but combatAreaEffectIDs list came back empty");
 				
-				getCombatMapOperations ().processCellsWithinRadius (areaBridge, targetLocation.getX (), targetLocation.getY (),
-					spell.getSpellRadius (), (tile) ->
-				{
-					tile.setMud (true);
-					return true;
-				});
+				final String combatAreaEffectID = combatAreaEffectIDs.get (getRandomUtils ().nextInt (combatAreaEffectIDs.size ()));
+				log.debug ("castCombatNow chose CAE " + combatAreaEffectID + " as effect for spell " + spell.getSpellID ());
+					
+				getFogOfWarMidTurnChanges ().addCombatAreaEffectOnServerAndClients (mom.getGeneralServerKnowledge (), combatAreaEffectID,
+					spell.getSpellID (), castingPlayer.getPlayerDescription ().getPlayerID (),
+					(variableDamage != null) ? variableDamage : spell.getCombatCastingCost (),		// For putting extra MP into Counter Magic
+					combatLocation, mom.getPlayers (), mom.getSessionDescription ());
 			}
 			
-			// Show animation for it
-			final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
-			anim.setSpellID (spell.getSpellID ());
-			anim.setCastInCombat (true);
-			anim.setCombatTargetLocation (targetLocation);
-
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
-				attackingPlayer.getConnection ().sendMessageToClient (anim);
-
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
-				defendingPlayer.getConnection ().sendMessageToClient (anim);
-			
-			// Send the updated map
-			final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
-			msg.setCombatLocation (combatLocation);
-			msg.setCombatTerrain (gc.getCombatMap ());
-			
-			if (attackingPlayer.getPlayerDescription ().isHuman ())
-				attackingPlayer.getConnection ().sendMessageToClient (msg);
-
-			if (defendingPlayer.getPlayerDescription ().isHuman ())
-				defendingPlayer.getConnection ().sendMessageToClient (msg);
-		}
-		
-		// Raise dead
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (targetUnit != null))
-		{
-			// Even though we're summoning the unit into a combat, the location of the unit might not be
-			// the same location as the combat - if its the attacker summoning a unit, it needs to go in the
-			// cell they're attacking from, not the actual defending/combat cell
-			final MapCoordinates3DEx summonLocation = getOverlandMapServerUtils ().findMapLocationOfUnitsInCombat
-				(combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
-			
-			// Heal it
-			targetUnit.getUnitDamage ().clear ();
-			targetUnit.setOwningPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
-			
-			if (spell.getResurrectedHealthPercentage () < 100)
+			// Unit enchantments or curses
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
+				(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				// What effects doesn't the unit already have - can cast Warp Creature multiple times
+				final List<String> unitSpellEffectIDs = getMemoryMaintainedSpellUtils ().listUnitSpellEffectsNotYetCastOnUnit
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					spell, castingPlayer.getPlayerDescription ().getPlayerID (), targetUnit.getUnitURN ());
 				
-				final int totalHP = xu.calculateHitPointsRemaining ();
-				final int hp = (totalHP * spell.getResurrectedHealthPercentage ()) / 100;
-				final int dmg = totalHP - hp;
-				if (dmg > 0)
+				if ((unitSpellEffectIDs == null) || (unitSpellEffectIDs.size () == 0))
+					throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " on unit URN " + targetUnit.getUnitURN () +
+						" but unitSpellEffectIDs list came back empty");
+				
+				// Pick an actual effect at random
+				final String unitSpellEffectID = unitSpellEffectIDs.get (getRandomUtils ().nextInt (unitSpellEffectIDs.size ()));
+				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
+					castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), targetUnit.getUnitURN (), unitSpellEffectID,
+					true, null, null, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+			}
+			
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.CITY_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.CITY_CURSES))
+			{
+				// What effects doesn't the city already have
+				final List<String> citySpellEffectIDs = getMemoryMaintainedSpellUtils ().listCitySpellEffectsNotYetCastAtLocation
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+					spell, castingPlayer.getPlayerDescription ().getPlayerID (), combatLocation);
+				
+				if ((citySpellEffectIDs == null) || (citySpellEffectIDs.size () == 0))
+					throw new MomException ("castCombatNow was called for casting spell " + spell.getSpellID () + " at location " + combatLocation +
+						" but citySpellEffectIDs list came back empty");
+				
+				// Pick an actual effect at random
+				final String citySpellEffectID = citySpellEffectIDs.get (getRandomUtils ().nextInt (citySpellEffectIDs.size ()));
+				getFogOfWarMidTurnChanges ().addMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge (),
+					castingPlayer.getPlayerDescription ().getPlayerID (), spell.getSpellID (), null, null,
+					true, combatLocation, citySpellEffectID, variableDamage, mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+				
+				// The new enchantment presumably requires the combat map to be regenerated so we can see it
+				// (the only city enchantments/curses that can be cast in combat are Wall of Fire / Wall of Darkness)
+				getCombatMapGenerator ().regenerateCombatTileBorders (gc.getCombatMap (), mom.getServerDB (), mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation);
+				
+				// Send the updated map
+				final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
+				msg.setCombatLocation (combatLocation);
+				msg.setCombatTerrain (gc.getCombatMap ());
+				
+				if (attackingPlayer.getPlayerDescription ().isHuman ())
+					attackingPlayer.getConnection ().sendMessageToClient (msg);
+	
+				if (defendingPlayer.getPlayerDescription ().isHuman ())
+					defendingPlayer.getConnection ().sendMessageToClient (msg);
+			}
+			
+			// Spells aimed at a location
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_COMBAT_SPELLS)
+			{
+				if (spell.getSpellValidBorderTarget ().size () > 0)
 				{
-					final UnitDamage dmgTaken = new UnitDamage ();
-					dmgTaken.setDamageTaken (dmg);
-					dmgTaken.setDamageType (StoredDamageTypeID.HEALABLE);
-					targetUnit.getUnitDamage ().add (dmgTaken);
+					// Wreck one tile
+					gc.getCombatMap ().getRow ().get (targetLocation.getY ()).getCell ().get (targetLocation.getX ()).setWrecked (true);
 				}
-			}
-			
-			// Does it become undead?
-			if (spell.getResurrectingAddsSkillID () != null)
-			{
-				final UnitSkillAndValue undead = new UnitSkillAndValue ();
-				undead.setUnitSkillID (spell.getResurrectingAddsSkillID ());
-				targetUnit.getUnitHasSkill ().add (undead);
-			}
-			
-			// Set it back to alive; this also sends the updates from above
-			getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
-
-			// Show the "summoning" animation for it
-			final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
-
-			getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
-				combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
-
-			// Allow it to be moved this combat turn
-			targetUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
-					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
-		}
-		
-		// Combat summons
-		else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
-		{
-			// Pick an actual unit at random
-			if (spell.getSummonedUnit ().size () > 0)
-			{
-				final String unitID = spell.getSummonedUnit ().get (getRandomUtils ().nextInt (spell.getSummonedUnit ().size ()));
-				log.debug ("castCombatNow chose Unit ID " + unitID + " as unit to summon from spell " + spell.getSpellID ());
+				else
+				{
+					// Make an area muddy, the size of the area is set in the radius field
+					final CombatMapArea areaBridge = new CombatMapArea ();
+					areaBridge.setArea (gc.getCombatMap ());
+					areaBridge.setCoordinateSystem (mom.getSessionDescription ().getCombatMapSize ());
+					
+					getCombatMapOperations ().processCellsWithinRadius (areaBridge, targetLocation.getX (), targetLocation.getY (),
+						spell.getSpellRadius (), (tile) ->
+					{
+						tile.setMud (true);
+						return true;
+					});
+				}
 				
+				// Show animation for it
+				final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
+				anim.setSpellID (spell.getSpellID ());
+				anim.setCastInCombat (true);
+				anim.setCombatTargetLocation (targetLocation);
+	
+				if (attackingPlayer.getPlayerDescription ().isHuman ())
+					attackingPlayer.getConnection ().sendMessageToClient (anim);
+	
+				if (defendingPlayer.getPlayerDescription ().isHuman ())
+					defendingPlayer.getConnection ().sendMessageToClient (anim);
+				
+				// Send the updated map
+				final UpdateCombatMapMessage msg = new UpdateCombatMapMessage ();
+				msg.setCombatLocation (combatLocation);
+				msg.setCombatTerrain (gc.getCombatMap ());
+				
+				if (attackingPlayer.getPlayerDescription ().isHuman ())
+					attackingPlayer.getConnection ().sendMessageToClient (msg);
+	
+				if (defendingPlayer.getPlayerDescription ().isHuman ())
+					defendingPlayer.getConnection ().sendMessageToClient (msg);
+			}
+			
+			// Raise dead
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (targetUnit != null))
+			{
 				// Even though we're summoning the unit into a combat, the location of the unit might not be
 				// the same location as the combat - if its the attacker summoning a unit, it needs to go in the
 				// cell they're attacking from, not the actual defending/combat cell
 				final MapCoordinates3DEx summonLocation = getOverlandMapServerUtils ().findMapLocationOfUnitsInCombat
 					(combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 				
-				// Now can add it
-				final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-					unitID, summonLocation, summonLocation, combatLocation, castingPlayer, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				// Heal it
+				targetUnit.getUnitDamage ().clear ();
+				targetUnit.setOwningPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 				
-				// What direction should the unit face?
-				final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
-				
-				// Set it immediately into combat
-				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
-					combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
-				
-				// Allow it to be moved this combat turn
-				tu.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (tu, null, null, null,
-					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
-						(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
-				
-				// Make sure we remove it after combat
-				tu.setWasSummonedInCombat (true);
-			}
-		}
-		
-		// Attack, healing or dispelling spells
-		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-			(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
-		{
-			// Does the spell attack a specific unit or ALL enemy units? e.g. Flame Strike or Death Spell
-			final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
-			final List<MemoryMaintainedSpell> targetSpells = new ArrayList<MemoryMaintainedSpell> ();
-			final List<MemoryCombatAreaEffect> targetCAEs = new ArrayList<MemoryCombatAreaEffect> ();
-			if (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)
-				targetUnits.add (targetUnit);
-			else
-			{
-				for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+				if (spell.getResurrectedHealthPercentage () < 100)
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
-					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-						variableDamage, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
-						
-						targetUnits.add (thisUnit);
+					final int totalHP = xu.calculateHitPointsRemaining ();
+					final int hp = (totalHP * spell.getResurrectedHealthPercentage ()) / 100;
+					final int dmg = totalHP - hp;
+					if (dmg > 0)
+					{
+						final UnitDamage dmgTaken = new UnitDamage ();
+						dmgTaken.setDamageTaken (dmg);
+						dmgTaken.setDamageType (StoredDamageTypeID.HEALABLE);
+						targetUnit.getUnitDamage ().add (dmgTaken);
+					}
 				}
 				
-				// Disenchant Area / True will target spells cast on the combat as well
-				if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
+				// Does it become undead?
+				if (spell.getResurrectingAddsSkillID () != null)
 				{
-					targetSpells.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-						(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
-							(combatLocation.equals (s.getCityLocation ()))).collect (Collectors.toList ()));
+					final UnitSkillAndValue undead = new UnitSkillAndValue ();
+					undead.setUnitSkillID (spell.getResurrectingAddsSkillID ());
+					targetUnit.getUnitHasSkill ().add (undead);
+				}
+				
+				// Set it back to alive; this also sends the updates from above
+				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (targetUnit, summonLocation, castingPlayer,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+	
+				// Show the "summoning" animation for it
+				final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
+	
+				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
+					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
+					combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+	
+				// Allow it to be moved this combat turn
+				targetUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
+						(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+			}
+			
+			// Combat summons
+			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
+			{
+				// Pick an actual unit at random
+				if (spell.getSummonedUnit ().size () > 0)
+				{
+					final String unitID = spell.getSummonedUnit ().get (getRandomUtils ().nextInt (spell.getSummonedUnit ().size ()));
+					log.debug ("castCombatNow chose Unit ID " + unitID + " as unit to summon from spell " + spell.getSpellID ());
 					
-					// Also CAEs which have no underlying maintained spell, like Prayer (method gets all CAEs in combat, so just need to restrict to ones cast by the opponent)
-					targetCAEs.addAll (getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells
-						(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ()).stream ().filter
-							(cae -> !cae.getCastingPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ())).collect (Collectors.toList ()));
+					// Even though we're summoning the unit into a combat, the location of the unit might not be
+					// the same location as the combat - if its the attacker summoning a unit, it needs to go in the
+					// cell they're attacking from, not the actual defending/combat cell
+					final MapCoordinates3DEx summonLocation = getOverlandMapServerUtils ().findMapLocationOfUnitsInCombat
+						(combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+					
+					// Now can add it
+					final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
+						unitID, summonLocation, summonLocation, combatLocation, castingPlayer, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					
+					// What direction should the unit face?
+					final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
+					
+					// Set it immediately into combat
+					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
+						combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+					
+					// Allow it to be moved this combat turn
+					tu.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (tu, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
+							(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+					
+					// Make sure we remove it after combat
+					tu.setWasSummonedInCombat (true);
 				}
 			}
 			
-			if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0))
+			// Attack, healing or dispelling spells
+			else if ((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
+				(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS))
 			{
-				if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
-					combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
-						null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
-				
-				else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
+				// Does the spell attack a specific unit or ALL enemy units? e.g. Flame Strike or Death Spell
+				final List<MemoryUnit> targetUnits = new ArrayList<MemoryUnit> ();
+				final List<MemoryMaintainedSpell> targetSpells = new ArrayList<MemoryMaintainedSpell> ();
+				final List<MemoryCombatAreaEffect> targetCAEs = new ArrayList<MemoryCombatAreaEffect> ();
+				if (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)
+					targetUnits.add (targetUnit);
+				else
 				{
-					// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
-					// and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
-					for (final MemoryUnit tu : targetUnits)
+					for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 					{
-						final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
-						final int heal = Math.min (dmg, spell.getCombatBaseDamage ());
-						if (heal > 0)
-							getUnitServerUtils ().healDamage (tu.getUnitDamage (), heal, false);
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						
+						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
+							variableDamage, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							
+							targetUnits.add (thisUnit);
 					}
 					
-					getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (),
-						targetUnits, null, spell.getSpellID (), new ArrayList<DamageResolutionTypeID> (), mom.getPlayers (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
-				}
-				else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
-				{
-					// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
-					final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (castingPlayer.getPlayerDescription ().getPlayerID (),
-						CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-						mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
-					
-					if (summoningCircleLocation != null)
+					// Disenchant Area / True will target spells cast on the combat as well
+					if (spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)
 					{
-						// Recall spells - first take the unit(s) out of combat
+						targetSpells.addAll (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+							(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) &&
+								(combatLocation.equals (s.getCityLocation ()))).collect (Collectors.toList ()));
+						
+						// Also CAEs which have no underlying maintained spell, like Prayer (method gets all CAEs in combat, so just need to restrict to ones cast by the opponent)
+						targetCAEs.addAll (getMemoryCombatAreaEffectUtils ().listCombatAreaEffectsFromLocalisedSpells
+							(mom.getGeneralServerKnowledge ().getTrueMap (), combatLocation, mom.getServerDB ()).stream ().filter
+								(cae -> !cae.getCastingPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ())).collect (Collectors.toList ()));
+					}
+				}
+				
+				if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0))
+				{
+					if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
+						combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
+							null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+					
+					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
+					{
+						// Healing spells work by sending ApplyDamage - this is basically just updating the client as to the damage taken by a bunch of combat units,
+						// and handles showing the animation for us, so its convenient to reuse it for this.  Effectively we're just applying negative damage...
 						for (final MemoryUnit tu : targetUnits)
-							getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
-								mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
-								combatLocation, null, null, null, castingSide, spell.getSpellID (), mom.getServerDB ());
+						{
+							final int dmg = getUnitUtils ().getHealableDamageTaken (tu.getUnitDamage ());
+							final int heal = Math.min (dmg, spell.getCombatBaseDamage ());
+							if (heal > 0)
+								getUnitServerUtils ().healDamage (tu.getUnitDamage (), heal, false);
+						}
 						
-						// Now teleport it back to our summoning circle
-						getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
-							(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
-							mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+						getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (),
+							targetUnits, null, spell.getSpellID (), new ArrayList<DamageResolutionTypeID> (), mom.getPlayers (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+					}
+					else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)
+					{
+						// Recall spells - first we need the location of the wizards' summoning circle 'building' to know where we're recalling them to
+						final MemoryBuilding summoningCircleLocation = getMemoryBuildingUtils ().findCityWithBuilding (castingPlayer.getPlayerDescription ().getPlayerID (),
+							CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+							mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
 						
-						// If we recalled our last remaining unit(s) out of combat, then we lose
-						if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
-							winningPlayer = (castingPlayer == defendingPlayer) ? attackingPlayer : defendingPlayer;
+						if (summoningCircleLocation != null)
+						{
+							// Recall spells - first take the unit(s) out of combat
+							for (final MemoryUnit tu : targetUnits)
+								getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
+									mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
+									combatLocation, null, null, null, castingSide, spell.getSpellID (), mom.getServerDB ());
+							
+							// Now teleport it back to our summoning circle
+							getFogOfWarMidTurnMultiChanges ().moveUnitStackOneCellOnServerAndClients (targetUnits, castingPlayer, combatLocation,
+								(MapCoordinates3DEx) summoningCircleLocation.getCityLocation (),
+								mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+							
+							// If we recalled our last remaining unit(s) out of combat, then we lose
+							if (getDamageProcessor ().countUnitsInCombat (combatLocation, castingSide, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+								winningPlayer = (castingPlayer == defendingPlayer) ? attackingPlayer : defendingPlayer;
+						}
+					}
+					else
+					{
+						// Dispel magic or similar - before we start rolling, send animation for it
+						final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
+						anim.setSpellID (spell.getSpellID ());
+						anim.setCastInCombat (true);
+						anim.setCombatTargetLocation (targetLocation);
+						
+						if ((spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT) && (targetUnits.size () > 0))
+							anim.setCombatTargetUnitURN (targetUnits.get (0).getUnitURN ());
+	
+						if (attackingPlayer.getPlayerDescription ().isHuman ())
+							attackingPlayer.getConnection ().sendMessageToClient (anim);
+	
+						if (defendingPlayer.getPlayerDescription ().isHuman ())
+							defendingPlayer.getConnection ().sendMessageToClient (anim);
+						
+						// Now get a list of all enchantments cast on all the units in the list by other wizards
+						final List<Integer> targetUnitURNs = targetUnits.stream ().map (u -> u.getUnitURN ()).collect (Collectors.toList ());
+						final List<MemoryMaintainedSpell> spellsToDispel = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
+							(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
+						spellsToDispel.addAll (targetSpells);
+						
+						// Common method does the rest
+						if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs, mom))
+							
+							// Its possible we dispelled Lionheart on the last enemy unit thereby winning the combat, so check to be sure
+							if (getDamageProcessor ().countUnitsInCombat (combatLocation,
+								(castingSide == UnitCombatSideID.ATTACKER) ? UnitCombatSideID.DEFENDER : UnitCombatSideID.ATTACKER,
+								mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+									winningPlayer = castingPlayer;
+	
+					}
+				}
+			}
+			
+			else
+				throw new MomException ("Cast a combat spell with a section ID that there is no code to deal with yet: " + spell.getSpellBookSectionID ());
+			
+			// Who is casting the spell?
+			if (combatCastingUnit == null)
+			{
+				// Wizard casting - so charge them the mana cost
+				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
+				
+				// Charge skill
+				Integer sendSkillValue = null;
+				if (castingPlayer == defendingPlayer)
+				{
+					if (gc.getCombatDefenderCastingSkillRemaining () != null)
+					{
+						gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
+						sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
+					}
+				}
+				else if (castingPlayer == attackingPlayer)
+				{
+					if (gc.getCombatAttackerCastingSkillRemaining () != null)
+					{
+						gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
+						sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
 					}
 				}
 				else
-				{
-					// Dispel magic or similar - before we start rolling, send animation for it
-					final ShowSpellAnimationMessage anim = new ShowSpellAnimationMessage ();
-					anim.setSpellID (spell.getSpellID ());
-					anim.setCastInCombat (true);
-					anim.setCombatTargetLocation (targetLocation);
-					
-					if ((spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT) && (targetUnits.size () > 0))
-						anim.setCombatTargetUnitURN (targetUnits.get (0).getUnitURN ());
-
-					if (attackingPlayer.getPlayerDescription ().isHuman ())
-						attackingPlayer.getConnection ().sendMessageToClient (anim);
-
-					if (defendingPlayer.getPlayerDescription ().isHuman ())
-						defendingPlayer.getConnection ().sendMessageToClient (anim);
-					
-					// Now get a list of all enchantments cast on all the units in the list by other wizards
-					final List<Integer> targetUnitURNs = targetUnits.stream ().map (u -> u.getUnitURN ()).collect (Collectors.toList ());
-					final List<MemoryMaintainedSpell> spellsToDispel = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
-						(s -> (s.getCastingPlayerID () != castingPlayer.getPlayerDescription ().getPlayerID ()) && (targetUnitURNs.contains (s.getUnitURN ()))).collect (Collectors.toList ());
-					spellsToDispel.addAll (targetSpells);
-					
-					// Common method does the rest
-					if (getSpellDispelling ().processDispelling (spell, variableDamage, castingPlayer, spellsToDispel, targetCAEs, mom))
-						
-						// Its possible we dispelled Lionheart on the last enemy unit thereby winning the combat, so check to be sure
-						if (getDamageProcessor ().countUnitsInCombat (combatLocation,
-							(castingSide == UnitCombatSideID.ATTACKER) ? UnitCombatSideID.DEFENDER : UnitCombatSideID.ATTACKER,
-							mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
-								winningPlayer = castingPlayer;
-
-				}
+					throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
+				
+				// Send both values to client
+				if (sendSkillValue != null)
+					getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
+				
+				// Only allow casting one spell each combat turn
+				gc.setSpellCastThisCombatTurn (true);
 			}
-		}
-		
-		else
-			throw new MomException ("Cast a combat spell with a section ID that there is no code to deal with yet: " + spell.getSpellBookSectionID ());
-		
-		// Who is casting the spell?
-		if (combatCastingUnit == null)
-		{
-			// Wizard casting - so charge them the mana cost
-			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
-			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
-			
-			// Charge skill
-			Integer sendSkillValue = null;
-			if (castingPlayer == defendingPlayer)
+			else if (combatCastingFixedSpellNumber != null)
 			{
-				if (gc.getCombatDefenderCastingSkillRemaining () != null)
-				{
-					gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
-					sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
-				}
+				// Casting a fixed spell that's part of the unit definition
+				combatCastingUnit.setDoubleCombatMovesLeft (0);
+	
+				combatCastingUnit.getFixedSpellsRemaining ().set (combatCastingFixedSpellNumber,
+					combatCastingUnit.getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) - 1);
+	
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 			}
-			else if (castingPlayer == attackingPlayer)
+			else if (combatCastingSlotNumber != null)
 			{
-				if (gc.getCombatAttackerCastingSkillRemaining () != null)
-				{
-					gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
-					sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
-				}
+				// Casting a spell imbued into a hero item
+				combatCastingUnit.setDoubleCombatMovesLeft (0);
+	
+				combatCastingUnit.getHeroItemSpellChargesRemaining ().set (combatCastingSlotNumber,
+					combatCastingUnit.getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) - 1);
+	
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 			}
 			else
-				throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
+			{
+				// Unit or hero casting - so charge them the mana cost and zero their movement
+				combatCastingUnit.setManaRemaining (combatCastingUnit.getManaRemaining () - multipliedManaCost);
+				combatCastingUnit.setDoubleCombatMovesLeft (0);
+				
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+			}
 			
-			// Send both values to client
-			if (sendSkillValue != null)
-				getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
-			
-			// Only allow casting one spell each combat turn
-			gc.setSpellCastThisCombatTurn (true);
-		}
-		else if (combatCastingFixedSpellNumber != null)
-		{
-			// Casting a fixed spell that's part of the unit definition
-			combatCastingUnit.setDoubleCombatMovesLeft (0);
-
-			combatCastingUnit.getFixedSpellsRemaining ().set (combatCastingFixedSpellNumber,
-				combatCastingUnit.getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) - 1);
-
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
-		}
-		else if (combatCastingSlotNumber != null)
-		{
-			// Casting a spell imbued into a hero item
-			combatCastingUnit.setDoubleCombatMovesLeft (0);
-
-			combatCastingUnit.getHeroItemSpellChargesRemaining ().set (combatCastingSlotNumber,
-				combatCastingUnit.getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) - 1);
-
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
-		}
-		else
-		{
-			// Unit or hero casting - so charge them the mana cost and zero their movement
-			combatCastingUnit.setManaRemaining (combatCastingUnit.getManaRemaining () - multipliedManaCost);
-			combatCastingUnit.setDoubleCombatMovesLeft (0);
-			
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
-		}
-		
-		// Did casting the spell result in winning/losing the combat?
-		if (winningPlayer != null)
-		{
-			getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
-			combatEnded = true;
+			// Did casting the spell result in winning/losing the combat?
+			if (winningPlayer != null)
+			{
+				getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+				combatEnded = true;
+			}
 		}
 
 		return combatEnded;

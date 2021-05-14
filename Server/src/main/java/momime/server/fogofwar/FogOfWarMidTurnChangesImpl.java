@@ -262,7 +262,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		final AddOrUpdateMaintainedSpellMessage spellMsg = new AddOrUpdateMaintainedSpellMessage ();
 		spellMsg.setMaintainedSpell (trueSpell);
 
-		// Check which players can see the terrain
+		// Check which players can see the spell
 		for (final PlayerServerDetails thisPlayer : players)
 		{
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -282,6 +282,40 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		// Technically we should also do this for the old player who lost the spell, but its fine, they will end up losing sight of it soon enough.
 		final PlayerServerDetails castingPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (players, trueSpell.getCastingPlayerID (), "updatePlayerMemoryOfSpell");
 		getFogOfWarProcessing ().updateAndSendFogOfWar (gsk.getTrueMap (), castingPlayer, players, "updatePlayerMemoryOfSpell", sd, db);
+	}
+	
+	/**
+	 * After updating the true copy of a CAE, this routine copies and sends the new value to players who can see it
+	 *
+	 * @param trueCAE True CAE that was updated
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	@Override
+	public final void updatePlayerMemoryOfCombatAreaEffect (final MemoryCombatAreaEffect trueCAE, final List<PlayerServerDetails> players,
+		final MomSessionDescription sd) throws JAXBException, XMLStreamException
+	{
+		// First build the message
+		final AddOrUpdateCombatAreaEffectMessage caeMsg = new AddOrUpdateCombatAreaEffectMessage ();
+		caeMsg.setMemoryCombatAreaEffect (trueCAE);
+
+		// Check which players can see the spell
+		for (final PlayerServerDetails thisPlayer : players)
+		{
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
+			
+			if (getFogOfWarMidTurnVisibility ().canSeeCombatAreaEffectMidTurn (trueCAE, priv.getFogOfWar (), sd.getFogOfWarSetting ().getCitiesSpellsAndCombatAreaEffects ()))
+			{
+				// Update player's memory on server
+				if (getFogOfWarDuplication ().copyCombatAreaEffect (trueCAE, priv.getFogOfWarMemory ().getCombatAreaEffect ()))
+
+					// Update player's memory on client
+					if (thisPlayer.getPlayerDescription ().isHuman ())
+						thisPlayer.getConnection ().sendMessageToClient (caeMsg);
+			}
+		}
 	}
 	
 	/**

@@ -183,28 +183,60 @@
 						<xsd:selector xpath="theirDispelMagicFail" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="SpellBindingOurSpellBindingHeadingPK">
+					<xsd:key name="dispelMagicOurSpellBindingHeadingPK">
 						<xsd:selector xpath="ourSpellBindingHeading" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="SpellBindingOurSpellBindingSuccessPK">
+					<xsd:key name="dispelMagicOurSpellBindingSuccessPK">
 						<xsd:selector xpath="ourSpellBindingSuccess" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="SpellBindingOurSpellBindingFailPK">
+					<xsd:key name="dispelMagicOurSpellBindingFailPK">
 						<xsd:selector xpath="ourSpellBindingFail" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="SpellBindingTheirSpellBindingHeadingPK">
+					<xsd:key name="dispelMagicTheirSpellBindingHeadingPK">
 						<xsd:selector xpath="theirSpellBindingHeading" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="SpellBindingTheirSpellBindingSuccessPK">
+					<xsd:key name="dispelMagicTheirSpellBindingSuccessPK">
 						<xsd:selector xpath="theirSpellBindingSuccess" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="SpellBindingTheirSpellBindingFailPK">
+					<xsd:key name="dispelMagicTheirSpellBindingFailPK">
 						<xsd:selector xpath="theirSpellBindingFail" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicOurCounterMagicHeadingPK">
+						<xsd:selector xpath="ourCounterMagicHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicTheirCounterMagicHeadingPK">
+						<xsd:selector xpath="theirCounterMagicHeading" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicOurCounterMagicSuccessPK">
+						<xsd:selector xpath="ourCounterMagicSuccess" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicOurCounterMagicFailPK">
+						<xsd:selector xpath="ourCounterMagicFail" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicTheirCounterMagicSuccessPK">
+						<xsd:selector xpath="theirCounterMagicSuccess" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicTheirCounterMagicFailPK">
+						<xsd:selector xpath="theirCounterMagicFail" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicNodeCounterMagicSuccessPK">
+						<xsd:selector xpath="nodeCounterMagicSuccess" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="dispelMagicNodeCounterMagicFailPK">
+						<xsd:selector xpath="nodeCounterMagicFail" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -2412,6 +2444,14 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirSpellBindingHeading" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirSpellBindingSuccess" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirSpellBindingFail" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourCounterMagicHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirCounterMagicHeading" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourCounterMagicSuccess" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="ourCounterMagicFail" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirCounterMagicSuccess" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theirCounterMagicFail" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodeCounterMagicSuccess" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="nodeCounterMagicFail" />
 		</xsd:sequence>
     </xsd:complexType>
 	

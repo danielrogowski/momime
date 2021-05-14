@@ -1217,6 +1217,42 @@ Each successfully dispelled spell will separately send out the usual FOW updates
 		</xsd:complexType>
 	</xsd:element>
 	
+	<xsd:complexType name="counterMagicResult">
+	    <xsd:annotation>
+    		<xsd:documentation>The result of one CAE attempting to counter a spell from even being cast.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="0" maxOccurs="1" name="owningPlayerID" type="mps:playerID">
+			    <xsd:annotation>
+		    		<xsd:documentation>The player who owns the CAE that is trying to counter the spell.  For nodes will be null.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="1" maxOccurs="1" name="combatAreaEffectID" type="momimecommon:combatAreaEffectID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="dispellingPower" type="momimecommon:spellCastingCost" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="chance" type="xsd:double" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="dispelled" type="xsd:boolean" />
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:element name="counterMagicResultsMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Lists the results of attempting to cast a spell in the presence of CAEs that may counter and block it.
+Includes a list of each CAE that attmpted to counter it and whether the counter succeeded or not for each.  This gets sent to both players in combat
+regardless of which one was actually trying to cast, or whether the counter is coming from a Counter Magic spell they cast or a node aura.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="castingPlayerID" type="mps:playerID" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="counterMagicResult" type="momimestoc:counterMagicResult" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
 	<xsd:element name="showSpellAnimationMessage">
 	    <xsd:annotation>
     		<xsd:documentation>Tells the client to display a spell animation.  There are no other side effects, so whatever

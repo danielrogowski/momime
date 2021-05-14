@@ -916,6 +916,30 @@
         <theirSpellBindingFail language="en">
             <text>SPELL_NAME, CASTING_COST MP, PERCENTAGE% chance - binding failed</text>
         </theirSpellBindingFail>
+        <ourCounterMagicHeading language="en">
+            <text>You attempted to cast SPELL_NAME which may be countered by:</text>
+        </ourCounterMagicHeading>
+        <theirCounterMagicHeading language="en">
+            <text>PLAYER_NAME attempted to cast SPELL_NAME which may be countered by:</text>
+        </theirCounterMagicHeading>
+        <ourCounterMagicSuccess language="en">
+            <text>Our COMBAT_AREA_EFFECT_NAME with strength DISPELLING_POWER, PERCENTAGE% chance - dispelled</text>
+        </ourCounterMagicSuccess>
+        <ourCounterMagicFail language="en">
+            <text>Our COMBAT_AREA_EFFECT_NAME with strength DISPELLING_POWER, PERCENTAGE% chance - dispel failed</text>
+        </ourCounterMagicFail>
+        <theirCounterMagicSuccess language="en">
+            <text>PLAYER_NAME's COMBAT_AREA_EFFECT_NAME with strength DISPELLING_POWER, PERCENTAGE% chance - dispelled</text>
+        </theirCounterMagicSuccess>
+        <theirCounterMagicFail language="en">
+            <text>PLAYER_NAME's COMBAT_AREA_EFFECT_NAME with strength DISPELLING_POWER, PERCENTAGE% chance - dispel failed</text>
+        </theirCounterMagicFail>
+        <nodeCounterMagicSuccess language="en">
+            <text>The dispelling power of the node, PERCENTAGE% chance - dispelled</text>
+        </nodeCounterMagicSuccess>
+        <nodeCounterMagicFail language="en">
+            <text>The dispelling power of the node, PERCENTAGE% chance - dispel failed</text>
+        </nodeCounterMagicFail>
     </dispelMagic>
     <variableMana>
         <title language="en">

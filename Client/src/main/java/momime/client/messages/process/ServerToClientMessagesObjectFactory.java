@@ -3,9 +3,9 @@ package momime.client.messages.process;
 import javax.xml.bind.annotation.XmlRegistry;
 
 import momime.common.messages.servertoclient.AddBuildingMessage;
+import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.AddOrUpdateCombatAreaEffectMessage;
 import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
-import momime.common.messages.servertoclient.AddNewTurnMessagesMessage;
 import momime.common.messages.servertoclient.AddOrUpdateUnitMessage;
 import momime.common.messages.servertoclient.AddPowerBaseHistoryMessage;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
@@ -19,6 +19,7 @@ import momime.common.messages.servertoclient.ChosenCustomPhotoMessage;
 import momime.common.messages.servertoclient.ChosenStandardPhotoMessage;
 import momime.common.messages.servertoclient.ChosenWizardMessage;
 import momime.common.messages.servertoclient.CombatEndedMessage;
+import momime.common.messages.servertoclient.CounterMagicResultsMessage;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
@@ -587,6 +588,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final DispelMagicResultsMessage createDispelMagicResultsMessage ()
 	{
 		return getFactory ().createDispelMagicResultsMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final CounterMagicResultsMessage createCounterMagicResultsMessage ()
+	{
+		return getFactory ().createCounterMagicResultsMessage ();
 	}
 
 	/**

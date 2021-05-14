@@ -54,13 +54,18 @@ public final class AddOrUpdateCombatAreaEffectMessageImpl extends AddOrUpdateCom
 		final MemoryCombatAreaEffect oldCAE = getMemoryCombatAreaEffectUtils ().findCombatAreaEffectURN (getMemoryCombatAreaEffect ().getCombatAreaEffectURN (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ());
 		if (oldCAE != null)
+		{
 			oldCAE.setCastingCost (getMemoryCombatAreaEffect ().getCastingCost ());
+			oldCAE.setCastingPlayerID (getMemoryCombatAreaEffect ().getCastingPlayerID ());
+		}
 		else
+		{
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getCombatAreaEffect ().add (getMemoryCombatAreaEffect ());
-		
-		// Check out whether we need an animation
-		animated = (getMemoryCombatAreaEffect ().getCastingPlayerID () != null) && (getCombatUI ().isVisible ()) &&
-			(getCombatUI ().getCombatLocation ().equals (getMemoryCombatAreaEffect ().getMapLocation ()));
+
+			// Check out whether we need an animation
+			animated = (getMemoryCombatAreaEffect ().getCastingPlayerID () != null) && (getCombatUI ().isVisible ()) &&
+				(getCombatUI ().getCombatLocation ().equals (getMemoryCombatAreaEffect ().getMapLocation ()));
+		}
 		
 		// Look up what colour this spell should flash
 		flashColour = Color.WHITE;

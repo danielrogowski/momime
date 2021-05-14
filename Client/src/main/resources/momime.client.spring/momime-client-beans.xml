@@ -527,6 +527,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
+	<bean id="counterMagicResultsMessage" class="momime.client.messages.process.CounterMagicResultsMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="textUtils" ref="textUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+	</bean>
+
 	<bean id="showSpellAnimationMessage" class="momime.client.messages.process.ShowSpellAnimationMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="combatUI" ref="combatUI" />

@@ -5,14 +5,18 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomSessionDescription;
 import momime.server.MomSessionVariables;
 
 /**
@@ -39,4 +43,29 @@ public interface SpellDispelling
 	public boolean processDispelling (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer,
 		final List<MemoryMaintainedSpell> targetSpells, final List<MemoryCombatAreaEffect> targetCAEs, final MomSessionVariables mom)
 		throws MomException, JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException;
+	
+	/**
+	 * Makes dispel rolls that try to block a spell from ever being cast in combat in the first place (nodes and Counter Magic)
+	 * 
+	 * @param castingPlayer Player who is trying to cast a spell
+	 * @param spell The spell they are trying to cast
+	 * @param unmodifiedCombatCastingCost Unmodified mana cost of the spell they are trying to cast, including any extra MP for variable damage 
+	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
+	 * @param defendingPlayer Defending player in the combat
+	 * @param attackingPlayer Attacking player in the combat
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the spell was successfully cast or not; so false = was dispelled
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public boolean processCountering (final PlayerServerDetails castingPlayer, final Spell spell, final int unmodifiedCombatCastingCost,
+		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException;
 }

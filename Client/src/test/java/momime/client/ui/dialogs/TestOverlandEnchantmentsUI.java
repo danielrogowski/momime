@@ -41,6 +41,7 @@ import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 
 /**
  * Tests the OverlandEnchantmentsUI class
@@ -175,6 +176,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		ench.setAddSpellMessage (spellMessage);
 		ench.setWizardClientUtils (wizardClientUtils);
 		ench.setMagicSlidersUI (new MagicSlidersUI ());
+		ench.setMemoryMaintainedSpellUtils (mock (MemoryMaintainedSpellUtils.class));
 		
 		// Display form
 		ench.setModal (false);

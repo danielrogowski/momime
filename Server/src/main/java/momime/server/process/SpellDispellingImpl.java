@@ -9,16 +9,23 @@ import java.util.Map.Entry;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.database.CombatAreaEffect;
+import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomSessionDescription;
+import momime.common.messages.servertoclient.CounterMagicResult;
+import momime.common.messages.servertoclient.CounterMagicResultsMessage;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.utils.MemoryMaintainedSpellUtils;
@@ -85,7 +92,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 		for (final MemoryMaintainedSpell spellToDispel : targetSpells)
 		{
 			// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
-			final Spell spellToDispelDef = mom.getServerDB ().findSpell (spellToDispel.getSpellID (), "castCombatNow (D)");
+			final Spell spellToDispelDef = mom.getServerDB ().findSpell (spellToDispel.getSpellID (), "processDispelling (D)");
 			
 			final DispelMagicResult result = new DispelMagicResult ();
 			result.setOwningPlayerID (spellToDispel.getCastingPlayerID ());
@@ -98,7 +105,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 			if (castingPlayer.getPlayerDescription ().isHuman ())
 				resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 			
-			final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "castCombatNow (D1)");
+			final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "processDispelling (D1)");
 			if (spellOwner.getPlayerDescription ().isHuman ())
 			{
 				List<DispelMagicResult> results = resultsMap.get (spellToDispel.getCastingPlayerID ());
@@ -150,7 +157,7 @@ public final class SpellDispellingImpl implements SpellDispelling
 				if (castingPlayer.getPlayerDescription ().isHuman ())
 					resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
 				
-				final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cae.getCastingPlayerID (), "castCombatNow (D2)");
+				final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), cae.getCastingPlayerID (), "processDispelling (D2)");
 				if (spellOwner.getPlayerDescription ().isHuman ())
 				{
 					List<DispelMagicResult> results = resultsMap.get (cae.getCastingPlayerID ());
@@ -175,12 +182,97 @@ public final class SpellDispellingImpl implements SpellDispelling
 				msg.getDispelMagicResult ().clear ();
 				msg.getDispelMagicResult ().addAll (entry.getValue ());
 				
-				final PlayerServerDetails entryPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "castCombatNow (D3)");
+				final PlayerServerDetails entryPlayer = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), entry.getKey (), "processDispelling (D3)");
 				entryPlayer.getConnection ().sendMessageToClient (msg);
 			}
 		}
 		
 		return anyKilled;
+	}
+	
+	/**
+	 * Makes dispel rolls that try to block a spell from ever being cast in combat in the first place (nodes and Counter Magic)
+	 * 
+	 * @param castingPlayer Player who is trying to cast a spell
+	 * @param spell The spell they are trying to cast
+	 * @param unmodifiedCombatCastingCost Unmodified mana cost of the spell they are trying to cast, including any extra MP for variable damage 
+	 * @param combatLocation Location of the combat where this spell is being cast; null = being cast overland
+	 * @param defendingPlayer Defending player in the combat
+	 * @param attackingPlayer Attacking player in the combat
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the spell was successfully cast or not; so false = was dispelled
+	 * @throws RecordNotFoundException If we encounter a something that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final boolean processCountering (final PlayerServerDetails castingPlayer, final Spell spell, final int unmodifiedCombatCastingCost,
+		final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
+		final FogOfWarMemory trueMap, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
+	{
+		final List<CounterMagicResult> results = new ArrayList<CounterMagicResult> ();
+		
+		// As soon as one CAE blocks it, we don't bother keep rolling any more
+		boolean dispelled = false;
+		
+		// Need to copy the list as we might remove CAEs as we go
+		final List<MemoryCombatAreaEffect> trueCAEs = new ArrayList<MemoryCombatAreaEffect> ();
+		trueCAEs.addAll (trueMap.getCombatAreaEffect ());
+		
+		// Look for CAEs in this location that have a dispelling power value defined
+		for (final MemoryCombatAreaEffect cae : trueCAEs)
+			if ((!dispelled) && (combatLocation.equals (cae.getMapLocation ())) &&
+				((cae.getCastingPlayerID () == null) || (!cae.getCastingPlayerID ().equals (castingPlayer.getPlayerDescription ().getPlayerID ()))))
+			{
+				final CombatAreaEffect caeDef = db.findCombatAreaEffect (cae.getCombatAreaEffectID (), "processCountering");
+				if ((caeDef.getDispellingPower () != null) &&
+					((caeDef.getCombatAreaEffectMagicRealm () == null) || (!caeDef.getCombatAreaEffectMagicRealm ().equals (spell.getSpellRealm ()))))
+				{
+					final CounterMagicResult result = new CounterMagicResult ();
+					result.setOwningPlayerID (cae.getCastingPlayerID ());
+					result.setCombatAreaEffectID (cae.getCombatAreaEffectID ());
+					result.setDispellingPower ((caeDef.getDispellingPower () > 0) ? caeDef.getDispellingPower () : cae.getCastingCost ());
+					result.setChance (Integer.valueOf (result.getDispellingPower ()).doubleValue () / (unmodifiedCombatCastingCost + result.getDispellingPower ()));
+					result.setDispelled ((getRandomUtils ().nextInt (unmodifiedCombatCastingCost + result.getDispellingPower ()) < result.getDispellingPower ()));
+					results.add (result);
+					
+					if (result.isDispelled ())
+						dispelled = true;
+					
+					// Decrease remaining power of Counter Magic
+					if (caeDef.getDispellingPower () < 0)
+					{
+						cae.setCastingCost (cae.getCastingCost () + caeDef.getDispellingPower ());
+						if (cae.getCastingCost () > 0)
+							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCombatAreaEffect (cae, players, sd);
+						else
+							getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (trueMap, cae.getCombatAreaEffectURN (), players, sd);
+					}
+				}
+			}
+		
+		// Any results to send to any human players?
+		if ((results.size () > 0) && ((attackingPlayer.getPlayerDescription ().isHuman ()) || (defendingPlayer.getPlayerDescription ().isHuman ())))
+		{
+			final CounterMagicResultsMessage msg = new CounterMagicResultsMessage ();
+			msg.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+			msg.setSpellID (spell.getSpellID ());
+			msg.getCounterMagicResult ().addAll (results);
+			
+			if (attackingPlayer.getPlayerDescription ().isHuman ())
+				attackingPlayer.getConnection ().sendMessageToClient (msg);
+
+			if (defendingPlayer.getPlayerDescription ().isHuman ())
+				defendingPlayer.getConnection ().sendMessageToClient (msg);
+		}
+		
+		return !dispelled;
 	}
 
 	/**

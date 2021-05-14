@@ -297,6 +297,11 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
+	public CounterMagicResultsMessageImpl createCounterMagicResultsMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
 	public ShowSpellAnimationMessageImpl createShowSpellAnimationMessage ();
 
 	/**

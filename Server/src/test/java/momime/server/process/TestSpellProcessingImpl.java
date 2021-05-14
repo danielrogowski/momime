@@ -813,6 +813,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final RandomUtils randomUtils = mock (RandomUtils.class);
 		when (randomUtils.nextInt (5)).thenReturn (3);
 		
+		// Counter magic
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null)).thenReturn (15);
+		
+		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
+		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);
+		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -824,6 +831,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setServerResourceCalculations (serverResourceCalc);
 		proc.setMemoryCombatAreaEffectUtils (caeUtils);
+		proc.setSpellUtils (spellUtils);
+		proc.setSpellDispelling (spellDispelling);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, null, mom);
@@ -915,6 +924,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final RandomUtils randomUtils = mock (RandomUtils.class);
 		when (randomUtils.nextInt (5)).thenReturn (3);
 		
+		// Counter magic
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null)).thenReturn (15);
+		
+		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
+		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);
+		
 		// Set up test object
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -926,6 +942,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setResourceValueUtils (resourceValueUtils);
 		proc.setServerResourceCalculations (serverResourceCalc);
 		proc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		proc.setSpellUtils (spellUtils);
+		proc.setSpellDispelling (spellDispelling);
 
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, targetUnit, null, mom);
@@ -1034,6 +1052,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Mock unit speed
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (49);
 		
+		// Counter magic
+		final SpellUtils spellUtils = mock (SpellUtils.class);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null)).thenReturn (15);
+		
+		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
+		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);
+		
 		// Set up test object
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
 		final ServerResourceCalculations serverResourceCalc = mock (ServerResourceCalculations.class);
@@ -1047,6 +1072,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setOverlandMapServerUtils (overlandMapServerUtils);
 		proc.setCombatProcessing (combatProcessing);
 		proc.setUnitUtils (unitUtils);
+		proc.setSpellUtils (spellUtils);
+		proc.setSpellDispelling (spellDispelling);
 		
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, mom);

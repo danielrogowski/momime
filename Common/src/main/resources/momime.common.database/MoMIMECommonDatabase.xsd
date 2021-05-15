@@ -2922,6 +2922,7 @@ Heroes have entries with numberOfTimes left null for the additional spells they 
         </xsd:annotation>
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="1" name="numberOfTimes" type="momimecommon:spellCount" nxe:label="Number of Times can cast it" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="immuneToCounterMagic" type="xsd:boolean" nxe:label="Immune to Counter Magic?" nxe:gridwidth="200" />
 		</xsd:sequence>
 		<xsd:attribute name="unitSpellID" type="momimecommon:spellID" use="required" nxe:label="Spell" nxe:showmaincolumn="false">
 			<xsd:annotation>

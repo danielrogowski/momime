@@ -33,6 +33,8 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.StoredDamageTypeID;
+import momime.common.database.Unit;
+import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillAndValue;
@@ -408,10 +410,21 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Set this if we need to call combatEnded at the end
 		PlayerServerDetails winningPlayer = null;
 		
+		// Some natural abilities that are not really "spells" as such are immune to counter magic, e.g. Giant Spiders' web
+		boolean immuneToCounterMagic = false;
+		if (combatCastingFixedSpellNumber != null)
+		{
+			final Unit unitDef = mom.getServerDB ().findUnit (combatCastingUnit.getUnitID (), "castCombatNow");
+			final UnitCanCast unitCanCast = unitDef.getUnitCanCast ().get (combatCastingFixedSpellNumber);
+			if ((unitCanCast.isImmuneToCounterMagic () != null) && (unitCanCast.isImmuneToCounterMagic ()))
+				immuneToCounterMagic = true;
+		}
+		
 		// See if node aura or Counter Magic blocks it
 		final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage);
-		if (getSpellDispelling ().processCountering (castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer,
-			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
+		if ((immuneToCounterMagic) || (getSpellDispelling ().processCountering
+			(castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer,
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ())))
 		{
 			// Combat enchantments
 			if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)

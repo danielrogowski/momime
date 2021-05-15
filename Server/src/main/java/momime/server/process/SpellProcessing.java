@@ -85,13 +85,14 @@ public interface SpellProcessing
 	 *
 	 * @param spellURN Which spell it is
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether switching off the spell resulted in the death of the unit it was cast on
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws RecordNotFoundException If we encounter any elements that cannot be found in the DB
 	 * @throws MomException If there is a problem with any of the calculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void switchOffSpell (final int spellURN, final MomSessionVariables mom)
+	public boolean switchOffSpell (final int spellURN, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException, MomException;
 	
 	/**

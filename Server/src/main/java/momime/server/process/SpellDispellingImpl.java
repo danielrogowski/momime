@@ -53,6 +53,9 @@ public final class SpellDispellingImpl implements SpellDispelling
 	/** Random number generator */
 	private RandomUtils randomUtils;
 	
+	/** Spell processing methods */
+	private SpellProcessing spellProcessing;
+	
 	/**
 	 * Makes dispel rolls against a list of target spells and CAEs
 	 * 
@@ -151,9 +154,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 				}
 				
 				// Regular dispel
-				else if (getFogOfWarMidTurnChanges ().switchOffMaintainedSpellOnServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
-					spellToDispel.getSpellURN (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ()))
-						anyKilled = true;
+				else if (getSpellProcessing ().switchOffSpell (spellToDispel.getSpellURN (), mom))
+					anyKilled = true;
 			}			
 		}
 		
@@ -371,5 +373,21 @@ public final class SpellDispellingImpl implements SpellDispelling
 	public final void setRandomUtils (final RandomUtils utils)
 	{
 		randomUtils = utils;
+	}
+
+	/**
+	 * @return Spell processing methods
+	 */
+	public final SpellProcessing getSpellProcessing ()
+	{
+		return spellProcessing;
+	}
+
+	/**
+	 * @param obj Spell processing methods
+	 */
+	public final void setSpellProcessing (final SpellProcessing obj)
+	{
+		spellProcessing = obj;
 	}
 }

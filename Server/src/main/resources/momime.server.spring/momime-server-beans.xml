@@ -173,6 +173,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="damageProcessor" ref="damageProcessor" />
+		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 	</bean>
 	
 	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype">
@@ -558,7 +562,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverSpellCalculations" ref="serverSpellCalculations" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="spellDispelling" ref="spellDispelling" />
-		<property name="combatMapUtils" ref="combatMapUtils" />
 	</bean>
 
 	<bean id="spellQueueing" class="momime.server.process.SpellQueueingImpl">
@@ -583,6 +586,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
+		<property name="spellProcessing" ref="spellProcessing" />
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">

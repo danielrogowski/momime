@@ -770,6 +770,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 	}
 
 	/**
+	 * Be very careful about calling this directly as it does not do things like cleaning up attached CAEs.  Maybe need to call switchOffSpell instead.
+	 * 
 	 * @param trueMap True server knowledge of buildings and terrain
 	 * @param spellURN Which spell it is
 	 * @param players List of players in the session

@@ -6,6 +6,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.server.session.PostSessionClientToServerMessage;
@@ -15,11 +16,17 @@ import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.clienttoserver.RequestSwitchOffMaintainedSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.utils.CombatMapUtils;
+import momime.common.utils.CombatPlayers;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
+import momime.server.process.CombatStartAndEnd;
+import momime.server.process.DamageProcessor;
 import momime.server.process.SpellProcessing;
 
 /**
@@ -39,6 +46,18 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 
 	/** Spell processing methods */
 	private SpellProcessing spellProcessing;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
+	
+	/** Damage processor */
+	private DamageProcessor damageProcessor;
+	
+	/** Starting and ending combats */
+	private CombatStartAndEnd combatStartAndEnd;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -84,8 +103,31 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 		}
 		else
 		{
+			// If the spell is cast on a unit then grab it now, because we could potentially kill it when we turn the spell off
+			final MemoryUnit trueUnit = (trueSpell.getUnitURN () == null) ? null : getUnitUtils ().findUnitURN
+				(trueSpell.getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "switchOffSpell");
+			
+			// Once its dead we also won't be able to figure out who the players in combat were
+			final CombatPlayers combatPlayers = ((trueUnit == null) || (trueUnit.getCombatLocation () == null)) ? null :
+				getCombatMapUtils ().determinePlayersInCombatFromLocation ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
+					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ()); 
+			
 			// Switch off spell + associated CAEs
-			getSpellProcessing ().switchOffSpell (getSpellURN (), mom);
+			if (getSpellProcessing ().switchOffSpell (getSpellURN (), mom))
+				
+				// Unit died - if it was in combat, did switching off the spell lose the combat?
+				if ((combatPlayers != null) && (combatPlayers.bothFound ()))
+					if (getDamageProcessor ().countUnitsInCombat ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
+						trueUnit.getCombatSide (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) == 0)
+					{
+						final PlayerServerDetails attackingPlayer = (PlayerServerDetails) combatPlayers.getAttackingPlayer ();
+						final PlayerServerDetails defendingPlayer = (PlayerServerDetails) combatPlayers.getDefendingPlayer ();
+						
+						getCombatStartAndEnd ().combatEnded ((MapCoordinates3DEx) trueUnit.getCombatLocation (),
+							attackingPlayer, defendingPlayer,
+							(trueUnit.getOwningPlayerID () == attackingPlayer.getPlayerDescription ().getPlayerID ()) ? defendingPlayer : attackingPlayer,
+							null, mom);
+					}
 			
 			// Spell no longer using mana
 			getServerResourceCalculations ().recalculateGlobalProductionValues (sender.getPlayerDescription ().getPlayerID (), false, mom);
@@ -138,5 +180,69 @@ public final class RequestSwitchOffMaintainedSpellMessageImpl extends RequestSwi
 	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+
+	/**
+	 * @return Combat map utils
+	 */
+	public final CombatMapUtils getCombatMapUtils ()
+	{
+		return combatMapUtils;
+	}
+
+	/**
+	 * @param util Combat map utils
+	 */
+	public final void setCombatMapUtils (final CombatMapUtils util)
+	{
+		combatMapUtils = util;
+	}
+
+	/**
+	 * @return Damage processor
+	 */
+	public final DamageProcessor getDamageProcessor ()
+	{
+		return damageProcessor;
+	}
+
+	/**
+	 * @param proc Damage processor
+	 */
+	public final void setDamageProcessor (final DamageProcessor proc)
+	{
+		damageProcessor = proc;
+	}
+
+	/**
+	 * @return Starting and ending combats
+	 */
+	public final CombatStartAndEnd getCombatStartAndEnd ()
+	{
+		return combatStartAndEnd;
+	}
+
+	/**
+	 * @param cse Starting and ending combats
+	 */
+	public final void setCombatStartAndEnd (final CombatStartAndEnd cse)
+	{
+		combatStartAndEnd = cse;
 	}
 }

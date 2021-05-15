@@ -26,6 +26,7 @@ import momime.client.languages.database.Shortcut;
 import momime.client.newturnmessages.NewTurnMessageSpellEx;
 import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.common.database.LanguageText;
 import momime.common.messages.MemoryMaintainedSpell;
@@ -64,6 +65,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 	/** Turn sequence and movement helper methods */
 	private OverlandMapProcessing overlandMapProcessing;
 
+	/** Magic sliders screen */
+	private MagicSlidersUI magicSlidersUI;
+	
 	/** OK action */
 	private Action okAction;
 
@@ -142,6 +146,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 			if (getCancelTargettingSpell () != null)
 				getOverlandMapProcessing ().updateMovementRemaining ();
 
+			// In case targetting at an overland enchantment, reset magic screen back to normal
+			getMagicSlidersUI ().setTargettingOverlandEnchantment (false);
+			
 			// Close the form
 			getDialog ().dispose ();
 		});
@@ -206,6 +213,9 @@ public final class MessageBoxUI extends MomClientDialogUI
 				
 				// Close out the "Target Spell" right hand panel
 				getOverlandMapProcessing ().updateMovementRemaining ();
+				
+				// In case targetting at an overland enchantment, reset magic screen back to normal
+				getMagicSlidersUI ().setTargettingOverlandEnchantment (false);
 			}
 			
 			// Switch off a spell
@@ -406,6 +416,22 @@ public final class MessageBoxUI extends MomClientDialogUI
 	public final void setOverlandMapProcessing (final OverlandMapProcessing proc)
 	{
 		overlandMapProcessing = proc;
+	}
+	
+	/**
+	 * @return Magic sliders screen
+	 */
+	public final MagicSlidersUI getMagicSlidersUI ()
+	{
+		return magicSlidersUI;
+	}
+
+	/**
+	 * @param ui Magic sliders screen
+	 */
+	public final void setMagicSlidersUI (final MagicSlidersUI ui)
+	{
+		magicSlidersUI = ui;
 	}
 	
 	/**

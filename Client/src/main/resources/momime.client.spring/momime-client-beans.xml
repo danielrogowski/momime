@@ -1693,6 +1693,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+		<property name="magicSlidersUI" ref="magicSlidersUI" />
 	</bean>
 
 	<bean id="calculationBoxLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

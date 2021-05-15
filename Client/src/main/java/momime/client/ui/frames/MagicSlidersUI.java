@@ -948,8 +948,11 @@ public final class MagicSlidersUI extends MomClientFrameUI
 	 */
 	public final void setTargettingOverlandEnchantment (final boolean t)
 	{
-		targettingOverlandEnchantment = t;
-		languageChanged ();
+		if (t != isTargettingOverlandEnchantment ())
+		{
+			targettingOverlandEnchantment = t;
+			languageChanged ();
+		}
 	}
 	
 	/**

@@ -402,17 +402,17 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// Keep track of if we, or if resolveAttack, called combatEnded
 		boolean combatEnded = false;
 
+		final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+
+		// Set this if we need to call combatEnded at the end
+		PlayerServerDetails winningPlayer = null;
+		
 		// See if node aura or Counter Magic blocks it
 		final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage);
 		if (getSpellDispelling ().processCountering (castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer,
 			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ()))
 		{
-			final ServerGridCellEx gc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-				(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-			
-			// Set this if we need to call combatEnded at the end
-			PlayerServerDetails winningPlayer = null;
-			
 			// Combat enchantments
 			if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)
 			{
@@ -748,80 +748,80 @@ public final class SpellProcessingImpl implements SpellProcessing
 			
 			else
 				throw new MomException ("Cast a combat spell with a section ID that there is no code to deal with yet: " + spell.getSpellBookSectionID ());
+		}
 			
-			// Who is casting the spell?
-			if (combatCastingUnit == null)
+		// Who is casting the spell?
+		if (combatCastingUnit == null)
+		{
+			// Wizard casting - so charge them the mana cost
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
+			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
+			
+			// Charge skill
+			Integer sendSkillValue = null;
+			if (castingPlayer == defendingPlayer)
 			{
-				// Wizard casting - so charge them the mana cost
-				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
-				getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -multipliedManaCost);
-				
-				// Charge skill
-				Integer sendSkillValue = null;
-				if (castingPlayer == defendingPlayer)
+				if (gc.getCombatDefenderCastingSkillRemaining () != null)
 				{
-					if (gc.getCombatDefenderCastingSkillRemaining () != null)
-					{
-						gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
-						sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
-					}
+					gc.setCombatDefenderCastingSkillRemaining (gc.getCombatDefenderCastingSkillRemaining () - reducedCombatCastingCost);
+					sendSkillValue = gc.getCombatDefenderCastingSkillRemaining ();
 				}
-				else if (castingPlayer == attackingPlayer)
+			}
+			else if (castingPlayer == attackingPlayer)
+			{
+				if (gc.getCombatAttackerCastingSkillRemaining () != null)
 				{
-					if (gc.getCombatAttackerCastingSkillRemaining () != null)
-					{
-						gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
-						sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
-					}
+					gc.setCombatAttackerCastingSkillRemaining (gc.getCombatAttackerCastingSkillRemaining () - reducedCombatCastingCost);
+					sendSkillValue = gc.getCombatAttackerCastingSkillRemaining ();
 				}
-				else
-					throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
-				
-				// Send both values to client
-				if (sendSkillValue != null)
-					getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
-				
-				// Only allow casting one spell each combat turn
-				gc.setSpellCastThisCombatTurn (true);
-			}
-			else if (combatCastingFixedSpellNumber != null)
-			{
-				// Casting a fixed spell that's part of the unit definition
-				combatCastingUnit.setDoubleCombatMovesLeft (0);
-	
-				combatCastingUnit.getFixedSpellsRemaining ().set (combatCastingFixedSpellNumber,
-					combatCastingUnit.getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) - 1);
-	
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
-			}
-			else if (combatCastingSlotNumber != null)
-			{
-				// Casting a spell imbued into a hero item
-				combatCastingUnit.setDoubleCombatMovesLeft (0);
-	
-				combatCastingUnit.getHeroItemSpellChargesRemaining ().set (combatCastingSlotNumber,
-					combatCastingUnit.getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) - 1);
-	
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 			}
 			else
-			{
-				// Unit or hero casting - so charge them the mana cost and zero their movement
-				combatCastingUnit.setManaRemaining (combatCastingUnit.getManaRemaining () - multipliedManaCost);
-				combatCastingUnit.setDoubleCombatMovesLeft (0);
-				
-				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
-			}
+				throw new MomException ("Trying to charge combat casting cost to kill but the caster appears to be neither attacker nor defender");
 			
-			// Did casting the spell result in winning/losing the combat?
-			if (winningPlayer != null)
-			{
-				getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
-				combatEnded = true;
-			}
+			// Send both values to client
+			if (sendSkillValue != null)
+				getServerResourceCalculations ().sendGlobalProductionValues (castingPlayer, sendSkillValue);
+			
+			// Only allow casting one spell each combat turn
+			gc.setSpellCastThisCombatTurn (true);
+		}
+		else if (combatCastingFixedSpellNumber != null)
+		{
+			// Casting a fixed spell that's part of the unit definition
+			combatCastingUnit.setDoubleCombatMovesLeft (0);
+
+			combatCastingUnit.getFixedSpellsRemaining ().set (combatCastingFixedSpellNumber,
+				combatCastingUnit.getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) - 1);
+
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+		}
+		else if (combatCastingSlotNumber != null)
+		{
+			// Casting a spell imbued into a hero item
+			combatCastingUnit.setDoubleCombatMovesLeft (0);
+
+			combatCastingUnit.getHeroItemSpellChargesRemaining ().set (combatCastingSlotNumber,
+				combatCastingUnit.getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) - 1);
+
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+		}
+		else
+		{
+			// Unit or hero casting - so charge them the mana cost and zero their movement
+			combatCastingUnit.setManaRemaining (combatCastingUnit.getManaRemaining () - multipliedManaCost);
+			combatCastingUnit.setDoubleCombatMovesLeft (0);
+			
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+		}
+		
+		// Did casting the spell result in winning/losing the combat?
+		if (winningPlayer != null)
+		{
+			getCombatStartAndEnd ().combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
+			combatEnded = true;
 		}
 
 		return combatEnded;

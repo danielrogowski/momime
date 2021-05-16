@@ -3108,6 +3108,21 @@ this value each time a dispel attempt is made (counter magic).</xsd:documentatio
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastingCost" type="momimecommon:spellCastingCost" nxe:label="Overland Cost" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastingCost" type="momimecommon:spellCastingCost" nxe:label="Combat Cost" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="overlandDispelCost" type="momimecommon:spellCastingCost" nxe:label="Overland Dispel Cost" nxe:gridwidth="100">
+		        <xsd:annotation>
+		        	<xsd:documentation>Strength of spell when someone is trying to dispel it; by default = overlandCastingCost, but Spell Lock has a special value here.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatDispelCost" type="momimecommon:spellCastingCost" nxe:label="Combat Dispel Cost" nxe:gridwidth="100">
+		        <xsd:annotation>
+		        	<xsd:documentation>Strength of spell when someone is trying to dispel it; by default = combatCastingCost, but Spell Lock has a special value here.</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="blocksOtherDispels" type="xsd:boolean" nxe:label="Blocks other dispels?" nxe:gridwidth="100">
+		        <xsd:annotation>
+		        	<xsd:documentation>If this is cast on a unit then it is the only enchantment that may be dispelled; all others are protected (Spell Lock).</xsd:documentation>
+		        </xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="spellBookSectionID" type="momimecommon:spellBookSectionID" nxe:label="Spell Book Section" nxe:showmaincolumn="false" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="permanent" type="xsd:boolean" nxe:label="Permanent?" nxe:gridwidth="100">
 		        <xsd:annotation>

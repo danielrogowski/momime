@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -94,70 +95,105 @@ public final class SpellDispellingImpl implements SpellDispelling
 		else
 			throw new MomException ("processDispelling trying to process spell ID " + spell.getSpellID () + " but no dispelling power is defined");
 		
+		// Sort the list, so all Spell Locks come first
+		if (targetSpells.size () > 1)
+		{
+			final List<String> spellLockSpellIDs = mom.getServerDB ().getSpell ().stream ().filter
+				(s -> (s.isBlocksOtherDispels () != null) && (s.isBlocksOtherDispels ())).map (s -> s.getSpellID ()).collect (Collectors.toList ());
+			
+			targetSpells.sort ((s1, s2) ->
+			{
+				final int v;
+				if (spellLockSpellIDs.contains (s1.getSpellID ()) == spellLockSpellIDs.contains (s2.getSpellID ()))
+					v = s1.getSpellURN () - s2.getSpellURN ();
+				
+				else if (spellLockSpellIDs.contains (s1.getSpellID ()))
+					v = -1;
+				
+				else
+					v = 1;
+				
+				return v;
+			});
+		}
+		
 		// Now go through trying to dispel each spell
+		// Skip over any spells targeted on units for which we've previously found a Spell Lock
+		final List<Integer> spellLockedUnitURNs = new ArrayList<Integer> ();
+		
 		boolean anyKilled = false;
 		for (final MemoryMaintainedSpell spellToDispel : targetSpells)
-		{
-			// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
-			final Spell spellToDispelDef = mom.getServerDB ().findSpell (spellToDispel.getSpellID (), "processDispelling (D)");
-			
-			final DispelMagicResult result = new DispelMagicResult ();
-			result.setOwningPlayerID (spellToDispel.getCastingPlayerID ());
-			result.setSpellID (spellToDispel.getSpellID ());
-			result.setCastingCost (spellToDispel.isCastInCombat () ? spellToDispelDef.getCombatCastingCost () : spellToDispelDef.getOverlandCastingCost ());
-			result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
-			result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
-
-			// Add it to the messages first, because we might update who owns it
-			if (castingPlayer.getPlayerDescription ().isHuman ())
-				resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
-			
-			final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "processDispelling (D1)");
-			if (spellOwner.getPlayerDescription ().isHuman ())
+			if ((spellToDispel.getUnitURN () == null) || (!spellLockedUnitURNs.contains (spellToDispel.getUnitURN ())))
 			{
-				List<DispelMagicResult> results = resultsMap.get (spellToDispel.getCastingPlayerID ());
-				if (results == null)
+				// How much did this spell cost to cast?  That depends whether it was cast overland or in combat
+				final Spell spellToDispelDef = mom.getServerDB ().findSpell (spellToDispel.getSpellID (), "processDispelling (D)");
+				
+				final DispelMagicResult result = new DispelMagicResult ();
+				result.setOwningPlayerID (spellToDispel.getCastingPlayerID ());
+				result.setSpellID (spellToDispel.getSpellID ());
+				
+				if (spellToDispel.isCastInCombat ())
+					result.setCastingCost ((spellToDispelDef.getCombatDispelCost () != null) ? spellToDispelDef.getCombatDispelCost () : spellToDispelDef.getCombatCastingCost ());
+				else
+					result.setCastingCost ((spellToDispelDef.getOverlandDispelCost () != null) ? spellToDispelDef.getOverlandDispelCost () : spellToDispelDef.getOverlandCastingCost ());
+				
+				result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
+				result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
+	
+				// Add it to the messages first, because we might update who owns it
+				if (castingPlayer.getPlayerDescription ().isHuman ())
+					resultsMap.get (castingPlayer.getPlayerDescription ().getPlayerID ()).add (result);
+				
+				final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "processDispelling (D1)");
+				if (spellOwner.getPlayerDescription ().isHuman ())
 				{
-					results = new ArrayList<DispelMagicResult> ();
-					resultsMap.put (spellToDispel.getCastingPlayerID (), results);
-				}
-				results.add (result);
-			}
-
-			// Process dispelling or capturing it
-			if (result.isDispelled ())
-			{
-				// Do we take over the spell or just cancel it?
-				// However, also check if we already have this overland enchantment - if we do, treat Spell Binding just like regular Disjunction
-				if ((spell.getOverlandMaxDamage () == null) && (spell.getCombatMaxDamage () == null) &&
-					(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-						castingPlayer.getPlayerDescription ().getPlayerID (), spellToDispel.getSpellID (), null, null, null, null) == null)) 
-				{
-					// Check each combat area effect that this overland enchantment gives to see if we have any of them in effect - if so cancel them
-					for (final String combatAreaEffectID: spellToDispelDef.getSpellHasCombatEffect ())
+					List<DispelMagicResult> results = resultsMap.get (spellToDispel.getCastingPlayerID ());
+					if (results == null)
 					{
-						final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
-							(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), null, combatAreaEffectID, spellToDispel.getCastingPlayerID ());
-						
-						if (cae != null)
-						{
-							cae.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
-							getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCombatAreaEffect (cae, mom.getPlayers (), mom.getSessionDescription ());
-						}
+						results = new ArrayList<DispelMagicResult> ();
+						resultsMap.put (spellToDispel.getCastingPlayerID (), results);
 					}
-
-					// Now take over the spell itself
-					spellToDispel.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
-					
-					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spellToDispel, mom.getGeneralServerKnowledge (),
-						mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					results.add (result);
 				}
 				
-				// Regular dispel
-				else if (getSpellProcessing ().switchOffSpell (spellToDispel.getSpellURN (), mom))
-					anyKilled = true;
-			}			
-		}
+				// If spell locked then keep a list of it
+				if ((spellToDispel.getUnitURN () != null) && (spellToDispelDef.isBlocksOtherDispels () != null) && (spellToDispelDef.isBlocksOtherDispels ()))
+					spellLockedUnitURNs.add (spellToDispel.getUnitURN ());
+	
+				// Process dispelling or capturing it
+				if (result.isDispelled ())
+				{
+					// Do we take over the spell or just cancel it?
+					// However, also check if we already have this overland enchantment - if we do, treat Spell Binding just like regular Disjunction
+					if ((spell.getOverlandMaxDamage () == null) && (spell.getCombatMaxDamage () == null) &&
+						(getMemoryMaintainedSpellUtils ().findMaintainedSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
+							castingPlayer.getPlayerDescription ().getPlayerID (), spellToDispel.getSpellID (), null, null, null, null) == null)) 
+					{
+						// Check each combat area effect that this overland enchantment gives to see if we have any of them in effect - if so cancel them
+						for (final String combatAreaEffectID: spellToDispelDef.getSpellHasCombatEffect ())
+						{
+							final MemoryCombatAreaEffect cae = getMemoryCombatAreaEffectUtils ().findCombatAreaEffect
+								(mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (), null, combatAreaEffectID, spellToDispel.getCastingPlayerID ());
+							
+							if (cae != null)
+							{
+								cae.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+								getFogOfWarMidTurnChanges ().updatePlayerMemoryOfCombatAreaEffect (cae, mom.getPlayers (), mom.getSessionDescription ());
+							}
+						}
+	
+						// Now take over the spell itself
+						spellToDispel.setCastingPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
+						
+						getFogOfWarMidTurnChanges ().updatePlayerMemoryOfSpell (spellToDispel, mom.getGeneralServerKnowledge (),
+							mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ());
+					}
+					
+					// Regular dispel
+					else if (getSpellProcessing ().switchOffSpell (spellToDispel.getSpellURN (), mom))
+						anyKilled = true;
+				}			
+			}
 		
 		// Also go through trying to dispel each CAE
 		if (targetCAEs != null)

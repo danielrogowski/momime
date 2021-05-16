@@ -412,7 +412,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			
 			// Either unit have a select unit button that needs to update?
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-				if ((!button.isHidden ()) &&
+				if ((!button.isHidden ()) && (button.getComponent ().getUnit () != null) &&
 					((button.getComponent ().getUnit ().getUnit () == attackerUnit) || (getDefenderUnits ().stream ().allMatch (du -> du.getDefUnit () == button.getComponent ().getUnit ().getUnit ()))))
 					button.repaint ();
 

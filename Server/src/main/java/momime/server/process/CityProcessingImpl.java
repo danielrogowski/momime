@@ -34,6 +34,7 @@ import momime.common.database.UnitEx;
 import momime.common.internal.CityProductionBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
@@ -923,6 +924,14 @@ public final class CityProcessingImpl implements CityProcessing
 		// Clean up defeated wizards
 		if (wizardState == WizardState.DEFEATED)
 		{
+			// Remove any CAEs the wizard still had cast
+			final List<MemoryCombatAreaEffect> defeatedCAEs = mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect ().stream ().filter
+				(c -> c.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()).collect (Collectors.toList ());
+
+			for (final MemoryCombatAreaEffect defeatedCAE : defeatedCAEs)
+				getFogOfWarMidTurnChanges ().removeCombatAreaEffectFromServerAndClients (mom.getGeneralServerKnowledge ().getTrueMap (),
+					defeatedCAE.getCombatAreaEffectURN (), mom.getPlayers (), mom.getSessionDescription ());
+			
 			// Remove any spells the wizard still had cast
 			final List<MemoryMaintainedSpell> defeatedSpells = mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell ().stream ().filter
 				(s -> s.getCastingPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()).collect (Collectors.toList ());

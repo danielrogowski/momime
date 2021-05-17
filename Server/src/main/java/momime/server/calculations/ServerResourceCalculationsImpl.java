@@ -205,11 +205,17 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 						if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
 							nodeAuraSquares++;
 					}
-	
-			// How much magic power does each square generate?
-			final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
-			if (nodeAuraMagicPower > 0)
+			
+			if (nodeAuraSquares > 0)
+			{
+				// Node mastery gives 2x magic power
+				if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_NODE_MASTERY) > 0)
+					nodeAuraSquares = nodeAuraSquares * 2;
+		
+				// How much magic power does each square generate?
+				final int nodeAuraMagicPower = (nodeAuraSquares * sd.getNodeStrength ().getDoubleNodeAuraMagicPower ()) / 2;
 				getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, nodeAuraMagicPower);
+			}
 		}
 
 		// We never explicitly add Mana from Magic Power, this is calculated on the fly by getResourceValueUtils ().calculateAmountPerTurnForProductionType

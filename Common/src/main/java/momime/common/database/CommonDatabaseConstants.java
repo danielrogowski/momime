@@ -78,6 +78,9 @@ public final class CommonDatabaseConstants
 	/** Channeler retort (all spell upkeep reduced 50%) */
 	public final static String RETORT_ID_CHANNELER = "RT03";
 
+	/** Node mastery (2x magic power from nodes) */
+	public final static String RETORT_NODE_MASTERY = "RT18";
+	
 	// production types
 
 	/** Rations for feeding civvies + armies */

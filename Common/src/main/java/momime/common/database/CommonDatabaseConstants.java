@@ -78,6 +78,9 @@ public final class CommonDatabaseConstants
 	/** Channeler retort (all spell upkeep reduced 50%) */
 	public final static String RETORT_ID_CHANNELER = "RT03";
 
+	/** Archmage, twice as hard to dispel their spells + twice as resilient to being countered  */
+	public final static String RETORT_ID_ARCHMAGE = "RT04";
+
 	/** Node mastery (2x magic power from nodes) */
 	public final static String RETORT_NODE_MASTERY = "RT18";
 	

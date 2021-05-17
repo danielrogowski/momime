@@ -1081,9 +1081,13 @@
 			<xsd:selector xpath="tileType/tileTypeAreaEffect" />
 			<xsd:field xpath="@combatAreaEffectID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:pickPK" name="combatAreaEffectFKpick">
+		<xsd:keyref refer="momimecommon:pickPK" name="combatAreaEffectFKpick_realm">
 			<xsd:selector xpath="combatAreaEffect" />
 			<xsd:field xpath="combatAreaEffectMagicRealm" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="combatAreaEffectFKpick_negated">
+			<xsd:selector xpath="combatAreaEffect" />
+			<xsd:field xpath="combatAreaEffectNegatedByPick" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:pickPK" name="combatAreaEffectSkillBonusFKpick">
 			<xsd:selector xpath="combatAreaEffect/combatAreaEffectSkillBonus" />
@@ -3034,6 +3038,13 @@ but kept these separate to make it totally clear when production values are reco
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectMagicRealm" type="momimecommon:pickID" nxe:label="CAE magic realm" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="combatAreaEffectNegatedByPick" type="momimecommon:pickID" nxe:label="Negated by pick" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>

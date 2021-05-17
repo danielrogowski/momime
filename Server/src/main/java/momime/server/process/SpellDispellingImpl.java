@@ -24,13 +24,16 @@ import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
+import momime.common.messages.PlayerPick;
 import momime.common.messages.servertoclient.CounterMagicResult;
 import momime.common.messages.servertoclient.CounterMagicResultsMessage;
 import momime.common.messages.servertoclient.DispelMagicResult;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerPickUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 
@@ -56,6 +59,9 @@ public final class SpellDispellingImpl implements SpellDispelling
 	
 	/** Spell processing methods */
 	private SpellProcessing spellProcessing;
+	
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
 	
 	/**
 	 * Makes dispel rolls against a list of target spells and CAEs
@@ -273,6 +279,8 @@ public final class SpellDispellingImpl implements SpellDispelling
 		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		final List<CounterMagicResult> results = new ArrayList<CounterMagicResult> ();
+
+		final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
 		
 		// As soon as one CAE blocks it, we don't bother keep rolling any more
 		boolean dispelled = false;
@@ -288,7 +296,13 @@ public final class SpellDispellingImpl implements SpellDispelling
 			{
 				final CombatAreaEffect caeDef = db.findCombatAreaEffect (cae.getCombatAreaEffectID (), "processCountering");
 				if ((caeDef.getDispellingPower () != null) &&
-					((caeDef.getCombatAreaEffectMagicRealm () == null) || (!caeDef.getCombatAreaEffectMagicRealm ().equals (spell.getSpellRealm ()))))
+						
+					// Nature nodes don't counter Nature spells
+					((caeDef.getCombatAreaEffectMagicRealm () == null) || (!caeDef.getCombatAreaEffectMagicRealm ().equals (spell.getSpellRealm ()))) &&
+					
+					// Node dispelling negated by Node Mastery
+					((caeDef.getCombatAreaEffectNegatedByPick () == null) || (getPlayerPickUtils ().getQuantityOfPick (picks, caeDef.getCombatAreaEffectNegatedByPick ()) < 1)))
+					
 				{
 					final CounterMagicResult result = new CounterMagicResult ();
 					result.setOwningPlayerID (cae.getCastingPlayerID ());
@@ -425,5 +439,21 @@ public final class SpellDispellingImpl implements SpellDispelling
 	public final void setSpellProcessing (final SpellProcessing obj)
 	{
 		spellProcessing = obj;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

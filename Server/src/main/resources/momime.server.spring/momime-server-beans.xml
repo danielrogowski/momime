@@ -587,6 +587,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="spellProcessing" ref="spellProcessing" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 
 	<bean id="damageProcessor" class="momime.server.process.DamageProcessorImpl">

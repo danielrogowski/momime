@@ -128,6 +128,9 @@ public final class SpellDispellingImpl implements SpellDispelling
 		// Skip over any spells targeted on units for which we've previously found a Spell Lock
 		final List<Integer> spellLockedUnitURNs = new ArrayList<Integer> ();
 		
+		final Map<String, String> masteries = mom.getServerDB ().getPick ().stream ().filter (p -> p.getNodeAndDispelBonus () != null).collect (Collectors.toMap
+			(p -> p.getNodeAndDispelBonus (), p -> p.getPickID ()));
+		
 		boolean anyKilled = false;
 		for (final MemoryMaintainedSpell spellToDispel : targetSpells)
 			if ((spellToDispel.getUnitURN () == null) || (!spellLockedUnitURNs.contains (spellToDispel.getUnitURN ())))
@@ -145,11 +148,21 @@ public final class SpellDispellingImpl implements SpellDispelling
 					result.setCastingCost ((spellToDispelDef.getOverlandDispelCost () != null) ? spellToDispelDef.getOverlandDispelCost () : spellToDispelDef.getOverlandCastingCost ());
 				
 				// Retorts that make spells more difficult to dispel
+				int multiplier = 1;
+				
 				final PlayerServerDetails spellOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (mom.getPlayers (), spellToDispel.getCastingPlayerID (), "processDispelling (D1)");
 				final List<PlayerPick> spellOwnerPicks = ((MomPersistentPlayerPublicKnowledge) spellOwner.getPersistentPlayerPublicKnowledge ()).getPick ();
 				
 				if (getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, CommonDatabaseConstants.RETORT_ID_ARCHMAGE) > 0)
-					result.setCastingCost (result.getCastingCost () * 2);
+					multiplier++;
+				
+				if ((masteries.containsKey (spellToDispelDef.getSpellRealm ())) &&
+					(getPlayerPickUtils ().getQuantityOfPick (spellOwnerPicks, masteries.get (spellToDispelDef.getSpellRealm ())) > 0))
+					
+					multiplier++;
+				
+				if (multiplier > 1)
+					result.setCastingCost (result.getCastingCost () * multiplier);
 				
 				result.setChance (dispellingPower.doubleValue () / (result.getCastingCost () + dispellingPower));
 				result.setDispelled ((getRandomUtils ().nextInt (result.getCastingCost () + dispellingPower) < dispellingPower));
@@ -287,13 +300,23 @@ public final class SpellDispellingImpl implements SpellDispelling
 	{
 		final List<CounterMagicResult> results = new ArrayList<CounterMagicResult> ();
 
+		final Map<String, String> masteries = db.getPick ().stream ().filter (p -> p.getNodeAndDispelBonus () != null).collect (Collectors.toMap
+			(p -> p.getNodeAndDispelBonus (), p -> p.getPickID ()));
+		
 		// Retorts that make spells more difficult to dispel
-		int castingCost = unmodifiedCombatCastingCost;
+		int multiplier = 1;
 		
 		final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
 
 		if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_ID_ARCHMAGE) > 0)
-			castingCost = castingCost * 2;
+			multiplier++;
+
+		if ((masteries.containsKey (spell.getSpellRealm ())) &&
+			(getPlayerPickUtils ().getQuantityOfPick (picks, masteries.get (spell.getSpellRealm ())) > 0))
+				
+			multiplier++;
+		
+		final int castingCost = unmodifiedCombatCastingCost * multiplier;
 		
 		// As soon as one CAE blocks it, we don't bother keep rolling any more
 		boolean dispelled = false;

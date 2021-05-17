@@ -1041,7 +1041,11 @@
 			<xsd:selector xpath="pick" />
 			<xsd:field xpath="unitTypeID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:pickPK" name="pickFKpick">
+		<xsd:keyref refer="momimecommon:pickTypePK" name="pickFKpick_mastery">
+			<xsd:selector xpath="pick" />
+			<xsd:field xpath="nodeAndDispelBonus" />
+		</xsd:keyref>		
+		<xsd:keyref refer="momimecommon:pickPK" name="pickFKpick_cast">
 			<xsd:selector xpath="pick" />
 			<xsd:field xpath="castSpellsFromPickID" />
 		</xsd:keyref>
@@ -2081,6 +2085,13 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickCost" type="momimecommon:pickCost" nxe:label="Cost" nxe:gridwidth="60" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="nodeAndDispelBonus" type="momimecommon:pickID" nxe:label="Node + Dispel bonus" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickReligiousBuildingBonus" type="momimecommon:percentage" nxe:label="Religious Building Bonus %" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false">
 				<xsd:annotation>

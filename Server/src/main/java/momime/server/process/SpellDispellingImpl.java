@@ -95,12 +95,25 @@ public final class SpellDispellingImpl implements SpellDispelling
 		final Integer dispellingPower;
 		if (variableDamage != null)
 			dispellingPower = variableDamage;
-		else if (spell.getCombatBaseDamage () != null)
-			dispellingPower = spell.getCombatBaseDamage ();
-		else if (spell.getOverlandBaseDamage () != null)
-			dispellingPower = spell.getOverlandBaseDamage ();
 		else
-			throw new MomException ("processDispelling trying to process spell ID " + spell.getSpellID () + " but no dispelling power is defined");
+		{
+			final Integer baseDispellingPower;
+			if (spell.getCombatBaseDamage () != null)
+				baseDispellingPower = spell.getCombatBaseDamage ();
+			else if (spell.getOverlandBaseDamage () != null)
+				baseDispellingPower = spell.getOverlandBaseDamage ();
+			else
+				throw new MomException ("processDispelling trying to process spell ID " + spell.getSpellID () + " but no dispelling power is defined");
+			
+			// If caster has Runemaster and specified variableDamage then this was already included in the specified dispelling power.
+			// But if they just passed in null (like the AI does) then we need to double the base damage.
+			int multiplier = 1;
+			final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+			if (getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_NODE_RUNEMASTER) > 0)
+				multiplier++;
+			
+			dispellingPower = baseDispellingPower * multiplier;
+		}
 		
 		// Sort the list, so all Spell Locks come first
 		if (targetSpells.size () > 1)

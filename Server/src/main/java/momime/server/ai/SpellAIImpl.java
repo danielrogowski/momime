@@ -657,7 +657,7 @@ public final class SpellAIImpl implements SpellAI
 					else
 					{
 						// Validation for units casting is much simpler, as reductions for number of spell books or certain retorts and the range penalty all don't apply
-						final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage);
+						final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, pub.getPick ());
 						canAffordSpell = (unmodifiedCombatCastingCost <= combatCastingUnit.getManaRemaining ());
 					}
 

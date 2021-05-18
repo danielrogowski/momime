@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.actions.LoggingAction;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
@@ -40,7 +41,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.PlayerPick;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
+import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.SpellCastType;
 import momime.common.utils.SpellUtils;
 
@@ -75,6 +78,9 @@ public final class VariableManaUI extends MomClientDialogUI
 	
 	/** Spell book */
 	private SpellBookUI spellBookUI;
+	
+	/** Player pick utils */
+	private PlayerPickUtils playerPickUtils;
 	
 	/** OK action */
 	private Action okAction;
@@ -394,24 +400,25 @@ public final class VariableManaUI extends MomClientDialogUI
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If we can't find the spell being targetted
 	 * @throws MomException If the variable settings on the spell definition are inconsistent
+	 * @throws PlayerNotFoundException If we can't find our player details in the list
 	 */
-	public final void variableDamageChosen () throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
+	public final void variableDamageChosen ()
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		final Spell spell = getClient ().getClientDB ().findSpell (getSpellBeingTargetted ().getSpellID (), "variableDamageChosen");
-		final SpellBookSectionID sectionID = spell.getSpellBookSectionID ();
+		final SpellBookSectionID sectionID = getSpellBeingTargetted ().getSpellBookSectionID ();
 		
 		if ((getCastType () == SpellCastType.COMBAT) &&
 			((sectionID == SpellBookSectionID.UNIT_ENCHANTMENTS) || (sectionID == SpellBookSectionID.UNIT_CURSES) ||
 			(sectionID == SpellBookSectionID.SUMMONING) ||
 			(((sectionID == SpellBookSectionID.ATTACK_SPELLS) || (sectionID == SpellBookSectionID.DISPEL_SPELLS)) &&
-				(spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
+				(getSpellBeingTargetted ().getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))))
 			
-			getCombatUI ().setSpellBeingTargetted (spell);
+			getCombatUI ().setSpellBeingTargetted (getSpellBeingTargetted ());
 		else
 		{
 			// Tell server to cast it
 			final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
-			msg.setSpellID (spell.getSpellID ());
+			msg.setSpellID (getSpellBeingTargetted ().getSpellID ());
 
 			if (getCastType () == SpellCastType.COMBAT)
 			{
@@ -445,13 +452,14 @@ public final class VariableManaUI extends MomClientDialogUI
 	/**
 	 * @return Reads off the slider value
 	 * @throws MomException If the variable settings on the spell definition are inconsistent
+	 * @throws PlayerNotFoundException If we can't find our player details in the list
 	 */
-	public final int getVariableDamage () throws MomException
+	public final int getVariableDamage () throws MomException, PlayerNotFoundException
 	{
 		// The only time we may get here when the form hasn't been displayed is if the first variable MP spell we cast
 		// we had insufficient MP to make any choice at all, and so the form was never set up properly or displayed.
 		// So if there's no range at all, avoid reading the slider value which may be null.
-		final int dmg;
+		int dmg;
 		if (!anySelectableRange ())
 			dmg = (getCastType () == SpellCastType.COMBAT) ? getSpellBeingTargetted ().getCombatBaseDamage () : getSpellBeingTargetted ().getOverlandBaseDamage ();
 		else
@@ -467,6 +475,18 @@ public final class VariableManaUI extends MomClientDialogUI
 							((slider.getValue () - getSpellBeingTargetted ().getCombatCastingCost ()) * getSpellBeingTargetted ().getCombatAdditionalDamagePointsPerMana ()) :
 						getSpellBeingTargetted ().getOverlandBaseDamage () +
 							((slider.getValue () - getSpellBeingTargetted ().getOverlandCastingCost ()) * getSpellBeingTargetted ().getOverlandAdditionalDamagePointsPerMana ());
+					
+					// Dispel strength doubled if wizard is a Runemaster
+					final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "sliderPositionChanged");
+					final List<PlayerPick> picks = ((MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ()).getPick ();
+					
+					final SpellBookSectionID sectionID = getSpellBeingTargetted ().getSpellBookSectionID ();
+					
+					if ((sectionID == SpellBookSectionID.DISPEL_SPELLS) &&
+						(getPlayerPickUtils ().getQuantityOfPick (picks, CommonDatabaseConstants.RETORT_NODE_RUNEMASTER) > 0))
+						
+						dmg = dmg * 2;
+					
 					break;
 
 				default:
@@ -602,5 +622,21 @@ public final class VariableManaUI extends MomClientDialogUI
 	public final void setSpellBookUI (final SpellBookUI ui)
 	{
 		spellBookUI = ui;
+	}
+
+	/**
+	 * @return Player pick utils
+	 */
+	public final PlayerPickUtils getPlayerPickUtils ()
+	{
+		return playerPickUtils;
+	}
+
+	/**
+	 * @param utils Player pick utils
+	 */
+	public final void setPlayerPickUtils (final PlayerPickUtils utils)
+	{
+		playerPickUtils = utils;
 	}
 }

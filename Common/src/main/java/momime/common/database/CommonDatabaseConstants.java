@@ -81,6 +81,9 @@ public final class CommonDatabaseConstants
 	/** Archmage, twice as hard to dispel their spells + twice as resilient to being countered  */
 	public final static String RETORT_ID_ARCHMAGE = "RT04";
 
+	/** Runemaster (2x powerful dispels) */
+	public final static String RETORT_NODE_RUNEMASTER = "RT11";
+	
 	/** Node mastery (2x magic power from nodes) */
 	public final static String RETORT_NODE_MASTERY = "RT18";
 	

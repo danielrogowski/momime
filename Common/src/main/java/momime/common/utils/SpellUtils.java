@@ -58,22 +58,24 @@ public interface SpellUtils
 	/**
 	 * @param spell Spell we want to cast
 	 * @param variableDamage Chosen damage selected for the spell, for spells like fire bolt where a varying amount of mana can be channeled into the spell
+	 * @param picks Books and retorts the player has
 	 * @return Combat casting cost, taking into account additional MP for variable damage spells, not taking into account reductions from 8 or more spell books or similar
 	 * @throws MomException If variable damage is supplied for a spell that doesn't support it
 	 */
-	public int getUnmodifiedCombatCastingCost (final Spell spell, final Integer variableDamage) throws MomException;
+	public int getUnmodifiedCombatCastingCost (final Spell spell, final Integer variableDamage, final List<PlayerPick> picks) throws MomException;
 
 	/**
 	 * @param spell Spell we want to cast
 	 * @param heroItem If this spell is Enchant Item or Create Artifact then the item being made; for all other spells pass null
 	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
+	 * @param picks Books and retorts the player has
 	 * @param db Lookup lists built over the XML database
 	 * @return Overland casting cost, taking into account additional MP for variable damage spells, not taking into account reductions from 8 or more spell books or similar
 	 * @throws MomException If variable damage is supplied for a spell that doesn't support it
 	 * @throws RecordNotFoundException If the item type, one of the bonuses or spell charges can't be found in the XML
 	 */
-	public int getUnmodifiedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final Integer variableDamage, final CommonDatabase db)
-		throws MomException, RecordNotFoundException;
+	public int getUnmodifiedOverlandCastingCost (final Spell spell, final HeroItem heroItem, final Integer variableDamage, final List<PlayerPick> picks,
+		final CommonDatabase db) throws MomException, RecordNotFoundException;
 	
 	/**
 	 * This should only be used when the wizard is casting a combat spell himself.  Heroes or monsters with inherent casting

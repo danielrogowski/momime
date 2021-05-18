@@ -244,7 +244,7 @@ public final class TestSpellUtilsImpl
 		spell.setCombatCastingCost (30);
 		
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (30, utils.getUnmodifiedCombatCastingCost (spell, null)); 
+		assertEquals (30, utils.getUnmodifiedCombatCastingCost (spell, null, null)); 
 	}
 	
 	/**
@@ -264,7 +264,7 @@ public final class TestSpellUtilsImpl
 		// Each of those +60 costs 3 MP so total of +180
 		// plus the base casting cost of 30 = 210
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (210, utils.getUnmodifiedCombatCastingCost (spell, 80)); 
+		assertEquals (210, utils.getUnmodifiedCombatCastingCost (spell, 80, null)); 
 	}
 	
 	/**
@@ -284,7 +284,7 @@ public final class TestSpellUtilsImpl
 		// We get +3 for each additional MP so +60 dmg costs +20 MP
 		// plus the base casting cost of 30 = 50
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (50, utils.getUnmodifiedCombatCastingCost (spell, 80)); 
+		assertEquals (50, utils.getUnmodifiedCombatCastingCost (spell, 80, null)); 
 	}
 	
 	/**
@@ -301,7 +301,7 @@ public final class TestSpellUtilsImpl
 		spell.setCombatMaxDamage (110);
 		
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		utils.getUnmodifiedCombatCastingCost (spell, 80); 
+		utils.getUnmodifiedCombatCastingCost (spell, 80, null); 
 	}
 	
 	/**
@@ -315,7 +315,7 @@ public final class TestSpellUtilsImpl
 		spell.setOverlandCastingCost (30);
 		
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (30, utils.getUnmodifiedOverlandCastingCost (spell, null, null, null)); 
+		assertEquals (30, utils.getUnmodifiedOverlandCastingCost (spell, null, null, null, null)); 
 	}
 	
 	/**
@@ -340,7 +340,7 @@ public final class TestSpellUtilsImpl
 		// Call method
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
 		utils.setHeroItemCalculations (calc);
-		assertEquals (200, utils.getUnmodifiedOverlandCastingCost (spell, item, null, db)); 
+		assertEquals (200, utils.getUnmodifiedOverlandCastingCost (spell, item, null, null, db)); 
 	}
 	
 	/**
@@ -360,7 +360,7 @@ public final class TestSpellUtilsImpl
 		// Each of those +60 costs 3 MP so total of +180
 		// plus the base casting cost of 30 = 210
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (210, utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null)); 
+		assertEquals (210, utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null, null)); 
 	}
 	
 	/**
@@ -380,7 +380,7 @@ public final class TestSpellUtilsImpl
 		// We get +3 for each additional MP so +60 dmg costs +20 MP
 		// plus the base casting cost of 30 = 50
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		assertEquals (50, utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null)); 
+		assertEquals (50, utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null, null)); 
 	}
 	
 	/**
@@ -397,7 +397,7 @@ public final class TestSpellUtilsImpl
 		spell.setOverlandMaxDamage (110);
 		
 		final SpellUtilsImpl utils = new SpellUtilsImpl ();
-		utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null); 
+		utils.getUnmodifiedOverlandCastingCost (spell, null, 80, null, null); 
 	}
 	
 	/**

@@ -348,7 +348,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			{
 				// Validate unit or hero casting
 				// Reductions for number of spell books, or certain retorts, only apply when the wizard is casting, but on the plus side, the range penalty doesn't apply
-				reducedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage);
+				reducedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, pub.getPick ());
 				multipliedManaCost = reducedCombatCastingCost;
 				
 				if (multipliedManaCost > combatCastingUnit.getManaRemaining ())

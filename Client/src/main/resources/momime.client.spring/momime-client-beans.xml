@@ -1483,6 +1483,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="spellBookUI" ref="spellBookUI" />
+		<property name="playerPickUtils" ref="playerPickUtils" />
 	</bean>
 	
 	<bean id="createArtifactLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

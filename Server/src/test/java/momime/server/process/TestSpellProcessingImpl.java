@@ -35,6 +35,7 @@ import momime.common.messages.MemoryCombatAreaEffect;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageSpell;
@@ -793,8 +794,9 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		attackingPd.setHuman (true);
 		attackingPd.setPlayerID (7);
 
+		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge (); 
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
 		players.add (attackingPlayer);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (null, null, null, null, null);
@@ -815,7 +817,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// Counter magic
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null)).thenReturn (15);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);
@@ -904,8 +906,9 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		attackingPd.setHuman (true);
 		attackingPd.setPlayerID (7);
 
+		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge (); 
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
 		players.add (attackingPlayer);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (null, null, null, null, null);
@@ -926,7 +929,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// Counter magic
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null)).thenReturn (15);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);
@@ -1008,8 +1011,9 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		attackingPd.setHuman (true);
 		attackingPd.setPlayerID (7);
 
+		final MomPersistentPlayerPublicKnowledge attackingPub = new MomPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge attackingPriv = new MomPersistentPlayerPrivateKnowledge (); 
-		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, null, attackingPriv, null, null);
+		final PlayerServerDetails attackingPlayer = new PlayerServerDetails (attackingPd, attackingPub, attackingPriv, null, null);
 		players.add (attackingPlayer);
 		
 		final PlayerServerDetails defendingPlayer = new PlayerServerDetails (null, null, null, null, null);
@@ -1054,7 +1058,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		// Counter magic
 		final SpellUtils spellUtils = mock (SpellUtils.class);
-		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null)).thenReturn (15);
+		when (spellUtils.getUnmodifiedCombatCastingCost (spell, null, attackingPub.getPick ())).thenReturn (15);
 		
 		final SpellDispelling spellDispelling = mock (SpellDispelling.class);
 		when (spellDispelling.processCountering (castingPlayer, spell, 15, combatLocation, defendingPlayer, attackingPlayer, trueMap, players, sd, db)).thenReturn (true);

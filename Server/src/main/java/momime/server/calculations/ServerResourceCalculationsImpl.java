@@ -3,6 +3,7 @@ package momime.server.calculations;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -22,8 +23,8 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.EnforceProductionID;
 import momime.common.database.Plane;
-import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
@@ -55,6 +56,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.SpellQueueing;
 import momime.server.process.resourceconsumer.MomResourceConsumer;
 import momime.server.process.resourceconsumer.MomResourceConsumerBuilding;
@@ -195,15 +197,43 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 		if (!zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER))
 		{
+			// Find all the nodes we own where we have the corresponding mastery, e.g. find chaos nodes we own if we have chaos mastery
+			final List<String> nodeMagicRealmIDs = db.getPick ().stream ().filter
+				(p -> (p.getNodeAndDispelBonus () != null) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), p.getPickID ()) > 0)).map
+				(p -> p.getNodeAndDispelBonus ()).collect (Collectors.toList ());
+			
+			final List<String> nodeTileTypeIDs = db.getTileTypes ().stream ().filter (t -> nodeMagicRealmIDs.contains (t.getMagicRealmID ())).map
+				(t -> t.getTileTypeID ()).collect (Collectors.toList ());
+			
+			final List<MapCoordinates3DEx> nodeLocations = new ArrayList<MapCoordinates3DEx> ();
+			if (nodeTileTypeIDs.size () > 0)
+				for (final Plane plane : db.getPlane ())
+					for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
+						for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
+						{
+							final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
+							if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (nodeTileTypeIDs.contains (terrainData.getTileTypeID ())) &&
+								(player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
+								
+								nodeLocations.add (new MapCoordinates3DEx (x, y, plane.getPlaneNumber ()));
+						}
+			
 			// Counts up how many node aura squares each player gets
 			int nodeAuraSquares = 0;
 			for (final Plane plane : db.getPlane ())
 				for (int x = 0; x < sd.getOverlandMapSize ().getWidth (); x++)
 					for (int y = 0; y < sd.getOverlandMapSize ().getHeight (); y++)
 					{
-						final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x).getTerrainData ();
+						final ServerGridCellEx tc = (ServerGridCellEx) trueMap.getMap ().getPlane ().get (plane.getPlaneNumber ()).getRow ().get (y).getCell ().get (x);
+						final OverlandMapTerrainData terrainData = tc.getTerrainData ();
 						if ((terrainData != null) && (terrainData.getNodeOwnerID () != null) && (player.getPlayerDescription ().getPlayerID ().equals (terrainData.getNodeOwnerID ())))
+						{
 							nodeAuraSquares++;
+							
+							// Count it twice if we have the mastery to get double magic power from this node
+							if (nodeLocations.contains (tc.getAuraFromNode ()))
+								nodeAuraSquares++;
+						}
 					}
 			
 			if (nodeAuraSquares > 0)

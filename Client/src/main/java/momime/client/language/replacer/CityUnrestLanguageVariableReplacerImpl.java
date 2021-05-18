@@ -3,6 +3,7 @@ package momime.client.language.replacer;
 import momime.common.database.RecordNotFoundException;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
+import momime.common.internal.CityUnrestBreakdownSpell;
 
 /**
  * Language replacer for city unrest calculation variables
@@ -11,6 +12,9 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 {
 	/** Building specific breakdown */
 	private CityUnrestBreakdownBuilding currentBuilding;
+	
+	/** Spell specific breakdown */
+	private CityUnrestBreakdownSpell currentSpell;
 	
 	/**
 	 * @param code Code to replace
@@ -92,6 +96,15 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 				text = "-" + getCurrentBuilding ().getUnrestReduction ();
 				break;
 				
+			// Dependant on current spell
+			case "SPELL_NAME":
+				text = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (getCurrentSpell ().getSpellID (), "determineVariableValue").getSpellName ());
+				break;
+
+			case "SPELL_REDUCTION":
+				text = "-" + getCurrentSpell ().getUnrestReduction ();
+				break;
+				
 			default:
 				text = null;
 		}
@@ -113,5 +126,22 @@ public final class CityUnrestLanguageVariableReplacerImpl extends BreakdownLangu
 	public final void setCurrentBuilding (final CityUnrestBreakdownBuilding building)
 	{
 		currentBuilding = building;
+	}
+
+	/**
+	 * @return Spell specific breakdown
+	 */
+	public final CityUnrestBreakdownSpell getCurrentSpell ()
+	{
+		return currentSpell;
+	}
+	
+	/**
+	 * @param spell Spell specific breakdown
+	 */
+	@Override
+	public final void setCurrentSpell (final CityUnrestBreakdownSpell spell)
+	{
+		currentSpell = spell;
 	}
 }

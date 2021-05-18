@@ -116,6 +116,20 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 		</xsd:sequence>
 	</xsd:complexType>
 	
+	<xsd:complexType name="cityUnrestBreakdownSpell">
+		<xsd:annotation>
+			<xsd:documentation>Stores the unrest reduction granted by a particular spell.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="spellID" type="momimecommon:spellID" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="unrestReduction" type="momimecommon:buildingUnrestReduction">
+				<xsd:annotation>
+					<xsd:documentation>How much unrest the spell reduces - stored as a positive value.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
 	<xsd:complexType name="cityUnrestBreakdown">
 		<xsd:annotation>
 			<xsd:documentation>Stores the breakdown of all the values used in calculating the number of rebels in a city.</xsd:documentation>
@@ -152,6 +166,7 @@ Use of this structure directly (rather than the Growing and Dying subclasses) im
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="buildingReducingUnrest" type="momimeinternal:cityUnrestBreakdownBuilding" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellReducingUnrest" type="momimeinternal:cityUnrestBreakdownSpell" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="religiousBuildingRetortPercentage" type="momimecommon:percentage">
 				<xsd:annotation>
 					<xsd:documentation>% that our retorts (Divine or Infernal Power) are improving the effectiveness of reglious buildings by.

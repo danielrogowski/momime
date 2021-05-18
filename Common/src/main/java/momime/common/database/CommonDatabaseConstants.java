@@ -265,6 +265,9 @@ public final class CommonDatabaseConstants
 	
 	// spells
 	
+	/** Just Cause spell */
+	public final static String SPELL_ID_JUST_CAUSE = "SP127";
+	
 	/** Summoning circle spell */
 	public final static String SPELL_ID_SUMMONING_CIRCLE = "SP203";
 	

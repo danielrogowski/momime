@@ -39,8 +39,8 @@ import momime.common.database.OverlandMapSize;
 import momime.common.database.Pick;
 import momime.common.database.PickType;
 import momime.common.database.Plane;
-import momime.common.database.ProductionTypeEx;
 import momime.common.database.ProductionTypeAndDoubledValue;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.RaceEx;
 import momime.common.database.RacePopulationTask;
 import momime.common.database.RaceUnrest;
@@ -57,6 +57,7 @@ import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -65,6 +66,7 @@ import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 
 /**
@@ -785,9 +787,12 @@ public final class TestCityCalculationsImpl
 
 		// Buildings
 		final List<MemoryBuilding> buildings = new ArrayList<MemoryBuilding> ();
-
+		
 		// Units
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
+		
+		// Spells
+		final List<MemoryMaintainedSpell> spells = new ArrayList<MemoryMaintainedSpell> ();
 
 		// Player
 		final PlayerDescription pd = new PlayerDescription ();
@@ -806,16 +811,18 @@ public final class TestCityCalculationsImpl
 
 		// Set up object to test
 		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class); 
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		
 		final CityCalculationsImpl calc = new CityCalculationsImpl ();
 		calc.setMemoryBuildingUtils (memoryBuildingUtils);
+		calc.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
 		calc.setPlayerPickUtils (playerPickUtils);
 		calc.setMultiplayerSessionUtils (multiplayerSessionUtils);
 		
 		// Tax rate with no rebels!  and no gold...
 		final CityUnrestBreakdown zeroPercent = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR01", db);
+			(players, map, units, buildings, spells, cityLocation, "TR01", db);
 		assertEquals (17, zeroPercent.getPopulation ());
 		assertEquals (0, zeroPercent.getTaxPercentage ());
 		assertEquals (0, zeroPercent.getRacialPercentage ());
@@ -838,7 +845,7 @@ public final class TestCityCalculationsImpl
 
 		// Harsh 45% tax rate = 7.65, prove that it rounds down
 		final CityUnrestBreakdown highPercent = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, highPercent.getPopulation ());
 		assertEquals (45, highPercent.getTaxPercentage ());
 		assertEquals (0, highPercent.getRacialPercentage ());
@@ -863,7 +870,7 @@ public final class TestCityCalculationsImpl
 		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (50);
 		
 		final CityUnrestBreakdown maxPercent = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR03", db);
+			(players, map, units, buildings, spells, cityLocation, "TR03", db);
 		assertEquals (17, maxPercent.getPopulation ());
 		assertEquals (75, maxPercent.getTaxPercentage ());
 		assertEquals (0, maxPercent.getRacialPercentage ());
@@ -893,7 +900,7 @@ public final class TestCityCalculationsImpl
 		when (playerPickUtils.totalReligiousBuildingBonus (ppk.getPick (), db)).thenReturn (0);
 		
 		final CityUnrestBreakdown shrine = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, shrine.getPopulation ());
 		assertEquals (45, shrine.getTaxPercentage ());
 		assertEquals (0, shrine.getRacialPercentage ());
@@ -929,7 +936,7 @@ public final class TestCityCalculationsImpl
 		buildings.add (secondBuilding);
 
 		final CityUnrestBreakdown animistsGuild = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, animistsGuild.getPopulation ());
 		assertEquals (45, animistsGuild.getTaxPercentage ());
 		assertEquals (0, animistsGuild.getRacialPercentage ());
@@ -958,7 +965,7 @@ public final class TestCityCalculationsImpl
 		// Divine power does work on 2nd religious building
 		secondBuilding.setBuildingID ("BL03");
 		final CityUnrestBreakdown temple = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, temple.getPopulation ());
 		assertEquals (45, temple.getTaxPercentage ());
 		assertEquals (0, temple.getRacialPercentage ());
@@ -992,7 +999,7 @@ public final class TestCityCalculationsImpl
 		units.add (normalUnit);
 
 		final CityUnrestBreakdown firstUnit = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, firstUnit.getPopulation ());
 		assertEquals (45, firstUnit.getTaxPercentage ());
 		assertEquals (0, firstUnit.getRacialPercentage ());
@@ -1026,7 +1033,7 @@ public final class TestCityCalculationsImpl
 		units.add (heroUnit);
 
 		final CityUnrestBreakdown secondUnit = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, secondUnit.getPopulation ());
 		assertEquals (45, secondUnit.getTaxPercentage ());
 		assertEquals (0, secondUnit.getRacialPercentage ());
@@ -1069,7 +1076,7 @@ public final class TestCityCalculationsImpl
 		}
 
 		final CityUnrestBreakdown extraUnits = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, extraUnits.getPopulation ());
 		assertEquals (45, extraUnits.getTaxPercentage ());
 		assertEquals (0, extraUnits.getRacialPercentage ());
@@ -1103,7 +1110,7 @@ public final class TestCityCalculationsImpl
 		when (memoryBuildingUtils.findCityWithBuilding (1, CommonDatabaseConstants.BUILDING_FORTRESS, map, buildings)).thenReturn (fortressBuilding);
 
 		final CityUnrestBreakdown klackons = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, klackons.getPopulation ());
 		assertEquals (45, klackons.getTaxPercentage ());
 		assertEquals (0, klackons.getRacialPercentage ());
@@ -1133,7 +1140,7 @@ public final class TestCityCalculationsImpl
 		cityData.setCityRaceID ("RC02");
 
 		final CityUnrestBreakdown highElves = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, highElves.getPopulation ());
 		assertEquals (45, highElves.getTaxPercentage ());
 		assertEquals (0, highElves.getRacialPercentage ());
@@ -1161,7 +1168,7 @@ public final class TestCityCalculationsImpl
 
 		// If reduce the tax rate from only having 3 rebels, they're so happy that we get a negative number of rebels
 		final CityUnrestBreakdown forcePositive = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR01", db);
+			(players, map, units, buildings, spells, cityLocation, "TR01", db);
 		assertEquals (17, forcePositive.getPopulation ());
 		assertEquals (0, forcePositive.getTaxPercentage ());
 		assertEquals (0, forcePositive.getRacialPercentage ());
@@ -1197,7 +1204,7 @@ public final class TestCityCalculationsImpl
 		fortressBuilding.setCityLocation (new MapCoordinates3DEx (20, 2, 0));
 
 		final CityUnrestBreakdown racialUnrest = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR02", db);
+			(players, map, units, buildings, spells, cityLocation, "TR02", db);
 		assertEquals (17, racialUnrest.getPopulation ());
 		assertEquals (45, racialUnrest.getTaxPercentage ());
 		assertEquals (30, racialUnrest.getRacialPercentage ());
@@ -1231,7 +1238,7 @@ public final class TestCityCalculationsImpl
 		cityData.setCityPopulation (24890);		// Has to be over 20 for 105% to round down to >1 person
 		
 		final CityUnrestBreakdown forceAll = calc.calculateCityRebels
-			(players, map, units, buildings, cityLocation, "TR03", db);
+			(players, map, units, buildings, spells, cityLocation, "TR03", db);
 		assertEquals (24, forceAll.getPopulation ());
 		assertEquals (75, forceAll.getTaxPercentage ());
 		assertEquals (30, forceAll.getRacialPercentage ());

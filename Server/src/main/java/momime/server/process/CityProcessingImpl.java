@@ -258,8 +258,8 @@ public final class CityProcessingImpl implements CityProcessing
 
 				final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) thisPlayer.getPersistentPlayerPrivateKnowledge ();
 
-				city.setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
-					cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
+				city.setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (),
+					gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
 
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (city);
 
@@ -547,7 +547,8 @@ public final class CityProcessingImpl implements CityProcessing
 								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getBuilding (), cityLocation, sd, db);
 
 							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels
-								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
+								(players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
+								 gsk.getTrueMap ().getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
 
 							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 						}
@@ -642,8 +643,8 @@ public final class CityProcessingImpl implements CityProcessing
 			// The sold building might have been producing rations or stemming unrest so had better recalculate everything
 			getServerCityCalculations ().calculateCitySizeIDAndMinimumFarmers (players, trueMap.getMap (), trueMap.getBuilding (), cityLocation, sd, db);
 
-			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels
-				(players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
+			tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (),
+				trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, priv.getTaxRateID (), db).getFinalTotal ());
 
 			getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());
 
@@ -713,8 +714,8 @@ public final class CityProcessingImpl implements CityProcessing
 						{
 							final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane.getPlaneNumber ());
 							
-							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels 
-								(mom.getPlayers (), trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, taxRateID, mom.getServerDB ()).getFinalTotal ());
+							cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (mom.getPlayers (), trueMap.getMap (),
+								trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (), cityLocation, taxRateID, mom.getServerDB ()).getFinalTotal ());
 
 							getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 
@@ -790,7 +791,7 @@ public final class CityProcessingImpl implements CityProcessing
 		// Although farmers will be the same, capturing player may have a different tax rate or different units stationed here so recalc rebels
 		tc.getCityData ().setNumberOfRebels (getCityCalculations ().calculateCityRebels
 			(players, trueMap.getMap (),
-			trueMap.getUnit (), trueMap.getBuilding (),
+			trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
 			cityLocation, atkPriv.getTaxRateID (), db).getFinalTotal ());
 		
 		getServerCityCalculations ().ensureNotTooManyOptionalFarmers (tc.getCityData ());

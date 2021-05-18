@@ -513,8 +513,8 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				final PlayerServerDetails cityOwner = getMultiplayerSessionServerUtils ().findPlayerWithID (players, cityData.getCityOwnerID (), "moveUnitStackOneCellOnServerAndClients");
 				final MomPersistentPlayerPrivateKnowledge cityOwnerPriv = (MomPersistentPlayerPrivateKnowledge) cityOwner.getPersistentPlayerPrivateKnowledge ();
 
-				cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (), gsk.getTrueMap ().getBuilding (),
-					cityLocation, cityOwnerPriv.getTaxRateID (), db).getFinalTotal ());
+				cityData.setNumberOfRebels (getCityCalculations ().calculateCityRebels (players, gsk.getTrueMap ().getMap (), gsk.getTrueMap ().getUnit (),
+					gsk.getTrueMap ().getBuilding (), gsk.getTrueMap ().getMaintainedSpell (), cityLocation, cityOwnerPriv.getTaxRateID (), db).getFinalTotal ());
 
 				getServerCityCalculations ().ensureNotTooManyOptionalFarmers (cityData);
 

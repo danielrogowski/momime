@@ -259,6 +259,7 @@
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="booleanMapAreaOperations2D" ref="booleanMapAreaOperations2D" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	
 	<bean id="skillCalculations" class="momime.common.calculations.SkillCalculationsImpl" />

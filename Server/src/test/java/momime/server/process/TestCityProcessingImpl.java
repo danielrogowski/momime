@@ -294,10 +294,14 @@ public final class TestCityProcessingImpl extends ServerTestData
 		raidersMyrrorRebels.setFinalTotal (4);
 		
 		final CityCalculations cityCalc = mock (CityCalculations.class);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), humanLocation, "TR01", db)).thenReturn (humanRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), aiLocation, "TR02", db)).thenReturn (aiRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), raidersArcanusLocation, "TR03", db)).thenReturn (raidersArcanusRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), raidersMyrrorLocation, "TR03", db)).thenReturn (raidersMyrrorRebels);
+		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			humanLocation, "TR01", db)).thenReturn (humanRebels);
+		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			aiLocation, "TR02", db)).thenReturn (aiRebels);
+		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			raidersArcanusLocation, "TR03", db)).thenReturn (raidersArcanusRebels);
+		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			raidersMyrrorLocation, "TR03", db)).thenReturn (raidersMyrrorRebels);
 		
 		// City names
 		when (overlandMapServerUtils.generateCityName (gsk, race1)).thenReturn ("Human city");
@@ -602,9 +606,12 @@ public final class TestCityProcessingImpl extends ServerTestData
 		final CityUnrestBreakdown raidersRebels = new CityUnrestBreakdown ();
 		raidersRebels.setFinalTotal (3);
 		
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), humanLocation, "TR01", db)).thenReturn (humanRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), aiLocation, "TR02", db)).thenReturn (aiRebels);
-		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), raidersLocation, "TR03", db)).thenReturn (raidersRebels);
+		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			humanLocation, "TR01", db)).thenReturn (humanRebels);
+		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			aiLocation, "TR02", db)).thenReturn (aiRebels);
+		when (cityCalc.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			raidersLocation, "TR03", db)).thenReturn (raidersRebels);
 		
 		// Where the unit built by the raider city will appear
 		final UnitAddLocation unitAddLocation = new UnitAddLocation (raidersLocation, UnitAddBumpTypeID.CITY);
@@ -747,7 +754,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, BARRACKS, db)).thenReturn (false);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granaryDef)).thenReturn (12);
-		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, "TR", db)).thenReturn (unrest);
+		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (BARRACKS);
 		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, true, sd, db);
@@ -843,7 +851,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, BARRACKS, db)).thenReturn (false);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granaryDef)).thenReturn (12);
-		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, "TR", db)).thenReturn (unrest);
+		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (BARRACKS);
 		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, false, sd, db);
@@ -939,7 +948,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		when (memoryBuildingUtils.isBuildingAPrerequisiteForBuilding (GRANARY, FARMERS_MARKET, db)).thenReturn (true);
 		when (memoryBuildingUtils.goldFromSellingBuilding (granaryDef)).thenReturn (12);
-		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), cityLocation, "TR", db)).thenReturn (unrest);
+		when (cityCalculations.calculateCityRebels (players, trueMap.getMap (), trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			cityLocation, "TR", db)).thenReturn (unrest);
 		
 		cityData.setCurrentlyConstructingBuildingID (FARMERS_MARKET);
 		proc.sellBuilding (trueMap, players, cityLocation, granary.getBuildingURN (), false, true, sd, db);
@@ -1129,9 +1139,12 @@ public final class TestCityProcessingImpl extends ServerTestData
 
 		// Have to use anyObject () for location since .equals () doesn't give correct result
 		final CityCalculations cityCalculations = mock (CityCalculations.class);
-		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation1, "TR03", db)).thenReturn (breakdown1);
-		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation2, "TR03", db)).thenReturn (breakdown2);
-		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), cityLocation3, "TR03", db)).thenReturn (breakdown3);
+		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			cityLocation1, "TR03", db)).thenReturn (breakdown1);
+		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			cityLocation2, "TR03", db)).thenReturn (breakdown2);
+		when (cityCalculations.calculateCityRebels (players, trueTerrain, trueMap.getUnit (), trueMap.getBuilding (), trueMap.getMaintainedSpell (),
+			cityLocation3, "TR03", db)).thenReturn (breakdown3);
 		
 		final ServerCityCalculations serverCityCalculations = mock (ServerCityCalculations.class);
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);

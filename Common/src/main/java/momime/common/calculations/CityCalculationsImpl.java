@@ -51,12 +51,14 @@ import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
+import momime.common.internal.CityUnrestBreakdownSpell;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -66,6 +68,7 @@ import momime.common.messages.PlayerPick;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.RenderCityData;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 
@@ -88,6 +91,9 @@ public final class CityCalculationsImpl implements CityCalculations
 	
 	/** Boolean operations for 2D maps */
 	private BooleanMapAreaOperations2D booleanMapAreaOperations2D;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * A list of directions for traversing from a city's coordinates through all the map cells within that city's radius
@@ -555,6 +561,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 * @param map Known terrain
 	 * @param units Known units
 	 * @param buildings Known buildings
+	 * @param spells Known spells
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param db Lookup lists built over the XML database
@@ -564,7 +571,7 @@ public final class CityCalculationsImpl implements CityCalculations
 	 */
 	@Override
 	public final CityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException
 	{
@@ -656,6 +663,19 @@ public final class CityCalculationsImpl implements CityCalculations
 				religiousUnrestReduction = religiousUnrestReduction - breakdown.getReligiousBuildingRetortValue ();		// Subtract a -ve, i.e. add to the unrest reduction
 			}
 		}
+		
+		// Unrest reduction from spells
+		int spellsUnrestReduction = 0;
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells, cityData.getCityOwnerID (), CommonDatabaseConstants.SPELL_ID_JUST_CAUSE,
+			null, null, null, null) != null)
+		{
+			spellsUnrestReduction++;
+			
+			final CityUnrestBreakdownSpell spellBreakdown = new CityUnrestBreakdownSpell ();
+			spellBreakdown.setSpellID (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE);
+			spellBreakdown.setUnrestReduction (1);
+			breakdown.getSpellReducingUnrest ().add (spellBreakdown);
+		}
 
 		// Subtract pacifying effects of non-summoned units
 		for (final MemoryUnit thisUnit : units)
@@ -669,7 +689,8 @@ public final class CityCalculationsImpl implements CityCalculations
 		breakdown.setUnitReduction (-(breakdown.getUnitCount () / 2));
 
 		// Total unrest, before applying bounding limits
-		breakdown.setBaseTotal (breakdown.getBaseValue () + breakdown.getRacialLiteral () - religiousUnrestReduction - nonReligiousUnrestReduction + breakdown.getUnitReduction ());
+		breakdown.setBaseTotal (breakdown.getBaseValue () + breakdown.getRacialLiteral () - religiousUnrestReduction - nonReligiousUnrestReduction -
+			spellsUnrestReduction + breakdown.getUnitReduction ());
 		final int boundedTotal;
 
 		if (breakdown.getBaseTotal () < 0)
@@ -1465,5 +1486,21 @@ public final class CityCalculationsImpl implements CityCalculations
 	public final void setBooleanMapAreaOperations2D (final BooleanMapAreaOperations2D op)
 	{
 		booleanMapAreaOperations2D = op;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

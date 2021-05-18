@@ -1001,7 +1001,8 @@ public final class CityViewUI extends MomClientFrameUI
 					final CityUnrestBreakdown breakdown = getCityCalculations ().calculateCityRebels (getClient ().getPlayers (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
-						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (), getCityLocation (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getBuilding (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getCityLocation (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getTaxRateID (), getClient ().getClientDB ());
 					
 					final CalculationBoxUI calc = getPrototypeFrameCreator ().createCalculationBox ();

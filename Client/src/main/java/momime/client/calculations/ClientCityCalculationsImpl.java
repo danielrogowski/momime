@@ -36,6 +36,7 @@ import momime.common.internal.CityProductionBreakdownPopulationTask;
 import momime.common.internal.CityProductionBreakdownTileType;
 import momime.common.internal.CityUnrestBreakdown;
 import momime.common.internal.CityUnrestBreakdownBuilding;
+import momime.common.internal.CityUnrestBreakdownSpell;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.utils.MemoryBuildingUtils;
@@ -115,6 +116,13 @@ public final class ClientCityCalculationsImpl implements ClientCityCalculations
 		// Divine Power / Infernal Power retort
 		if (breakdown.getReligiousBuildingReduction () != 0)
 			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getRetort ()));
+
+		// Spells
+		for (final CityUnrestBreakdownSpell spellUnrest : breakdown.getSpellReducingUnrest ())
+		{
+			getUnrestReplacer ().setCurrentSpell (spellUnrest);			
+			getUnrestReplacer ().addLine (text, getLanguageHolder ().findDescription (getLanguages ().getUnrestCalculation ().getSpellUnrestReduction ()));
+		}
 		
 		// Units stationed in city
 		if (breakdown.getUnitCount () > 0)

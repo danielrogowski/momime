@@ -21,6 +21,7 @@ import momime.common.internal.CityUnrestBreakdown;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.RenderCityData;
@@ -120,6 +121,7 @@ public interface CityCalculations
 	 * @param map Known terrain
 	 * @param units Known units
 	 * @param buildings Known buildings
+	 * @param spells Known spells
 	 * @param cityLocation Location of the city to calculate for
 	 * @param taxRateID Tax rate to use for the calculation
 	 * @param db Lookup lists built over the XML database
@@ -128,7 +130,7 @@ public interface CityCalculations
 	 * @throws RecordNotFoundException If any of a number of items cannot be found in the cache
 	 */
 	public CityUnrestBreakdown calculateCityRebels (final List<? extends PlayerPublicDetails> players,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings,
+		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units, final List<MemoryBuilding> buildings, final List<MemoryMaintainedSpell> spells,
 		final MapCoordinates3DEx cityLocation, final String taxRateID, final CommonDatabase db)
 		throws PlayerNotFoundException, RecordNotFoundException;
 

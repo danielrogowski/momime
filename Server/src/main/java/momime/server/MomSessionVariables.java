@@ -87,8 +87,9 @@ public interface MomSessionVariables
 	/**
 	 * Searches for all save points of the current session and deletes the oldest ones, keeping only the number of latest save points as specified
 	 * @param keepCount Number of save points to keep
+	 * @return Number that were deleted
 	 */
-	public void deleteOldestSavePoints (final int keepCount);
+	public int deleteOldestSavePoints (final int keepCount);
 	
 	/**
 	 * @param playerID Human player to convert to AI player

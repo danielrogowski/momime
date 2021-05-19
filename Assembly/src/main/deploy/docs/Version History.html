@@ -26,7 +26,7 @@
 		pretty sure things are generally fine there too, but obviously haven't exhaustively tested across all of them.  If anybody has issues with running on other operating
 		systems then please let me know so I can try to make improvements.</p>
 
-	<p>Discussion forum for MoM IME <a href="http://mom.pjj.cc/forum">here</a>, or contact the author at <a href="mailto:momime@hotmail.ca">momime@hotmail.ca</a>.</p>
+	<p>Come join our discord channel <a href="https://discord.gg/JSAyfnKE">here</a>, or contact the author at <a href="mailto:momime@hotmail.ca">momime@hotmail.ca</a>.</p>
 
 	<h3>Version History</h3>
 	<table border=1>
@@ -38,12 +38,36 @@
 		<tr>
 			<a name="currentversion"></a>
 			<td align=left><b>Current version: 0.9.9.0</b></td>
-			<td align=left><b>?</b></td>
+			<td align=left><b>18 May 2021</b></td>
 			<td align=left>
 				<b>Spells that now work correctly:</b>
 				<ul>
 					<li>Dispel Magic, Dispel Magic true (worked before, but added sound+graphics)
 					<li>Disenchant Area, Disenchant True
+					<li>Disjunction, Disjunction True
+					<li>Spell Binding
+					<li>Counter Magic
+					<li>Just Cause reduces unrest in all cities by 1 (thanks to The MythMaker for spotting this)
+				</ul>
+
+				<b>Retorts that now work correctly:</b>
+				<ul>
+					<li>Node Mastery makes you immune to the dispelling effect of nodes
+					<li>Node Mastery earns double Magic Power from captured nodes
+					<li>Archmage's spells are twice as difficult to dispel and twice as resilient to Counter Magic, node auras and similar blocking effects
+					<li>Chaos/Sorcery/Nature mastery makes spells of that realm twice as hard to dispel
+					<li>Chaos/Sorcery/Nature mastery earn double Magic Power from captured nodes of that type
+					<li>Runemaster is twice as good at dispelling
+				</ul>
+				
+				<b>Unit abilities that now work correctly:</b>
+				<ul>
+					<li>Spell Lock preventing other unit enchantments from being dispelled and having special difficulty of 150 on attempts to dispel it
+				</ul>
+				
+				<b>Other game elements that now work correctly:</b>
+				<ul>
+					<li>Dispelling power of nodes
 				</ul>
 				
 				<b>Minor new features:</b>
@@ -53,7 +77,13 @@
 			
 				<b>Fixed bugs:</b>
 				<ul>
+					<li>AI had no targetting rules for Raise Dead / Animate Dead and so if it tried to cast these in combat it would give an error
+					<li>AI would try to cast Wall of Fire/Darkness/Stone in combat even if it already had that spell in that city, resulting in an error
 					<li>If we previously saw a unit and it had spells cast on it, then while we couldn't see it lost some of those spells, and now we walk up to it and see the unit again, we can now see the spells are gone
+					<li>Properly handle if the last enemy unit in combat has lost health but has Lionheart cast on it and we dispel it thereby killing it and winning the combat
+					<li>Properly handle if the last enemy unit in combat has lost health but has Lionheart cast on it the unit owner willingly switches Lionheart off thereby killing it and losing the combat
+					<li>When wizards were defeated and removed from the game, any combat area effects they still had cast weren't being cleaned up
+					<li>Fixed error if a player's units died in combat before they even had an overland move (if they weren't first player in a reloaded game)
 				</ul>
 			
 				<b>Removed features:</b>
@@ -65,6 +95,7 @@
 				<ul>
 					<li>Previously there was both a sword and wand both called "White Lightning".  Renamed the wand to "Wand of Lightning" so they're unique.
 					<li>Previously there was both a shield and axe both called "The Resistor".  Renamed the axe to "Axe of Resistance" so they're unique.
+					<li>Updated description of range penalty on channeler retort to be more accurate.
 				</ul>
 
 				<b>Technical changes:</b>

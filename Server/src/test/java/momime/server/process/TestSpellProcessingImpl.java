@@ -1046,7 +1046,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MemoryUnit summonedUnit = new MemoryUnit ();
 		summonedUnit.setUnitID ("UN004");
 		
-		when (midTurn.addUnitOnServerAndClients (gsk, "UN004", attackingFrom, attackingFrom,
+		when (midTurn.addUnitOnServerAndClients (gsk, "UN004", attackingFrom, null,
 			combatLocation, attackingPlayer, UnitStatusID.ALIVE, players, sd, db)).thenReturn (summonedUnit);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);

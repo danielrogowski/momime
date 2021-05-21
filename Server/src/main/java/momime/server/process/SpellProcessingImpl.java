@@ -616,7 +616,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// Now can add it
 					final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-						unitID, summonLocation, summonLocation, combatLocation, castingPlayer, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						unitID, summonLocation, null, combatLocation, castingPlayer, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 					
 					// What direction should the unit face?
 					final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;

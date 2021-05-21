@@ -151,6 +151,7 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		
 		final AddOrUpdateMaintainedSpellMessageImpl spellMessage = new AddOrUpdateMaintainedSpellMessageImpl ();
 		spellMessage.setMaintainedSpell (spell);
+		spellMessage.setNewlyCast (true);
 
 		// Using the real image generator is easier than mocking it out
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();

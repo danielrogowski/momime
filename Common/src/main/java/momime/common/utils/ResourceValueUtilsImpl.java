@@ -236,6 +236,41 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		
 		return total;
 	}
+
+	/**
+	 * There isn't a "calculateBasicResearch" and "calculateModifiedResearch" since basic research is calculated with calculateAmountPerTurnForProductionType.
+	 * So this method adds on the modified bonus onto basic research, for which the only source is from Sage heroes.
+	 * 
+	 * @param playerID Player we want to calculate modified research for
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return Research bonus from units
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public final int calculateResearchFromUnits (final int playerID, final List<? extends PlayerPublicDetails> players,
+		final FogOfWarMemory mem, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		int total = 0;
+		
+		for (final MemoryUnit unit : mem.getUnit ())
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerID))
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE))
+				{
+					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();
+					final int heroSkillValue = ((xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE) + 1) * 3 * (expLevel+1)) / 2;
+					total = total + heroSkillValue;
+				}
+			}
+		
+		return total;
+	}
 	
 	/**
      * This does include splitting magic power into mana/research/skill improvement, but does not include selling 2 rations to get 1 gold

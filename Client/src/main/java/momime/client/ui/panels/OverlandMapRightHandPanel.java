@@ -1240,7 +1240,10 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 				(getSpellUtils ().getSpellsForStatus (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellResearchStatus (),
 					SpellResearchStatusID.RESEARCHABLE_NOW, getClient ().getClientDB ()).size () > 0) &&
 				(getResourceValueUtils ().calculateAmountPerTurnForProductionType (getClient ().getOurPersistentPlayerPrivateKnowledge (),
-					pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()) > 0))
+					pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH,
+					getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ()) + getResourceValueUtils ().calculateResearchFromUnits
+					(getClient ().getOurPlayerID (), getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+						getClient ().getClientDB ()) > 0))
 			{
 				resourceIconFilenames.add (getClient ().getClientDB ().findProductionType
 					(CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "updateProductionTypesStoppingUsFromEndingTurn").findProductionValueImageFile ("1"));

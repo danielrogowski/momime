@@ -497,15 +497,17 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * Checks how much research we generate this turn and puts it towards the current spell
 	 * 
 	 * @param player Player to progress research for
+	 * @param players Player list
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If there is a spell in the list of research statuses that doesn't exist in the DB
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws JAXBException If there is a problem converting a reply message into XML
 	 * @throws XMLStreamException If there is a problem writing a reply message to the XML stream
 	 * @throws MomException If we find an invalid casting reduction type
 	 */
-	final void progressResearch (final PlayerServerDetails player, final MomSessionDescription sd, final CommonDatabase db)
-		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException
+	final void progressResearch (final PlayerServerDetails player, final List<PlayerServerDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		throws RecordNotFoundException, JAXBException, XMLStreamException, MomException, PlayerNotFoundException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
@@ -513,7 +515,9 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 		if (priv.getSpellIDBeingResearched () != null)
 		{
-			int researchAmount = getResourceValueUtils ().calculateAmountPerTurnForProductionType (priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, sd.getSpellSetting (), db);
+			int researchAmount = getResourceValueUtils ().calculateAmountPerTurnForProductionType
+				(priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, sd.getSpellSetting (), db) +
+				getResourceValueUtils ().calculateResearchFromUnits (player.getPlayerDescription ().getPlayerID (), players, priv.getFogOfWarMemory (), db);				
 
 			log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " generated " + researchAmount + " RPs this turn in spell research");
 			
@@ -640,7 +644,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 						// Per turn production amounts are now fine, so do the accumulation and effect calculations
 						accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
-						progressResearch (player, mom.getSessionDescription (), mom.getServerDB ());
+						progressResearch (player, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						resetCastingSkillRemainingThisTurnToFull (player, mom.getPlayers (), mom.getServerDB ());
 
 						// Continue casting spells

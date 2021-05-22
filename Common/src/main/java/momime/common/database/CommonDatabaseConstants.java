@@ -250,6 +250,9 @@ public final class CommonDatabaseConstants
 	
 	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
 	public final static String UNIT_SKILL_ID_CASTER_HERO = "HS05";
+	
+	/** Hero contributes to wizard's research */
+	public final static String UNIT_SKILL_ID_SAGE = "HS14";
 
 	/**
 	 * Special code used for hero item bonuses, meaning "type(s) of attack appropriate for the type of weapon", so is used to differentiate

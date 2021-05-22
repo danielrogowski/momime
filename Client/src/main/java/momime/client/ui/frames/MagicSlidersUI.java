@@ -580,7 +580,7 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				final int manaPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
 					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 
-				final int researchPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
+				final int basicResearch = getResourceValueUtils ().calculateAmountPerTurnForProductionType
 					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 
 				final int skillPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
@@ -589,12 +589,19 @@ public final class MagicSlidersUI extends MomClientFrameUI
 				final int magicPowerPerTurnValue = getResourceValueUtils ().calculateAmountPerTurnForProductionType
 					(getClient ().getOurPersistentPlayerPrivateKnowledge (), pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER, getClient ().getSessionDescription ().getSpellSetting (), getClient ().getClientDB ());
 			
+				// Bonuses from heroes
+				final int modifiedResearch = basicResearch + getResourceValueUtils ().calculateResearchFromUnits (getClient ().getOurPlayerID (),
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				
 				// Update the per turn labels
 				final ProductionType manaProduction = getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, "updateProductionLabels");
 				manaPerTurn.setString (getTextUtils ().intToStrCommas (manaPerTurnValue) + " " + getLanguageHolder ().findDescription (manaProduction.getProductionTypeSuffix ()));
 		
 				final ProductionType researchProduction = getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, "updateProductionLabels");
-				researchPerTurn.setString (getTextUtils ().intToStrCommas (researchPerTurnValue) + " " + getLanguageHolder ().findDescription (researchProduction.getProductionTypeSuffix ()));
+				if (basicResearch == modifiedResearch)
+					researchPerTurn.setString (getTextUtils ().intToStrCommas (basicResearch) + " " + getLanguageHolder ().findDescription (researchProduction.getProductionTypeSuffix ()));
+				else
+					researchPerTurn.setString (getTextUtils ().intToStrCommas (modifiedResearch) + " (" + getTextUtils ().intToStrCommas (basicResearch) + ") " + getLanguageHolder ().findDescription (researchProduction.getProductionTypeSuffix ()));
 		
 				final ProductionType skillProduction = getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT, "updateProductionLabels");
 				skillPerTurn.setString (getTextUtils ().intToStrCommas (skillPerTurnValue) + " " + getLanguageHolder ().findDescription (skillProduction.getProductionTypeSuffix ()));

@@ -749,6 +749,8 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		pd.setHuman (isHuman);
 		
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
 		// Connection
 		final DummyServerToClientConnection msgs = new DummyServerToClientConnection ();
@@ -781,7 +783,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 			(priv, pub.getPick (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_RESEARCH, spellSettings, db)).thenReturn (40);
 		
 		// No spell being researched
-		calc.progressResearch (player, sd, db);
+		calc.progressResearch (player, players, sd, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -802,7 +804,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		// Spend 40 research - 60 left
 		priv.setSpellIDBeingResearched ("SP002");
 
-		calc.progressResearch (player, sd, db);
+		calc.progressResearch (player, players, sd, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -829,7 +831,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 
 		// Spend 40 research - 20 left
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, sd, db);
+		calc.progressResearch (player, players, sd, db);
 		
 		assertEquals ("SP002", priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());
@@ -856,7 +858,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		
 		// Finish research
 		msgs.getMessages ().clear ();
-		calc.progressResearch (player, sd, db);
+		calc.progressResearch (player, players, sd, db);
 		
 		assertNull (priv.getSpellIDBeingResearched ());
 		assertEquals (3, priv.getSpellResearchStatus ().size ());

@@ -19,6 +19,7 @@ import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ExperienceLevel;
 import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -467,6 +468,48 @@ public final class TestResourceValueUtilsImpl
 		
 		// Run method
 		assertEquals (3 + 10 + 7, utils.calculateModifiedCastingSkill (resourceValues, playerDetails, players, mem, db, true));
+	}
+	
+	/**
+	 * Tests the calculateResearchFromUnits method
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateResearchFromUnits () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Players
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		// Units
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryUnit hero = new MemoryUnit ();
+		hero.setStatus (UnitStatusID.ALIVE);
+		hero.setOwningPlayerID (2);
+		
+		mem.getUnit ().add (hero);
+
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE)).thenReturn (true);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE)).thenReturn (2);
+		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
+		
+		// Level 2 hero with super sage
+		final ExperienceLevel captain = new ExperienceLevel ();
+		captain.setLevelNumber (2);
+		when (xu.getModifiedExperienceLevel ()).thenReturn (captain);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setUnitUtils (unitUtils);
+		
+		// Run method
+		assertEquals (13, utils.calculateResearchFromUnits (2, players, mem, db));
 	}
 	
 	/**

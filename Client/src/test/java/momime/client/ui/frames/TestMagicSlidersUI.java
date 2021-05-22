@@ -42,6 +42,7 @@ import momime.common.messages.MomResourceValue;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatus;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
 import momime.common.utils.SpellUtils;
@@ -204,6 +205,9 @@ public final class TestMagicSlidersUI extends ClientTestData
 			return slider;
 		});
 		
+		// Wizard's Fortress
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class); 
+		
 		// With the values moving, we need the real calc production values routine in order to demonstrate the UI working properly
 		final SpellCalculations spellCalc = mock (SpellCalculations.class);
 		
@@ -213,6 +217,7 @@ public final class TestMagicSlidersUI extends ClientTestData
 		resourceValueUtils.setPlayerPickUtils (pickUtils);
 		resourceValueUtils.setSpellCalculations (spellCalc);
 		resourceValueUtils.setSkillCalculations (skillCalc);
+		resourceValueUtils.setMemoryBuildingUtils (memoryBuildingUtils);
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/MagicSlidersUI.xml"));

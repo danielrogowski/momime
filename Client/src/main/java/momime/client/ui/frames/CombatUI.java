@@ -1215,7 +1215,8 @@ public final class CombatUI extends MomClientFrameUI
 				castableLabel.setVisible (true);
 
 				// Set up initial casting values
-				updateRemainingCastingSkill (getResourceValueUtils ().calculateCastingSkillOfPlayer (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ()));
+				updateRemainingCastingSkill (getResourceValueUtils ().calculateModifiedCastingSkill (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (),
+					ourPlayer, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (), false));
 			}
 			
 			// Can't cast anything, at least until it is our turn

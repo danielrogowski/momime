@@ -3,17 +3,26 @@ package momime.common.utils;
 import java.util.Iterator;
 import java.util.List;
 
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculations;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
+import momime.common.messages.UnitStatusID;
 
 /**
  * Methods for working with list of MomResourceValues
@@ -28,6 +37,12 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
+
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/**
 	 * @param resourceList List of resources to search through
@@ -161,7 +176,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
      * @return The specified player's casting skill, in mana-points-spendable/turn instead of raw skill points
      */
 	@Override
-	public final int calculateCastingSkillOfPlayer (final List<MomResourceValue> resourceList)
+	public final int calculateBasicCastingSkill (final List<MomResourceValue> resourceList)
 	{
 		final int playerSkillPoints = findAmountStoredForProductionType (resourceList, CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
 		final int result = getSkillCalculations ().getCastingSkillForSkillPoints (playerSkillPoints);
@@ -169,6 +184,59 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		return result;
 	}
 
+    /**
+	 * @param resourceList List of resources to search through
+	 * @param playerDetails Details about the player whose casting skill we want
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @param includeBonusFromHeroesAtFortress Whether to add on bonus from heroes parked at the Wizard's Fortress, or only from Archmage
+     * @return The specified player's casting skill, including bonuses from Archmage and heroes
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+     */
+	@Override
+	public int calculateModifiedCastingSkill (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db, final boolean includeBonusFromHeroesAtFortress)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		int total = calculateBasicCastingSkill (resourceList);
+		
+		// Archmage
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) playerDetails.getPersistentPlayerPublicKnowledge ();
+		for (final PlayerPick pick : pub.getPick ())
+		{
+			final Pick pickDef = db.findPick (pick.getPickID (), "calculateModifiedCastingSkill");
+			if (pickDef.getDynamicSkillBonus () != null)
+				total = total + (pickDef.getDynamicSkillBonus () * pick.getQuantity ());
+		}
+		
+		// Heroes with caster skill who are parked at our Fortress
+		if (includeBonusFromHeroesAtFortress)
+		{
+			final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
+				(playerDetails.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, mem.getMap (), mem.getBuilding ());
+			if (fortressLocation != null)
+			{
+				int heroesTotalMana = 0;
+				
+				for (final MemoryUnit unit : mem.getUnit ())
+					if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerDetails.getPlayerDescription ().getPlayerID ()) &&
+						(fortressLocation.getCityLocation ().equals (unit.getUnitLocation ())))
+					{
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+						if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO))
+							heroesTotalMana = heroesTotalMana + xu.calculateManaTotal ();
+					}
+				
+				total = total + (heroesTotalMana / 2);
+			}
+		}
+		
+		return total;
+	}
+	
 	/**
      * This does include splitting magic power into mana/research/skill improvement, but does not include selling 2 rations to get 1 gold
      * Delphi method is TMomPlayerResourceValues.FindAmountPerTurnForProductionType
@@ -313,5 +381,37 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 }

@@ -222,7 +222,7 @@ public final class TestCombatUI extends ClientTestData
 		
 		// Spell stats
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.calculateCastingSkillOfPlayer (priv.getResourceValue ())).thenReturn (22);
+		when (resourceValueUtils.calculateModifiedCastingSkill (priv.getResourceValue (), attackingPlayer, players, fow, db, false)).thenReturn (22);
 		
 		when (resourceValueUtils.findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (97);
 		

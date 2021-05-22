@@ -22,6 +22,7 @@ import com.ndg.random.RandomUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.database.AiUnitCategory;
+import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Wizard;
@@ -331,7 +332,7 @@ public final class MomAIImpl implements MomAI
 			// Only wizards can use alchemy (raiders don't need mana)
 			// Make sure we do this before rush buying projects in cities, as generating mana for Spell of Return is more important
 			if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (mom.getGeneralPublicKnowledge ().getTurnNumber () >= 25))
-				considerAlchemy (player);
+				considerAlchemy (player, mom.getPlayers (), mom.getServerDB ());
 			
 			if (numberOfCities > 0)
 			{
@@ -363,13 +364,19 @@ public final class MomAIImpl implements MomAI
 	
 	/**
 	 * @param player AI player to consider converting gold into mana for
+	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	final void considerAlchemy (final PlayerServerDetails player)
+	final void considerAlchemy (final PlayerServerDetails player, final List<PlayerServerDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
 		// Want 10x casting skill in MP
-		final int desiredMana = getResourceValueUtils ().calculateCastingSkillOfPlayer (priv.getResourceValue ()) * 10;
+		final int desiredMana = getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (), player, players, priv.getFogOfWarMemory (), db, true) * 10;
 		final int currentMana = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		log.debug ("AI Player ID " + player.getPlayerDescription ().getPlayerID () + " has " + currentMana + " MP and wants minimum " + desiredMana + " MP");
 		

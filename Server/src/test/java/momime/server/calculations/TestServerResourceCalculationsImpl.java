@@ -912,16 +912,29 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 	
 	/**
 	 * Tests the resetCastingSkillRemainingThisTurnToFull method
+	 * @throws Exception If there is a problem
 	 */
 	@Test
-	public final void testResetCastingSkillRemainingThisTurnToFull ()
+	public final void testResetCastingSkillRemainingThisTurnToFull () throws Exception
 	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+
 		// Player
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
 		final MomPersistentPlayerPrivateKnowledge priv = new MomPersistentPlayerPrivateKnowledge ();
+		priv.setFogOfWarMemory (mem);
+		
 		final MomTransientPlayerPrivateKnowledge trans = new MomTransientPlayerPrivateKnowledge ();
 
 		final PlayerDescription pd = new PlayerDescription ();
-		final PlayerServerDetails player = new PlayerServerDetails (pd, null, priv, null, trans);
+		pd.setPlayerID (2);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, trans);
+		
+		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		// Set amount of casting skill
 		final MomResourceValue skillImprovement = new MomResourceValue ();
@@ -929,15 +942,19 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		skillImprovement.setAmountStored (10);
 		priv.getResourceValue ().add (skillImprovement);
 		
+		// Wizard's Fortress
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		
 		// Set up test object
 		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();
 		resourceValueUtils.setSkillCalculations (new SkillCalculationsImpl ());
+		resourceValueUtils.setMemoryBuildingUtils (memoryBuildingUtils);
 		
 		final ServerResourceCalculationsImpl calc = new ServerResourceCalculationsImpl ();
 		calc.setResourceValueUtils (resourceValueUtils);
 		
 		// Run test
-		calc.resetCastingSkillRemainingThisTurnToFull (player);
+		calc.resetCastingSkillRemainingThisTurnToFull (player, players, db);
 		assertEquals (3, trans.getOverlandCastingSkillRemainingThisTurn ());
 	}
 }

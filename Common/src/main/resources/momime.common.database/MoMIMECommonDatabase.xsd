@@ -2115,6 +2115,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickInitialSkill" type="momimecommon:pickInitialSkill" nxe:label="Initial Skill" nxe:gridwidth="70" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="dynamicSkillBonus" type="momimecommon:pickInitialSkill" nxe:label="Dynamic Skill +" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="enhancesDamageType" type="xsd:boolean" nxe:label="Enhances Damage Type?" nxe:gridwidth="200"> 
 				<xsd:annotation>
 					<xsd:documentation>Basically this indicates whether this lifeform type ignores Weapon Immunity.</xsd:documentation>

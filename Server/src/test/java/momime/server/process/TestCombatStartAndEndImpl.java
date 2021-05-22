@@ -225,8 +225,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Casting skill of each player
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.calculateCastingSkillOfPlayer (attackingPriv.getResourceValue ())).thenReturn (28);
-		when (resourceValueUtils.calculateCastingSkillOfPlayer (defendingPriv.getResourceValue ())).thenReturn (22);
+		when (resourceValueUtils.calculateModifiedCastingSkill (attackingPriv.getResourceValue (), attackingPlayer, players,
+			attackingPriv.getFogOfWarMemory (), db, false)).thenReturn (28);
+		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingPlayer, players,
+			defendingPriv.getFogOfWarMemory (), db, false)).thenReturn (22);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -378,8 +380,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Casting skill of each player
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.calculateCastingSkillOfPlayer (attackingPriv.getResourceValue ())).thenReturn (28);
-		when (resourceValueUtils.calculateCastingSkillOfPlayer (defendingPriv.getResourceValue ())).thenReturn (22);
+		when (resourceValueUtils.calculateModifiedCastingSkill (attackingPriv.getResourceValue (), attackingPlayer, players,
+			attackingPriv.getFogOfWarMemory (), db, false)).thenReturn (28);
+		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingPlayer, players,
+			defendingPriv.getFogOfWarMemory (), db, false)).thenReturn (22);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
@@ -529,8 +533,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		// Casting skill of each player
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
-		when (resourceValueUtils.calculateCastingSkillOfPlayer (attackingPriv.getResourceValue ())).thenReturn (28);
-		when (resourceValueUtils.calculateCastingSkillOfPlayer (defendingPriv.getResourceValue ())).thenReturn (22);
+		when (resourceValueUtils.calculateModifiedCastingSkill (attackingPriv.getResourceValue (), attackingPlayer, players,
+			attackingPriv.getFogOfWarMemory (), db, false)).thenReturn (28);
+		when (resourceValueUtils.calculateModifiedCastingSkill (defendingPriv.getResourceValue (), defendingPlayer, players,
+			defendingPriv.getFogOfWarMemory (), db, false)).thenReturn (22);
 		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);

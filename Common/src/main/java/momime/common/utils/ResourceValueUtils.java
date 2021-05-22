@@ -2,10 +2,14 @@ package momime.common.utils;
 
 import java.util.List;
 
+import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+
 import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.SpellSetting;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
@@ -68,8 +72,24 @@ public interface ResourceValueUtils
 	 * @param resourceList List of resources to search through
      * @return The specified player's casting skill, in mana-points-spendable/turn instead of raw skill points
      */
-	public int calculateCastingSkillOfPlayer (final List<MomResourceValue> resourceList);
+	public int calculateBasicCastingSkill (final List<MomResourceValue> resourceList);
 
+    /**
+	 * @param resourceList List of resources to search through
+	 * @param playerDetails Details about the player whose casting skill we want
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @param includeBonusFromHeroesAtFortress Whether to add on bonus from heroes parked at the Wizard's Fortress, or only from Archmage
+     * @return The specified player's casting skill, including bonuses from Archmage and heroes
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+     */
+	public int calculateModifiedCastingSkill (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db, final boolean includeBonusFromHeroesAtFortress)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
 	/**
      * This does include splitting magic power into mana/research/skill improvement, but does not include selling 2 rations to get 1 gold
      * Delphi method is TMomPlayerResourceValues.FindAmountPerTurnForProductionType

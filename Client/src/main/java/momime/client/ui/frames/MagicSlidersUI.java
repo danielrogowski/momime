@@ -603,14 +603,20 @@ public final class MagicSlidersUI extends MomClientFrameUI
 					("AMOUNT_PER_TURN", getTextUtils ().intToStrCommas (magicPowerPerTurnValue)));				
 			
 				// Update casting skill label
-				final int currentSkill = getResourceValueUtils ().calculateCastingSkillOfPlayer (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ());
-				castingSkill.setText (getTextUtils ().intToStrCommas (currentSkill));
+				final int basicSkill = getResourceValueUtils ().calculateBasicCastingSkill (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ());
+				final int modifiedSkill = getResourceValueUtils ().calculateModifiedCastingSkill (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (),
+					ourPlayer, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (), true);
+				
+				if (basicSkill == modifiedSkill)
+					castingSkill.setText (getTextUtils ().intToStrCommas (modifiedSkill));
+				else
+					castingSkill.setText (getTextUtils ().intToStrCommas (modifiedSkill) + " (" + getTextUtils ().intToStrCommas (basicSkill) + ")");
 			
 				// Skill progress bar
-				skillPerTurn.setMaximum (getSkillCalculations ().getSkillPointsRequiredToImproveSkillFrom (currentSkill));
+				skillPerTurn.setMaximum (getSkillCalculations ().getSkillPointsRequiredToImproveSkillFrom (basicSkill));
 				skillPerTurn.setValue (getResourceValueUtils ().findAmountStoredForProductionType
 					(getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT) -
-					getSkillCalculations ().getSkillPointsRequiredForCastingSkill (currentSkill));		// i.e. current skill pts - what we needed to attain our current skill level
+					getSkillCalculations ().getSkillPointsRequiredForCastingSkill (basicSkill));		// i.e. current skill pts - what we needed to attain our current skill level
 			
 				// Spell being researched
 				if (getClient ().getOurPersistentPlayerPrivateKnowledge ().getSpellIDBeingResearched () == null)

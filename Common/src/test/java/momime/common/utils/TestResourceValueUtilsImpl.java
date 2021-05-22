@@ -10,18 +10,28 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
+import com.ndg.multiplayer.sessionbase.PlayerDescription;
+
 import momime.common.MomException;
 import momime.common.calculations.SkillCalculationsImpl;
 import momime.common.calculations.SpellCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellSetting;
+import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MagicPowerDistribution;
+import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomResourceValue;
 import momime.common.messages.PlayerPick;
+import momime.common.messages.UnitStatusID;
 
 /**
  * Tests the ResourceValueUtils class
@@ -315,11 +325,12 @@ public final class TestResourceValueUtilsImpl
 	}
 
 	/**
-	 * Tests the calculateCastingSkillOfPlayer method
+	 * Tests the calculateBasicCastingSkill method
 	 */
 	@Test
-	public final void testCalculateCastingSkillOfPlayer ()
+	public final void testCalculateBasicCastingSkill ()
 	{
+		// Casting skill points
 		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
 
 		final MomResourceValue skillImprovement = new MomResourceValue ();
@@ -327,11 +338,137 @@ public final class TestResourceValueUtilsImpl
 		skillImprovement.setAmountStored (10);
 		resourceValues.add (skillImprovement);
 
+		// Set up object to test
 		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
 		utils.setSkillCalculations (new SkillCalculationsImpl ());
-		assertEquals (3, utils.calculateCastingSkillOfPlayer (resourceValues));
+		
+		// Run method
+		assertEquals (3, utils.calculateBasicCastingSkill (resourceValues));
 	}
 
+	/**
+	 * Tests the calculateModifiedCastingSkill method when there are no bonuses
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateModifiedCastingSkill_Basic () throws Exception
+	{
+		// Casting skill points
+		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
+
+		final MomResourceValue skillImprovement = new MomResourceValue ();
+		skillImprovement.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		skillImprovement.setAmountStored (10);
+		resourceValues.add (skillImprovement);
+		
+		// Player picks
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails playerDetails = new PlayerPublicDetails (pd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		// Units
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Wizard's Fortress
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setSkillCalculations (new SkillCalculationsImpl ());
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+		
+		// Run method
+		assertEquals (3, utils.calculateModifiedCastingSkill (resourceValues, playerDetails, players, mem, db, true));
+	}
+	
+	/**
+	 * Tests the calculateModifiedCastingSkill method when there are both types of bonuses
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateModifiedCastingSkill_Modified () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		for (int n = 1; n <= 3; n++)
+		{
+			final Pick pickDef = new Pick ();
+			pickDef.setPickID ("RT0" + n);
+			
+			if (n == 2)
+				pickDef.setDynamicSkillBonus (10);
+			
+			when (db.findPick (pickDef.getPickID (), "calculateModifiedCastingSkill")).thenReturn (pickDef);
+		}
+		
+		// Casting skill points
+		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
+
+		final MomResourceValue skillImprovement = new MomResourceValue ();
+		skillImprovement.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_SKILL_IMPROVEMENT);
+		skillImprovement.setAmountStored (10);
+		resourceValues.add (skillImprovement);
+		
+		// Player picks
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails playerDetails = new PlayerPublicDetails (pd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final PlayerPick pick = new PlayerPick ();
+			pick.setPickID ("RT0" + n);
+			pick.setQuantity (1);
+			pub.getPick ().add (pick);
+		}
+		
+		// Units
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		final MemoryUnit hero = new MemoryUnit ();
+		hero.setStatus (UnitStatusID.ALIVE);
+		hero.setOwningPlayerID (2);
+		hero.setUnitLocation (new MapCoordinates3DEx (20, 10, 1));
+		
+		mem.getUnit ().add (hero);
+		
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)).thenReturn (true);
+		when (xu.calculateManaTotal ()).thenReturn (15);
+		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
+		
+		// Wizard's Fortress
+		final MemoryBuilding fortress = new MemoryBuilding ();
+		fortress.setCityLocation (new MapCoordinates3DEx (20, 10, 1));
+		
+		final MemoryBuildingUtils memoryBuildingUtils = mock (MemoryBuildingUtils.class);
+		when (memoryBuildingUtils.findCityWithBuilding (2, CommonDatabaseConstants.BUILDING_FORTRESS, mem.getMap (), mem.getBuilding ())).thenReturn (fortress);
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setSkillCalculations (new SkillCalculationsImpl ());
+		utils.setMemoryBuildingUtils (memoryBuildingUtils);
+		utils.setUnitUtils (unitUtils);
+		
+		// Run method
+		assertEquals (3 + 10 + 7, utils.calculateModifiedCastingSkill (resourceValues, playerDetails, players, mem, db, true));
+	}
+	
 	/**
 	 * Tests the calculateAmountPerTurnForProductionType method
 	 * @throws MomException If there is a problem

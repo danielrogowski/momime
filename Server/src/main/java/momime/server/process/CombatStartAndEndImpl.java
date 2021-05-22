@@ -230,10 +230,12 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			
 			// Set casting skill allocation for this combat 
 			final MomPersistentPlayerPrivateKnowledge attackingPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
-			tc.setCombatAttackerCastingSkillRemaining (getResourceValueUtils ().calculateCastingSkillOfPlayer (attackingPriv.getResourceValue ()));
+			tc.setCombatAttackerCastingSkillRemaining (getResourceValueUtils ().calculateModifiedCastingSkill (attackingPriv.getResourceValue (),
+				attackingPlayer, mom.getPlayers (), attackingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
 			
 			final MomPersistentPlayerPrivateKnowledge defendingPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-			tc.setCombatDefenderCastingSkillRemaining (getResourceValueUtils ().calculateCastingSkillOfPlayer (defendingPriv.getResourceValue ()));
+			tc.setCombatDefenderCastingSkillRemaining (getResourceValueUtils ().calculateModifiedCastingSkill (defendingPriv.getResourceValue (),
+				defendingPlayer, mom.getPlayers (), defendingPriv.getFogOfWarMemory (), mom.getServerDB (), false)); 
 			
 			// Finally send the message, containing all the unit positions, units (if monsters in a node/lair/tower) and combat scenery
 			if (attackingPlayer.getPlayerDescription ().isHuman ())

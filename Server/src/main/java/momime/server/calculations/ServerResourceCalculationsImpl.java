@@ -579,13 +579,20 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	 * Resets the casting skill the wizard(s) have left to spend this turn back to their full skill
 	 * 
 	 * @param player Player who's overlandCastingSkillRemainingThisTurn to set
+	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player)
+	final void resetCastingSkillRemainingThisTurnToFull (final PlayerServerDetails player, final List<PlayerServerDetails> players, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 
-		trans.setOverlandCastingSkillRemainingThisTurn (getResourceValueUtils ().calculateCastingSkillOfPlayer (priv.getResourceValue ()));
+		trans.setOverlandCastingSkillRemainingThisTurn (getResourceValueUtils ().calculateModifiedCastingSkill (priv.getResourceValue (),
+			player, players, priv.getFogOfWarMemory (), db, true));
 	}
 
 	/**
@@ -634,7 +641,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 						// Per turn production amounts are now fine, so do the accumulation and effect calculations
 						accumulateGlobalProductionValues (player, mom.getSessionDescription ().getSpellSetting (), mom.getServerDB ());
 						progressResearch (player, mom.getSessionDescription (), mom.getServerDB ());
-						resetCastingSkillRemainingThisTurnToFull (player);
+						resetCastingSkillRemainingThisTurnToFull (player, mom.getPlayers (), mom.getServerDB ());
 
 						// Continue casting spells
 						// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used

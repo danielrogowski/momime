@@ -797,8 +797,11 @@
                 <text>Próba połączenia nie powiodła się, z nietypowym kodem błędu.</text>
             </other>
             <unexpectedConversationTag language="en">
-            	<text>This server appears to be running ACTUAL_ELEMENT instead of EXPECTED_ELEMENT.</text>
+            	<text>Connected to server, but this server appears to be running ACTUAL_ELEMENT instead of EXPECTED_ELEMENT.</text>
             </unexpectedConversationTag>
+            <badStream language="en">
+            	<text>Connected to server, but the data from the server is not in the expected format.  Typically this means you connected to something other than a MoM IME server.</text>
+            </badStream>
         </connectionErrors>
     </multiplayer>
     <unitName>

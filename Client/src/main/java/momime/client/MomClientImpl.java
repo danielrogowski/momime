@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.ZipException;
 
 import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
@@ -737,27 +738,34 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 			{
 				log.error (e, e);
 				
+				List<LanguageText> languageText = null;
+				String text = null;
+				
 				if (e instanceof XMLUnexpectedElement)
 				{
 					final XMLUnexpectedElement e2 = (XMLUnexpectedElement) e;
 					if (e2.isStartConversationTag ())
+						text = getLanguageHolder ().findDescription
+							(getLanguageHolder ().getLanguages ().getMultiplayer ().getConnectionErrors ().getUnexpectedConversationTag ()).replaceAll
+								("EXPECTED_ELEMENT", e2.getExpectedElement ()).replaceAll ("ACTUAL_ELEMENT", e2.getActualElement ());
+				}
+				else if (e instanceof ZipException)
+					languageText = getLanguageHolder ().getLanguages ().getMultiplayer ().getConnectionErrors ().getBadStream ();
+				
+				// Display in window
+				if ((languageText != null) || (text != null))
+				{
+					final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+					msg.setLanguageTitle (getLanguages ().getMultiplayer ().getConnectionErrors ().getTitle ());
+					msg.setLanguageText (languageText);
+					msg.setText (text);
+					try
 					{
-						final List<LanguageText> languageText = getLanguageHolder ().getLanguages ().getMultiplayer ().getConnectionErrors ().getUnexpectedConversationTag ();
-						final String text = getLanguageHolder ().findDescription (languageText).replaceAll
-							("EXPECTED_ELEMENT", e2.getExpectedElement ()).replaceAll ("ACTUAL_ELEMENT", e2.getActualElement ());
-						
-						// Display in window
-						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
-						msg.setLanguageTitle (getLanguages ().getMultiplayer ().getConnectionErrors ().getTitle ());
-						msg.setText (text);
-						try
-						{
-							msg.setVisible (true);
-						}
-						catch (final Exception e3)
-						{
-							log.error (e3, e3);
-						}
+						msg.setVisible (true);
+					}
+					catch (final Exception e2)
+					{
+						log.error (e2, e2);
 					}
 				}
 			}

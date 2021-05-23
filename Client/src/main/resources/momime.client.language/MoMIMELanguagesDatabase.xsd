@@ -2293,6 +2293,10 @@
 					<xsd:selector xpath="other" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
+				<xsd:key name="connectionErrorsUnexpectedConversationTagPK">
+					<xsd:selector xpath="unexpectedConversationTag" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
    			</xsd:element>
 		</xsd:sequence>
     </xsd:complexType>
@@ -2392,6 +2396,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="timedOut" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="refused" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="other" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unexpectedConversationTag" />
 		</xsd:sequence>
     </xsd:complexType>
 	

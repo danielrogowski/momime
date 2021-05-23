@@ -13,6 +13,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.multiplayer.base.exception.XMLUnexpectedElement;
 import com.ndg.multiplayer.client.MultiplayerSessionClient;
 import com.ndg.multiplayer.client.MultiplayerSessionClientEvent;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
@@ -723,6 +724,41 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 				catch (final Exception e)
 				{
 					log.error (e, e);
+				}
+			}
+			
+			/**
+			 * Event triggered when client disconnects, or fails to connect in the first place.
+			 * 
+			 * @param e Exception that caused the disconnection, or null if the disconnection was controlled (sent closing conversation tag)
+			 */
+			@Override
+			public final void disconnected (final Exception e)
+			{
+				log.error (e, e);
+				
+				if (e instanceof XMLUnexpectedElement)
+				{
+					final XMLUnexpectedElement e2 = (XMLUnexpectedElement) e;
+					if (e2.isStartConversationTag ())
+					{
+						final List<LanguageText> languageText = getLanguageHolder ().getLanguages ().getMultiplayer ().getConnectionErrors ().getUnexpectedConversationTag ();
+						final String text = getLanguageHolder ().findDescription (languageText).replaceAll
+							("EXPECTED_ELEMENT", e2.getExpectedElement ()).replaceAll ("ACTUAL_ELEMENT", e2.getActualElement ());
+						
+						// Display in window
+						final MessageBoxUI msg = getPrototypeFrameCreator ().createMessageBox ();
+						msg.setLanguageTitle (getLanguages ().getMultiplayer ().getConnectionErrors ().getTitle ());
+						msg.setText (text);
+						try
+						{
+							msg.setVisible (true);
+						}
+						catch (final Exception e3)
+						{
+							log.error (e3, e3);
+						}
+					}
 				}
 			}
 		});

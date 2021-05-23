@@ -6,7 +6,7 @@
     <languagesXmlFilename>client/languages/Languages.momime.xml</languagesXmlFilename>
 	<chosenLanguage>en</chosenLanguage>
 	<overlandSmoothTerrain>true</overlandSmoothTerrain>
-	<overlandSmoothTextures>true</overlandSmoothTextures>
+	<overlandSmoothTextures>false</overlandSmoothTextures>
 	<overlandShowPartialFogOfWar>true</overlandShowPartialFogOfWar>
 	<overlandSmoothFogOfWar>true</overlandSmoothFogOfWar>
 	<overlandShowOurBorder>false</overlandShowOurBorder>

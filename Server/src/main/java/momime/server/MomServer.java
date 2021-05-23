@@ -7,7 +7,6 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.multiplayer.base.server.MultiplayerBaseServerThread;
-import com.ndg.multiplayer.server.MultiplayerClientConnection;
 import com.ndg.multiplayer.server.MultiplayerSessionServer;
 import com.ndg.multiplayer.server.session.MultiplayerSessionThread;
 import com.ndg.multiplayer.sessionbase.SessionDescription;
@@ -44,27 +43,16 @@ public final class MomServer extends MultiplayerSessionServer
 	@Override
 	protected final MultiplayerBaseServerThread createAndStartClientThread (final Socket socket) throws InterruptedException, JAXBException, XMLStreamException
 	{
-		final Object readyForMessagesMonitor = new Object ();
-		
-		final MultiplayerClientConnection conn = new MultiplayerClientConnection ("ClientConnection-" + socket);
+		final MomClientConnection conn = new MomClientConnection ("ClientConnection-" + socket, getNewGameDatabaseMessage ());
 		conn.setServer (this);
 		conn.setSocket (socket);
 		conn.setSendContext (getServerToClientContext ());
 		conn.setReceiveContext (getClientToServerContext ());
 		conn.setReceiveObjectFactoryArray (getClientToServerContextFactoryArray ());
-		conn.setReadyForMessagesMonitor (readyForMessagesMonitor);
 		conn.setConversationTag (getConversationTag ());
 		conn.setCompress (isCompress ());
 		conn.setDecompress (isDecompress ());
 		conn.start ();
-		
-		// Wait until thread has started up properly, then send new game database to the client
-		synchronized (readyForMessagesMonitor)
-		{
-			readyForMessagesMonitor.wait ();
-		}
-
-		conn.sendMessageToClient (newGameDatabaseMessage);
 		
 		return conn;
 	}

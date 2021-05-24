@@ -711,6 +711,9 @@ public final class NewGameUI extends MomClientFrameUI
 	
 	/** Each wizard can be chosen only once? */
 	private JCheckBox eachWizardOnlyOnce;
+
+	/** Gain or lose fame for razing captured cities? */
+	private JCheckBox fameRazingPenalty;
 	
 	/** Wizard city start size label */
 	private JLabel wizardCityStartSizeLabel;
@@ -1949,6 +1952,9 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		eachWizardOnlyOnce = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
 		difficulty1Panel.add (eachWizardOnlyOnce, "frmNewGameCustomDifficulty1EachWizardOnlyOnce");
+
+		fameRazingPenalty = getUtils ().createImageCheckBox (MomUIConstants.GOLD, getSmallFont (), checkboxUnticked, checkboxTicked);
+		difficulty1Panel.add (fameRazingPenalty, "frmNewGameCustomDifficulty1FameRazingPenalty");
 		
 		wizardCityStartSizeLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
 		difficulty1Panel.add (wizardCityStartSizeLabel, "frmNewGameCustomDifficulty1WizardCitySize");
@@ -3459,6 +3465,7 @@ public final class NewGameUI extends MomClientFrameUI
 		aiUpkeepMultiplierLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getAiUpkeepMultiplier ()));
 		allowCustomWizards.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getCustomWizards ()));
 		eachWizardOnlyOnce.setText										(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getEachWizardOnlyOnce ()));
+		fameRazingPenalty.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getFameRazingPenalty ()));
 		wizardCityStartSizeLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getWizardCitySize ()));
 		maxCitySizeLabel.setText											(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getMaxCitySize ()));
 		raiderCityStartSizeLabel.setText									(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomDifficultyTab1 ().getRaiderCitySizePrefix ()));
@@ -4082,6 +4089,7 @@ public final class NewGameUI extends MomClientFrameUI
 		aiUpkeepMultiplier.setText									(Integer.valueOf (difficultyLevel.getAiUpkeepMultiplier ()).toString ());
 		allowCustomWizards.setSelected							(difficultyLevel.isCustomWizards ());
 		eachWizardOnlyOnce.setSelected							(difficultyLevel.isEachWizardOnlyOnce ());
+		fameRazingPenalty.setSelected							(difficultyLevel.isFameRazingPenalty ());
 		wizardCityStartSize.setText									(Integer.valueOf (difficultyLevel.getWizardCityStartSize ()).toString ());
 		maxCitySize.setText											(Integer.valueOf (difficultyLevel.getCityMaxSize ()).toString ());
 		raiderCityStartSizeMin.setText								(Integer.valueOf (difficultyLevel.getRaiderCityStartSizeMin ()).toString ());
@@ -4341,6 +4349,7 @@ public final class NewGameUI extends MomClientFrameUI
 	    difficultyLevel.setAiUpkeepMultiplier									(Integer.parseInt (aiUpkeepMultiplier.getText ()));
 	    difficultyLevel.setCustomWizards										(allowCustomWizards.isSelected ());
 	    difficultyLevel.setEachWizardOnlyOnce								(eachWizardOnlyOnce.isSelected ());
+	    difficultyLevel.setFameRazingPenalty								(fameRazingPenalty.isSelected ());
 	    difficultyLevel.setTowerMonstersMinimum							(Integer.parseInt (towersMonstersMin.getText ()));
 	    difficultyLevel.setTowerMonstersMaximum						(Integer.parseInt (towersMonstersMax.getText ()));
 	    difficultyLevel.setTowerTreasureMinimum							(Integer.parseInt (towersTreasureMin.getText ()));

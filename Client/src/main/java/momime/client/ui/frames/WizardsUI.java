@@ -37,12 +37,15 @@ import momime.client.utils.PlayerPickClientUtils;
 import momime.client.utils.TextUtils;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Pick;
+import momime.common.database.ProductionTypeEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.WizardState;
 import momime.common.utils.PlayerKnowledgeUtils;
+import momime.common.utils.ResourceValueUtils;
 
 /**
  * Wizards screen, for checking everybodys' picks and diplomacy
@@ -85,6 +88,9 @@ public final class WizardsUI extends MomClientFrameUI
 	/** Client-side pick utils */
 	private PlayerPickClientUtils playerPickClientUtils;
 	
+	/** Resource value utils */
+	private ResourceValueUtils resourceValueUtils;
+	
 	/** List of gem images */
 	private List<JLabel> gems;
 	
@@ -108,6 +114,9 @@ public final class WizardsUI extends MomClientFrameUI
 	
 	/** Wizard's name */
 	private JLabel playerName;
+	
+	/** Wizard's fame */
+	private JLabel fameLabel;
 	
 	/** Wizard being viewed */
 	private PlayerPublicDetails selectedWizard;
@@ -138,6 +147,9 @@ public final class WizardsUI extends MomClientFrameUI
 		
 		playerName = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
 		contentPane.add (playerName, "frmWizardsName");
+		
+		fameLabel = getUtils ().createLabel (MomUIConstants.GOLD, getLargeFont ());
+		contentPane.add (fameLabel, "frmWizardsFame");
 		
 		bookshelf = new JPanel (new GridBagLayout ());
 		bookshelf.setOpaque (false);
@@ -201,7 +213,7 @@ public final class WizardsUI extends MomClientFrameUI
 						
 						updateBookshelfFromPicks ();
 						updateRetortsFromPicks (-1);
-						updateWizardName ();
+						updateWizard ();
 					}
 					catch (final Exception e)
 					{
@@ -347,12 +359,35 @@ public final class WizardsUI extends MomClientFrameUI
 	/**
 	 * Updates the name of the currently selected wizard
 	 */
-	private final void updateWizardName ()
+	private final void updateWizard ()
 	{
 		if (selectedWizard == null)
 			playerName.setText (null);
 		else
 			playerName.setText (getWizardClientUtils ().getPlayerName (selectedWizard));
+		
+		// Can only see fame of ourselves
+		fameLabel.setVisible ((selectedWizard != null) && (selectedWizard.getPlayerDescription ().getPlayerID ().equals (getClient ().getOurPlayerID ())));
+		if (fameLabel.isVisible ())
+			try
+			{
+				final ProductionTypeEx fame = getClient ().getClientDB ().findProductionType (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME, "updateWizard");
+				final String fameSuffix = getLanguageHolder ().findDescription (fame.getProductionTypeDescription ());
+				
+				final int basicFame = getResourceValueUtils ().calculateBasicFame (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue ());
+				final int modifiedFame = getResourceValueUtils ().calculateModifiedFame (getClient ().getOurPersistentPlayerPrivateKnowledge ().getResourceValue (),
+					selectedWizard, getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+				
+				if (basicFame == modifiedFame)
+					fameLabel.setText (getTextUtils ().intToStrCommas (basicFame) + " " + fameSuffix); 
+				else
+					fameLabel.setText (getTextUtils ().intToStrCommas (modifiedFame) + " (" + getTextUtils ().intToStrCommas (basicFame) + ") " + fameSuffix); 
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+				fameLabel.setVisible (false);
+			}
 	}
 	
 	/**
@@ -364,7 +399,7 @@ public final class WizardsUI extends MomClientFrameUI
 		getFrame ().setTitle (getLanguageHolder ().findDescription (getLanguages ().getWizardsScreen ().getTitle ()));
 		closeAction.putValue (Action.NAME, getLanguageHolder ().findDescription (getLanguages ().getSimple ().getClose ()));
 		
-		updateWizardName ();
+		updateWizard ();
 	}
 	
 	/**
@@ -525,5 +560,21 @@ public final class WizardsUI extends MomClientFrameUI
 	public final void setPlayerPickClientUtils (final PlayerPickClientUtils util)
 	{
 		playerPickClientUtils = util;
+	}
+
+	/**
+	 * @return Resource value utils
+	 */
+	public final ResourceValueUtils getResourceValueUtils ()
+	{
+		return resourceValueUtils;
+	}
+
+	/**
+	 * @param util Resource value utils
+	 */
+	public final void setResourceValueUtils (final ResourceValueUtils util)
+	{
+		resourceValueUtils = util;
 	}
 }

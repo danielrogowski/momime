@@ -192,6 +192,12 @@
 		<horizontalAlignment>0.5</horizontalAlignment>
 		<verticalAlignment>0</verticalAlignment>
 	</component>
+	<component name="frmWizardsFame">
+		<left>180</left>
+		<top>384</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0</verticalAlignment>
+	</component>
 	<component name="frmWizardsClose">
 		<left>622</left>
 		<top>460</top>

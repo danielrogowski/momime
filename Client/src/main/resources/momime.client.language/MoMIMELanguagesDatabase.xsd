@@ -2984,6 +2984,10 @@
 					<xsd:selector xpath="eachWizardOnlyOnce" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
+				<xsd:key name="customDifficultyTab1FameRazingPenaltyPK">
+					<xsd:selector xpath="fameRazingPenalty" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
    			</xsd:element>
    			<xsd:element minOccurs="0" maxOccurs="1" name="customDifficultyTab2" type="momimelangs:customDifficultyTab2">
 				<xsd:key name="customDifficultyTab2TitlePK">
@@ -3304,6 +3308,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="maxCitySize" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="customWizards" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="eachWizardOnlyOnce" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="fameRazingPenalty" />
 		</xsd:sequence>
     </xsd:complexType>
 	

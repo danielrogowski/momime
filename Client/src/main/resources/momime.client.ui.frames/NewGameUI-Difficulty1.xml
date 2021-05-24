@@ -194,69 +194,75 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
+	<component name="frmNewGameCustomDifficulty1FameRazingPenalty">
+		<left>20</left>
+		<top>210</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmNewGameCustomDifficulty1WizardCitySize">
 		<left>20</left>
-		<top>230</top>
+		<top>245</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1WizardCitySizeEdit">
 		<left>220</left>
-		<top>223</top>
+		<top>238</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1MaxCitySize">
 		<left>20</left>
-		<top>250</top>
+		<top>265</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1MaxCitySizeEdit">
 		<left>220</left>
-		<top>243</top>
+		<top>258</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCitySizePrefix">
 		<left>20</left>
-		<top>290</top>
+		<top>305</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCitySizeMin">
 		<left>20</left>
-		<top>303</top>
+		<top>318</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCitySizeAnd">
 		<left>90</left>
-		<top>310</top>
+		<top>325</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCitySizeMax">
 		<left>115</left>
-		<top>303</top>
+		<top>318</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthPrefix">
 		<left>185</left>
-		<top>310</top>
+		<top>325</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthEdit">
 		<left>20</left>
-		<top>323</top>
+		<top>338</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomDifficulty1RaiderCityGrowthSuffix">
 		<left>90</left>
-		<top>330</top>
+		<top>345</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

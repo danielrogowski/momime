@@ -27,6 +27,7 @@ import momime.common.database.SpellSetting;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MagicPowerDistribution;
 import momime.common.messages.MemoryBuilding;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -510,6 +511,150 @@ public final class TestResourceValueUtilsImpl
 		
 		// Run method
 		assertEquals (13, utils.calculateResearchFromUnits (2, players, mem, db));
+	}
+	
+	/**
+	 * Tests the CalculateBasicFame method
+	 */
+	@Test
+	public final void testCalculateBasicFame ()
+	{
+		// Accumulated fame
+		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
+
+		final MomResourceValue fame = new MomResourceValue ();
+		fame.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
+		fame.setAmountStored (3);
+		resourceValues.add (fame);
+
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		
+		// Run method
+		assertEquals (3, utils.calculateBasicFame (resourceValues));
+	}
+	
+	/**
+	 * Tests the CalculateBasicFame method when there are no bonuses
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateModifiedFame_Basic () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		
+		// Accumulated fame
+		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
+
+		final MomResourceValue fame = new MomResourceValue ();
+		fame.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
+		fame.setAmountStored (3);
+		resourceValues.add (fame);
+
+		// Player picks
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails playerDetails = new PlayerPublicDetails (pd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
+		// Units
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		
+		// Run method
+		assertEquals (3, utils.calculateModifiedFame (resourceValues, playerDetails, players, mem, db));
+	}
+	
+	/**
+	 * Tests the CalculateBasicFame method when all the bonuses apply
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testCalculateModifiedFame_Modified () throws Exception
+	{
+		// Mock database
+		final CommonDatabase db = mock (CommonDatabase.class);
+		for (int n = 1; n <= 3; n++)
+		{
+			final Pick pickDef = new Pick ();
+			pickDef.setPickID ("RT0" + n);
+			
+			if (n == 2)
+				pickDef.setDynamicFameBonus (10);
+			
+			when (db.findPick (pickDef.getPickID (), "calculateModifiedFame")).thenReturn (pickDef);
+		}
+		
+		// Accumulated fame
+		final List<MomResourceValue> resourceValues = new ArrayList<MomResourceValue> ();
+
+		final MomResourceValue fame = new MomResourceValue ();
+		fame.setProductionTypeID (CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
+		fame.setAmountStored (3);
+		resourceValues.add (fame);
+
+		// Player picks
+		final PlayerDescription pd = new PlayerDescription ();
+		pd.setPlayerID (2);
+		
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		
+		final PlayerPublicDetails playerDetails = new PlayerPublicDetails (pd, pub, null);
+		
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+		
+		for (int n = 1; n <= 3; n++)
+		{
+			final PlayerPick pick = new PlayerPick ();
+			pick.setPickID ("RT0" + n);
+			pick.setQuantity (1);
+			pub.getPick ().add (pick);
+		}
+
+		// Units
+		final FogOfWarMemory mem = new FogOfWarMemory ();
+
+		final MemoryUnit hero = new MemoryUnit ();
+		hero.setStatus (UnitStatusID.ALIVE);
+		hero.setOwningPlayerID (2);
+		
+		mem.getUnit ().add (hero);
+
+		final UnitUtils unitUtils = mock (UnitUtils.class);
+		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY)).thenReturn (true);
+		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY)).thenReturn (2);
+		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
+		
+		// Level 2 hero with super legendary
+		final ExperienceLevel captain = new ExperienceLevel ();
+		captain.setLevelNumber (2);
+		when (xu.getModifiedExperienceLevel ()).thenReturn (captain);
+		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		when (memoryMaintainedSpellUtils.findMaintainedSpell (mem.getMaintainedSpell (), 2,
+			CommonDatabaseConstants.SPELL_ID_JUST_CAUSE, null, null, null, null)).thenReturn (new MemoryMaintainedSpell ());
+		
+		// Set up object to test
+		final ResourceValueUtilsImpl utils = new ResourceValueUtilsImpl ();
+		utils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		utils.setUnitUtils (unitUtils);
+		
+		// Run method
+		assertEquals (3 + 10 + 10 + 13, utils.calculateModifiedFame (resourceValues, playerDetails, players, mem, db));
 	}
 	
 	/**

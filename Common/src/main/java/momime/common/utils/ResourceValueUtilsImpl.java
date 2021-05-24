@@ -44,6 +44,9 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
 	/**
 	 * @param resourceList List of resources to search through
 	 * @param productionTypeID Production type ID to search for
@@ -272,6 +275,65 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		return total;
 	}
 	
+    /**
+	 * @param resourceList List of resources to search through
+     * @return The specified player's fame accumulated through battles
+     */
+	@Override
+	public final int calculateBasicFame (final List<MomResourceValue> resourceList)
+	{
+		return findAmountStoredForProductionType (resourceList, CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
+	}
+	
+    /**
+	 * @param resourceList List of resources to search through
+	 * @param playerDetails Details about the player whose fame we want
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+     * @return The specified player's fame accumulated through battles, retorts, spells and legendary heroes
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+     */
+	@Override
+	public final int calculateModifiedFame (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails, final List<PlayerPublicDetails> players,
+		final FogOfWarMemory mem, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		int total = calculateBasicFame (resourceList);
+
+		// Famous
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) playerDetails.getPersistentPlayerPublicKnowledge ();
+		for (final PlayerPick pick : pub.getPick ())
+		{
+			final Pick pickDef = db.findPick (pick.getPickID (), "calculateModifiedFame");
+			if (pickDef.getDynamicFameBonus () != null)
+				total = total + (pickDef.getDynamicFameBonus () * pick.getQuantity ());
+		}
+		
+		// Just Cause
+		if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (mem.getMaintainedSpell (), playerDetails.getPlayerDescription ().getPlayerID (),
+			CommonDatabaseConstants.SPELL_ID_JUST_CAUSE, null, null, null, null) != null)
+			
+			total = total + 10;
+		
+		// Legendary heroes
+		for (final MemoryUnit unit : mem.getUnit ())
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerDetails.getPlayerDescription ().getPlayerID ()))
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
+				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY))
+				{
+					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();
+					final int heroSkillValue = ((xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY) + 1) * 3 * (expLevel+1)) / 2;
+					total = total + heroSkillValue;
+				}
+			}
+		
+		return total;
+	}
+	
 	/**
      * This does include splitting magic power into mana/research/skill improvement, but does not include selling 2 rations to get 1 gold
      * Delphi method is TMomPlayerResourceValues.FindAmountPerTurnForProductionType
@@ -448,5 +510,21 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

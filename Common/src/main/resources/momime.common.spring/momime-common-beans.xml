@@ -299,6 +299,7 @@
 		<property name="spellCalculations" ref="spellCalculations" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	
 	<bean id="spellUtils" class="momime.common.utils.SpellUtilsImpl">

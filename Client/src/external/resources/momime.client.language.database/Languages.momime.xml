@@ -2517,6 +2517,9 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
             <eachWizardOnlyOnce language="pl">
                 <text>Każdy czarodziej może zostać wybrany tylko raz?</text>
             </eachWizardOnlyOnce>
+            <fameRazingPenalty language="en">
+                <text>Fame penalty for razing captured cities?</text>
+            </fameRazingPenalty>
         </customDifficultyTab1>
         <customDifficultyTab2>
             <title language="en">

@@ -1411,6 +1411,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="helpUI" ref="helpUI" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="playerPickClientUtils" ref="playerPickClientUtils" />
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
 	</bean>
 	
 	<bean id="optionsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

@@ -1603,8 +1603,9 @@
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiSpellResearchMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI spell research multipler" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="aiUpkeepMultiplier" type="momimecommon:uncappedPercentage" nxe:label="AI upkeep multipler" nxe:gridwidth="140" />
 	
-			<!-- New MoM IME setting -->
+			<!-- New MoM IME settings -->
 			<xsd:element minOccurs="1" maxOccurs="1" name="eachWizardOnlyOnce" type="xsd:boolean" nxe:label="Each wizard only once?" nxe:gridwidth="150" />
+			<xsd:element minOccurs="1" maxOccurs="1" name="fameRazingPenalty" type="xsd:boolean" nxe:label="Penalize fame for razing?" nxe:gridwidth="150" />
 			
 			<!-- Strategy Guide p417 -->
 			<xsd:element minOccurs="1" maxOccurs="1" name="towerMonstersMinimum" type="momimecommon:monsterStrength" nxe:label="Tower Min. monster strength" nxe:gridwidth="170" />
@@ -2116,6 +2117,7 @@ e.g. we can have negative Gold per turn as long as the accumulated amount stays 
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="pickInitialSkill" type="momimecommon:pickInitialSkill" nxe:label="Initial Skill" nxe:gridwidth="70" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="dynamicSkillBonus" type="momimecommon:pickInitialSkill" nxe:label="Dynamic Skill +" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="dynamicFameBonus" type="momimecommon:fame" nxe:label="Dynamic Fame +" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="enhancesDamageType" type="xsd:boolean" nxe:label="Enhances Damage Type?" nxe:gridwidth="200"> 
 				<xsd:annotation>
 					<xsd:documentation>Basically this indicates whether this lifeform type ignores Weapon Immunity.</xsd:documentation>
@@ -3606,7 +3608,8 @@ Implication is that for spells and attacks whose damage resolution is based on r
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySizeName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="citySizeNameIncludingOwner" type="momimecommon:languageText" nxe:label="Name, including owner" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="fameLostForRazing" type="momimecommon:fame" nxe:label="Fame Lost for Razing" nxe:gridwidth="120" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="fameGainedForCapturing" type="momimecommon:fame" nxe:label="Fame Gained for Capturing" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="fameLostForLosing" type="momimecommon:fame" nxe:label="Fame Lost for Losing" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMinimum" type="momimecommon:cityPopulation" nxe:label="Minimum population" nxe:gridwidth="130" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="citySizeMaximum" type="momimecommon:cityPopulation" nxe:label="Maximum population" nxe:gridwidth="130" />
 		</xsd:sequence>

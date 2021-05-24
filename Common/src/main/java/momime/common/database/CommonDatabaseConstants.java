@@ -122,6 +122,9 @@ public final class CommonDatabaseConstants
 	/** Unit upkeep reduction (from Summoner retort) */
 	public final static String PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION = "RE12";
 
+	/** Fame */
+	public final static String PRODUCTION_TYPE_ID_FAME = "RE13";
+	
 	// tile types
 
 	/** Forest tiles */
@@ -250,6 +253,9 @@ public final class CommonDatabaseConstants
 	
 	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
 	public final static String UNIT_SKILL_ID_CASTER_HERO = "HS05";
+
+	/** Hero contributes to wizard's fame */
+	public final static String UNIT_SKILL_ID_LEGENDARY = "HS09";
 	
 	/** Hero contributes to wizard's research */
 	public final static String UNIT_SKILL_ID_SAGE = "HS14";

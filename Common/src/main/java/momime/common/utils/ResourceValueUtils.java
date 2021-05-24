@@ -106,6 +106,27 @@ public interface ResourceValueUtils
 	public int calculateResearchFromUnits (final int playerID, final List<? extends PlayerPublicDetails> players,
 		final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+
+    /**
+	 * @param resourceList List of resources to search through
+     * @return The specified player's fame accumulated through battles
+     */
+	public int calculateBasicFame (final List<MomResourceValue> resourceList);
+	
+    /**
+	 * @param resourceList List of resources to search through
+	 * @param playerDetails Details about the player whose fame we want
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+     * @return The specified player's fame accumulated through battles, retorts, spells and legendary heroes
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+     */
+	public int calculateModifiedFame (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails, final List<PlayerPublicDetails> players,
+		final FogOfWarMemory mem, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 	
 	/**
      * This does include splitting magic power into mana/research/skill improvement, but does not include selling 2 rations to get 1 gold

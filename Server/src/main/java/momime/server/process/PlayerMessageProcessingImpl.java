@@ -342,7 +342,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	private final PlayerDescription createAiPlayerDescription (final WizardEx wizard)
 	{
 		final PlayerDescription pd = new PlayerDescription ();
-		pd.setPlayerName (wizard.getWizardID () + "-" + wizard.getWizardName ());
+		pd.setPlayerName (wizard.getWizardID () + "-" + wizard.getWizardName ().get (0).getText ());
 		pd.setHuman (false);
 
 		return pd;

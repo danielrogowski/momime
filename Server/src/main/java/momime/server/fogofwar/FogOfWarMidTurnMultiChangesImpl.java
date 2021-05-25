@@ -324,7 +324,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	}
 	
 	/**
-	 * When a unit dies in combat, all the units on the opposing side gain 1 exp. 
+	 * When a unit dies in combat, all the units on the opposing side gain +2 exp. 
 	 * 
 	 * @param combatLocation The location where the combat is taking place
 	 * @param combatSide Which side is to gain 1 exp
@@ -358,11 +358,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				int exp = getUnitSkillDirectAccess ().getDirectSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
 				if ((magicRealm.isGainExperienceEachTurn ()) && (exp >= 0))
 				{
-					exp++;
-					getUnitSkillDirectAccess ().setDirectSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp);
-					
-					// Note we don't do this directly on xu as that will not reflect the updated experience, and don't want to make a whole new ExpandedUnitDetails just to do a simple check
-					getUnitServerUtils ().checkIfHeroGainedALevel (xu.getUnitURN (), xu.getUnitType (), (PlayerServerDetails) xu.getOwningPlayer (), exp);
+					for (int gainExp = 0; gainExp < 2; gainExp++)
+					{
+						exp++;
+						getUnitSkillDirectAccess ().setDirectSkillValue (trueUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp);
+						
+						// Note we don't do this directly on xu as that will not reflect the updated experience, and don't want to make a whole new ExpandedUnitDetails just to do a simple check
+						getUnitServerUtils ().checkIfHeroGainedALevel (xu.getUnitURN (), xu.getUnitType (), (PlayerServerDetails) xu.getOwningPlayer (), exp);
+					}
 					
 					// This updates both the player memories on the server, and sends messages out to the clients, as needed
 					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);

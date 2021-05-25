@@ -471,13 +471,13 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 	This is because the attacker may elect to not attack with every single unit in their stack
 	 * @param combatMap Combat scenery we are placing the units onto (important because some tiles will be impassable to some types of unit)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
-	 * @return Number of units that were positioned
+	 * @return Details about units that were positioned
 	 * @throws MomException If there is a logic failure, e.g. not enough space to fit all the units
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws PlayerNotFoundException If we can't find the player who owns one of the units
 	 */
 	@Override
-	public final int positionCombatUnits (final MapCoordinates3DEx combatLocation, final StartCombatMessage startCombatMessage,
+	public final PositionCombatUnitsSummary positionCombatUnits (final MapCoordinates3DEx combatLocation, final StartCombatMessage startCombatMessage,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CoordinateSystem combatMapCoordinateSystem,
 		final MapCoordinates3DEx currentLocation, final int startX, final int startY, final int maxRows, final int unitHeading,
 		final UnitCombatSideID combatSide, final List<Integer> onlyUnitURNs, final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
@@ -518,6 +518,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 		
 		// Work out combat class of all units to position
+		// Also find most expensive unit
+		int mostExpensiveUnitCost = 0;
 		final List<MemoryUnitAndCombatClass> unitsToPosition = new ArrayList<MemoryUnitAndCombatClass> ();
 		for (final ExpandedUnitDetails tu : unitStack)
 		{
@@ -526,6 +528,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (tu);
 			
 			unitsToPosition.add (new MemoryUnitAndCombatClass (tu, calculateUnitCombatClass (tu)));
+			
+			// Check unit cost
+			if ((tu.getUnitDefinition ().getProductionCost () != null) && (tu.getUnitDefinition ().getProductionCost () > mostExpensiveUnitCost))
+				mostExpensiveUnitCost = tu.getUnitDefinition ().getProductionCost ();
 		}
 		
 		log.debug (unitsToPosition.size () + " units were placed into combat at " + combatLocation + " for side " + combatSide);
@@ -546,7 +552,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		placeCombatUnits (combatLocation, startX, startY, unitHeading, combatSide, unitsToPosition, unitsInRow, startCombatMessage,
 			attackingPlayer, defendingPlayer, combatMapCoordinateSystem, combatMap, mom.getServerDB ());
 		
-		return unitsToPosition.size ();
+		return new PositionCombatUnitsSummary (unitsToPosition.size (), mostExpensiveUnitCost);
 	}
 	
 	/**

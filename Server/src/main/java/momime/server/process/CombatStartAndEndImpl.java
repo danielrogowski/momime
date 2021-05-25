@@ -202,22 +202,31 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		// Final 'True' parameter is because only some of the units in the attacking cell may actually be attacking, whereas everyone in the defending cell will always help defend.
 		// We need to do this (at least on the server) even if we immediately end the combat below, since we need to mark the attackers into the combat so that they will advance 1 square.
 		log.debug ("Positioning defenders at " + defendingLocation);
-		final int defenderUnitCount = getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage,
+		final PositionCombatUnitsSummary defenderSummary = getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage,
 			attackingPlayer, defendingPlayer, mom.getSessionDescription ().getCombatMapSize (), defendingLocation,
 			COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y,
 			COMBAT_SETUP_DEFENDER_ROWS, COMBAT_SETUP_DEFENDER_FACING,
 			UnitCombatSideID.DEFENDER, defendingUnitURNs, tc.getCombatMap (), mom);
 				
 		log.debug ("Positioning attackers at " + defendingLocation);
-		final int attackerUnitCount = getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage,
+		final PositionCombatUnitsSummary attackerSummary = getCombatProcessing ().positionCombatUnits (combatLocation, startCombatMessage,
 			attackingPlayer, defendingPlayer, mom.getSessionDescription ().getCombatMapSize (), attackingFrom,
 			COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_X, COMBAT_SETUP_ATTACKER_FRONT_ROW_CENTRE_Y,
 			COMBAT_SETUP_ATTACKER_ROWS, COMBAT_SETUP_ATTACKER_FACING,
 			UnitCombatSideID.ATTACKER, attackingUnitURNs, tc.getCombatMap (), mom);
 		
 		// Remember how many units were initially on each side - need this to award fame at the end
-		tc.setDefenderUnitCount (defenderUnitCount);
-		tc.setAttackerUnitCount (attackerUnitCount);
+		if (defenderSummary != null)
+		{
+			tc.setDefenderUnitCount (defenderSummary.getUnitCount ());
+			tc.setDefenderMostExpensiveUnitCost (defenderSummary.getMostExpensiveUnitCost ());
+		}
+		
+		if (attackerSummary != null)
+		{
+			tc.setAttackerUnitCount (attackerSummary.getUnitCount ());
+			tc.setAttackerMostExpensiveUnitCost (attackerSummary.getMostExpensiveUnitCost ());
+		}
 		
 		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
 		if (defendingPlayer == null)
@@ -402,9 +411,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 
 			// If won a combat vs 4 or more units, gain +1 fame
 			// If lost a combat and lost 4 or more units, lose -1 fame
-			final MomPersistentPlayerPublicKnowledge atkPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
-			final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
-
 			int attackerFameChange = (winningPlayer == attackingPlayer) ? winningFameChange : losingFameChange;
 			int defenderFameChange = (winningPlayer == defendingPlayer) ? winningFameChange : losingFameChange;
 			
@@ -420,7 +426,24 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackerFameChange--;
 			}
 			
+			// If won a combat vs an expensive unit, gain +1 fame
+			// If lost a combat including losing an expensive unit, lose -1 fame
+			if ((winningPlayer == attackingPlayer) && (tc.getDefenderMostExpensiveUnitCost () >= 600))
+			{
+				attackerFameChange++;
+				defenderFameChange--;
+			}
+
+			if ((winningPlayer == defendingPlayer) && (tc.getAttackerMostExpensiveUnitCost () >= 600))
+			{
+				defenderFameChange++;
+				attackerFameChange--;
+			}
+			
 			// Update fame
+			final MomPersistentPlayerPublicKnowledge atkPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
+			final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
+
 			if ((attackerFameChange != 0) && (PlayerKnowledgeUtils.isWizard (atkPub.getWizardID ())))
 			{
 				// Fame cannot go negative
@@ -601,6 +624,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				tc.setCombatAttackerCastingSkillRemaining (null);
 				tc.setDefenderUnitCount (null);
 				tc.setAttackerUnitCount (null);
+				tc.setDefenderMostExpensiveUnitCost (null);
+				tc.setAttackerMostExpensiveUnitCost (null);
 				
 				// Figure out what to do next now the combat is over
 				if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)

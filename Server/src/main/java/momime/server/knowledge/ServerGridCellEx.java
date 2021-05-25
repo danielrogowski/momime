@@ -52,6 +52,12 @@ public final class ServerGridCellEx extends ServerGridCell
 	/** Number of attacker units when the combat started */
 	private Integer attackerUnitCount;
 	
+	/** Cost of most expensive defender */
+	private Integer defenderMostExpensiveUnitCost;
+	
+	/** Cost of most expensive attacker */
+	private Integer attackerMostExpensiveUnitCost;
+
 	/** List of items held by any heroes that died in this combat, no matter which side they were on */
 	private List<NumberedHeroItem> itemsFromHeroesWhoDiedInCombat = new ArrayList<NumberedHeroItem> ();
 	
@@ -245,6 +251,38 @@ public final class ServerGridCellEx extends ServerGridCell
 	public final void setAttackerUnitCount (final Integer c)
 	{
 		attackerUnitCount = c;
+	}
+
+	/**
+	 * @return Cost of most expensive defender
+	 */
+	public final Integer getDefenderMostExpensiveUnitCost ()
+	{
+		return defenderMostExpensiveUnitCost;
+	}
+
+	/**
+	 * @param c Cost of most expensive defender
+	 */
+	public final void setDefenderMostExpensiveUnitCost (final Integer c)
+	{
+		defenderMostExpensiveUnitCost = c;
+	}
+	
+	/**
+	 * @return Most of most expensive attacker
+	 */
+	public final Integer getAttackerMostExpensiveUnitCost ()
+	{
+		return attackerMostExpensiveUnitCost;
+	}
+	
+	/**
+	 * @param c Cost of most expensive attacker
+	 */
+	public final void setAttackerMostExpensiveUnitCost (final Integer c)
+	{
+		attackerMostExpensiveUnitCost = c;
 	}
 	
 	/**

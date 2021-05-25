@@ -719,6 +719,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
+		gc.setDefenderUnitCount (1);
+		gc.setAttackerUnitCount (1);
+		gc.setDefenderMostExpensiveUnitCost (100);
+		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// It isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -838,6 +842,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
+		gc.setDefenderUnitCount (1);
+		gc.setAttackerUnitCount (1);
+		gc.setDefenderMostExpensiveUnitCost (100);
+		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// It isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -993,7 +1001,11 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
-		
+		gc.setDefenderUnitCount (1);
+		gc.setAttackerUnitCount (1);
+		gc.setDefenderMostExpensiveUnitCost (100);
+		gc.setAttackerMostExpensiveUnitCost (100);
+
 		// It's a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
 		when (memoryGridCellUtils.isTerrainTowerOfWizardry (terrainData)).thenReturn (true);
@@ -1152,6 +1164,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
 		gc.setCityData (cityData);
+		gc.setDefenderUnitCount (1);
+		gc.setAttackerUnitCount (1);
+		gc.setDefenderMostExpensiveUnitCost (100);
+		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// Defending player has 1200 coins in total
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1346,6 +1362,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
 		gc.setCityData (cityData);
+		gc.setDefenderUnitCount (1);
+		gc.setAttackerUnitCount (1);
+		gc.setDefenderMostExpensiveUnitCost (100);
+		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// Defending player has 1200 coins in total
 		final ResourceValueUtils resourceValueUtils = mock (ResourceValueUtils.class);
@@ -1520,6 +1540,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
+		gc.setDefenderUnitCount (1);
+		gc.setAttackerUnitCount (1);
+		gc.setDefenderMostExpensiveUnitCost (100);
+		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// It isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);
@@ -1665,6 +1689,10 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
+		gc.setDefenderUnitCount (1);
+		gc.setAttackerUnitCount (1);
+		gc.setDefenderMostExpensiveUnitCost (100);
+		gc.setAttackerMostExpensiveUnitCost (100);
 		
 		// It isn't a tower
 		final MemoryGridCellUtils memoryGridCellUtils = mock (MemoryGridCellUtils.class);

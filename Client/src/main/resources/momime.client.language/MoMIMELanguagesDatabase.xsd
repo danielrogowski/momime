@@ -1587,6 +1587,14 @@
 						<xsd:selector xpath="undeadCreatedPlural" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="combatEndedScreenFameGainedPK">
+						<xsd:selector xpath="fameGained" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatEndedScreenFameLostPK">
+						<xsd:selector xpath="fameLost" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="magicSlidersScreen" type="momimelangs:magicSlidersScreen">
 					<xsd:key name="magicSlidersScreenTitlePK">
@@ -3789,6 +3797,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroItems" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="undeadCreatedSingular" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="undeadCreatedPlural" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="fameGained" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="fameLost" />
 		</xsd:sequence>
     </xsd:complexType>
 	

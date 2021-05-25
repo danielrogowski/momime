@@ -555,6 +555,7 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="1" name="goldSwiped" type="momimecommon:undoubledProductionValue" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="goldFromRazing" type="momimecommon:undoubledProductionValue" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="fameChange" type="momimecommon:fame" />
 					</xsd:sequence>
 				</xsd:extension>
 			</xsd:complexContent>

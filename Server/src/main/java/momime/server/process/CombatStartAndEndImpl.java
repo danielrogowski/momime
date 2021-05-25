@@ -15,12 +15,14 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
+import momime.common.database.CitySize;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitCombatSideID;
 import momime.common.messages.CaptureCityDecisionID;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
@@ -32,6 +34,7 @@ import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage
 import momime.common.messages.servertoclient.StartCombatMessage;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -312,13 +315,18 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			msg.setCaptureCityDecisionID (useCaptureCityDecision);
 			msg.setHeroItemCount (tc.getItemsFromHeroesWhoDiedInCombat ().size ());
 			
+			// Start to work out fame change for each player involved
+			int winningFameChange = 0;
+			int losingFameChange = 0;
+			boolean wasWizardsFortress = false;
+			
 			// Deal with the attacking player swiping gold from a city they just took - we do this first so we can send it with the CombatEnded message
 			final MomPersistentPlayerPrivateKnowledge atkPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+			final MomPersistentPlayerPrivateKnowledge defPriv = (defendingPlayer == null) ? null : (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+			
 			if ((useCaptureCityDecision != null) && (defendingPlayer != null))
 			{
 				// Calc as a long since the the multiplication could give a really big number
-				final MomPersistentPlayerPrivateKnowledge defPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
-				
 				final long cityPopulation = tc.getCityData ().getCityPopulation ();
 				final long totalGold = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
 				final long totalPopulation = getOverlandMapServerUtils ().totalPlayerPopulation
@@ -341,6 +349,27 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				// Swipe it - the updated values will be sent to the players below
 				getResourceValueUtils ().addToAmountStored (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, (int) -goldSwiped);
 				getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, (int) goldSwiped + goldFromRazing);
+				
+				// Fame gained/lost for capturing a city
+				final CitySize citySize = mom.getServerDB ().findCitySize (tc.getCityData ().getCitySizeID (), "combatEnded");
+				if (citySize.getFameLostForLosing () != null)
+				{
+					losingFameChange = losingFameChange - citySize.getFameLostForLosing ();
+					
+					if ((useCaptureCityDecision == CaptureCityDecisionID.RAZE) && (mom.getSessionDescription ().getDifficultyLevel ().isFameRazingPenalty ()))
+						winningFameChange = winningFameChange - citySize.getFameLostForLosing ();
+				}
+				
+				if ((citySize.getFameGainedForCapturing () != null) &&
+					((useCaptureCityDecision == CaptureCityDecisionID.CAPTURE) || (!mom.getSessionDescription ().getDifficultyLevel ().isFameRazingPenalty ())))
+					
+					winningFameChange = winningFameChange + citySize.getFameGainedForCapturing ();
+				
+				// Need this much lower down too
+				wasWizardsFortress = (getMemoryBuildingUtils ().findBuilding
+					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null);
+				if (wasWizardsFortress)
+					winningFameChange = winningFameChange + 5;
 			}
 			
 			// Cancel any spells that were cast in combat, note doing so can actually kill some units
@@ -362,14 +391,49 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			final List<MemoryUnit> undead = getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 			msg.setUndeadCreated (undead.size ());
+			
+			// Update fame
+			final MomPersistentPlayerPublicKnowledge atkPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
+			final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
 
+			int attackerFameChange = (winningPlayer == attackingPlayer) ? winningFameChange : losingFameChange;
+			int defenderFameChange = (winningPlayer == defendingPlayer) ? winningFameChange : losingFameChange;
+
+			if ((attackerFameChange != 0) && (PlayerKnowledgeUtils.isWizard (atkPub.getWizardID ())))
+			{
+				// Fame cannot go negative
+				int attackerFame = getResourceValueUtils ().findAmountStoredForProductionType (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
+				if (attackerFame + attackerFameChange < 0)
+					attackerFameChange = -attackerFame;
+				
+				if (attackerFameChange != 0)
+					getResourceValueUtils ().addToAmountStored (atkPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME, attackerFameChange);
+			}
+
+			if ((defenderFameChange != 0) && (defendingPlayer != null) && (PlayerKnowledgeUtils.isWizard (defPub.getWizardID ())))
+			{
+				// Fame cannot go negative
+				int defenderFame = getResourceValueUtils ().findAmountStoredForProductionType (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME);
+				if (defenderFame + defenderFameChange < 0)
+					defenderFameChange = -defenderFame;
+				
+				if (defenderFameChange != 0)
+					getResourceValueUtils ().addToAmountStored (defPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_FAME, defenderFameChange);
+			}
+			
 			// Send the CombatEnded message
 			// Remember defending player may still be nil if we attacked an empty lair
 			if ((defendingPlayer != null) && (defendingPlayer.getPlayerDescription ().isHuman ()))
+			{
+				msg.setFameChange (defenderFameChange);
 				defendingPlayer.getConnection ().sendMessageToClient (msg);
+			}
 			
 			if (attackingPlayer.getPlayerDescription ().isHuman ())
+			{
+				msg.setFameChange (attackerFameChange);
 				attackingPlayer.getConnection ().sendMessageToClient (msg);
+			}
 			
 			// Kill off dead units from the combat and remove any combat summons like Phantom Warriors
 			// This also removes ('kills') on the client monsters in a lair/node/tower who won
@@ -410,9 +474,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 						moveFrom, moveTo, mom.getPlayers (), mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Before we remove buildings, check if this was the wizard's fortress and/or summoning circle
-				boolean wasWizardsFortress = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
-					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_FORTRESS) != null);
-
 				final boolean wasSummoningCircle = (useCaptureCityDecision != null) && (getMemoryBuildingUtils ().findBuilding
 					(mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding (), combatLocation, CommonDatabaseConstants.BUILDING_SUMMONING_CIRCLE) != null);
 				

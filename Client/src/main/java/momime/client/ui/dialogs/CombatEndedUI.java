@@ -205,6 +205,20 @@ public final class CombatEndedUI extends MomClientDialogUI
 			}
 		}
 		
+		// Fame changed?
+		if (getMessage ().getFameChange () != 0)
+		{
+			if (bottomText.length () > 0)
+				bottomText.append (System.lineSeparator ());
+
+			if (getMessage ().getFameChange () > 0)
+				bottomText.append (getLanguageHolder ().findDescription (getLanguages ().getCombatEndedScreen ().getFameGained ()).replaceAll
+					("FAME_GAINED", getTextUtils ().intToStrCommas (getMessage ().getFameChange ())));
+			else
+				bottomText.append (getLanguageHolder ().findDescription (getLanguages ().getCombatEndedScreen ().getFameLost ()).replaceAll
+					("FAME_LOST", getTextUtils ().intToStrCommas (-getMessage ().getFameChange ())));
+		}
+		
 		// Hero items?
 		if ((getMessage ().getHeroItemCount () > 0) && (getMessage ().getWinningPlayerID () == getClient ().getOurPlayerID ()))
 		{

@@ -230,6 +230,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="alchemyUI" ref="alchemyUI" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 
 	<bean id="erasePendingMovementsMessage" class="momime.client.messages.process.ErasePendingMovementsMessageImpl" scope="prototype">

@@ -24,6 +24,7 @@ import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
 import momime.common.MomException;
+import momime.common.database.CitySize;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.FogOfWarSetting;
@@ -1076,6 +1077,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final CitySize citySize = new CitySize ();
+		when (db.findCitySize ("CS01", "combatEnded")).thenReturn (citySize);
+		
 		// General server knowledge
 		final OverlandMapSize sys = createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1143,6 +1147,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityOwnerID (defendingPd.getPlayerID ());
 		cityData.setCityPopulation (8500);
+		cityData.setCitySizeID ("CS01");
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);
@@ -1266,6 +1271,9 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		// Mock database
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
+		final CitySize citySize = new CitySize ();
+		when (db.findCitySize ("CS01", "combatEnded")).thenReturn (citySize);
+		
 		// General server knowledge
 		final OverlandMapSize sys = createOverlandMapSize ();
 		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (sys);
@@ -1333,6 +1341,7 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		final OverlandMapCityData cityData = new OverlandMapCityData ();
 		cityData.setCityOwnerID (defendingPd.getPlayerID ());
 		cityData.setCityPopulation (8500);
+		cityData.setCitySizeID ("CS01");
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
 		gc.setTerrainData (terrainData);

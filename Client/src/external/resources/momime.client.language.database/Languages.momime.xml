@@ -3852,6 +3852,12 @@ Bonus Or +GOLD_BONUS%</text>
         <undeadCreatedPlural language="en">
             <text>UNDEAD_COUNT units rise from the dead.</text>
         </undeadCreatedPlural>
+        <fameGained language="en">
+            <text>You have gained FAME_GAINED fame.</text>
+        </fameGained>
+        <fameLost language="en">
+            <text>You have lost FAME_LOST fame.</text>
+        </fameLost>
     </combatEndedScreen>
     <magicSlidersScreen>
         <title language="en">

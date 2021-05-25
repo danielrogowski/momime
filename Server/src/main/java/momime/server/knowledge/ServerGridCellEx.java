@@ -46,6 +46,12 @@ public final class ServerGridCellEx extends ServerGridCell
 	/** In simultaneous turns games, the PendingMovement the defender made which caused the combat currently taking place at this location (border conflicts/counterattacks only) */
 	private PendingMovement combatDefenderPendingMovement;
 	
+	/** Number of defender units when the combat started */
+	private Integer defenderUnitCount;
+	
+	/** Number of attacker units when the combat started */
+	private Integer attackerUnitCount;
+	
 	/** List of items held by any heroes that died in this combat, no matter which side they were on */
 	private List<NumberedHeroItem> itemsFromHeroesWhoDiedInCombat = new ArrayList<NumberedHeroItem> ();
 	
@@ -209,6 +215,38 @@ public final class ServerGridCellEx extends ServerGridCell
 		combatDefenderPendingMovement = move;
 	}
 
+	/**
+	 * @return Number of defender units when the combat started
+	 */
+	public final Integer getDefenderUnitCount ()
+	{
+		return defenderUnitCount;
+	}
+	
+	/**
+	 * @param c Number of defender units when the combat started
+	 */
+	public final void setDefenderUnitCount (final Integer c)
+	{
+		defenderUnitCount = c;
+	}
+	
+	/**
+	 * @return Number of attacker units when the combat started\
+	 */
+	public final Integer getAttackerUnitCount ()
+	{
+		return attackerUnitCount;
+	}
+
+	/**
+	 * @param c Number of attacker units when the combat started
+	 */
+	public final void setAttackerUnitCount (final Integer c)
+	{
+		attackerUnitCount = c;
+	}
+	
 	/**
 	 * @return List of items held by any heroes that died in this combat, no matter which side they were on
 	 */

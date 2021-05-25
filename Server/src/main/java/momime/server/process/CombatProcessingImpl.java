@@ -471,12 +471,13 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * 	This is because the attacker may elect to not attack with every single unit in their stack
 	 * @param combatMap Combat scenery we are placing the units onto (important because some tiles will be impassable to some types of unit)
 	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Number of units that were positioned
 	 * @throws MomException If there is a logic failure, e.g. not enough space to fit all the units
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws PlayerNotFoundException If we can't find the player who owns one of the units
 	 */
 	@Override
-	public final void positionCombatUnits (final MapCoordinates3DEx combatLocation, final StartCombatMessage startCombatMessage,
+	public final int positionCombatUnits (final MapCoordinates3DEx combatLocation, final StartCombatMessage startCombatMessage,
 		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CoordinateSystem combatMapCoordinateSystem,
 		final MapCoordinates3DEx currentLocation, final int startX, final int startY, final int maxRows, final int unitHeading,
 		final UnitCombatSideID combatSide, final List<Integer> onlyUnitURNs, final MapAreaOfCombatTiles combatMap, final MomSessionVariables mom)
@@ -544,6 +545,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// Now can actually place the units
 		placeCombatUnits (combatLocation, startX, startY, unitHeading, combatSide, unitsToPosition, unitsInRow, startCombatMessage,
 			attackingPlayer, defendingPlayer, combatMapCoordinateSystem, combatMap, mom.getServerDB ());
+		
+		return unitsToPosition.size ();
 	}
 	
 	/**

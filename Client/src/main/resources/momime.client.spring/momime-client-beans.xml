@@ -185,6 +185,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="replacePicksMessage" class="momime.client.messages.process.ReplacePicksMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 	
 	<bean id="chooseInitialSpellsNowMessage" class="momime.client.messages.process.ChooseInitialSpellsNowMessageImpl" scope="prototype">
@@ -469,9 +470,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="combatUI" ref="combatUI" />
+		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 
 	<bean id="addOrUpdateCombatAreaEffectMessage" class="momime.client.messages.process.AddOrUpdateCombatAreaEffectMessageImpl" scope="prototype">
@@ -1865,6 +1868,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="magicSlidersUI" ref="magicSlidersUI" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="wizardsUI" ref="wizardsUI" />
 	</bean>
 	
 	<bean id="combatEndedLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

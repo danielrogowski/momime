@@ -391,6 +391,23 @@ public final class WizardsUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * @param wizard Wizard whose picks or fame has changed
+	 * @throws IOException If there is a problem loading any of the book images
+	 * @throws RecordNotFoundException If one of the picks we have isn't in the graphics XML file
+	 */
+	public final void wizardUpdated (final PlayerPublicDetails wizard)
+		throws IOException, RecordNotFoundException
+	{
+		// If it isn't the wizard we're currently showing then we don't care
+		if ((playerName != null) && (wizard == selectedWizard))
+		{
+			updateBookshelfFromPicks ();
+			updateRetortsFromPicks (-1);
+			updateWizard ();
+		}
+	}
+	
+	/**
 	 * Update all labels and such from the chosen language 
 	 */
 	@Override

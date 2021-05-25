@@ -10,6 +10,7 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
+import momime.client.ui.frames.WizardsUI;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.servertoclient.ReplacePicksMessage;
 
@@ -27,6 +28,9 @@ public final class ReplacePicksMessageImpl extends ReplacePicksMessage implement
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
 	
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -39,6 +43,8 @@ public final class ReplacePicksMessageImpl extends ReplacePicksMessage implement
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		pub.getPick ().clear ();
 		pub.getPick ().addAll (getPick ());
+		
+		getWizardsUI ().wizardUpdated (player);
 	}
 	
 	/**
@@ -71,5 +77,21 @@ public final class ReplacePicksMessageImpl extends ReplacePicksMessage implement
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
 	}
 }

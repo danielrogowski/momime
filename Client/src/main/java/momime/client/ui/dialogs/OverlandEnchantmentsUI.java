@@ -32,9 +32,11 @@ import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.messages.process.AddOrUpdateMaintainedSpellMessageImpl;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.MagicSlidersUI;
+import momime.client.ui.frames.WizardsUI;
 import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
@@ -90,6 +92,9 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
 	
 	/** The spell being drawn */
 	private AddOrUpdateMaintainedSpellMessageImpl addSpellMessage;
@@ -245,7 +250,11 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		else
 			existingSpell.setCastingPlayerID (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
 					
+		// Update other screens
 		getMagicSlidersUI ().spellsChanged ();
+		
+		if (getAddSpellMessage ().getMaintainedSpell ().getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+			getWizardsUI ().wizardUpdated (player);
 		
 		// If spell binding, use special music for it
 		Spell musicSpell = spell;
@@ -537,5 +546,21 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils utils)
 	{
 		memoryMaintainedSpellUtils = utils;
+	}
+
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
 	}
 }

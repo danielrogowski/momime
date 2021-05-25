@@ -9,12 +9,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.multiplayer.base.client.BaseServerToClientMessage;
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
+import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.UnitInfoUI;
+import momime.client.ui.frames.WizardsUI;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.SwitchOffMaintainedSpellMessage;
@@ -36,6 +40,9 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
+	/** Session utils */
+	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
 	/** Magic sliders screen */
 	private MagicSlidersUI magicSlidersUI;
 	
@@ -44,6 +51,9 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	
 	/** Combat UI */
 	private CombatUI combatUI;
+	
+	/** Wizards UI */
+	private WizardsUI wizardsUI;
 	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
@@ -107,7 +117,17 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 			
 			// If we've got the magic screen loaded up, update overland enchantments
 			else
+			{
 				getMagicSlidersUI ().spellsChanged ();
+				
+				if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_JUST_CAUSE))
+				{
+					final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID
+						(getClient ().getPlayers (), spell.getCastingPlayerID (), "SwitchOffMaintainedSpellMessageImpl.processOneUpdate (W)");				
+					
+					getWizardsUI ().wizardUpdated (player);
+				}
+			}
 		}
 		catch (final Exception e)
 		{
@@ -147,6 +167,22 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 		memoryMaintainedSpellUtils = spellUtils;
 	}
 
+	/**
+	 * @return Session utils
+	 */
+	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
+	{
+		return multiplayerSessionUtils;
+	}
+
+	/**
+	 * @param util Session utils
+	 */
+	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
+	{
+		multiplayerSessionUtils = util;
+	}
+	
 	/**
 	 * @return Magic sliders screen
 	 */
@@ -193,5 +229,21 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 	public final void setCombatUI (final CombatUI ui)
 	{
 		combatUI = ui;
+	}
+
+	/**
+	 * @return Wizards UI
+	 */
+	public final WizardsUI getWizardsUI ()
+	{
+		return wizardsUI;
+	}
+
+	/**
+	 * @param ui Wizards UI
+	 */
+	public final void setWizardsUI (final WizardsUI ui)
+	{
+		wizardsUI = ui;
 	}
 }

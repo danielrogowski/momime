@@ -297,8 +297,8 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
      */
 	@Override
-	public final int calculateModifiedFame (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails, final List<PlayerPublicDetails> players,
-		final FogOfWarMemory mem, final CommonDatabase db)
+	public final int calculateModifiedFame (final List<MomResourceValue> resourceList, final PlayerPublicDetails playerDetails,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		int total = calculateBasicFame (resourceList);

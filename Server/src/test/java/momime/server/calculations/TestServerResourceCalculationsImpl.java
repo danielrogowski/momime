@@ -60,6 +60,7 @@ import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.ResourceValueUtilsImpl;
@@ -153,6 +154,9 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final PlayerServerDetails player = new PlayerServerDetails (pd, pub, priv, null, null);
 		players.add (player);
 		
+		// Spells
+		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
+		
 		// Set up test object
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -165,7 +169,10 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		calc.setUnitServerUtils (mock (UnitServerUtils.class));
 		
 		// Use real resource value utils, so we don't have to mock every possible value of addToAmountPerTurn
-		calc.setResourceValueUtils (new ResourceValueUtilsImpl ());		
+		final ResourceValueUtilsImpl resourceValueUtils = new ResourceValueUtilsImpl ();
+		resourceValueUtils.setMemoryMaintainedSpellUtils (memoryMaintainedSpellUtils);
+		resourceValueUtils.setUnitUtils (unitUtils);
+		calc.setResourceValueUtils (resourceValueUtils);
 
 		// We have some shadow demons (7 mana upkeep)
 		final MemoryUnit shadowDemons = new MemoryUnit ();

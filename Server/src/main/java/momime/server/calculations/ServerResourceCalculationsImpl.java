@@ -51,6 +51,7 @@ import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
@@ -128,7 +129,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 		// If wizard is banished then they do not get several production types
 		final List<String> zeroedProductionTypes = new ArrayList<String> ();
-		if (pub.getWizardState () != WizardState.ACTIVE)
+		if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.ACTIVE))
 			for (final ProductionTypeEx productionType : db.getProductionTypes ())
 				if ((productionType.isZeroWhenBanished () != null) && (productionType.isZeroWhenBanished ()))
 					zeroedProductionTypes.add (productionType.getProductionTypeID ());
@@ -168,6 +169,24 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		final int manaConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
 		if ((manaConsumption < -1) && (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHANNELER) > 0))
 			getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, (-manaConsumption) / 2);
+		
+		// Gold upkeep of troops is reduced by wizard's fame
+		if (PlayerKnowledgeUtils.isWizard (pub.getWizardID ()))
+		{
+			final int goldConsumption = getResourceValueUtils ().findAmountPerTurnForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+			if (goldConsumption < 0)
+			{
+				int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player, players, trueMap, db);
+				if (fame > 0)
+				{
+					// Can't actually generate gold from fame, so limit it to only what will cancel out our consumption
+					if (fame > -goldConsumption)
+						fame = -goldConsumption;
+					
+					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, fame);
+				}
+			}
+		}
 
 		// The gist of the ordering here is that, now we've dealt with mana consumption, we can now add on things that *might* generate mana
 		// In practice this is mostly irrelevant since *nothing* actually generates mana directly - it only generates magic power that can be converted into mana

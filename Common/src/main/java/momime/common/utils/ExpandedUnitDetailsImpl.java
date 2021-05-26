@@ -547,6 +547,20 @@ public final class ExpandedUnitDetailsImpl implements ExpandedUnitDetails
 	}
 	
 	/**
+	 * @return How much fame a player loses when this unit dies
+	 */
+	@Override
+	public final int calculateFameLostForUnitDying ()
+	{
+		int fame = 0;
+		
+		if (isHero ())
+			fame = (getModifiedExperienceLevel ().getLevelNumber () + 1) / 2;
+		
+		return fame;
+	}
+	
+	/**
 	 * @return String representation of all class values, for debug purposes
 	 */
 	@Override

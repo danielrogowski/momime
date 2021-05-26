@@ -36,6 +36,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -251,6 +252,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// Kill off any of the units who may have died.
 		// We don't need to notify the clients of this separately, clients can tell from the damage taken values above whether the units are dead or not,
 		// whether or not they're involved in the combat.
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		
 		boolean combatEnded = false;
 		PlayerServerDetails winningPlayer = null;
 		
@@ -266,6 +270,8 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyAttackingPlayerUnitsSurvived = true;
 				else
 				{
+					tc.setAttackerSpecialFameLost (tc.getAttackerSpecialFameLost () + xuAttackingPlayerUnit.calculateFameLostForUnitDying ());
+					
 					final KillUnitActionID action = (getUnitServerUtils ().whatKilledUnit (attackingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT) ?
 						KillUnitActionID.PERMANENT_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
 					
@@ -298,8 +304,10 @@ public final class DamageProcessorImpl implements DamageProcessor
 					anyDefendingPlayerUnitsSurvived = true;
 				else
 				{
+					tc.setDefenderSpecialFameLost (tc.getDefenderSpecialFameLost () + xuDefendingPlayerUnit.calculateFameLostForUnitDying ());
+					
 					final KillUnitActionID action = (getUnitServerUtils ().whatKilledUnit (defendingPlayerUnit.getUnitDamage ()) == StoredDamageTypeID.PERMANENT) ?
-							KillUnitActionID.PERMANENT_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
+						KillUnitActionID.PERMANENT_DAMAGE : KillUnitActionID.HEALABLE_COMBAT_DAMAGE;
 					
 					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (defendingPlayerUnit, action,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());

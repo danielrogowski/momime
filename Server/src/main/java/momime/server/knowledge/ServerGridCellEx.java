@@ -57,6 +57,12 @@ public final class ServerGridCellEx extends ServerGridCell
 	
 	/** Cost of most expensive attacker */
 	private Integer attackerMostExpensiveUnitCost;
+	
+	/** Fame the defender lost in combat due to particular units dying */
+	private Integer defenderSpecialFameLost;
+	
+	/** Fame the attacker lost in combat due to particular units dying */
+	private Integer attackerSpecialFameLost;
 
 	/** List of items held by any heroes that died in this combat, no matter which side they were on */
 	private List<NumberedHeroItem> itemsFromHeroesWhoDiedInCombat = new ArrayList<NumberedHeroItem> ();
@@ -283,6 +289,38 @@ public final class ServerGridCellEx extends ServerGridCell
 	public final void setAttackerMostExpensiveUnitCost (final Integer c)
 	{
 		attackerMostExpensiveUnitCost = c;
+	}
+
+	/**
+	 * @return Fame the defender lost in combat due to particular units dying
+	 */
+	public final Integer getDefenderSpecialFameLost ()
+	{
+		return defenderSpecialFameLost;
+	}
+
+	/**
+	 * @param f Fame the defender lost in combat due to particular units dying
+	 */
+	public final void setDefenderSpecialFameLost (final Integer f)
+	{
+		defenderSpecialFameLost = f;
+	}
+	
+	/**
+	 * @return Fame the attacker lost in combat due to particular units dying
+	 */
+	public final Integer getAttackerSpecialFameLost ()
+	{
+		return attackerSpecialFameLost;
+	}
+	
+	/**
+	 * @param f Fame the attacker lost in combat due to particular units dying
+	 */
+	public final void setAttackerSpecialFameLost (final Integer f)
+	{
+		attackerSpecialFameLost = f;
 	}
 	
 	/**

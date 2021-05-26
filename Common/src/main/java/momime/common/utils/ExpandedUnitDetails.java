@@ -227,6 +227,11 @@ public interface ExpandedUnitDetails
 	public int calculateManaTotal () throws MomException;
 
 	/**
+	 * @return How much fame a player loses when this unit dies
+	 */
+	public int calculateFameLostForUnitDying ();
+	
+	/**
 	 * @return String identifiying this unit, suitable for including in debug messages
 	 */
 	public String getDebugIdentifier ();

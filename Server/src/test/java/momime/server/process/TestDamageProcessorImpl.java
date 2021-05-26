@@ -35,6 +35,7 @@ import momime.common.database.DamageType;
 import momime.common.database.FogOfWarSetting;
 import momime.common.database.NegatedBySkill;
 import momime.common.database.NegatedByUnitID;
+import momime.common.database.OverlandMapSize;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
@@ -59,6 +60,7 @@ import momime.server.database.ServerDatabaseValues;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.KillUnitActionID;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.UnitServerUtils;
 
@@ -116,14 +118,18 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
-		final CombatMapSize combatMapSize = createCombatMapSize (); 
+		final CombatMapSize combatMapSize = createCombatMapSize ();
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		sd.setCombatMapSize (combatMapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
+		final ServerGridCellEx tc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		tc.setAttackerSpecialFameLost (0);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -298,13 +304,17 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		final CombatMapSize combatMapSize = createCombatMapSize (); 
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 		
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		sd.setCombatMapSize (combatMapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
+		final ServerGridCellEx tc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (10).getCell ().get (20);
+		tc.setAttackerSpecialFameLost (0);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -468,13 +478,15 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		final CombatMapSize combatMapSize = createCombatMapSize (); 
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		sd.setCombatMapSize (combatMapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -626,13 +638,15 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		// Session description
 		final FogOfWarSetting fogOfWarSettings = new FogOfWarSetting ();
 		final CombatMapSize combatMapSize = createCombatMapSize (); 
+		final OverlandMapSize overlandMapSize = createOverlandMapSize ();
 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setFogOfWarSetting (fogOfWarSettings);
 		sd.setCombatMapSize (combatMapSize);
+		sd.setOverlandMapSize (overlandMapSize);
 		
 		// General server knowledge
-		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapSize);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);

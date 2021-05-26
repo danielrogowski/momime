@@ -220,12 +220,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 		{
 			tc.setDefenderUnitCount (defenderSummary.getUnitCount ());
 			tc.setDefenderMostExpensiveUnitCost (defenderSummary.getMostExpensiveUnitCost ());
+			tc.setDefenderSpecialFameLost (0);
 		}
 		
 		if (attackerSummary != null)
 		{
 			tc.setAttackerUnitCount (attackerSummary.getUnitCount ());
 			tc.setAttackerMostExpensiveUnitCost (attackerSummary.getMostExpensiveUnitCost ());
+			tc.setAttackerSpecialFameLost (0);
 		}
 		
 		// Are there any defenders (attacking an empty city) - if not then bypass the combat entirely
@@ -440,6 +442,13 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				attackerFameChange--;
 			}
 			
+			// Fame for losing heroes
+			if ((winningPlayer == attackingPlayer) && (tc.getDefenderSpecialFameLost () != null))
+				defenderFameChange = defenderFameChange - tc.getDefenderSpecialFameLost ();
+
+			if ((winningPlayer == defendingPlayer) && (tc.getAttackerSpecialFameLost () != null))
+				attackerFameChange = attackerFameChange - tc.getAttackerSpecialFameLost ();
+			
 			// Update fame
 			final MomPersistentPlayerPublicKnowledge atkPub = (MomPersistentPlayerPublicKnowledge) attackingPlayer.getPersistentPlayerPublicKnowledge ();
 			final MomPersistentPlayerPublicKnowledge defPub = (defendingPlayer == null) ? null : (MomPersistentPlayerPublicKnowledge) defendingPlayer.getPersistentPlayerPublicKnowledge ();
@@ -626,6 +635,8 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 				tc.setAttackerUnitCount (null);
 				tc.setDefenderMostExpensiveUnitCost (null);
 				tc.setAttackerMostExpensiveUnitCost (null);
+				tc.setDefenderSpecialFameLost (null);
+				tc.setAttackerSpecialFameLost (null);
 				
 				// Figure out what to do next now the combat is over
 				if (mom.getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)

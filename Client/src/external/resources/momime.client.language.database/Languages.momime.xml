@@ -1752,6 +1752,12 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
         <heroGainedALevelLastTurn language="en">
             <text>Last turn, SIMPLE_UNIT_NAME attained the level of EXPERIENCE_LEVEL_NAME</text>
         </heroGainedALevelLastTurn>
+        <offersCategory language="en">
+            <text>Offers</text>
+        </offersCategory>
+        <offerHero language="en">
+            <text>SIMPLE_UNIT_NAME offers to join you for COST gold</text>
+        </offerHero>
     </newTurnMessages>
     <mainMenuScreen>
         <longTitle language="en">

@@ -155,6 +155,9 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	
 	/** Random number generator */
 	private RandomUtils randomUtils;
+	
+	/** Offer generator */
+	private OfferGenerator offerGenerator;
 
 	/** Number of save points to keep for each session */
 	private int savePointKeepCount;
@@ -672,6 +675,17 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		// 3) Completed buildings (both bonuses and increased maintenance)
 		getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, false, mom);
 		storePowerBaseHistory (onlyOnePlayerID, mom.getPlayers ());
+		
+		// Generate offers for heroes, mercenaries and items to hire or buy
+		for (final PlayerServerDetails player : mom.getPlayers ())
+			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == player.getPlayerDescription ().getPlayerID ()))
+			{
+				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				
+				// Don't let raiders buy units or hire heroes
+				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
+					getOfferGenerator ().generateHeroOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+			}
 	}
 	
 	/**
@@ -1547,6 +1561,22 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 		randomUtils = utils;
 	}
 
+	/**
+	 * @return Offer generator
+	 */
+	public final OfferGenerator getOfferGenerator ()
+	{
+		return offerGenerator;
+	}
+
+	/**
+	 * @param g Offer generator
+	 */
+	public final void setOfferGenerator (final OfferGenerator g)
+	{
+		offerGenerator = g;
+	}
+	
 	/**
 	 * @return Number of save points to keep for each session
 	 */

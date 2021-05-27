@@ -346,6 +346,62 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 		</xsd:complexContent>
 	</xsd:complexType>		       
 
+	<xsd:complexType name="newTurnMessageOffer">
+	    <xsd:annotation>
+    		<xsd:documentation>Offer to hire someone or buy something.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="cost" type="momimecommon:productionCost" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+
+	<xsd:complexType name="newTurnMessageOfferHero">
+	    <xsd:annotation>
+    		<xsd:documentation>Offer to hire a hero.  The hero stats get generated on the server, but until they're actually bought, they don't
+exist in the client's unit list (at least not with the correct details) so we have to include the full unit details here.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageOffer">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="hero" type="momimemsgs:memoryUnit" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+			       
+	<xsd:complexType name="newTurnMessageOfferUnits">
+	    <xsd:annotation>
+    		<xsd:documentation>Offer to hire mercenary unit(s).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageOffer">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitID" type="momimecommon:unitID" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="unitCount" type="momimecommon:unitCount" />
+					<xsd:element minOccurs="1" maxOccurs="1" name="levelNumber" type="momimecommon:experienceLevelNumber" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+			       
+	<xsd:complexType name="newTurnMessageOfferItem">
+	    <xsd:annotation>
+    		<xsd:documentation>Offer to buy a hero item.  Similar to heroes - we don't actually have the item yet so cannot look it up in our list,
+so must include the full details of the item here.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimemsgs:newTurnMessageOffer">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="heroItem" type="momimemsgs:numberedHeroItem" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+			       
 	<xsd:complexType name="momTransientPlayerPrivateKnowledge">
 	    <xsd:annotation>
     		<xsd:documentation>Holds all private knowledge that a player only knows about themselves, they can't see the values for other players,
@@ -1078,6 +1134,18 @@ through lack of production, we can still look up their name to show it on the ne
 			<xsd:enumeration value="H"><xsd:annotation>
 				<xsd:documentation>Hero gained a level</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="HERO_GAINED_A_LEVEL" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="O"><xsd:annotation>
+				<xsd:documentation>Offer hero for hire</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OFFER_HERO" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="M"><xsd:annotation>
+				<xsd:documentation>Offer units for hire (mercenaries)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OFFER_UNITS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="E"><xsd:annotation>
+				<xsd:documentation>Offer item to buy (merchant)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="OFFER_ITEM" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

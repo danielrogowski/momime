@@ -80,4 +80,14 @@ public interface ServerUnitCalculations
 	 */
 	public List<UnitEx> listUnitsSpellMightSummon (final Spell spell, final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db)
 		throws RecordNotFoundException;
+	
+	/**
+	 * Similar to listUnitsSpellMightSummon, except lists all heroes who haven't been killed, and who we have the necessary spell book picks for. 
+	 * 
+	 * @param player Player recruiting heroes
+	 * @param trueUnits List of true units
+	 * @param db Lookup lists built over the XML database
+	 * @return List of heroes available to us
+	 */
+	public List<UnitEx> listHeroesForHire (final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db);
 }

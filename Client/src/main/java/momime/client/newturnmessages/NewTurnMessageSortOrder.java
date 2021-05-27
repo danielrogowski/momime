@@ -35,7 +35,10 @@ public enum NewTurnMessageSortOrder
 	 SORT_ORDER_NODES (6),
 	
 	/** NTMs about units */
-	SORT_ORDER_UNITS (7);
+	SORT_ORDER_UNITS (7),
+	
+	/** NTMs about offers */
+	SORT_ORDER_OFFERS (8);
 	 
 	 /** Numeric sort order */
 	 private final int sortOrder;
@@ -92,6 +95,10 @@ public enum NewTurnMessageSortOrder
 				 
 			 case SORT_ORDER_UNITS:
 				 languageText = lang.getUnitsCategory ();
+				 break;
+				 
+			 case SORT_ORDER_OFFERS:
+				 languageText = lang.getOffersCategory ();
 				 break;
 				 
 			default:

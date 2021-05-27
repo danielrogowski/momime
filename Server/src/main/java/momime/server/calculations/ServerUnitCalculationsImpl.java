@@ -279,6 +279,49 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 		
 		return possibleUnits;
 	}
+
+	/**
+	 * Similar to listUnitsSpellMightSummon, except lists all heroes who haven't been killed, and who we have the necessary spell book picks for. 
+	 * 
+	 * @param player Player recruiting heroes
+	 * @param trueUnits List of true units
+	 * @param db Lookup lists built over the XML database
+	 * @return List of heroes available to us
+	 */
+	@Override
+	public final List<UnitEx> listHeroesForHire (final PlayerServerDetails player, final List<MemoryUnit> trueUnits, final CommonDatabase db)
+	{
+		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+		
+		final List<UnitEx> possibleUnits = new ArrayList<UnitEx> ();
+		for (final UnitEx possibleUnit : db.getUnits ())
+			if ((possibleUnit.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO)) &&
+				(possibleUnit.getHiringFame () != null) && (possibleUnit.getProductionCost () != null))
+			{
+				final MemoryUnit hero = getUnitServerUtils ().findUnitWithPlayerAndID (trueUnits,
+					player.getPlayerDescription ().getPlayerID (), possibleUnit.getUnitID ());
+
+				boolean addToList;
+				if (hero == null)
+					addToList = false;
+				else
+					addToList = ((hero.getStatus () == UnitStatusID.NOT_GENERATED) || (hero.getStatus () == UnitStatusID.GENERATED));
+				
+				// Check for units that require particular picks to summon
+				final Iterator<PickAndQuantity> iter = possibleUnit.getUnitPickPrerequisite ().iterator ();
+				while ((addToList) && (iter.hasNext ()))
+				{
+					final PickAndQuantity prereq = iter.next ();
+					if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), prereq.getPickID ()) < prereq.getQuantity ())
+						addToList = false;
+				}
+	
+				if (addToList)
+					possibleUnits.add (possibleUnit);
+			}
+		
+		return possibleUnits;
+	}
 	
 	/**
 	 * @return Unit utils

@@ -18,6 +18,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.common.database.LanguageText;
+import momime.common.database.UnitEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.NewTurnMessageSummonUnit;
 import momime.common.utils.ExpandedUnitDetails;
@@ -74,10 +75,22 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 		Image image = null;
 		try
 		{
-			final String imageName = getClient ().getClientDB ().findUnit (getUnitID (), "NewTurnMessageSummonUnitEx").getUnitSummonImageFile ();
-			if (imageName != null)
+			final UnitEx unitDef = getClient ().getClientDB ().findUnit (getUnitID (), "NewTurnMessageSummonUnitEx");
+			
+			// If summoning a hero, show their portrait
+			if (unitDef.getHeroPortraitImageFile () != null)
 			{
-				final BufferedImage fullSizeImage = getUtils ().loadImage (imageName);
+				final BufferedImage fullSizeImage = getUtils ().loadImage (unitDef.getHeroPortraitImageFile ());
+				
+				// Original graphics don't use square pixel, so resize it to match the size on the armies and unit info screens
+				// see frmHeroItemsHeroPortrait
+				image = fullSizeImage.getScaledInstance (48, 58, Image.SCALE_FAST);
+			}
+			
+			// If summoning a normal unit, they have a special summonining image
+			else if (unitDef.getUnitSummonImageFile () != null)
+			{
+				final BufferedImage fullSizeImage = getUtils ().loadImage (unitDef.getUnitSummonImageFile ());
 				image = fullSizeImage.getScaledInstance (fullSizeImage.getWidth () / 2, fullSizeImage.getHeight () / 2, Image.SCALE_SMOOTH);
 			}
 		}

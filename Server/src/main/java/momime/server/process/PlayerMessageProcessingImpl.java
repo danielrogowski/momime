@@ -684,7 +684,10 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				
 				// Don't let raiders buy units or hire heroes
 				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
+				{
 					getOfferGenerator ().generateHeroOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					getOfferGenerator ().generateUnitsOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				}
 			}
 	}
 	

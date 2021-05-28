@@ -3,7 +3,6 @@ package momime.client.newturnmessages;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -18,20 +17,25 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.TextUtils;
+import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ExperienceLevel;
 import momime.common.database.LanguageText;
-import momime.common.messages.NewTurnMessageOfferHero;
+import momime.common.database.Pick;
+import momime.common.database.UnitType;
+import momime.common.messages.AvailableUnit;
+import momime.common.messages.NewTurnMessageOfferUnits;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.UnitTypeUtils;
 import momime.common.utils.UnitUtils;
 
 /**
- * Offer to hire a hero.  The hero stats get generated on the server, but until they're actually bought, they don't
- * exist in the client's unit list (at least not with the correct details) so we have to include the full unit details here.
+ * Offer to hire mercenary unit(s).
  */
-public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
+public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
 	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess
 {
 	/** Class logger */
-	private final static Log log = LogFactory.getLog (NewTurnMessageOfferHeroEx.class);
+	private final static Log log = LogFactory.getLog (NewTurnMessageOfferUnitsEx.class);
 
 	/** Current status of this NTM */
 	private NewTurnMessageStatus status;
@@ -57,7 +61,7 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 	/** Text utils */
 	private TextUtils textUtils;
 	
-	/** The hero who gained a level */
+	/** The unit on offer */
 	private ExpandedUnitDetails xu;
 	
 	/**
@@ -79,15 +83,9 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 		if (xu != null)
 			try
 			{
-				final String imageName = getClient ().getClientDB ().findUnit (xu.getUnitID (), "NewTurnMessageOfferHeroEx").getHeroPortraitImageFile ();
+				final String imageName = getClient ().getClientDB ().findUnit (xu.getUnitID (), "NewTurnMessageOfferUnitsEx").getUnitOverlandImageFile ();
 				if (imageName != null)
-				{
-					final BufferedImage fullSizeImage = getUtils ().loadImage (imageName);
-					
-					// Original graphics don't use square pixel, so resize it to match the size on the armies and unit info screens
-					// see frmHeroItemsHeroPortrait
-					image = fullSizeImage.getScaledInstance (48, 58, Image.SCALE_FAST);
-				}
+					image = getUtils ().loadImage (imageName);
 			}
 			catch (final Exception e)
 			{
@@ -104,7 +102,19 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 	@Override
 	public final void preProcess () throws IOException
 	{
-		xu = getUnitUtils ().expandUnitDetails (getHero (), null, null, null, getClient ().getPlayers (),
+		// Work out the experience value from the level
+		final Pick normalUnitRealm = getClient ().getClientDB ().findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "NewTurnMessageOfferUnitsEx");
+		final UnitType normalUnit = getClient ().getClientDB ().findUnitType (normalUnitRealm.getUnitTypeID (), "NewTurnMessageOfferUnitsEx");
+		final ExperienceLevel expLevel = UnitTypeUtils.findExperienceLevel (normalUnit, getLevelNumber ());
+		
+		// Now can create a sample unit
+		final AvailableUnit sampleUnit = new AvailableUnit ();
+		sampleUnit.setUnitID (getUnitID ());
+
+		// We don't have to get the weapon grade or experience right just to draw the figures
+		getUnitUtils ().initializeUnitSkills (sampleUnit, expLevel.getExperienceRequired (), getClient ().getClientDB ());
+		
+		xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	
@@ -114,9 +124,12 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 	@Override
 	public final String getText ()
 	{
-		final List<LanguageText> languageText = getLanguages ().getNewTurnMessages ().getOfferHero ();
+		final List<LanguageText> languageText = (getUnitCount () == 1) ? getLanguages ().getNewTurnMessages ().getOfferUnit () :
+			getLanguages ().getNewTurnMessages ().getOfferUnits ();
 		
-		String text = getLanguageHolder ().findDescription (languageText).replaceAll ("COST", getTextUtils ().intToStrCommas (getCost ()));
+		String text = getLanguageHolder ().findDescription (languageText).replaceAll
+			("COST", getTextUtils ().intToStrCommas (getCost ())).replaceAll
+			("COUNT", getTextUtils ().intToStrCommas (getUnitCount ()));
 		
 		getUnitStatsReplacer ().setUnit (xu);
 		text = getUnitStatsReplacer ().replaceVariables (text);

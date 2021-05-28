@@ -677,6 +677,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 
+	<bean id="newTurnMessageOfferUnits" class="momime.client.newturnmessages.NewTurnMessageOfferUnitsEx" scope="prototype">
+		<property name="smallFont" ref="smallFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="client" ref="client" />
+		<property name="utils" ref="uiUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
+		<property name="textUtils" ref="textUtils" />
+	</bean>
+
 	<!-- Create extended versions of damage calculations which include method to work out the text to display -->
 
 	<bean id="damageCalculationHeaderData" class="momime.client.calculations.damage.DamageCalculationHeaderDataEx" scope="prototype">

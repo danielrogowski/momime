@@ -668,6 +668,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 
 	<!-- AI -->

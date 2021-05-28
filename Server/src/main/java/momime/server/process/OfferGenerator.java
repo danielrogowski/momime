@@ -29,4 +29,19 @@ public interface OfferGenerator
 	public void generateHeroOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
+	 * Randomly checks if the player gets an offer to hire mercenary units.
+	 * 
+	 * @param player Player to check for units offer for
+	 * @param players List of players
+	 * @param trueMap True map details
+	 * @param db Lookup lists built over the XML database
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	public void generateUnitsOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+		final FogOfWarMemory trueMap, final CommonDatabase db)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

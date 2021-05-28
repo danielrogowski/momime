@@ -923,6 +923,14 @@
 						<xsd:selector xpath="offerHero" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferUnitPK">
+						<xsd:selector xpath="offerUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferUnitsPK">
+						<xsd:selector xpath="offerUnits" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			
     			<xsd:element minOccurs="0" maxOccurs="1" name="mainMenuScreen" type="momimelangs:mainMenuScreen">
@@ -2689,6 +2697,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroGainedALevelLastTurn" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offersCategory" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerHero" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnits" />
 		</xsd:sequence>
     </xsd:complexType>
 	

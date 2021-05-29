@@ -1759,11 +1759,14 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
             <text>SIMPLE_UNIT_NAME offers to join you for COST gold</text>
         </offerHero>
         <offerUnit language="en">
-            <text>RACE_UNIT_NAME offers to join you for COST gold</text>
+            <text>RACE_UNIT_NAME offer to join you for COST gold</text>
         </offerUnit>
         <offerUnits language="en">
             <text>COUNT RACE_UNIT_NAME offer to join you for COST gold</text>
         </offerUnits>
+        <offerItem language="en">
+            <text>A merchant offers to sell you ITEM_NAME for COST gold</text>
+        </offerItem>
     </newTurnMessages>
     <mainMenuScreen>
         <longTitle language="en">

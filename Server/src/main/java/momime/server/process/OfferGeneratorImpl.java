@@ -12,6 +12,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
+import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -23,13 +24,16 @@ import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.NewTurnMessageOfferHero;
+import momime.common.messages.NewTurnMessageOfferItem;
 import momime.common.messages.NewTurnMessageOfferUnits;
 import momime.common.messages.NewTurnMessageTypeID;
+import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -57,6 +61,9 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	
 	/** Memory building utils */
 	private MemoryBuildingUtils memoryBuildingUtils;
+
+	/** Hero item calculations */
+	private HeroItemCalculations heroItemCalculations;
 	
 	/**
 	 * Tests to see if the player has any heroes they can get, and if so rolls a chance that one offers to join them this turn (for a fee).
@@ -244,6 +251,70 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	}
 
 	/**
+	 * Randomly checks if the player gets an offer to buy a hero item.
+	 * 
+	 * @param player Player to check for item offer for
+	 * @param players List of players
+	 * @param trueMap True map details
+	 * @param db Lookup lists built over the XML database
+	 * @param gsk General server knowledge
+     * @throws RecordNotFoundException If we can't find one of our picks in the database
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public final void generateItemOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+		final FogOfWarMemory trueMap, final CommonDatabase db, final MomGeneralServerKnowledge gsk)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		if (gsk.getAvailableHeroItem ().size () > 0)
+		{
+			// How much fame do we have?
+			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+			final int fame = getResourceValueUtils ().calculateModifiedFame (priv.getResourceValue (), player, players, trueMap, db);
+			
+			// 2% chance +1 per each 25 fame
+			int chance = 2 + (fame / 25);
+			
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			if (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_FAMOUS) > 0)
+				chance = chance * 2;
+			
+			// Cap chance at 10% no matter what
+			if (chance > 10)
+				chance = 10;
+			
+			log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " has " + chance + "% chance of an item offer this turn");
+			
+			if (getRandomUtils ().nextInt (100) < chance)
+			{
+				// Randomly pick an item
+				final NumberedHeroItem item = gsk.getAvailableHeroItem ().get (getRandomUtils ().nextInt (gsk.getAvailableHeroItem ().size ()));
+				
+				// How much does it cost?
+				final boolean halfPrice = (getPlayerPickUtils ().getQuantityOfPick (pub.getPick (), CommonDatabaseConstants.RETORT_ID_CHARISMATIC) > 0);
+				final int cost = getHeroItemCalculations ().calculateCraftingCost (item, db) / (halfPrice ? 2 : 1);
+				
+				// Now we can see if we can actually afford it
+				final int gold = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD);
+				if (gold >= cost)
+				{
+					log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " got offer for item URN " + item.getHeroItemURN () + " - " + item.getHeroItemName ());
+					
+					// Add NTM for it
+					final NewTurnMessageOfferItem offer = new NewTurnMessageOfferItem ();
+					offer.setMsgType (NewTurnMessageTypeID.OFFER_ITEM);
+					offer.setCost (cost);
+					offer.setHeroItem (item);
+					
+					final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
+					trans.getNewTurnMessage ().add (offer);
+				}
+			}
+		}
+	}
+
+	/**
 	 * @return Resource value utils
 	 */
 	public final ResourceValueUtils getResourceValueUtils ()
@@ -337,5 +408,21 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
 	{
 		memoryBuildingUtils = utils;
+	}
+
+	/**
+	 * @return Hero item calculations
+	 */
+	public final HeroItemCalculations getHeroItemCalculations ()
+	{
+		return heroItemCalculations;
+	}
+
+	/**
+	 * @param calc Hero item calculations
+	 */
+	public final void setHeroItemCalculations (final HeroItemCalculations calc)
+	{
+		heroItemCalculations = calc;
 	}
 }

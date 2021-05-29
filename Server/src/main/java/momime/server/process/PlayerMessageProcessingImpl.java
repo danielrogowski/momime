@@ -683,10 +683,12 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 				
 				// Don't let raiders buy units or hire heroes
-				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () != WizardState.DEFEATED))
+				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 				{
 					getOfferGenerator ().generateHeroOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					getOfferGenerator ().generateUnitsOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					getOfferGenerator ().generateItemOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (),
+						mom.getGeneralServerKnowledge ());
 				}
 			}
 	}

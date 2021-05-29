@@ -7,6 +7,7 @@ import momime.common.messages.NewTurnMessageCreateArtifact;
 import momime.common.messages.NewTurnMessageHeroGainedALevel;
 import momime.common.messages.NewTurnMessageNode;
 import momime.common.messages.NewTurnMessageOfferHero;
+import momime.common.messages.NewTurnMessageOfferItem;
 import momime.common.messages.NewTurnMessageOfferUnits;
 import momime.common.messages.NewTurnMessagePopulationChange;
 import momime.common.messages.NewTurnMessageSpell;
@@ -140,6 +141,15 @@ public final class NewTurnMessagesObjectFactory extends ObjectFactory
 		return getNewTurnMessagesFactory ().createNewTurnMessageOfferUnits ();
 	}
 
+	/**
+	 * @return Custom extended NTM
+	 */
+	@Override
+	public final NewTurnMessageOfferItem createNewTurnMessageOfferItem ()
+	{
+		return getNewTurnMessagesFactory ().createNewTurnMessageOfferItem ();
+	}
+	
 	/**
 	 * @return Factory for creating NTMs from spring prototypes
 	 */

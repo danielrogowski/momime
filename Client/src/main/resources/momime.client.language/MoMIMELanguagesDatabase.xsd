@@ -931,6 +931,10 @@
 						<xsd:selector xpath="offerUnits" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferItemPK">
+						<xsd:selector xpath="offerItem" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			
     			<xsd:element minOccurs="0" maxOccurs="1" name="mainMenuScreen" type="momimelangs:mainMenuScreen">
@@ -2699,6 +2703,7 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerHero" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnit" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnits" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerItem" />
 		</xsd:sequence>
     </xsd:complexType>
 	

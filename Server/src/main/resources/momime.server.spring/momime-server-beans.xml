@@ -669,6 +669,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
+		<property name="heroItemCalculations" ref="heroItemCalculations" />
 	</bean>
 
 	<!-- AI -->

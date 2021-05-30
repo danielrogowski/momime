@@ -85,9 +85,18 @@ public interface PrototypeFrameCreator
 	 */
 	public WizardWonUI createWizardWon ();
 	
-	
 	/**
 	 * @return New army list UI
 	 */
 	public ArmyListUI createArmyList ();
+	
+	/**
+	 * @return New hiring UI
+	 */
+	public HeroOrUnitsOfferUI createHeroOrUnitsOffer ();
+
+	/**
+	 * @return New hero item offer UI
+	 */
+	public HeroItemOfferUI createHeroItemOffer ();
 }

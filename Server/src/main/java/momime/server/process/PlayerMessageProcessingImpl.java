@@ -41,6 +41,8 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
+import momime.common.messages.NewTurnMessageData;
+import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.PlayerPick;
@@ -681,6 +683,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == player.getPlayerDescription ().getPlayerID ()))
 			{
 				final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+				final MomTransientPlayerPrivateKnowledge trans = (MomTransientPlayerPrivateKnowledge) player.getTransientPlayerPrivateKnowledge ();
 				
 				// Don't let raiders buy units or hire heroes
 				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
@@ -689,6 +692,16 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					getOfferGenerator ().generateUnitsOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					getOfferGenerator ().generateItemOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (),
 						mom.getGeneralServerKnowledge ());
+					
+					// Give unique URNs to any offers that were generated
+					int offerURN = 0;
+					for (final NewTurnMessageData ntm : trans.getNewTurnMessage ())
+						if (ntm instanceof NewTurnMessageOffer)
+						{
+							final NewTurnMessageOffer offer = (NewTurnMessageOffer) ntm;
+							offerURN++;
+							offer.setOfferURN (offerURN);
+						}
 				}
 			}
 	}

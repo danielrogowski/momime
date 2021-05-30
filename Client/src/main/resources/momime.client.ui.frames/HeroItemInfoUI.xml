@@ -14,6 +14,12 @@
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.5</verticalAlignment>
 	</component>
+	<component name="frmHeroItemInfoExtraButton">
+		<left>312</left>
+		<top>24</top>
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
 	<component name="frmHeroItemInfoClose">
 		<left>372</left>
 		<top>24</top>

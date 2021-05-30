@@ -16,6 +16,9 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.HeroOrUnitsOfferUI;
+import momime.client.ui.frames.MomClientFrameUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -32,7 +35,7 @@ import momime.common.utils.UnitUtils;
  * Offer to hire mercenary unit(s).
  */
 public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
-	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess
+	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess, NewTurnMessageClickable
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (NewTurnMessageOfferUnitsEx.class);
@@ -60,6 +63,12 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
 	
 	/** Text utils */
 	private TextUtils textUtils;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
+
+	/** Sample unit representing the unit on offer */
+	private AvailableUnit sampleUnit;
 	
 	/** The unit on offer */
 	private ExpandedUnitDetails xu;
@@ -108,8 +117,9 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
 		final ExperienceLevel expLevel = UnitTypeUtils.findExperienceLevel (normalUnit, getLevelNumber ());
 		
 		// Now can create a sample unit
-		final AvailableUnit sampleUnit = new AvailableUnit ();
+		sampleUnit = new AvailableUnit ();
 		sampleUnit.setUnitID (getUnitID ());
+		sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
 
 		// We don't have to get the weapon grade or experience right just to draw the figures
 		getUnitUtils ().initializeUnitSkills (sampleUnit, expLevel.getExperienceRequired (), getClient ().getClientDB ());
@@ -135,6 +145,26 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
 		text = getUnitStatsReplacer ().replaceVariables (text);
 
 		return text;
+	}
+	
+	/**
+	 * Take appropriate action when a new turn message is clicked on
+	 * @throws Exception If there was a problem
+	 */
+	@Override
+	public final void clicked () throws Exception
+	{
+		MomClientFrameUI frame = getClient ().getOffers ().get (getOfferURN ());
+		if (frame == null)
+		{
+			final HeroOrUnitsOfferUI offer = getPrototypeFrameCreator ().createHeroOrUnitsOffer ();
+			offer.setUnit (sampleUnit);
+			offer.setNewTurnMessageOffer (this);
+			
+			getClient ().getOffers ().put (getOfferURN (), offer);
+			frame = offer;
+		}
+		frame.setVisible (true);
 	}
 	
 	/**
@@ -292,5 +322,21 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

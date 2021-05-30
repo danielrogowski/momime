@@ -14,6 +14,9 @@ import momime.client.MomClient;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.HeroItemOfferUI;
+import momime.client.ui.frames.MomClientFrameUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.database.HeroItemType;
 import momime.common.database.LanguageText;
@@ -24,7 +27,7 @@ import momime.common.messages.NewTurnMessageOfferItem;
  * so must include the full details of the item here.
  */
 public final class NewTurnMessageOfferItemEx extends NewTurnMessageOfferItem
-	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI
+	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessageClickable
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (NewTurnMessageOfferItemEx.class);
@@ -46,6 +49,9 @@ public final class NewTurnMessageOfferItemEx extends NewTurnMessageOfferItem
 	
 	/** Text utils */
 	private TextUtils textUtils;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -90,6 +96,25 @@ public final class NewTurnMessageOfferItemEx extends NewTurnMessageOfferItem
 			("ITEM_NAME", getHeroItem ().getHeroItemName ());
 
 		return text;
+	}
+	
+	/**
+	 * Take appropriate action when a new turn message is clicked on
+	 * @throws Exception If there was a problem
+	 */
+	@Override
+	public final void clicked () throws Exception
+	{
+		MomClientFrameUI frame = getClient ().getOffers ().get (getOfferURN ());
+		if (frame == null)
+		{
+			final HeroItemOfferUI offer = getPrototypeFrameCreator ().createHeroItemOffer ();
+			offer.setNewTurnMessageOffer (this);
+			
+			getClient ().getOffers ().put (getOfferURN (), offer);
+			frame = offer;
+		}
+		frame.setVisible (true);
 	}
 	
 	/**
@@ -215,5 +240,21 @@ public final class NewTurnMessageOfferItemEx extends NewTurnMessageOfferItem
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

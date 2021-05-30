@@ -17,6 +17,9 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.frames.HeroOrUnitsOfferUI;
+import momime.client.ui.frames.MomClientFrameUI;
+import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.database.LanguageText;
 import momime.common.messages.NewTurnMessageOfferHero;
@@ -28,7 +31,7 @@ import momime.common.utils.UnitUtils;
  * exist in the client's unit list (at least not with the correct details) so we have to include the full unit details here.
  */
 public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
-	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess
+	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess, NewTurnMessageClickable
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (NewTurnMessageOfferHeroEx.class);
@@ -56,6 +59,9 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 	
 	/** Text utils */
 	private TextUtils textUtils;
+	
+	/** Prototype frame creator */
+	private PrototypeFrameCreator prototypeFrameCreator;
 	
 	/** The hero who gained a level */
 	private ExpandedUnitDetails xu;
@@ -122,6 +128,26 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 		text = getUnitStatsReplacer ().replaceVariables (text);
 
 		return text;
+	}
+	
+	/**
+	 * Take appropriate action when a new turn message is clicked on
+	 * @throws Exception If there was a problem
+	 */
+	@Override
+	public final void clicked () throws Exception
+	{
+		MomClientFrameUI frame = getClient ().getOffers ().get (getOfferURN ());
+		if (frame == null)
+		{
+			final HeroOrUnitsOfferUI offer = getPrototypeFrameCreator ().createHeroOrUnitsOffer ();
+			offer.setUnit (getHero ());
+			offer.setNewTurnMessageOffer (this);
+			
+			getClient ().getOffers ().put (getOfferURN (), offer);
+			frame = offer;
+		}
+		frame.setVisible (true);
 	}
 	
 	/**
@@ -279,5 +305,21 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 	public final void setTextUtils (final TextUtils tu)
 	{
 		textUtils = tu;
+	}
+
+	/**
+	 * @return Prototype frame creator
+	 */
+	public final PrototypeFrameCreator getPrototypeFrameCreator ()
+	{
+		return prototypeFrameCreator;
+	}
+
+	/**
+	 * @param obj Prototype frame creator
+	 */
+	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
+	{
+		prototypeFrameCreator = obj;
 	}
 }

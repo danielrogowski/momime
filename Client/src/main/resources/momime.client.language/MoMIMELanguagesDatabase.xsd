@@ -1403,6 +1403,18 @@
 						<xsd:selector xpath="unitCanCast" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="unitInfoScreenHirePK">
+						<xsd:selector xpath="hire" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitInfoScreenBuyPK">
+						<xsd:selector xpath="buy" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitInfoScreenRejectPK">
+						<xsd:selector xpath="reject" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="optionsScreen" type="momimelangs:optionsScreen">
 					<xsd:key name="optionsScreenTitlePK">
@@ -3739,6 +3751,9 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="rename" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="renamePrompt" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitCanCast" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="hire" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="buy" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="reject" />
 		</xsd:sequence>
     </xsd:complexType>
 	

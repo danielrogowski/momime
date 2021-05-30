@@ -353,6 +353,7 @@ identify them to each other at runtime, e.g. client requests to move hero item n
 		<xsd:complexContent>
 			<xsd:extension base="momimemsgs:newTurnMessageData">
 				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="offerURN" type="momimemsgs:offerURN" />
 					<xsd:element minOccurs="1" maxOccurs="1" name="cost" type="momimecommon:productionCost" />
 				</xsd:sequence>
 			</xsd:extension>
@@ -1244,6 +1245,13 @@ So need a separate data item for this.</xsd:documentation>
 	<xsd:simpleType name="listIndex">
 		<xsd:annotation>
 			<xsd:documentation>An index into an unbounded list.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="offerURN">
+	    <xsd:annotation>
+    		<xsd:documentation>Unique identifier allocated to each offer sent to a player each turn.  Only unique for that player for that turn.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>

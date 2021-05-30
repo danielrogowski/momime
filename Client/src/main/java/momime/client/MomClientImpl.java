@@ -59,6 +59,7 @@ import momime.client.ui.frames.JoinGameUI;
 import momime.client.ui.frames.LoadGameUI;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.ui.frames.MainMenuUI;
+import momime.client.ui.frames.MomClientFrameUI;
 import momime.client.ui.frames.NewGameUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
@@ -188,6 +189,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** List of all hero item info screens currently open, keyed by Hero Item URN */
 	private Map<Integer, HeroItemInfoUI> heroItemInfos = new HashMap<Integer, HeroItemInfoUI> ();
+
+	/** List of all offer screens currently open, keyed by Offer URN */
+	private Map<Integer, MomClientFrameUI> offers = new HashMap<Integer, MomClientFrameUI> ();
 	
 	/**
 	 * Kick off method invoked by spring's init-method
@@ -1359,5 +1363,14 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final Map<Integer, HeroItemInfoUI> getHeroItemInfos ()
 	{
 		return heroItemInfos;
+	}
+	
+	/**
+	 * @return List of all offer screens currently open, keyed by Offer URN
+	 */
+	@Override
+	public final Map<Integer, MomClientFrameUI> getOffers ()
+	{
+		return offers;
 	}
 }

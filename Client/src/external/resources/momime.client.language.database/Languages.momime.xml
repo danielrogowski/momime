@@ -3589,6 +3589,15 @@ Bonus Or +GOLD_BONUS%</text>
         <unitCanCast language="en">
             <text>SPELL_NAME spell</text>
         </unitCanCast>
+        <hire language="en">
+            <text>Hire</text>
+        </hire>
+        <buy language="en">
+            <text>Buy</text>
+        </buy>
+        <reject language="en">
+            <text>Reject</text>
+        </reject>
     </unitInfoScreen>
     <optionsScreen>
         <title language="en">

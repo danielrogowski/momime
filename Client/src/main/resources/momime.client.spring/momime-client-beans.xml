@@ -675,6 +675,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="newTurnMessageOfferUnits" class="momime.client.newturnmessages.NewTurnMessageOfferUnitsEx" scope="prototype">
@@ -685,6 +686,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<bean id="newTurnMessageOfferItem" class="momime.client.newturnmessages.NewTurnMessageOfferItemEx" scope="prototype">
@@ -693,6 +695,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
 		<property name="textUtils" ref="textUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 	</bean>
 
 	<!-- Create extended versions of damage calculations which include method to work out the text to display -->
@@ -1879,6 +1882,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each unitInfoUI -->
 	</bean>
+
+	<bean id="heroOrUnitsOfferUI" class="momime.client.ui.frames.HeroOrUnitsOfferUI" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each heroOrUnitsOfferUI -->
+	</bean>
 	
 	<bean id="overlandEnchantmentsLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/OverlandEnchantmentsUI.xml" />
@@ -1942,6 +1954,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 	
 	<bean id="heroItemInfoUI" class="momime.client.ui.frames.HeroItemInfoUI" scope="prototype">
+		<property name="heroItemInfoLayout" ref="heroItemInfoLayout" />
+		<property name="client" ref="client" />
+		<property name="smallFont" ref="smallFont" />
+		<property name="mediumFont" ref="mediumFont" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+	</bean>
+	
+	<bean id="heroItemOfferUI" class="momime.client.ui.frames.HeroItemOfferUI" scope="prototype">
 		<property name="heroItemInfoLayout" ref="heroItemInfoLayout" />
 		<property name="client" ref="client" />
 		<property name="smallFont" ref="smallFont" />

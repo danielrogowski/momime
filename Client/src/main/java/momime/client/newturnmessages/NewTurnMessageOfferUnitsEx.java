@@ -17,7 +17,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.HeroOrUnitsOfferUI;
-import momime.client.ui.frames.MomClientFrameUI;
+import momime.client.ui.frames.OfferUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.database.CommonDatabaseConstants;
@@ -34,8 +34,8 @@ import momime.common.utils.UnitUtils;
 /**
  * Offer to hire mercenary unit(s).
  */
-public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
-	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess, NewTurnMessageClickable
+public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits implements NewTurnMessageOfferEx,
+	NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess, NewTurnMessageClickable, NewTurnMessageMustBeAnswered
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (NewTurnMessageOfferUnitsEx.class);
@@ -72,6 +72,9 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
 	
 	/** The unit on offer */
 	private ExpandedUnitDetails xu;
+	
+	/** null = not yet decided; true = accepted; false = rejected */
+	private Boolean offerAccepted;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -134,8 +137,13 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
 	@Override
 	public final String getText ()
 	{
-		final List<LanguageText> languageText = (getUnitCount () == 1) ? getLanguages ().getNewTurnMessages ().getOfferUnit () :
-			getLanguages ().getNewTurnMessages ().getOfferUnits ();
+		final List<LanguageText> languageText;
+		if (isOfferAccepted () == null)
+			languageText = (getUnitCount () == 1) ? getLanguages ().getNewTurnMessages ().getOfferUnit () : getLanguages ().getNewTurnMessages ().getOfferUnits ();
+		else if (isOfferAccepted ())
+			languageText = (getUnitCount () == 1) ? getLanguages ().getNewTurnMessages ().getOfferUnitAccepted () : getLanguages ().getNewTurnMessages ().getOfferUnitsAccepted ();
+		else
+			languageText = (getUnitCount () == 1) ? getLanguages ().getNewTurnMessages ().getOfferUnitRejected () : getLanguages ().getNewTurnMessages ().getOfferUnitsRejected ();
 		
 		String text = getLanguageHolder ().findDescription (languageText).replaceAll
 			("COST", getTextUtils ().intToStrCommas (getCost ())).replaceAll
@@ -154,17 +162,47 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits
 	@Override
 	public final void clicked () throws Exception
 	{
-		MomClientFrameUI frame = getClient ().getOffers ().get (getOfferURN ());
-		if (frame == null)
+		if (!isAnswered ())
 		{
-			final HeroOrUnitsOfferUI offer = getPrototypeFrameCreator ().createHeroOrUnitsOffer ();
-			offer.setUnit (sampleUnit);
-			offer.setNewTurnMessageOffer (this);
-			
-			getClient ().getOffers ().put (getOfferURN (), offer);
-			frame = offer;
+			OfferUI ui = getClient ().getOffers ().get (getOfferURN ());
+			if (ui == null)
+			{
+				final HeroOrUnitsOfferUI offer = getPrototypeFrameCreator ().createHeroOrUnitsOffer ();
+				offer.setUnit (sampleUnit);
+				offer.setNewTurnMessageOffer (this);
+				
+				getClient ().getOffers ().put (getOfferURN (), offer);
+				ui = offer;
+			}
+			ui.setVisible (true);
 		}
-		frame.setVisible (true);
+	}
+	
+	/**
+	 * @return null = not yet decided; true = accepted; false = rejected
+	 */
+	@Override
+	public final Boolean isOfferAccepted ()
+	{
+		return offerAccepted;
+	}
+	
+	/**
+	 * @param a null = not yet decided; true = accepted; false = rejected
+	 */
+	@Override
+	public final void setOfferAccepted (final Boolean a)
+	{
+		offerAccepted = a;
+	}
+	
+	/**
+	 * @return Whether the user has acted on this message yet
+	 */
+	@Override
+	public final boolean isAnswered ()
+	{
+		return (isOfferAccepted () != null);
 	}
 	
 	/**

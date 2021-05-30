@@ -594,6 +594,23 @@ The to/from locations can be their bank, the anvil, or actually being used by a 
 		</xsd:complexType>
 	</xsd:element>
 
+<!-- Offers, new for 0.9.9.1 -->
+
+	<xsd:element name="requestAcceptOfferMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Server has previously sent us an offer to hire a hero, units or buy an item, and we want to accept the offer.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:clientToServerMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="offerURN" type="momimemsgs:offerURN" />
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
 <!-- Simple types -->
 
 	<xsd:simpleType name="heroItemSlotNumber">

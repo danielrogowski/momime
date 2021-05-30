@@ -15,7 +15,7 @@ import momime.client.database.NewGameDatabase;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.CityViewUI;
 import momime.client.ui.frames.HeroItemInfoUI;
-import momime.client.ui.frames.MomClientFrameUI;
+import momime.client.ui.frames.OfferUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.common.database.CommonDatabase;
 import momime.common.messages.MomGeneralPublicKnowledge;
@@ -133,7 +133,7 @@ public interface MomClient
 	/**
 	 * @return List of all offer screens currently open, keyed by Offer URN
 	 */
-	public Map<Integer, MomClientFrameUI> getOffers ();
+	public Map<Integer, OfferUI> getOffers ();
 	
 	/**
 	 * @return Info we need in order to create games; sent from server

@@ -1758,15 +1758,39 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
         <offerHero language="en">
             <text>SIMPLE_UNIT_NAME offers to join you for COST gold</text>
         </offerHero>
+        <offerHeroAccepted language="en">
+            <text>You hired SIMPLE_UNIT_NAME for COST gold</text>
+        </offerHeroAccepted>
+        <offerHeroRejected language="en">
+            <text>You rejected SIMPLE_UNIT_NAME for COST gold</text>
+        </offerHeroRejected>
         <offerUnit language="en">
             <text>RACE_UNIT_NAME offer to join you for COST gold</text>
         </offerUnit>
+        <offerUnitAccepted language="en">
+            <text>You hired RACE_UNIT_NAME for COST gold</text>
+        </offerUnitAccepted>
+        <offerUnitRejected language="en">
+            <text>You rejected RACE_UNIT_NAME for COST gold</text>
+        </offerUnitRejected>
         <offerUnits language="en">
             <text>COUNT RACE_UNIT_NAME offer to join you for COST gold</text>
         </offerUnits>
+        <offerUnitsAccepted language="en">
+            <text>You hired COUNT RACE_UNIT_NAME for COST gold</text>
+        </offerUnitsAccepted>
+        <offerUnitsRejected language="en">
+            <text>You rejected COUNT RACE_UNIT_NAME for COST gold</text>
+        </offerUnitsRejected>
         <offerItem language="en">
             <text>A merchant offers to sell you ITEM_NAME for COST gold</text>
         </offerItem>
+        <offerItemAccepted language="en">
+            <text>You bought ITEM_NAME for COST gold</text>
+        </offerItemAccepted>
+        <offerItemRejected language="en">
+            <text>You rejected buying ITEM_NAME for COST gold</text>
+        </offerItemRejected>
     </newTurnMessages>
     <mainMenuScreen>
         <longTitle language="en">

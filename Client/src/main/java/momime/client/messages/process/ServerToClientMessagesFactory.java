@@ -318,4 +318,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public PlayAnimationMessageImpl createPlayAnimationMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public OfferAcceptedMessageImpl createOfferAcceptedMessage ();
 }

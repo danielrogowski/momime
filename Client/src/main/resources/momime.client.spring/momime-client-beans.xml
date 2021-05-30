@@ -570,6 +570,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 	</bean>
 
+	<bean id="offerAcceptedMessage" class="momime.client.messages.process.OfferAcceptedMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+	</bean>
+
 	<!-- Create extended versions of NTMs which include drawing implementations -->
 
 	<bean id="newTurnMessageCategory" class="momime.client.newturnmessages.NewTurnMessageCategory" scope="prototype">
@@ -1889,6 +1895,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each heroOrUnitsOfferUI -->
 	</bean>
 	
@@ -1971,6 +1979,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
+		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 	
 	<bean id="treasureLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

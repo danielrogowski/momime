@@ -22,6 +22,7 @@ import momime.common.messages.clienttoserver.DismissUnitMessage;
 import momime.common.messages.clienttoserver.EndCombatTurnMessage;
 import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.ObjectFactory;
+import momime.common.messages.clienttoserver.RequestAcceptOfferMessage;
 import momime.common.messages.clienttoserver.RequestCastSpellMessage;
 import momime.common.messages.clienttoserver.RequestMoveCombatUnitMessage;
 import momime.common.messages.clienttoserver.RequestMoveHeroItemMessage;
@@ -337,12 +338,21 @@ public final class ClientToServerMessagesObjectFactory extends ObjectFactory
 	}
 
 	/**
-	 * @return Newly created RequestMoveHeroItemMessage
+	 * @return Newly created RequestRemoveQueuedSpellMessage
 	 */
 	@Override
 	public final RequestRemoveQueuedSpellMessage createRequestRemoveQueuedSpellMessage ()
 	{
 		return getFactory ().createRequestRemoveQueuedSpellMessage ();
+	}
+	
+	/**
+	 * @return Newly created RequestAcceptOfferMessage
+	 */
+	@Override
+	public final RequestAcceptOfferMessage createRequestAcceptOfferMessage ()
+	{
+		return getFactory ().createRequestAcceptOfferMessage ();
 	}
 	
 	/**

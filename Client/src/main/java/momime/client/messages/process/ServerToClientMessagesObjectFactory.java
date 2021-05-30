@@ -35,6 +35,7 @@ import momime.common.messages.servertoclient.MoveUnitInCombatMessage;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.NewGameDatabaseMessage;
 import momime.common.messages.servertoclient.ObjectFactory;
+import momime.common.messages.servertoclient.OfferAcceptedMessage;
 import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
@@ -633,6 +634,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final PlayAnimationMessage createPlayAnimationMessage ()
 	{
 		return getFactory ().createPlayAnimationMessage ();
+	}
+	
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final OfferAcceptedMessage createOfferAcceptedMessage ()
+	{
+		return getFactory ().createOfferAcceptedMessage ();
 	}
 	
 	/**

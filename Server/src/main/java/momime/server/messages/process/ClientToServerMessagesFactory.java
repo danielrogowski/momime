@@ -169,4 +169,9 @@ public interface ClientToServerMessagesFactory
 	 * @return Newly created message
 	 */
 	public RequestRemoveQueuedSpellMessageImpl createRequestRemoveQueuedSpellMessage ();
+
+	/**
+	 * @return Newly created message
+	 */
+	public RequestAcceptOfferMessageImpl createRequestAcceptOfferMessage ();
 }

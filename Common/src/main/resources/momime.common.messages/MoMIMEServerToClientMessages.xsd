@@ -1372,6 +1372,24 @@ Unlike updateWizardStateMessage, the animation has no bearing on the game and pu
 		</xsd:complexType>
 	</xsd:element>
 
+<!-- Offers, new for 0.9.9.1 -->
+
+	<xsd:element name="offerAcceptedMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>Client requested to accept an offer to hire a hero, units or buy an item, and server processed it OK.
+The actual new unit(s) or hero item will be sent separately.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+		        	<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="offerURN" type="momimemsgs:offerURN" />
+		        	</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+
 <!--  Enums -->
 
 	<xsd:simpleType name="damageCalculationMessageTypeID">

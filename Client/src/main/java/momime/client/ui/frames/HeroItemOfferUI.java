@@ -22,16 +22,18 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutManager;
 
 import momime.client.MomClient;
+import momime.client.newturnmessages.NewTurnMessageOfferItemEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemType;
 import momime.common.database.RecordNotFoundException;
-import momime.common.messages.NewTurnMessageOfferItem;
+import momime.common.messages.clienttoserver.RequestAcceptOfferMessage;
 
 /**
  * Dialog asking user to confirm or reject offer to buy a hero item
  */
-public final class HeroItemOfferUI extends MomClientFrameUI
+public final class HeroItemOfferUI extends MomClientFrameUI implements OfferUI
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (HeroItemOfferUI.class);
@@ -47,6 +49,12 @@ public final class HeroItemOfferUI extends MomClientFrameUI
 	
 	/** Medium font */
 	private Font mediumFont;
+
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/** Buy action */
 	private Action buyAction;
@@ -58,7 +66,7 @@ public final class HeroItemOfferUI extends MomClientFrameUI
 	private JTextArea bonuses;
 
 	/** The offer we're showing this UI for */
-	private NewTurnMessageOfferItem newTurnMessageOffer;
+	private NewTurnMessageOfferItemEx newTurnMessageOffer;
 
 	/**
 	 * Sets up the dialog once all values have been injected
@@ -75,11 +83,17 @@ public final class HeroItemOfferUI extends MomClientFrameUI
 		// Actions
 		buyAction = new LoggingAction ((ev) ->
 		{
-			getFrame ().dispose ();
+			final RequestAcceptOfferMessage msg = new RequestAcceptOfferMessage ();
+			msg.setOfferURN (getNewTurnMessageOffer ().getOfferURN ());
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
 		});
 
 		rejectAction = new LoggingAction ((ev) ->
 		{
+			getNewTurnMessageOffer ().setOfferAccepted (false);
+			getNewTurnMessagesUI ().languageChanged ();
+			getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 			getFrame ().dispose ();
 		});
 		
@@ -176,8 +190,9 @@ public final class HeroItemOfferUI extends MomClientFrameUI
 	}
 
 	/**
-	 * Close the hero item screen 
+	 * Close out the offer UI
 	 */
+	@Override
 	public final void close ()
 	{
 		getFrame ().dispose ();
@@ -250,7 +265,7 @@ public final class HeroItemOfferUI extends MomClientFrameUI
 	/**
 	 * @return The offer we're showing this UI for
 	 */
-	public final NewTurnMessageOfferItem getNewTurnMessageOffer ()
+	public final NewTurnMessageOfferItemEx getNewTurnMessageOffer ()
 	{
 		return newTurnMessageOffer;
 	}
@@ -258,8 +273,40 @@ public final class HeroItemOfferUI extends MomClientFrameUI
 	/**
 	 * @param o The offer we're showing this UI for
 	 */
-	public final void setNewTurnMessageOffer (final NewTurnMessageOfferItem o)
+	public final void setNewTurnMessageOffer (final NewTurnMessageOfferItemEx o)
 	{
 		newTurnMessageOffer = o;
+	}
+
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

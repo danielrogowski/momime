@@ -18,7 +18,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.frames.HeroOrUnitsOfferUI;
-import momime.client.ui.frames.MomClientFrameUI;
+import momime.client.ui.frames.OfferUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.client.utils.TextUtils;
 import momime.common.database.LanguageText;
@@ -30,8 +30,8 @@ import momime.common.utils.UnitUtils;
  * Offer to hire a hero.  The hero stats get generated on the server, but until they're actually bought, they don't
  * exist in the client's unit list (at least not with the correct details) so we have to include the full unit details here.
  */
-public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
-	implements NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess, NewTurnMessageClickable
+public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero implements NewTurnMessageOfferEx,
+	NewTurnMessageExpiration, NewTurnMessageSimpleUI, NewTurnMessagePreProcess, NewTurnMessageClickable, NewTurnMessageMustBeAnswered
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (NewTurnMessageOfferHeroEx.class);
@@ -65,6 +65,9 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 	
 	/** The hero who gained a level */
 	private ExpandedUnitDetails xu;
+	
+	/** null = not yet decided; true = accepted; false = rejected */
+	private Boolean offerAccepted;
 	
 	/**
 	 * @return One of the SORT_ORDER_ constants, indicating the sort order/title category to group this message under
@@ -120,7 +123,13 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 	@Override
 	public final String getText ()
 	{
-		final List<LanguageText> languageText = getLanguages ().getNewTurnMessages ().getOfferHero ();
+		final List<LanguageText> languageText;
+		if (isOfferAccepted () == null)
+			languageText = getLanguages ().getNewTurnMessages ().getOfferHero ();
+		else if (isOfferAccepted ())
+			languageText = getLanguages ().getNewTurnMessages ().getOfferHeroAccepted ();
+		else
+			languageText = getLanguages ().getNewTurnMessages ().getOfferHeroRejected ();
 		
 		String text = getLanguageHolder ().findDescription (languageText).replaceAll ("COST", getTextUtils ().intToStrCommas (getCost ()));
 		
@@ -137,17 +146,47 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero
 	@Override
 	public final void clicked () throws Exception
 	{
-		MomClientFrameUI frame = getClient ().getOffers ().get (getOfferURN ());
-		if (frame == null)
+		if (!isAnswered ())
 		{
-			final HeroOrUnitsOfferUI offer = getPrototypeFrameCreator ().createHeroOrUnitsOffer ();
-			offer.setUnit (getHero ());
-			offer.setNewTurnMessageOffer (this);
-			
-			getClient ().getOffers ().put (getOfferURN (), offer);
-			frame = offer;
+			OfferUI ui = getClient ().getOffers ().get (getOfferURN ());
+			if (ui == null)
+			{
+				final HeroOrUnitsOfferUI offer = getPrototypeFrameCreator ().createHeroOrUnitsOffer ();
+				offer.setUnit (getHero ());
+				offer.setNewTurnMessageOffer (this);
+				
+				getClient ().getOffers ().put (getOfferURN (), offer);
+				ui = offer;
+			}
+			ui.setVisible (true);
 		}
-		frame.setVisible (true);
+	}
+	
+	/**
+	 * @return null = not yet decided; true = accepted; false = rejected
+	 */
+	@Override
+	public final Boolean isOfferAccepted ()
+	{
+		return offerAccepted;
+	}
+	
+	/**
+	 * @param a null = not yet decided; true = accepted; false = rejected
+	 */
+	@Override
+	public final void setOfferAccepted (final Boolean a)
+	{
+		offerAccepted = a;
+	}
+	
+	/**
+	 * @return Whether the user has acted on this message yet
+	 */
+	@Override
+	public final boolean isAnswered ()
+	{
+		return (isOfferAccepted () != null);
 	}
 	
 	/**

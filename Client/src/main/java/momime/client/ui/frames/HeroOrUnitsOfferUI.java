@@ -15,15 +15,17 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
+import momime.client.newturnmessages.NewTurnMessageOfferEx;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.ui.panels.UnitInfoPanel;
 import momime.common.MomException;
 import momime.common.messages.AvailableUnit;
-import momime.common.messages.NewTurnMessageOffer;
+import momime.common.messages.clienttoserver.RequestAcceptOfferMessage;
 
 /**
  * Dialog asking user to confirm or reject offer to hire a hero or some mercenary units
  */
-public final class HeroOrUnitsOfferUI extends MomClientFrameUI
+public final class HeroOrUnitsOfferUI extends MomClientFrameUI implements OfferUI
 {
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (HeroOrUnitsOfferUI.class);
@@ -38,10 +40,16 @@ public final class HeroOrUnitsOfferUI extends MomClientFrameUI
 	private AvailableUnit unit;
 	
 	/** The offer we're showing this UI for */
-	private NewTurnMessageOffer newTurnMessageOffer;
+	private NewTurnMessageOfferEx newTurnMessageOffer;
 	
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** New turn messages UI */
+	private NewTurnMessagesUI newTurnMessagesUI;
+	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
 	
 	/** Hire action */
 	private Action hireAction;
@@ -59,11 +67,17 @@ public final class HeroOrUnitsOfferUI extends MomClientFrameUI
 		// Actions
 		hireAction = new LoggingAction ((ev) ->
 		{
-			getFrame ().dispose ();
+			final RequestAcceptOfferMessage msg = new RequestAcceptOfferMessage ();
+			msg.setOfferURN (getNewTurnMessageOffer ().getOfferURN ());
+			
+			getClient ().getServerConnection ().sendMessageToServer (msg);
 		});
 
 		rejectAction = new LoggingAction ((ev) ->
 		{
+			getNewTurnMessageOffer ().setOfferAccepted (false);
+			getNewTurnMessagesUI ().languageChanged ();
+			getOverlandMapRightHandPanel ().updateProductionTypesStoppingUsFromEndingTurn ();
 			getFrame ().dispose ();
 		});
 
@@ -117,6 +131,15 @@ public final class HeroOrUnitsOfferUI extends MomClientFrameUI
 	}
 	
 	/**
+	 * Close out the offer UI
+	 */
+	@Override
+	public final void close ()
+	{
+		getFrame ().dispose ();
+	}
+	
+	/**
 	 * @return Prototype frame creator
 	 */
 	public final PrototypeFrameCreator getPrototypeFrameCreator ()
@@ -167,7 +190,7 @@ public final class HeroOrUnitsOfferUI extends MomClientFrameUI
 	/**
 	 * @return The offer we're showing this UI for
 	 */
-	public final NewTurnMessageOffer getNewTurnMessageOffer ()
+	public final NewTurnMessageOfferEx getNewTurnMessageOffer ()
 	{
 		return newTurnMessageOffer;
 	}
@@ -175,7 +198,7 @@ public final class HeroOrUnitsOfferUI extends MomClientFrameUI
 	/**
 	 * @param o The offer we're showing this UI for
 	 */
-	public final void setNewTurnMessageOffer (final NewTurnMessageOffer o)
+	public final void setNewTurnMessageOffer (final NewTurnMessageOfferEx o)
 	{
 		newTurnMessageOffer = o;
 	}
@@ -194,5 +217,37 @@ public final class HeroOrUnitsOfferUI extends MomClientFrameUI
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return New turn messages UI
+	 */
+	public final NewTurnMessagesUI getNewTurnMessagesUI ()
+	{
+		return newTurnMessagesUI;
+	}
+
+	/**
+	 * @param ui New turn messages UI
+	 */
+	public final void setNewTurnMessagesUI (final NewTurnMessagesUI ui)
+	{
+		newTurnMessagesUI = ui;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

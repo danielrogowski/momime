@@ -923,16 +923,48 @@
 						<xsd:selector xpath="offerHero" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferHeroAcceptedPK">
+						<xsd:selector xpath="offerHeroAccepted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferHeroRejectedPK">
+						<xsd:selector xpath="offerHeroRejected" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="newTurnMessagesOfferUnitPK">
 						<xsd:selector xpath="offerUnit" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferUnitAcceptedPK">
+						<xsd:selector xpath="offerUnitAccepted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferUnitRejectedPK">
+						<xsd:selector xpath="offerUnitRejected" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="newTurnMessagesOfferUnitsPK">
 						<xsd:selector xpath="offerUnits" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferUnitsAcceptedPK">
+						<xsd:selector xpath="offerUnitsAccepted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferUnitsRejectedPK">
+						<xsd:selector xpath="offerUnitsRejected" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
 					<xsd:key name="newTurnMessagesOfferItemPK">
 						<xsd:selector xpath="offerItem" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferItemAcceptedPK">
+						<xsd:selector xpath="offerItemAccepted" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="newTurnMessagesOfferItemRejectedPK">
+						<xsd:selector xpath="offerItemRejected" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -2713,9 +2745,17 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="heroGainedALevelLastTurn" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offersCategory" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerHero" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerHeroAccepted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerHeroRejected" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnitAccepted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnitRejected" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnits" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnitsAccepted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerUnitsRejected" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerItem" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerItemAccepted" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="offerItemRejected" />
 		</xsd:sequence>
     </xsd:complexType>
 	

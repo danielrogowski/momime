@@ -2,6 +2,7 @@ package momime.server.process;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -694,13 +695,17 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						mom.getGeneralServerKnowledge ());
 					
 					// Give unique URNs to any offers that were generated
-					int offerURN = 0;
 					for (final NewTurnMessageData ntm : trans.getNewTurnMessage ())
 						if (ntm instanceof NewTurnMessageOffer)
 						{
+							mom.getGeneralServerKnowledge ().setNextFreeOfferURN (mom.getGeneralServerKnowledge ().getNextFreeOfferURN () + 1);
+							
 							final NewTurnMessageOffer offer = (NewTurnMessageOffer) ntm;
-							offerURN++;
-							offer.setOfferURN (offerURN);
+							offer.setOfferForPlayerID (player.getPlayerDescription ().getPlayerID ());
+							offer.setOfferURN (mom.getGeneralServerKnowledge ().getNextFreeOfferURN ());
+							
+							// Copy it to secondary list so we have a record of it, will need this in case client accepts the offer
+							mom.getGeneralServerKnowledge ().getOffer ().add (offer);
 						}
 				}
 			}
@@ -1085,6 +1090,15 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 	public final void nextTurnButton (final MomSessionVariables mom, final PlayerServerDetails player)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		// Clear out any offers for that player - now that they ended their turn, they aren't valid anymore
+		final Iterator<NewTurnMessageOffer> iter = mom.getGeneralServerKnowledge ().getOffer ().iterator ();
+		while (iter.hasNext ())
+		{
+			final NewTurnMessageOffer offer = iter.next ();
+			if (offer.getOfferForPlayerID () == player.getPlayerDescription ().getPlayerID ())
+				iter.remove ();
+		}
+		
 		switch (mom.getSessionDescription ().getTurnSystem ())
 		{
 			case ONE_PLAYER_AT_A_TIME:

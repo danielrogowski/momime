@@ -203,6 +203,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	</bean>
 
 	<bean id="requestRemoveQueuedSpellMessage" class="momime.server.messages.process.RequestRemoveQueuedSpellMessageImpl" scope="prototype" />
+
+	<bean id="requestAcceptOfferMessage" class="momime.server.messages.process.RequestAcceptOfferMessageImpl" scope="prototype">
+		<property name="resourceValueUtils" ref="resourceValueUtils" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="heroItemUtils" ref="heroItemUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+	</bean>
 	
 	<!-- User registry -->
 

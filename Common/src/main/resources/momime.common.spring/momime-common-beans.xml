@@ -58,6 +58,7 @@
     			<value>momime.common.messages.clienttoserver.UploadCustomPhotoMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestMoveHeroItemMessage</value>
     			<value>momime.common.messages.clienttoserver.RequestRemoveQueuedSpellMessage</value>
+    			<value>momime.common.messages.clienttoserver.RequestAcceptOfferMessage</value>
     		</list>
    		</constructor-arg>
 	</bean>
@@ -148,6 +149,7 @@
     			<value>momime.common.messages.servertoclient.UpdateWizardStateMessage</value>
     			<value>momime.common.messages.servertoclient.AddPowerBaseHistoryMessage</value>
     			<value>momime.common.messages.servertoclient.PlayAnimationMessage</value>
+    			<value>momime.common.messages.servertoclient.OfferAcceptedMessage</value>
 
 				<!-- FoW messages -->
     			<value>momime.common.messages.servertoclient.UpdateTerrainMessage</value>

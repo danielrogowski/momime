@@ -3664,8 +3664,12 @@
 					<xsd:selector xpath="cannotEndTurnResearch" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="mapRightHandBarCannotEndTurnNewTurnMessagesPK">
-					<xsd:selector xpath="cannotEndTurnNewTurnMessages" />
+				<xsd:key name="mapRightHandBarCannotEndTurnNewTurnMessagesSpellPK">
+					<xsd:selector xpath="cannotEndTurnNewTurnMessagesSpell" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarCannotEndTurnNewTurnMessagesOfferPK">
+					<xsd:selector xpath="cannotEndTurnNewTurnMessagesOffer" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
 				<xsd:key name="mapRightHandBarCannotEndTurnUnassignedHeroItemsPK">
@@ -3742,7 +3746,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnTitle" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnPrefix" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnResearch" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnNewTurnMessages" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnNewTurnMessagesSpell" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnNewTurnMessagesOffer" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="cannotEndTurnUnassignedHeroItems" />
 		</xsd:sequence>
     </xsd:complexType>

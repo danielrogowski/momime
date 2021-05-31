@@ -224,6 +224,24 @@ public final class NewTurnMessageSpellEx extends NewTurnMessageSpell
 	}
 	
 	/**
+	 * @return Text to display when we can't end turn because this NTM hasn't been answered yet 
+	 */
+	@Override
+	public final List<LanguageText> getCannotEndTurnText ()
+	{
+		return getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnNewTurnMessagesSpell ();
+	}
+	
+	/**
+	 * @return Image to display when we can't end turn because this NTM hasn't been answered yet
+	 */
+	@Override
+	public final String getCannotEndTurnImageFilename ()
+	{
+		return "/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToNTMs-spell.png";
+	}
+	
+	/**
 	 * @return Font to display the text in
 	 */
 	@Override

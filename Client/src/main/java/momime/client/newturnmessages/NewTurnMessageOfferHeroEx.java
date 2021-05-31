@@ -190,6 +190,24 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero imp
 	}
 	
 	/**
+	 * @return Text to display when we can't end turn because this NTM hasn't been answered yet 
+	 */
+	@Override
+	public final List<LanguageText> getCannotEndTurnText ()
+	{
+		return getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnNewTurnMessagesOffer ();
+	}
+	
+	/**
+	 * @return Image to display when we can't end turn because this NTM hasn't been answered yet
+	 */
+	@Override
+	public final String getCannotEndTurnImageFilename ()
+	{
+		return "/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToNTMs-offer.png";
+	}
+	
+	/**
 	 * @return Font to display the text in
 	 */
 	@Override

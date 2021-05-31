@@ -3444,9 +3444,12 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
             <cannotEndTurnResearch language="en">
                 <text>You must choose a spell to begin researching, or set your research to zero.</text>
             </cannotEndTurnResearch>
-            <cannotEndTurnNewTurnMessages language="en">
+            <cannotEndTurnNewTurnMessagesSpell language="en">
                 <text>You have completed casting spells that you still need to choose targets for.</text>
-            </cannotEndTurnNewTurnMessages>
+            </cannotEndTurnNewTurnMessagesSpell>
+            <cannotEndTurnNewTurnMessagesOffer language="en">
+                <text>You have an offer you must either accept or reject.</text>
+            </cannotEndTurnNewTurnMessagesOffer>
             <cannotEndTurnUnassignedHeroItems language="en">
                 <text>Your item vault is overfull.  You must assign some items to heros, or destroy them on the anvil to make more space.</text>
             </cannotEndTurnUnassignedHeroItems>

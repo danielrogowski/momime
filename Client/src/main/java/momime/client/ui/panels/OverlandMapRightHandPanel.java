@@ -14,7 +14,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Action;
@@ -1253,24 +1252,16 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 			}
 			
 			// Do we have unanswered new turn messages?
-			boolean found = false;
-			final Iterator<NewTurnMessageData> iter = getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ().iterator ();
-			while ((!found) && (iter.hasNext ()))
-			{
-				final NewTurnMessageData ntm = iter.next ();
+			for (final NewTurnMessageData ntm : getClient ().getOurTransientPlayerPrivateKnowledge ().getNewTurnMessage ())
 				if (ntm instanceof NewTurnMessageMustBeAnswered)
 				{
-					if (!((NewTurnMessageMustBeAnswered) ntm).isAnswered ())
-						found = true;
+					final NewTurnMessageMustBeAnswered mba = (NewTurnMessageMustBeAnswered) ntm;
+					if ((!mba.isAnswered ()) && (!resourceIconFilenames.contains (mba.getCannotEndTurnImageFilename ())))
+					{
+						resourceIconFilenames.add (mba.getCannotEndTurnImageFilename ());
+						text.append (BULLET_POINT + getLanguageHolder ().findDescription (mba.getCannotEndTurnText ()) + System.lineSeparator ());
+					}
 				}
-			}
-			
-			if (found)
-			{
-				resourceIconFilenames.add ("/momime.client.graphics/ui/overland/rightHandPanel/cannotEndTurnDueToNTMs.png");
-				text.append (BULLET_POINT + getLanguageHolder ().findDescription
-					(getLanguages ().getOverlandMapScreen ().getMapRightHandBar ().getCannotEndTurnNewTurnMessages ()) + System.lineSeparator ());
-			}
 			
 			// Is our bank of unassigned hero items overfull?
 			if ((getClient ().getSessionDescription ().getUnitSetting ().getMaxHeroItemsInBank () != null) &&

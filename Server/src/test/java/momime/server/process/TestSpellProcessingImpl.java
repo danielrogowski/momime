@@ -381,7 +381,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Mock creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final MemoryUnit unit = new MemoryUnit ();
-		when (midTurn.addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, null, null,
+		when (midTurn.addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, null, null, null,
 			player3, UnitStatusID.ALIVE, players, sd, db)).thenReturn (unit);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
@@ -402,8 +402,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castOverlandNow (player3, spell, null, null, mom);
 		
 		// Prove that unit got added
-		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, null, null, player3,
-			UnitStatusID.ALIVE, players, sd, db);
+		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", summoningCircleLocation, null, null, null,
+			player3, UnitStatusID.ALIVE, players, sd, db);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
 		assertEquals (1, trans3.getNewTurnMessage ().size ());
@@ -536,8 +536,8 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.castOverlandNow (player3, spell, null, null, mom);
 		
 		// Prove that unit got updated, not added
-		verify (midTurn, times (0)).addUnitOnServerAndClients (gsk, "UN008", summoningCircleLocation, summoningCircleLocation, null, player3,
-			UnitStatusID.ALIVE, players, sd, db);
+		verify (midTurn, times (0)).addUnitOnServerAndClients (gsk, "UN008", summoningCircleLocation, summoningCircleLocation, null, null,
+			player3, UnitStatusID.ALIVE, players, sd, db);
 		verify (midTurn, times (1)).updateUnitStatusToAliveOnServerAndClients (theHero, summoningCircleLocation, player3, players, trueMap, sd, db);
 		
 		// Casting player gets the "You have summoned Hell Hounds!" new turn message popup
@@ -1046,7 +1046,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final MemoryUnit summonedUnit = new MemoryUnit ();
 		summonedUnit.setUnitID ("UN004");
 		
-		when (midTurn.addUnitOnServerAndClients (gsk, "UN004", attackingFrom, null,
+		when (midTurn.addUnitOnServerAndClients (gsk, "UN004", attackingFrom, null, null,
 			combatLocation, attackingPlayer, UnitStatusID.ALIVE, players, sd, db)).thenReturn (summonedUnit);
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);

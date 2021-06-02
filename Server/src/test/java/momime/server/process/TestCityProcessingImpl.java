@@ -398,10 +398,14 @@ public final class TestCityProcessingImpl extends ServerTestData
 		verify (serverCityCalc, times (4)).ensureNotTooManyOptionalFarmers (any (OverlandMapCityData.class));
 		
 		// Check units were added
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN001", humanLocation, humanLocation, null, humanPlayer, UnitStatusID.ALIVE, null, sd, db);
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN002", aiLocation, aiLocation, null, aiPlayer, UnitStatusID.ALIVE, null, sd, db);
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN003", raidersArcanusLocation, raidersArcanusLocation, null, raidersPlayer, UnitStatusID.ALIVE, null, sd, db);
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN004", raidersMyrrorLocation, raidersMyrrorLocation, null, raidersPlayer, UnitStatusID.ALIVE, null, sd, db);
+		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN001", humanLocation, humanLocation, null, null,
+			humanPlayer, UnitStatusID.ALIVE, null, sd, db);
+		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN002", aiLocation, aiLocation, null, null,
+			aiPlayer, UnitStatusID.ALIVE, null, sd, db);
+		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN003", raidersArcanusLocation, raidersArcanusLocation, null, null,
+			raidersPlayer, UnitStatusID.ALIVE, null, sd, db);
+		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN004", raidersMyrrorLocation, raidersMyrrorLocation, null, null,
+			raidersPlayer, UnitStatusID.ALIVE, null, sd, db);
 		
 		// Check buildings were added.
 		// Note players intentionally left as null so that building is only added on the server.
@@ -663,7 +667,8 @@ public final class TestCityProcessingImpl extends ServerTestData
 		assertEquals ("UN001", raidersCity.getCurrentlyConstructingUnitID ());
 		assertEquals (0, raidersCity.getProductionSoFar ().intValue ());
 		
-		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", raidersLocation, raidersLocation, null, raidersPlayer, UnitStatusID.ALIVE, players, sd, db);
+		verify (midTurn, times (1)).addUnitOnServerAndClients (gsk, "UN001", raidersLocation, raidersLocation, null, null,
+			raidersPlayer, UnitStatusID.ALIVE, players, sd, db);
 		
 		// Check calcs were done
 		verify (serverCityCalc, times (3)).calculateCitySizeIDAndMinimumFarmers (eq (players), eq (trueTerrain), eq (trueMap.getBuilding ()),

@@ -290,7 +290,8 @@ public final class CityProcessingImpl implements CityProcessing
 						for (int freeAtStart = 0; freeAtStart < thisUnit.getFreeAtStartCount (); freeAtStart++)
 						{
 							final MapCoordinates3DEx unitCoords = new MapCoordinates3DEx (cityLocation);
-							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, thisPlayer, UnitStatusID.ALIVE, null, sd, db);
+							getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, thisUnit.getUnitID (), unitCoords, cityLocation, null, null,
+								thisPlayer, UnitStatusID.ALIVE, null, sd, db);
 						}
 			}
 			
@@ -497,7 +498,7 @@ public final class CityProcessingImpl implements CityProcessing
 
 											// Now actually add the unit
 											getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, unit.getUnitID (), addLocation.getUnitLocation (),
-												cityLocation, null, cityOwner, UnitStatusID.ALIVE, players, sd, db);
+												cityLocation, null, null, cityOwner, UnitStatusID.ALIVE, players, sd, db);
 										}
 
 										// Zero production for the next construction project

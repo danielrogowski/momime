@@ -106,6 +106,7 @@ public interface FogOfWarMidTurnChanges
 	 * @param unitID Type of unit to create
 	 * @param locationToAddUnit Location to add the new unit; can be null for adding heroes that haven't been summoned yet
 	 * @param buildingsLocation Location the unit was built - might be different from locationToAddUnit if the city is full and the unit got bumped to an adjacent tile; passed as null for units not built in cities such as summons
+	 * @param overrideStartingExperience Set this to not calculate startingExperience from buildings at buildingLocation and instead just take this value
 	 * @param combatLocation The location of the combat that this unit is being summoned into; null for anything other than combat summons
 	 * @param unitOwner Player who will own the new unit
 	 * @param initialStatus Initial status of the unit, typically ALIVE
@@ -120,8 +121,8 @@ public interface FogOfWarMidTurnChanges
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	public MemoryUnit addUnitOnServerAndClients (final MomGeneralServerKnowledge gsk,
-		final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation, final MapCoordinates3DEx combatLocation,
-		final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
+		final String unitID, final MapCoordinates3DEx locationToAddUnit, final MapCoordinates3DEx buildingsLocation, final Integer overrideStartingExperience,
+		final MapCoordinates3DEx combatLocation, final PlayerServerDetails unitOwner, final UnitStatusID initialStatus, final List<PlayerServerDetails> players,
 		final MomSessionDescription sd, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 

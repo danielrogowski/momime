@@ -2,6 +2,9 @@ package momime.server.process;
 
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -9,6 +12,8 @@ import momime.common.MomException;
 import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.NewTurnMessageOffer;
+import momime.server.MomSessionVariables;
 import momime.server.messages.MomGeneralServerKnowledge;
 
 /**
@@ -61,4 +66,19 @@ public interface OfferGenerator
 	public void generateItemOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final CommonDatabase db, final MomGeneralServerKnowledge gsk)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+
+	/**
+	 * Processes accepting an offer.  Assumes we've already validated that the offer is genuine (the client didn't make it up) and that they can afford it.
+	 * 
+	 * @param player Player who is accepting an offer
+	 * @param offer Offer being accepted
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If there is a validation problem
+	 */
+	public void acceptOffer (final PlayerServerDetails player, final NewTurnMessageOffer offer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 }

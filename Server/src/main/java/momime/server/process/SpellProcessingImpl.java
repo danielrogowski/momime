@@ -300,8 +300,9 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						else
 							// For non-heroes, create a new unit
-							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (), summonedUnit.getUnitID (), addLocation.getUnitLocation (), null,
-								null, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+							newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
+								summonedUnit.getUnitID (), addLocation.getUnitLocation (), null, null, null,
+								player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						
 						// Let it move this turn
 						newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
@@ -616,7 +617,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 					
 					// Now can add it
 					final MemoryUnit tu = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
-						unitID, summonLocation, null, combatLocation, castingPlayer, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+						unitID, summonLocation, null, null, combatLocation, castingPlayer, UnitStatusID.ALIVE,
+						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 					
 					// What direction should the unit face?
 					final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;

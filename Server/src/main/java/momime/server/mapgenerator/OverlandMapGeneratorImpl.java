@@ -1588,7 +1588,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 			// Actually add them
 			for (int monsterNo = 0; monsterNo < mainMonsterCount; monsterNo++)
 			{
-				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, mainMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
+				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, mainMonster.getUnitID (), lairLocation, null, null, null,
+					monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
 				monstersStrength = monstersStrength - mainMonster.getProductionCost ();
 			}
 		}
@@ -1603,7 +1604,8 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 
 			// Actually add them
 			for (int monsterNo = 0; monsterNo < secondaryMonsterCount; monsterNo++)
-				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, secondaryMonster.getUnitID (), lairLocation, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
+				getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (gsk, secondaryMonster.getUnitID (), lairLocation, null, null, null,
+					monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
 		}
 	}
 

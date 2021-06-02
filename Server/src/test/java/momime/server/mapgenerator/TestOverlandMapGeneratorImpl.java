@@ -1372,7 +1372,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 		mapGen.fillSingleLairOrTowerWithMonsters (coords, "MB01", 3000, 6000, 0.8, monsterPlayer);		// 0.8 thru 3000-6000 is 5400
 		
 		// Check results
-		verify (midTurn, times (5)).addUnitOnServerAndClients (gsk, "UN009", coords, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
-		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN004", coords, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
+		verify (midTurn, times (5)).addUnitOnServerAndClients (gsk, "UN009", coords, null, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
+		verify (midTurn, times (2)).addUnitOnServerAndClients (gsk, "UN004", coords, null, null, null, monsterPlayer, UnitStatusID.ALIVE, null, sd, db);
 	}
 }

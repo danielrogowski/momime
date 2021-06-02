@@ -21,13 +21,12 @@ import momime.common.messages.NewTurnMessageOfferHero;
 import momime.common.messages.NewTurnMessageOfferItem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.clienttoserver.RequestAcceptOfferMessage;
-import momime.common.messages.servertoclient.OfferAcceptedMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.utils.HeroItemUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
-import momime.server.calculations.ServerResourceCalculations;
+import momime.server.process.OfferGenerator;
 
 /**
  * Server has previously sent us an offer to hire a hero, units or buy an item, and we want to accept the offer.
@@ -40,14 +39,14 @@ public final class RequestAcceptOfferMessageImpl extends RequestAcceptOfferMessa
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 	
-	/** Resource calculations */
-	private ServerResourceCalculations serverResourceCalculations;
-	
 	/** Hero item utils */
 	private HeroItemUtils heroItemUtils;
 	
 	/** Unit utils */
 	private UnitUtils unitUtils;
+	
+	/** Offer generator */
+	private OfferGenerator offerGenerator;
 	
 	/**
 	 * @param thread Thread for the session this message is for; from the thread, the processor can obtain the list of players, sd, gsk, gpl, etc
@@ -112,21 +111,7 @@ public final class RequestAcceptOfferMessageImpl extends RequestAcceptOfferMessa
 			sender.getConnection ().sendMessageToClient (reply);
 		}
 		else
-		{
-			// All ok - deduct money & send to client
-			getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -offer.getCost ());
-			getServerResourceCalculations ().sendGlobalProductionValues (sender, null);
-			
-			// Mark offer as accepted
-			final OfferAcceptedMessage msg = new OfferAcceptedMessage ();
-			msg.setOfferURN (getOfferURN ());
-			sender.getConnection ().sendMessageToClient (msg);
-			
-			// Remove it so they can't accept it twice
-			mom.getGeneralServerKnowledge ().getOffer ().remove (offer);
-			
-			// Actually give the units or items on offer
-		}
+			getOfferGenerator ().acceptOffer (sender, offer, mom);
 	}
 
 	/**
@@ -143,22 +128,6 @@ public final class RequestAcceptOfferMessageImpl extends RequestAcceptOfferMessa
 	public final void setResourceValueUtils (final ResourceValueUtils utils)
 	{
 		resourceValueUtils = utils;
-	}
-
-	/**
-	 * @return Resource calculations
-	 */
-	public final ServerResourceCalculations getServerResourceCalculations ()
-	{
-		return serverResourceCalculations;
-	}
-
-	/**
-	 * @param calc Resource calculations
-	 */
-	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
-	{
-		serverResourceCalculations = calc;
 	}
 
 	/**
@@ -191,5 +160,21 @@ public final class RequestAcceptOfferMessageImpl extends RequestAcceptOfferMessa
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Offer generator
+	 */
+	public final OfferGenerator getOfferGenerator ()
+	{
+		return offerGenerator;
+	}
+
+	/**
+	 * @param g Offer generator
+	 */
+	public final void setOfferGenerator (final OfferGenerator g)
+	{
+		offerGenerator = g;
 	}
 }

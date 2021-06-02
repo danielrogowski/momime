@@ -4,9 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -15,25 +19,38 @@ import momime.common.MomException;
 import momime.common.calculations.HeroItemCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.ExperienceLevel;
+import momime.common.database.Pick;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitType;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPrivateKnowledge;
+import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.NewTurnMessageOfferHero;
 import momime.common.messages.NewTurnMessageOfferItem;
 import momime.common.messages.NewTurnMessageOfferUnits;
 import momime.common.messages.NewTurnMessageTypeID;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.UnitStatusID;
+import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
+import momime.common.messages.servertoclient.OfferAcceptedMessage;
+import momime.common.utils.HeroItemUtils;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.PlayerPickUtils;
 import momime.common.utils.ResourceValueUtils;
+import momime.common.utils.UnitTypeUtils;
+import momime.common.utils.UnitUtils;
+import momime.server.MomSessionVariables;
+import momime.server.calculations.ServerResourceCalculations;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.messages.MomGeneralServerKnowledge;
+import momime.server.utils.UnitAddLocation;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -56,6 +73,9 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
+	/** Unit utils */
+	private UnitUtils unitUtils;
+	
 	/** Server-only unit utils */
 	private UnitServerUtils unitServerUtils;
 	
@@ -64,6 +84,15 @@ public final class OfferGeneratorImpl implements OfferGenerator
 
 	/** Hero item calculations */
 	private HeroItemCalculations heroItemCalculations;
+	
+	/** Resource calculations */
+	private ServerResourceCalculations serverResourceCalculations;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnChanges fogOfWarMidTurnChanges;
+	
+	/** Hero item utils */
+	private HeroItemUtils heroItemUtils;
 	
 	/**
 	 * Tests to see if the player has any heroes they can get, and if so rolls a chance that one offers to join them this turn (for a fee).
@@ -313,6 +342,140 @@ public final class OfferGeneratorImpl implements OfferGenerator
 			}
 		}
 	}
+	
+	/**
+	 * Processes accepting an offer.  Assumes we've already validated that the offer is genuine (the client didn't make it up) and that they can afford it.
+	 * 
+	 * @param player Player who is accepting an offer
+	 * @param offer Offer being accepted
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If there is a validation problem
+	 */
+	@Override
+	public final void acceptOffer (final PlayerServerDetails player, final NewTurnMessageOffer offer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
+
+		// All ok - deduct money & send to client
+		getResourceValueUtils ().addToAmountStored (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD, -offer.getCost ());
+		getServerResourceCalculations ().sendGlobalProductionValues (player, null);
+		
+		// Mark offer as accepted
+		if (player.getPlayerDescription ().isHuman ())
+		{
+			final OfferAcceptedMessage msg = new OfferAcceptedMessage ();
+			msg.setOfferURN (offer.getOfferURN ());
+			player.getConnection ().sendMessageToClient (msg);
+		}
+		
+		// Remove it so they can't accept it twice
+		mom.getGeneralServerKnowledge ().getOffer ().remove (offer);
+		
+		// Find where units should appear
+		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
+			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS,
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ());
+		
+		if (fortressLocation == null)
+			throw new MomException ("Player " + player.getPlayerDescription ().getPlayerName () + " tried to accept an offer but they have no Wizard's Fortress");
+		
+		// Heroes
+		if (offer instanceof NewTurnMessageOfferHero)
+		{
+			final NewTurnMessageOfferHero heroOffer = (NewTurnMessageOfferHero) offer;
+			
+			final MemoryUnit hero = getUnitUtils ().findUnitURN (heroOffer.getHero ().getUnitURN (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "acceptOffer");
+			
+			if (hero.getStatus () != UnitStatusID.GENERATED)
+				throw new MomException ("Player " + player.getPlayerDescription ().getPlayerName () + " tried to accept an offer for hero URN " +
+					hero.getUnitURN () + " but their status is " + hero.getStatus ());
+			
+			final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
+				((MapCoordinates3DEx) fortressLocation.getCityLocation (), hero.getUnitID (),
+					player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			
+			// It is possible that we try to hire a hero but he has nowhere to fit
+			if (addLocation.getUnitLocation () != null)
+			{
+				getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+				
+				// Let it move this turn
+				hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+			}
+		}
+		
+		// Units
+		else if (offer instanceof NewTurnMessageOfferUnits)
+		{
+			final NewTurnMessageOfferUnits unitsOffer = (NewTurnMessageOfferUnits) offer;
+			
+			// How much experience will the new unit(s) have?
+			final Pick normalUnitRealm = mom.getServerDB ().findPick (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL, "acceptOffer");
+			final UnitType normalUnit = mom.getServerDB ().findUnitType (normalUnitRealm.getUnitTypeID (), "acceptOffer");
+			final ExperienceLevel expLevel = UnitTypeUtils.findExperienceLevel (normalUnit, unitsOffer.getLevelNumber ());
+			
+			// Keep looping until we run out of units to add, or run out of places to put them
+			boolean keepGoing = true;
+			int unitsAdded = 0;
+			
+			while (keepGoing)
+			{
+				final UnitAddLocation addLocation = getUnitServerUtils ().findNearestLocationWhereUnitCanBeAdded
+					((MapCoordinates3DEx) fortressLocation.getCityLocation (), unitsOffer.getUnitID (),
+						player.getPlayerDescription ().getPlayerID (), mom.getGeneralServerKnowledge ().getTrueMap (),
+						mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				
+				if (addLocation.getUnitLocation () == null)
+					keepGoing = false;
+				else
+				{
+					final MemoryUnit newUnit = getFogOfWarMidTurnChanges ().addUnitOnServerAndClients (mom.getGeneralServerKnowledge (),
+						unitsOffer.getUnitID (), addLocation.getUnitLocation (), null, expLevel.getExperienceRequired (),
+						null, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+
+					// Let it move this turn
+					newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
+						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+					
+					unitsAdded++;
+					if (unitsAdded >= unitsOffer.getUnitCount ())
+						keepGoing = false;
+				}
+			}
+		}
+		
+		// Item
+		else if (offer instanceof NewTurnMessageOfferItem)
+		{
+			final NewTurnMessageOfferItem itemOffer = (NewTurnMessageOfferItem) offer;
+			
+			final NumberedHeroItem item = getHeroItemUtils ().findHeroItemURN
+				(itemOffer.getHeroItem ().getHeroItemURN (), mom.getGeneralServerKnowledge ().getAvailableHeroItem ());
+			
+			if (item == null)
+				throw new RecordNotFoundException (NumberedHeroItem.class, itemOffer.getHeroItem ().getHeroItemURN (), "acceptOffer");
+			
+			mom.getGeneralServerKnowledge ().getAvailableHeroItem ().remove (item);
+			priv.getUnassignedHeroItem ().add (item);
+			
+			// Add on client
+			if (player.getPlayerDescription ().isHuman ())
+			{
+				final AddUnassignedHeroItemMessage msg = new AddUnassignedHeroItemMessage ();
+				msg.setHeroItem (item);
+				player.getConnection ().sendMessageToClient (msg);
+			}
+		}
+	}
 
 	/**
 	 * @return Resource value utils
@@ -379,6 +542,22 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	}
 
 	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
+	}
+	
+	/**
 	 * @return Server-only unit utils
 	 */
 	public final UnitServerUtils getUnitServerUtils ()
@@ -424,5 +603,53 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	public final void setHeroItemCalculations (final HeroItemCalculations calc)
 	{
 		heroItemCalculations = calc;
+	}
+
+	/**
+	 * @return Resource calculations
+	 */
+	public final ServerResourceCalculations getServerResourceCalculations ()
+	{
+		return serverResourceCalculations;
+	}
+
+	/**
+	 * @param calc Resource calculations
+	 */
+	public final void setServerResourceCalculations (final ServerResourceCalculations calc)
+	{
+		serverResourceCalculations = calc;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
+	{
+		return fogOfWarMidTurnChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnChanges (final FogOfWarMidTurnChanges obj)
+	{
+		fogOfWarMidTurnChanges = obj;
+	}
+
+	/**
+	 * @return Hero item utils
+	 */
+	public final HeroItemUtils getHeroItemUtils ()
+	{
+		return heroItemUtils;
+	}
+
+	/**
+	 * @param util Hero item utils
+	 */
+	public final void setHeroItemUtils (final HeroItemUtils util)
+	{
+		heroItemUtils = util;
 	}
 }

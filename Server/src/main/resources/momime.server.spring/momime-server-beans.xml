@@ -206,9 +206,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="requestAcceptOfferMessage" class="momime.server.messages.process.RequestAcceptOfferMessageImpl" scope="prototype">
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
-		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="heroItemUtils" ref="heroItemUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="offerGenerator" ref="offerGenerator" />
 	</bean>
 	
 	<!-- User registry -->
@@ -674,9 +674,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
+		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
+		<property name="heroItemUtils" ref="heroItemUtils" />
 	</bean>
 
 	<!-- AI -->

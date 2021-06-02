@@ -410,6 +410,9 @@ public final class OfferGeneratorImpl implements OfferGenerator
 				// Let it move this turn
 				hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
+				
+				// Update amounts to show what the hero is consuming/generatnig
+				getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
 			}
 		}
 		
@@ -451,6 +454,10 @@ public final class OfferGeneratorImpl implements OfferGenerator
 						keepGoing = false;
 				}
 			}
+
+			// Update amounts to show what the units are consuming/generatnig
+			if (unitsAdded > 0)
+				getServerResourceCalculations ().recalculateGlobalProductionValues (player.getPlayerDescription ().getPlayerID (), false, mom);
 		}
 		
 		// Item

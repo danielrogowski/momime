@@ -44,6 +44,9 @@ import momime.common.messages.MomTransientPlayerPrivateKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.NewTurnMessageData;
 import momime.common.messages.NewTurnMessageOffer;
+import momime.common.messages.NewTurnMessageOfferHero;
+import momime.common.messages.NewTurnMessageOfferItem;
+import momime.common.messages.NewTurnMessageOfferUnits;
 import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.PlayerPick;
@@ -690,10 +693,20 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// Don't let raiders buy units or hire heroes
 				if ((PlayerKnowledgeUtils.isWizard (pub.getWizardID ())) && (pub.getWizardState () == WizardState.ACTIVE))
 				{
-					getOfferGenerator ().generateHeroOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-					getOfferGenerator ().generateUnitsOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-					getOfferGenerator ().generateItemOffer (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (),
-						mom.getGeneralServerKnowledge ());
+					final NewTurnMessageOfferHero heroOffer = getOfferGenerator ().generateHeroOffer
+						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					if ((heroOffer != null) && (!player.getPlayerDescription ().isHuman ()))
+						getMomAI ().decideOffer (player, heroOffer, mom);
+					
+					final NewTurnMessageOfferUnits unitsOffer = getOfferGenerator ().generateUnitsOffer
+						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+					if ((unitsOffer != null) && (!player.getPlayerDescription ().isHuman ()))
+						getMomAI ().decideOffer (player, unitsOffer, mom);
+					
+					final NewTurnMessageOfferItem itemOffer = getOfferGenerator ().generateItemOffer
+						(player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getGeneralServerKnowledge ());
+					if ((itemOffer != null) && (!player.getPlayerDescription ().isHuman ()))
+						getMomAI ().decideOffer (player, itemOffer, mom);
 					
 					// Give unique URNs to any offers that were generated
 					for (final NewTurnMessageData ntm : trans.getNewTurnMessage ())

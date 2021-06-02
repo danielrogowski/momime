@@ -28,6 +28,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Wizard;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.NewTurnMessageOffer;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.WizardState;
@@ -37,6 +38,7 @@ import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.process.OfferGenerator;
 import momime.server.utils.CityServerUtils;
 
 /**
@@ -76,6 +78,9 @@ public final class MomAIImpl implements MomAI
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
+	
+	/** Offer generator */
+	private OfferGenerator offerGenerator;
 	
 	/**
 	 * @param player AI player whose turn to take
@@ -413,6 +418,26 @@ public final class MomAIImpl implements MomAI
 	}
 
 	/**
+	 * AI player decides whether to accept an offer.  Assumes we've already validated that they can afford it.
+	 * 
+	 * @param player Player who is accepting an offer
+	 * @param offer Offer being accepted
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If there is a validation problem
+	 */
+	@Override
+	public final void decideOffer (final PlayerServerDetails player, final NewTurnMessageOffer offer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		// AI players should have plenty money so just accept all offers
+		getOfferGenerator ().acceptOffer (player, offer, mom);
+	}
+	
+	/**
 	 * @return Methods for updating true map + players' memory
 	 */
 	public final FogOfWarMidTurnChanges getFogOfWarMidTurnChanges ()
@@ -570,5 +595,21 @@ public final class MomAIImpl implements MomAI
 	public final void setPlayerPickUtils (final PlayerPickUtils utils)
 	{
 		playerPickUtils = utils;
+	}
+
+	/**
+	 * @return Offer generator
+	 */
+	public final OfferGenerator getOfferGenerator ()
+	{
+		return offerGenerator;
+	}
+
+	/**
+	 * @param g Offer generator
+	 */
+	public final void setOfferGenerator (final OfferGenerator g)
+	{
+		offerGenerator = g;
 	}
 }

@@ -101,15 +101,18 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	 * @param players List of players
 	 * @param trueMap True map details
 	 * @param db Lookup lists built over the XML database
+	 * @return The offer that was generate if there was one, otherwise null
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final void generateHeroOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+	public final NewTurnMessageOfferHero generateHeroOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		NewTurnMessageOfferHero offer = null;
+		
 		// How much fame and gold do we have?
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 
@@ -172,7 +175,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 				log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " got offer from hero " + heroDef.getUnitID () + ", Unit URN " + hero.getUnitURN ());
 				
 				// Add NTM for it
-				final NewTurnMessageOfferHero offer = new NewTurnMessageOfferHero ();
+				offer = new NewTurnMessageOfferHero ();
 				offer.setMsgType (NewTurnMessageTypeID.OFFER_HERO);
 				offer.setCost (heroDef.getProductionCost () / (halfPrice ? 2 : 1));
 				offer.setHero (hero);
@@ -181,6 +184,8 @@ public final class OfferGeneratorImpl implements OfferGenerator
 				trans.getNewTurnMessage ().add (offer);
 			}
 		}
+		
+		return offer;
 	}
 	
 	/**
@@ -190,15 +195,18 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	 * @param players List of players
 	 * @param trueMap True map details
 	 * @param db Lookup lists built over the XML database
+	 * @return The offer that was generate if there was one, otherwise null
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final void generateUnitsOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+	public final NewTurnMessageOfferUnits generateUnitsOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		NewTurnMessageOfferUnits offer = null;
+		
 		// Find which plane we are on
 		final MemoryBuilding fortressLocation = getMemoryBuildingUtils ().findCityWithBuilding
 			(player.getPlayerDescription ().getPlayerID (), CommonDatabaseConstants.BUILDING_FORTRESS, trueMap.getMap (), trueMap.getBuilding ());
@@ -265,7 +273,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 					log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " got offer for " + unitCount + "x " + unitDef.getUnitID () + " at level " + expLevel);
 					
 					// Add NTM for it
-					final NewTurnMessageOfferUnits offer = new NewTurnMessageOfferUnits ();
+					offer = new NewTurnMessageOfferUnits ();
 					offer.setMsgType (NewTurnMessageTypeID.OFFER_UNITS);
 					offer.setCost (cost);
 					offer.setUnitCount (unitCount);
@@ -277,6 +285,8 @@ public final class OfferGeneratorImpl implements OfferGenerator
 				}
 			}
 		}
+		
+		return offer;
 	}
 
 	/**
@@ -287,15 +297,18 @@ public final class OfferGeneratorImpl implements OfferGenerator
 	 * @param trueMap True map details
 	 * @param db Lookup lists built over the XML database
 	 * @param gsk General server knowledge
+	 * @return The offer that was generate if there was one, otherwise null
      * @throws RecordNotFoundException If we can't find one of our picks in the database
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
 	@Override
-	public final void generateItemOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
+	public final NewTurnMessageOfferItem generateItemOffer (final PlayerServerDetails player, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final CommonDatabase db, final MomGeneralServerKnowledge gsk)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		NewTurnMessageOfferItem offer = null;
+		
 		if (gsk.getAvailableHeroItem ().size () > 0)
 		{
 			// How much fame do we have?
@@ -331,7 +344,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 					log.debug ("Player ID " + player.getPlayerDescription ().getPlayerID () + " got offer for item URN " + item.getHeroItemURN () + " - " + item.getHeroItemName ());
 					
 					// Add NTM for it
-					final NewTurnMessageOfferItem offer = new NewTurnMessageOfferItem ();
+					offer = new NewTurnMessageOfferItem ();
 					offer.setMsgType (NewTurnMessageTypeID.OFFER_ITEM);
 					offer.setCost (cost);
 					offer.setHeroItem (item);
@@ -341,6 +354,8 @@ public final class OfferGeneratorImpl implements OfferGenerator
 				}
 			}
 		}
+		
+		return offer;
 	}
 	
 	/**

@@ -8,6 +8,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 
 import momime.common.MomException;
 import momime.common.database.RecordNotFoundException;
+import momime.common.messages.NewTurnMessageOffer;
 import momime.server.MomSessionVariables;
 
 /**
@@ -28,4 +29,19 @@ public interface MomAI
 	 */
 	public boolean aiPlayerTurn (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * AI player decides whether to accept an offer.  Assumes we've already validated that they can afford it.
+	 * 
+	 * @param player Player who is accepting an offer
+	 * @param offer Offer being accepted
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected data item can't be found
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If there is a validation problem
+	 */
+	public void decideOffer (final PlayerServerDetails player, final NewTurnMessageOffer offer, final MomSessionVariables mom)
+		throws JAXBException, XMLStreamException, PlayerNotFoundException, RecordNotFoundException, MomException;
 }

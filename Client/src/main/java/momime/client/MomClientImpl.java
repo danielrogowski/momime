@@ -55,6 +55,7 @@ import momime.client.ui.frames.CreateArtifactUI;
 import momime.client.ui.frames.DamageCalculationsUI;
 import momime.client.ui.frames.HeroItemInfoUI;
 import momime.client.ui.frames.HeroItemsUI;
+import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.JoinGameUI;
 import momime.client.ui.frames.LoadGameUI;
 import momime.client.ui.frames.MagicSlidersUI;
@@ -156,6 +157,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	
 	/** Hero items UI */
 	private HeroItemsUI heroItemsUI;
+	
+	/** UI for screen showing power base history for each wizard */
+	private HistoryUI historyUI;
 	
 	/** Music player */
 	private AudioPlayer musicPlayer;
@@ -378,6 +382,9 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 					final List<Integer> heroItemsToClose = getHeroItemInfos ().keySet ().stream ().collect (Collectors.toList ());
 					heroItemsToClose.forEach (i -> getHeroItemInfos ().get (i).close ());
 					
+					final List<Integer> offersToClose = getOffers ().keySet ().stream ().collect (Collectors.toList ());
+					offersToClose.forEach (o -> getOffers ().get (o).close ());
+					
 					getOverlandMapUI ().setVisible (false);
 					getTaxRateUI ().setVisible (false);
 					getMagicSlidersUI ().setVisible (false);
@@ -397,6 +404,7 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 					getWizardsUI ().setVisible (false);
 					getCreateArtifactUI ().setVisible (false);
 					getHeroItemsUI ().setVisible (false);
+					getHistoryUI ().setVisible (false);
 				}
 			}
 
@@ -1204,6 +1212,22 @@ public final class MomClientImpl extends MultiplayerSessionClient implements Mom
 	public final void setHeroItemsUI (final HeroItemsUI ui)
 	{
 		heroItemsUI = ui;
+	}
+
+	/**
+	 * @return UI for screen showing power base history for each wizard
+	 */
+	public final HistoryUI getHistoryUI ()
+	{
+		return historyUI;
+	}
+
+	/**
+	 * @param h UI for screen showing power base history for each wizard
+	 */
+	public final void setHistoryUI (final HistoryUI h)
+	{
+		historyUI = h;
 	}
 	
 	/**

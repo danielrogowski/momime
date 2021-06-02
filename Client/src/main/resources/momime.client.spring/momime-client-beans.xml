@@ -787,6 +787,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="wizardsUI" ref="wizardsUI" />
 		<property name="createArtifactUI" ref="createArtifactUI" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
+		<property name="historyUI" ref="historyUI" />
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />

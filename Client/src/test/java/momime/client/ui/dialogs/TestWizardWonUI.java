@@ -93,7 +93,7 @@ public final class TestWizardWonUI extends ClientTestData
 			talkingAnim.getFrame ().add ("/momime.client.graphics/wizards/WZ01-talk-frame-" + s + ".png");
 		}
 		
-		when (gfx.findAnimation ("WIZARD_TALKING_01", "WizardWonUI (T)")).thenReturn (talkingAnim);
+		when (db.findAnimation ("WIZARD_TALKING_01", "WizardWonUI (T)")).thenReturn (talkingAnim);
 		
 		// Mock entries from the language XML
 		final WizardWonScreen wizardWonScreenLang = new WizardWonScreen ();

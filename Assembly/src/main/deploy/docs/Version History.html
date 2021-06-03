@@ -37,8 +37,64 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.9.0</b></td>
-			<td align=left><b>18 May 2021</b></td>
+			<td align=left><b>Current version: 0.9.9.1</b></td>
+			<td align=left><b>4 Jun 2021</b></td>
+			<td align=left>
+				<b>New features:</b>
+				<ul>
+					<li>Fame gained and lost from winning/losing important combats, capturing/losing cities, banishing/defeating a wizard, losing heroes
+					<li>Get offers to hire heroes and units, and to buy hero items
+					<li>Gold upkeep of troops is now reduced by your fame
+					<li>New game setting to control whether razing cities gains or loses fame (on for Intro..Impossible difficulty levels for accuracy with original MoM; off for Recommended difficulty level)
+				</ul>
+
+				<b>Retorts that now work correctly:</b>
+				<ul>
+					<li>Famous retort now grants +10 fame and doubles chance of receiving offers each turn
+					<li>Charismatic halves price of offers
+				</ul>
+
+				<b>Spells that now work correctly:</b>
+				<ul>
+					<li>Just Cause now grants +10 fame
+				</ul>
+				
+				<b>Unit abilities that now work correctly:</b>
+				<ul>
+					<li>Heroes with Caster ability parked in Wizard's fortress now add half their caster value to the controlling Wizard's casting skill for casting overland spells
+					<li>Heroes with Sage ability now contribute to Wizard's research
+					<li>Heroes with Legendary ability now contribute to Wizard's fame
+				</ul>
+
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Units summoned in a city combat (like phantom warriors) no longer get  get magic/mithril/adamantium weapons if the city can make them (thanks to Druthlen for spotting this)
+					<li>+10 skill bonus from Archmage is now added dynamically so 1) you gain it if you earn Archmage as a treasure reward during the game and 2) spending magic power to improve casting skill is now worked out
+prior to adding the +10, so you aren't penalized for having the higher casting skill (after I read this on MoM wiki)
+					<li>Gain 2 exp instead of 1 for each unit killed in battle (again because I read this on the MoM wiki, previously had just guessed +1 exp)
+					<li>Fixed server issue where if something made a bad connection to the server (e.g. try connecting with mismatching version MoM IME client), it would hang the server and thereafter refuse to accept legitimate connections
+					<li>If you or another wizard gains additional picks from treasure and already have the screen open looking at that wizard, they will now update properly without having to refresh it manually
+					<li>AI players were generating incorrect player names since all the XML refactoring in 0.9.9.0
+					<li>Power history graph didn't close out when the game ends
+				</ul>
+
+				<b>Trivial changes:</b>
+				<ul>
+					<li>Changed client to defaut to smooth zooming off since it just makes the overland map look blurry
+					<li>Updated several of the flag colours which were too dark and difficult to distinguish
+					<li>When summoning heroes, the new turn messages scroll now shows their portrait rather than the generic male/female summoning photo which didn't really look right on the scroll
+				</ul>
+
+				<b>Technical changes:</b>
+				<ul>
+					<li>If client connects to a server running the wrong version of MoM IME, now shows a popup message about it rather than just showing an exception in the log
+					<li>If client connects to a server running something other than MoM IME, now shows a popup message about it rather than just showing an exception in the log
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.9.0</td>
+			<td align=left>18 May 2021</td>
 			<td align=left>
 				<b>Spells that now work correctly:</b>
 				<ul>
@@ -154,7 +210,7 @@
 				<b>New features:</b>
 				<ul>
 					<li>Historian screen added, showing graph of all wizards' power base
-					<li>Ending animation and game closes down properly when you win the game by capturing the last wizards' last city
+					<li>Ending animation and game closes down properly when you win the game by capturing the last wizard's last city
 				</ul>
 
 				<b>AI improvements:</b>
@@ -801,7 +857,7 @@
 					<li>Selling a building that affects ration production now corrects farmers as needed
 					<li>Fixed layout of combat tiles - previously as units moved you could see the borders between the tiles flicker because they weren't arranged exactly right
 					<li>Stopped "waiting to receive new game options" message from appearing incorrectly if you connect to the same server twice
-					<li>Better error message if you try to sell your Wizards' Fortress or Summoning Circle
+					<li>Better error message if you try to sell your Wizard's Fortress or Summoning Circle
 					<li>Constructing or summoning a new unit now makes the area the new unit can see visible immediately (e.g. if it can see further than the city which built it/where it was summoned)
 					<li>Fixed a bug caused when one of your units kills the enemy and wins a combat while you have other units who still have movement left in that combat - there were a couple of effects of this, ranging from being asked to move the same unit twice in the next combat, to it outright crashing the game (thanks to Keith for spotting this)
 					<li>Fixed a bug caused when you clicked again in combat while animations were still playing - there were a couple of effects of this, ranging from being told that you were trying to move a unit that had no movement left, to it outright crashing the game (thanks to Keith for spotting this)

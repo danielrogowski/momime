@@ -43,5 +43,19 @@ public enum UnitNameType
 	 * e.g. "Valana the Bard", "the Trireme", "the unit of Orc Swordsmen", "the unit of Longbowmen", "the Magic Spirit", "the unit of Hell Hounds".
 	 * This is used in various dialog boxes, e.g. Do you want to disband "the unit of Orc Swordsmen" ?
 	 */
-	THE_UNIT_OF_NAME;
+	THE_UNIT_OF_NAME,
+	
+	/**
+	 * Outputs a the unit or hero name including "a unit of" prefix if it is plural.
+	 * e.g. "Valana the Bard", "a Trireme", "a unit of Orc Swordsmen", "a unit of Longbowmen", "a Magic Spirit", "a unit of Hell Hounds".
+	 * This is used in offers, e.g. Do you want to hire "a unit of Orc Swordsmen" ?
+	 */
+	A_UNIT_OF_NAME,
+
+	/**
+	 * Outputs a the unit or hero name including "units of" prefix if it is plural, and putting an "s" on the end of singular unit names.
+	 * e.g. "Valana the Bard", "Triremes", "units of Orc Swordsmen", "units of Longbowmen", "Magic Spirits", "units of Hell Hounds".
+	 * This is used in offers, e.g. Do you want to hire "3 units of Orc Swordsmen" ?
+	 */
+	UNITS_OF_NAME;
 }

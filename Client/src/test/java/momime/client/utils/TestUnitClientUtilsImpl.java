@@ -144,6 +144,10 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final UnitName unitNameLang = new UnitName ();
 		unitNameLang.getTheUnitOfNameSingular ().add (createLanguageText (Language.ENGLISH, "the RACE_UNIT_NAME"));
 		unitNameLang.getTheUnitOfNamePlural ().add (createLanguageText (Language.ENGLISH, "the unit of RACE_UNIT_NAME"));
+		unitNameLang.getAUnitOfNameSingular ().add (createLanguageText (Language.ENGLISH, "a RACE_UNIT_NAME"));
+		unitNameLang.getAUnitOfNamePlural ().add (createLanguageText (Language.ENGLISH, "a unit of RACE_UNIT_NAME"));
+		unitNameLang.getUnitsOfNameSingular ().add (createLanguageText (Language.ENGLISH, "RACE_UNIT_NAMEs"));
+		unitNameLang.getUnitsOfNamePlural ().add (createLanguageText (Language.ENGLISH, "units of RACE_UNIT_NAME"));
 		
 		final MomLanguagesEx lang = mock (MomLanguagesEx.class);
 		when (lang.getUnitName ()).thenReturn (unitNameLang);
@@ -219,6 +223,24 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		assertEquals ("the unit of Longbowmen",		utils.getUnitName (raceUnique,				UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the Magic Spirit",					utils.getUnitName (summonedSingular,		UnitNameType.THE_UNIT_OF_NAME));
 		assertEquals ("the unit of Hell Hounds",		utils.getUnitName (summonedPlural,		UnitNameType.THE_UNIT_OF_NAME));
+
+		// Test A_UNIT_OF_NAME
+		assertEquals ("Renamed Hero",					utils.getUnitName (heroOverridden,			UnitNameType.A_UNIT_OF_NAME));
+		assertEquals ("Valana the Bard",					utils.getUnitName (heroGenerated,			UnitNameType.A_UNIT_OF_NAME));
+		assertEquals ("a Trireme",							utils.getUnitName (nonRaceSpecific,			UnitNameType.A_UNIT_OF_NAME));
+		assertEquals ("a unit of Orc Swordsmen",		utils.getUnitName (raceSpecific,				UnitNameType.A_UNIT_OF_NAME));
+		assertEquals ("a unit of Longbowmen",			utils.getUnitName (raceUnique,				UnitNameType.A_UNIT_OF_NAME));
+		assertEquals ("a Magic Spirit",						utils.getUnitName (summonedSingular,		UnitNameType.A_UNIT_OF_NAME));
+		assertEquals ("a unit of Hell Hounds",			utils.getUnitName (summonedPlural,		UnitNameType.A_UNIT_OF_NAME));
+
+		// Test UNITS_OF_NAME
+		assertEquals ("Renamed Hero",					utils.getUnitName (heroOverridden,			UnitNameType.UNITS_OF_NAME));
+		assertEquals ("Valana the Bard",					utils.getUnitName (heroGenerated,			UnitNameType.UNITS_OF_NAME));
+		assertEquals ("Triremes",							utils.getUnitName (nonRaceSpecific,			UnitNameType.UNITS_OF_NAME));
+		assertEquals ("units of Orc Swordsmen",		utils.getUnitName (raceSpecific,				UnitNameType.UNITS_OF_NAME));
+		assertEquals ("units of Longbowmen",			utils.getUnitName (raceUnique,				UnitNameType.UNITS_OF_NAME));
+		assertEquals ("Magic Spirits",						utils.getUnitName (summonedSingular,		UnitNameType.UNITS_OF_NAME));
+		assertEquals ("units of Hell Hounds",			utils.getUnitName (summonedPlural,		UnitNameType.UNITS_OF_NAME));
 	}
 	
 	/**

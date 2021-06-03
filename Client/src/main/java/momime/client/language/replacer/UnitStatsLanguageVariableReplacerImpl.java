@@ -82,6 +82,14 @@ public final class UnitStatsLanguageVariableReplacerImpl extends LanguageVariabl
 				text = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.THE_UNIT_OF_NAME);
 				break;
 			
+			case "A_UNIT_OF_NAME":
+				text = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.A_UNIT_OF_NAME);
+				break;
+			
+			case "UNITS_OF_NAME":
+				text = getUnitClientUtils ().getUnitName (getUnit ().getUnit (), UnitNameType.UNITS_OF_NAME);
+				break;
+			
 			// Used by skill descriptions
 			case "MANA_TOTAL":
 				text = Integer.valueOf (getUnit ().calculateManaTotal ()).toString ();

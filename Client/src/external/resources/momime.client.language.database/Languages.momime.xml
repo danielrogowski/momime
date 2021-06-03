@@ -811,6 +811,18 @@
         <theUnitOfNamePlural language="en">
             <text>the unit of RACE_UNIT_NAME</text>
         </theUnitOfNamePlural>
+        <aUnitOfNameSingular language="en">
+            <text>a RACE_UNIT_NAME</text>
+        </aUnitOfNameSingular>
+        <aUnitOfNamePlural language="en">
+            <text>a unit of RACE_UNIT_NAME</text>
+        </aUnitOfNamePlural>
+        <unitsOfNameSingular language="en">
+            <text>RACE_UNIT_NAMEs</text>
+        </unitsOfNameSingular>
+        <unitsOfNamePlural language="en">
+            <text>units of RACE_UNIT_NAME</text>
+        </unitsOfNamePlural>
     </unitName>
     <turnSystems>
         <onePlayerAtATime language="en">
@@ -1765,22 +1777,22 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
             <text>You rejected SIMPLE_UNIT_NAME for COST gold</text>
         </offerHeroRejected>
         <offerUnit language="en">
-            <text>RACE_UNIT_NAME offer to join you for COST gold</text>
+            <text>A_UNIT_OF_NAME offer to join you for COST gold</text>
         </offerUnit>
         <offerUnitAccepted language="en">
-            <text>You hired RACE_UNIT_NAME for COST gold</text>
+            <text>You hired A_UNIT_OF_NAME for COST gold</text>
         </offerUnitAccepted>
         <offerUnitRejected language="en">
-            <text>You rejected RACE_UNIT_NAME for COST gold</text>
+            <text>You rejected A_UNIT_OF_NAME for COST gold</text>
         </offerUnitRejected>
         <offerUnits language="en">
-            <text>COUNT RACE_UNIT_NAME offer to join you for COST gold</text>
+            <text>COUNT UNITS_OF_NAME offer to join you for COST gold</text>
         </offerUnits>
         <offerUnitsAccepted language="en">
-            <text>You hired COUNT RACE_UNIT_NAME for COST gold</text>
+            <text>You hired COUNT UNITS_OF_NAME for COST gold</text>
         </offerUnitsAccepted>
         <offerUnitsRejected language="en">
-            <text>You rejected COUNT RACE_UNIT_NAME for COST gold</text>
+            <text>You rejected COUNT UNITS_OF_NAME for COST gold</text>
         </offerUnitsRejected>
         <offerItem language="en">
             <text>A merchant offers to sell you ITEM_NAME for COST gold</text>

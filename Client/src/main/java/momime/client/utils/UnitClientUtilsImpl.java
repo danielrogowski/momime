@@ -172,7 +172,25 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 						unitName = getLanguageHolder ().findDescription (languageText).replaceAll ("RACE_UNIT_NAME", unitName);
 						break;
 					}
+
+					case A_UNIT_OF_NAME:
+					{
+						final String prefix = getLanguageHolder ().findDescription (unitDef.getUnitNamePrefix ());
+						final List<LanguageText> languageText = ObjectUtils.isEmpty (prefix) ? getLanguages ().getUnitName ().getAUnitOfNamePlural () : getLanguages ().getUnitName ().getAUnitOfNameSingular ();
 						
+						unitName = getLanguageHolder ().findDescription (languageText).replaceAll ("RACE_UNIT_NAME", unitName);
+						break;
+					}
+					
+					case UNITS_OF_NAME:
+					{
+						final String prefix = getLanguageHolder ().findDescription (unitDef.getUnitNamePrefix ());
+						final List<LanguageText> languageText = ObjectUtils.isEmpty (prefix) ? getLanguages ().getUnitName ().getUnitsOfNamePlural () : getLanguages ().getUnitName ().getUnitsOfNameSingular ();
+						
+						unitName = getLanguageHolder ().findDescription (languageText).replaceAll ("RACE_UNIT_NAME", unitName);
+						break;
+					}
+					
 					// Other name types are handled elsewhere or require nothing to be added
 					default:
 						break;

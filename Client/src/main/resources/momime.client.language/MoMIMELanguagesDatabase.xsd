@@ -93,6 +93,22 @@
 						<xsd:selector xpath="theUnitOfNamePlural" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
+					<xsd:key name="unitNameAUnitOfNameSingularPK">
+						<xsd:selector xpath="aUnitOfNameSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitNameAUnitOfNamePluralPK">
+						<xsd:selector xpath="aUnitOfNamePlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitNameUnitsOfNameSingularPK">
+						<xsd:selector xpath="unitsOfNameSingular" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="unitNameUnitsOfNamePluralPK">
+						<xsd:selector xpath="unitsOfNamePlural" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
     			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="turnSystems" type="momimelangs:turnSystems">
 					<xsd:key name="turnSystemsOnePlayerAtATimePK">
@@ -2481,6 +2497,10 @@
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theUnitOfNameSingular" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="theUnitOfNamePlural" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aUnitOfNameSingular" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="aUnitOfNamePlural" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitsOfNameSingular" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="unitsOfNamePlural" />
 		</xsd:sequence>
     </xsd:complexType>
 	

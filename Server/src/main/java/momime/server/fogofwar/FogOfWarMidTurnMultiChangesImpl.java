@@ -279,9 +279,27 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
+		// Find the best Armsmaster at each map cell
+		final Map<MapCoordinates3DEx, Integer> armsmasters = new HashMap<MapCoordinates3DEx, Integer> ();
+		
+		for (final MemoryUnit thisUnit : trueUnits)
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ARMSMASTER))
+				{
+					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();
+					final int heroSkillValue = ((xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_ARMSMASTER) + 1) * 2 * (expLevel+1)) / 2;
+					
+					Integer oldValue = armsmasters.get (xu.getUnitLocation ());
+					if ((oldValue == null) || (oldValue < heroSkillValue))
+						armsmasters.put (xu.getUnitLocation (), heroSkillValue);
+				}
+			}
+		
 		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see (except summoned ones) - so collate the client messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
-		
+
 		// Now process all units
 		for (final MemoryUnit thisUnit : trueUnits)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
@@ -308,6 +326,15 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					// Note we don't do this directly on xu as that will not reflect the updated experience, and don't want to make a whole new ExpandedUnitDetails just to do a simple check
 					getUnitServerUtils ().checkIfHeroGainedALevel (xu.getUnitURN (), xu.getUnitType (), (PlayerServerDetails) xu.getOwningPlayer (), exp);
 					sendMsg = true;
+					
+					// Any armsmaster here?  Block heroes from getting this too - can't do this via modified magic realm as heroes can become
+					// chaos channeled and so can normal units, but one gains exp from armsmaster and one does not
+					if (!xu.getUnitDefinition ().getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+					{
+						final Integer heroSkillValue = armsmasters.get (xu.getUnitLocation ());
+						if (heroSkillValue != null)
+							getUnitSkillDirectAccess ().setDirectSkillValue (thisUnit, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, exp + heroSkillValue);
+					}
 				}
 
 				// Inform any clients who know about this unit

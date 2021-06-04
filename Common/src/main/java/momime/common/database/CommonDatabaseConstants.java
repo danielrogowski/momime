@@ -256,6 +256,9 @@ public final class CommonDatabaseConstants
 	public final static String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
 
 	// hero skills
+
+	/** Armsmaster raises exp of normal units stacked with them */
+	public final static String UNIT_SKILL_ID_ARMSMASTER = "HS03";
 	
 	/** Allows heroes to cast spells plus provides MP for mag heroes to use as ammo, available MP = skill level * (exp level + 1) * 2½ */
 	public final static String UNIT_SKILL_ID_CASTER_HERO = "HS05";

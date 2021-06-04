@@ -397,6 +397,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
 		when (xu1.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (xu1.getUnitDefinition ()).thenReturn (unitDef);
 		
 		// Summoned unit that has taken 1 kind of damage
 		final UnitDamage unit2dmg1 = new UnitDamage ();
@@ -415,6 +416,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (xu2.getUnitDefinition ()).thenReturn (unitDef);
 		
 		// Hero that has taken no damage
 		final MemoryUnit unit3 = new MemoryUnit ();
@@ -428,6 +430,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
 		when (xu3.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (xu3.getUnitDefinition ()).thenReturn (unitDef);
 		
 		// Summoned unit that has taken no damage
 		final MemoryUnit unit4 = new MemoryUnit ();
@@ -441,6 +444,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
 		when (xu4.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (xu4.getUnitDefinition ()).thenReturn (unitDef);
 		
 		// Dead hero
 		final UnitDamage unit5dmg1 = new UnitDamage ();
@@ -459,6 +463,7 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
 		when (unitUtils.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
 		when (xu5.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
+		when (xu5.getUnitDefinition ()).thenReturn (unitDef);
 		
 		// Units list
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();

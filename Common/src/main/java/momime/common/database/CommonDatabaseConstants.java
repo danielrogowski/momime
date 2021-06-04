@@ -266,6 +266,9 @@ public final class CommonDatabaseConstants
 	/** Hero contributes to wizard's fame */
 	public final static String UNIT_SKILL_ID_LEGENDARY = "HS09";
 	
+	/** Hero adds +10 gold instead of consuming gold */
+	public final static String UNIT_SKILL_ID_NOBLE = "HS12";
+	
 	/** Hero contributes to wizard's research */
 	public final static String UNIT_SKILL_ID_SAGE = "HS14";
 

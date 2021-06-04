@@ -722,6 +722,9 @@ public final class UnitUtilsImpl implements UnitUtils
 			modifiedUpkeepValues = new HashMap<String, Integer> ();		// Empty map
 		else
 		{
+			// Noble replaces usual gold consumption with gain of +10 gold
+			final boolean isNoble = modifiedSkillValues.containsKey (CommonDatabaseConstants.UNIT_SKILL_ID_NOBLE);
+			
 			// Reduce upkeep for Summoner retort?
 			// Get reduction as a percentage - note we use the special "unit upkeep" production type, not "Mana"
 			final int percentageReduction = (picks == null) ? 0 : getPlayerPickUtils ().totalProductionBonus
@@ -730,13 +733,20 @@ public final class UnitUtilsImpl implements UnitUtils
 			// Now copy and modify each basic skill value
 			modifiedUpkeepValues = basicUpkeepValues.entrySet ().stream ().collect (Collectors.toMap (u -> u.getKey (), u ->
 			{
-				final int baseUpkeepValue = (u.getValue () * unitTypeUpkeepPercentage) / 100;
-
-				// Calculate actual amount of reduction, rounding down
-				final int amountReduction = (baseUpkeepValue * percentageReduction) / 100;
-				
-				// Note its impossible to actually get zero here since we round the reduction down, unless percentageReduction reached 100 which will never happen
-				return baseUpkeepValue - amountReduction;				
+				final int modifiedUpkeepValue;
+				if ((isNoble) && (u.getKey ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)))
+					modifiedUpkeepValue = -10;	// negative upkeep, so actually gives +10
+				else
+				{
+					final int baseUpkeepValue = (u.getValue () * unitTypeUpkeepPercentage) / 100;
+	
+					// Calculate actual amount of reduction, rounding down
+					final int amountReduction = (baseUpkeepValue * percentageReduction) / 100;
+					
+					// Note its impossible to actually get zero here since we round the reduction down, unless percentageReduction reached 100 which will never happen
+					modifiedUpkeepValue = baseUpkeepValue - amountReduction;
+				}
+				return modifiedUpkeepValue;
 			}));
 		}
 		

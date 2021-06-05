@@ -87,7 +87,7 @@ public final class NewTurnMessageUnitKilledFromLackOfProductionEx extends NewTur
 		// Now we've got a hold of the unit, we can really kill it
 		getUnitUtils ().removeUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		
-		xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
+		xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	

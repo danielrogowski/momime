@@ -285,7 +285,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueUnits)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, trueMap, db);
 				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_ARMSMASTER))
 				{
 					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();
@@ -304,7 +304,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueUnits)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, trueMap, db);
 				final Pick magicRealm = xu.getModifiedUnitMagicRealmLifeformType ();
 				
 				boolean sendMsg = false;
@@ -379,7 +379,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			if ((trueUnit.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (trueUnit.getCombatLocation ())) &&
 				(trueUnit.getCombatSide () == combatSide) && (trueUnit.getCombatPosition () != null) && (trueUnit.getCombatHeading () != null))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (trueUnit, null, null, null, true, players, trueMap, db);
 				final Pick magicRealm = xu.getModifiedUnitMagicRealmLifeformType ();
 
 				int exp = getUnitSkillDirectAccess ().getDirectSkillValue (trueUnit.getUnitHasSkill (), CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE);
@@ -988,7 +988,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ()))
 			{
-				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db).getModifiedSkillValue
+				thisUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, trueMap, db).getModifiedSkillValue
 					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 
 				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (thisUnit, trueMap.getMap (), players, db, fogOfWarSettings, fowMessages);

@@ -309,7 +309,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (player);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, false, players, fow, db)).thenReturn (xu);
 		
 		// Skills
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);

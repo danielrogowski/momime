@@ -153,7 +153,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, false, players, fow, db)).thenReturn (xu1);
 		
 		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
 		move1Stack.add (xu1);
@@ -174,7 +174,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, false, players, fow, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
 		move2Stack.add (xu2);
@@ -195,7 +195,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, false, players, fow, db)).thenReturn (xu3);
 		
 		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
 		move3Stack.add (xu3);
@@ -279,7 +279,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, false, players, fow, db)).thenReturn (xu1);
 		
 		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
 		move1Stack.add (xu1);
@@ -300,7 +300,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, false, players, fow, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
 		move2Stack.add (xu2);
@@ -321,7 +321,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, false, players, fow, db)).thenReturn (xu3);
 		
 		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
 		move3Stack.add (xu3);
@@ -423,7 +423,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, false, players, fow, db)).thenReturn (xu1);
 		
 		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
 		move1Stack.add (xu1);
@@ -444,7 +444,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, false, players, fow, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
 		move2Stack.add (xu2);
@@ -465,7 +465,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, false, players, fow, db)).thenReturn (xu3);
 		
 		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
 		move3Stack.add (xu3);
@@ -598,7 +598,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, false, players, fow, db)).thenReturn (xu1);
 		
 		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
 		move1Stack.add (xu1);
@@ -670,7 +670,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, false, players, fow, db)).thenReturn (xu1);
 		
 		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
 		move1Stack.add (xu1);
@@ -745,7 +745,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, false, players, fow, db)).thenReturn (xu1);
 		
 		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
 		move1Stack.add (xu1);
@@ -773,7 +773,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, false, players, fow, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
 		move2Stack.add (xu2);
@@ -795,7 +795,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, false, players, fow, db)).thenReturn (xu3);
 		
 		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
 		move3Stack.add (xu3);
@@ -896,7 +896,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move1.getUnitURN ().add (move1Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, players, fow, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (move1Unit, null, null, null, false, players, fow, db)).thenReturn (xu1);
 		
 		final List<ExpandedUnitDetails> move1Stack = new ArrayList<ExpandedUnitDetails> ();
 		move1Stack.add (xu1);
@@ -924,7 +924,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move2.getUnitURN ().add (move2Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, players, fow, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (move2Unit, null, null, null, false, players, fow, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> move2Stack = new ArrayList<ExpandedUnitDetails> ();
 		move2Stack.add (xu2);
@@ -946,7 +946,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 		move3.getUnitURN ().add (move3Unit.getUnitURN ());
 		
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, players, fow, db)).thenReturn (xu3);
+		when (unitUtils.expandUnitDetails (move3Unit, null, null, null, false, players, fow, db)).thenReturn (xu3);
 		
 		final List<ExpandedUnitDetails> move3Stack = new ArrayList<ExpandedUnitDetails> ();
 		move3Stack.add (xu3);
@@ -1160,7 +1160,7 @@ public final class TestSimultaneousTurnsProcessingImpl extends ServerTestData
 			spirits.add (spirit);
 
 			final ExpandedUnitDetails xuSpirit = mock (ExpandedUnitDetails.class);
-			when (unitUtils.expandUnitDetails (spirit, null, null, null, players, trueMap, db)).thenReturn (xuSpirit);
+			when (unitUtils.expandUnitDetails (spirit, null, null, null, false, players, trueMap, db)).thenReturn (xuSpirit);
 			xuSpirits.add (xuSpirit);
 		}
 

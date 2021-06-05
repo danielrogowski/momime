@@ -145,7 +145,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, false, players, fow, db)).thenReturn (xu);
 		
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
@@ -293,7 +293,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (xu.getUnitDefinition ()).thenReturn (longbowmen);
 		when (xu.getOwningPlayerID ()).thenReturn (1);
 		when (xu.getOwningPlayer ()).thenReturn (unitOwner);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, false, players, fow, db)).thenReturn (xu);
 		
 		// Movement
 		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);

@@ -356,7 +356,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			else
 			{
 				// Does it have the necessary skill?
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				if ((necessarySkillID == null) || (xu.hasModifiedSkill (necessarySkillID)))				
@@ -559,7 +559,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		testUnit.setOwningPlayerID (playerID);
 		getUnitUtils ().initializeUnitSkills (testUnit, 0, db);
 
-		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (testUnit, null, null, null, players, trueMap, db);
+		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (testUnit, null, null, null, false, players, trueMap, db);
 
 		// First try the centre
 		MapCoordinates3DEx addLocation = null;

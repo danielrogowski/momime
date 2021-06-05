@@ -1041,7 +1041,7 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 						final int oldValue = (gc.getRoadProductionSoFar () == null) ? 0 : gc.getRoadProductionSoFar ();
 						
 						// Lay a little more pavement - dwarven engineers construct 2 points per turn instead of 1
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, players, trueMap, db);
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, false, players, trueMap, db);
 						Integer skillValue = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD);
 						if ((skillValue == null) || (skillValue < 1))
 							skillValue = 1;
@@ -1203,7 +1203,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 					for (final Integer unitURN : thisMove.getUnitURN ())
 					{
 						final MemoryUnit tu = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "continueMovement");
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, false,
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						unitStack.add (xu);
 					}
 					

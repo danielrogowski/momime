@@ -427,7 +427,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 						getFogOfWarMidTurnChanges ().updateUnitStatusToAliveOnServerAndClients (hero, addLocation.getUnitLocation (), player, players, gsk.getTrueMap (), sd, db);
 					
 						// Let it move this turn
-						hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null, players, gsk.getTrueMap (), db).getModifiedSkillValue
+						hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null, false, players, gsk.getTrueMap (), db).getModifiedSkillValue
 							(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 					}
 					break;

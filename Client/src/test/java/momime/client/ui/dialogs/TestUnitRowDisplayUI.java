@@ -149,7 +149,7 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 		when (unitClientUtils.getUnitName (unit, UnitNameType.RACE_UNIT_NAME)).thenReturn ("Unicorns");
 
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, false, players, fow, db)).thenReturn (xu);
 		
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
 		units.add (unit);

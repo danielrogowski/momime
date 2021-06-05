@@ -152,7 +152,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 		trueMap.getUnit ().add (trireme);
 		
 		final ExpandedUnitDetails xuTrireme = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (trireme, null, null, null, players, trueMap, db)).thenReturn (xuTrireme);
+		when (unitUtils.expandUnitDetails (trireme, null, null, null, false, players, trueMap, db)).thenReturn (xuTrireme);
 		when (xuTrireme.getUnitDefinition ()).thenReturn (triremeDef);
 		when (xuTrireme.getMemoryUnit ()).thenReturn (trireme);
 
@@ -169,7 +169,7 @@ public final class TestServerUnitCalculationsImpl extends ServerTestData
 			trueMap.getUnit ().add (spearmen);
 			
 			final ExpandedUnitDetails xuSpearmen = mock (ExpandedUnitDetails.class);
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, trueMap, db)).thenReturn (xuSpearmen);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, false, players, trueMap, db)).thenReturn (xuSpearmen);
 			when (xuSpearmen.getUnitDefinition ()).thenReturn (spearmenDef);
 			when (xuSpearmen.getMemoryUnit ()).thenReturn (spearmen);
 

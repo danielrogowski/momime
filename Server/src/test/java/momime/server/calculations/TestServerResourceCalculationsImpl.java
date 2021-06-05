@@ -182,7 +182,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		trueMap.getUnit ().add (shadowDemons);
 
 		final ExpandedUnitDetails xuShadowDemons = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (shadowDemons, null, null, null, players, trueMap, db)).thenReturn (xuShadowDemons);
+		when (unitUtils.expandUnitDetails (shadowDemons, null, null, null, false, players, trueMap, db)).thenReturn (xuShadowDemons);
 		when (xuShadowDemons.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (7);
 		
 		final Set<String> shadowDemonsUpkeeps = new HashSet<String> ();
@@ -224,7 +224,7 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		trueMap.getUnit ().add (warlocks);
 
 		final ExpandedUnitDetails xuWarlocks = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (warlocks, null, null, null, players, trueMap, db)).thenReturn (xuWarlocks);
+		when (unitUtils.expandUnitDetails (warlocks, null, null, null, false, players, trueMap, db)).thenReturn (xuWarlocks);
 		when (xuWarlocks.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS)).thenReturn (1);
 		when (xuWarlocks.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_GOLD)).thenReturn (5);
 		
@@ -533,18 +533,18 @@ public final class TestServerResourceCalculationsImpl extends ServerTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		final ExpandedUnitDetails xuWarlocks = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (warlocks, null, null, null, players, trueMap, db)).thenReturn (xuWarlocks);
+		when (unitUtils.expandUnitDetails (warlocks, null, null, null, false, players, trueMap, db)).thenReturn (xuWarlocks);
 		
 		final ExpandedUnitDetails xuGargoyles = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (gargoyles, null, null, null, players, trueMap, db)).thenReturn (xuGargoyles);
+		when (unitUtils.expandUnitDetails (gargoyles, null, null, null, false, players, trueMap, db)).thenReturn (xuGargoyles);
 		when (xuGargoyles.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
 		
 		final ExpandedUnitDetails xuGargoylesOtherStatus = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (gargoylesOtherStatus, null, null, null, players, trueMap, db)).thenReturn (xuGargoylesOtherStatus);
+		when (unitUtils.expandUnitDetails (gargoylesOtherStatus, null, null, null, false, players, trueMap, db)).thenReturn (xuGargoylesOtherStatus);
 		when (xuGargoylesOtherStatus.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
 		
 		final ExpandedUnitDetails xuGargoylesOtherPlayer = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (gargoylesOtherPlayer, null, null, null, players, trueMap, db)).thenReturn (xuGargoylesOtherPlayer);
+		when (unitUtils.expandUnitDetails (gargoylesOtherPlayer, null, null, null, false, players, trueMap, db)).thenReturn (xuGargoylesOtherPlayer);
 		when (xuGargoylesOtherPlayer.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA)).thenReturn (5);
 		
 		// Create dummy implementation for the factory that is usually provided by spring

@@ -493,7 +493,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if ((currentLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 				((onlyUnitURNs == null) || (onlyUnitURNs.contains (tu.getUnitURN ()))))
 
-				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, true,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 		
 		// Remove from the list any units to whom the combat terrain is impassable.
 		// This is so land units being transported in boats can't participate in naval combats.

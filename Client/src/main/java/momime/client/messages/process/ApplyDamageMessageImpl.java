@@ -222,7 +222,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				duration = tickCount / (double) RANGED_ATTACK_FPS;
 				
 				// Get the start location of every individual missile
-				final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attackerUnit, null, null, null,
+				final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attackerUnit, null, null, null, true,
 					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
 				final int totalFigureCount = xuAttacker.getFullFigureCount ();

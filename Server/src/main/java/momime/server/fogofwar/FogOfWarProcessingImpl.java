@@ -254,7 +254,7 @@ public class FogOfWarProcessingImpl implements FogOfWarProcessing
 			for (final MemoryUnit thisUnit : trueMap.getUnit ())
 				if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, trueMap, db);
 					final int scoutingRange = getServerUnitCalculations ().calculateUnitScoutingRange (xu, db);
 
 					// If standing in a tower, can see both planes

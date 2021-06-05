@@ -622,7 +622,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Find details about this kind of unit
 		building = null;
 		shadingColours = new ArrayList<String> ();
-		unit = getUnitUtils ().expandUnitDetails (showUnit, null, null, null, getClient ().getPlayers (),
+		unit = getUnitUtils ().expandUnitDetails (showUnit, null, null, null, false, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		// Update language independant labels

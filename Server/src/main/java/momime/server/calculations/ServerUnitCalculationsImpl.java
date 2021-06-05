@@ -148,7 +148,7 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 				final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
 				for (final MemoryUnit tu : trueMap.getUnit ())
 					if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())) && (playerID == tu.getOwningPlayerID ()))
-						unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, players, trueMap, db));
+						unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, false, players, trueMap, db));
 				
 				// Get a list of the unit stack skills
 				final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);

@@ -1535,7 +1535,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (unitUtils.findUnitURN (101, trueMap.getUnit ())).thenReturn (targetUnit);
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), true, players, trueMap, db)).thenReturn (xu);
 		
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);
@@ -1666,7 +1666,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		when (unitUtils.findUnitURN (101, trueMap.getUnit ())).thenReturn (targetUnit);
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), players, trueMap, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), true, players, trueMap, db)).thenReturn (xu);
 		
 		// Invalid target
 		final MemoryMaintainedSpellUtils memoryMaintainedSpellUtils = mock (MemoryMaintainedSpellUtils.class);

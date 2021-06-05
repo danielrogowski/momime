@@ -2745,6 +2745,11 @@ In that case, the restriction is put here, with multiple addsToSkill records if 
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="onlyInCombat" type="xsd:boolean" nxe:label="Only applies in combat" nxe:showmaincolumn="false">
+				<xsd:annotation>
+        			<xsd:documentation>Bonus only applies to damage being rolled to the unit in combat.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 	</xsd:complexType>
 

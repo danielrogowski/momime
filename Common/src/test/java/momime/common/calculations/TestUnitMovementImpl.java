@@ -254,7 +254,7 @@ public final class TestUnitMovementImpl
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		when (xu1.getUnitDefinition ()).thenReturn (unitDef);
-		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, map, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (unit1, null, null, null, false, players, map, db)).thenReturn (xu1);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu1, unitStackSkills, "TT01", db)).thenReturn (null);
 		
 		// At 0, 0, 2 there's a transport with capacity 2
@@ -266,7 +266,7 @@ public final class TestUnitMovementImpl
 		
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
 		when (xu2.getUnitDefinition ()).thenReturn (transportDef);
-		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, map, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (unit2, null, null, null, false, players, map, db)).thenReturn (xu2);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu2, unitStackSkills, "TT01", db)).thenReturn (2);
 
 		// At 0, 0, 3 there's a transport with capacity 2 with 1 unit already inside it (terrain is impassable to that unit)
@@ -278,7 +278,7 @@ public final class TestUnitMovementImpl
 		
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
 		when (xu3.getUnitDefinition ()).thenReturn (transportDef);
-		when (unitUtils.expandUnitDetails (unit3, null, null, null, players, map, db)).thenReturn (xu3);
+		when (unitUtils.expandUnitDetails (unit3, null, null, null, false, players, map, db)).thenReturn (xu3);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu3, unitStackSkills, "TT01", db)).thenReturn (2);
 
 		final MemoryUnit unit4 = new MemoryUnit ();
@@ -289,7 +289,7 @@ public final class TestUnitMovementImpl
 		
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
 		when (xu4.getUnitDefinition ()).thenReturn (unitDef);
-		when (unitUtils.expandUnitDetails (unit4, null, null, null, players, map, db)).thenReturn (xu4);
+		when (unitUtils.expandUnitDetails (unit4, null, null, null, false, players, map, db)).thenReturn (xu4);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu4, unitStackSkills, "TT01", db)).thenReturn (null);
 		
 		// At 0, 0, 4 there's a transport with capacity 2 with 1 unit standing next to it but not inside it (terrain is passable to that unit)
@@ -301,7 +301,7 @@ public final class TestUnitMovementImpl
 		
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
 		when (xu5.getUnitDefinition ()).thenReturn (transportDef);
-		when (unitUtils.expandUnitDetails (unit5, null, null, null, players, map, db)).thenReturn (xu5);
+		when (unitUtils.expandUnitDetails (unit5, null, null, null, false, players, map, db)).thenReturn (xu5);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu5, unitStackSkills, "TT01", db)).thenReturn (2);
 
 		final MemoryUnit unit6 = new MemoryUnit ();
@@ -312,7 +312,7 @@ public final class TestUnitMovementImpl
 		
 		final ExpandedUnitDetails xu6 = mock (ExpandedUnitDetails.class);
 		when (xu6.getUnitDefinition ()).thenReturn (unitDef);
-		when (unitUtils.expandUnitDetails (unit6, null, null, null, players, map, db)).thenReturn (xu6);
+		when (unitUtils.expandUnitDetails (unit6, null, null, null, false, players, map, db)).thenReturn (xu6);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu6, unitStackSkills, "TT01", db)).thenReturn (2);
 		
 		// At 0, 0, 5 there's somebody else's unit which makes no difference, we can "move onto it" to attack it
@@ -324,7 +324,7 @@ public final class TestUnitMovementImpl
 		
 		final ExpandedUnitDetails xu7 = mock (ExpandedUnitDetails.class);
 		when (xu7.getUnitDefinition ()).thenReturn (unitDef);
-		when (unitUtils.expandUnitDetails (unit7, null, null, null, players, map, db)).thenReturn (xu7);
+		when (unitUtils.expandUnitDetails (unit7, null, null, null, false, players, map, db)).thenReturn (xu7);
 		when (unitCalculations.calculateDoubleMovementToEnterTileType (xu7, unitStackSkills, "TT01", db)).thenReturn (null);
 		
 		// Unit stack

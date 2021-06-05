@@ -215,7 +215,7 @@ public final class OverlandMapServerUtilsImpl implements OverlandMapServerUtils
 			defendingSpirit.setUnitID (tc.getNodeSpiritUnitID ());
 			getUnitUtils ().initializeUnitSkills (defendingSpirit, -1, db);
 			
-			final int defendingStrength = getUnitUtils ().expandUnitDetails (defendingSpirit, null, null, null, players, trueMap, db).getModifiedSkillValue
+			final int defendingStrength = getUnitUtils ().expandUnitDetails (defendingSpirit, null, null, null, false, players, trueMap, db).getModifiedSkillValue
 				(CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
 			
 			// Decide who wins

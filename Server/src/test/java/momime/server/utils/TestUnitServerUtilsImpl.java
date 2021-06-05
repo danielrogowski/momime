@@ -1135,7 +1135,8 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (false),
+			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		// Map cell and surrounding terrain that we're trying to add to
@@ -1213,7 +1214,8 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (false),
+			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		// Map cell and surrounding terrain that we're trying to add to
@@ -1297,7 +1299,8 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (false),
+			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
 		// Map cell and surrounding terrain that we're trying to add to

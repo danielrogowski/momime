@@ -145,11 +145,12 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
-		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null), eq (true),
+			eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, true, players, trueMap, db)).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, true, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
@@ -330,11 +331,13 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 
 		final ExpandedUnitDetails xuAttacker = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null), eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
-		when (unitUtils.expandUnitDetails (attacker, null, null, null, players, trueMap, db)).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (eq (attacker), anyList (), eq (null), eq (null), eq (true),
+			eq (players), eq (trueMap), eq (db))).thenReturn (xuAttacker);
+		when (unitUtils.expandUnitDetails (attacker, null, null, null, true,
+			players, trueMap, db)).thenReturn (xuAttacker);
 
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, true, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Attack resolution
 		final AttackResolutionProcessing attackResolutionProc = mock (AttackResolutionProcessing.class);
@@ -505,7 +508,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuDefender = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender, null, null, null, players, trueMap, db)).thenReturn (xuDefender);
+		when (unitUtils.expandUnitDetails (defender, null, null, null, true, players, trueMap, db)).thenReturn (xuDefender);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -658,13 +661,13 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		
 		final ExpandedUnitDetails xuDefender1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender1, null, null, null, players, trueMap, db)).thenReturn (xuDefender1);
+		when (unitUtils.expandUnitDetails (defender1, null, null, null, true, players, trueMap, db)).thenReturn (xuDefender1);
 		
 		final ExpandedUnitDetails xuDefender2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender2, null, null, null, players, trueMap, db)).thenReturn (xuDefender2);
+		when (unitUtils.expandUnitDetails (defender2, null, null, null, true, players, trueMap, db)).thenReturn (xuDefender2);
 		
 		final ExpandedUnitDetails xuDefender3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (defender3, null, null, null, players, trueMap, db)).thenReturn (xuDefender3);
+		when (unitUtils.expandUnitDetails (defender3, null, null, null, true, players, trueMap, db)).thenReturn (xuDefender3);
 		
 		// Middle unit is immune to illusions
 		when (xuDefender1.hasModifiedSkill ("US001")).thenReturn (false);

@@ -102,7 +102,7 @@ public final class NewTurnMessageHeroGainedALevelEx extends NewTurnMessageHeroGa
 	{
 		final MemoryUnit unit = getUnitUtils ().findUnitURN (getUnitURN (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ());
 		if (unit != null)
-			xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
+			xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, getClient ().getPlayers (),
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	

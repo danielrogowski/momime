@@ -127,7 +127,7 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 		// We don't have to get the weapon grade or experience right just to draw the figures
 		getUnitUtils ().initializeUnitSkills (sampleUnit, expLevel.getExperienceRequired (), getClient ().getClientDB ());
 		
-		xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null, getClient ().getPlayers (),
+		xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null, false, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	

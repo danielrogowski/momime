@@ -163,7 +163,7 @@ public final class TargetSpellMessageImpl extends TargetSpellMessage implements 
 					else
 					{
 						// Common routine used by both the client and server does the guts of the validation work
-						xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
+						xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (), false,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						final TargetSpellResult reason = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell

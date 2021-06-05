@@ -381,7 +381,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		getUnitUtils ().initializeUnitSkills (dummyUnit, 0, db);		// otherwise it does not even get the "walking" skill
 		
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
-		selectedUnits.add (getUnitUtils ().expandUnitDetails (dummyUnit, null, null, null, players, fogOfWarMemory, db));
+		selectedUnits.add (getUnitUtils ().expandUnitDetails (dummyUnit, null, null, null, false, players, fogOfWarMemory, db));
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		

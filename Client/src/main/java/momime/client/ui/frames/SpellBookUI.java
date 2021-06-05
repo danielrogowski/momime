@@ -749,7 +749,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				{
 					final MemoryUnit thisUnit = iter.next ();
 					
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (), true,
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -840,7 +840,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				// This is basically the same loop as above, except now we need a list of the dead units, not simply to find one and exit the loop 
 				for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (), true,
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -1016,7 +1016,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
 			// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
 			// overrideMaximumMP isn't essential, but there's no point us listing spells in the spell book that the unit doesn't have enough MP to cast.
-			final ExpandedUnitDetails castingUnit = getUnitUtils ().expandUnitDetails (getCombatUI ().getCastingSource ().getCastingUnit (), null, null, null,
+			final ExpandedUnitDetails castingUnit = getUnitUtils ().expandUnitDetails (getCombatUI ().getCastingSource ().getCastingUnit (), null, null, null, true,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 			if (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT))

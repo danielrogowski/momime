@@ -168,7 +168,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				if ((unitLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false,
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					final HideableComponent<SelectUnitButton> button = buttonIter.next ();

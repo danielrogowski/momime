@@ -310,6 +310,12 @@
 		<property name="heroItemCalculations" ref="heroItemCalculations" />
 	</bean>
 	
+	<bean id="unitDetailsUtils" class="momime.common.utils.UnitDetailsUtilsImpl">
+		<property name="playerPickUtils" ref="playerPickUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+	</bean>
+	
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />

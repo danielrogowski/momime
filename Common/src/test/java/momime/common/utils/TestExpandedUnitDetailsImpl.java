@@ -1,9 +1,7 @@
 package momime.common.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -13,11 +11,9 @@ import java.util.Map;
 import org.junit.Test;
 
 import momime.common.MomException;
-import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSkillComponent;
 import momime.common.database.UnitSkillPositiveNegative;
 import momime.common.messages.AvailableUnit;
@@ -156,30 +152,6 @@ public final class TestExpandedUnitDetailsImpl
 		assertEquals (0, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.HERO_ITEMS, UnitSkillPositiveNegative.BOTH).intValue ());
 		assertEquals (0, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.HERO_ITEMS, UnitSkillPositiveNegative.POSITIVE).intValue ());
 		assertEquals (0, xu.filterModifiedSkillValue ("US001", UnitSkillComponent.HERO_ITEMS, UnitSkillPositiveNegative.NEGATIVE).intValue ());
-	}
-	
-	/**
-	 * Tests the getFullFigureCount method
-	 */
-	@Test
-	public final void testGetFullFigureCount ()
-	{
-		// Mock database
-		final UnitEx unitDef = new UnitEx ();
-		
-		// Set up object to test
-		final ExpandedUnitDetailsImpl unit = new ExpandedUnitDetailsImpl (null, unitDef, null, null, null, null, null, null, null, null, null, null, null, null);
-
-		// Run method
-		unitDef.setFigureCount (1);
-		assertEquals (1, unit.getFullFigureCount ());
-
-		unitDef.setFigureCount (4);
-		assertEquals (4, unit.getFullFigureCount ());
-
-		// Hydra
-		unitDef.setFigureCount (9);
-		assertEquals (1, unit.getFullFigureCount ());
 	}
 	
 	/**
@@ -333,46 +305,6 @@ public final class TestExpandedUnitDetailsImpl
 		assertEquals (1, xu.calculateHitPointsRemainingOfFirstFigure ());
 	}
 	
-	/**
-	 * Tests the unitIgnoresCombatTerrain method
-	 * @throws Exception If there is a problem
-	 */
-	@Test
-	public final void testUnitIgnoresCombatTerrain () throws Exception
-	{
-		// Mock database
-		final CommonDatabase db = mock (CommonDatabase.class);
-		
-		final UnitSkillEx skillA = new UnitSkillEx ();
-		when (db.findUnitSkill ("A", "unitIgnoresCombatTerrain")).thenReturn (skillA);
-
-		final UnitSkillEx skillB = new UnitSkillEx ();
-		skillB.setIgnoreCombatTerrain (false);
-		when (db.findUnitSkill ("B", "unitIgnoresCombatTerrain")).thenReturn (skillB);
-
-		final UnitSkillEx skillC = new UnitSkillEx ();
-		skillC.setIgnoreCombatTerrain (true);
-		when (db.findUnitSkill ("C", "unitIgnoresCombatTerrain")).thenReturn (skillC);
-		
-		// Skill list
-		final Map<String, Integer> basicSkillValues = new HashMap<String, Integer> ();
-		basicSkillValues.put ("A", null);
-		basicSkillValues.put ("B", null);
-
-		// Underlying unit
-		final AvailableUnit unit = new AvailableUnit ();
-		
-		// Set up object to test
-		final ExpandedUnitDetailsImpl xu = new ExpandedUnitDetailsImpl (unit, null, null, null, null, null, null, null, null, basicSkillValues, null, null, null, null);
-		
-		// Try with no matching skills
-		assertFalse (xu.unitIgnoresCombatTerrain (db));
-		
-		// Now add one
-		basicSkillValues.put ("C", null);
-		assertTrue (xu.unitIgnoresCombatTerrain (db));
-	}
-
 	/**
 	 * Tests the calculateFullRangedAttackAmmo method
 	 * Its a bit of a dumb test, since its only returning the value straight out of getModifiedSkillValue, but including it to be complete and as a pretest for giveUnitFullRangedAmmoAndMana

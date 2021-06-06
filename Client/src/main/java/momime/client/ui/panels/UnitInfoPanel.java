@@ -68,6 +68,7 @@ import momime.common.database.UnitSkillTypeID;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryMaintainedSpell;
+import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.NumberedHeroItem;
 import momime.common.utils.ExpandedUnitDetails;
@@ -619,10 +620,17 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unitAttributesScrollPane.setVisible (true);
 		unitSkillsScrollPane.setVisible (true);
 
+		// Is the unit in combat?
+		final boolean isInCombat;
+		if (showUnit instanceof MemoryUnit)
+			isInCombat = ((((MemoryUnit) showUnit).getCombatLocation ()) != null);
+		else
+			isInCombat = false;
+		
 		// Find details about this kind of unit
 		building = null;
 		shadingColours = new ArrayList<String> ();
-		unit = getUnitUtils ().expandUnitDetails (showUnit, null, null, null, false, getClient ().getPlayers (),
+		unit = getUnitUtils ().expandUnitDetails (showUnit, null, null, null, isInCombat, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 		// Update language independant labels

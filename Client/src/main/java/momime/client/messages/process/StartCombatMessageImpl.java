@@ -12,6 +12,7 @@ import momime.client.MomClient;
 import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.CreateArtifactUI;
 import momime.client.ui.frames.SpellBookUI;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.common.calculations.UnitCalculations;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.servertoclient.StartCombatMessage;
@@ -67,6 +68,15 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (xu);
+		}
+		
+		// Update any unit info screen that may be open
+		// Do this as a separate pass, as we need to know all the units in the combat to correctly calculate skills as some other unit might give us a bonus
+		for (final StartCombatMessageUnit unitLoc : getUnitPlacement ())
+		{
+			UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unitLoc.getUnitURN ());
+			if (unitInfo != null)
+				unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 		}
 		
 		// Start up the UI

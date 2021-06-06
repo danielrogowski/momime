@@ -18,6 +18,7 @@ import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
+import momime.client.ui.frames.UnitInfoUI;
 import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
@@ -194,6 +195,11 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		// Prompt for it to move
 		if (getCombatPosition () != null)
 			getCombatMapProcessing ().moveToFrontOfList (unit);
+		
+		// Update any unit info screen that may be open
+		UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unit.getUnitURN ());
+		if (unitInfo != null)
+			unitInfo.getUnitInfoPanel ().refreshUnitDetails ();
 	}
 	
 	/**

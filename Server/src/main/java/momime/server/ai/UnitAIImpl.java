@@ -191,20 +191,21 @@ public final class UnitAIImpl implements UnitAI
 				{
 					final List<UnitEx> unitDefs = getServerUnitCalculations ().listUnitsSpellMightSummon (spell, player, trueUnits, db);
 					for (final UnitEx unitDef : unitDefs)
-					{
-						final AvailableUnit unit = new AvailableUnit ();
-						unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
-						unit.setUnitID (unitDef.getUnitID ());
-						
-						getUnitUtils ().initializeUnitSkills (unit, null, db);
-		
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, priv.getFogOfWarMemory (), db);
-						
-						results.add (new AIConstructableUnit (unitDef, null, spell,
-							getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
-							getAiUnitCalculations ().determineAIUnitType (xu),
-							getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
-					}
+						if (!unitDef.getUnitMagicRealm ().equals (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO))
+						{
+							final AvailableUnit unit = new AvailableUnit ();
+							unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
+							unit.setUnitID (unitDef.getUnitID ());
+							
+							getUnitUtils ().initializeUnitSkills (unit, null, db);
+			
+							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, priv.getFogOfWarMemory (), db);
+							
+							results.add (new AIConstructableUnit (unitDef, null, spell,
+								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
+								getAiUnitCalculations ().determineAIUnitType (xu),
+								getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, sd.getSpellSetting (), db)));
+						}
 				}
 		
 		// Sort the results

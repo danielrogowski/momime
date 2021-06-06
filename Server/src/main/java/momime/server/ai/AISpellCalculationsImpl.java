@@ -101,7 +101,7 @@ public final class AISpellCalculationsImpl implements AISpellCalculations
 				unit.setOwningPlayerID (player.getPlayerDescription ().getPlayerID ());
 				unit.setUnitID (unitDef.getUnitID ());
 				
-				getUnitUtils ().initializeUnitSkills (unit, null, db);
+				getUnitUtils ().initializeUnitSkills (unit, 0, db);
 				
 				if (!getAiUnitCalculations ().canAffordUnitMaintenance (player, players, unit, spellSettings, db))
 					ok = false;

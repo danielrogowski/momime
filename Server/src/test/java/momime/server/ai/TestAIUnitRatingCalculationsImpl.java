@@ -25,6 +25,7 @@ import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
+import momime.common.utils.UnitDetailsUtilsImpl;
 import momime.common.utils.UnitUtilsImpl;
 import momime.server.ServerTestData;
 import momime.server.utils.UnitServerUtilsImpl;
@@ -194,8 +195,11 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		unitUtils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
+		unitUtils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
 		unitServerUtils.setUnitUtils (unitUtils);
@@ -246,8 +250,11 @@ public final class TestAIUnitRatingCalculationsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
+		
 		final UnitUtilsImpl unitUtils = new UnitUtilsImpl ();
-		unitUtils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
+		unitUtils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		final UnitServerUtilsImpl unitServerUtils = new UnitServerUtilsImpl ();
 		unitServerUtils.setUnitUtils (unitUtils);

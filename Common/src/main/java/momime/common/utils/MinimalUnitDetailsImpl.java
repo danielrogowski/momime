@@ -208,6 +208,25 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	}
 
 	/**
+	 * @param unitSkillID Unit skill ID to check
+	 * @return Basic unmodified value of this skill, or null for valueless skills such as movement skills; if unit is a hero then skill is multiplied up by their level
+	 * @throws MomException If we call this on a skill that the unit does not have - must verify that the unit has the skill first by calling hasBasicSkill ()
+	 */
+	@Override
+	public final Integer getBasicOrHeroSkillValue (final String unitSkillID) throws MomException
+	{
+		final Integer basicValue = getBasicSkillValue (unitSkillID);
+		final Integer multipliedValue;
+		if ((basicValue == null) || (!isHero ()))
+			multipliedValue = basicValue;
+		else
+			// For heroes, basicValue = 1 for normal skill and 2 for super skill
+			multipliedValue = (basicValue + 1) * (getModifiedExperienceLevel ().getLevelNumber () + 1);
+		
+		return multipliedValue;
+	}
+	
+	/**
 	 * @return Set of all basic skills this unit has
 	 */
 	@Override

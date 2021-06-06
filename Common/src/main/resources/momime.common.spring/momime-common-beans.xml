@@ -318,8 +318,7 @@
 	
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
-		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
-		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="unitDetailsUtils" ref="unitDetailsUtils" />
 	</bean>
 	
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">

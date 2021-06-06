@@ -346,19 +346,19 @@ public final class TestUnitUtilsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("MB01");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("S");
-		when (db.findPick ("MB01", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("MB01"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("S", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("S"), anyString ())).thenReturn (unitType);
 		
 		for (int n = 1; n <= 3; n++)
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+			when (db.findUnitSkill (eq ("US00" + n), anyString ())).thenReturn (new UnitSkillEx ());
 			
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT), anyString ())).thenReturn (new UnitSkillEx ());
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -374,7 +374,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final AvailableUnit unit = new AvailableUnit ();
@@ -393,8 +393,11 @@ public final class TestUnitUtilsImpl
 		}
 
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
@@ -443,19 +446,19 @@ public final class TestUnitUtilsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("MB01");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("S");
-		when (db.findPick ("MB01", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("MB01"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("S", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("S"), anyString ())).thenReturn (unitType);
 		
 		for (int n = 1; n <= 3; n++)
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+			when (db.findUnitSkill (eq ("US00" + n), anyString ())).thenReturn (new UnitSkillEx ());
 			
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT), anyString ())).thenReturn (new UnitSkillEx ());
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -476,7 +479,10 @@ public final class TestUnitUtilsImpl
 		}
 
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, null, mem, db);
@@ -526,14 +532,14 @@ public final class TestUnitUtilsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 		
 		for (int n = 0; n <= 5; n++)
 		{
@@ -559,16 +565,16 @@ public final class TestUnitUtilsImpl
 		}
 		
 		for (int n = 1; n <= 6; n++)
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+			when (db.findUnitSkill (eq ("US00" + n), anyString ())).thenReturn (new UnitSkillEx ());
 		
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE), anyString ())).thenReturn (new UnitSkillEx ());
 		
 		final UnitSpellEffect spellEffect1 = new UnitSpellEffect ();
 		spellEffect1.setUnitSkillID ("US004");
 		
 		final Spell spellDef1 = new Spell ();
 		spellDef1.getUnitSpellEffect ().add (spellEffect1);
-		when (db.findSpell ("SP001", "expandUnitDetails")).thenReturn (spellDef1);
+		when (db.findSpell (eq ("SP001"), anyString ())).thenReturn (spellDef1);
 
 		final UnitSpellEffect spellEffect2 = new UnitSpellEffect ();
 		spellEffect2.setUnitSkillID ("US005");
@@ -576,7 +582,7 @@ public final class TestUnitUtilsImpl
 		
 		final Spell spellDef2 = new Spell ();
 		spellDef2.getUnitSpellEffect ().add (spellEffect2);
-		when (db.findSpell ("SP002", "expandUnitDetails")).thenReturn (spellDef2);
+		when (db.findSpell (eq ("SP002"), anyString ())).thenReturn (spellDef2);
 
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -604,7 +610,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Warlord and Crusade
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -638,10 +644,14 @@ public final class TestUnitUtilsImpl
 		unit.getUnitHasSkill ().add (exp);
 
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		unitDetailsUtils.setMemoryCombatAreaEffectUtils (caeUtils);
+		unitDetailsUtils.setPlayerPickUtils (playerPickUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		utils.setPlayerPickUtils (playerPickUtils);
-		utils.setMemoryCombatAreaEffectUtils (caeUtils);
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
@@ -700,25 +710,25 @@ public final class TestUnitUtilsImpl
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 		
 		// Skill defintions
 		for (final int n : new int [] {2, 5, 6})
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+			when (db.findUnitSkill (eq ("US00" + n), anyString ())).thenReturn (new UnitSkillEx ());
 		
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK), anyString ())).thenReturn (new UnitSkillEx ());
 		
 		final UnitSkillEx skillThatGrantsOthers = new UnitSkillEx ();
 		for (int n = 2; n <= 4; n++)
 			skillThatGrantsOthers.getGrantsSkill ().add ("US00" + n);
-		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (skillThatGrantsOthers);
+		when (db.findUnitSkill (eq ("US001"), anyString ())).thenReturn (skillThatGrantsOthers);
 		
 		final NegatedBySkill negatedByOurs = new NegatedBySkill ();
 		negatedByOurs.setNegatedBySkillID ("US005");
@@ -726,7 +736,7 @@ public final class TestUnitUtilsImpl
 		
 		final UnitSkillEx skillCancelledByOurs = new UnitSkillEx ();
 		skillCancelledByOurs.getNegatedBySkill ().add (negatedByOurs);
-		when (db.findUnitSkill ("US003", "expandUnitDetails")).thenReturn (skillCancelledByOurs);
+		when (db.findUnitSkill (eq ("US003"), anyString ())).thenReturn (skillCancelledByOurs);
 
 		final NegatedBySkill negatedByEnemys = new NegatedBySkill ();
 		negatedByEnemys.setNegatedBySkillID ("US006");
@@ -734,12 +744,12 @@ public final class TestUnitUtilsImpl
 		
 		final UnitSkillEx skillCancelledByEnemys = new UnitSkillEx ();
 		skillCancelledByEnemys.getNegatedBySkill ().add (negatedByEnemys);
-		when (db.findUnitSkill ("US004", "expandUnitDetails")).thenReturn (skillCancelledByEnemys);
+		when (db.findUnitSkill (eq ("US004"), anyString ())).thenReturn (skillCancelledByEnemys);
 		
 		// RAT definition
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setMithrilAndAdamantiumVersions (true);
-		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat);
+		when (db.findRangedAttackType (eq ("RAT01"), anyString ())).thenReturn (rat);
 		
 		// Weapon grade definition
 		final WeaponGrade weaponGrade = new WeaponGrade ();
@@ -751,7 +761,7 @@ public final class TestUnitUtilsImpl
 			weaponGrade.getWeaponGradeSkillBonus ().add (weaponGradeBonus);
 		}
 		
-		when (db.findWeaponGrade (2, "expandUnitDetails")).thenReturn (weaponGrade);
+		when (db.findWeaponGrade (eq (2), anyString ())).thenReturn (weaponGrade);
 
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -767,7 +777,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -804,8 +814,11 @@ public final class TestUnitUtilsImpl
 		}
 		
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, enemyUnits, null, null, false, players, mem, db);
@@ -864,32 +877,32 @@ public final class TestUnitUtilsImpl
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setPickID ("LTN");
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final Pick modifiedMagicRealm = new Pick ();
 		modifiedMagicRealm.setPickID ("LTC");
-		when (db.findPick ("LTC", "expandUnitDetails")).thenReturn (modifiedMagicRealm);
+		when (db.findPick (eq ("LTC"), anyString ())).thenReturn (modifiedMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 		
 		// Skill defintions
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
-		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK), anyString ())).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill (eq ("US001"), anyString ())).thenReturn (new UnitSkillEx ());
 
 		final UnitSkillEx chaosChannels = new UnitSkillEx ();
 		chaosChannels.setChangesUnitToMagicRealm ("LTC");
-		when (db.findUnitSkill ("US002", "expandUnitDetails")).thenReturn (chaosChannels);
+		when (db.findUnitSkill (eq ("US002"), anyString ())).thenReturn (chaosChannels);
 		
 		// RAT definition
 		final RangedAttackTypeEx rat = new RangedAttackTypeEx ();
 		rat.setMithrilAndAdamantiumVersions (false);		// <---
-		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat);
+		when (db.findRangedAttackType (eq ("RAT01"), anyString ())).thenReturn (rat);
 		
 		// Weapon grade definition
 		final WeaponGrade weaponGrade = new WeaponGrade ();
@@ -901,7 +914,7 @@ public final class TestUnitUtilsImpl
 			weaponGrade.getWeaponGradeSkillBonus ().add (weaponGradeBonus);
 		}
 		
-		when (db.findWeaponGrade (2, "expandUnitDetails")).thenReturn (weaponGrade);
+		when (db.findWeaponGrade (eq (2), anyString ())).thenReturn (weaponGrade);
 		
 		// CAE definiton
 		final CombatAreaEffect caeDef = new CombatAreaEffect ();
@@ -934,7 +947,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -960,8 +973,11 @@ public final class TestUnitUtilsImpl
 		unit.getUnitHasSkill ().add (cc);
 		
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
@@ -1015,12 +1031,12 @@ public final class TestUnitUtilsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		// Pick defintions
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 
 		final Pick mergedMagicRealm = new Pick ();
 		mergedMagicRealm.setPickID ("LTUC");
@@ -1028,7 +1044,7 @@ public final class TestUnitUtilsImpl
 		for (final String mergedFromPickID : new String [] {"LTC", "LTU"})
 			mergedMagicRealm.getMergedFromPick ().add (mergedFromPickID);
 		
-		when (db.findPick ("LTUC", "expandUnitDetails")).thenReturn (mergedMagicRealm);
+		when (db.findPick (eq ("LTUC"), anyString ())).thenReturn (mergedMagicRealm);
 		
 		final List<Pick> picks = new ArrayList<Pick> ();
 		picks.add (unitMagicRealm);
@@ -1037,7 +1053,7 @@ public final class TestUnitUtilsImpl
 		
 		// Unit type and experience definition
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 		
 		for (int n = 0; n <= 4; n++)
 		{
@@ -1063,16 +1079,16 @@ public final class TestUnitUtilsImpl
 		// Skill definitions
 		final UnitSkillEx chaosChannels = new UnitSkillEx ();
 		chaosChannels.setChangesUnitToMagicRealm ("LTC");
-		when (db.findUnitSkill ("US001", "expandUnitDetails")).thenReturn (chaosChannels);
+		when (db.findUnitSkill (eq ("US001"), anyString ())).thenReturn (chaosChannels);
 
 		final UnitSkillEx undead = new UnitSkillEx ();
 		undead.setChangesUnitToMagicRealm ("LTU");
-		when (db.findUnitSkill ("US002", "expandUnitDetails")).thenReturn (undead);
+		when (db.findUnitSkill (eq ("US002"), anyString ())).thenReturn (undead);
 		
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE), anyString ())).thenReturn (new UnitSkillEx ());
 		
 		for (final String unitSkillID : new String [] {CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT})
-			when (db.findUnitSkill (unitSkillID, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+			when (db.findUnitSkill (eq (unitSkillID), anyString ())).thenReturn (new UnitSkillEx ());
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1088,7 +1104,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Warlord and Crusade
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
@@ -1118,10 +1134,14 @@ public final class TestUnitUtilsImpl
 		unit.getUnitHasSkill ().add (exp);
 
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		unitDetailsUtils.setMemoryCombatAreaEffectUtils (caeUtils);
+		unitDetailsUtils.setPlayerPickUtils (playerPickUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		utils.setPlayerPickUtils (playerPickUtils);
-		utils.setMemoryCombatAreaEffectUtils (caeUtils);
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
@@ -1176,14 +1196,14 @@ public final class TestUnitUtilsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 		
 		for (int n = 0; n <= 8; n++)
 		{
@@ -1221,7 +1241,7 @@ public final class TestUnitUtilsImpl
 		}
 
 		for (final UnitSkillEx skillDef : unitSkillDefs)
-			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
+			when (db.findUnitSkill (eq (skillDef.getUnitSkillID ()), anyString ())).thenReturn (skillDef);
 		
 		doReturn (unitSkillDefs).when (db).getUnitSkills ();
 		
@@ -1239,7 +1259,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -1270,11 +1290,17 @@ public final class TestUnitUtilsImpl
 		unit.getUnitHasSkill ().add (exp);
 
 		// Set up object to test
-		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
-		utils.setPlayerPickUtils (mock (PlayerPickUtils.class));
-		utils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
+		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 		
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		unitDetailsUtils.setMemoryCombatAreaEffectUtils (mock (MemoryCombatAreaEffectUtils.class));
+		unitDetailsUtils.setPlayerPickUtils (playerPickUtils);
+		
+		final UnitUtilsImpl utils = new UnitUtilsImpl ();
+		utils.setUnitDetailsUtils (unitDetailsUtils);
+		utils.setPlayerPickUtils (playerPickUtils);
+
 		// Test every experience level
 		for (int expLevel = 0; expLevel <= 8; expLevel++)
 		{
@@ -1340,14 +1366,14 @@ public final class TestUnitUtilsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 
 		// The skills that the bonuses add to
 		final List<UnitSkillEx> unitSkillDefs = new ArrayList<UnitSkillEx> ();
@@ -1378,7 +1404,7 @@ public final class TestUnitUtilsImpl
 		}
 
 		for (final UnitSkillEx skillDef : unitSkillDefs)
-			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
+			when (db.findUnitSkill (eq (skillDef.getUnitSkillID ()), anyString ())).thenReturn (skillDef);
 		
 		doReturn (unitSkillDefs).when (db).getUnitSkills ();
 		
@@ -1396,7 +1422,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -1435,8 +1461,11 @@ public final class TestUnitUtilsImpl
 		otherUnit.getUnitHasSkill ().add (otherUnitSkill);
 		
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
@@ -1495,22 +1524,22 @@ public final class TestUnitUtilsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 
 		// Skill definitions
 		for (int n = 1; n <= 9; n++)
-			when (db.findUnitSkill ("US00" + n, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+			when (db.findUnitSkill (eq ("US00" + n), anyString ())).thenReturn (new UnitSkillEx ());
 
 		final UnitSkillEx invulnerabilityDef = new UnitSkillEx ();
 		invulnerabilityDef.getGrantsSkill ().add ("US005");
-		when (db.findUnitSkill ("US010", "expandUnitDetails")).thenReturn (invulnerabilityDef);
+		when (db.findUnitSkill (eq ("US010"), anyString ())).thenReturn (invulnerabilityDef);
 		
 		// Hero item type
 		final HeroItemType heroItemType = new HeroItemType ();
@@ -1529,7 +1558,7 @@ public final class TestUnitUtilsImpl
 		for (int n = 8; n <= 9; n++)
 			heroItemType.getHeroItemTypeAttackType ().add ("US00" + n);
 		
-		when (db.findHeroItemType ("IT01", "expandUnitDetails")).thenReturn (heroItemType);
+		when (db.findHeroItemType (eq ("IT01"), anyString ())).thenReturn (heroItemType);
 		
 		// Imbuable properties
 		for (int n = 1; n <= 4; n++)
@@ -1542,7 +1571,7 @@ public final class TestUnitUtilsImpl
 			
 			final HeroItemBonus imbue = new HeroItemBonus ();
 			imbue.getHeroItemBonusStat ().add (imbueBonus);
-			when (db.findHeroItemBonus ("IB0" + n, "expandUnitDetails")).thenReturn (imbue);
+			when (db.findHeroItemBonus (eq ("IB0" + n), anyString ())).thenReturn (imbue);
 		}
 
 		final HeroItemBonusStat plusAttackBonus = new HeroItemBonusStat ();
@@ -1551,7 +1580,7 @@ public final class TestUnitUtilsImpl
 		
 		final HeroItemBonus plusAttack = new HeroItemBonus ();
 		plusAttack.getHeroItemBonusStat ().add (plusAttackBonus);
-		when (db.findHeroItemBonus ("IB05", "expandUnitDetails")).thenReturn (plusAttack);
+		when (db.findHeroItemBonus (eq ("IB05"), anyString ())).thenReturn (plusAttack);
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1567,7 +1596,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -1599,8 +1628,11 @@ public final class TestUnitUtilsImpl
 		unit.getHeroItemSlot ().add (slot);
 		
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
 		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
@@ -1681,14 +1713,14 @@ public final class TestUnitUtilsImpl
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
 		unitDef.setRangedAttackType ("RAT01");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 
 		// The skills that the bonuses add to
 		final List<UnitSkillEx> unitSkillDefs = new ArrayList<UnitSkillEx> ();
@@ -1742,16 +1774,16 @@ public final class TestUnitUtilsImpl
 		}
 
 		for (final UnitSkillEx skillDef : unitSkillDefs)
-			when (db.findUnitSkill (skillDef.getUnitSkillID (), "expandUnitDetails")).thenReturn (skillDef);
+			when (db.findUnitSkill (eq (skillDef.getUnitSkillID ()), anyString ())).thenReturn (skillDef);
 		
 		doReturn (unitSkillDefs).when (db).getUnitSkills ();
 		
 		// RAT definitions
 		final RangedAttackTypeEx rat1 = new RangedAttackTypeEx ();
-		when (db.findRangedAttackType ("RAT01", "expandUnitDetails")).thenReturn (rat1);
+		when (db.findRangedAttackType (eq ("RAT01"), anyString ())).thenReturn (rat1);
 		
 		final RangedAttackTypeEx rat2 = new RangedAttackTypeEx ();
-		when (db.findRangedAttackType ("RAT02", "expandUnitDetails")).thenReturn (rat2);
+		when (db.findRangedAttackType (eq ("RAT02"), anyString ())).thenReturn (rat2);
 		
 		// Create other lists
 		final FogOfWarMemory mem = new FogOfWarMemory ();
@@ -1767,7 +1799,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Create test unit
 		final MemoryUnit unit = new MemoryUnit ();
@@ -1794,8 +1826,11 @@ public final class TestUnitUtilsImpl
 		}
 
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// If we specify nothing about the type of incoming attack, then only the RAT-based bonus can apply
 		final ExpandedUnitDetails details1 = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
@@ -2051,17 +2086,17 @@ public final class TestUnitUtilsImpl
 		
 		final UnitEx unitDef = new UnitEx ();
 		unitDef.setUnitMagicRealm ("LTN");
-		when (db.findUnit ("UN001", "expandUnitDetails")).thenReturn (unitDef);
+		when (db.findUnit (eq ("UN001"), anyString ())).thenReturn (unitDef);
 		
 		final Pick unitMagicRealm = new Pick ();
 		unitMagicRealm.setUnitTypeID ("N");
-		when (db.findPick ("LTN", "expandUnitDetails")).thenReturn (unitMagicRealm);
+		when (db.findPick (eq ("LTN"), anyString ())).thenReturn (unitMagicRealm);
 		
 		final UnitType unitType = new UnitType ();
 		unitType.setUnitTypeID ("N");
-		when (db.findUnitType ("N", "expandUnitDetails")).thenReturn (unitType);
+		when (db.findUnitType (eq ("N"), anyString ())).thenReturn (unitType);
 
-		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD, "expandUnitDetails")).thenReturn (new UnitSkillEx ());
+		when (db.findUnitSkill (eq (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD), anyString ())).thenReturn (new UnitSkillEx ());
 		
 		// Unit upkeeps
 		final ProductionTypeAndUndoubledValue upkeep1 = new ProductionTypeAndUndoubledValue ();
@@ -2088,7 +2123,7 @@ public final class TestUnitUtilsImpl
 		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
 		
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, owningPd.getPlayerID (), "expandUnitDetails")).thenReturn (owningPlayer);
+		when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (owningPd.getPlayerID ()), anyString ())).thenReturn (owningPlayer);
 		
 		// Upkeep reduction from picks (summoner retort)
 		final PlayerPickUtils pickUtils = mock (PlayerPickUtils.class);
@@ -2103,8 +2138,11 @@ public final class TestUnitUtilsImpl
 		mem.getUnit ().add (unit);
 
 		// Set up object to test
+		final UnitDetailsUtilsImpl unitDetailsUtils = new UnitDetailsUtilsImpl ();
+		unitDetailsUtils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		final UnitUtilsImpl utils = new UnitUtilsImpl ();
-		utils.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		utils.setUnitDetailsUtils (unitDetailsUtils);
 		utils.setPlayerPickUtils (pickUtils);
 		
 		// Upkeep with no modifiers

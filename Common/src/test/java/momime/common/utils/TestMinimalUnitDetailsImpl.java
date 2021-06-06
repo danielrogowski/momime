@@ -92,6 +92,57 @@ public final class TestMinimalUnitDetailsImpl
 	}
 	
 	/**
+	 * Tests the getBasicOrHeroSkillValue method on a hero
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetBasicOrHeroSkillValue_Hero () throws Exception
+	{
+		// Mock database
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_HERO);
+
+		final ExperienceLevel expLevel = new ExperienceLevel ();
+		expLevel.setLevelNumber (3);
+		
+		// Unit skills
+		final Map<String, Integer> basicSkillValues = new HashMap<String, Integer> ();
+		basicSkillValues.put ("A", 2);
+		
+		// Set up object to test
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, expLevel, basicSkillValues);
+		
+		// Call method
+		// Value is doubled so 6, which can check on e.g. Might page of wiki for level 3 hero with Super Might
+		assertEquals (12, mu.getBasicOrHeroSkillValue ("A").intValue ());
+	}
+	
+	/**
+	 * Tests the getBasicOrHeroSkillValue method on a normal unit
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testGetBasicOrHeroSkillValue_Normal () throws Exception
+	{
+		// Mock database
+		final UnitEx unitDef = new UnitEx ();
+		unitDef.setUnitMagicRealm (CommonDatabaseConstants.UNIT_MAGIC_REALM_LIFEFORM_TYPE_ID_NORMAL);
+
+		final ExperienceLevel expLevel = new ExperienceLevel ();
+		expLevel.setLevelNumber (3);
+		
+		// Unit skills
+		final Map<String, Integer> basicSkillValues = new HashMap<String, Integer> ();
+		basicSkillValues.put ("A", 2);
+		
+		// Set up object to test
+		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, expLevel, basicSkillValues);
+		
+		// Call method
+		assertEquals (2, mu.getBasicOrHeroSkillValue ("A").intValue ());
+	}
+	
+	/**
 	 * Tests the getFullFigureCount method on a normal unit
 	 */
 	@Test

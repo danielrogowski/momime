@@ -1001,9 +1001,13 @@
 			<xsd:selector xpath="unitSkill/addsToSkill" />
 			<xsd:field xpath="onlyVersusAttacksFromSkillID" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:pickPK" name="addsToSkillFKpick">
+		<xsd:keyref refer="momimecommon:pickPK" name="addsToSkillFKpick1">
 			<xsd:selector xpath="unitSkill/addsToSkill" />
 			<xsd:field xpath="onlyVersusAttacksFromMagicRealmID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:pickPK" name="addsToSkillFKpick2">
+			<xsd:selector xpath="unitSkill/addsToSkill" />
+			<xsd:field xpath="onlyAppliesToMagicRealmID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:rangedAttackTypePK" name="addsToSkillFKrangedAttackType">
 			<xsd:selector xpath="unitSkill/addsToSkill" />
@@ -2710,6 +2714,14 @@ bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2
 If addsToSkillID is non-null, either addsToSkillDivisor or addsToSkillFixed must be filled in, but not both.  If both are null, the amount of the
 bonus is taken from the numeric value of the skill, e.g. "Resistance to Others 2".</xsd:documentation>
         		</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="onlyAppliesToMagicRealmID" type="momimecommon:pickID" nxe:label="Only applies to Magic Realm/Lifeform Type" nxe:showmaincolumn="false">
+				<xsd:annotation>
+					<xsd:documentation>Bonus only applies to unit with this magic realm.  Only makes sense in conjunction with affectsEntireStack = true.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>pickDescriptionSingular</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="rangedAttackTypeID" type="momimecommon:rangedAttackTypeID" nxe:label="Ranged attack type" nxe:showmaincolumn="false">
 				<xsd:annotation>
@@ -4869,8 +4881,8 @@ which is why it is last in the list, so it will only be healed when all healable
 				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_EFFECTS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="T"><xsd:annotation>
-				<xsd:documentation>Bonus from other skills or spell effects that affect the whole unit stack, e.g. Resistance to All or Holy Bonus</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="SPELL_EFFECTS_STACK" /></xsd:appinfo>
+				<xsd:documentation>Bonus from other skills or spell effects that affect the whole unit stack, e.g. Resistance to All, Holy Bonus or hero Leadership skill</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="STACK" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="C"><xsd:annotation>
 				<xsd:documentation>Bonus from combat area effects, including CAE-type spells, e.g. node auras or prayer</xsd:documentation>

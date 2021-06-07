@@ -69,6 +69,7 @@ public interface DamageCalculator
 	 * @param spell The spell being cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
 	 * @param castingPlayer The player casting the spell
+	 * @param castingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param db Lookup lists built over the XML database
@@ -76,10 +77,11 @@ public interface DamageCalculator
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If there is a problem with the game logic
 	 */
-	public AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage,
-		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
-		throws JAXBException, XMLStreamException, RecordNotFoundException;
+	public AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final ExpandedUnitDetails castingUnit,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException;
 	
 	/**
 	 * Rolls the number of actual hits and blocks for normal "single figure" type damage, where the first figure defends then takes hits, then the

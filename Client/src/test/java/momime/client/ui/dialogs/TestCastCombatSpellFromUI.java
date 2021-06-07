@@ -30,6 +30,7 @@ import momime.common.database.UnitEx;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MemoryUnitHeroItemSlot;
 import momime.common.messages.NumberedHeroItem;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Tests the CastCombatSpellFromUI class
@@ -90,6 +91,10 @@ public final class TestCastCombatSpellFromUI extends ClientTestData
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
 		when (unitClientUtils.getUnitName (unit, UnitNameType.SIMPLE_UNIT_NAME)).thenReturn ("Archangel");
 		
+		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
+		when (xu.getMemoryUnit ()).thenReturn (unit);
+		when (xu.getUnitID ()).thenReturn ("UN001");
+		
 		// Mock fixed spells, and item with spell charges
 		unit.getFixedSpellsRemaining ().add (1);
 		unit.getHeroItemSpellChargesRemaining ().add (-1);
@@ -110,9 +115,9 @@ public final class TestCastCombatSpellFromUI extends ClientTestData
 		// Sample list of casting choices
 		final List<CastCombatSpellFrom> castingSources = new ArrayList<CastCombatSpellFrom> ();
 		castingSources.add (new CastCombatSpellFrom (null, null, null));
-		castingSources.add (new CastCombatSpellFrom (unit, null, null));
-		castingSources.add (new CastCombatSpellFrom (unit, 0, null));
-		castingSources.add (new CastCombatSpellFrom (unit, null, 1));
+		castingSources.add (new CastCombatSpellFrom (xu, null, null));
+		castingSources.add (new CastCombatSpellFrom (xu, 0, null));
+		castingSources.add (new CastCombatSpellFrom (xu, null, 1));
 
 		// Layout
 		final XmlLayoutContainerEx layout = (XmlLayoutContainerEx) createXmlLayoutUnmarshaller ().unmarshal (getClass ().getResource ("/momime.client.ui.frames/SelectAdvisorUI.xml"));

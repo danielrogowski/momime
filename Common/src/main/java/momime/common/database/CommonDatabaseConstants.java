@@ -272,6 +272,9 @@ public final class CommonDatabaseConstants
 	/** Hero contributes to wizard's research */
 	public final static String UNIT_SKILL_ID_SAGE = "HS14";
 
+	/** Hero item skill that penalises target's resistance attribute by the specified amount */
+	public final static String UNIT_SKILL_ID_SAVING_THROW_PENALTY = "HS15";
+	
 	/**
 	 * Special code used for hero item bonuses, meaning "type(s) of attack appropriate for the type of weapon", so is used to differentiate
 	 * that for example an Sword of Illuisonary Attack being wielded by a hero with a Thrown Attack affects his regular melee hits only, and not

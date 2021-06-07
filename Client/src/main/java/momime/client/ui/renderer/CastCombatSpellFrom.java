@@ -1,6 +1,6 @@
 package momime.client.ui.renderer;
 
-import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandedUnitDetails;
 
 /**
  * Combat spells can either be cast from the wizard's own MP pool, the MP pool of some units or heroes (e.g. Archangels can cast life magic),
@@ -10,7 +10,7 @@ import momime.common.messages.MemoryUnit;
 public final class CastCombatSpellFrom
 {
 	/** The unit casting the spell, if casting from their own MP poor or a hero item; null if the wizard is casting the spell */
-	private final MemoryUnit castingUnit; 
+	private final ExpandedUnitDetails castingUnit; 
 	
 	/** Index into the list of fixed spells that this unit can cast, e.g. Giant Spiders casting Web; null for all other casting types */
 	private final Integer fixedSpellNumber;
@@ -23,7 +23,7 @@ public final class CastCombatSpellFrom
 	 * @param aFixedSpellNumber Index into the list of fixed spells that this unit can cast, e.g. Giant Spiders casting Web; null for all other casting types
 	 * @param aHeroItemSlotNumber Slot number of the item the hero is casting a spell charge from; null for all other casting types
 	 */
-	public CastCombatSpellFrom (final MemoryUnit aCastingUnit, final Integer aFixedSpellNumber, final Integer aHeroItemSlotNumber)
+	public CastCombatSpellFrom (final ExpandedUnitDetails aCastingUnit, final Integer aFixedSpellNumber, final Integer aHeroItemSlotNumber)
 	{
 		castingUnit = aCastingUnit;
 		fixedSpellNumber = aFixedSpellNumber;
@@ -33,7 +33,7 @@ public final class CastCombatSpellFrom
 	/**
 	 * @return The unit casting the spell, if casting from their own MP poor or a hero item; null if the wizard is casting the spell
 	 */
-	public final MemoryUnit getCastingUnit () 
+	public final ExpandedUnitDetails getCastingUnit () 
 	{
 		return castingUnit;
 	}

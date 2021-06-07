@@ -263,6 +263,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @param spell The spell being cast
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt
 	 * @param castingPlayer The player casting the spell
+	 * @param castingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param db Lookup lists built over the XML database
@@ -270,15 +271,26 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
+	 * @throws MomException If there is a problem with the game logic
 	 */
 	@Override
-	public final AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage,
-		final PlayerServerDetails castingPlayer, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
-		throws JAXBException, XMLStreamException, RecordNotFoundException
+	public final AttackDamage attackFromSpell (final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, final ExpandedUnitDetails castingUnit,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, MomException
 	{
 		// Work out damage done - note this isn't applicable to all types of attack, e.g. Warp Wood has no attack value, so we might get null here
-		final Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
+		Integer damage = (variableDamage != null) ? variableDamage : spell.getCombatBaseDamage ();
 		final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "attackFromSpell");
+
+		// For spells that roll against resistance, add on any -spell save from hero items
+		// RESISTANCE_ROLLS is intentionally excluded, as for that "damage" a.k.a. "potentialHits" is the number of rolls to me - so can't modify this by the saving throw penalty
+		if ((castingUnit != null) && (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY)) &&
+			((spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.EACH_FIGURE_RESIST_OR_DIE) ||
+				(spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.SINGLE_FIGURE_RESIST_OR_DIE) ||
+				(spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.RESIST_OR_TAKE_DAMAGE) ||
+				(spell.getAttackSpellDamageResolutionTypeID () == DamageResolutionTypeID.DISINTEGRATE)))
+			
+			damage = ((damage == null) ? 0 : damage) + castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY);
 		
 		// Start breakdown message
 		final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();

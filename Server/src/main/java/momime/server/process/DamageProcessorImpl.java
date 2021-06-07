@@ -136,8 +136,18 @@ public final class DamageProcessorImpl implements DamageProcessor
 		
 		// If its a spell, we work out the kind of damage dealt once only (so it only appears in the client message log once)
 		// If its a regular attribute-based attack, damage is worked out inside each resolution step.
-		final AttackDamage commonPotentialDamageToDefenders = (spell == null) ? null :
-			getDamageCalculator ().attackFromSpell (spell, variableDamage, castingPlayer, attackingPlayer, defendingPlayer, mom.getServerDB ());
+		final AttackDamage commonPotentialDamageToDefenders;
+		if (spell == null)
+			commonPotentialDamageToDefenders = null;
+		else
+		{
+			final ExpandedUnitDetails xuAttacker = (attacker == null) ? null : 
+				getUnitUtils ().expandUnitDetails (attacker, null, null, null, true,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+
+			commonPotentialDamageToDefenders = getDamageCalculator ().attackFromSpell
+				(spell, variableDamage, castingPlayer, xuAttacker, attackingPlayer, defendingPlayer, mom.getServerDB ());
+		}
 		
 		// Process our attack against each defender
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();

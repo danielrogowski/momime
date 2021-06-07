@@ -174,7 +174,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			msg = null;
 		
 		// Validation checks about who is casting it (wizard or a unit)
-		MemoryUnit combatCastingUnit = null;
+		ExpandedUnitDetails xuCombatCastingUnit = null;
 		if (msg == null)
 		{
 			final SpellResearchStatusID researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spellID).getStatus ();
@@ -194,7 +194,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			else
 			{
 				// Unit or hero casting
-				combatCastingUnit = getUnitUtils ().findUnitURN (combatCastingUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+				final MemoryUnit combatCastingUnit = getUnitUtils ().findUnitURN (combatCastingUnitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 				if (combatCastingUnit == null)
 					msg = "Cannot find the unit who is trying to cast a spell.";
 				
@@ -210,7 +210,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 				else
 				{
-					final ExpandedUnitDetails xuCombatCastingUnit = getUnitUtils ().expandUnitDetails (combatCastingUnit, null, null, null, (combatLocation != null),
+					xuCombatCastingUnit = getUnitUtils ().expandUnitDetails (combatCastingUnit, null, null, null, (combatLocation != null),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					if (combatCastingFixedSpellNumber != null)
@@ -296,7 +296,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			if (!combatPlayers.bothFound ())
 				msg = "You cannot cast combat spells if one side has been wiped out in the combat.";
 			
-			else if (combatCastingUnit == null)
+			else if (xuCombatCastingUnit == null)
 			{
 				// Validate wizard casting
 				if ((gc.isSpellCastThisCombatTurn () != null) && (gc.isSpellCastThisCombatTurn ()))
@@ -351,7 +351,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				reducedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, pub.getPick ());
 				multipliedManaCost = reducedCombatCastingCost;
 				
-				if (multipliedManaCost > combatCastingUnit.getManaRemaining ())
+				if (multipliedManaCost > xuCombatCastingUnit.getManaRemaining ())
 					msg = "This unit or hero doesn't have enough mana remaining to cast the spell.";
 			}
 			
@@ -377,7 +377,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, combatLocation, player.getPlayerDescription ().getPlayerID (), variableDamage, xu,
+						(spell, combatLocation, player.getPlayerDescription ().getPlayerID (), xuCombatCastingUnit, variableDamage, xu,
 						mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					if (validTarget != TargetSpellResult.VALID_TARGET)
@@ -460,7 +460,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 			// Cast combat spell
 			// Always cast instantly
 			// If its a spell where we need to choose a target and/or additional mana, the client will already have done so
-			combatEnded = getSpellProcessing ().castCombatNow (player, combatCastingUnit, combatCastingFixedSpellNumber, combatCastingSlotNumber, spell,
+			combatEnded = getSpellProcessing ().castCombatNow (player, xuCombatCastingUnit, combatCastingFixedSpellNumber, combatCastingSlotNumber, spell,
 				reducedCombatCastingCost, multipliedManaCost, variableDamage, combatLocation,
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				combatTargetUnit, combatTargetLocation, mom);

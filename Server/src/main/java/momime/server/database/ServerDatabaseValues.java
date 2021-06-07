@@ -65,11 +65,6 @@ public final class ServerDatabaseValues
 	/** Limit ranged attack distance penalty to -10% */ 
 	public final static String UNIT_SKILL_ID_LONG_RANGE = "US125";
 	
-	// hero skills
-
-	/** Hero item skill that penalises target's resistance attribute by the specified amount */
-	public final static String UNIT_SKILL_ID_SAVING_THROW_PENALTY = "HS15";
-	
 	// damage types
 	
 	/** Life stealing / create undead damage */

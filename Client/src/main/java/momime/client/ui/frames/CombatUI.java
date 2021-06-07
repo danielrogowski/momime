@@ -552,7 +552,7 @@ public final class CombatUI extends MomClientFrameUI
 											variableDamage = null;
 										
 										validTarget = (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-											(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), variableDamage,
+											(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
 												xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 												getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 									}
@@ -1059,7 +1059,7 @@ public final class CombatUI extends MomClientFrameUI
 										variableDamage = null;
 									
 									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), variableDamage,
+										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
 										xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
@@ -1372,20 +1372,21 @@ public final class CombatUI extends MomClientFrameUI
 			(getSelectedUnitInCombat ().getDoubleCombatMovesLeft () > 0))
 		{
 			// Unit or hero casting from their own MP pool
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (getSelectedUnitInCombat (), null, null, null, true,
+			final ExpandedUnitDetails castingUnit = getUnitUtils ().expandUnitDetails (getSelectedUnitInCombat (), null, null, null, true,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			if ((getSelectedUnitInCombat ().getManaRemaining () > 0) &&
-				(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)) || (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)))
+				(castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)) ||
+					(castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT)))
 				
-				sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), null, null));
+				sources.add (new CastCombatSpellFrom (castingUnit, null, null));
 			
 			// Units with fixed spells, e.g. Giant Spiders casting Web
 			int spellNumber = 0;
 			for (final Integer casts : getSelectedUnitInCombat ().getFixedSpellsRemaining ())
 			{
 				if ((casts != null) && (casts > 0))
-					sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), spellNumber, null));
+					sources.add (new CastCombatSpellFrom (castingUnit, spellNumber, null));
 				
 				spellNumber++;
 			}
@@ -1395,7 +1396,7 @@ public final class CombatUI extends MomClientFrameUI
 			for (final Integer charges : getSelectedUnitInCombat ().getHeroItemSpellChargesRemaining ())
 			{
 				if ((charges != null) && (charges > 0))
-					sources.add (new CastCombatSpellFrom (getSelectedUnitInCombat (), null, slotNumber));
+					sources.add (new CastCombatSpellFrom (castingUnit, null, slotNumber));
 				
 				slotNumber++;
 			}
@@ -1444,7 +1445,7 @@ public final class CombatUI extends MomClientFrameUI
 			// Casting spell imbued into hero item - don't need to show spell book to ask which spell to pick, so just cast it directly
 			else if (castingSource.getHeroItemSlotNumber () != null)
 			{
-				final String spellID = castingSource.getCastingUnit ().getHeroItemSlot ().get (castingSource.getHeroItemSlotNumber ()).getHeroItem ().getSpellID ();
+				final String spellID = castingSource.getCastingUnit ().getMemoryUnit ().getHeroItemSlot ().get (castingSource.getHeroItemSlotNumber ()).getHeroItem ().getSpellID ();
 				spellBookUI.castSpell (getClient ().getClientDB ().findSpell (spellID, "setCastingSource-I"), null, null);
 			}
 			

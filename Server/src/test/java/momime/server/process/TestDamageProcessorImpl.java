@@ -523,7 +523,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final DamageCalculator calc = mock (DamageCalculator.class);
 		final DamageType damageType = new DamageType (); 
 		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
-		when (calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
+		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
 
 		// Damage taken
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (1);
@@ -694,7 +694,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final DamageCalculator calc = mock (DamageCalculator.class);
 		final DamageType damageType = new DamageType ();
 		final AttackDamage spellDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
-		when (calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
+		when (calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db)).thenReturn (spellDamage);
 
 		// Damage taken
 		when (xuDefender1.calculateAliveFigureCount ()).thenReturn (1);

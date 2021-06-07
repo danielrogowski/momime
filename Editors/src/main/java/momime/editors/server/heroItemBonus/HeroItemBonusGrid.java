@@ -22,7 +22,6 @@ import com.ndg.xmleditor.editor.XmlEditorException;
 import momime.common.database.CommonDatabaseConstants;
 import momime.editors.grid.MoMEditorGridWithImport;
 import momime.editors.server.ServerEditorDatabaseConstants;
-import momime.server.database.ServerDatabaseValues;
 
 /**
  * Allows importing data on hero item bonuses (e.g. +1 Attack, -5 Spell Save, Holy Avenger) from original MoM LBXes
@@ -33,7 +32,7 @@ public final class HeroItemBonusGrid extends MoMEditorGridWithImport
 	private final static String [] POWER_TYPE_SKILL_ID = new String []
 		{CommonDatabaseConstants.UNIT_SKILL_ID_ATTACK_APPROPRIATE_FOR_TYPE_OF_HERO_ITEM, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT,
 		CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE, CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT,
-		ServerDatabaseValues.UNIT_SKILL_ID_SAVING_THROW_PENALTY,
+		CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY,
 		CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE};
 	
 	/**

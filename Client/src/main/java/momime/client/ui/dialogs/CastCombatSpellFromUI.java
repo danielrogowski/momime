@@ -181,25 +181,25 @@ public final class CastCombatSpellFromUI extends MomClientDialogUI
 
 					final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (spellID, "CastCombatSpellFromUI").getSpellName ());
 
-					text = getUnitClientUtils ().getUnitName (castingSourceAction.getKey ().getCastingUnit (), UnitNameType.SIMPLE_UNIT_NAME) + " - " +
-						castingSourceAction.getKey ().getCastingUnit ().getFixedSpellsRemaining ().get
+					text = getUnitClientUtils ().getUnitName (castingSourceAction.getKey ().getCastingUnit ().getMemoryUnit (), UnitNameType.SIMPLE_UNIT_NAME) + " - " +
+						castingSourceAction.getKey ().getCastingUnit ().getMemoryUnit ().getFixedSpellsRemaining ().get
 							(castingSourceAction.getKey ().getFixedSpellNumber ()) + "x " + spellName;
 				}
 				
 				// Casting spell imbued in a hero item
 				else if (castingSourceAction.getKey ().getHeroItemSlotNumber () != null)
 				{
-					final NumberedHeroItem item = castingSourceAction.getKey ().getCastingUnit ().getHeroItemSlot ().get
+					final NumberedHeroItem item = castingSourceAction.getKey ().getCastingUnit ().getMemoryUnit ().getHeroItemSlot ().get
 						(castingSourceAction.getKey ().getHeroItemSlotNumber ()).getHeroItem ();
 
 					final String spellName = getLanguageHolder ().findDescription (getClient ().getClientDB ().findSpell (item.getSpellID (), "CastCombatSpellFromUI").getSpellName ());
 					
-					text = item.getHeroItemName () + " - " + castingSourceAction.getKey ().getCastingUnit ().getHeroItemSpellChargesRemaining ().get
+					text = item.getHeroItemName () + " - " + castingSourceAction.getKey ().getCastingUnit ().getMemoryUnit ().getHeroItemSpellChargesRemaining ().get
 						(castingSourceAction.getKey ().getHeroItemSlotNumber ()) + "x " + spellName;
 				}
 				else
 					// Hero or unit casting from their own MP pool
-					text = getUnitClientUtils ().getUnitName (castingSourceAction.getKey ().getCastingUnit (), UnitNameType.SIMPLE_UNIT_NAME);
+					text = getUnitClientUtils ().getUnitName (castingSourceAction.getKey ().getCastingUnit ().getMemoryUnit (), UnitNameType.SIMPLE_UNIT_NAME);
 				
 				castingSourceAction.getValue ().putValue (Action.NAME, text);
 			}

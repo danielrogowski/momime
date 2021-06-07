@@ -17,6 +17,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
+import momime.common.utils.ExpandedUnitDetails;
 import momime.server.MomSessionVariables;
 
 /**
@@ -47,7 +48,7 @@ public interface SpellProcessing
 	 * or both (like Firebolt), then the client will already have done all this and supplied us with the chosen values.
 	 * 
 	 * @param castingPlayer Player who is casting the spell
-	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
+	 * @param xuCombatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param combatCastingFixedSpellNumber For casting fixed spells the unit knows (e.g. Giant Spiders casting web), indicates the spell number; for other types of casting this is null
 	 * @param combatCastingSlotNumber For casting spells imbued into hero items, this is the number of the slot (0, 1 or 2); for other types of casting this is null
 	 * @param spell Which spell they want to cast
@@ -67,7 +68,7 @@ public interface SpellProcessing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public boolean castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final Integer combatCastingFixedSpellNumber,
+	public boolean castCombatNow (final PlayerServerDetails castingPlayer, final ExpandedUnitDetails xuCombatCastingUnit, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)

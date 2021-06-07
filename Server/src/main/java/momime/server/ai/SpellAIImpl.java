@@ -375,7 +375,7 @@ public final class SpellAIImpl implements SpellAI
 									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false,
 										mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 									if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
-										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, player.getPlayerDescription ().getPlayerID (), null, xu,
+										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, player.getPlayerDescription ().getPlayerID (), null, null, xu,
 											priv.getFogOfWarMemory (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 										
 										validTargetFound = true;
@@ -501,7 +501,7 @@ public final class SpellAIImpl implements SpellAI
 					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false,
 						mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
-						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, player.getPlayerDescription ().getPlayerID (), null, xu,
+						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, player.getPlayerDescription ().getPlayerID (), null, null, xu,
 							priv.getFogOfWarMemory (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET))
 					{
 						int thisUnitRating = getAiUnitCalculations ().calculateUnitAverageRating (xu.getUnit (), xu, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
@@ -570,8 +570,8 @@ public final class SpellAIImpl implements SpellAI
 	 * @throws MomException If there are any issues with data or calculation logic
 	 */
 	@Override
-	public final CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation,
-		final MomSessionVariables mom)
+	public final CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
+		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
@@ -734,7 +734,7 @@ public final class SpellAIImpl implements SpellAI
 										System.out.println ("Here");
 									
 									if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, player.getPlayerDescription ().getPlayerID (),
-										null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+										combatCastingUnit, null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 									{
 										if (targetCount == null)
 										{

@@ -688,8 +688,11 @@ public final class SpellBookUI extends MomClientFrameUI
 		final PlayerPublicDetails ourPlayer = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getClient ().getOurPlayerID (), "clickSpell");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
-		final boolean unitCasting = (getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null) &&
-			(getCombatUI ().getCastingSource ().getCastingUnit () != null);
+		final ExpandedUnitDetails castingUnit;
+		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null))
+			castingUnit = getCombatUI ().getCastingSource ().getCastingUnit ();
+		else
+			castingUnit = null;
 		
 		// Look up name
 		final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
@@ -698,7 +701,7 @@ public final class SpellBookUI extends MomClientFrameUI
 		final boolean proceed;
 		final List<MemoryUnit> deadUnits = new ArrayList<MemoryUnit> ();
 		if ((spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_RETURN)) ||
-			((pub.getWizardState () != WizardState.ACTIVE) && (!unitCasting)))
+			((pub.getWizardState () != WizardState.ACTIVE) && (castingUnit == null)))
 			
 			proceed = false;
 		else if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () == null))
@@ -753,7 +756,7 @@ public final class SpellBookUI extends MomClientFrameUI
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, xu,
+						(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), castingUnit, null, xu,
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
 						
 						found = true;
@@ -844,7 +847,7 @@ public final class SpellBookUI extends MomClientFrameUI
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
-						(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), null, xu,
+						(spell, getCombatUI ().getCombatLocation (), getClient ().getOurPlayerID (), castingUnit, null, xu,
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET)
 						
 						deadUnits.add (thisUnit);
@@ -1016,8 +1019,7 @@ public final class SpellBookUI extends MomClientFrameUI
 			// Units with the caster skill (Archangels, Efreets and Djinns) cast spells from their magic realm, totally ignoring whatever spells their controlling wizard knows.
 			// Using getModifiedUnitMagicRealmLifeformTypeID makes this account for them casting Death spells instead if you get an undead Archangel or similar.
 			// overrideMaximumMP isn't essential, but there's no point us listing spells in the spell book that the unit doesn't have enough MP to cast.
-			final ExpandedUnitDetails castingUnit = getUnitUtils ().expandUnitDetails (getCombatUI ().getCastingSource ().getCastingUnit (), null, null, null, true,
-				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+			final ExpandedUnitDetails castingUnit = getCombatUI ().getCastingSource ().getCastingUnit ();
 
 			if (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT))
 				overrideMaximumMP = castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_UNIT);
@@ -1366,8 +1368,9 @@ public final class SpellBookUI extends MomClientFrameUI
 	 * or can be taken from the unit's MP pool.
 	 * 
 	 * @return Highest MP cost of combat spell that we can cast
+	 * @throws MomException If the unit whose details we are storing is not a MemoryUnit 
 	 */
-	public final int getCombatMaxCastable ()
+	public final int getCombatMaxCastable () throws MomException
 	{
 		final int maxCastable;
 		

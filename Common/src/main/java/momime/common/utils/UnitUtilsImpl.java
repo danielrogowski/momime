@@ -63,7 +63,8 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * So the two that are left, that we must treat differently, are + to hit and + to block.  Most units don't have those values defined, but bonuses definitely still apply.
 	 */
 	private final static String [] SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL = new String []
-		{CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK};
+		{CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
+		 CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY};
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;

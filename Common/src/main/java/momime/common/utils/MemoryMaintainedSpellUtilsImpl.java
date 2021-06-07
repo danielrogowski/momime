@@ -241,8 +241,9 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 * @param spell Spell being cast
 	 * @param combatLocation The location that the combat is taking place; null for targetting overland spells
 	 * @param castingPlayerID Player casting the spell
+	 * @param castingUnit Unit casting the spell, if its a hero casting a spell or using a spell imbued into an item, or a creature like Giant Spiders casting web; null if wizard casting
 	 * @param variableDamage The damage chosen, for spells where variable mana can be channeled into casting them, e.g. fire bolt; or null if the attack isn't coming from a spell
-	 * @param unit Unit to cast the spell on
+	 * @param targetUnit Unit to cast the spell on
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
 	 * @return VALID_TARGET, or an enum value indicating why it isn't a valid target
@@ -252,42 +253,42 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	 */
 	@Override
 	public final TargetSpellResult isUnitValidTargetForSpell (final Spell spell, final MapCoordinates3DEx combatLocation,
-		final int castingPlayerID, final Integer variableDamage, final ExpandedUnitDetails unit,
+		final int castingPlayerID, final ExpandedUnitDetails castingUnit, final Integer variableDamage, final ExpandedUnitDetails targetUnit,
 		final FogOfWarMemory mem, final CommonDatabase db) throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
     	final TargetSpellResult result;
-    	final int unitURN = unit.getUnitURN ();
+    	final int targetUnitURN = targetUnit.getUnitURN ();
     	
     	// Simpify identifying some kinds of spells so don't have to repeat this all over the place
     	final boolean raiseDead = (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getResurrectedHealthPercentage () != null);
     	final boolean healingSpell = (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null);
     	
     	// If we're trying to cast a combat spell, then the unit must be in the right combat
-    	if ((combatLocation != null) && ((!combatLocation.equals (unit.getCombatLocation ())) ||
-    		(unit.getCombatPosition () == null) || (unit.getCombatSide () == null) || (unit.getCombatHeading () == null)))
+    	if ((combatLocation != null) && ((!combatLocation.equals (targetUnit.getCombatLocation ())) ||
+    		(targetUnit.getCombatPosition () == null) || (targetUnit.getCombatSide () == null) || (targetUnit.getCombatHeading () == null)))
     		
     		result = TargetSpellResult.UNIT_NOT_IN_EXPECTED_COMBAT;
     	
     	// For anything other than raise dead-type spell, target unit must be alive
-    	else if ((!raiseDead) && (unit.getStatus () != UnitStatusID.ALIVE))
+    	else if ((!raiseDead) && (targetUnit.getStatus () != UnitStatusID.ALIVE))
     		result = TargetSpellResult.UNIT_DEAD;
 
     	// For raise dead-type spells, target unit must be dead
-    	else if ((raiseDead) && (unit.getStatus () != UnitStatusID.DEAD))
+    	else if ((raiseDead) && (targetUnit.getStatus () != UnitStatusID.DEAD))
        		result = TargetSpellResult.UNIT_NOT_DEAD;
     	
     	// Casting something beneficial on an enemy unit
     	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)) &&
-    		(unit.getOwningPlayerID () != castingPlayerID))
+    		(targetUnit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.ENCHANTING_OR_HEALING_ENEMY; 
 
     	// Casting something nasty on a friendly unit
     	else if (((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) || (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)) &&
-    		(unit.getOwningPlayerID () == castingPlayerID))
+    		(targetUnit.getOwningPlayerID () == castingPlayerID))
     		result = TargetSpellResult.CURSING_OR_ATTACKING_OWN;
     	
     	// Trying to raise dead an enemy unit with a spell that doesn't explicitly allow this
-    	else if ((raiseDead) && ((spell.isResurrectEnemyUnits () == null) || (!spell.isResurrectEnemyUnits ())) && (unit.getOwningPlayerID () != castingPlayerID))
+    	else if ((raiseDead) && ((spell.isResurrectEnemyUnits () == null) || (!spell.isResurrectEnemyUnits ())) && (targetUnit.getOwningPlayerID () != castingPlayerID))
     		result = TargetSpellResult.RAISING_ENEMY;
     	
     	else
@@ -296,25 +297,25 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		final boolean unitSpellEffectRequired = (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) ||
     			(spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES);
     		
-    		final List<String> unitSpellEffectIDs = listUnitSpellEffectsNotYetCastOnUnit (mem.getMaintainedSpell (), spell, castingPlayerID, unit.getUnitURN ());
+    		final List<String> unitSpellEffectIDs = listUnitSpellEffectsNotYetCastOnUnit (mem.getMaintainedSpell (), spell, castingPlayerID, targetUnitURN);
     		if ((unitSpellEffectRequired) && (unitSpellEffectIDs == null))
     			result = TargetSpellResult.NO_SPELL_EFFECT_IDS_DEFINED;
     		
     		else if ((unitSpellEffectRequired) && (unitSpellEffectIDs.size () == 0))
     			result = TargetSpellResult.ALREADY_HAS_ALL_POSSIBLE_SPELL_EFFECTS;
     		
-    		else if (!getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell, unit.getModifiedUnitMagicRealmLifeformType ().getPickID ()))
+    		else if (!getSpellUtils ().spellCanTargetMagicRealmLifeformType (spell, targetUnit.getModifiedUnitMagicRealmLifeformType ().getPickID ()))
     			result = TargetSpellResult.UNIT_INVALID_MAGIC_REALM_LIFEFORM_TYPE;
     		
     		// combatBaseDamage being not null is what identifies a special unit spell to be a healing spell
-    		else if ((healingSpell) && (getUnitUtils ().getTotalDamageTaken (unit.getUnitDamage ()) == 0)) 
+    		else if ((healingSpell) && (getUnitUtils ().getTotalDamageTaken (targetUnit.getUnitDamage ()) == 0)) 
     			result = TargetSpellResult.UNDAMAGED;
 
-    		else if ((healingSpell) && (getUnitUtils ().getHealableDamageTaken (unit.getUnitDamage ()) == 0))
+    		else if ((healingSpell) && (getUnitUtils ().getHealableDamageTaken (targetUnit.getUnitDamage ()) == 0))
     			result = TargetSpellResult.PERMANENTLY_DAMAGED;
     		
     		else if ((spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS) &&
-    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == unitURN) && (s.getCastingPlayerID () != castingPlayerID))))
+    			(mem.getMaintainedSpell ().stream ().noneMatch (s -> (s.getUnitURN () != null) && (s.getUnitURN () == targetUnitURN) && (s.getCastingPlayerID () != castingPlayerID))))
     			result = TargetSpellResult.NOTHING_TO_DISPEL;
     		
     		else if ((spell.getSpellBookSectionID () != SpellBookSectionID.ATTACK_SPELLS) || (combatLocation == null))
@@ -324,7 +325,7 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
     		{
     			// Combat attack spell - immunity skill?
     			final DamageType damageType = db.findDamageType (spell.getAttackSpellDamageTypeID (), "isUnitValidTargetForSpell");
-    			if (unit.isUnitImmuneToDamageType (damageType))
+    			if (targetUnit.isUnitImmuneToDamageType (damageType))
     				result = TargetSpellResult.IMMUNE;
     			else
 	    			// Immune due to resistance?
@@ -336,15 +337,20 @@ public final class MemoryMaintainedSpellUtilsImpl implements MemoryMaintainedSpe
 	    				case RESISTANCE_ROLLS:
 	    				case DISINTEGRATE:
 	    					// Units with 10 or more resistance are immune to spells that roll against resistance
-	    					// First need to take into account if there's a saving throw modifier, NB. Resistance rolls damage allows no saving throw modifier
-	    					int resistance = Math.max (0, unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE));
+	    					// First need to take into account if there's a saving throw modifier
+	    					// NB. Resistance rolls damage allows no saving throw modifier because in this case, the skill value represents the number of rolls to make
+	    					int resistance = Math.max (0, targetUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE));
 	    					if (spell.getAttackSpellDamageResolutionTypeID () != DamageResolutionTypeID.RESISTANCE_ROLLS)
 	    					{
 	    						final Integer savingThrowModifier = ((spell.getCombatMaxDamage () == null) || (variableDamage == null)) ? spell.getCombatBaseDamage () : variableDamage;
 	    						if (savingThrowModifier != null)
 	    							resistance = resistance - savingThrowModifier;
+
+		    					// Heroes with -spell save items
+		    					if ((castingUnit != null) && (castingUnit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY)))
+		    						resistance = resistance - castingUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY);
 	    					}
-	    						
+	    					
 	    					if (resistance >= 10)
 	    						result = TargetSpellResult.TOO_HIGH_RESISTANCE;
 	    					else

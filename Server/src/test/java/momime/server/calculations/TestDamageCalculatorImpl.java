@@ -597,7 +597,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		final PlayerServerDetails castingPlayer = attackingPlayer;
-		final AttackDamage dmg = calc.attackFromSpell (spell, null, castingPlayer, attackingPlayer, defendingPlayer, db);
+		final AttackDamage dmg = calc.attackFromSpell (spell, null, castingPlayer, null, attackingPlayer, defendingPlayer, db);
 		
 		// Check results
 		assertEquals (12, dmg.getPotentialHits ().intValue ());
@@ -667,7 +667,7 @@ public final class TestDamageCalculatorImpl
 		
 		// Run test
 		final PlayerServerDetails castingPlayer = attackingPlayer;
-		final AttackDamage dmg = calc.attackFromSpell (spell, 20, castingPlayer, attackingPlayer, defendingPlayer, db);
+		final AttackDamage dmg = calc.attackFromSpell (spell, 20, castingPlayer, null, attackingPlayer, defendingPlayer, db);
 		
 		// Check results
 		assertEquals (20, dmg.getPotentialHits ().intValue ());

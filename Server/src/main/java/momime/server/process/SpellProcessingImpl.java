@@ -362,7 +362,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * or both (like Firebolt), then the client will already have done all this and supplied us with the chosen values.
 	 * 
 	 * @param castingPlayer Player who is casting the spell
-	 * @param combatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
+	 * @param xuCombatCastingUnit Unit who is casting the spell; null means its the wizard casting, rather than a specific unit
 	 * @param combatCastingFixedSpellNumber For casting fixed spells the unit knows (e.g. Giant Spiders casting web), indicates the spell number; for other types of casting this is null
 	 * @param combatCastingSlotNumber For casting spells imbued into hero items, this is the number of the slot (0, 1 or 2); for other types of casting this is null
 	 * @param spell Which spell they want to cast
@@ -383,7 +383,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final boolean castCombatNow (final PlayerServerDetails castingPlayer, final MemoryUnit combatCastingUnit, final Integer combatCastingFixedSpellNumber,
+	public final boolean castCombatNow (final PlayerServerDetails castingPlayer, final ExpandedUnitDetails xuCombatCastingUnit, final Integer combatCastingFixedSpellNumber,
 		final Integer combatCastingSlotNumber, final Spell spell, final int reducedCombatCastingCost, final int multipliedManaCost,
 		final Integer variableDamage, final MapCoordinates3DEx combatLocation, final PlayerServerDetails defendingPlayer, final PlayerServerDetails attackingPlayer,
 		final MemoryUnit targetUnit, final MapCoordinates2DEx targetLocation, final MomSessionVariables mom)
@@ -411,7 +411,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		boolean immuneToCounterMagic = false;
 		if (combatCastingFixedSpellNumber != null)
 		{
-			final Unit unitDef = mom.getServerDB ().findUnit (combatCastingUnit.getUnitID (), "castCombatNow");
+			final Unit unitDef = mom.getServerDB ().findUnit (xuCombatCastingUnit.getUnitID (), "castCombatNow");
 			final UnitCanCast unitCanCast = unitDef.getUnitCanCast ().get (combatCastingFixedSpellNumber);
 			if ((unitCanCast.isImmuneToCounterMagic () != null) && (unitCanCast.isImmuneToCounterMagic ()))
 				immuneToCounterMagic = true;
@@ -657,7 +657,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
-							variableDamage, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
+							xuCombatCastingUnit, variableDamage, xu, mom.getGeneralServerKnowledge ().getTrueMap (),
+							mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 							
 							targetUnits.add (thisUnit);
 					}
@@ -679,7 +680,8 @@ public final class SpellProcessingImpl implements SpellProcessing
 				if ((targetUnits.size () > 0) || (targetSpells.size () > 0) || (targetCAEs.size () > 0))
 				{
 					if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
-						combatEnded = getDamageProcessor ().resolveAttack (null, targetUnits, attackingPlayer, defendingPlayer,
+						combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
+							targetUnits, attackingPlayer, defendingPlayer,
 							null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 					
 					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
@@ -764,7 +766,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 		}
 			
 		// Who is casting the spell?
-		if (combatCastingUnit == null)
+		if (xuCombatCastingUnit == null)
 		{
 			// Wizard casting - so charge them the mana cost
 			final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) castingPlayer.getPersistentPlayerPrivateKnowledge ();
@@ -801,32 +803,32 @@ public final class SpellProcessingImpl implements SpellProcessing
 		else if (combatCastingFixedSpellNumber != null)
 		{
 			// Casting a fixed spell that's part of the unit definition
-			combatCastingUnit.setDoubleCombatMovesLeft (0);
+			xuCombatCastingUnit.setDoubleCombatMovesLeft (0);
 
-			combatCastingUnit.getFixedSpellsRemaining ().set (combatCastingFixedSpellNumber,
-				combatCastingUnit.getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) - 1);
+			xuCombatCastingUnit.getMemoryUnit ().getFixedSpellsRemaining ().set (combatCastingFixedSpellNumber,
+				xuCombatCastingUnit.getMemoryUnit ().getFixedSpellsRemaining ().get (combatCastingFixedSpellNumber) - 1);
 
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 		}
 		else if (combatCastingSlotNumber != null)
 		{
 			// Casting a spell imbued into a hero item
-			combatCastingUnit.setDoubleCombatMovesLeft (0);
+			xuCombatCastingUnit.setDoubleCombatMovesLeft (0);
 
-			combatCastingUnit.getHeroItemSpellChargesRemaining ().set (combatCastingSlotNumber,
-				combatCastingUnit.getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) - 1);
+			xuCombatCastingUnit.getMemoryUnit ().getHeroItemSpellChargesRemaining ().set (combatCastingSlotNumber,
+				xuCombatCastingUnit.getMemoryUnit ().getHeroItemSpellChargesRemaining ().get (combatCastingSlotNumber) - 1);
 
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 		}
 		else
 		{
 			// Unit or hero casting - so charge them the mana cost and zero their movement
-			combatCastingUnit.setManaRemaining (combatCastingUnit.getManaRemaining () - multipliedManaCost);
-			combatCastingUnit.setDoubleCombatMovesLeft (0);
+			xuCombatCastingUnit.setManaRemaining (xuCombatCastingUnit.getManaRemaining () - multipliedManaCost);
+			xuCombatCastingUnit.setDoubleCombatMovesLeft (0);
 			
-			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (combatCastingUnit, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+			getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xuCombatCastingUnit.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
 				mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
 		}
 		

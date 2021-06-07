@@ -776,6 +776,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="cityAI" ref="cityAI" />
 		<property name="cityProcessing" ref="cityProcessing" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="aiHeroItemRatingCalculations" ref="aiHeroItemRatingCalculations" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 	</bean>
 
 	<bean id="unitAIMovement" class="momime.server.ai.UnitAIMovementImpl">

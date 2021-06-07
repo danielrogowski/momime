@@ -15,6 +15,7 @@ import momime.common.MomException;
 import momime.common.database.AiMovementCode;
 import momime.common.database.AiUnitCategory;
 import momime.common.database.CommonDatabase;
+import momime.common.database.FogOfWarSetting;
 import momime.common.database.RecordNotFoundException;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -196,4 +197,20 @@ public interface UnitAI
 	 */
 	public List<MapCoordinates3DEx> listNodesWeDontOwnOnPlane (final int playerID, final Integer plane, final FogOfWarMemory fogOfWarMemory, final CoordinateSystem sys,
 		final CommonDatabase db) throws RecordNotFoundException;
+
+	/**
+	 * @param player AI player whose hero items we want to reallocate
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param players Players list
+	 * @param db Lookup lists built over the XML database
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 */
+	public void reallocateHeroItems (final PlayerServerDetails player, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
 }

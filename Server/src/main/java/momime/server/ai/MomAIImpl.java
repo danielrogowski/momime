@@ -96,6 +96,9 @@ public final class MomAIImpl implements MomAI
 	public final boolean aiPlayerTurn (final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
+		getUnitAI ().reallocateHeroItems (player, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (),
+			mom.getSessionDescription ().getFogOfWarSetting ());
+		
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 

@@ -11,6 +11,24 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<context:property-placeholder location="classpath:MoMIMEServerVersion.properties" />
 	
+	<!-- JMX -->
+	
+	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="assembler" ref="assembler"/>
+        <property name="namingStrategy" ref="namingStrategy"/>
+        <property name="autodetect" value="true"/>
+    </bean>
+
+    <bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+
+    <bean id="assembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+        <property name="attributeSource" ref="jmxAttributeSource"/>
+    </bean>
+
+    <bean id="namingStrategy" class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+        <property name="attributeSource" ref="jmxAttributeSource"/>
+    </bean>	
+	
 	<!-- Server config XML -->
 	
 	<bean id="serverConfigSchema" class="javax.xml.validation.Schema" factory-bean="schemaFactory" factory-method="newSchema">

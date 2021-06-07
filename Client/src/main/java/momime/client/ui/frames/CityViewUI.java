@@ -339,7 +339,7 @@ public final class CityViewUI extends MomClientFrameUI
 				final AvailableUnit unit = new AvailableUnit ();
 				unit.setUnitID (cityData.getCurrentlyConstructingUnitID ());
 				
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false,
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
 					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				getUnitStatsReplacer ().setUnit (xu);
 
@@ -869,7 +869,7 @@ public final class CityViewUI extends MomClientFrameUI
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false,
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 				
 				final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
@@ -1110,7 +1110,7 @@ public final class CityViewUI extends MomClientFrameUI
 			// We don't have to get the weapon grade or experience right just to draw the figures
 			getUnitUtils ().initializeUnitSkills (sample, null, getClient ().getClientDB ());
 			
-			sampleUnit = getUnitUtils ().expandUnitDetails (sample, null, null, null, false,
+			sampleUnit = getUnitUtils ().expandUnitDetails (sample, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);

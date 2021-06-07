@@ -187,7 +187,7 @@ public final class CombatAIImpl implements CombatAI
 			{
 				// Is this the first possible target we've found, or better than our current target.
 				// EvaluateTarget just returns 1, 2 or 3 - bump that up a lot.
-				int thisScore = evaluateTarget (attacker, getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, true, players, mem, db)) * 1000;
+				int thisScore = evaluateTarget (attacker, getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db)) * 1000;
 				
 				// Subtract more the further away the unit is, so closer units get a higher score.
 				// Can't use doubleMovementDistances for this as it gets set to the same high 999 value for all ranged attacks.
@@ -318,7 +318,7 @@ public final class CombatAIImpl implements CombatAI
 			final List<ExpandedUnitDetailsAndCombatAIOrder> sortedUnitsToMove = new ArrayList<ExpandedUnitDetailsAndCombatAIOrder> ();
 			for (final MemoryUnit tu : unitsToMove)
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, true,
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				sortedUnitsToMove.add (new ExpandedUnitDetailsAndCombatAIOrder (xu, calculateUnitCombatAIOrder (xu)));

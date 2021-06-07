@@ -124,7 +124,7 @@ public final class TestArmyListUI extends ClientTestData
 						fow.getUnit ().add (thisUnit);
 						
 						final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-						when (unitUtils.expandUnitDetails (thisUnit, null, null, null, false, players, fow, db)).thenReturn (xu);
+						when (unitUtils.expandUnitDetails (thisUnit, null, null, null, players, fow, db)).thenReturn (xu);
 					}
 		
 		// Client

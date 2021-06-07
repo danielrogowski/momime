@@ -875,7 +875,7 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 		if (trueSpell.getUnitURN () != null)
 		{
 			final MemoryUnit mu = getUnitUtils ().findUnitURN (trueSpell.getUnitURN (), trueMap.getUnit (), "switchOffMaintainedSpellOnServerAndClients");
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false, players, trueMap, db);
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, trueMap, db);
 			if (xu.calculateAliveFigureCount () <= 0)
 			{
 				killed = true;

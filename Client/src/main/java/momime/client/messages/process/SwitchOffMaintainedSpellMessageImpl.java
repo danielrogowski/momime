@@ -107,7 +107,7 @@ public final class SwitchOffMaintainedSpellMessageImpl extends SwitchOffMaintain
 					// We might be witnessing the combat from an adjacent tile so can see the spell being cancelled, but not know the unit's exact location if we're not directly involved
 					if (u.getCombatPosition () != null)
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (u, null, null, null, true,
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (u, null, null, null,
 							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						getCombatUI ().setUnitToDrawAtLocation (u.getCombatPosition ().getX (), u.getCombatPosition ().getY (), xu);

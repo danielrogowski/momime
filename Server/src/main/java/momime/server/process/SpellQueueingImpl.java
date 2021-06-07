@@ -210,7 +210,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 
 				else
 				{
-					xuCombatCastingUnit = getUnitUtils ().expandUnitDetails (combatCastingUnit, null, null, null, (combatLocation != null),
+					xuCombatCastingUnit = getUnitUtils ().expandUnitDetails (combatCastingUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					if (combatCastingFixedSpellNumber != null)
@@ -373,7 +373,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					msg = "Cannot find the unit you are trying to target the spell on.";
 				else
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (combatTargetUnit, null, null, spell.getSpellRealm (), (combatLocation != null),
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (combatTargetUnit, null, null, spell.getSpellRealm (),
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell

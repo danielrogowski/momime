@@ -173,7 +173,7 @@ public final class UnitAIImpl implements UnitAI
 							
 							getUnitUtils ().initializeUnitSkills (unit, startingExperience, db);
 							
-							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, priv.getFogOfWarMemory (), db);
+							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
 							
 							results.add (new AIConstructableUnit (unitDef, cityLocation, null,
 								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
@@ -199,7 +199,7 @@ public final class UnitAIImpl implements UnitAI
 							
 							getUnitUtils ().initializeUnitSkills (unit, null, db);
 			
-							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, priv.getFogOfWarMemory (), db);
+							final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
 							
 							results.add (new AIConstructableUnit (unitDef, null, spell,
 								getAiUnitCalculations ().calculateUnitAverageRating (unit, xu, players, priv.getFogOfWarMemory (), db),
@@ -242,7 +242,7 @@ public final class UnitAIImpl implements UnitAI
 					unitArray [mu.getUnitLocation ().getZ ()] [mu.getUnitLocation ().getY ()] [mu.getUnitLocation ().getX ()] = unitList; 
 				}
 
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false, players, mem, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, mem, db);
 				
 				unitList.add (new AIUnitAndRatings (mu,
 					getAiUnitCalculations ().determineAIUnitType (xu),
@@ -424,7 +424,7 @@ public final class UnitAIImpl implements UnitAI
 	public final AiUnitCategory determineUnitCategory (final MemoryUnit mu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, players, mem, db);
 
 		// Check categories from the bottom up, since the end categories are the most specific
 		AiUnitCategory category = null;
@@ -747,7 +747,7 @@ public final class UnitAIImpl implements UnitAI
 		// Create a stack for the units (so transports pick up any units stacked with them)
 		final List<ExpandedUnitDetails> selectedUnits = new ArrayList<ExpandedUnitDetails> ();
 		for (final AIUnitAndRatings mu : units)
-			selectedUnits.add (getUnitUtils ().expandUnitDetails (mu.getUnit (), null, null, null, false, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()));
+			selectedUnits.add (getUnitUtils ().expandUnitDetails (mu.getUnit (), null, null, null, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ()));
 		
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 		
@@ -824,7 +824,7 @@ public final class UnitAIImpl implements UnitAI
 					for (final AIUnitAndRatings mu : units)
 					{
 						final MemoryUnit tu = getUnitUtils ().findUnitURN (mu.getUnit ().getUnitURN (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "decideAndExecuteUnitMovement");
-						trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, false,
+						trueUnits.add (getUnitUtils ().expandUnitDetails (tu, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 					}
 					

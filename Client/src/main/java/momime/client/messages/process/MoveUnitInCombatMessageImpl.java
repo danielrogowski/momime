@@ -110,7 +110,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 			log.warn ("MoveUnitInCombatMessageImpl is trying to move Unit URN " + getUnitURN () + " but its previous location stated in the message (" + getMoveFrom () +
 				") isn't what we expected (" + mu.getCombatPosition () + ")");
 		
-		unit = getUnitUtils ().expandUnitDetails (mu, null, null, null, true,
+		unit = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 			getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 		
 		// See if we need to draw an animation that moves with the unit, e.g. Confusion

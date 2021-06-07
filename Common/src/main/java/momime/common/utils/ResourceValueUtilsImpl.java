@@ -228,7 +228,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 					if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerDetails.getPlayerDescription ().getPlayerID ()) &&
 						(fortressLocation.getCityLocation ().equals (unit.getUnitLocation ())))
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, mem, db);
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
 						if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO))
 							heroesTotalMana = heroesTotalMana + xu.calculateManaTotal ();
 					}
@@ -263,7 +263,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		for (final MemoryUnit unit : mem.getUnit ())
 			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerID))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, mem, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
 				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE))
 				{
 					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();
@@ -322,7 +322,7 @@ public final class ResourceValueUtilsImpl implements ResourceValueUtils
 		for (final MemoryUnit unit : mem.getUnit ())
 			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getOwningPlayerID () == playerDetails.getPlayerDescription ().getPlayerID ()))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, mem, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db);
 				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY))
 				{
 					final int expLevel = xu.getModifiedExperienceLevel ().getLevelNumber ();

@@ -141,7 +141,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE) && (!getUnitServerUtils ().doesUnitSpecialOrderResultInDeath (thisUnit.getSpecialOrder ())))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, trueMap, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
 				for (final String upkeepProductionTypeID : xu.listModifiedUpkeepProductionTypeIDs ())
 					getResourceValueUtils ().addToAmountPerTurn (priv.getResourceValue (), upkeepProductionTypeID, -xu.getModifiedUpkeepValue (upkeepProductionTypeID));
 			}
@@ -317,7 +317,7 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, trueMap, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
 				final int consumptionAmount = xu.getModifiedUpkeepValue (productionTypeID);
 				if (consumptionAmount > 0)
 				{

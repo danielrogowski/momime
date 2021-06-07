@@ -306,7 +306,7 @@ public final class CityAIImpl implements CityAI
 		for (final MemoryUnit thisUnit : trueMap.getUnit ())
 			if ((thisUnit.getOwningPlayerID () == player.getPlayerDescription ().getPlayerID ()) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, trueMap, db);
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, trueMap, db);
 				rationsNeeded = rationsNeeded + xu.getModifiedUpkeepValue (CommonDatabaseConstants.PRODUCTION_TYPE_ID_RATIONS);
 			}
 

@@ -210,7 +210,7 @@ public final class TreasureUI extends MomClientDialogUI
 						prisonerText = prisonerText.replaceAll ("A_UNIT_NAME", "A hero");
 					else
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false,
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 						
 						getUnitStatsReplacer ().setUnit (xu);

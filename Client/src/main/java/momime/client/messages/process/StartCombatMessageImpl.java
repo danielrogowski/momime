@@ -64,7 +64,7 @@ public final class StartCombatMessageImpl extends StartCombatMessage implements 
 			unit.setCombatHeading (unitLoc.getCombatHeading ());
 			unit.setCombatSide (unitLoc.getCombatSide ());
 			
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, true,
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			getUnitCalculations ().giveUnitFullRangedAmmoAndMana (xu);

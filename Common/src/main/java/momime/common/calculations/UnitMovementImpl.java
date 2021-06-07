@@ -146,7 +146,7 @@ public final class UnitMovementImpl implements UnitMovement
 					final int z = thisUnit.getUnitLocation ().getZ ();
 					
 					final OverlandMapTerrainData terrainData = map.getMap ().getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, map, db);
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, map, db);
 					
 					// Count space granted by transports
 					final Integer unitTransportCapacity = xu.getUnitDefinition ().getTransportCapacity ();

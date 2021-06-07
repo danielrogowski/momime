@@ -372,7 +372,7 @@ public final class SpellAIImpl implements SpellAI
 								while ((!validTargetFound) && (iter.hasNext ()))
 								{
 									final MemoryUnit mu = iter.next ();
-									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false,
+									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 										mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 									if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
 										(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, player.getPlayerDescription ().getPlayerID (), null, null, xu,
@@ -498,7 +498,7 @@ public final class SpellAIImpl implements SpellAI
 				int bestUnitRating = -1;
 				for (final MemoryUnit mu : priv.getFogOfWarMemory ().getUnit ())
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null, false,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 						mom.getPlayers (), priv.getFogOfWarMemory (), mom.getServerDB ());
 					if ((getAiUnitCalculations ().determineAIUnitType (xu) == AIUnitType.COMBAT_UNIT) &&
 						(getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, null, player.getPlayerDescription ().getPlayerID (), null, null, xu,
@@ -727,7 +727,7 @@ public final class SpellAIImpl implements SpellAI
 	
 								for (final MemoryUnit targetUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 								{
-									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), true,
+									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
 									if (spell.getSpellID ().equals ("SP137"))

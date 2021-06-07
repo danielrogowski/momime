@@ -91,7 +91,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u1);
 
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u1, null, null, null, true, players, fow, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (u1, null, null, null, players, fow, db)).thenReturn (xu1);
 		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 
 		// Wrong location
@@ -105,7 +105,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u2);
 
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u2, null, null, null, true, players, fow, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (u2, null, null, null, players, fow, db)).thenReturn (xu2);
 		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 		
 		// No combat position
@@ -118,7 +118,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u3);
 
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u3, null, null, null, true, players, fow, db)).thenReturn (xu3);
+		when (unitUtils.expandUnitDetails (u3, null, null, null, players, fow, db)).thenReturn (xu3);
 		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 		
 		// Wrong player
@@ -132,7 +132,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u4);
 
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u4, null, null, null, true, players, fow, db)).thenReturn (xu4);
+		when (unitUtils.expandUnitDetails (u4, null, null, null, players, fow, db)).thenReturn (xu4);
 		when (xu4.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (1);
 		
 		// Unit B that matches
@@ -146,7 +146,7 @@ public final class TestUnitCalculationsImpl
 		fow.getUnit ().add (u5);
 
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (u5, null, null, null, true, players, fow, db)).thenReturn (xu5);
+		when (unitUtils.expandUnitDetails (u5, null, null, null, players, fow, db)).thenReturn (xu5);
 		when (xu5.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (2);
 		
 		// Set up object to test
@@ -880,7 +880,7 @@ public final class TestUnitCalculationsImpl
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
 			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, false, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 			if (n == 0)
@@ -975,7 +975,7 @@ public final class TestUnitCalculationsImpl
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
 			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, false, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 			selectedUnits.add (xuSpearmen);
@@ -1082,7 +1082,7 @@ public final class TestUnitCalculationsImpl
 			when (xuSpearmen.getOwningPlayerID ()).thenReturn (1);
 			when (xuSpearmen.getUnitURN ()).thenReturn (n + 1);
 			
-			when (unitUtils.expandUnitDetails (spearmen, null, null, null, false, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
+			when (unitUtils.expandUnitDetails (spearmen, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuSpearmen);
 			
 			fogOfWarMemory.getUnit ().add (spearmen);
 		}
@@ -1105,7 +1105,7 @@ public final class TestUnitCalculationsImpl
 			when (xuDrake.getUnitURN ()).thenReturn (n + 4);
 			when (xuDrake.hasModifiedSkill ("US001")).thenReturn (true);
 			
-			when (unitUtils.expandUnitDetails (drake, null, null, null, false, players, fogOfWarMemory, db)).thenReturn (xuDrake);
+			when (unitUtils.expandUnitDetails (drake, null, null, null, players, fogOfWarMemory, db)).thenReturn (xuDrake);
 			
 			fogOfWarMemory.getUnit ().add (drake);
 		}

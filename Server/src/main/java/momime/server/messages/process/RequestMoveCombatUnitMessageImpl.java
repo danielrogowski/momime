@@ -96,7 +96,7 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 			final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(tu.getCombatLocation ().getZ ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
 
-			xu = getUnitUtils ().expandUnitDetails (tu, null, null, null, true,
+			xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
 			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];

@@ -291,7 +291,7 @@ public final class TestCombatUI extends ClientTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xuSelectedUnit = mock (ExpandedUnitDetails.class);
 		when (xuSelectedUnit.getUnitDefinition ()).thenReturn (unitDef);
-		when (unitUtils.expandUnitDetails (selectedUnit, null, null, null, true, players, fow, db)).thenReturn (xuSelectedUnit);
+		when (unitUtils.expandUnitDetails (selectedUnit, null, null, null, players, fow, db)).thenReturn (xuSelectedUnit);
 		
 		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);
 		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)).thenReturn (2);

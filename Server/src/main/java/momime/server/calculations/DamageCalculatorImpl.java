@@ -115,15 +115,15 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		// e.g. Defender may have Weapon Immunity but the attacker has Holy Weapon which negates it
 		// e.g. Attacker may have First Strike but the defender has Negate First Strike
 		// So to get around this, we generate the attacker's stats twice.
-		final ExpandedUnitDetails xuAttackerPreliminary = getUnitUtils ().expandUnitDetails (attacker.getUnit (), null, attackSkillID, null, true, players, mem, db);
+		final ExpandedUnitDetails xuAttackerPreliminary = getUnitUtils ().expandUnitDetails (attacker.getUnit (), null, attackSkillID, null, players, mem, db);
 		final List<ExpandedUnitDetails> attackers = new ArrayList<ExpandedUnitDetails> ();
 		attackers.add (xuAttackerPreliminary);
 		
-		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, true, players, mem, db);
+		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, players, mem, db);
 		final List<ExpandedUnitDetails> defenders = new ArrayList<ExpandedUnitDetails> ();
 		defenders.add (xuDefender);
 		
-		final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attacker.getUnit (), defenders, attackSkillID, null, true, players, mem, db);
+		final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attacker.getUnit (), defenders, attackSkillID, null, players, mem, db);
 		
 		// The unit's skill level indicates the strength of the attack (e.g. Poison Touch 2 vs Poison Touch 4)
 		final AttackDamage attackDamage;

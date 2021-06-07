@@ -140,7 +140,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 						for (final Integer unitURN : thisMove.getUnitURN ())
 						{
 							final MemoryUnit tu = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "processSimultaneousTurnsMovement");
-							unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, false,
+							unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null,
 								mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 						}
 						
@@ -216,7 +216,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				for (final Integer unitURN : thisMove.getUnitURN ())
 				{
 					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement");
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					unitStack.add (xu);
 					
@@ -265,7 +265,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			for (final Integer unitURN : oneCell.getPendingMovement ().getUnitURN ())
 			{
 				final MemoryUnit tu = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCellPendingMovement");
-				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, false,
+				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 			}
 			
@@ -319,7 +319,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 				for (final Integer unitURN : thisMove.getUnitURN ())
 				{
 					final MemoryUnit thisUnit = getUnitUtils ().findUnitURN (unitURN, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), "findAndProcessOneCombat");
-					unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false,
+					unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 					
 					if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)
@@ -569,7 +569,7 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 			}
 			else
 			{
-				final ExpandedUnitDetails xuSpirit = getUnitUtils ().expandUnitDetails (spirit, null, null, null, false,
+				final ExpandedUnitDetails xuSpirit = getUnitUtils ().expandUnitDetails (spirit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 				getOverlandMapServerUtils ().attemptToMeldWithNode (xuSpirit, mom.getGeneralServerKnowledge ().getTrueMap (),

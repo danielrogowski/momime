@@ -104,7 +104,7 @@ public final class AIUnitCalculationsImpl implements AIUnitCalculations
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 		
-		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, priv.getFogOfWarMemory (), db);
+		final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, players, priv.getFogOfWarMemory (), db);
 		
 		// Now we can check its upkeep
 		boolean ok = true;

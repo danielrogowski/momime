@@ -339,8 +339,8 @@ public final class TestPlayerMessageProcessingImpl
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit1, null, null, null, false, players, trueMap, db)).thenReturn (xu1);
-		when (unitUtils.expandUnitDetails (unit2, null, null, null, false, players, trueMap, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> unitStack1 = new ArrayList<ExpandedUnitDetails> ();
 		unitStack1.add (xu1);
@@ -432,8 +432,8 @@ public final class TestPlayerMessageProcessingImpl
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit1, null, null, null, false, players, trueMap, db)).thenReturn (xu1);
-		when (unitUtils.expandUnitDetails (unit2, null, null, null, false, players, trueMap, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		
 		final List<ExpandedUnitDetails> unitStack1 = new ArrayList<ExpandedUnitDetails> ();
 		unitStack1.add (xu1);

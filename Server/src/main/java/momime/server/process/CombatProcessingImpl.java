@@ -493,7 +493,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if ((currentLocation.equals (tu.getUnitLocation ())) && (tu.getStatus () == UnitStatusID.ALIVE) &&
 				((onlyUnitURNs == null) || (onlyUnitURNs.contains (tu.getUnitURN ()))))
 
-				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, true,
+				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 		
 		// Remove from the list any units to whom the combat terrain is impassable.

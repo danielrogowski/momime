@@ -1135,7 +1135,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (false),
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
@@ -1214,7 +1214,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (false),
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		
@@ -1299,7 +1299,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final List<PlayerServerDetails> players = new ArrayList<PlayerServerDetails> ();
 		
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (false),
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (testUnit);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
 		

@@ -139,7 +139,7 @@ public final class NewTurnMessageSummonUnitEx extends NewTurnMessageSummonUnit
 			unit.setUnitID (getUnitID ());
 		}
 		
-		xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, false, getClient ().getPlayers (),
+		xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	

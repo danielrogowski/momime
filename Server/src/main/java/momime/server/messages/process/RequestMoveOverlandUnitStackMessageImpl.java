@@ -79,7 +79,7 @@ public final class RequestMoveOverlandUnitStackMessageImpl extends RequestMoveOv
 				error = "Some of the units you are trying to move are not at the starting location";
 			else
 			{
-				unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false,
+				unitStack.add (getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
 				
 				if (thisUnit.getDoubleOverlandMovesLeft () < doubleMovementRemaining)

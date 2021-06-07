@@ -186,7 +186,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 			for (int stepRepetitionNo = 0; stepRepetitionNo < stepRepetitions; stepRepetitionNo++)
 			{
 				// If the unit being attacked is already dead, then don't bother proceeding
-				final ExpandedUnitDetails xuUnitBeingAttackedHPcheck = getUnitUtils ().expandUnitDetails (unitBeingAttacked.getUnit (), null, null, null, true, players, mem, db);
+				final ExpandedUnitDetails xuUnitBeingAttackedHPcheck = getUnitUtils ().expandUnitDetails (unitBeingAttacked.getUnit (), null, null, null, players, mem, db);
 				
 				final List<UnitDamage> damageTaken = (unitBeingAttacked == defender) ? damageToDefender : damageToAttacker;
 				if (getUnitUtils ().getTotalDamageTaken (damageTaken) < xuUnitBeingAttackedHPcheck.calculateHitPointsRemaining ())					
@@ -208,7 +208,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 						if (unitMakingAttack == null)
 							throw new MomException ("processAttackResolutionStep: Tried to process attack step from a null unitMakingAttack, attacking side = " + step.getCombatSide ());
 						
-						xuUnitMakingAttack = getUnitUtils ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, true, players, mem, db);
+						xuUnitMakingAttack = getUnitUtils ().expandUnitDetails (unitMakingAttack.getUnit (), null, null, null, players, mem, db);
 						
 						// If this is a hasted ranged attack, make sure we actually have enough ammo to make both attacks
 						if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())) &&
@@ -254,7 +254,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							}
 							
 							final ExpandedUnitDetails xuUnitBeingAttacked = getUnitUtils ().expandUnitDetails (unitBeingAttacked.getUnit (), xuUnitsMakingAttack,
-								potentialDamage.getAttackFromSkillID (), potentialDamage.getAttackFromMagicRealmID (), true, players, mem, db);
+								potentialDamage.getAttackFromSkillID (), potentialDamage.getAttackFromMagicRealmID (), players, mem, db);
 							
 							final int thisDamage;				
 							switch (potentialDamage.getDamageResolutionTypeID ())
@@ -398,11 +398,11 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 		// Instead we apply both, then the unit has -2 HP, and the heal routine will always heal healable damage first.
 		// So we convert 2 HP of the healable damage already taken into life stealing damage, ending up with the unit dying from
 		// taking 2 HP healable damage and 4 HP life stealing damage, and so it becomes undead.
-		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), null, null, null, true, players, mem, db);
+		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), null, null, null, players, mem, db);
 		getUnitServerUtils ().healDamage (defender.getUnit ().getUnitDamage (), -xuDefender.calculateHitPointsRemaining (), true);
 		if (attacker != null)
 		{
-			final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attacker.getUnit (), null, null, null, true, players, mem, db);
+			final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attacker.getUnit (), null, null, null, players, mem, db);
 			getUnitServerUtils ().healDamage (attacker.getUnit ().getUnitDamage (), -xuAttacker.calculateHitPointsRemaining (), true);
 		}
 		

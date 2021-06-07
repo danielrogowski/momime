@@ -400,7 +400,7 @@ public final class TestUnitUtilsImpl
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
-		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
@@ -485,7 +485,7 @@ public final class TestUnitUtilsImpl
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
-		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, null, mem, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, null, mem, db);
 		
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
@@ -654,7 +654,7 @@ public final class TestUnitUtilsImpl
 		utils.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
@@ -821,7 +821,7 @@ public final class TestUnitUtilsImpl
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
-		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, enemyUnits, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, enemyUnits, null, null, players, mem, db);
 		
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
@@ -980,7 +980,7 @@ public final class TestUnitUtilsImpl
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
-		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
@@ -1144,7 +1144,7 @@ public final class TestUnitUtilsImpl
 		utils.setPlayerPickUtils (playerPickUtils);
 		
 		// Run method
-		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
@@ -1306,7 +1306,7 @@ public final class TestUnitUtilsImpl
 		{
 			// Run method
 			exp.setUnitSkillValue (expLevel * 10);
-			final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+			final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 			
 			// Do simple checks
 			assertSame (unit, details.getUnit ());
@@ -1468,7 +1468,7 @@ public final class TestUnitUtilsImpl
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
-		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
@@ -1635,7 +1635,7 @@ public final class TestUnitUtilsImpl
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// Run method
-		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 		
 		// Do simple checks
 		assertSame (unit, details.getUnit ());
@@ -1833,7 +1833,7 @@ public final class TestUnitUtilsImpl
 		utils.setUnitDetailsUtils (unitDetailsUtils);
 		
 		// If we specify nothing about the type of incoming attack, then only the RAT-based bonus can apply
-		final ExpandedUnitDetails details1 = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details1 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 
 		assertSame (unit, details1.getUnit ());
 		assertTrue (details1.isMemoryUnit ());
@@ -1874,7 +1874,7 @@ public final class TestUnitUtilsImpl
 		
 		// Now use the right RAT
 		unitDef.setRangedAttackType ("RAT02");
-		final ExpandedUnitDetails details2 = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details2 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 
 		assertSame (unit, details2.getUnit ());
 		assertTrue (details2.isMemoryUnit ());
@@ -1914,7 +1914,7 @@ public final class TestUnitUtilsImpl
 		assertEquals (1, details2.getModifiedSkillValue ("US005").intValue ());
 		
 		// Attack with the right attackSkillID
-		final ExpandedUnitDetails details3 = utils.expandUnitDetails (unit, null, "UA01", null, false, players, mem, db);
+		final ExpandedUnitDetails details3 = utils.expandUnitDetails (unit, null, "UA01", null, players, mem, db);
 
 		assertSame (unit, details3.getUnit ());
 		assertTrue (details3.isMemoryUnit ());
@@ -1954,7 +1954,7 @@ public final class TestUnitUtilsImpl
 		assertEquals (1, details3.getModifiedSkillValue ("US005").intValue ());
 		
 		// Attack with the only attackSkillID that means we *don't* get the 3rd bonus
-		final ExpandedUnitDetails details4 = utils.expandUnitDetails (unit, null, "UA02", null, false, players, mem, db);
+		final ExpandedUnitDetails details4 = utils.expandUnitDetails (unit, null, "UA02", null, players, mem, db);
 
 		assertSame (unit, details4.getUnit ());
 		assertTrue (details4.isMemoryUnit ());
@@ -1994,7 +1994,7 @@ public final class TestUnitUtilsImpl
 		assertEquals (1, details4.getModifiedSkillValue ("US005").intValue ());
 		
 		// Attack with the right magicRealmID
-		final ExpandedUnitDetails details5 = utils.expandUnitDetails (unit, null, null, "MB01", false, players, mem, db);
+		final ExpandedUnitDetails details5 = utils.expandUnitDetails (unit, null, null, "MB01", players, mem, db);
 
 		assertSame (unit, details5.getUnit ());
 		assertTrue (details5.isMemoryUnit ());
@@ -2034,7 +2034,8 @@ public final class TestUnitUtilsImpl
 		assertEquals (1, details5.getModifiedSkillValue ("US005").intValue ());
 
 		// Attack in combat
-		final ExpandedUnitDetails details6 = utils.expandUnitDetails (unit, null, null, null, true, players, mem, db);
+		unit.setCombatLocation (new MapCoordinates3DEx (20, 10, 1));
+		final ExpandedUnitDetails details6 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 
 		assertSame (unit, details6.getUnit ());
 		assertTrue (details6.isMemoryUnit ());
@@ -2146,7 +2147,7 @@ public final class TestUnitUtilsImpl
 		utils.setPlayerPickUtils (pickUtils);
 		
 		// Upkeep with no modifiers
-		final ExpandedUnitDetails details1 = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details1 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 
 		assertSame (unit, details1.getUnit ());
 		assertTrue (details1.isMemoryUnit ());
@@ -2170,7 +2171,7 @@ public final class TestUnitUtilsImpl
 		undead.setUnitSkillID (CommonDatabaseConstants.UNIT_SKILL_ID_UNDEAD);
 		unit.getUnitHasSkill ().add (undead);
 
-		final ExpandedUnitDetails details2 = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details2 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 
 		assertSame (unit, details2.getUnit ());
 		assertTrue (details2.isMemoryUnit ());
@@ -2192,7 +2193,7 @@ public final class TestUnitUtilsImpl
 		// Undead summoned units have +50% upkeep
 		unitType.setUndeadUpkeepPercentage (150);
 
-		final ExpandedUnitDetails details3 = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details3 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 
 		assertSame (unit, details3.getUnit ());
 		assertTrue (details3.isMemoryUnit ());
@@ -2214,7 +2215,7 @@ public final class TestUnitUtilsImpl
 		// 50% reduction from retorts
 		when (pickUtils.totalProductionBonus (CommonDatabaseConstants.PRODUCTION_TYPE_ID_UNIT_UPKEEP_REDUCTION, "N", pub.getPick (), db)).thenReturn (70);
 		
-		final ExpandedUnitDetails details4 = utils.expandUnitDetails (unit, null, null, null, false, players, mem, db);
+		final ExpandedUnitDetails details4 = utils.expandUnitDetails (unit, null, null, null, players, mem, db);
 
 		assertSame (unit, details4.getUnit ());
 		assertTrue (details4.isMemoryUnit ());

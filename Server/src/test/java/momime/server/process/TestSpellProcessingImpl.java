@@ -386,7 +386,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, false, players, trueMap, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Set up test object		
 		final SpellProcessingImpl proc = new SpellProcessingImpl ();
@@ -514,7 +514,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (theHero, null, null, null, false, players, trueMap, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (theHero, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Fix random results
 		final RandomUtils randomUtils = mock (RandomUtils.class);
@@ -1051,7 +1051,7 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (summonedUnit, null, null, null, true, players, trueMap, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (summonedUnit, null, null, null, players, trueMap, db)).thenReturn (xu);
 		
 		// Mock unit speed
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).thenReturn (49);

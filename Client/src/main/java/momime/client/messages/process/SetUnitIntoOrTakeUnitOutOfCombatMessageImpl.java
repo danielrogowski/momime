@@ -177,7 +177,7 @@ public final class SetUnitIntoOrTakeUnitOutOfCombatMessageImpl extends SetUnitIn
 		else
 		{
 			// Show the unit
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, true,
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			getCombatUI ().setUnitToDrawAtLocation (getCombatPosition ().getX (), getCombatPosition ().getY (), xu);

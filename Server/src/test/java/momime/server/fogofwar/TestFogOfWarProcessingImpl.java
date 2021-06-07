@@ -259,7 +259,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		trueMap.getUnit ().add (unitOne);
 		
 		final ExpandedUnitDetails xu1 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unitOne, null, null, null, false, players, trueMap, db)).thenReturn (xu1);
+		when (unitUtils.expandUnitDetails (unitOne, null, null, null, players, trueMap, db)).thenReturn (xu1);
 
 		final MemoryUnit unitTwo = new MemoryUnit ();
 		unitTwo.setUnitID ("UN067");
@@ -269,7 +269,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		trueMap.getUnit ().add (unitTwo);
 
 		final ExpandedUnitDetails xu2 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unitTwo, null, null, null, false, players, trueMap, db)).thenReturn (xu2);
+		when (unitUtils.expandUnitDetails (unitTwo, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		
 		final MemoryUnit unitThree = new MemoryUnit ();
 		unitThree.setUnitID ("UN005");
@@ -279,7 +279,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		trueMap.getUnit ().add (unitThree);
 
 		final ExpandedUnitDetails xu3 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unitThree, null, null, null, false, players, trueMap, db)).thenReturn (xu3);
+		when (unitUtils.expandUnitDetails (unitThree, null, null, null, players, trueMap, db)).thenReturn (xu3);
 		
 		// Unit in a tower
 		for (final Plane plane : db.getPlane ())
@@ -298,7 +298,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		trueMap.getUnit ().add (unitFour);
 
 		final ExpandedUnitDetails xu4 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unitFour, null, null, null, false, players, trueMap, db)).thenReturn (xu4);
+		when (unitUtils.expandUnitDetails (unitFour, null, null, null, players, trueMap, db)).thenReturn (xu4);
 		
 		// Enemy unit
 		final MemoryUnit unitFive = new MemoryUnit ();
@@ -309,7 +309,7 @@ public final class TestFogOfWarProcessingImpl extends ServerTestData
 		trueMap.getUnit ().add (unitFive);
 
 		final ExpandedUnitDetails xu5 = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unitFive, null, null, null, false, players, trueMap, db)).thenReturn (xu5);
+		when (unitUtils.expandUnitDetails (unitFive, null, null, null, players, trueMap, db)).thenReturn (xu5);
 		
 		// Unit scouting ranges
 		final ServerUnitCalculations unitCalc = mock (ServerUnitCalculations.class);

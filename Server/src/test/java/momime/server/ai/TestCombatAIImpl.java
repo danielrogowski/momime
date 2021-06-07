@@ -135,7 +135,7 @@ public final class TestCombatAIImpl
 		final MemoryUnit unit = new MemoryUnit ();
 
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, true, players, fow, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		when (xu.getMemoryUnit ()).thenReturn (unit);
 		
 		// Set up object to test

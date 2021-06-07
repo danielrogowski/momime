@@ -113,7 +113,7 @@ public final class NewTurnMessageOfferHeroEx extends NewTurnMessageOfferHero imp
 	@Override
 	public final void preProcess () throws IOException
 	{
-		xu = getUnitUtils ().expandUnitDetails (getHero (), null, null, null, false, getClient ().getPlayers (),
+		xu = getUnitUtils ().expandUnitDetails (getHero (), null, null, null, getClient ().getPlayers (),
 			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 	}
 	

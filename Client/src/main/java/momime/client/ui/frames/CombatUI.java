@@ -539,7 +539,7 @@ public final class CombatUI extends MomClientFrameUI
 										validTarget = false;
 									else
 									{
-										final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (), true,
+										final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (),
 											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 										final Integer variableDamage;
@@ -1046,7 +1046,7 @@ public final class CombatUI extends MomClientFrameUI
 							case DISPEL_SPELLS:
 								if (unit != null)
 								{
-									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (), true,
+									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (),
 										getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									final Integer variableDamage;
@@ -1271,7 +1271,7 @@ public final class CombatUI extends MomClientFrameUI
 				if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())) &&
 					(unit.getCombatHeading () != null) && (unit.getCombatSide () != null))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, true,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 							
 					setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), xu);
@@ -1372,7 +1372,7 @@ public final class CombatUI extends MomClientFrameUI
 			(getSelectedUnitInCombat ().getDoubleCombatMovesLeft () > 0))
 		{
 			// Unit or hero casting from their own MP pool
-			final ExpandedUnitDetails castingUnit = getUnitUtils ().expandUnitDetails (getSelectedUnitInCombat (), null, null, null, true,
+			final ExpandedUnitDetails castingUnit = getUnitUtils ().expandUnitDetails (getSelectedUnitInCombat (), null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			if ((getSelectedUnitInCombat ().getManaRemaining () > 0) &&
@@ -1673,7 +1673,7 @@ public final class CombatUI extends MomClientFrameUI
 		}
 		else
 		{
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null, true,
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			final CombatMapSize combatMapSize = getClient ().getSessionDescription ().getCombatMapSize ();

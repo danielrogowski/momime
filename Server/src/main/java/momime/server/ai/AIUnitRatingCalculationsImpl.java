@@ -104,7 +104,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 	public final int calculateUnitCurrentRating (final AvailableUnit unit, final ExpandedUnitDetails xu, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		final int rating = calculateUnitRating ((xu != null) ? xu : getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, mem, db), db);
+		final int rating = calculateUnitRating ((xu != null) ? xu : getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db), db);
 		return rating;
 	}
 
@@ -170,7 +170,7 @@ public final class AIUnitRatingCalculationsImpl implements AIUnitRatingCalculati
 		}
 
 		// Now calculate its rating
-		final int rating = calculateUnitRating (getUnitUtils ().expandUnitDetails (unit, null, null, null, false, players, mem, db), db);
+		final int rating = calculateUnitRating (getUnitUtils ().expandUnitDetails (unit, null, null, null, players, mem, db), db);
 		
 		// Now put everything back the way it was
 		if (experience >= 0)

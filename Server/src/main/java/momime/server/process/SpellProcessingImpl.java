@@ -305,7 +305,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 								player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						
 						// Let it move this turn
-						newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null, false,
+						newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
 								(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 					}
@@ -561,7 +561,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				
 				if (spell.getResurrectedHealthPercentage () < 100)
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, null, true,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 					
 					final int totalHP = xu.calculateHitPointsRemaining ();
@@ -596,7 +596,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 	
 				// Allow it to be moved this combat turn
-				targetUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null, true,
+				targetUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
 						(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 			}
@@ -630,7 +630,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 					
 					// Allow it to be moved this combat turn
-					tu.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (tu, null, null, null, true,
+					tu.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (tu, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
 							(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 					
@@ -653,7 +653,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 				{
 					for (final MemoryUnit thisUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
 					{
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (), true,
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 						
 						if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, castingPlayer.getPlayerDescription ().getPlayerID (),
@@ -1089,7 +1089,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 			// If its a unit enchantment, does it grant any secondary permanent effects? (Black Channels making units Undead)
 			if (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS)
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (), false,
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
 				for (final UnitSpellEffect effect : spell.getUnitSpellEffect ())

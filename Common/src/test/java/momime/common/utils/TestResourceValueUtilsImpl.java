@@ -452,7 +452,7 @@ public final class TestResourceValueUtilsImpl
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CASTER_HERO)).thenReturn (true);
 		when (xu.calculateManaTotal ()).thenReturn (15);
-		when (unitUtils.expandUnitDetails (hero, null, null, null, false, players, mem, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
 		
 		// Wizard's Fortress
 		final MemoryBuilding fortress = new MemoryBuilding ();
@@ -498,7 +498,7 @@ public final class TestResourceValueUtilsImpl
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE)).thenReturn (true);
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_SAGE)).thenReturn (2);
-		when (unitUtils.expandUnitDetails (hero, null, null, null, false, players, mem, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
 		
 		// Level 2 hero with super sage
 		final ExperienceLevel captain = new ExperienceLevel ();
@@ -636,7 +636,7 @@ public final class TestResourceValueUtilsImpl
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY)).thenReturn (true);
 		when (xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_LEGENDARY)).thenReturn (2);
-		when (unitUtils.expandUnitDetails (hero, null, null, null, false, players, mem, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (hero, null, null, null, players, mem, db)).thenReturn (xu);
 		
 		// Level 2 hero with super legendary
 		final ExperienceLevel captain = new ExperienceLevel ();

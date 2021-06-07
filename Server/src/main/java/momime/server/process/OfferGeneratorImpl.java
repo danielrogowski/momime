@@ -423,7 +423,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
 				
 				// Let it move this turn
-				hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null, false,
+				hero.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (hero, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
 						(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 				
@@ -462,7 +462,7 @@ public final class OfferGeneratorImpl implements OfferGenerator
 						null, player, UnitStatusID.ALIVE, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 					// Let it move this turn
-					newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null, false,
+					newUnit.setDoubleOverlandMovesLeft (2 * getUnitUtils ().expandUnitDetails (newUnit, null, null, null,
 						mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()).getModifiedSkillValue
 							(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 					

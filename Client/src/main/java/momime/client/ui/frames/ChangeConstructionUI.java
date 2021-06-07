@@ -366,7 +366,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			// We don't have to get the weapon grade or experience right just to draw the figures
 			getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());
 			
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null, false,
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (xu, true);

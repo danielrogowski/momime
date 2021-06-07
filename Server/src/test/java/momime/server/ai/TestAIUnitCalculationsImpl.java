@@ -62,7 +62,7 @@ public final class TestAIUnitCalculationsImpl
 		final AvailableUnit unit = new AvailableUnit ();
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, false, players, fow, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Resources it consumes
 		final Set<String> upkeeps = new HashSet<String> ();
@@ -123,7 +123,7 @@ public final class TestAIUnitCalculationsImpl
 		final AvailableUnit unit = new AvailableUnit ();
 		
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (unit, null, null, null, false, players, fow, db)).thenReturn (xu);
+		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Resources it consumes
 		final Set<String> upkeeps = new HashSet<String> ();

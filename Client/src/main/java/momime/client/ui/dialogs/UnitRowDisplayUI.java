@@ -189,7 +189,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 				{
 					// Its a normal unit enchantment being cast on the overland map
 					// Use common routine to do all the validation
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (), false,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -243,7 +243,7 @@ public final class UnitRowDisplayUI extends MomClientDialogUI
 				if (thisSkill.getUnitSkillTypeID () == UnitSkillTypeID.ATTRIBUTE)
 					unitAttributeIDs.add (thisSkill.getUnitSkillID ());
 
-			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (), false,
+			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, spell.getSpellRealm (),
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
 			for (int attrNo = 1; attrNo <= 6; attrNo++)

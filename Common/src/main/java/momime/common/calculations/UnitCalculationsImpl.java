@@ -89,7 +89,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			if ((thisUnit.getOwningPlayerID () == playerID) && (combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getCombatPosition () != null) &&
 				(thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getStatus () == UnitStatusID.ALIVE))
 					
-				thisUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, true, players, mem, db).getModifiedSkillValue
+				thisUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db).getModifiedSkillValue
 					(CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 	}
 	
@@ -507,7 +507,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 					if ((thisTransportCapacity == null) || (thisTransportCapacity <= 0))
 					{
 						// Always automatically add "outside" units; add "inside" units only if there's still space
-						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, false, players, fogOfWarMemory, db);
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, fogOfWarMemory, db);
 						if (areAllTerrainTypesPassable (xu, unitStackSkills, db))
 							stack.getUnits ().add (xu);
 						else if (unitsInside < transportCapacity)

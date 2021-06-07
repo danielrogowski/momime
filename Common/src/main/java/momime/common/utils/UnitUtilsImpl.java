@@ -194,7 +194,6 @@ public final class UnitUtilsImpl implements UnitUtils
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
 	 * @param attackFromMagicRealmID The magic realm of the incoming attack, e.g. bonus from Bless only activates vs Death and Chaos-based attacks;
 	 *		null will only count bonuses that apply regardless of the kind of attack being defended against
-	 * @param isInCombat Whether the reason we need the unit stats is because of some attack they're involved in in a combat 
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param db Lookup lists built over the XML database
@@ -205,7 +204,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	 */
 	@Override
 	public final ExpandedUnitDetails expandUnitDetails (final AvailableUnit unit,
-		final List<ExpandedUnitDetails> enemyUnits, final String attackFromSkillID, final String attackFromMagicRealmID, final boolean isInCombat,
+		final List<ExpandedUnitDetails> enemyUnits, final String attackFromSkillID, final String attackFromMagicRealmID,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
@@ -229,6 +228,8 @@ public final class UnitUtilsImpl implements UnitUtils
 					if (thisUnit == unit)
 						mu = thisMU;
 				}
+		
+		final boolean isInCombat = (unitCombatLocation != null);
 		
 		if (mu == null)
 		{

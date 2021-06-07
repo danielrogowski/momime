@@ -752,7 +752,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				{
 					final MemoryUnit thisUnit = iter.next ();
 					
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (), true,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
@@ -843,7 +843,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				// This is basically the same loop as above, except now we need a list of the dead units, not simply to find one and exit the loop 
 				for (final MemoryUnit thisUnit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (), true,
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, spell.getSpellRealm (),
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 					
 					if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell

@@ -552,7 +552,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
 		
 		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (false),
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (xuDefendingSpirit);
 		
 		// Unit stats
@@ -690,7 +690,7 @@ public final class TestOverlandMapServerUtilsImpl extends ServerTestData
 		when (xuAttackingSpirit.getMemoryUnit ()).thenReturn (attackingSpirit);
 		
 		final ExpandedUnitDetails xuDefendingSpirit = mock (ExpandedUnitDetails.class);
-		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null), eq (false),
+		when (unitUtils.expandUnitDetails (any (AvailableUnit.class), eq (null), eq (null), eq (null),
 			eq (players), eq (trueMap), eq (db))).thenReturn (xuDefendingSpirit);
 		
 		// Unit stats

@@ -211,6 +211,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 	/** Y coord to display overland cast animation at, in pixels */
 	private int overlandCastAnimationY;
 	
+	/** Plane to display overland cast animation at; null means both (its cast at a tower) */
+	private Integer overlandCastAnimationPlane;
+	
 	/** Frame number to display of overland cast animation */
 	private int overlandCastAnimationFrame;
 	
@@ -623,7 +626,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 				}
 
 				// Draw casting animation?
-				if (getOverlandCastAnimation () != null)
+				if ((getOverlandCastAnimation () != null) &&
+					((getOverlandCastAnimationPlane () == null) || (getOverlandCastAnimationPlane () == getMapViewPlane ())))
+					
 					try
 					{
 						final BufferedImage castImage = getUtils ().loadImage (getOverlandCastAnimation ().getFrame ().get (getOverlandCastAnimationFrame ()));
@@ -1840,6 +1845,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 		overlandCastAnimationY = y;
 	}
 
+	/**
+	 * @return Plane to display overland cast animation at; null means both (its cast at a tower)
+	 */
+	public final Integer getOverlandCastAnimationPlane ()
+	{
+		return overlandCastAnimationPlane;
+	}
+
+	/**
+	 * @param p Plane to display overland cast animation at; null means both (its cast at a tower)
+	 */
+	public final void setOverlandCastAnimationPlane (final Integer p)
+	{
+		overlandCastAnimationPlane = p;
+	}
+	
 	/**
 	 * @return Frame number to display of overland cast animation
 	 */

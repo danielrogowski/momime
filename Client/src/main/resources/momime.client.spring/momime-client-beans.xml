@@ -467,6 +467,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 	</bean>
 
 	<bean id="switchOffMaintainedSpellMessage" class="momime.client.messages.process.SwitchOffMaintainedSpellMessageImpl" scope="prototype">

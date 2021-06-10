@@ -30,10 +30,12 @@ import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Spell;
 import momime.common.database.TileSetEx;
+import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.OverlandMapCityData;
 import momime.common.messages.servertoclient.AddOrUpdateMaintainedSpellMessage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 
 /**
@@ -73,6 +75,9 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	
 	/** City calculations */
 	private CityCalculations cityCalculations;
+	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
 	
 	/** True for city enchantments/curses and overland enchantments */
 	private boolean animatedByOtherFrame;
@@ -183,7 +188,16 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 						}
 						else
 						{
-							// Show anim on OverlandMapUI
+							// Show anim on OverlandMapUI - is the unit in a tower?
+							final MemoryGridCell mc = getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+								(spellTargetUnit.getUnitLocation ().getZ ()).getRow ().get (spellTargetUnit.getUnitLocation ().getY ()).getCell ().get
+								(spellTargetUnit.getUnitLocation ().getX ());
+							
+							if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
+								getOverlandMapUI ().setOverlandCastAnimationPlane (null);
+							else
+								getOverlandMapUI ().setOverlandCastAnimationPlane (spellTargetUnit.getUnitLocation ().getZ ());
+							
 							final TileSetEx overlandMapTileSet = getClient ().getClientDB ().findTileSet (CommonDatabaseConstants.TILE_SET_OVERLAND_MAP, "AddMaintainedSpellMessageImpl.init");
 		
 							final int adjustX = (anim.getOverlandCastOffsetX () == null) ? 0 : anim.getOverlandCastOffsetX ();
@@ -539,5 +553,21 @@ public final class AddOrUpdateMaintainedSpellMessageImpl extends AddOrUpdateMain
 	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
+	}
+
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
 	}
 }

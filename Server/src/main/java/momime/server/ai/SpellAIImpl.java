@@ -389,6 +389,12 @@ public final class SpellAIImpl implements SpellAI
 								
 								break;
 								
+							// Special spells with no target to choose (especially spell of mastery)
+							case SPECIAL_SPELLS:
+								if (spell.getSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY))
+									considerSpells.add (10, spell);
+								break;
+								
 							// This is fine, the AI doesn't cast every type of spell yet
 							default:
 						}

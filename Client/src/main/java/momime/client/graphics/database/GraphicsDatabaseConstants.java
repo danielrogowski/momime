@@ -58,6 +58,12 @@ public final class GraphicsDatabaseConstants
 
 	/** Winning animation sparkles */
 	public final static String ANIM_WIZARD_WON_SPARKLES = "WORLDS_SPARKLES";
+
+	/** Animation of cloud appearing above Wizards' Fortress */
+	public final static String ANIM_SPELL_OF_MASTERY_START = "SPELL_OF_MASTERY_START";
+	
+	/** Animation of portal which sucks up enemy wizards */
+	public final static String ANIM_SPELL_OF_MASTERY_PORTAL = "SPELL_OF_MASTERY_PORTAL";
 	
 	/**
 	 * Prevent instatiation of this class

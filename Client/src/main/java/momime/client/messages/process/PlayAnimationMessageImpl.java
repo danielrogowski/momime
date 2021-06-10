@@ -13,6 +13,8 @@ import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.client.MomClient;
+import momime.client.ui.dialogs.SpellOfMasteryEndUI;
+import momime.client.ui.dialogs.SpellOfMasteryStartUI;
 import momime.client.ui.dialogs.WizardWonUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
 import momime.common.messages.servertoclient.PlayAnimationMessage;
@@ -53,6 +55,18 @@ public final class PlayAnimationMessageImpl extends PlayAnimationMessage impleme
 				wizardWonUI.setPlayAnimationMessage (this);
 				wizardWonUI.setVisible (true);
 				break;
+				
+			case STARTED_SPELL_OF_MASTERY:
+				final SpellOfMasteryStartUI spellOfMasteryStartUI = getPrototypeFrameCreator ().createSpellOfMasteryStart ();
+				spellOfMasteryStartUI.setCastingWizard (player);
+				spellOfMasteryStartUI.setPlayAnimationMessage (this);
+				spellOfMasteryStartUI.setVisible (true);
+				
+			case FINISHED_SPELL_OF_MASTERY:
+				final SpellOfMasteryEndUI spellOfMasteryEndUI = getPrototypeFrameCreator ().createSpellOfMasteryEnd ();
+				spellOfMasteryEndUI.setCastingWizard (player);
+				spellOfMasteryEndUI.setPlayAnimationMessage (this);
+				spellOfMasteryEndUI.setVisible (true);
 				
 			default:
 				// Its just an animation, don't throw a major exception for it

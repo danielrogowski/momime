@@ -45,6 +45,8 @@ import momime.client.languages.database.ShortcutKey;
 import momime.client.languages.database.Simple;
 import momime.client.languages.database.SpellBookScreen;
 import momime.client.languages.database.SpellCasting;
+import momime.client.languages.database.SpellOfMasteryEndScreen;
+import momime.client.languages.database.SpellOfMasteryStartScreen;
 import momime.client.languages.database.SpellQueueScreen;
 import momime.client.languages.database.TaxRateScreen;
 import momime.client.languages.database.TreasureScreen;
@@ -358,6 +360,16 @@ public interface MomLanguagesEx
 	 */
     public WizardWonScreen getWizardWonScreen ();
 	
+	/**
+	 * @return Container for language strings
+	 */
+    public SpellOfMasteryStartScreen getSpellOfMasteryStartScreen ();
+
+	/**
+	 * @return Container for language strings
+	 */
+    public SpellOfMasteryEndScreen getSpellOfMasteryEndScreen ();
+    
 	/**
 	 * @return Container for language strings
 	 */

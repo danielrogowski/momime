@@ -61,7 +61,9 @@ import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
 import momime.common.messages.servertoclient.AddUnassignedHeroItemMessage;
+import momime.common.messages.servertoclient.AnimationID;
 import momime.common.messages.servertoclient.FullSpellListMessage;
+import momime.common.messages.servertoclient.PlayAnimationMessage;
 import momime.common.messages.servertoclient.ShowSpellAnimationMessage;
 import momime.common.messages.servertoclient.UpdateCombatMapMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
@@ -69,6 +71,7 @@ import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
+import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.ResourceValueUtils;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.TargetSpellResult;
@@ -350,6 +353,32 @@ public final class SpellProcessingImpl implements SpellProcessing
 			}
 			else
 				getSpellAI ().decideSpellTarget (player, spell, maintainedSpell, mom);
+		}
+		
+		// Special spells (Spell of Mastery and a few other unique spells that you don't even pick a target for)
+		else if (sectionID == SpellBookSectionID.SPECIAL_SPELLS)
+		{
+			final PlayAnimationMessage msg = new PlayAnimationMessage ();
+			msg.setAnimationID (AnimationID.FINISHED_SPELL_OF_MASTERY);
+			msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+			
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+			
+			// Defeat everyone except the winner
+			for (final PlayerServerDetails defeatedPlayer : mom.getPlayers ())
+				if (defeatedPlayer != player)
+				{
+					final MomPersistentPlayerPublicKnowledge defeatedPub = (MomPersistentPlayerPublicKnowledge) defeatedPlayer.getPersistentPlayerPublicKnowledge ();
+					if ((PlayerKnowledgeUtils.isWizard (defeatedPub.getWizardID ())) && (defeatedPub.getWizardState () != WizardState.DEFEATED))
+					{
+						defeatedPub.setWizardState (WizardState.DEFEATED);
+						if (defeatedPlayer.getPlayerDescription ().isHuman ())
+							mom.updateHumanPlayerToAI (defeatedPlayer.getPlayerDescription ().getPlayerID ());
+					}
+				}
+			
+			// Let the remaining player win (this kicks them and ends the session)
+			getPlayerMessageProcessing ().checkIfWonGame (mom);
 		}
 
 		else

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
+	<formWidth>640</formWidth>		<!-- 320 x 2 -->
+	<formHeight>480</formHeight>		<!-- 200 x 2.4 -->
+	<component name="frmSpellOfMasteryEndLine">
+		<left>320</left>
+		<top>8</top>
+		<horizontalAlignment>0.5</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellOfMasteryEndChanting">
+		<left>138</left>			<!-- 69 x 2 -->
+		<top>180</top>			<!-- 75 x 2.4 -->
+		<width>166</width>		<!-- 83 x 2 -->
+		<height>271</height>	<!-- 113 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+	<component name="frmSpellOfMasteryEndPortal">
+		<left>180</left>			<!-- 90 x 2 -->
+		<top>0</top>				<!-- 0 x 2.4 -->
+		<width>272</width>		<!-- 136 x 2 -->
+		<height>360</height>	<!-- 150 x 2.4 -->
+		<horizontalAlignment>0.0</horizontalAlignment>
+		<verticalAlignment>0.0</verticalAlignment>
+	</component>
+</ns2:xmlLayoutContainer>

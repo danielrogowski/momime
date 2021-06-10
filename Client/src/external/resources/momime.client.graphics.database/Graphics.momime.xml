@@ -368,6 +368,96 @@
 		<frame>/momime.client.graphics/animations/worlds/worlds-frame-66.png</frame>
 		<frame>/momime.client.graphics/animations/worlds/worlds-frame-67.png</frame>
 	</animation>
+	<animation animationID="SPELL_OF_MASTERY_START">
+		<animationDescription>Spell of Mastery starting (swirl over Wizard's Fortress)</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-01.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-02.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-03.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-04.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-05.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-06.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-07.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-08.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-09.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-10.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-11.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-12.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-13.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-14.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-15.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-16.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-17.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-18.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-19.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-20.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-21.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-22.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-23.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-24.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-25.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-26.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-27.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-28.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-29.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-30.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-31.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-32.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-33.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-34.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-35.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-36.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-37.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-38.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-39.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-40.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-41.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-42.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-43.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-44.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-45.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-46.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-47.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-48.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-49.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-50.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-51.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-52.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-53.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-54.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-55.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-56.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-57.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-58.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-59.png</frame>
+		<frame>/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-60.png</frame>
+	</animation>
+	<animation animationID="SPELL_OF_MASTERY_PORTAL">
+		<animationDescription>Spell of Mastery end (portal which sucks up enemy wizards)</animationDescription>
+		<animationSpeed>4</animationSpeed>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-01.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-02.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-03.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-04.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-05.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-06.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-07.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-08.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-09.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-10.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-11.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-12.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-13.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-14.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-15.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-16.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-17.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-18.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-19.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-20.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-21.png</frame>
+		<frame>/momime.client.graphics/animations/wizardsLab/portal-frame-22.png</frame>
+	</animation>
 	<playList playListID="OVERLAND">
 		<audioFile>/momime.client.music/MUSIC_099 - BGM.mp3</audioFile>
 		<audioFile>/momime.client.music/MUSIC_100 - BGM.mp3</audioFile>

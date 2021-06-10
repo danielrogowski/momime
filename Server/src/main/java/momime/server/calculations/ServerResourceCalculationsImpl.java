@@ -634,8 +634,15 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 	public final void recalculateGlobalProductionValues (final int onlyOnePlayerID, final boolean duringStartPhase, final MomSessionVariables mom)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException
 	{
+		// Make a list of all players to process, in case the session ends and wipes the list out part way through
+		final List<PlayerServerDetails> playersToProcess = new ArrayList<PlayerServerDetails> ();
+		
 		for (final PlayerServerDetails player : mom.getPlayers ())
 			if ((onlyOnePlayerID == 0) || (player.getPlayerDescription ().getPlayerID () == onlyOnePlayerID))
+				playersToProcess.add (player);
+		
+		for (final PlayerServerDetails player : playersToProcess)
+			if (mom.getPlayers ().size () > 0)
 			{
 				// Don't calc production for the Rampaging Monsters player, or the routine spots that they have lots of units
 				// that take a lot of mana to maintain, and no buildings generating any mana to support them, and kills them all off
@@ -668,8 +675,11 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 
 						// Continue casting spells
 						// If we actually completed casting one, then adjust calculated per turn production to take into account the extra mana being used
+						// as long as it wasn't Spell of Mastery and the session is closed out already
 						if (getSpellQueueing ().progressOverlandCasting (player, mom))
-							recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription (), mom.getServerDB ());
+							if (mom.getPlayers ().size () > 0)
+								recalculateAmountsPerTurn (player, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+									mom.getSessionDescription (), mom.getServerDB ());
 					}
 					else if (player.getPlayerDescription ().isHuman ())
 

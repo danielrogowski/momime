@@ -1,5 +1,7 @@
 package momime.server.process;
 
+import java.util.List;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
@@ -54,14 +56,15 @@ public interface SpellQueueing
 	 * and to make sure they can't cast it instantly.
 	 * 
 	 * @param player Player casting the spell
+	 * @param players List of players in the session
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem If create item/artifact, the details of the item to create
 	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
 	 * @throws JAXBException If there is a problem sending the reply to the client
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
-	public void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem, final Integer variableDamage)
-		throws JAXBException, XMLStreamException;
+	public void queueSpell (final PlayerServerDetails player, final List<PlayerServerDetails> players, final String spellID, final HeroItem heroItem,
+		final Integer variableDamage) throws JAXBException, XMLStreamException;
 	
 	/**
 	 * Spends any skill/mana the player has left towards casting queued spells

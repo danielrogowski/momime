@@ -5,6 +5,8 @@ import momime.client.ui.dialogs.CombatEndedUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.MiniCityViewUI;
 import momime.client.ui.dialogs.OverlandEnchantmentsUI;
+import momime.client.ui.dialogs.SpellOfMasteryEndUI;
+import momime.client.ui.dialogs.SpellOfMasteryStartUI;
 import momime.client.ui.dialogs.TreasureUI;
 import momime.client.ui.dialogs.UnitRowDisplayUI;
 import momime.client.ui.dialogs.WizardBanishedUI;
@@ -84,6 +86,16 @@ public interface PrototypeFrameCreator
 	 * @return New wizard won UI
 	 */
 	public WizardWonUI createWizardWon ();
+
+	/**
+	 * @return New Spell of Mastery Start UI
+	 */
+	public SpellOfMasteryStartUI createSpellOfMasteryStart ();
+	
+	/**
+	 * @return New Spell of Mastery End UI
+	 */
+	public SpellOfMasteryEndUI createSpellOfMasteryEnd ();
 	
 	/**
 	 * @return New army list UI

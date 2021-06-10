@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
+import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -32,7 +33,9 @@ import momime.common.messages.QueuedSpell;
 import momime.common.messages.SpellResearchStatusID;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
+import momime.common.messages.servertoclient.AnimationID;
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
+import momime.common.messages.servertoclient.PlayAnimationMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
@@ -100,6 +103,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 	
 	/** Hero item server utils */
 	private HeroItemServerUtils heroItemServerUtils;
+	
+	/** Server only helper methods for dealing with players in a session */
+	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
 	/**
 	 * Client wants to cast a spell, either overland or in combat
@@ -489,7 +495,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 					(player.getPlayerDescription ().getPlayerID (), false, mom);
 			}
 			else
-				queueSpell (player, spellID, heroItem, variableDamage);
+				queueSpell (player, mom.getPlayers (), spellID, heroItem, variableDamage);
 		}
 		
 		return combatEnded;
@@ -500,6 +506,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * and to make sure they can't cast it instantly.
 	 * 
 	 * @param player Player casting the spell
+	 * @param players List of players in the session
 	 * @param spellID Which spell they want to cast
 	 * @param heroItem If create item/artifact, the details of the item to create
 	 * @param variableDamage Chosen damage selected for the spell, for spells like disenchant area where a varying amount of mana can be channeled into the spell
@@ -507,8 +514,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 */
 	@Override
-	public final void queueSpell (final PlayerServerDetails player, final String spellID, final HeroItem heroItem, final Integer variableDamage)
-		throws JAXBException, XMLStreamException
+	public final void queueSpell (final PlayerServerDetails player, final List<PlayerServerDetails> players, final String spellID, final HeroItem heroItem,
+		final Integer variableDamage) throws JAXBException, XMLStreamException
 	{
 		final MomPersistentPlayerPrivateKnowledge priv = (MomPersistentPlayerPrivateKnowledge) player.getPersistentPlayerPrivateKnowledge ();
 		
@@ -529,6 +536,16 @@ public final class SpellQueueingImpl implements SpellQueueing
 			reply.setVariableDamage (variableDamage);
 			
 			player.getConnection ().sendMessageToClient (reply);
+		}
+		
+		// Tell everyone if someone started casting Spell of Mastery
+		if ((priv.getQueuedSpell ().size () == 1) && (spellID.equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY)))
+		{
+			final PlayAnimationMessage msg = new PlayAnimationMessage ();
+			msg.setAnimationID (AnimationID.STARTED_SPELL_OF_MASTERY);
+			msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+			
+			getMultiplayerSessionServerUtils ().sendMessageToAllClients (players, msg);
 		}
 	}
 
@@ -555,7 +572,8 @@ public final class SpellQueueingImpl implements SpellQueueing
 		// Keep going while this player has spells queued, free mana and free skill
 		boolean anySpellsCast = false;
 		int manaRemaining = getResourceValueUtils ().findAmountStoredForProductionType (priv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA);
-		while ((priv.getQueuedSpell ().size () > 0) && (trans.getOverlandCastingSkillRemainingThisTurn () > 0) && (manaRemaining > 0))
+		while ((mom.getPlayers ().size () > 0) && (priv.getQueuedSpell ().size () > 0) &&
+			(trans.getOverlandCastingSkillRemainingThisTurn () > 0) && (manaRemaining > 0))
 		{
 			// How much to put towards this spell?
 			final QueuedSpell queued = priv.getQueuedSpell ().get (0);
@@ -589,12 +607,24 @@ public final class SpellQueueingImpl implements SpellQueueing
 				// Cast it
 				getSpellProcessing ().castOverlandNow (player, spell, queued.getVariableDamage (), queued.getHeroItem (), mom);
 				anySpellsCast = true;
+				
+				// If the next thing we had queued is Spell of Mastery then announce it
+				// Note if what we just cast was Spell of Mastery, the session may have already been wiped out and the players list be empty
+				if ((mom.getPlayers ().size () > 0) && (priv.getQueuedSpell ().size () > 0) &&
+					(priv.getQueuedSpell ().get (0).getQueuedSpellID ().equals (CommonDatabaseConstants.SPELL_ID_SPELL_OF_MASTERY)))
+				{
+					final PlayAnimationMessage msg = new PlayAnimationMessage ();
+					msg.setAnimationID (AnimationID.STARTED_SPELL_OF_MASTERY);
+					msg.setPlayerID (player.getPlayerDescription ().getPlayerID ());
+					
+					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+				}
 			}
 
 			// Update mana spent so far on client (or set to 0 if finished)
 			// Maybe this should be moved out?  If we cast multiple queued spells, do we really have to keep sending 0's?
 			// Surely the client only cares on the mana spent on casting ones that we don't remove from its queue
-			if (player.getPlayerDescription ().isHuman ())
+			if ((mom.getPlayers ().size () > 0) && (player.getPlayerDescription ().isHuman ()))
 			{
 				final UpdateManaSpentOnCastingCurrentSpellMessage msg = new UpdateManaSpentOnCastingCurrentSpellMessage ();
 				msg.setManaSpentOnCastingCurrentSpell (priv.getManaSpentOnCastingCurrentSpell ());
@@ -813,5 +843,21 @@ public final class SpellQueueingImpl implements SpellQueueing
 	public final void setHeroItemServerUtils (final HeroItemServerUtils util)
 	{
 		heroItemServerUtils = util;
+	}
+
+	/**
+	 * @return Server only helper methods for dealing with players in a session
+	 */
+	public final MultiplayerSessionServerUtils getMultiplayerSessionServerUtils ()
+	{
+		return multiplayerSessionServerUtils;
+	}
+
+	/**
+	 * @param obj Server only helper methods for dealing with players in a session
+	 */
+	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
+	{
+		multiplayerSessionServerUtils = obj;
 	}
 }

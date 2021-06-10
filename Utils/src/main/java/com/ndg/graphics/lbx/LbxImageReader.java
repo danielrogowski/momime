@@ -3,6 +3,8 @@ package com.ndg.graphics.lbx;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -733,7 +735,7 @@ public final class LbxImageReader extends ImageReader
 				writer.close ();
 			} */
 
-/*			try (final FileReader reader = new FileReader ("F:\\LbxPalette.txt"))
+			try (final FileReader reader = new FileReader ("W:\\LbxPalette.txt"))
 			{
 				try (final BufferedReader bufRead = new BufferedReader (reader))
 				{
@@ -744,7 +746,7 @@ public final class LbxImageReader extends ImageReader
 				}
 				
 				reader.close ();
-			} */
+			}
 			
 			// Values of at least this indicate run length values
 			RLE_val = firstPaletteColourIndex + paletteColourCount;

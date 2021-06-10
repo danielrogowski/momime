@@ -220,7 +220,9 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 	</bean>
 
-	<bean id="requestRemoveQueuedSpellMessage" class="momime.server.messages.process.RequestRemoveQueuedSpellMessageImpl" scope="prototype" />
+	<bean id="requestRemoveQueuedSpellMessage" class="momime.server.messages.process.RequestRemoveQueuedSpellMessageImpl" scope="prototype">
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
+	</bean>
 
 	<bean id="requestAcceptOfferMessage" class="momime.server.messages.process.RequestAcceptOfferMessageImpl" scope="prototype">
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
@@ -604,6 +606,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellProcessing" ref="spellProcessing" />
 		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 		<property name="heroItemServerUtils" ref="heroItemServerUtils" />
+		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
 	</bean>
 
 	<bean id="spellDispelling" class="momime.server.process.SpellDispellingImpl">

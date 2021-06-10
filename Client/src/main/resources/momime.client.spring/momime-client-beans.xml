@@ -2032,6 +2032,38 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 	</bean>
 	
+	<bean id="spellOfMasteryStartLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/SpellOfMasteryStartUI.xml" />
+	</bean>
+
+	<bean id="spellOfMasteryStartUI" class="momime.client.ui.dialogs.SpellOfMasteryStartUI" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="spellOfMasteryStartLayout" ref="spellOfMasteryStartLayout" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="client" ref="client" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+	</bean>
+	
+	<bean id="spellOfMasteryEndLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
+		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/SpellOfMasteryEndUI.xml" />
+	</bean>
+
+	<bean id="spellOfMasteryEndUI" class="momime.client.ui.dialogs.SpellOfMasteryEndUI" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="languageChangeMaster" ref="optionsUI" />
+		<property name="utils" ref="uiUtils" />
+		<property name="spellOfMasteryEndLayout" ref="spellOfMasteryEndLayout" />
+		<property name="largeFont" ref="largeFont" />
+		<property name="graphicsDB" ref="graphicsDatabase" />
+		<property name="musicPlayer" ref="musicPlayer" />
+		<property name="client" ref="client" />
+		<property name="wizardClientUtils" ref="wizardClientUtils" />
+	</bean>
+	
 	<bean id="armyListLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.dialogs/ArmyListUI.xml" />
 	</bean>

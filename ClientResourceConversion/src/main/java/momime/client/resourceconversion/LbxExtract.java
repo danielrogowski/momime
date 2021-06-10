@@ -17,7 +17,7 @@ import com.ndg.graphics.ImageCache;
 public final class LbxExtract
 {
 	/** Location of MoM IME Client project sources */
-	private final static String CLIENT_PROJECT_ROOT = "W:\\EclipseHome\\SourceForge\\MoMIMEClient";
+	private final static String CLIENT_PROJECT_ROOT = "W:\\EclipseHome\\SourceForge\\MoMIME\\Client";
 	
 	/** Cache for locating files and handling archives */
 	private ImageCache cache;
@@ -71,13 +71,13 @@ public final class LbxExtract
 			}
 		};
 		
-/*		for (int w = 0; w <= 13; w++)
+		for (int w = 0; w <= 13; w++)
 		{
 			String t = Integer.valueOf (w+1).toString ();
 			while (t.length () < 2)
 				t = "0" + t;
 			
-			final int maxFrame = ((w == 0) || (w == 7)) ? 19 : 24;
+			final int maxFrame = 59; // ((w == 0) || (w == 7)) ? 19 : 24;
 			
 			for (int n = 0; n <= maxFrame ; n++)
 			{
@@ -85,17 +85,21 @@ public final class LbxExtract
 				while (s.length () < 2)
 					s = "0" + s;
 				
-				convertImage ("WIN.LBX", 3+w, n, "wizards\\WZ" + t + "-talk-frame-" + s);
+				convertImage ("SPLMASTR.LBX", w, n, "wizards\\WZ" + t + "-ball-frame-" + s);
 			}
-		} */
-		
-		for (int n = 0; n <= 5 ; n++)
-		{
-			convertImage ("WIN.LBX", 17+n, 0, "animations\\worlds\\hands-" + (n+1));
 		}
 		
+		/*for (int n = 0; n <= 5 ; n++)
+		{
+			String s = Integer.valueOf (n+17).toString ();
+			while (s.length () < 2)
+				s = "0" + s;
+
+			convertImage ("SPLMASTR.LBX", 31, n, "animations\\wizardsLab\\portal-frame-" + s);
+		} */
+		
 		System.out.println ("All done!");
-	}
+	} 
 
 	/**
 	 * Kicks off the conversion

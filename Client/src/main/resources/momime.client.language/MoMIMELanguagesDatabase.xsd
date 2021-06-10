@@ -2010,6 +2010,26 @@
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellOfMasteryStartScreen" type="momimelangs:spellOfMasteryStartScreen">
+					<xsd:key name="spellOfMasteryStartScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellOfMasteryStartScreenLinePK">
+						<xsd:selector xpath="line" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
+    			<xsd:element minOccurs="0" maxOccurs="1" name="spellOfMasteryEndScreen" type="momimelangs:spellOfMasteryEndScreen">
+					<xsd:key name="spellOfMasteryEndScreenTitlePK">
+						<xsd:selector xpath="title" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="spellOfMasteryEndScreenLinePK">
+						<xsd:selector xpath="line" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="historyScreen" type="momimelangs:historyScreen">
 					<xsd:key name="historyScreenTitlePK">
 						<xsd:selector xpath="title" />
@@ -4055,6 +4075,20 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line2" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line3" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line4" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="spellOfMasteryStartScreen" nxe:submenu="UI" nxe:singular="Spell of Mastery Start" nxe:plural="Spell of Mastery Start">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line" />
+		</xsd:sequence>
+    </xsd:complexType>
+	
+	<xsd:complexType name="spellOfMasteryEndScreen" nxe:submenu="UI" nxe:singular="Spell of Mastery End" nxe:plural="Spell of Mastery End">
+		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="line" />
 		</xsd:sequence>
     </xsd:complexType>
 	

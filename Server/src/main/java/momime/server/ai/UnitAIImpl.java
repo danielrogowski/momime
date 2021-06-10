@@ -1028,6 +1028,7 @@ public final class UnitAIImpl implements UnitAI
 			}
 			
 			// Any items leftover unused go back in the bank
+			priv.getUnassignedHeroItem ().clear ();
 			priv.getUnassignedHeroItem ().addAll (itemsList);
 		}
 	}

@@ -667,21 +667,26 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 			getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, true, mom);
 
 			// Do this AFTER calculating and accumulating production, so checking for units dying due to insufficient rations happens before city populations might change
-			getCityProcessing ().growCitiesAndProgressConstructionProjects (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
-				mom.getSessionDescription (), mom.getServerDB ());
+			// Also at this point the session may already have ended, if somebody cast Spell of Mastery
+			if (mom.getPlayers ().size () > 0)
+				getCityProcessing ().growCitiesAndProgressConstructionProjects (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge (),
+					mom.getSessionDescription (), mom.getServerDB ());
 		}
-
-		// Give units their full movement back again
-		// NB. Do this after our cities may have constructed new units above
-		getFogOfWarMidTurnMultiChanges ().resetUnitOverlandMovement (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-			mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 		
-		// Now need to do one final recalc to take into account
-		// 1) Cities producing more food/gold due to increased population
-		// 2) Cities eating more food due to increased population
-		// 3) Completed buildings (both bonuses and increased maintenance)
-		getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, false, mom);
-		storePowerBaseHistory (onlyOnePlayerID, mom.getPlayers ());
+		if (mom.getPlayers ().size () > 0)
+		{
+			// Give units their full movement back again
+			// NB. Do this after our cities may have constructed new units above
+			getFogOfWarMidTurnMultiChanges ().resetUnitOverlandMovement (onlyOnePlayerID, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+				mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
+			
+			// Now need to do one final recalc to take into account
+			// 1) Cities producing more food/gold due to increased population
+			// 2) Cities eating more food due to increased population
+			// 3) Completed buildings (both bonuses and increased maintenance)
+			getServerResourceCalculations ().recalculateGlobalProductionValues (onlyOnePlayerID, false, mom);
+			storePowerBaseHistory (onlyOnePlayerID, mom.getPlayers ());
+		}
 		
 		// Generate offers for heroes, mercenaries and items to hire or buy
 		for (final PlayerServerDetails player : mom.getPlayers ())

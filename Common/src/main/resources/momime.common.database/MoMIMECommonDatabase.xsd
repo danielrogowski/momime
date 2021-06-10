@@ -1451,13 +1451,21 @@
 			<xsd:selector xpath="tileSet/smoothedTileType/smoothedTile" />
 			<xsd:field xpath="tileAnimation" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimationE">
+		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimation1">
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="evaporatingAnimation" />
 		</xsd:keyref>
-		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimationT">
+		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimation2">
 			<xsd:selector xpath="wizard" />
 			<xsd:field xpath="talkingAnimation" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimation3">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="chantingAnimation" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:animationPK" name="wizardFKanimation4">
+			<xsd:selector xpath="wizard" />
+			<xsd:field xpath="ballAnimation" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:playListPK" name="combatPlayListFKplayList">
 			<xsd:selector xpath="wizard/combatPlayList" />
@@ -2252,6 +2260,20 @@ If it finds multiple, it will look for a pick with mergedFromPick entries that m
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="talkingAnimation" type="momimecommon:animationID" nxe:label="Talking anim" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="chantingAnimation" type="momimecommon:animationID" nxe:label="Chanting anim" nxe:gridwidth="150">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="ballAnimation" type="momimecommon:animationID" nxe:label="Ball anim" nxe:gridwidth="150">
 				<xsd:annotation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>animationDescription</nxe:showreferencedfield>
@@ -4539,6 +4561,10 @@ the exact type of spell is currently dictated by whether there any spellValidBor
 				<xsd:documentation>Dispelling spells; if attackSpellCombatTarget is single unit then this is Dispel Magic / True; if attackSpellCombatTarget is all units then
 this is Disenchant Area / True; if cannot be cast in combat then this is Disjunction / True.</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DISPEL_SPELLS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="SC97"><xsd:annotation>
+				<xsd:documentation>Special spells that do not require a target at all; exact effect of the spell is simply hard coded by the spellID</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="SPECIAL_SPELLS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="SC98"><xsd:annotation>
 				<xsd:documentation>Researchable now - One of the 8 options for what to research next</xsd:documentation>

@@ -4180,6 +4180,22 @@ Bonus Or +GOLD_BONUS%</text>
             <text>and true Master of Magic</text>
         </line4>
     </wizardWonScreen>
+    <spellOfMasteryStartScreen>
+        <title language="en">
+            <text>Spell of Mastery</text>
+        </title>
+        <line language="en">
+            <text>PLAYER_NAME has started casting the Spell of Mastery</text>
+        </line>
+    </spellOfMasteryStartScreen>
+    <spellOfMasteryEndScreen>
+        <title language="en">
+            <text>Spell of Mastery</text>
+        </title>
+        <line language="en">
+            <text>PLAYER_NAME has completed casting the Spell of Mastery</text>
+        </line>
+    </spellOfMasteryEndScreen>
     <historyScreen>
         <title language="en">
             <text>History of Wizards' Power</text>

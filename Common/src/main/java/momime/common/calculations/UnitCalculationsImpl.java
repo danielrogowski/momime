@@ -681,6 +681,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 									{
 										movementTypes [moveTo.getY ()] [moveTo.getX ()] = CombatMoveType.CANNOT_MOVE;
 										doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = MOVEMENT_DISTANCE_CANNOT_MOVE_HERE;
+										movementDirections [moveTo.getY ()] [moveTo.getX ()] = 0;
 									}
 								}
 								else

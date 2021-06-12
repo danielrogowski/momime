@@ -327,8 +327,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				result = true;
 			else
 			{
-				// To attack it, we have to have one of the listed skills
-				result = false;
+				// To attack it, we have to have the same combatActionID (also flying), or one of the listed skills
+				result = determineCombatActionID (unit, false, db).equals (enemyCombatActionID);
 				final Iterator<String> iter = unit.listModifiedSkillIDs ().iterator ();
 				while ((!result) && (iter.hasNext ()))
 				{

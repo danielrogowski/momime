@@ -19,7 +19,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.language.LanguageChangeMaster;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
@@ -35,6 +34,7 @@ import momime.client.utils.ResourceValueClientUtilsImpl;
 import momime.client.utils.UnitClientUtils;
 import momime.client.utils.UnitNameType;
 import momime.client.utils.WizardClientUtils;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.UnitEx;
@@ -148,11 +148,11 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Movement
-		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		
 		final UnitSkillEx movementSkill = new UnitSkillEx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
-		when (clientUnitCalc.findPreferredMovementSkillGraphics (xu)).thenReturn (movementSkill);
+		when (unitCalc.findPreferredMovementSkillGraphics (xu, db)).thenReturn (movementSkill);
 
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
@@ -175,7 +175,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
-		panel.setClientUnitCalculations (clientUnitCalc);
+		panel.setUnitCalculations (unitCalc);
 		panel.setUnitUtils (unitUtils);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setAnim (anim);
@@ -296,11 +296,11 @@ public final class TestUnitInfoUI extends ClientTestData
 		when (unitUtils.expandUnitDetails (unit, null, null, null, players, fow, db)).thenReturn (xu);
 		
 		// Movement
-		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
+		final UnitCalculations unitCalc = mock (UnitCalculations.class);
 		
 		final UnitSkillEx movementSkill = new UnitSkillEx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
-		when (clientUnitCalc.findPreferredMovementSkillGraphics (xu)).thenReturn (movementSkill);
+		when (unitCalc.findPreferredMovementSkillGraphics (xu, db)).thenReturn (movementSkill);
 
 		// Unit name
 		final UnitClientUtils unitClientUtils = mock (UnitClientUtils.class);
@@ -323,7 +323,7 @@ public final class TestUnitInfoUI extends ClientTestData
 		panel.setUnitSkillListCellRenderer (renderer);
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
-		panel.setClientUnitCalculations (clientUnitCalc);
+		panel.setUnitCalculations (unitCalc);
 		panel.setUnitUtils (unitUtils);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setAnim (anim);

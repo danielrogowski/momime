@@ -40,7 +40,6 @@ import com.ndg.zorder.ZOrderGraphicsImpl;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
@@ -164,9 +163,6 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
-	
-	/** Client unit calculations */
-	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** Animation controller */
 	private AnimationController anim;
@@ -645,7 +641,7 @@ public final class CombatUI extends MomClientFrameUI
 								
 								// If animation didn't provide a specific combatActionID then just default to standing still
 								if (combatActionID == null)
-									combatActionID = getClientUnitCalculations ().determineCombatActionID (unit.getUnit (), false);
+									combatActionID = getUnitCalculations ().determineCombatActionID (unit.getUnit (), false, getClient ().getClientDB ());
 								
 								// Draw unit
 								getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
@@ -662,7 +658,7 @@ public final class CombatUI extends MomClientFrameUI
 				if (getUnitMoving () != null)
 					try
 					{
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true);
+						final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true, getClient ().getClientDB ());
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
 							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours ());
 					}
@@ -1728,7 +1724,7 @@ public final class CombatUI extends MomClientFrameUI
 			// Movement
 			selectedUnitMovement.setText (getTextUtils ().halfIntToStr (unit.getDoubleCombatMovesLeft ()));
 			selectedUnitMovementImage.setIcon (new ImageIcon (getUtils ().loadImage
-				(getClientUnitCalculations ().findPreferredMovementSkillGraphics (xu).getMovementIconImageFile ())));
+				(getUnitCalculations ().findPreferredMovementSkillGraphics (xu, getClient ().getClientDB ()).getMovementIconImageFile ())));
 			
 			// Unit image
 			selectedUnitImage.setIcon (new ImageIcon (getUtils ().loadImage
@@ -2076,22 +2072,6 @@ public final class CombatUI extends MomClientFrameUI
 		unitClientUtils = util;
 	}
 
-	/**
-	 * @return Client unit calculations
-	 */
-	public final ClientUnitCalculations getClientUnitCalculations ()
-	{
-		return clientUnitCalculations;
-	}
-
-	/**
-	 * @param calc Client unit calculations
-	 */
-	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
-	{
-		clientUnitCalculations = calc;
-	}
-	
 	/**
 	 * @return Animation controller
 	 */

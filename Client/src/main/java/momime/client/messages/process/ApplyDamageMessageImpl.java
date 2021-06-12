@@ -15,7 +15,6 @@ import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
@@ -27,7 +26,6 @@ import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.client.utils.AnimationController;
 import momime.client.utils.UnitClientUtils;
-import momime.common.calculations.UnitCalculations;
 import momime.common.database.AnimationEx;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.DamageResolutionTypeID;
@@ -76,9 +74,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/** Unit utils */
 	private UnitUtils unitUtils;
 
-	/** Unit calculations */
-	private UnitCalculations unitCalculations;
-	
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 	
@@ -88,9 +83,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	/** Combat map processing */
 	private CombatMapProcessing combatMapProcessing;
 	
-	/** Client unit calculations */
-	private ClientUnitCalculations clientUnitCalculations;
-
 	/** Bitmap generator includes routines for calculating pixel coords */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
 	
@@ -577,22 +569,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	}
 
 	/**
-	 * @return Unit calculations
-	 */
-	public final UnitCalculations getUnitCalculations ()
-	{
-		return unitCalculations;
-	}
-
-	/**
-	 * @param calc Unit calculations
-	 */
-	public final void setUnitCalculations (final UnitCalculations calc)
-	{
-		unitCalculations = calc;
-	}
-
-	/**
 	 * @return Client-side unit utils
 	 */
 	public final UnitClientUtils getUnitClientUtils ()
@@ -638,22 +614,6 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 	public final void setCombatMapProcessing (final CombatMapProcessing proc)
 	{
 		combatMapProcessing = proc;
-	}
-
-	/**
-	 * @return Client unit calculations
-	 */
-	public final ClientUnitCalculations getClientUnitCalculations ()
-	{
-		return clientUnitCalculations;
-	}
-
-	/**
-	 * @param calc Client unit calculations
-	 */
-	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
-	{
-		clientUnitCalculations = calc;
 	}
 
 	/**

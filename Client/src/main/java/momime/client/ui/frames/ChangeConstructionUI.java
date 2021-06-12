@@ -33,7 +33,6 @@ import com.ndg.swing.actions.LoggingAction;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.AnimationContainer;
 import momime.client.ui.CompositeShape;
 import momime.client.ui.MomUIConstants;
@@ -108,9 +107,6 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	
 	/** Client city calculations */
 	private ClientCityCalculations clientCityCalculations;
-	
-	/** Client unit calculations */
-	private ClientUnitCalculations clientUnitCalculations;
 	
 	/** Unit/building info panel */
 	private UnitInfoPanel unitInfoPanel;
@@ -369,7 +365,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (sampleUnit, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
-			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (xu, true);
+			final String movingActionID = getUnitCalculations ().determineCombatActionID (xu, true, getClient ().getClientDB ());
 			getUnitClientUtils ().registerUnitFiguresAnimation (thisUnit.getUnitID (), movingActionID, 4, unitsList);
 
 			unitsItems.addElement (xu);
@@ -663,21 +659,5 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 	public final void setClientCityCalculations (final ClientCityCalculations calc)
 	{
 		clientCityCalculations = calc;
-	}
-	
-	/**
-	 * @return Client unit calculations
-	 */
-	public final ClientUnitCalculations getClientUnitCalculations ()
-	{
-		return clientUnitCalculations;
-	}
-
-	/**
-	 * @param calc Client unit calculations
-	 */
-	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
-	{
-		clientUnitCalculations = calc;
 	}
 }

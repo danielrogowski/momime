@@ -354,7 +354,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="moveUnitInCombatMessage" class="momime.client.messages.process.MoveUnitInCombatMessageImpl" scope="prototype">
 		<property name="unitClientUtils" ref="unitClientUtils" />
-		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="combatUI" ref="combatUI" />
@@ -366,9 +366,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="combatUI" ref="combatUI" />
-		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
@@ -841,7 +839,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="anim" ref="anim" />
 		<property name="unitUtils" ref="unitUtils" />
-		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
@@ -867,11 +865,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="productionReplacer" ref="productionReplacer" />
 	</bean>
 
-	<bean id="clientUnitCalculations" class="momime.client.calculations.ClientUnitCalculationsImpl">
-		<property name="client" ref="client" />
-		<property name="unitUtils" ref="unitUtils" />
-	</bean>
-	
 	<bean id="tileSetBitmaskGenerator" class="momime.client.calculations.TileSetBitmaskGeneratorImpl">
 		<property name="client" ref="client" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
@@ -1350,7 +1343,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapUtils" ref="combatMapUtils" />
 		<property name="wizardClientUtils" ref="wizardClientUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
-		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="anim" ref="anim" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="unitUtils" ref="unitUtils" />
@@ -1625,7 +1617,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="languageHolder" ref="languageHolder" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
-		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="unitCalculations" ref="unitCalculations" />
 	</bean>
 
 	<bean id="unitAttributeListCellRenderer" class="momime.client.ui.renderer.UnitAttributeListCellRenderer" scope="prototype">
@@ -1803,7 +1795,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapBitmapGenerator" ref="overlandMapBitmapGenerator" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="overlandMapUI" ref="overlandMapUI" />
-		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
+		<property name="unitCalculations" ref="unitCalculations" />
 		<property name="helpUI" ref="helpUI" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="cityViewPanel" ref="cityViewPanel" />																				<!-- So Spring will create and inject a new cityViewPanel for each cityViewUI -->
@@ -1847,7 +1839,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="unitClientUtils" ref="unitClientUtils" />
 		<property name="unitCalculations" ref="unitCalculations" />
-		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
@@ -1872,7 +1863,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 		<property name="cityCalculations" ref="cityCalculations" />
 		<property name="clientCityCalculations" ref="clientCityCalculations" />
-		<property name="clientUnitCalculations" ref="clientUnitCalculations" />
 		<property name="buildingListCellRenderer" ref="buildingListCellRenderer" />		<!-- So Spring will create and inject a new building list renderer for each change construction UI -->
 		<property name="unitListCellRenderer" ref="unitListCellRenderer" />					<!-- So Spring will create and inject a new unit list renderer for each change construction UI -->
 		<property name="unitInfoPanel" ref="unitInfoPanel" />										<!-- So Spring will create and inject a new unitInfoPanel for each changeConstructionUI -->

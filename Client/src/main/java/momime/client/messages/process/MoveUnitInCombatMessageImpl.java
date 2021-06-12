@@ -15,12 +15,12 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.AnimationEx;
 import momime.common.database.TileSetEx;
 import momime.common.database.UnitSkillEx;
@@ -43,8 +43,8 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/** Client-side unit utils */
 	private UnitClientUtils unitClientUtils;
 
-	/** Client unit calculations */
-	private ClientUnitCalculations clientUnitCalculations;
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/** Multiplayer client */
 	private MomClient client;
@@ -149,7 +149,7 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		// Kick off animation
 		mu.setCombatHeading (getDirection ());
-		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
+		final String movingActionID = getUnitCalculations ().determineCombatActionID (unit, true, getClient ().getClientDB ());
 		
 		// Play walking sound effect
 		getUnitClientUtils ().playCombatActionSound (mu, movingActionID);
@@ -244,19 +244,19 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	}
 
 	/**
-	 * @return Client unit calculations
+	 * @return Unit calculations
 	 */
-	public final ClientUnitCalculations getClientUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
-		return clientUnitCalculations;
+		return unitCalculations;
 	}
 
 	/**
-	 * @param calc Client unit calculations
+	 * @param calc Unit calculations
 	 */
-	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
-		clientUnitCalculations = calc;
+		unitCalculations = calc;
 	}
 	
 	/**

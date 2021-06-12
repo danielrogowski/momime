@@ -37,7 +37,6 @@ import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.AnimationContainer;
 import momime.client.ui.MomUIConstants;
@@ -127,9 +126,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
 
-	/** Client unit calculations */
-	private ClientUnitCalculations clientUnitCalculations;
-	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
 	
@@ -291,7 +287,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						{
 							// Show combat anim of unit 
 							zOrderGraphics.setGraphics (g);
-							final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
+							final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnit (), true, getClient ().getClientDB ());
 							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours);
 						}
 					}
@@ -754,7 +750,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 
 		// Show the image of the selected unit
 		getAnim ().unregisterRepaintTrigger (null, currentlyConstructingImage);
-		final String movingActionID = getClientUnitCalculations ().determineCombatActionID (getUnit (), true);
+		final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnit (), true, getClient ().getClientDB ());
 		getUnitClientUtils ().registerUnitFiguresAnimation (getUnit ().getUnitID (), movingActionID, 4, currentlyConstructingImage); 
 		
 		// Show URN?
@@ -1004,22 +1000,6 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
-	}
-
-	/**
-	 * @return Client unit calculations
-	 */
-	public final ClientUnitCalculations getClientUnitCalculations ()
-	{
-		return clientUnitCalculations;
-	}
-
-	/**
-	 * @param calc Client unit calculations
-	 */
-	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
-	{
-		clientUnitCalculations = calc;
 	}
 
 	/**

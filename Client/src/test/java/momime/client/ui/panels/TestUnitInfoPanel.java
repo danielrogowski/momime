@@ -27,7 +27,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.config.MomImeClientConfig;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.language.LanguageChangeMaster;
@@ -408,7 +407,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		layout.buildMaps ();
 		
 		// Set up panel
-		final ClientUnitCalculations clientUnitCalc = mock (ClientUnitCalculations.class);
 		final PlayerPickUtils playerPickUtils = mock (PlayerPickUtils.class);
 
 		final UnitInfoPanel panel = new UnitInfoPanel ();
@@ -420,7 +418,6 @@ public final class TestUnitInfoPanel extends ClientTestData
 		panel.setResourceValueClientUtils (resourceValueClientUtils);
 		panel.setAnim (anim);
 		panel.setUnitCalculations (unitCalc);
-		panel.setClientUnitCalculations (clientUnitCalc);
 		panel.setUnitClientUtils (unitClientUtils);
 		panel.setUnitAttributeListCellRenderer (attributeRenderer);
 		panel.setUnitSkillListCellRenderer (skillRenderer);

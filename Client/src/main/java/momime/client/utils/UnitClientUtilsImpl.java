@@ -19,7 +19,6 @@ import com.ndg.zorder.ZOrderGraphics;
 
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.CombatTileFigurePositionsGfx;
 import momime.client.graphics.database.FigurePositionsForFigureCount;
@@ -35,6 +34,7 @@ import momime.client.ui.frames.CombatUI;
 import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.LanguageText;
@@ -87,8 +87,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** Client unit calculations */
-	private ClientUnitCalculations clientUnitCalculations;
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/** Helper methods and constants for creating and laying out Swing components */
 	private NdgUIUtils utils;
@@ -237,7 +237,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		else if (unitSkillID.equals (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED))
 		{
 			// Movement has its own special rules, so we show a boot or wings or sailing icon
-			skillImageName = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getMovementIconImageFile ();
+			skillImageName = getUnitCalculations ().findPreferredMovementSkillGraphics (unit, getClient ().getClientDB ()).getMovementIconImageFile ();
 		}
 		else
 		{
@@ -520,7 +520,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			// Get sample tile
 			final String sampleTileImageFile;
 			if (drawSampleTile)
-				sampleTileImageFile = getClientUnitCalculations ().findPreferredMovementSkillGraphics (unit).getSampleTileImageFile ();
+				sampleTileImageFile = getUnitCalculations ().findPreferredMovementSkillGraphics (unit, getClient ().getClientDB ()).getSampleTileImageFile ();
 			else
 				sampleTileImageFile = null; 
 			
@@ -751,19 +751,19 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	}
 
 	/**
-	 * @return Client unit calculations
+	 * @return Unit calculations
 	 */
-	public final ClientUnitCalculations getClientUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
-		return clientUnitCalculations;
+		return unitCalculations;
 	}
 
 	/**
-	 * @param calc Client unit calculations
+	 * @param calc Unit calculations
 	 */
-	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
-		clientUnitCalculations = calc;
+		unitCalculations = calc;
 	}
 	
 	/**

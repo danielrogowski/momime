@@ -25,7 +25,6 @@ import com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx;
 import momime.client.ClientTestData;
 import momime.client.MomClient;
 import momime.client.audio.AudioPlayer;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.LanguageChangeMaster;
@@ -310,8 +309,7 @@ public final class TestCombatUI extends ClientTestData
 		final UnitSkillEx movementSkill = new UnitSkillEx ();
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		
-		final ClientUnitCalculations clientUnitCalculations = mock (ClientUnitCalculations.class);
-		when (clientUnitCalculations.findPreferredMovementSkillGraphics (xuSelectedUnit)).thenReturn (movementSkill);
+		when (unitCalc.findPreferredMovementSkillGraphics (xuSelectedUnit, db)).thenReturn (movementSkill);
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
@@ -334,7 +332,6 @@ public final class TestCombatUI extends ClientTestData
 		combat.setMemoryGridCellUtils (memoryGridCellUtils);
 		combat.setSpellCalculations (spellCalculations);
 		combat.setUnitClientUtils (unitClientUtils);
-		combat.setClientUnitCalculations (clientUnitCalculations);
 		combat.setCombatLocation (new MapCoordinates3DEx (20, 10, 0));
 		combat.setMusicPlayer (mock (AudioPlayer.class));
 		combat.setCombatMapProcessing (mock (CombatMapProcessing.class));

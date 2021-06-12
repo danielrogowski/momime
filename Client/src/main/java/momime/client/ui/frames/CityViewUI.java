@@ -47,7 +47,6 @@ import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
 import momime.client.calculations.ClientCityCalculations;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.graphics.AnimationContainer;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
@@ -66,6 +65,7 @@ import momime.client.utils.WizardClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.CityCalculations;
 import momime.common.calculations.CityProductionBreakdownsEx;
+import momime.common.calculations.UnitCalculations;
 import momime.common.database.Building;
 import momime.common.database.CityViewElement;
 import momime.common.database.CommonDatabaseConstants;
@@ -174,8 +174,8 @@ public final class CityViewUI extends MomClientFrameUI
 	/** Overland map UI */
 	private OverlandMapUI overlandMapUI;
 	
-	/** Client unit calculations */
-	private ClientUnitCalculations clientUnitCalculations;
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 
 	/** Help text scroll */
 	private HelpUI helpUI;
@@ -728,7 +728,7 @@ public final class CityViewUI extends MomClientFrameUI
 					if (sampleUnit != null)
 					{
 						zOrderGraphics.setGraphics (g);
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+						final String movingActionID = getUnitCalculations ().determineCombatActionID (sampleUnit, true, getClient ().getClientDB ());
 						getUnitClientUtils ().drawUnitFigures (sampleUnit, movingActionID, 4, zOrderGraphics, (constructionPanel.getWidth () - 60) / 2, 28, true, true, 0, null);
 					}
 				}
@@ -1113,7 +1113,7 @@ public final class CityViewUI extends MomClientFrameUI
 			sampleUnit = getUnitUtils ().expandUnitDetails (sample, null, null, null,
 				getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 			
-			final String movingActionID = getClientUnitCalculations ().determineCombatActionID (sampleUnit, true);
+			final String movingActionID = getUnitCalculations ().determineCombatActionID (sampleUnit, true, getClient ().getClientDB ());
 			getUnitClientUtils ().registerUnitFiguresAnimation (cityData.getCurrentlyConstructingUnitID (), movingActionID, 4, constructionPanel);
 		}
 		
@@ -1691,19 +1691,19 @@ public final class CityViewUI extends MomClientFrameUI
 	}
 
 	/**
-	 * @return Client unit calculations
+	 * @return Unit calculations
 	 */
-	public final ClientUnitCalculations getClientUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
-		return clientUnitCalculations;
+		return unitCalculations;
 	}
 
 	/**
-	 * @param calc Client unit calculations
+	 * @param calc Unit calculations
 	 */
-	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
-		clientUnitCalculations = calc;
+		unitCalculations = calc;
 	}
 
 	/**

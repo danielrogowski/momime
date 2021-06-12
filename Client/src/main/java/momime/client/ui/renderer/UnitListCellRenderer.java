@@ -18,11 +18,11 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.zorder.ZOrderGraphicsImmediateImpl;
 
 import momime.client.MomClient;
-import momime.client.calculations.ClientUnitCalculations;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
 import momime.client.utils.UnitClientUtils;
+import momime.common.calculations.UnitCalculations;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**
@@ -45,8 +45,8 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 	/** Utils for drawing units */
 	private UnitClientUtils unitClientUtils;
 	
-	/** Client unit calculations */
-	private ClientUnitCalculations clientUnitCalculations;
+	/** Unit calculations */
+	private UnitCalculations unitCalculations;
 	
 	/** Font to write the text in */
 	private Font font;
@@ -83,7 +83,7 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 					try
 					{
 						zOrderGraphics.setGraphics (g);
-						final String movingActionID = getClientUnitCalculations ().determineCombatActionID (unit, true);
+						final String movingActionID = getUnitCalculations ().determineCombatActionID (unit, true, getClient ().getClientDB ());
 						getUnitClientUtils ().drawUnitFigures (unit, movingActionID, 4, zOrderGraphics, 0, PANEL_SIZE.height - 32, true, true, 0, null);
 					}
 					catch (final Exception e)
@@ -174,19 +174,19 @@ public final class UnitListCellRenderer implements ListCellRenderer<ExpandedUnit
 	}
 
 	/**
-	 * @return Client unit calculations
+	 * @return Unit calculations
 	 */
-	public final ClientUnitCalculations getClientUnitCalculations ()
+	public final UnitCalculations getUnitCalculations ()
 	{
-		return clientUnitCalculations;
+		return unitCalculations;
 	}
 
 	/**
-	 * @param calc Client unit calculations
+	 * @param calc Unit calculations
 	 */
-	public final void setClientUnitCalculations (final ClientUnitCalculations calc)
+	public final void setUnitCalculations (final UnitCalculations calc)
 	{
-		clientUnitCalculations = calc;
+		unitCalculations = calc;
 	}
 	
 	/**

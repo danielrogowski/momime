@@ -39,6 +39,7 @@ import momime.common.database.TileTypeEx;
 import momime.common.database.UnitCanCast;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
@@ -1298,5 +1299,148 @@ public final class TestUnitCalculationsImpl
 		unit.setOwningPlayerID (1);
 
 		assertTrue (calc.willMovingHereResultInAnAttack (40, 10, 0, 2, map, units));
+	}
+
+	/**
+	 * Tests the findPreferredMovementSkillGraphics method when we find a match
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testFindPreferredMovementSkillGraphics_Found () throws Exception
+	{
+		// Mock database
+		final List<UnitSkillEx> skills = new ArrayList<UnitSkillEx> ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitSkillEx skill = new UnitSkillEx ();
+			skill.setUnitSkillID ("US0" + n);
+			
+			if ((n >= 2) || (n <= 4))
+				skill.setMovementIconImagePreference (5-n);  // So US02,3,4 have preference 3,2,1
+			
+			skills.add (skill);
+		}
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitSkills ()).thenReturn (skills);
+		
+		// Unit to test
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+
+		// Give the unit skills US02 and US03
+		when (unit.hasModifiedSkill ("US01")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US02")).thenReturn (true);
+		when (unit.hasModifiedSkill ("US03")).thenReturn (true);
+		when (unit.hasModifiedSkill ("US04")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US05")).thenReturn (false);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		
+		// Run test
+		assertEquals ("US03", calc.findPreferredMovementSkillGraphics (unit, db).getUnitSkillID ());
+	}
+
+	/**
+	 * Tests the findPreferredMovementSkillGraphics method when we don't find a match
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testFindPreferredMovementSkillGraphics_NotFound () throws Exception
+	{
+		// Mock database
+		final List<UnitSkillEx> skills = new ArrayList<UnitSkillEx> ();
+		for (int n = 1; n <= 5; n++)
+		{
+			final UnitSkillEx skill = new UnitSkillEx ();
+			skill.setUnitSkillID ("US0" + n);
+			
+			if ((n >= 2) || (n <= 4))
+				skill.setMovementIconImagePreference (5-n);  // So US02,3,4 have preference 3,2,1
+			
+			skills.add (skill);
+		}
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitSkills ()).thenReturn (skills);
+		
+		// Unit to test
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+
+		// Give the unit skills US02 and US03
+		when (unit.hasModifiedSkill ("US01")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US02")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US03")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US04")).thenReturn (false);
+		when (unit.hasModifiedSkill ("US05")).thenReturn (false);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		
+		// Run test
+		calc.findPreferredMovementSkillGraphics (unit, db);
+	}
+	
+	/**
+	 * Tests the determineCombatActionID method when a combatActionID is defined 
+	 * @throws Exception If there is a problem
+	 */
+	@Test
+	public final void testDetermineCombatActionID_Defined () throws Exception
+	{
+		// Mock database
+		final List<UnitSkillEx> skills = new ArrayList<UnitSkillEx> ();
+		final UnitSkillEx skill = new UnitSkillEx ();
+		skill.setUnitSkillID ("US01");
+		skill.setMovementIconImagePreference (1);
+		skill.setStandActionID ("XXX");
+		skill.setMoveActionID ("YYY");
+		skills.add (skill);
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitSkills ()).thenReturn (skills);
+
+		// Unit to test
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+
+		// Give the unit skills US01 only
+		when (unit.hasModifiedSkill ("US01")).thenReturn (true);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		
+		// Run test
+		assertEquals ("XXX", calc.determineCombatActionID (unit, false, db));
+		assertEquals ("YYY", calc.determineCombatActionID (unit, true, db));
+	}
+	
+	/**
+	 * Tests the determineCombatActionID method when a combatActionID isn't defined 
+	 * @throws Exception If there is a problem
+	 */
+	@Test(expected=MomException.class)
+	public final void testDetermineCombatActionID_Undefined () throws Exception
+	{
+		// Mock database
+		final List<UnitSkillEx> skills = new ArrayList<UnitSkillEx> ();
+		final UnitSkillEx skill = new UnitSkillEx ();
+		skill.setUnitSkillID ("US01");
+		skill.setMovementIconImagePreference (1);
+		skills.add (skill);
+		
+		final CommonDatabase db = mock (CommonDatabase.class);
+		when (db.getUnitSkills ()).thenReturn (skills);
+
+		// Unit to test
+		final ExpandedUnitDetails unit = mock (ExpandedUnitDetails.class);
+
+		// Give the unit skills US01 only
+		when (unit.hasModifiedSkill ("US01")).thenReturn (true);
+		
+		// Set up object to test
+		final UnitCalculationsImpl calc = new UnitCalculationsImpl ();
+		
+		// Run test
+		calc.determineCombatActionID (unit, false, db);
 	}
 }

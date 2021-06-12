@@ -315,6 +315,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			(unit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK) <= 0))
 			result = false;
 		
+		// AI calls this without specifying enemyCombatActionID
+		else if (enemyCombatActionID == null)
+			result = true;
+		
 		else
 		{
 			// Is the enemy unit flying?

@@ -1682,7 +1682,7 @@ public final class CombatUI extends MomClientFrameUI
 			
 			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes, xu,
 				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getCombatTerrain (),
-				combatMapSize, getClient ().getClientDB ());
+				combatMapSize, getClient ().getPlayers (), getClient ().getClientDB ());
 			
 			// Calculate unit stats
 			final int chanceToHit = Math.min (10, 3 + (!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT) ? 0 :

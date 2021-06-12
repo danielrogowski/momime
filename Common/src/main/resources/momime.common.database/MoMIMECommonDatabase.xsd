@@ -416,7 +416,12 @@
 						<xsd:field xpath="@language" />
 					</xsd:key>
 				</xsd:element>
-				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAction" type="momimecommon:combatAction" />
+				<xsd:element minOccurs="0" maxOccurs="unbounded" name="combatAction" type="momimecommon:combatAction">
+					<xsd:key name="canOnlyBeAttackedByUnitsWithSkillPK">
+						<xsd:selector xpath="canOnlyBeAttackedByUnitsWithSkill" />
+						<xsd:field xpath="." />
+					</xsd:key>
+				</xsd:element>
 				<xsd:element minOccurs="0" maxOccurs="unbounded" name="unit" type="momimecommon:unit">
 					<xsd:key name="unitHasSkillPK">
 						<xsd:selector xpath="unitHasSkill" />
@@ -988,6 +993,10 @@
 		<xsd:keyref refer="momimecommon:combatActionPK" name="unitSkillFKcombatActionMove">
 			<xsd:selector xpath="unitSkill" />
 			<xsd:field xpath="moveActionID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="canOnlyBeAttackedByUnitsWithSkillFKunitSkill">
+			<xsd:selector xpath="combatAction/canOnlyBeAttackedByUnitsWithSkill" />
+			<xsd:field xpath="." />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:animationPK" name="unitSkillFKanimation">
 			<xsd:selector xpath="unitSkill" />
@@ -2867,6 +2876,15 @@ Levels that do not require any experience (i.e. Recruit for normal units) must s
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatActionDescription" type="momimecommon:description" nxe:label="Description" nxe:gridwidth="450" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="defaultActionSoundFile" type="momimecommon:imageFilename" nxe:label="Default action sound file" nxe:gridwidth="450" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="canOnlyBeAttackedByUnitsWithSkill" type="momimecommon:unitSkillID" nxe:label="Can only be attacked by skill">
+				<xsd:annotation>
+					<xsd:documentation>Units with combatActionID=FLY in combat can only be attacked by other units with combatActionID=FLY, or who have
+one of these listed skills.</xsd:documentation>
+					<xsd:appinfo>
+						<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+					</xsd:appinfo>
+		        </xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="combatActionID" type="momimecommon:combatActionID" use="required" nxe:label="Combat Action ID" nxe:gridwidth="100" />
 	</xsd:complexType>

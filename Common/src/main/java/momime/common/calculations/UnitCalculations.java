@@ -95,12 +95,17 @@ public interface UnitCalculations
 	/**
 	 * This is much simpler than canMakeRangedAttack, as we don't need ammo to fire with.
 	 * This is really here to stop settlers with 0 attack trying to attack other units.
+	 * But also have to stop grounded units attacking flying units, unless they have a thrown/gaze/breath attack.
 	 * 
-	 * @param unit Unit to calculate for
+	 * @param enemyCombatActionID Standing combat action of the unit we want to attack, so we know whether it is flying
+	 * @param unit Unit doing the attacking
+	 * @param db Lookup lists built over the XML database
 	 * @return Whether the unit can make a melee attack in combat
+	 * @throws RecordNotFoundException If the enemyCombatActionID cannot be found
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
-	public boolean canMakeMeleeAttack (final ExpandedUnitDetails unit) throws MomException;
+	public boolean canMakeMeleeAttack (final String enemyCombatActionID, final ExpandedUnitDetails unit, final CommonDatabase db)
+		throws MomException, RecordNotFoundException;
 	
 	/**
 	 * @param x X coordinate of the location we want to check
@@ -172,6 +177,7 @@ public interface UnitCalculations
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param combatMap The details of the combat terrain
 	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
@@ -179,7 +185,8 @@ public interface UnitCalculations
 	 */
 	public void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
 		final CombatMoveType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
-		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
+		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException;
 
 	/**

@@ -16,6 +16,7 @@ import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.MomException;
+import momime.common.database.CombatAction;
 import momime.common.database.CombatMapLayerID;
 import momime.common.database.CombatTileBorder;
 import momime.common.database.CombatTileBorderBlocksMovementID;
@@ -294,15 +295,20 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	/**
 	 * This is much simpler than canMakeRangedAttack, as we don't need ammo to fire with.
 	 * This is really here to stop settlers with 0 attack trying to attack other units.
+	 * But also have to stop grounded units attacking flying units, unless they have a thrown/gaze/breath attack.
 	 * 
-	 * @param unit Unit to calculate for
+	 * @param enemyCombatActionID Standing combat action of the unit we want to attack, so we know whether it is flying
+	 * @param unit Unit doing the attacking
+	 * @param db Lookup lists built over the XML database
 	 * @return Whether the unit can make a melee attack in combat
+	 * @throws RecordNotFoundException If the enemyCombatActionID cannot be found
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 */
 	@Override
-	public final boolean canMakeMeleeAttack (final ExpandedUnitDetails unit) throws MomException
+	public final boolean canMakeMeleeAttack (final String enemyCombatActionID, final ExpandedUnitDetails unit, final CommonDatabase db)
+		throws MomException, RecordNotFoundException
 	{
-		final boolean result;
+		boolean result;
 		
 		// First we have to actually have a ranged attack
 		if ((!unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK)) ||
@@ -310,7 +316,24 @@ public final class UnitCalculationsImpl implements UnitCalculations
 			result = false;
 		
 		else
-			result = true;
+		{
+			// Is the enemy unit flying?
+			final CombatAction enemyCombatAction = db.findCombatAction (enemyCombatActionID, "canMakeMeleeAttack");
+			if (enemyCombatAction.getCanOnlyBeAttackedByUnitsWithSkill ().size () == 0)
+				result = true;
+			else
+			{
+				// To attack it, we have to have one of the listed skills
+				result = false;
+				final Iterator<String> iter = unit.listModifiedSkillIDs ().iterator ();
+				while ((!result) && (iter.hasNext ()))
+				{
+					final String unitSkillID = iter.next ();
+					if (enemyCombatAction.getCanOnlyBeAttackedByUnitsWithSkill ().contains (unitSkillID))
+						result = true;
+				}
+			}
+		}
 
 		return result;
 	}
@@ -585,7 +608,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param movementDirections Trace of unit directions taken to reach here
 	 * @param movementTypes Type of move (or lack of) for every location on the combat map (these correspond exactly to the X, move, attack, icons displayed in the client)
 	 * @param ourUnits Array marking location of all of our units in the combat
-	 * @param enemyUnits Array marking location of all enemy units in the combat
+	 * @param enemyUnits Array marking location of all enemy units in the combat; each element in the array is their combatActionID so we know which ones are flying
 	 * @param combatMap The details of the combat terrain
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
@@ -594,7 +617,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 */
 	final void processCell (final MapCoordinates2DEx moveFrom, final ExpandedUnitDetails unitBeingMoved, final boolean ignoresCombatTerrain,
 		final List<MapCoordinates2DEx> cellsLeftToCheck, final int [] [] doubleMovementDistances, final int [] [] movementDirections,
-		final CombatMoveType [] [] movementTypes, final boolean [] [] ourUnits, final boolean [] [] enemyUnits,
+		final CombatMoveType [] [] movementTypes, final boolean [] [] ourUnits, final String [] [] enemyUnits,
 		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException
 	{
@@ -640,14 +663,15 @@ public final class UnitCalculationsImpl implements UnitCalculations
 							// Record the new distance
 							doubleMovementDistances [moveTo.getY ()] [moveTo.getX ()] = newDistance;
 							movementDirections [moveTo.getY ()] [moveTo.getX ()] = d;
+							final String enemyCombatActionID = enemyUnits [moveTo.getY ()] [moveTo.getX ()];
 							
 							if (doubleMovementRemainingToHere > 0)
 							{
 								// Is there an enemy in this square to attack?
-								if (enemyUnits [moveTo.getY ()] [moveTo.getX ()])
+								if (enemyCombatActionID != null)
 								{
 									// Can we attack the unit here?
-									if (canMakeMeleeAttack (unitBeingMoved))
+									if (canMakeMeleeAttack (enemyCombatActionID, unitBeingMoved, db))
 										movementTypes [moveTo.getY ()] [moveTo.getX ()] = CombatMoveType.MELEE;
 									else
 									{
@@ -660,7 +684,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 							}
 							
 							// If there is an enemy here, don't check further squares
-							if (!enemyUnits [moveTo.getY ()] [moveTo.getX ()])
+							if (enemyCombatActionID == null)
 							{
 								// Log that we need to check every location branching off from here.
 								// For the AI combat routine, we have to recurse right to the edge of the map - we can't just stop when we
@@ -689,6 +713,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	 * @param fogOfWarMemory Known overland terrain, units, buildings and so on
 	 * @param combatMap The details of the combat terrain
 	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param players Players list
 	 * @param db Lookup lists built over the XML database
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
@@ -697,12 +722,13 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	@Override
 	public final void calculateCombatMovementDistances (final int [] [] doubleMovementDistances, final int [] [] movementDirections,
 		final CombatMoveType [] [] movementTypes, final ExpandedUnitDetails unitBeingMoved, final FogOfWarMemory fogOfWarMemory,
-		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
+		final MapAreaOfCombatTiles combatMap, final CoordinateSystem combatMapCoordinateSystem,
+		final List<? extends PlayerPublicDetails> players, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Create other areas
 		final boolean [] [] ourUnits = new boolean [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
-		final boolean [] [] enemyUnits = new boolean [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
+		final String [] [] enemyUnits = new String [combatMapCoordinateSystem.getHeight ()] [combatMapCoordinateSystem.getWidth ()];
 		
 		// Initialize areas
 		for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
@@ -712,7 +738,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				movementTypes [y] [x] = CombatMoveType.CANNOT_MOVE;
 				movementDirections [y] [x] = 0;
 				ourUnits [y] [x] = false;
-				enemyUnits [y] [x] = false;
+				enemyUnits [y] [x] = null;
 			}
 		
 		// We know combatLocation from the unit being moved
@@ -729,7 +755,10 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				if (thisUnit.getOwningPlayerID () == unitBeingMoved.getOwningPlayerID ())
 					ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
 				else
-					enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
+				{
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, fogOfWarMemory, db);
+					enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
+				}
 			}
 		
 		// We can move to where we start from for free
@@ -755,7 +784,7 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		if (canMakeRangedAttack (unitBeingMoved))
 			for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
 				for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
-					if (enemyUnits [y] [x])
+					if (enemyUnits [y] [x] != null)
 					{
 						// Firing a missle weapon always uses up all of our movement so mark this for the sake of it - although MovementDistances
 						// isn't actually used to reduce the movement a unit has left in this fashion

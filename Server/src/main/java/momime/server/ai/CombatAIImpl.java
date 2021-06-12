@@ -182,6 +182,9 @@ public final class CombatAIImpl implements CombatAI
 				
 				// Check that if we select this enemy, we have a valid action to take against it - i.e. that we don't have a cunning human
 				// player box in a weak unit by surrounding it by 8 others and then get in a tizzy trying to work out a path to the unit.
+				
+				// This also stops grounded units trying to attack flying units, as calculateCombatMovementDistances will already have
+				// figured out that we're not allowed to attack it and set it to CANNOT_MOVE and MOVEMENT_DISTANCE_CANNOT_MOVE_HERE
 				((attacks.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()])) ||
 				(movementDirections [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] > 0)))
 			{
@@ -233,10 +236,12 @@ public final class CombatAIImpl implements CombatAI
 		
 		getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections,
 			movementTypes, tu, mom.getGeneralServerKnowledge ().getTrueMap (),
-			combatMap, combatMapSize, mom.getServerDB ());
+			combatMap, combatMapSize, mom.getPlayers (), mom.getServerDB ());
 		
-		// Work out which enemy we want to attack, if we can even make some kind of attack that is
-		final MemoryUnit bestUnit = (getUnitCalculations ().canMakeRangedAttack (tu) || getUnitCalculations ().canMakeMeleeAttack (tu)) ? 
+		// Work out which enemy we want to attack, if we can even make some kind of attack that is.
+		// We can get away with calling canMakeMeleeAttack generically without using the actual combatActionID of each enemy, as even if we can
+		// make an attack in theory, selectBestTarget will realise we have no actual valid targets if we're grounded and all enemy are flying.
+		final MemoryUnit bestUnit = (getUnitCalculations ().canMakeRangedAttack (tu) || getUnitCalculations ().canMakeMeleeAttack (null, tu, mom.getServerDB ())) ? 
 			selectBestTarget (tu, combatLocation, movementDirections, doubleMovementDistances, movementTypes, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
 				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ()) : null;
 		

@@ -736,9 +736,6 @@ public final class SpellAIImpl implements SpellAI
 									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
 										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 
-									if (spell.getSpellID ().equals ("SP137"))
-										System.out.println ("Here");
-									
 									if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, player.getPlayerDescription ().getPlayerID (),
 										combatCastingUnit, null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
 									{

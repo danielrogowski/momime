@@ -1,6 +1,7 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Plane;
 import momime.common.database.ProductionTypeAndUndoubledValue;
+import momime.common.database.RaceEx;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.TaxRate;
 import momime.common.database.Unit;
@@ -277,11 +279,22 @@ public final class CityProcessingImpl implements CityProcessing
 				else
 				{
 					// Raiders buildings' depend on the city size
+					final RaceEx race = db.findRace (city.getCityRaceID (), "createStartingCities");
+					
 					for (final Building thisBuilding : db.getBuilding ())
 						if ((thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () != null) &&
 							(city.getCityPopulation () >= thisBuilding.getInRaidersStartingCitiesWithPopulationAtLeast () * 1000))
+						{
+							// Make sure the race of the city is actually allowed this kind of building
+							boolean ok = true;
+							final Iterator<String> cannotBuildIter = race.getRaceCannotBuild ().iterator ();
+							while ((ok) && (cannotBuildIter.hasNext ()))
+								if (cannotBuildIter.next ().equals (thisBuilding.getBuildingID ()))
+									ok = false;
 							
-							getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, thisBuilding.getBuildingID (), null, null, null, sd, db);
+							if (ok)
+								getFogOfWarMidTurnChanges ().addBuildingOnServerAndClients (gsk, null, cityLocation, thisBuilding.getBuildingID (), null, null, null, sd, db);
+						}
 				}
 
 				// Add starting units

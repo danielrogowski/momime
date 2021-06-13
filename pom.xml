@@ -2,14 +2,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ndg.momime</groupId>
 	<artifactId>momime-parent</artifactId>
-	<version>0.9.9.2</version>
+	<version>0.9.9.3-SNAPSHOT</version>
 	<name>momimeParent</name>
 	<description>MoM IME multimodule parent project</description>
 	<packaging>pom</packaging>
 
 	<scm>
 		<connection>scm:git:ssh://nigelgay@git.code.sf.net/p/momime/momime</connection>
-		<tag>momime-parent-0.9.9.2</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<parent>

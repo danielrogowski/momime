@@ -1495,39 +1495,47 @@ public final class CombatUI extends MomClientFrameUI
 						caePanel = defenderCAEs;
 						caeList = defenderCAEImages;
 					}
-					else
+					else if (cae.getCastingPlayerID () == null)	// Things like node auras, which are not "owned" by anybody
 					{
 						caePanel = commonCAEs;
 						caeList = commonCAEImages;
 					}
+					else
+					{
+						caePanel = null;
+						caeList = null;
+					}
 					
 					// Add the image - caeList.size () is a sneaky way of generating the 'x' values for the GridBagLayout
-					final BufferedImage image = getUtils ().loadImage (getClient ().getClientDB ().findCombatAreaEffect
-						(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ());
-					final JLabel label = getUtils ().createImage (getUtils ().doubleSize (image));
-					
-					caePanel.add (label, getUtils ().createConstraintsNoFill (caeList.size (), 0, 1, 1, new Insets (0, 1, 0, 1), GridBagConstraintsNoFill.CENTRE));
-					caeList.add (label);
-					
-					// Right clicking on CAEs displays help text about them
-					label.addMouseListener (new MouseAdapter ()
+					if (caePanel != null)
 					{
-						@Override
-						public final void mouseClicked (final MouseEvent ev)
+						final BufferedImage image = getUtils ().loadImage (getClient ().getClientDB ().findCombatAreaEffect
+							(cae.getCombatAreaEffectID (), "generateCombatAreaEffectIcons").getCombatAreaEffectImageFile ());
+						final JLabel label = getUtils ().createImage (getUtils ().doubleSize (image));
+						
+						caePanel.add (label, getUtils ().createConstraintsNoFill (caeList.size (), 0, 1, 1, new Insets (0, 1, 0, 1), GridBagConstraintsNoFill.CENTRE));
+						caeList.add (label);
+						
+						// Right clicking on CAEs displays help text about them
+						label.addMouseListener (new MouseAdapter ()
 						{
-							if (SwingUtilities.isRightMouseButton (ev))
+							@Override
+							public final void mouseClicked (final MouseEvent ev)
 							{
-								try
+								if (SwingUtilities.isRightMouseButton (ev))
 								{
-									getHelpUI ().showCombatAreaEffectID (cae.getCombatAreaEffectID ());
-								}
-								catch (final Exception e)
-								{
-									log.error (e, e);
+									try
+									{
+										getHelpUI ().showCombatAreaEffectID (cae.getCombatAreaEffectID ());
+									}
+									catch (final Exception e)
+									{
+										log.error (e, e);
+									}
 								}
 							}
-						}
-					});
+						});
+					}
 				}
 			
 			defenderCAEs.revalidate ();

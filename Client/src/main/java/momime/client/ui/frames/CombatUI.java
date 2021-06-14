@@ -1262,19 +1262,30 @@ public final class CombatUI extends MomClientFrameUI
 			
 			// unitToDrawAtEachLocation is a lot simpler here than in OverlandMapUI since there can only ever be 1 unit at each location.
 			unitToDrawAtEachLocation = new CombatUIUnitAndAnimations [getClient ().getSessionDescription ().getCombatMapSize ().getHeight ()] [getClient ().getSessionDescription ().getCombatMapSize ().getWidth ()];
-			                                                                  
-			for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-				if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())) &&
-					(unit.getCombatHeading () != null) && (unit.getCombatSide () != null))
-				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
-						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-							
-					setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), xu);
-				}
-			
+			setUnitsToDrawAtEachLocation ();                                   
 			generateCombatAreaEffectIcons ();
 		}
+	}
+
+	/**
+	 * Builds the complete unitToDrawAtEachLocation array, by filling in details of which unit is at each combat map cell
+	 * 
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	public final void setUnitsToDrawAtEachLocation ()
+		throws MomException, PlayerNotFoundException, RecordNotFoundException
+	{
+		for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getCombatPosition () != null) && (getCombatLocation ().equals (unit.getCombatLocation ())) &&
+				(unit.getCombatHeading () != null) && (unit.getCombatSide () != null))
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, null,
+					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+						
+				setUnitToDrawAtLocation (unit.getCombatPosition ().getX (), unit.getCombatPosition ().getY (), xu);
+			}
 	}
 	
 	/**

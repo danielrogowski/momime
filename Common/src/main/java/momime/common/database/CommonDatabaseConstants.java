@@ -231,6 +231,12 @@ public final class CommonDatabaseConstants
 	/** Skill for settlers creating new cities */
 	public final static String UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
 
+	/** Natural invisibility */
+	public final static String UNIT_SKILL_ID_INVISIBILITY = "US018";
+
+	/** Invisibility skill added from spell */
+	public final static String UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL = "SS062";
+	
 	/** Skill for engineers building roads */
 	public final static String UNIT_SKILL_ID_BUILD_ROAD = "US036";
 
@@ -303,7 +309,7 @@ public final class CommonDatabaseConstants
 	
 	/** Spell of Return has a lot of special rules - we are always blocked from casting it even when banished (server auto casts it for us), and can never cancel casting it */
 	public final static String SPELL_ID_SPELL_OF_RETURN = "SP214";
-
+	
 	// client graphics
 
 	/** Tile set for the overland map */

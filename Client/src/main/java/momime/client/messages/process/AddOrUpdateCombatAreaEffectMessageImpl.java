@@ -133,9 +133,12 @@ public final class AddOrUpdateCombatAreaEffectMessageImpl extends AddOrUpdateCom
 	@Override
 	public final void finish () throws JAXBException, XMLStreamException, IOException
 	{
-		// If there's a combat in progress, the icon for this CAE might need to be added to it
+		// If there's a combat in progress, the icon for this CAE might need to be added to it, and we'd better regenerate all unit stats too
 		if (getCombatUI ().isVisible ())
+		{
+			getCombatUI ().setUnitsToDrawAtEachLocation ();
 			getCombatUI ().generateCombatAreaEffectIcons ();
+		}
 		
 		// Make sure the combat screen isn't showing any colour
 		getCombatUI ().setFlashColour (CombatUI.NO_FLASH_COLOUR);

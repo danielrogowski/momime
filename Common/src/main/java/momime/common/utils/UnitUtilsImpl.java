@@ -71,6 +71,9 @@ public final class UnitUtilsImpl implements UnitUtils
 	
 	/** Methods for working out minimal unit details */
 	private UnitDetailsUtils unitDetailsUtils;
+
+	/** Memory CAE utils */
+	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
 	
 	/**
 	 * @param unitURN Unit URN to search for
@@ -339,35 +342,12 @@ public final class UnitUtilsImpl implements UnitUtils
 		
 		for (final Entry<String, Integer> skill : basicSkillValues.entrySet ())
 		{
-			boolean negated = false;
-			final UnitSkillEx skillDef = db.findUnitSkill (skill.getKey (), "expandUnitDetails");
-			final Iterator<NegatedBySkill> iter = skillDef.getNegatedBySkill ().iterator ();
-			while ((!negated) && (iter.hasNext ()))
-			{
-				final NegatedBySkill negation = iter.next ();
-				switch (negation.getNegatedByUnitID ())
-				{
-					case OUR_UNIT:
-						if (basicSkillValues.containsKey (negation.getNegatedBySkillID ()))
-							negated = true;
-						break;
-						
-					case ENEMY_UNIT:
-						if (enemyUnits != null)
-							negated = enemyUnits.stream ().anyMatch (e -> e.hasModifiedSkill (negation.getNegatedBySkillID ()));
-						break;
-						
-					default:
-						throw new MomException ("expandUnitDetails doesn't know what to do with negatedByUnitID value of " +
-							negation.getNegatedByUnitID () + " when determining value of skill " + skill.getKey ());
-				}
-			}
-			
-			if (!negated)
+			if (!isSkillNegated (skill.getKey (), basicSkillValues, enemyUnits, db))
 			{
 				basicSkillValuesWithNegatedSkillsRemoved.put (skill.getKey (), skill.getValue ());
 				
 				// For any that are not negated, while we already have the skill definition found, see if the skill modifies the units magic realm/lifeform type
+				final UnitSkillEx skillDef = db.findUnitSkill (skill.getKey (), "expandUnitDetails");
 				if (skillDef.getChangesUnitToMagicRealm () != null)
 					changedMagicRealmLifeformTypeIDs.add (skillDef.getChangesUnitToMagicRealm ());
 			}
@@ -495,14 +475,27 @@ public final class UnitUtilsImpl implements UnitUtils
 				for (final CombatAreaEffectSkillBonus bonus : db.findCombatAreaEffect (thisCAE.getCombatAreaEffectID (), "expandUnitDetails").getCombatAreaEffectSkillBonus ())
 				{
 					// Magic realm/lifeform type can be blank for effects that apply to all types of unit (e.g. Prayer)
-					final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
-					if ((components != null) && (bonus.getUnitSkillValue () != null) &&
-						((bonus.getEffectMagicRealm () == null) || (bonus.getEffectMagicRealm ().equals (magicRealmLifeformType.getPickID ()))))
+					if ((bonus.getEffectMagicRealm () == null) || (bonus.getEffectMagicRealm ().equals (magicRealmLifeformType.getPickID ())))
 					{
-						// There might be more than one CAE giving a bonus to the same skill, so this isn't a simple "put"
-						Integer bonusValue = components.get (UnitSkillComponent.COMBAT_AREA_EFFECTS);
-						bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus.getUnitSkillValue ();
-						components.put (UnitSkillComponent.COMBAT_AREA_EFFECTS, bonusValue);
+						// If bonus is value-less, then it can add a skill we previously didn't have (like Mass Invisibility granting Invisibility)
+						if (bonus.getUnitSkillValue () == null)
+						{
+							if ((!modifiedSkillValues.containsKey (bonus.getUnitSkillID ())) && (!isSkillNegated (bonus.getUnitSkillID (), modifiedSkillValues, enemyUnits, db)))
+								modifiedSkillValues.put (bonus.getUnitSkillID (), null);
+						}
+
+						else
+						{
+							// If bonus has a value like +attack, we only get the bonus if we already have that attack skill
+							final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonus.getUnitSkillID ());
+							if ((components != null) && (bonus.getUnitSkillValue () != null))
+							{
+								// There might be more than one CAE giving a bonus to the same skill, so this isn't a simple "put"
+								Integer bonusValue = components.get (UnitSkillComponent.COMBAT_AREA_EFFECTS);
+								bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonus.getUnitSkillValue ();
+								components.put (UnitSkillComponent.COMBAT_AREA_EFFECTS, bonusValue);
+							}
+						}
 					}
 				}
 			}
@@ -733,6 +726,48 @@ public final class UnitUtilsImpl implements UnitUtils
 		return xu;
 	}
 
+	/**
+	 * @param unitSkillID Unit skill we want to check for
+	 * @param ourSkillValues List of skills the unit has
+	 * @param enemyUnits List of enemy units who may have skills that negate the skill we're checking for; typically this is the unit we're engaging in an attack with; in some
+	 * 	cases such as Invisibility, it may be ALL units we're in combat with; for situations not involved in combats or specific attacks, just pass null here
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the skill is negated or not
+	 * @throws RecordNotFoundException If we can't find the skill definition
+	 * @throws MomException If the skill definition has an unknown negatedByUnitID value
+	 */
+	@Override
+	public final boolean isSkillNegated (final String unitSkillID, final Map<String, ? extends Object> ourSkillValues, final List<ExpandedUnitDetails> enemyUnits,
+		final CommonDatabase db) throws RecordNotFoundException, MomException
+	{
+		final UnitSkillEx skillDef = db.findUnitSkill (unitSkillID, "isSkillNegated");
+		final Iterator<NegatedBySkill> iter = skillDef.getNegatedBySkill ().iterator ();
+		boolean negated = false;
+		
+		while ((!negated) && (iter.hasNext ()))
+		{
+			final NegatedBySkill negation = iter.next ();
+			switch (negation.getNegatedByUnitID ())
+			{
+				case OUR_UNIT:
+					if (ourSkillValues.containsKey (negation.getNegatedBySkillID ()))
+						negated = true;
+					break;
+					
+				case ENEMY_UNIT:
+					if (enemyUnits != null)
+						negated = enemyUnits.stream ().anyMatch (e -> e.hasModifiedSkill (negation.getNegatedBySkillID ()));
+					break;
+					
+				default:
+					throw new MomException ("isSkillNegated doesn't know what to do with negatedByUnitID value of " +
+						negation.getNegatedByUnitID () + " when determining value of skill " + unitSkillID);
+			}
+		}
+		
+		return negated;
+	}
+	
 	/**
 	 * Since Available Units cannot be in combat, this is quite a bit simpler than the MomUnit version
 	 *
@@ -1075,6 +1110,26 @@ public final class UnitUtilsImpl implements UnitUtils
 		return total;
 	}
 	
+
+	/**
+	 * @param xu Unit present on the combat map
+	 * @param ourPlayerID Our player ID
+	 * @return Whether we can see it or its completely hidden
+	 */
+	public final boolean canSeeUnitInCombat (final ExpandedUnitDetails xu, final int ourPlayerID, final List<MemoryCombatAreaEffect> CAEs)
+	{
+		boolean invisible;
+		if (xu.getOwningPlayerID () == ourPlayerID)
+			invisible = false;
+		else
+		{
+			invisible = (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)) ||
+				(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL));
+		}
+		
+		return !invisible;
+	}
+	
 	/**
 	 * @return Player pick utils
 	 */
@@ -1105,5 +1160,21 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void setUnitDetailsUtils (final UnitDetailsUtils u)
 	{
 		unitDetailsUtils = u;
+	}
+
+	/**
+	 * @return Memory CAE utils
+	 */
+	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	{
+		return memoryCombatAreaEffectUtils;
+	}
+
+	/**
+	 * @param utils Memory CAE utils
+	 */
+	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	{
+		memoryCombatAreaEffectUtils = utils;
 	}
 }

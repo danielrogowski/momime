@@ -1,6 +1,7 @@
 package momime.common.utils;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
@@ -85,6 +86,19 @@ public interface UnitUtils
 		final List<ExpandedUnitDetails> enemyUnits, final String attackFromSkillID, final String attackFromMagicRealmID,
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+	
+	/**
+	 * @param unitSkillID Unit skill we want to check for
+	 * @param ourSkillValues List of skills the unit has
+	 * @param enemyUnits List of enemy units who may have skills that negate the skill we're checking for; typically this is the unit we're engaging in an attack with; in some
+	 * 	cases such as Invisibility, it may be ALL units we're in combat with; for situations not involved in combats or specific attacks, just pass null here
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the skill is negated or not
+	 * @throws RecordNotFoundException If we can't find the skill definition
+	 * @throws MomException If the skill definition has an unknown negatedByUnitID value
+	 */
+	public boolean isSkillNegated (final String unitSkillID, final Map<String, ? extends Object> ourSkillValues, final List<ExpandedUnitDetails> enemyUnits,
+		final CommonDatabase db) throws RecordNotFoundException, MomException;
 	
 	/**
 	 * Since Available Units cannot be in combat, this is quite a bit simpler than the MomUnit version

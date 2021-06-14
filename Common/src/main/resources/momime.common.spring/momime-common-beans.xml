@@ -320,6 +320,7 @@
 	<bean id="unitUtils" class="momime.common.utils.UnitUtilsImpl">
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="unitDetailsUtils" ref="unitDetailsUtils" />
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
 	</bean>
 	
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">

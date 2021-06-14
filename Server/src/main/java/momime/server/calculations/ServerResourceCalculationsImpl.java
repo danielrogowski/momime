@@ -205,7 +205,19 @@ public final class ServerResourceCalculationsImpl implements ServerResourceCalcu
 						for (final CityProductionBreakdown cityProduction : getCityCalculations ().calculateAllCityProductions (players, trueMap.getMap (),
 							trueMap.getBuilding (), cityLocation, priv.getTaxRateID (), sd, true, false, db).getProductionType ())
 						{
-							int cityProductionValue = -cityProduction.getConsumptionAmount ();
+							int cityProductionValue = 0;
+							
+							// We have to pay gold upkeep even when banished
+							if ((cityProduction.getProductionTypeID ().equals (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER)) &&
+								(zeroedProductionTypes.contains (CommonDatabaseConstants.PRODUCTION_TYPE_ID_MAGIC_POWER)))
+							{
+								// Don't charge magic power consumption from Wizards' Guild when banished, since they don't generate magic power
+								// plus they aren't getting the research points from the Wizards' Guild either
+							}
+							else
+								cityProductionValue = -cityProduction.getConsumptionAmount ();
+							
+							// If banished, we don't get positive benefits like research from library
 							if (!zeroedProductionTypes.contains (cityProduction.getProductionTypeID ()))
 								cityProductionValue = cityProductionValue + cityProduction.getCappedProductionAmount () + cityProduction.getConvertToProductionAmount ();
 							

@@ -56,6 +56,7 @@ import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.messages.OverlandMapTerrainData;
+import momime.common.messages.TurnPhase;
 import momime.common.messages.TurnSystem;
 import momime.common.utils.MemoryGridCellUtilsImpl;
 import momime.common.utils.ResourceValueUtils;
@@ -125,8 +126,8 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		mapRightHandBarLang.getPatrol ().add (createLanguageText (Language.ENGLISH, "Patrol"));
 		mapRightHandBarLang.getWait ().add (createLanguageText (Language.ENGLISH, "Wait"));
 		mapRightHandBarLang.getOnePlayerAtATimeCurrentPlayer ().add (createLanguageText (Language.ENGLISH, "Current player:"));
-		mapRightHandBarLang.getSimultaneousTurnsLine1 ().add (createLanguageText (Language.ENGLISH, "Waiting for"));
-		mapRightHandBarLang.getSimultaneousTurnsLine2 ().add (createLanguageText (Language.ENGLISH, "other players"));
+		mapRightHandBarLang.getSimultaneousTurnsWaitingLine1 ().add (createLanguageText (Language.ENGLISH, "Waiting for"));
+		mapRightHandBarLang.getSimultaneousTurnsWaitingLine2 ().add (createLanguageText (Language.ENGLISH, "other players"));
 		mapRightHandBarLang.getProductionPerTurn ().add (createLanguageText (Language.ENGLISH, "AMOUNT_PER_TURN PRODUCTION_TYPE per turn"));
 		mapRightHandBarLang.getProductionPerTurnMagicPower ().add (createLanguageText (Language.ENGLISH, "Power Base AMOUNT_PER_TURN"));
 		mapRightHandBarLang.getTargetSpell ().add (createLanguageText (Language.ENGLISH, "Target Spell"));
@@ -429,6 +430,7 @@ public final class TestOverlandMapRightHandPanel extends ClientTestData
 		panel.panel.setBottom (OverlandMapRightHandPanelBottom.PLAYER);
 		
 		panel.panel.getClient ().getSessionDescription ().setTurnSystem (TurnSystem.SIMULTANEOUS);
+		panel.panel.getClient ().getGeneralPublicKnowledge ().setTurnPhase (TurnPhase.ALLOCATING_MOVES);
 		panel.panel.turnSystemOrCurrentPlayerChanged ();
 
 		Thread.sleep (5000);

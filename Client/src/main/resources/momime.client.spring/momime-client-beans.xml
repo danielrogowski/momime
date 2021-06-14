@@ -265,11 +265,17 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="newTurnMessageProcessing" ref="newTurnMessageProcessing" />
 		<property name="newTurnMessagesUI" ref="newTurnMessagesUI" />
 		<property name="historyUI" ref="historyUI" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 
 	<bean id="onePlayerSimultaneousTurnDoneMessage" class="momime.client.messages.process.OnePlayerSimultaneousTurnDoneMessageImpl" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
+	</bean>
+
+	<bean id="updateTurnPhaseMessage" class="momime.client.messages.process.UpdateTurnPhaseMessageImpl" scope="prototype">
+		<property name="client" ref="client" />
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 	</bean>
 

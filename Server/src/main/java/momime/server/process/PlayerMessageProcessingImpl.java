@@ -52,6 +52,7 @@ import momime.common.messages.PendingMovement;
 import momime.common.messages.PlayerPick;
 import momime.common.messages.SpellResearchStatus;
 import momime.common.messages.SpellResearchStatusID;
+import momime.common.messages.TurnPhase;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.WizardState;
@@ -74,6 +75,7 @@ import momime.common.messages.servertoclient.SetCurrentPlayerMessage;
 import momime.common.messages.servertoclient.StartGameMessage;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 import momime.common.messages.servertoclient.TextPopupMessage;
+import momime.common.messages.servertoclient.UpdateTurnPhaseMessage;
 import momime.common.utils.CompareUtils;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
@@ -1150,6 +1152,11 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 				// Has everyone finished now?
 				if (getPlayerServerUtils ().allPlayersFinishedAllocatingMovement (mom.getPlayers (), mom.getGeneralPublicKnowledge ().getTurnNumber ()))
 				{
+					// Tell all clients we're now processing movement
+					final UpdateTurnPhaseMessage msg = new UpdateTurnPhaseMessage ();
+					msg.setTurnPhase (TurnPhase.PROCESSING_MOVES);
+					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), msg);
+					
 					// Erase all pending movements on the clients, since we're about to process movement
 					getMultiplayerSessionServerUtils ().sendMessageToAllClients (mom.getPlayers (), new ErasePendingMovementsMessage ());
 					

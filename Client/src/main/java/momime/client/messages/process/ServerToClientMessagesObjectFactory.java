@@ -63,6 +63,7 @@ import momime.common.messages.servertoclient.UpdateGlobalEconomyMessage;
 import momime.common.messages.servertoclient.UpdateManaSpentOnCastingCurrentSpellMessage;
 import momime.common.messages.servertoclient.UpdateRemainingResearchCostMessage;
 import momime.common.messages.servertoclient.UpdateTerrainMessage;
+import momime.common.messages.servertoclient.UpdateTurnPhaseMessage;
 import momime.common.messages.servertoclient.UpdateWizardStateMessage;
 import momime.common.messages.servertoclient.YourPhotoIsOkMessage;
 import momime.common.messages.servertoclient.YourRaceIsOkMessage;
@@ -211,6 +212,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final StartSimultaneousTurnMessage createStartSimultaneousTurnMessage ()
 	{
 		return getFactory ().createStartSimultaneousTurnMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final UpdateTurnPhaseMessage createUpdateTurnPhaseMessage ()
+	{
+		return getFactory ().createUpdateTurnPhaseMessage ();
 	}
 
 	/**

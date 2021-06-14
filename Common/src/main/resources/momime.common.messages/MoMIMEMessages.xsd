@@ -526,6 +526,11 @@ so must include the full details of the item here.</xsd:documentation>
     						<xsd:documentation>Optional because it will be null in simultaneous turns games.</xsd:documentation>
 						</xsd:annotation>
 					</xsd:element>
+					<xsd:element minOccurs="0" maxOccurs="1" name="turnPhase" type="momimemsgs:turnPhase">
+					    <xsd:annotation>
+    						<xsd:documentation>Optional because it will be null in one-player-at-a-time games.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
 		        </xsd:sequence>
 			</xsd:extension>
 		</xsd:complexContent>
@@ -1191,6 +1196,22 @@ So need a separate data item for this.</xsd:documentation>
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Defeated, no cities or units remaining</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFEATED" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="turnPhase">
+	    <xsd:annotation>
+    		<xsd:documentation>Current phase within one turn.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:normalizedString">
+			<xsd:enumeration value="A"><xsd:annotation>
+				<xsd:documentation>Allocating moves</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="ALLOCATING_MOVES" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Processing moves</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PROCESSING_MOVES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

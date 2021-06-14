@@ -3672,12 +3672,20 @@
 					<xsd:selector xpath="onePlayerAtATimeCurrentPlayer" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="mapRightHandBarSimultaneousTurnsLine1PK">
-					<xsd:selector xpath="simultaneousTurnsLine1" />
+				<xsd:key name="mapRightHandBarSimultaneousTurnsWaitingLine1PK">
+					<xsd:selector xpath="simultaneousTurnsWaitingLine1" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
-				<xsd:key name="mapRightHandBarSimultaneousTurnsLine2PK">
-					<xsd:selector xpath="simultaneousTurnsLine2" />
+				<xsd:key name="mapRightHandBarSimultaneousTurnsWaitingLine2PK">
+					<xsd:selector xpath="simultaneousTurnsWaitingLine2" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarSimultaneousTurnsProcessingLine1PK">
+					<xsd:selector xpath="simultaneousTurnsProcessingLine1" />
+					<xsd:field xpath="@language" />
+				</xsd:key>
+				<xsd:key name="mapRightHandBarSimultaneousTurnsProcessingLine2PK">
+					<xsd:selector xpath="simultaneousTurnsProcessingLine2" />
 					<xsd:field xpath="@language" />
 				</xsd:key>
 				<xsd:key name="mapRightHandBarProductionPerTurnPK">
@@ -3778,8 +3786,10 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="patrol" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wait" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="onePlayerAtATimeCurrentPlayer" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsLine1" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsLine2" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsWaitingLine1" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsWaitingLine2" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsProcessingLine1" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="simultaneousTurnsProcessingLine2" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPerTurn" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="productionPerTurnMagicPower" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="targetSpell" />

@@ -14,7 +14,10 @@ import momime.client.process.OverlandMapProcessing;
 import momime.client.ui.frames.HistoryUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.OverlandMapUI;
+import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.CityCalculations;
+import momime.common.messages.TurnPhase;
+import momime.common.messages.TurnSystem;
 import momime.common.messages.servertoclient.StartSimultaneousTurnMessage;
 
 /**
@@ -43,6 +46,9 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	/** UI for screen showing power base history for each wizard */
 	private HistoryUI historyUI;
 	
+	/** Overland map right hand panel showing economy etc */
+	private OverlandMapRightHandPanel overlandMapRightHandPanel;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -55,6 +61,13 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 		getClient ().getGeneralPublicKnowledge ().setTurnNumber (getTurnNumber ());
 		getOverlandMapUI ().updateTurnLabelText ();
 		getHistoryUI ().updateTurnLabelText ();
+		
+		// Allocating moves
+		if (getClient ().getSessionDescription ().getTurnSystem () == TurnSystem.SIMULTANEOUS)
+		{
+			getClient ().getGeneralPublicKnowledge ().setTurnPhase (TurnPhase.ALLOCATING_MOVES);
+			getOverlandMapRightHandPanel ().turnSystemOrCurrentPlayerChanged ();
+		}
 		
 		// Allow selling buildings
 		getCityCalculations ().blankBuildingsSoldThisTurn (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap (), 0);
@@ -186,5 +199,21 @@ public final class StartSimultaneousTurnMessageImpl extends StartSimultaneousTur
 	public final void setHistoryUI (final HistoryUI h)
 	{
 		historyUI = h;
+	}
+
+	/**
+	 * @return Overland map right hand panel showing economy etc
+	 */
+	public final OverlandMapRightHandPanel getOverlandMapRightHandPanel ()
+	{
+		return overlandMapRightHandPanel;
+	}
+
+	/**
+	 * @param panel Overland map right hand panel showing economy etc
+	 */
+	public final void setOverlandMapRightHandPanel (final OverlandMapRightHandPanel panel)
+	{
+		overlandMapRightHandPanel = panel;
 	}
 }

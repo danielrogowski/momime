@@ -87,6 +87,11 @@ public interface ServerToClientMessagesFactory
 	/**
 	 * @return Newly created message
 	 */
+	public UpdateTurnPhaseMessageImpl createUpdateTurnPhaseMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
 	public AddNewTurnMessagesMessageImpl createAddNewTurnMessagesMessage ();
 
 	/**

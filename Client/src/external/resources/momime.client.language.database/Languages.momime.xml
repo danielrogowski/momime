@@ -3432,12 +3432,18 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
             <onePlayerAtATimeCurrentPlayer language="en">
                 <text>Current player:</text>
             </onePlayerAtATimeCurrentPlayer>
-            <simultaneousTurnsLine1 language="en">
+            <simultaneousTurnsWaitingLine1 language="en">
                 <text>Waiting for</text>
-            </simultaneousTurnsLine1>
-            <simultaneousTurnsLine2 language="en">
+            </simultaneousTurnsWaitingLine1>
+            <simultaneousTurnsWaitingLine2 language="en">
                 <text>other players</text>
-            </simultaneousTurnsLine2>
+            </simultaneousTurnsWaitingLine2>
+            <simultaneousTurnsProcessingLine1 language="en">
+                <text>Processing moves</text>
+            </simultaneousTurnsProcessingLine1>
+            <simultaneousTurnsProcessingLine2 language="en">
+                <text>and combats</text>
+            </simultaneousTurnsProcessingLine2>
             <productionPerTurn language="en">
                 <text>AMOUNT_PER_TURN PRODUCTION_TYPE per turn</text>
             </productionPerTurn>

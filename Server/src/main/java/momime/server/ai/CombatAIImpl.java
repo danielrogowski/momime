@@ -154,7 +154,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @param units Units list
 	 * @param players Players list
 	 * @param mem Known overland terrain, units, buildings and so on
-	 * @param sys Combat map coordinate system
+	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return Best unit to attack, or null if enemy is wiped out already
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
@@ -163,7 +163,8 @@ public final class CombatAIImpl implements CombatAI
 	 */
 	final MemoryUnit selectBestTarget (final ExpandedUnitDetails attacker, final MapCoordinates3DEx combatLocation,
 		final int [] [] movementDirections, final int [] [] doubleMovementDistances, final CombatMoveType [] [] movementTypes,
-		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CoordinateSystem sys, final CommonDatabase db)
+		final List<MemoryUnit> units, final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CoordinateSystem combatMapCoordinateSystem,
+		final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
 		// Need this in a list for the comparison below
@@ -188,21 +189,27 @@ public final class CombatAIImpl implements CombatAI
 				((attacks.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()])) ||
 				(movementDirections [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] > 0)))
 			{
-				// Is this the first possible target we've found, or better than our current target.
-				// EvaluateTarget just returns 1, 2 or 3 - bump that up a lot.
-				int thisScore = evaluateTarget (attacker, getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db)) * 1000;
-				
-				// Subtract more the further away the unit is, so closer units get a higher score.
-				// Can't use doubleMovementDistances for this as it gets set to the same high 999 value for all ranged attacks.
-				if (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] == CombatMoveType.RANGED)
-					thisScore = thisScore - (int) (10 * getCoordinateSystemUtils ().determineReal2DDistanceBetween (sys, attacker.getCombatPosition (), (MapCoordinates2DEx) thisUnit.getCombatPosition ()));
-				else
-					thisScore = thisScore - doubleMovementDistances [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()];
-				
-				if ((bestScore == null) || (thisScore > bestScore))
+				// Make sure we can actually see it
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+				if (getUnitUtils ().canSeeUnitInCombat (xu, attacker.getOwningPlayerID (), players, mem, db, combatMapCoordinateSystem))
 				{
-					bestUnit = thisUnit;
-					bestScore = thisScore;
+					// Is this the first possible target we've found, or better than our current target.
+					// EvaluateTarget just returns 1, 2 or 3 - bump that up a lot.
+					int thisScore = evaluateTarget (attacker, xu) * 1000;
+					
+					// Subtract more the further away the unit is, so closer units get a higher score.
+					// Can't use doubleMovementDistances for this as it gets set to the same high 999 value for all ranged attacks.
+					if (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] == CombatMoveType.RANGED)
+						thisScore = thisScore - (int) (10 * getCoordinateSystemUtils ().determineReal2DDistanceBetween
+							(combatMapCoordinateSystem, attacker.getCombatPosition (), (MapCoordinates2DEx) thisUnit.getCombatPosition ()));
+					else
+						thisScore = thisScore - doubleMovementDistances [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()];
+					
+					if ((bestScore == null) || (thisScore > bestScore))
+					{
+						bestUnit = thisUnit;
+						bestScore = thisScore;
+					}
 				}
 			}
 		
@@ -243,7 +250,7 @@ public final class CombatAIImpl implements CombatAI
 		// make an attack in theory, selectBestTarget will realise we have no actual valid targets if we're grounded and all enemy are flying.
 		final MemoryUnit bestUnit = (getUnitCalculations ().canMakeRangedAttack (tu) || getUnitCalculations ().canMakeMeleeAttack (null, tu, mom.getServerDB ())) ? 
 			selectBestTarget (tu, combatLocation, movementDirections, doubleMovementDistances, movementTypes, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getOverlandMapSize (), mom.getServerDB ()) : null;
+				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ()) : null;
 		
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING; 
 		if (bestUnit != null)

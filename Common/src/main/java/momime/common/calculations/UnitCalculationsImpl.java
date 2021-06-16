@@ -753,6 +753,12 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		final boolean ignoresCombatTerrain = unitBeingMoved.unitIgnoresCombatTerrain (db);
 		
 		// Mark locations of units on both sides (including the unit being moved)
+		// Also make list of units the moving unit can personally see (if its invisible, we must have true sight to counter it, simply knowing where it is isn't enough)
+		final List<ExpandedUnitDetails> directlyVisibleEnemyUnits = new ArrayList<ExpandedUnitDetails> (); 
+		
+		final List<ExpandedUnitDetails> unitsBeingMoved = new ArrayList<ExpandedUnitDetails> ();
+		unitsBeingMoved.add (unitBeingMoved);
+		
 		for (final MemoryUnit thisUnit : fogOfWarMemory.getUnit ())
 			if ((combatLocation.equals (thisUnit.getCombatLocation ())) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
 				(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatSide () != null) && (thisUnit.getCombatHeading () != null))
@@ -761,9 +767,16 @@ public final class UnitCalculationsImpl implements UnitCalculations
 					ourUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = true;
 				else
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, fogOfWarMemory, db);
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, unitsBeingMoved, null, null, players, fogOfWarMemory, db);
 					if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getOwningPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
+					{
 						enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
+						
+						if ((!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)) &&
+							(!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL)))
+							
+							directlyVisibleEnemyUnits.add (xu);
+					}
 				}
 			}
 		
@@ -788,15 +801,19 @@ public final class UnitCalculationsImpl implements UnitCalculations
 		
 		// Now check if we can fire missile attacks at any enemies
 		if (canMakeRangedAttack (unitBeingMoved))
-			for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
-				for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
-					if (enemyUnits [y] [x] != null)
-					{
-						// Firing a missle weapon always uses up all of our movement so mark this for the sake of it - although MovementDistances
-						// isn't actually used to reduce the movement a unit has left in this fashion
-						movementTypes [y] [x] = CombatMoveType.RANGED;
-						doubleMovementDistances [y] [x] = 999;
-					}
+			for (final ExpandedUnitDetails xu : directlyVisibleEnemyUnits)
+			{
+				final int x = xu.getCombatPosition ().getX ();
+				final int y = xu.getCombatPosition ().getY ();
+				
+				// If the unit is invisible, we have to have True Sight / Illusions Immunity to be able to make a ranged attack against it.
+				// Simply being able to see it, or even standing right next to it, isn't enough.
+				
+				// Firing a missle weapon always uses up all of our movement so mark this for the sake of it - although MovementDistances
+				// isn't actually used to reduce the movement a unit has left in this fashion
+				movementTypes [y] [x] = CombatMoveType.RANGED;
+				doubleMovementDistances [y] [x] = 999;
+			}
 	}
 	
 	/**

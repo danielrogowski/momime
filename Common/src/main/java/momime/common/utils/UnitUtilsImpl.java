@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.ndg.map.CoordinateSystem;
+import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -72,8 +74,8 @@ public final class UnitUtilsImpl implements UnitUtils
 	/** Methods for working out minimal unit details */
 	private UnitDetailsUtils unitDetailsUtils;
 
-	/** Memory CAE utils */
-	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	/** Coordinate system utils */
+	private CoordinateSystemUtils coordinateSystemUtils;
 	
 	/**
 	 * @param unitURN Unit URN to search for
@@ -986,6 +988,41 @@ public final class UnitUtilsImpl implements UnitUtils
 
 		return found;
 	}
+
+	/**
+	 * findAliveUnitInCombatAt will still return units we cannot see because they're invisible.  This adds that check.  So for example if we have a unit
+	 * adjacent to an invisible unit, we can still "see" it and this method will return it.
+	 * 
+	 * @param combatLocation Location on overland map where the combat is taking place
+	 * @param combatPosition Position within the combat map to look at
+	 * @param ourPlayerID Our player ID
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @return Unit at this position, or null if there isn't one, or if there is one but we can't see it
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	@Override
+	public final ExpandedUnitDetails findAliveUnitInCombatWeCanSeeAt (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
+		final int ourPlayerID, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
+		final CoordinateSystem combatMapCoordinateSystem)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException
+	{
+		final MemoryUnit mu = findAliveUnitInCombatAt (mem.getUnit (), combatLocation, combatPosition);
+		ExpandedUnitDetails xu = null;
+		
+		if (mu != null)
+		{
+			xu = expandUnitDetails (mu, null, null, null, players, mem, db);
+			if (!canSeeUnitInCombat (xu, ourPlayerID, players, mem, db, combatMapCoordinateSystem))
+				xu = null;
+		}
+		
+		return xu;
+	}
 	
 	/**
 	 * Performs a deep copy (i.e. creates copies of every sub object rather than copying the references) of every field value from one unit to another
@@ -1112,19 +1149,71 @@ public final class UnitUtilsImpl implements UnitUtils
 	
 
 	/**
+	 * Whether a unit can be seen *at all* in combat.  So this isn't simply asking whether it has the Invisibility skill and whether we have
+	 * True Sight or Immunity to Illusions to negate it.  Even if a unit is invisible, we can still see it if we have one of our units adjacent to it.
+	 * 
+	 * So for a unit to be completely hidden in combat it must:
+	 * 1) not be ours AND
+	 * 2) be invisible (either natively, from Invisibility spell, or from Mass Invisible CAE) AND
+	 * 3) we must have no unit with True Sight or Immunity to Illusions AND
+	 * 4) we must have no unit adjacent to it
+	 * 
 	 * @param xu Unit present on the combat map
 	 * @param ourPlayerID Our player ID
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @return Whether we can see it or its completely hidden
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	public final boolean canSeeUnitInCombat (final ExpandedUnitDetails xu, final int ourPlayerID, final List<MemoryCombatAreaEffect> CAEs)
+	@Override
+	public final boolean canSeeUnitInCombat (final ExpandedUnitDetails xu, final int ourPlayerID,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
+		final CoordinateSystem combatMapCoordinateSystem)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
 		boolean invisible;
 		if (xu.getOwningPlayerID () == ourPlayerID)
 			invisible = false;
 		else
 		{
+			// expandUnitDetails takes care of granting invisibility spell from Mass Invisibility CAE, so we don't need to check for that here
 			invisible = (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)) ||
 				(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL));
+			
+			if (invisible)
+			{
+				final List<String> skillsThatNegateInvisibility = db.findUnitSkill
+					(CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY, "canSeeUnitInCombat").getNegatedBySkill ().stream ().map
+					(n -> n.getNegatedBySkillID ()).collect (Collectors.toList ());
+				
+				// Look through our units who are also in the combat looking for one which has True Sight or Immunity to Illusions or is adjacent to the enemy unit
+				final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();
+				while ((invisible) && (iter.hasNext ()))
+				{
+					final MemoryUnit thisUnit = iter.next ();
+					if ((thisUnit.getOwningPlayerID () == ourPlayerID) && (thisUnit.getStatus () == UnitStatusID.ALIVE) &&
+						(thisUnit.getCombatPosition () != null) && (thisUnit.getCombatHeading () != null) && (thisUnit.getCombatSide () != null) &&
+						(xu.getCombatLocation ().equals (thisUnit.getCombatLocation ())))
+					{
+						// Check for adjacency first since its quicker
+						if (getCoordinateSystemUtils ().determineStep2DDistanceBetween (combatMapCoordinateSystem,
+							xu.getCombatPosition (), (MapCoordinates2DEx) thisUnit.getCombatPosition ()) <= 1)
+							
+							invisible = false;
+						else
+						{
+							final ExpandedUnitDetails ourXU = expandUnitDetails (thisUnit, null, null, null, players, mem, db);
+							for (final String negatingSkillID : skillsThatNegateInvisibility)
+								if (ourXU.hasModifiedSkill (negatingSkillID))
+									invisible = false;
+						}
+					}
+				}
+			}
 		}
 		
 		return !invisible;
@@ -1163,18 +1252,18 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
-	 * @return Memory CAE utils
+	 * @return Coordinate system utils
 	 */
-	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
+	public final CoordinateSystemUtils getCoordinateSystemUtils ()
 	{
-		return memoryCombatAreaEffectUtils;
+		return coordinateSystemUtils;
 	}
 
 	/**
-	 * @param utils Memory CAE utils
+	 * @param utils Coordinate system utils
 	 */
-	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
+	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
-		memoryCombatAreaEffectUtils = utils;
+		coordinateSystemUtils = utils;
 	}
 }

@@ -3,6 +3,7 @@ package momime.common.utils;
 import java.util.List;
 import java.util.Map;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -164,6 +165,27 @@ public interface UnitUtils
 	public MemoryUnit findAliveUnitInCombatAt (final List<MemoryUnit> units, final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition);
 	
 	/**
+	 * findAliveUnitInCombatAt will still return units we cannot see because they're invisible.  This adds that check.  So for example if we have a unit
+	 * adjacent to an invisible unit, we can still "see" it and this method will return it.
+	 * 
+	 * @param combatLocation Location on overland map where the combat is taking place
+	 * @param combatPosition Position within the combat map to look at
+	 * @param ourPlayerID Our player ID
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @return Unit at this position, or null if there isn't one, or if there is one but we can't see it
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	public ExpandedUnitDetails findAliveUnitInCombatWeCanSeeAt (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
+		final int ourPlayerID, final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
+		final CoordinateSystem combatMapCoordinateSystem)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException;
+	
+	/**
 	 * Performs a deep copy (i.e. creates copies of every sub object rather than copying the references) of every field value from one unit to another
 	 * @param source Unit to copy values from
 	 * @param dest Unit to copy values to
@@ -182,4 +204,30 @@ public interface UnitUtils
 	 * @return Total damage taken across all types, excluding PERMANENT
 	 */
 	public int getHealableDamageTaken (final List<UnitDamage> damages);
+
+	/**
+	 * Whether a unit can be seen *at all* in combat.  So this isn't simply asking whether it has the Invisibility skill and whether we have
+	 * True Sight or Immunity to Illusions to negate it.  Even if a unit is invisible, we can still see it if we have one of our units adjacent to it.
+	 * 
+	 * So for a unit to be completely hidden in combat it must:
+	 * 1) not be ours AND
+	 * 2) be invisible (either natively, from Invisibility spell, or from Mass Invisible CAE) AND
+	 * 3) we must have no unit with True Sight or Immunity to Illusions AND
+	 * 4) we must have no unit adjacent to it
+	 * 
+	 * @param xu Unit present on the combat map
+	 * @param ourPlayerID Our player ID
+	 * @param players Players list
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @return Whether we can see it or its completely hidden
+	 * @throws RecordNotFoundException If the definition of the unit, a skill or spell or so on cannot be found in the db
+	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
+	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
+	 */
+	public boolean canSeeUnitInCombat (final ExpandedUnitDetails xu, final int ourPlayerID,
+		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
+		final CoordinateSystem combatMapCoordinateSystem)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException;
 }

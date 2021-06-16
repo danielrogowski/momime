@@ -1712,6 +1712,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final SpellSetting settings = new SpellSetting (); 
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setSpellSetting (settings);
+		sd.setCombatMapSize (createCombatMapSize ());
 		
 		// General server knowledge
 		final OverlandMapSize sys = createOverlandMapSize ();
@@ -1797,7 +1798,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Specifics about cell being target
 		final UnitUtils unitUtils = mock (UnitUtils.class);
-		when (unitUtils.findAliveUnitInCombatAt (trueMap.getUnit (), combatLocation, combatTargetLocation)).thenReturn (new MemoryUnit ());
+		when (unitUtils.findAliveUnitInCombatWeCanSeeAt (combatLocation, combatTargetLocation, 7, players,
+			trueMap, db, sd.getCombatMapSize ())).thenReturn (mock (ExpandedUnitDetails.class));
 		
 		// Set up test object
 		final SpellQueueingImpl proc = new SpellQueueingImpl ();

@@ -475,7 +475,7 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				attackerUI.getUnitInfoPanel ().refreshUnitDetails ();
 			
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-				if ((!button.isHidden ()) && (button.getComponent ().getUnit ().getMemoryUnit () == attackerUnit))
+				if ((!button.isHidden ()) && (button.getComponent ().getUnit () != null) && (button.getComponent ().getUnit ().getMemoryUnit () == attackerUnit))
 					button.repaint ();
 
 			for (final CityViewUI cityView : getClient ().getCityViews ().values ())
@@ -508,7 +508,9 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				defenderUI.getUnitInfoPanel ().refreshUnitDetails ();
 
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
-				if ((!button.isHidden ()) && (getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == button.getComponent ().getUnit ().getUnit ())))
+				if ((!button.isHidden ()) && (button.getComponent ().getUnit () != null) &&
+					(getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == button.getComponent ().getUnit ().getUnit ())))
+					
 					button.repaint ();
 
 			for (final CityViewUI cityView : getClient ().getCityViews ().values ())

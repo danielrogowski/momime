@@ -413,8 +413,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 			}
 			else if (spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING)
 			{
-				// Verify for summoning spells that there isn't a unit in that location
-				if (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, combatTargetLocation) != null)
+				// Verify for summoning spells that there isn't a unit in that location... one we know about anyway
+				if (getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, combatTargetLocation, player.getPlayerDescription ().getPlayerID (), mom.getPlayers (),
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ()) != null)
 					msg = "There is already a unit in the chosen location so you cannot summon there.";
 				
 				else if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&

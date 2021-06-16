@@ -1068,6 +1068,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		
 		// Ranged attacks always reduce movement remaining to zero and never result in the unit actually moving.
 		// The value gets sent to the client by resolveAttack below.
+		boolean blocked = false;
 		if (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.RANGED)
 			tu.setDoubleCombatMovesLeft (0);
 		else
@@ -1098,8 +1099,11 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// Send direction messages to the client, reducing the unit's movement with each step
 			// (so that's why we do this even if both players are AI)
-			for (final int d : directions)
+			int dirNo = 0;
+			while ((!blocked) && (dirNo < directions.size ()))
 			{
+				final int d = directions.get (dirNo);
+				
 				// Move to the new cell
 				final MoveUnitInCombatMessage msg = new MoveUnitInCombatMessage ();
 				msg.setUnitURN (tu.getUnitURN ());
@@ -1109,23 +1113,37 @@ public final class CombatProcessingImpl implements CombatProcessing
 				if (!getCoordinateSystemUtils ().move2DCoordinates (mom.getSessionDescription ().getCombatMapSize (), movePath, d))
 					throw new MomException ("okToMoveUnitInCombat: Server map tracing moved to a cell off the map (F)");
 				
-				// How much movement did it take us to walk into this cell?
-				// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
-				reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
-					(combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
-				msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
-				
-				// Only send this to the players involved in the combat.
-				// Players not involved in the combat don't care where the units are positioned.
-				if (attackingPlayer.getPlayerDescription ().isHuman ())
-					attackingPlayer.getConnection ().sendMessageToClient (msg);
-
-				if (defendingPlayer.getPlayerDescription ().isHuman ())
-					defendingPlayer.getConnection ().sendMessageToClient (msg);
+				// Check if the cell is really empty - maybe there's an invisible unit we couldn't see before
+				if (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, movePath) != null)
+				{
+					// Invisible unit here - wind movePath back one step
+					blocked = true;
+					movePath.setX (msg.getMoveFrom ().getX ());
+					movePath.setY (msg.getMoveFrom ().getY ());
+				}
+				else
+				{
+					// Good, no invisible unit here, so can make the move
+					// How much movement did it take us to walk into this cell?
+					// Units that ignore combat terrain always spend a fixed amount per move, so don't even bother calling the method
+					reduceMovementRemaining (tu.getMemoryUnit (), ignoresCombatTerrain ? 2 : getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+						(combatCell.getCombatMap ().getRow ().get (movePath.getY ()).getCell ().get (movePath.getX ()), mom.getServerDB ()));
+					msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
+					
+					// Only send this to the players involved in the combat.
+					// Players not involved in the combat don't care where the units are positioned.
+					if (attackingPlayer.getPlayerDescription ().isHuman ())
+						attackingPlayer.getConnection ().sendMessageToClient (msg);
+	
+					if (defendingPlayer.getPlayerDescription ().isHuman ())
+						defendingPlayer.getConnection ().sendMessageToClient (msg);
+					
+					dirNo++;
+				}
 			}
-			
+		
 			// If the unit it making an attack, that takes half its total movement
-			if (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE)
+			if ((!blocked) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] != CombatMoveType.MOVE))
 				reduceMovementRemaining (tu.getMemoryUnit (), tu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED));
 			
 			// Actually put the units in that location on the server
@@ -1145,31 +1163,34 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 		
 		// Anything special to do?
-		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-		defenders.add (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo));
-		
 		boolean combatEnded = false;
-		switch (movementTypes [moveTo.getY ()] [moveTo.getX ()])
+		if (!blocked)
 		{
-			case MELEE:
-				combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
-					movementDirections [moveTo.getY ()] [moveTo.getX ()],
-					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
-				break;
-				
-			case RANGED:
-				combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
-					getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), tu.getCombatPosition (), moveTo),
-					CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
-				break;
-				
-			case MOVE:
-				// Nothing special to do
-				break;
-
-			case CANNOT_MOVE:
-				// Should be impossible
-				break;
+			final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
+			defenders.add (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo));
+			
+			switch (movementTypes [moveTo.getY ()] [moveTo.getX ()])
+			{
+				case MELEE:
+					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
+						movementDirections [moveTo.getY ()] [moveTo.getX ()],
+						CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
+					break;
+					
+				case RANGED:
+					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
+						getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), tu.getCombatPosition (), moveTo),
+						CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
+					break;
+					
+				case MOVE:
+					// Nothing special to do
+					break;
+	
+				case CANNOT_MOVE:
+					// Should be impossible
+					break;
+			}
 		}
 		
 		return combatEnded;

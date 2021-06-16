@@ -514,15 +514,17 @@ public final class CombatUI extends MomClientFrameUI
 						else
 						{
 							// Trying to target a spell here
-							final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
-								getCombatLocation (), moveToLocation);
+							final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt
+								(getCombatLocation (), moveToLocation, getClient ().getOurPlayerID (), getClient ().getPlayers (),
+								 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
+								 getClient ().getSessionDescription ().getCombatMapSize ());
 							
 							final boolean validTarget;
 							switch (getSpellBeingTargetted ().getSpellBookSectionID ())
 							{
 								// Summoning spell - valid as long as there isn't a unit here
 								case SUMMONING:
-									validTarget = (unit == null);
+									validTarget = (xu == null);
 									break;
 									
 								// Unit enchantment / curse - separate method to perform all validation that this unit is a valid target
@@ -531,11 +533,11 @@ public final class CombatUI extends MomClientFrameUI
 								case ATTACK_SPELLS:
 								case SPECIAL_UNIT_SPELLS:
 								case DISPEL_SPELLS:
-									if (unit == null)
+									if (xu == null)
 										validTarget = false;
 									else
 									{
-										final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (),
+										final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargetted ().getSpellRealm (),
 											getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 
 										final Integer variableDamage;
@@ -549,7 +551,7 @@ public final class CombatUI extends MomClientFrameUI
 										
 										validTarget = (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 											(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
-												xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
+												xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (),
 												getClient ().getClientDB ()) == TargetSpellResult.VALID_TARGET);
 									}
 									break;
@@ -618,35 +620,40 @@ public final class CombatUI extends MomClientFrameUI
 						if (unit != null)
 							try
 							{
-								// Is the unit currently animating in an attack?
-								String combatActionID = null;
-								if (getAttackAnim () != null)
+								if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
+									getClient ().getSessionDescription ().getCombatMapSize ()))
 								{
-									// Ranged attack animation
-									if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
+									// Is the unit currently animating in an attack?
+									String combatActionID = null;
+									if (getAttackAnim () != null)
 									{
-										// Show firing unit going 'pew'
-										if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
-											combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_RANGED_ATTACK;
+										// Ranged attack animation
+										if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
+										{
+											// Show firing unit going 'pew'
+											if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) && (getAttackAnim ().getCurrent () == null))
+												combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_RANGED_ATTACK;
+										}
+										
+										// Melee attack animation
+										else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
+										{
+											if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) ||
+												(getAttackAnim ().getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == unit.getUnit ().getUnit ())))
+												combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
+										}
 									}
 									
-									// Melee attack animation
-									else if (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK.equals (getAttackAnim ().getAttackSkillID ()))
-									{
-										if ((unit.getUnit ().getMemoryUnit () == getAttackAnim ().getAttackerUnit ()) ||
-											(getAttackAnim ().getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == unit.getUnit ().getUnit ())))
-											combatActionID = GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_MELEE_ATTACK;
-									}
+									// If animation didn't provide a specific combatActionID then just default to standing still
+									if (combatActionID == null)
+										combatActionID = getUnitCalculations ().determineCombatActionID (unit.getUnit (), false, getClient ().getClientDB ());
+									
+									// Draw unit
+									getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
+										getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
+										getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours ());
 								}
-								
-								// If animation didn't provide a specific combatActionID then just default to standing still
-								if (combatActionID == null)
-									combatActionID = getUnitCalculations ().determineCombatActionID (unit.getUnit (), false, getClient ().getClientDB ());
-								
-								// Draw unit
-								getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
-									getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
-									getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours ());
 							}
 							catch (final Exception e)
 							{
@@ -771,19 +778,23 @@ public final class CombatUI extends MomClientFrameUI
 					for (int x = 0; x < getClient ().getSessionDescription ().getCombatMapSize ().getWidth (); x++)
 					{
 						final CombatUIUnitAndAnimations unit = unitToDrawAtEachLocation [y] [x];
-						if ((unit != null) && (unit.getAnimations () != null))
+						if ((unit != null) && (unit.getAnimations () != null) && (unit.getAnimations ().size () > 0))
 							try
 							{
-								for (final AnimationEx effectAnim : unit.getAnimations ())
-								{
-									final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
-									final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
+								if (getUnitUtils ().canSeeUnitInCombat (unit.getUnit (), getClient ().getOurPlayerID (), getClient ().getPlayers (),
+									getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
+									getClient ().getSessionDescription ().getCombatMapSize ()))
 									
-									final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.COMMON_XML);
-									g.drawImage (image,
-										getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) + adjustX,
-										getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
-								}
+									for (final AnimationEx effectAnim : unit.getAnimations ())
+									{
+										final int adjustX = (effectAnim.getCombatCastOffsetX () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetX ();
+										final int adjustY = (effectAnim.getCombatCastOffsetY () == null) ? 0 : 2 * effectAnim.getCombatCastOffsetY ();
+										
+										final BufferedImage image = getAnim ().loadImageOrAnimationFrame (null, effectAnim.getAnimationID (), false, AnimationContainer.COMMON_XML);
+										g.drawImage (image,
+											getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) + adjustX,
+											getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) + adjustY, image.getWidth () * 2, image.getHeight () * 2, null);
+									}
 							}
 							catch (final Exception e)
 							{
@@ -970,20 +981,22 @@ public final class CombatUI extends MomClientFrameUI
 				{
 					if (SwingUtilities.isRightMouseButton (ev))
 					{
-						final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
-							getCombatLocation (), combatCoords);
-						if (unit != null)
+						final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (getCombatLocation (), combatCoords,
+							getClient ().getOurPlayerID (), getClient ().getPlayers (),
+							getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
+							getClient ().getSessionDescription ().getCombatMapSize ());
+						if (xu != null)
 						{
-							if ((unit == getSelectedUnitInCombat ()) || (unit.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
-								(unit.getDoubleCombatMovesLeft () == null) || (unit.getDoubleCombatMovesLeft () <= 0))
+							if ((xu == getSelectedUnitInCombat ()) || (xu.getOwningPlayerID () != getClient ().getOurPlayerID ()) ||
+								(xu.getDoubleCombatMovesLeft () == null) || (xu.getDoubleCombatMovesLeft () <= 0))
 							{
 								// Is there a unit info screen already open for this unit?
-								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (unit.getUnitURN ());
+								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (xu.getUnitURN ());
 								if (unitInfo == null)
 								{
 									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
-									unitInfo.setUnit (unit);
-									getClient ().getUnitInfos ().put (unit.getUnitURN (), unitInfo);
+									unitInfo.setUnit (xu.getMemoryUnit ());
+									getClient ().getUnitInfos ().put (xu.getUnitURN (), unitInfo);
 								}
 							
 								unitInfo.setVisible (true);
@@ -992,15 +1005,17 @@ public final class CombatUI extends MomClientFrameUI
 							{
 								// Move it to the first unit in the list.
 								// We could just select it - but this mucks up if the unit then has two moves - half way through we'd end up jumping to a different unit.
-								getCombatMapProcessing ().moveToFrontOfList (unit);
+								getCombatMapProcessing ().moveToFrontOfList (xu.getMemoryUnit ());
 							}
 						}
 					}
 					else if (getSpellBeingTargetted () != null)
 					{
 						// Left clicking to target a spell
-						final MemoryUnit unit = getUnitUtils ().findAliveUnitInCombatAt (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (),
-							getCombatLocation (), moveToLocation);
+						final ExpandedUnitDetails xu = getUnitUtils ().findAliveUnitInCombatWeCanSeeAt
+							(getCombatLocation (), moveToLocation, getClient ().getOurPlayerID (), getClient ().getPlayers (),
+							 getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
+							 getClient ().getSessionDescription ().getCombatMapSize ());
 						
 						// Build message
 						final RequestCastSpellMessage msg = new RequestCastSpellMessage ();
@@ -1023,7 +1038,7 @@ public final class CombatUI extends MomClientFrameUI
 						{
 							// Summoning spell - valid as long as there isn't a unit here
 							case SUMMONING:
-								if (unit == null)
+								if (xu == null)
 								{
 									isValidTarget = true;
 									msg.setCombatTargetLocation (combatCoords);
@@ -1040,9 +1055,9 @@ public final class CombatUI extends MomClientFrameUI
 							case ATTACK_SPELLS:
 							case SPECIAL_UNIT_SPELLS:
 							case DISPEL_SPELLS:
-								if (unit != null)
+								if (xu != null)
 								{
-									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (unit, null, null, getSpellBeingTargetted ().getSpellRealm (),
+									final ExpandedUnitDetails xus = getUnitUtils ().expandUnitDetails (xu.getUnit (), null, null, getSpellBeingTargetted ().getSpellRealm (),
 										getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									final Integer variableDamage;
@@ -1056,12 +1071,12 @@ public final class CombatUI extends MomClientFrameUI
 									
 									final TargetSpellResult validTarget = getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell
 										(getSpellBeingTargetted (), getCombatLocation (), getClient ().getOurPlayerID (), getCastingSource ().getCastingUnit (), variableDamage,
-										xu, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+										 xus, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
 									
 									if (validTarget == TargetSpellResult.VALID_TARGET)
 									{
 										isValidTarget = true;
-										msg.setCombatTargetUnitURN (unit.getUnitURN ());
+										msg.setCombatTargetUnitURN (xu.getUnitURN ());
 									}
 	
 									// If we can't target on this unit, tell the player why not

@@ -762,7 +762,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				else
 				{
 					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, fogOfWarMemory, db);
-					enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
+					if (getUnitUtils ().canSeeUnitInCombat (xu, unitBeingMoved.getOwningPlayerID (), players, fogOfWarMemory, db, combatMapCoordinateSystem))
+						enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
 				}
 			}
 		

@@ -129,9 +129,17 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		
 		// Remove the unit from the map cell it is leaving so the regular drawing routine stops drawing this unit
 		getCombatUI ().setUnitToDrawAtLocation (mu.getCombatPosition ().getX (), mu.getCombatPosition ().getY (), null);
-		mu.setCombatPosition (null);
-		getCombatUI ().setUnitMoving (this);
+		
+		// Don't draw unit moving if we can't see it
+		if (getUnitUtils ().canSeeUnitInCombat (unit, getClient ().getOurPlayerID (), getClient ().getPlayers (),
+			getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB (),
+			getClient ().getSessionDescription ().getCombatMapSize ()))
+			
+			getCombatUI ().setUnitMoving (this);
 
+		// Can't blank this out until check above is done
+		mu.setCombatPosition (null);
+		
 		// We need this repeatedly so just work it out once
 		combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "MoveUnitInCombatMessageImpl.start");
 		tickCount = Math.max (combatMapTileSet.getTileWidth (), combatMapTileSet.getTileHeight ()) * 2;

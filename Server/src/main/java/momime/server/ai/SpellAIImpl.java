@@ -776,7 +776,8 @@ public final class SpellAIImpl implements SpellAI
 			final MapCoordinates2DEx summoningLocation = (choice.getSpell ().getSpellBookSectionID () != SpellBookSectionID.SUMMONING) ? null :
 				getUnitServerUtils ().findFreeCombatPositionClosestTo (combatLocation, gc.getCombatMap (),
 					new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
-					mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+					player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+					mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
 			
 			if (getSpellQueueing ().requestCastSpell (player, (combatCastingUnit == null) ? null : combatCastingUnit.getUnitURN (), null, null,
 				choice.getSpell ().getSpellID (), null, combatLocation, summoningLocation, (choice.getTargetUnit () == null) ? null : choice.getTargetUnit ().getUnitURN (), null, mom))

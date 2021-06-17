@@ -222,4 +222,20 @@ public interface UnitServerUtils
 		final MapCoordinates2DEx startPosition, final int ourPlayerID, final List<PlayerServerDetails> players, final FogOfWarMemory mem,
 		final CommonDatabase db, final CoordinateSystem combatMapCoordinateSystem)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
+
+	/**
+	 * Like above, except this will avoid units even if they're invisible
+	 * 
+	 * @param combatLocation Location of combat to check
+	 * @param combatMap Scenery of the combat map at that location
+	 * @param startPosition Position in the combat map to start checking from
+	 * @param trueUnits List of true units
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
+	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 */
+	public MapCoordinates2DEx findFreeCombatPositionAvoidingInvisibleClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException;
 }

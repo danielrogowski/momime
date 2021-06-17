@@ -826,6 +826,13 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		MapCoordinates2DEx found = null;
 		final MapCoordinates2DEx coords = new MapCoordinates2DEx (startPosition);
 		
+		// Check centre cell first
+		if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+				(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
+			(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem) == null))
+			
+			found = coords;
+		
 		int ringNumber = 1;
 		while (found == null)
 		{
@@ -846,6 +853,69 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 						if ((getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
 								(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0) &&
 							(getUnitUtils ().findAliveUnitInCombatWeCanSeeAt (combatLocation, coords, ourPlayerID, players, mem, db, combatMapCoordinateSystem) == null))
+							
+							found = coords;
+					}
+					
+					traverseSide++;
+				}
+				
+				directionChk++;
+			}
+			
+			ringNumber++;
+		}
+		
+		return found;
+	}
+	
+	/**
+	 * Like above, except this will avoid units even if they're invisible
+	 * 
+	 * @param combatLocation Location of combat to check
+	 * @param combatMap Scenery of the combat map at that location
+	 * @param startPosition Position in the combat map to start checking from
+	 * @param trueUnits List of true units
+	 * @param combatMapCoordinateSystem Combat map coordinate system
+	 * @param db Lookup lists built over the XML database
+	 * @return Closest free passable combat tile to startPosition; assumes it will eventually find one, will get error if parses the entire combat map and fails to find a suitable cell
+	 * @throws RecordNotFoundException If we counter a combatTileBorderID or combatTileTypeID that can't be found in the db
+	 */
+	@Override
+	public final MapCoordinates2DEx findFreeCombatPositionAvoidingInvisibleClosestTo (final MapCoordinates3DEx combatLocation, final MapAreaOfCombatTiles combatMap,
+		final MapCoordinates2DEx startPosition, final List<MemoryUnit> trueUnits, final CoordinateSystem combatMapCoordinateSystem, final CommonDatabase db)
+		throws RecordNotFoundException
+	{
+		MapCoordinates2DEx found = null;
+		final MapCoordinates2DEx coords = new MapCoordinates2DEx (startPosition);
+		
+		// Check centre cell first
+		if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords) == null) &&
+			(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+				(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
+				
+			found = coords;
+		
+		int ringNumber = 1;
+		while (found == null)
+		{
+			// Move left
+			getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 7);
+
+			int directionChk = 1;
+			while ((found == null) && (directionChk <= 4))
+			{
+				final int d = directionChk * 2;
+				int traverseSide = 1;
+				while ((found == null) && (traverseSide <= ringNumber * 2))
+				{
+					// Move in direction d
+					if (getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, d))
+					{
+						// Is this cell unoccupied + passable terrain?
+						if ((getUnitUtils ().findAliveUnitInCombatAt (trueUnits, combatLocation, coords) == null) &&
+							(getUnitCalculations ().calculateDoubleMovementToEnterCombatTile
+								(combatMap.getRow ().get (coords.getY ()).getCell ().get (coords.getX ()), db) >= 0))
 							
 							found = coords;
 					}

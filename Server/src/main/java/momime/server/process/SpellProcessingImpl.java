@@ -619,10 +619,14 @@ public final class SpellProcessingImpl implements SpellProcessing
 	
 				// Show the "summoning" animation for it
 				final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
+				
+				final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
+					(combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+						mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 	
 				getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
 					mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), targetUnit,
-					combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+					combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 	
 				// Allow it to be moved this combat turn
 				targetUnit.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (targetUnit, null, null, null,
@@ -654,9 +658,13 @@ public final class SpellProcessingImpl implements SpellProcessing
 					final int combatHeading = (castingPlayer == attackingPlayer) ? 8 : 4;
 					
 					// Set it immediately into combat
+					final MapCoordinates2DEx actualTargetLocation = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
+						(combatLocation, gc.getCombatMap (), targetLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+							mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+					
 					getCombatProcessing ().setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer,
 						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), tu,
-						combatLocation, combatLocation, targetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
+						combatLocation, combatLocation, actualTargetLocation, combatHeading, castingSide, spell.getSpellID (), mom.getServerDB ());
 					
 					// Allow it to be moved this combat turn
 					tu.setDoubleCombatMovesLeft (2 * getUnitUtils ().expandUnitDetails (tu, null, null, null,

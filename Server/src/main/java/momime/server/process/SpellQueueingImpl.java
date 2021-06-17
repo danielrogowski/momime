@@ -302,6 +302,9 @@ public final class SpellQueueingImpl implements SpellQueueing
 			if (!combatPlayers.bothFound ())
 				msg = "You cannot cast combat spells if one side has been wiped out in the combat.";
 			
+			else if (!player.getPlayerDescription ().getPlayerID ().equals (gc.getCombatCurrentPlayerID ()))
+				msg = "You cannot cast combat spells when it isn't your turn.";
+			
 			else if (xuCombatCastingUnit == null)
 			{
 				// Validate wizard casting

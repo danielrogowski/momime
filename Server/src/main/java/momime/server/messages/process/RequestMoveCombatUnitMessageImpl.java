@@ -88,25 +88,28 @@ public final class RequestMoveCombatUnitMessageImpl extends RequestMoveCombatUni
 		final int [] [] movementDirections = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		final CombatMoveType [] [] movementTypes = new CombatMoveType [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
 		
-		final ExpandedUnitDetails xu;
-		if (error != null)
-			xu = null;
-		else
+		ExpandedUnitDetails xu = null;
+		if (error == null)
 		{
 			final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
 				(tu.getCombatLocation ().getZ ()).getRow ().get (tu.getCombatLocation ().getY ()).getCell ().get (tu.getCombatLocation ().getX ());
-
-			xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 			
-			final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
-			
-			getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
-				xu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
-			
-			// Can we reach where we're trying to go?
-			if (movementTypes [getMoveTo ().getY ()] [getMoveTo ().getX ()] == CombatMoveType.CANNOT_MOVE)
-				error = "The unit you are trying to move cannot reach this location";
+			if (!sender.getPlayerDescription ().getPlayerID ().equals (tc.getCombatCurrentPlayerID ()))
+				error = "You cannot move units in combat when it isn't your turn";
+			else
+			{
+				xu = getUnitUtils ().expandUnitDetails (tu, null, null, null,
+					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
+				
+				final int [] [] doubleMovementDistances = new int [combatMapSize.getHeight ()] [combatMapSize.getWidth ()];
+				
+				getUnitCalculations ().calculateCombatMovementDistances (doubleMovementDistances, movementDirections, movementTypes,
+					xu, mom.getGeneralServerKnowledge ().getTrueMap (), tc.getCombatMap (), combatMapSize, mom.getPlayers (), mom.getServerDB ());
+				
+				// Can we reach where we're trying to go?
+				if (movementTypes [getMoveTo ().getY ()] [getMoveTo ().getX ()] == CombatMoveType.CANNOT_MOVE)
+					error = "The unit you are trying to move cannot reach this location";
+			}
 		}
 
 		if (error != null)

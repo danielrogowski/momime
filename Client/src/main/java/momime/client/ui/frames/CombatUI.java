@@ -1232,6 +1232,9 @@ public final class CombatUI extends MomClientFrameUI
 			
 			// Can't cast anything, at least until it is our turn
 			spellAction.setEnabled (false);
+			waitAction.setEnabled (false);
+			doneAction.setEnabled (false);
+			fleeAction.setEnabled (false);
 			
 			// Generates the bitmap for the static portion of the terrain
 			smoothCombatMapAndGenerateBitmaps ();
@@ -1368,9 +1371,12 @@ public final class CombatUI extends MomClientFrameUI
 	 * @throws PlayerNotFoundException If we cannot find the player who owns the unit
 	 * @throws MomException If the calculation logic runs into a situation it doesn't know how to deal with
 	 */
-	private final void enableOrDisableSpellAction () throws RecordNotFoundException, PlayerNotFoundException, MomException
+	public final void enableOrDisableSpellAction () throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		spellAction.setEnabled ((getClient ().getOurPlayerID ().equals (currentPlayerID)) && (listCastingSources ().size () > 0));
+		waitAction.setEnabled (getClient ().getOurPlayerID ().equals (currentPlayerID));
+		doneAction.setEnabled (getClient ().getOurPlayerID ().equals (currentPlayerID));
+		fleeAction.setEnabled (getClient ().getOurPlayerID ().equals (currentPlayerID));
 	}
 	
 	/**

@@ -81,6 +81,7 @@ public final class SetCombatPlayerMessageImpl extends SetCombatPlayerMessage imp
 			
 			// This disables spell casting because it realises it isn't our turn
 			getCombatUI ().setCastingSource (null, false);
+			getCombatUI ().enableOrDisableSpellAction ();
 		}
 	}
 

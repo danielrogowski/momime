@@ -56,10 +56,10 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	// NB. These aren't private so that the unit tests can use them too
 	
 	/** X coord of centre location around which defenders are placed */
-	final static int COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X = 4;
+	public final static int COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X = 4;
 	
 	/** Y coord of centre location around which defenders are placed */
-	final static int COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y = 11;
+	public final static int COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y = 11;
 	
 	/** Direction that defenders initially face */
 	final static int COMBAT_SETUP_DEFENDER_FACING = 4;

@@ -34,6 +34,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.CombatProcessing;
+import momime.server.process.CombatStartAndEndImpl;
 
 /**
  * AI for deciding what to do with units in combat
@@ -156,7 +157,7 @@ public final class CombatAIImpl implements CombatAI
 	 * @param mem Known overland terrain, units, buildings and so on
 	 * @param combatMapCoordinateSystem Combat map coordinate system
 	 * @param db Lookup lists built over the XML database
-	 * @return Best unit to attack, or null if enemy is wiped out already
+	 * @return Best unit to attack, or null if enemy is wiped out already or if they're all invisible
 	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
 	 * @throws PlayerNotFoundException If we can't find the player who owns the unit
@@ -245,19 +246,33 @@ public final class CombatAIImpl implements CombatAI
 			movementTypes, tu, mom.getGeneralServerKnowledge ().getTrueMap (),
 			combatMap, combatMapSize, mom.getPlayers (), mom.getServerDB ());
 		
-		// Work out which enemy we want to attack, if we can even make some kind of attack that is.
+		// Work out where we want to move.  Firstly, can we even make any kind of attack?  Units like settlers have no reason to move at all
 		// We can get away with calling canMakeMeleeAttack generically without using the actual combatActionID of each enemy, as even if we can
 		// make an attack in theory, selectBestTarget will realise we have no actual valid targets if we're grounded and all enemy are flying.
-		final MemoryUnit bestUnit = (getUnitCalculations ().canMakeRangedAttack (tu) || getUnitCalculations ().canMakeMeleeAttack (null, tu, mom.getServerDB ())) ? 
-			selectBestTarget (tu, combatLocation, movementDirections, doubleMovementDistances, movementTypes, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
-				mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ()) : null;
+		final MapCoordinates2DEx moveTo;
+		if ((getUnitCalculations ().canMakeRangedAttack (tu)) || (getUnitCalculations ().canMakeMeleeAttack (null, tu, mom.getServerDB ())))
+		{
+			// Can we find anything to attack?  Maybe they're all invisible
+			final MemoryUnit bestUnit = selectBestTarget (tu, combatLocation, movementDirections, doubleMovementDistances, movementTypes,
+				mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
+				mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+			
+			if (bestUnit != null)
+				moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) bestUnit.getCombatPosition ());
+
+			// Head to defenders area - then if both sides are completely invisible, at least they'll find each other - as long as we can actually go there
+			else				
+				moveTo = new MapCoordinates2DEx (CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_X,
+					CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_FRONT_ROW_CENTRE_Y);
+		}
+		else
+			moveTo = null;
 		
 		CombatAIMovementResult result = CombatAIMovementResult.NOTHING; 
-		if (bestUnit != null)
+		if (moveTo != null)
 		{
 			// If we can attack at range then shoot it - if not then start walking towards it, or if adjacent to it already then attack it
-			final MapCoordinates2DEx moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) bestUnit.getCombatPosition ());
-			
+			boolean ok = true;
 			if ((movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.MELEE) || (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.RANGED))
 			{
 				// Have set MoveToX, MoveToY already so nothing to do
@@ -265,21 +280,22 @@ public final class CombatAIImpl implements CombatAI
 			else
 				// Walk towards it - To find our destination, we need to start from the unit we're trying to attack
 				// and work backwards until we find a space that we can reach this turn
-				while (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.CANNOT_MOVE)
+				while ((ok) && (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.CANNOT_MOVE))
 				{
 					final int d = movementDirections [moveTo.getY ()] [moveTo.getX ()];
 					if (d < 1)
-						throw new MomException ("AI Combat routine traced an invalid direction");
+						ok = false;	// No route to get there (or we're already standing there)
 					
-					if (!getCoordinateSystemUtils ().move2DCoordinates (combatMapSize, moveTo,
+					else if (!getCoordinateSystemUtils ().move2DCoordinates (combatMapSize, moveTo,
 						getCoordinateSystemUtils ().normalizeDirection (combatMapSize.getCoordinateSystemType (), d+4)))
 						
 						throw new MomException ("AI Combat routine traced a location off the edge of the combat map");
-				}				
+				}
 			
 			// Move there
-			result = getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom) ?
-				CombatAIMovementResult.ENDED_COMBAT : CombatAIMovementResult.MOVED_OR_ATTACKED;
+			if (ok)
+				result = getCombatProcessing ().okToMoveUnitInCombat (tu, moveTo, movementDirections, movementTypes, mom) ?
+					CombatAIMovementResult.ENDED_COMBAT : CombatAIMovementResult.MOVED_OR_ATTACKED;
 		}
 		
 		return result;

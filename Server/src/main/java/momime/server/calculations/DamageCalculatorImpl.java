@@ -119,11 +119,18 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		final List<ExpandedUnitDetails> attackers = new ArrayList<ExpandedUnitDetails> ();
 		attackers.add (xuAttackerPreliminary);
 		
-		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, players, mem, db);
+		// In fact worse than that.  If attacker is invisible, the stats we worked out for them above will say they're invisible even if we have True Sight,
+		// because we haven't taken the defender into account yet.  That means if we work the final defender stats out now, they'll suffer -1 to hit. 
+		final ExpandedUnitDetails xuDefenderPreliminary = getUnitUtils ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, players, mem, db);
 		final List<ExpandedUnitDetails> defenders = new ArrayList<ExpandedUnitDetails> ();
-		defenders.add (xuDefender);
-		
+		defenders.add (xuDefenderPreliminary);
+
+		// Now work the real stats out
 		final ExpandedUnitDetails xuAttacker = getUnitUtils ().expandUnitDetails (attacker.getUnit (), defenders, attackSkillID, null, players, mem, db);
+		attackers.clear ();
+		attackers.add (xuAttacker);
+		
+		final ExpandedUnitDetails xuDefender = getUnitUtils ().expandUnitDetails (defender.getUnit (), attackers, attackSkillID, null, players, mem, db);
 		
 		// The unit's skill level indicates the strength of the attack (e.g. Poison Touch 2 vs Poison Touch 4)
 		final AttackDamage attackDamage;

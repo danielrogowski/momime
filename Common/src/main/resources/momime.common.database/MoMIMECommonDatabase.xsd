@@ -2788,9 +2788,14 @@ In that case, the restriction is put here, with multiple addsToSkill records if 
 					</xsd:appinfo>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="onlyInCombat" type="xsd:boolean" nxe:label="Only applies in combat" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="0" maxOccurs="1" name="onlyInCombat" type="xsd:boolean" nxe:label="Only applies in combat?" nxe:showmaincolumn="false">
 				<xsd:annotation>
         			<xsd:documentation>Bonus only applies to damage being rolled to the unit in combat.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element minOccurs="0" maxOccurs="1" name="penaltyToEnemy" type="xsd:boolean" nxe:label="Penalty to enemy?" nxe:showmaincolumn="false">
+				<xsd:annotation>
+        			<xsd:documentation>Skill modification is applied to enemy unit, not us.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
 		</xsd:sequence>
@@ -4931,6 +4936,10 @@ which is why it is last in the list, so it will only be healed when all healable
 			<xsd:enumeration value="C"><xsd:annotation>
 				<xsd:documentation>Bonus from combat area effects, including CAE-type spells, e.g. node auras or prayer</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="COMBAT_AREA_EFFECTS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="P"><xsd:annotation>
+				<xsd:documentation>Penalties given to us by enemy unit, e.g. -1 to hit invisible enemy</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PENALTIES" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
 		</xsd:restriction>
 	</xsd:simpleType>

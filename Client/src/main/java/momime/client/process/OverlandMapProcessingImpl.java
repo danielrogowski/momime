@@ -166,7 +166,9 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		int count = 0;
 		if (unitLocation != null)
 			for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-				if ((unitLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
+				if ((unitLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) &&
+					(getUnitUtils ().canSeeUnitOverland (mu, getClient ().getOurPlayerID (),
+						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 				{
 					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
@@ -365,11 +367,10 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			final int [] [] [] doubleMovementDistances			= new int [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
 			final int [] [] [] movementDirections					= new int [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
 			final boolean [] [] [] canMoveToInOneTurn			= new boolean [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
-			final boolean [] [] [] movingHereResultsInAttack	= new boolean [getClient ().getSessionDescription ().getOverlandMapSize ().getDepth ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getHeight ()] [getClient ().getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
 			getUnitMovement ().calculateOverlandMovementDistances (getOverlandMapUI ().getUnitMoveFrom ().getX (), getOverlandMapUI ().getUnitMoveFrom ().getY (), getOverlandMapUI ().getUnitMoveFrom ().getZ (),
 				getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), unitStack,
-				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
+				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
 				getClient ().getPlayers (), getClient ().getSessionDescription (), getClient ().getClientDB ());
 
 			getOverlandMapUI ().setDoubleMovementDistances (doubleMovementDistances);

@@ -1251,6 +1251,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="clientConfig" ref="clientConfig" />
 		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 		<property name="zoneAI" ref="zoneAI" />
+		<property name="unitUtils" ref="unitUtils" />
 		<property name="booleanMapAreaOperations3D" ref="booleanMapAreaOperations3D" />
 	</bean>
 

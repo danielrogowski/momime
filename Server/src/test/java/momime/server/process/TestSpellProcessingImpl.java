@@ -28,6 +28,7 @@ import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.UnitCombatSideID;
 import momime.common.database.UnitEx;
+import momime.common.messages.CombatMapSize;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
 import momime.common.messages.MemoryBuilding;
@@ -977,7 +978,10 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		// Session description
+		final CombatMapSize combatMapSize = createCombatMapSize ();
+		
 		final MomSessionDescription sd = new MomSessionDescription ();
+		sd.setCombatMapSize (combatMapSize);
 		
 		// Server knowledge
 		final CoordinateSystem sys = createOverlandMapCoordinateSystem ();
@@ -1041,6 +1045,13 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		// Position on the combat field where we clicked to summon the unit
 		final MapCoordinates2DEx targetLocation = new MapCoordinates2DEx (9, 7);
 		
+		// Position where its actually going to appear
+		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
+		final MapCoordinates2DEx adjustedTargetLocation = new MapCoordinates2DEx (10, 7);
+		
+		when (unitServerUtils.findFreeCombatPositionAvoidingInvisibleClosestTo (combatLocation, gc.getCombatMap (), targetLocation,
+			trueMap.getUnit (), combatMapSize, db)).thenReturn (adjustedTargetLocation);
+		
 		// Mock the creation of the unit
 		final FogOfWarMidTurnChanges midTurn = mock (FogOfWarMidTurnChanges.class);
 		final MemoryUnit summonedUnit = new MemoryUnit ();
@@ -1078,13 +1089,14 @@ public final class TestSpellProcessingImpl extends ServerTestData
 		proc.setUnitUtils (unitUtils);
 		proc.setSpellUtils (spellUtils);
 		proc.setSpellDispelling (spellDispelling);
+		proc.setUnitServerUtils (unitServerUtils);
 		
 		// Run test
 		proc.castCombatNow (castingPlayer, null, null, null, spell, 10, 20, null, combatLocation, defendingPlayer, attackingPlayer, null, targetLocation, mom);
 		
 		// Prove unit was summoned
 		verify (combatProcessing, times (1)).setUnitIntoOrTakeUnitOutOfCombat (attackingPlayer, defendingPlayer, trueTerrain, summonedUnit, combatLocation, combatLocation,
-			targetLocation, 8, UnitCombatSideID.ATTACKER, "SP001", db);
+			adjustedTargetLocation, 8, UnitCombatSideID.ATTACKER, "SP001", db);
 		
 		// We were charged MP for it
 		verify (resourceValueUtils, times (1)).addToAmountStored (attackingPriv.getResourceValue (), CommonDatabaseConstants.PRODUCTION_TYPE_ID_MANA, -20);

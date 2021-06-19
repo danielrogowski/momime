@@ -867,7 +867,8 @@ public final class CityViewUI extends MomClientFrameUI
 		
 		int x = 0;
 		for (final MemoryUnit mu : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
-			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE))
+			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) && (getUnitUtils ().canSeeUnitOverland
+				(mu, getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 			{
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
 					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());

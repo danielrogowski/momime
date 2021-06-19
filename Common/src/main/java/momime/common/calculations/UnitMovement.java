@@ -32,7 +32,6 @@ public interface UnitMovement
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param movementDirections The direction that we moved to get here, e.g. the tile directly above startX, startY will have value 1
 	 * @param canMoveToInOneTurn Indicates the locations that we can reach in a single turn (see the forester example above)
-	 * @param movingHereResultsInAttack Indicates whether we know that moving here will result in attacking an enemy unit stack
 	 * @param players List of players in this session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
@@ -43,6 +42,6 @@ public interface UnitMovement
 	public void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final FogOfWarMemory map, final UnitStack unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
-		final boolean [] [] [] movingHereResultsInAttack, final List<? extends PlayerPublicDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		final List<? extends PlayerPublicDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException;
 }

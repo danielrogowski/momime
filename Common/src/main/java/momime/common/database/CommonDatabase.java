@@ -538,4 +538,9 @@ public interface CommonDatabase
 	 * @return Size of the largest building image that can be constructed
 	 */
 	public Dimension getLargestBuildingSize ();
+	
+	/**
+	 * @return Hero item bonus ID that grants invisibility
+	 */
+	public String getInvisibilityHeroItemBonusID ();
 }

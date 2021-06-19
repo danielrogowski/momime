@@ -108,6 +108,8 @@ public interface UnitCalculations
 		throws MomException, RecordNotFoundException;
 	
 	/**
+	 * Will return true if we blunder onto a tile containing invisible units we couldn't see
+	 * 
 	 * @param x X coordinate of the location we want to check
 	 * @param y Y coordinate of the location we want to check
 	 * @param plane Plane we want to check
@@ -118,6 +120,20 @@ public interface UnitCalculations
 	 */
 	public boolean willMovingHereResultInAnAttack (final int x, final int y, final int plane, final int movingPlayerID,
 		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units);
+	
+	/**
+	 * Will only return true if we can see units in the target tile; if there's invisible enemies there will return false
+	 * 
+	 * @param x X coordinate of the location we want to check
+	 * @param y Y coordinate of the location we want to check
+	 * @param plane Plane we want to check
+	 * @param movingPlayerID The player who is trying to move here
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether moving here will result in an attack or not
+	 */
+	public boolean willMovingHereResultInAnAttackThatWeKnowAbout (final int x, final int y, final int plane, final int movingPlayerID,
+		final FogOfWarMemory mem, final CommonDatabase db);
 	
 	/**
 	 * @param unitStack Unit stack to check

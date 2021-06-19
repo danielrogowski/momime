@@ -145,6 +145,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	/** Size of the largest building image that can be constructed */
 	private Dimension largestBuildingSize;
 	
+	/** Hero item bonus ID that grants invisibility */
+	private String invisibilityHeroItemBonusID;
+	
 	/**
 	 * Builds all the hash maps to enable finding records faster
 	 */
@@ -224,6 +227,15 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		combatTileBorderImagesMap = new HashMap<String, CombatTileBorderImage> ();
 		for (final CombatTileBorderImage ctb : getCombatTileBorderImage ())
 			combatTileBorderImagesMap.put (ctb.getCombatTileBorderID () + "-" + ctb.getDirections () + "-" + ctb.getFrontOrBack ().value (), ctb);
+		
+		// Find list of all hero item bonuses that grant invisibility
+		// Need this multiple times for every draw of the map, so better to figure this out only once
+		invisibilityHeroItemBonusID = getHeroItemBonus ().stream ().filter (b -> b.getHeroItemBonusStat ().stream ().anyMatch
+			(s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL))).map (b -> b.getHeroItemBonusID ()).findAny ().orElse (null);
+		if (invisibilityHeroItemBonusID == null)
+			log.warn ("No hero item bonus that grants invisibility found");
+		else
+			log.info ("Hero item bonus that grants invisibility = " + invisibilityHeroItemBonusID);
 	}
 
 	/**
@@ -1052,6 +1064,15 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	public final Dimension getLargestBuildingSize ()
 	{
 		return largestBuildingSize;
+	}
+	
+	/**
+	 * @return Hero item bonus ID that grants invisibility
+	 */
+	@Override
+	public final String getInvisibilityHeroItemBonusID ()
+	{
+		return invisibilityHeroItemBonusID;
 	}
 	
 	/**

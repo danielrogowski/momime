@@ -722,6 +722,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -820,6 +821,8 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
+		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat (ok this makes the variable names a little misleading, because attackingPlayer isn't really attacking, but it suits the test)
 		final CombatPlayers combatPlayers = new CombatPlayers (new PlayerServerDetails (null, null, null, null, null), defendingPlayer);
@@ -920,6 +923,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1031,6 +1035,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1146,6 +1151,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1261,6 +1267,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1385,6 +1392,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1506,6 +1514,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1637,6 +1646,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1770,6 +1780,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -1899,6 +1910,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (25, 15, 1);
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -2032,6 +2044,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		gc.setCombatMap (createCombatMap ());
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);
@@ -2170,6 +2183,7 @@ public final class TestSpellQueueingImpl extends ServerTestData
 
 		final ServerGridCellEx gc = (ServerGridCellEx) trueTerrain.getPlane ().get (1).getRow ().get (15).getCell ().get (25);
 		gc.setCombatMap (createCombatMap ());
+		gc.setCombatCurrentPlayerID (7);
 		
 		// Two sides in combat
 		final CombatPlayers combatPlayers = new CombatPlayers (attackingPlayer, defendingPlayer);

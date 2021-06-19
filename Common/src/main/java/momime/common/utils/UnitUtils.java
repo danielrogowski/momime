@@ -16,6 +16,7 @@ import momime.common.database.UnitEx;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryCombatAreaEffect;
+import momime.common.messages.MemoryMaintainedSpell;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 
@@ -128,6 +129,8 @@ public interface UnitUtils
 	public String listUnitURNs (@SuppressWarnings ("rawtypes") final List units) throws MomException;
 
 	/**
+	 * Will find units even if they're invisible
+	 * 
 	 * @param units List of units to check (usually movingPlayer's memory)
 	 * @param x X coordinate of location to check
 	 * @param y Y coordinate of location to check
@@ -137,6 +140,19 @@ public interface UnitUtils
 	 */
 	public MemoryUnit findFirstAliveEnemyAtLocation (final List<MemoryUnit> units, final int x, final int y, final int plane, final int exceptPlayerID);
 
+	/**
+	 * @param ourPlayerID Our player ID
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param x X coordinate of location to check
+	 * @param y Y coordinate of location to check
+	 * @param plane Plane to check
+	 * @param exceptPlayerID Player who's units to not consider (can pass in 0 to test if there are units *at all* at this location)
+	 * @param db Lookup lists built over the XML database
+	 * @return First unit we find at the requested location who belongs to someone other than the specified player
+	 */
+	public MemoryUnit findFirstAliveEnemyWeCanSeeAtLocation (final int ourPlayerID, final FogOfWarMemory mem, final int x, final int y, final int plane,
+		final int exceptPlayerID, final CommonDatabase db);
+	
 	/**
 	 * @param units List of units to check
 	 * @param x X coordinate of location to check
@@ -230,4 +246,16 @@ public interface UnitUtils
 		final List<? extends PlayerPublicDetails> players, final FogOfWarMemory mem, final CommonDatabase db,
 		final CoordinateSystem combatMapCoordinateSystem)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException;
+	
+	/**
+	 * Needed to test whether to draw units on the overland map.  Calling expandUnitDetails continually is too
+	 * expensive so need a quicker way to check whether units are invisible or not.
+	 * 
+	 * @param mu Unit to test
+	 * @param ourPlayerID Our player ID
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the unit should be visible on the overland map
+	 */
+	public boolean canSeeUnitOverland (final MemoryUnit mu, final int ourPlayerID, final List<MemoryMaintainedSpell> spells, final CommonDatabase db);
 }

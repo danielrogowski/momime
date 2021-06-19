@@ -135,7 +135,9 @@ public final class MoveUnitStackOverlandMessageImpl extends MoveUnitStackOverlan
 			final MemoryUnit u = getUnitUtils ().findUnitURN (thisUnitURN, getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit (), "MoveUnitStackOverlandMessageImpl.start");
 			u.setUnitLocation (null);
 			
-			if (unitToDraw == null)
+			if ((unitToDraw == null) && (getUnitUtils ().canSeeUnitOverland (u, getClient ().getOurPlayerID (),
+				getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
+				
 				unitToDraw = u;
 		}
 		

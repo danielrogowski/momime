@@ -82,6 +82,7 @@ import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PlayerKnowledgeUtils;
 import momime.common.utils.TargetSpellResult;
+import momime.common.utils.UnitUtils;
 
 /**
  * Screen for displaying the overland map, including the buttons and side panels and so on that appear in the same frame
@@ -156,6 +157,9 @@ public final class OverlandMapUI extends MomClientFrameUI
 
 	/** MemoryMaintainedSpell utils */
 	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Unit utils */
+	private UnitUtils unitUtils;
 	
 	/** Zone AI */
 	private ZoneAI zoneAI;
@@ -507,34 +511,35 @@ public final class OverlandMapUI extends MomClientFrameUI
 				if ((getUnitStackMoving () != null) && (getUnitStackMoving ().getAnimationPlane () == mapViewPlane))
 				{
 					final MemoryUnit unit = getUnitStackMoving ().getUnitToDraw ();
-					try
-					{
-						final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
-						final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
-
-						final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
-						final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
-					
-						final int xpos = ((getUnitStackMoving ().getCurrentX () - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
-						final int ypos = ((getUnitStackMoving ().getCurrentY () - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
-
-						for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
-							for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
-							{
-								// Draw the unit
-								g.drawImage (unitBackground,
-									(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
-									unitZoomedWidth, unitZoomedHeight, null);
-
-								g.drawImage (unitImage,
-									(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
-									unitZoomedWidth, unitZoomedHeight, null);
-							}
-					}
-					catch (final IOException e)
-					{
-						log.error ("Error trying to load graphics to draw moving Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
-					}
+					if (unit != null)
+						try
+						{
+							final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
+							final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+	
+							final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
+							final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
+						
+							final int xpos = ((getUnitStackMoving ().getCurrentX () - ((unitImage.getWidth () - overlandMapTileSet.getTileWidth ()) / 2)) * mapViewZoom) / 10;
+							final int ypos = ((getUnitStackMoving ().getCurrentY () - ((unitImage.getHeight () - overlandMapTileSet.getTileHeight ()) / 2)) * mapViewZoom) / 10;
+	
+							for (int xRepeat = 0; xRepeat < xRepeatCount; xRepeat++)
+								for (int yRepeat = 0; yRepeat < yRepeatCount; yRepeat++)
+								{
+									// Draw the unit
+									g.drawImage (unitBackground,
+										(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+										unitZoomedWidth, unitZoomedHeight, null);
+	
+									g.drawImage (unitImage,
+										(mapZoomedWidth * xRepeat) - mapViewX + xpos, (mapZoomedHeight * yRepeat) - mapViewY + ypos,
+										unitZoomedWidth, unitZoomedHeight, null);
+								}
+						}
+						catch (final IOException e)
+						{
+							log.error ("Error trying to load graphics to draw moving Unit URN " + unit.getUnitURN () + " with ID " + unit.getUnitID (), e);
+						}
 				}
 				
 				// Darken areas of the map that the selected units cannot move to
@@ -1230,7 +1235,11 @@ public final class OverlandMapUI extends MomClientFrameUI
 		for (final MemoryUnit unit : getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getUnit ())
 
 			// Is it alive, and are we looking at the right plane to see it?
-			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null) && ((unit.getUnitLocation ().getZ () == mapViewPlane) || (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get (unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))))
+			if ((unit.getStatus () == UnitStatusID.ALIVE) && (unit.getUnitLocation () != null) && ((unit.getUnitLocation ().getZ () == mapViewPlane) ||
+				(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMap ().getPlane ().get
+					(unit.getUnitLocation ().getZ ()).getRow ().get (unit.getUnitLocation ().getY ()).getCell ().get (unit.getUnitLocation ().getX ()).getTerrainData ()))) &&
+				(getUnitUtils ().canSeeUnitOverland (unit, getClient ().getOurPlayerID (),
+					getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 			{
 				// If this is a map cell where we've got units selected to move, make sure we show one of the units that's moving
 				final boolean drawUnit;
@@ -1747,6 +1756,22 @@ public final class OverlandMapUI extends MomClientFrameUI
 	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
 	{
 		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Unit utils
+	 */
+	public final UnitUtils getUnitUtils ()
+	{
+		return unitUtils;
+	}
+
+	/**
+	 * @param utils Unit utils
+	 */
+	public final void setUnitUtils (final UnitUtils utils)
+	{
+		unitUtils = utils;
 	}
 	
 	/**

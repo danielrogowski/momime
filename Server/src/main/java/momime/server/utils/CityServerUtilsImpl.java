@@ -374,7 +374,6 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final int [] [] [] doubleMovementDistances			= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 		final int [] [] [] movementDirections					= new int [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 		final boolean [] [] [] canMoveToInOneTurn			= new boolean [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [sd.getOverlandMapSize ().getDepth ()] [sd.getOverlandMapSize ().getHeight ()] [sd.getOverlandMapSize ().getWidth ()];
 
 		final AvailableUnit dummyUnit = new AvailableUnit ();
 		dummyUnit.setUnitID (CommonDatabaseConstants.UNIT_ID_EXAMPLE);
@@ -386,7 +385,7 @@ public final class CityServerUtilsImpl implements CityServerUtils
 		final UnitStack unitStack = getUnitCalculations ().createUnitStack (selectedUnits, players, fogOfWarMemory, db);
 		
 		getUnitMovement ().calculateOverlandMovementDistances (firstCityLocation.getX (), firstCityLocation.getY (), firstCityLocation.getZ (),
-			playerID, fogOfWarMemory, unitStack, 0, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, players, sd, db);
+			playerID, fogOfWarMemory, unitStack, 0, doubleMovementDistances, movementDirections, canMoveToInOneTurn, players, sd, db);
 		
 		final List<MapCoordinates3DEx> missingRoadCells = new ArrayList<MapCoordinates3DEx> ();
 		if (doubleMovementDistances [secondCityLocation.getZ ()] [secondCityLocation.getY ()] [secondCityLocation.getX ()] >= 0)

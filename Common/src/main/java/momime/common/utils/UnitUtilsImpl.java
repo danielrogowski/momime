@@ -77,6 +77,9 @@ public final class UnitUtilsImpl implements UnitUtils
 	/** Coordinate system utils */
 	private CoordinateSystemUtils coordinateSystemUtils;
 	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
 	/**
 	 * @param unitURN Unit URN to search for
 	 * @param units List of units to search through
@@ -909,6 +912,8 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 
 	/**
+	 * Will find units even if they're invisible
+	 * 
 	 * @param units List of units to check (usually movingPlayer's memory)
 	 * @param x X coordinate of location to check
 	 * @param y Y coordinate of location to check
@@ -930,6 +935,36 @@ public final class UnitUtilsImpl implements UnitUtils
 
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != exceptPlayerID) && (thisUnit.getUnitLocation () != null) &&
 				(thisUnit.getUnitLocation ().getX () == x) && (thisUnit.getUnitLocation ().getY () == y) && (thisUnit.getUnitLocation ().getZ () == plane))
+
+				found = thisUnit;
+		}
+
+		return found;
+	}
+
+	/**
+	 * @param ourPlayerID Our player ID
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param x X coordinate of location to check
+	 * @param y Y coordinate of location to check
+	 * @param plane Plane to check
+	 * @param exceptPlayerID Player who's units to not consider (can pass in 0 to test if there are units *at all* at this location)
+	 * @param db Lookup lists built over the XML database
+	 * @return First unit we find at the requested location who belongs to someone other than the specified player
+	 */
+	@Override
+	public final MemoryUnit findFirstAliveEnemyWeCanSeeAtLocation (final int ourPlayerID, final FogOfWarMemory mem, final int x, final int y, final int plane,
+		final int exceptPlayerID, final CommonDatabase db)
+	{
+		MemoryUnit found = null;
+		final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();
+		while ((found == null) && (iter.hasNext ()))
+		{
+			final MemoryUnit thisUnit = iter.next ();
+
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getOwningPlayerID () != exceptPlayerID) && (thisUnit.getUnitLocation () != null) &&
+				(thisUnit.getUnitLocation ().getX () == x) && (thisUnit.getUnitLocation ().getY () == y) && (thisUnit.getUnitLocation ().getZ () == plane) &&
+				(canSeeUnitOverland (thisUnit, ourPlayerID, mem.getMaintainedSpell (), db)))
 
 				found = thisUnit;
 		}
@@ -1234,6 +1269,39 @@ public final class UnitUtilsImpl implements UnitUtils
 	}
 	
 	/**
+	 * Needed to test whether to draw units on the overland map.  Calling expandUnitDetails continually is too
+	 * expensive so need a quicker way to check whether units are invisible or not.
+	 * 
+	 * @param mu Unit to test
+	 * @param ourPlayerID Our player ID
+	 * @param spells Known spells
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the unit should be visible on the overland map
+	 */
+	@Override
+	public final boolean canSeeUnitOverland (final MemoryUnit mu, final int ourPlayerID, final List<MemoryMaintainedSpell> spells, final CommonDatabase db)
+	{
+		final boolean visible;
+		
+		if (mu.getOwningPlayerID () == ourPlayerID)
+			visible = true;
+		
+		else if (mu.getUnitHasSkill ().stream ().anyMatch (s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)))
+			visible = false;
+		
+		else if (getMemoryMaintainedSpellUtils ().findMaintainedSpell (spells,
+			null, null, mu.getUnitURN (), CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL, null, null) != null)
+			
+			visible = false;
+		else
+			visible = mu.getHeroItemSlot ().stream ().filter (s -> s.getHeroItem () != null).noneMatch
+				(s -> s.getHeroItem ().getHeroItemChosenBonus ().contains (db.getInvisibilityHeroItemBonusID ()));
+		
+		return visible;
+	}
+	
+	
+	/**
 	 * @return Player pick utils
 	 */
 	public final PlayerPickUtils getPlayerPickUtils ()
@@ -1279,5 +1347,21 @@ public final class UnitUtilsImpl implements UnitUtils
 	public final void setCoordinateSystemUtils (final CoordinateSystemUtils utils)
 	{
 		coordinateSystemUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

@@ -663,11 +663,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 			movementDirections											= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 			final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-			final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
 			getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 				priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-				doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+				doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 			// Is there a route to where we want to go?
 			validMoveFound = (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
@@ -688,13 +687,23 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// Adjust move to plane if moving onto or off of a tower
 				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (oneStepTrueTile.getTerrainData ()))
 				{
-					combatInitiated = movingHereResultsInAttack [oneStep.getZ ()] [oneStep.getY ()] [oneStep.getX ()];
+					combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 					oneStep.setZ (0);
 				}
 				else
 				{
 					oneStep.setZ (moveTo.getZ ());
-					combatInitiated = movingHereResultsInAttack [oneStep.getZ ()] [oneStep.getY ()] [oneStep.getX ()];
+					combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
+						mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+				}
+				
+				// If we ran into some invisible units prior to our destination, then adjust destination
+				if ((combatInitiated) && (!oneStep.equals (moveTo)))
+				{
+					moveTo.setX (oneStep.getX ());
+					moveTo.setY (oneStep.getY ());
+					moveTo.setZ (oneStep.getZ ());
 				}
 				
 				oneStepTrueTile = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
@@ -755,11 +764,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 				movementDirections											= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 				final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-				final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
 				getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 					priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-					doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+					doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 				validMoveFound = (doubleMovementDistances [moveTo.getZ ()] [moveTo.getY ()] [moveTo.getX ()] >= 0);
 			}
@@ -869,11 +877,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 		final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
 		getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?
 		final OneCellPendingMovement result;
@@ -892,7 +899,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			getCoordinateSystemUtils ().move3DCoordinates (mom.getSessionDescription ().getOverlandMapSize (), oneStep, movementDirection);
 
 			// Does this initiate a combat?
-			final boolean combatInitiated = movingHereResultsInAttack [oneStep.getZ ()] [oneStep.getY ()] [oneStep.getX ()];
+			final boolean combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (),
+				unitStackOwner.getPlayerDescription ().getPlayerID (),
+				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
 
 			// Set up result
 			result = new OneCellPendingMovement (unitStackOwner, pendingMovement, oneStep, combatInitiated);
@@ -931,11 +940,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 		final int [] [] [] doubleMovementDistances			= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 		final int [] [] [] movementDirections					= new int [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 		final boolean [] [] [] canMoveToInOneTurn			= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
-		final boolean [] [] [] movingHereResultsInAttack	= new boolean [mom.getServerDB ().getPlane ().size ()] [mom.getSessionDescription ().getOverlandMapSize ().getHeight ()] [mom.getSessionDescription ().getOverlandMapSize ().getWidth ()];
 
 		getUnitMovement ().calculateOverlandMovementDistances (moveFrom.getX (), moveFrom.getY (), moveFrom.getZ (), unitStackOwner.getPlayerDescription ().getPlayerID (),
 			priv.getFogOfWarMemory (), unitStack, doubleMovementRemaining,
-			doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+			doubleMovementDistances, movementDirections, canMoveToInOneTurn, mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 
 		// Is there a route to where we want to go?
 		final List<Integer> result;

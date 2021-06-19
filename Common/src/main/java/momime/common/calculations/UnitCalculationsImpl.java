@@ -343,6 +343,8 @@ public final class UnitCalculationsImpl implements UnitCalculations
 	}
 		
 	/**
+	 * Will return true if we blunder onto a tile containing invisible units we couldn't see
+	 * 
 	 * @param x X coordinate of the location we want to check
 	 * @param y Y coordinate of the location we want to check
 	 * @param plane Plane we want to check
@@ -370,6 +372,43 @@ public final class UnitCalculationsImpl implements UnitCalculations
 
 		// Lastly check for enemy units
 		else if (getUnitUtils ().findFirstAliveEnemyAtLocation (units, x, y, towerPlane, movingPlayerID) != null)
+			resultsInAttack = true;
+		else
+			resultsInAttack = false;
+
+		return resultsInAttack;
+	}
+	
+	/**
+	 * Will only return true if we can see units in the target tile; if there's invisible enemies there will return false
+	 * 
+	 * @param x X coordinate of the location we want to check
+	 * @param y Y coordinate of the location we want to check
+	 * @param plane Plane we want to check
+	 * @param movingPlayerID The player who is trying to move here
+	 * @param mem Known overland terrain, units, buildings and so on
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether moving here will result in an attack or not
+	 */
+	@Override
+	public final boolean willMovingHereResultInAnAttackThatWeKnowAbout (final int x, final int y, final int plane, final int movingPlayerID,
+		final FogOfWarMemory mem, final CommonDatabase db)
+	{
+		// Work out what plane to look for units on
+		final MemoryGridCell mc = mem.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
+		final int towerPlane;
+		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
+			towerPlane = 0;
+		else
+			towerPlane = plane;
+
+		// The easiest one to check for is an enemy city - even if there's no units there, it still counts as an attack so we can decide whether to raze or capture it
+		final boolean resultsInAttack;
+		if ((mc.getCityData () != null) && (mc.getCityData ().getCityOwnerID () != movingPlayerID))
+			resultsInAttack = true;
+
+		// Lastly check for enemy units
+		else if (getUnitUtils ().findFirstAliveEnemyWeCanSeeAtLocation (movingPlayerID, mem, x, y, towerPlane, movingPlayerID, db) != null)
 			resultsInAttack = true;
 		else
 			resultsInAttack = false;

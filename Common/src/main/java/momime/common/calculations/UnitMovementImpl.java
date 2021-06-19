@@ -253,22 +253,20 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param cellY Y location to move from
 	 * @param cellPlane Plane we are moving over
 	 * @param movingPlayerID The player who is trying to move here
-	 * @param map The player who is trying to move here's knowledge of the terrain
-	 * @param units The player who is trying to move here's knowledge of units
 	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param movementDirections The direction that we moved to get here, e.g. the tile directly above startX, startY will have value 1
 	 * @param canMoveToInOneTurn Indicates the locations that we can reach in a single turn (see the forester example above)
-	 * @param movingHereResultsInAttack Indicates whether we know that moving here will result in attacking an enemy unit stack
 	 * @param doubleMovementToEnterTile Double the movement points required to enter every tile on both planes; null = impassable
 	 * @param cellsLeftToCheck List of cells that still need to be checked (we add adjacent cells to the end of this list)
 	 * @param sys Overland map coordinate system
+	 * @param mem The player who is trying to move here's knowledge
+	 * @param db Lookup lists built over the XML database
 	 */
 	private final void calculateOverlandMovementDistances_Cell (final int cellX, final int cellY, final int cellPlane, final int movingPlayerID,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
-		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
-		final List<MapCoordinates2DEx> cellsLeftToCheck, final CoordinateSystem sys)
+		final boolean [] [] [] canMoveToInOneTurn, final Integer [] [] [] doubleMovementToEnterTile,
+		final List<MapCoordinates2DEx> cellsLeftToCheck, final CoordinateSystem sys, final FogOfWarMemory mem, final CommonDatabase db)
 	{
 		final int doubleDistanceToHere = doubleMovementDistances [cellPlane] [cellY] [cellX];
 		final int doubleMovementRemainingToHere = doubleMovementRemaining - doubleDistanceToHere;
@@ -305,11 +303,11 @@ public final class UnitMovementImpl implements UnitMovement
 							canMoveToInOneTurn [cellPlane] [coords.getY ()] [coords.getX ()] = (doubleMovementRemainingToHere > 0);
 
 							// Is this a square we have to stop at, i.e. one which contains enemy units?
-							movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()] = getUnitCalculations ().willMovingHereResultInAnAttack
-								(coords.getX (), coords.getY (), cellPlane, movingPlayerID, map, units);
+							final boolean movingHereResultsInAttack = getUnitCalculations ().willMovingHereResultInAnAttackThatWeKnowAbout
+								(coords.getX (), coords.getY (), cellPlane, movingPlayerID, mem, db);
 
 							// Log that we need to check every location branching off from here
-							if (!movingHereResultsInAttack [cellPlane] [coords.getY ()] [coords.getX ()])
+							if (!movingHereResultsInAttack)
 								cellsLeftToCheck.add (coords);
 						}
 					}
@@ -325,21 +323,19 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param startY Y location to start from
 	 * @param startPlane Plane we are moving over
 	 * @param movingPlayerID The player who is trying to move here
-	 * @param map The player who is trying to move here's knowledge of the terrain
-	 * @param units The player who is trying to move here's knowledge of units
 	 * @param doubleMovementRemaining The lowest movement remaining for any of the units that are moving
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param movementDirections The direction that we moved to get here, e.g. the tile directly above startX, startY will have value 1
 	 * @param canMoveToInOneTurn Indicates the locations that we can reach in a single turn (see the forester example above)
-	 * @param movingHereResultsInAttack Indicates whether we know that moving here will result in attacking an enemy unit stack
 	 * @param doubleMovementToEnterTile Double the movement points required to enter every tile on both planes; null = impassable
 	 * @param sys Overland map coordinate system
+	 * @param mem The player who is trying to move here's knowledge
+	 * @param db Lookup lists built over the XML database
 	 */
 	private final void calculateOverlandMovementDistances_Plane (final int startX, final int startY, final int startPlane, final int movingPlayerID,
-		final MapVolumeOfMemoryGridCells map, final List<MemoryUnit> units,
 		final int doubleMovementRemaining, final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections,
-		final boolean [] [] [] canMoveToInOneTurn, final boolean [] [] [] movingHereResultsInAttack, final Integer [] [] [] doubleMovementToEnterTile,
-		final CoordinateSystem sys)
+		final boolean [] [] [] canMoveToInOneTurn, final Integer [] [] [] doubleMovementToEnterTile,
+		final CoordinateSystem sys, final FogOfWarMemory mem, final CommonDatabase db)
 	{
 		// We can move to where we start from for free
 		doubleMovementDistances [startPlane] [startY] [startX] = 0;
@@ -348,16 +344,16 @@ public final class UnitMovementImpl implements UnitMovement
 		// Rather than iterating out distances from the centre, process rings around each location before proceeding to the next location
 		// This is to prevent the situation in the original MoM where you are on Enchanced Road, hit 'Up' and the game decides to move you up-left and then right to get there
 		final List<MapCoordinates2DEx> cellsLeftToCheck = new ArrayList<MapCoordinates2DEx> ();
-		calculateOverlandMovementDistances_Cell (startX, startY, startPlane, movingPlayerID, map, units,
-			doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-			doubleMovementToEnterTile, cellsLeftToCheck, sys);
+		calculateOverlandMovementDistances_Cell (startX, startY, startPlane, movingPlayerID,
+			doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
+			doubleMovementToEnterTile, cellsLeftToCheck, sys, mem, db);
 
 		// Keep going until there's nowhere left to check
 		while (cellsLeftToCheck.size () > 0)
 		{
-			calculateOverlandMovementDistances_Cell (cellsLeftToCheck.get (0).getX (), cellsLeftToCheck.get (0).getY (), startPlane, movingPlayerID, map, units,
+			calculateOverlandMovementDistances_Cell (cellsLeftToCheck.get (0).getX (), cellsLeftToCheck.get (0).getY (), startPlane, movingPlayerID,
 				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
-				movingHereResultsInAttack, doubleMovementToEnterTile, cellsLeftToCheck, sys);
+				doubleMovementToEnterTile, cellsLeftToCheck, sys, mem, db);
 
 			cellsLeftToCheck.remove (0);
 		}
@@ -379,7 +375,6 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param doubleMovementDistances Movement required to reach every location on both planes; 0 = can move there for free, negative value = can't move there
 	 * @param movementDirections The direction that we moved to get here, e.g. the tile directly above startX, startY will have value 1
 	 * @param canMoveToInOneTurn Indicates the locations that we can reach in a single turn (see the forester example above)
-	 * @param movingHereResultsInAttack Indicates whether we know that moving here will result in attacking an enemy unit stack
 	 * @param players List of players in this session
 	 * @param sd Session description
 	 * @param db Lookup lists built over the XML database
@@ -391,7 +386,7 @@ public final class UnitMovementImpl implements UnitMovement
 	public final void calculateOverlandMovementDistances (final int startX, final int startY, final int startPlane, final int movingPlayerID,
 		final FogOfWarMemory map, final UnitStack unitStack, final int doubleMovementRemaining,
 		final int [] [] [] doubleMovementDistances, final int [] [] [] movementDirections, final boolean [] [] [] canMoveToInOneTurn,
-		final boolean [] [] [] movingHereResultsInAttack, final List<? extends PlayerPublicDetails> players, final MomSessionDescription sd, final CommonDatabase db)
+		final List<? extends PlayerPublicDetails> players, final MomSessionDescription sd, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException
 	{
 		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack.getUnits ());
@@ -422,7 +417,6 @@ public final class UnitMovementImpl implements UnitMovement
 					doubleMovementDistances	[z] [y] [x] = MOVEMENT_DISTANCE_NOT_YET_CHECKED;
 					movementDirections			[z] [y] [x] = 0;
 					canMoveToInOneTurn			[z] [y] [x] = false;
-					movingHereResultsInAttack	[z] [y] [x] = false;
 				}
 
 		// If at a tower of wizardry, we can move on all planes
@@ -430,14 +424,14 @@ public final class UnitMovementImpl implements UnitMovement
 		if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))
 		{
 			for (final Plane plane : db.getPlane ())
-				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID, map.getMap (), map.getUnit (),
-					doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-					doubleMovementToEnterTile, sd.getOverlandMapSize ());
+				calculateOverlandMovementDistances_Plane (startX, startY, plane.getPlaneNumber (), movingPlayerID,
+					doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
+					doubleMovementToEnterTile, sd.getOverlandMapSize (), map, db);
 		}
 		else
-			calculateOverlandMovementDistances_Plane (startX, startY, startPlane, movingPlayerID, map.getMap (), map.getUnit (),
-				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn, movingHereResultsInAttack,
-				doubleMovementToEnterTile, sd.getOverlandMapSize ());
+			calculateOverlandMovementDistances_Plane (startX, startY, startPlane, movingPlayerID,
+				doubleMovementRemaining, doubleMovementDistances, movementDirections, canMoveToInOneTurn,
+				doubleMovementToEnterTile, sd.getOverlandMapSize (), map, db);
 	}
 
 	/**

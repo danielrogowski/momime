@@ -321,6 +321,7 @@
 		<property name="playerPickUtils" ref="playerPickUtils" />
 		<property name="unitDetailsUtils" ref="unitDetailsUtils" />
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 	
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">

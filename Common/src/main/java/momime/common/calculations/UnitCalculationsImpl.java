@@ -853,6 +853,33 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				movementTypes [y] [x] = CombatMoveType.RANGED;
 				doubleMovementDistances [y] [x] = 999;
 			}
+		
+		// If unit has teleporting, it can move anywhere as long as the tile is passable
+		// This does mean we could end up trying to teleport onto an invisible enemy unit
+		if ((unitBeingMoved.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_TELEPORT)) ||
+			(unitBeingMoved.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MERGING)))
+			
+			for (int y = 0; y < combatMapCoordinateSystem.getHeight (); y++)
+				for (int x = 0; x < combatMapCoordinateSystem.getWidth (); x++)
+				{
+					if ((movementTypes [y] [x] == CombatMoveType.CANNOT_MOVE) ||
+						((movementTypes [y] [x] == CombatMoveType.MOVE) && (doubleMovementDistances [y] [x] > 2)))
+					{
+						final MomCombatTile moveToTile = combatMap.getRow ().get (y).getCell ().get (x);
+						final int doubleMovementToEnterThisTile = calculateDoubleMovementToEnterCombatTile (moveToTile, db);
+						
+						// Our own units prevent us moving here - enemy units don't because by 'moving there' we'll attack them
+						if ((doubleMovementToEnterThisTile < 0) || (ourUnits [y] [x]) || (enemyUnits [y] [x] != null))
+						{
+							// Can't move here
+						}
+						else
+						{
+							movementTypes [y] [x] = CombatMoveType.TELEPORT;
+							doubleMovementDistances [y] [x] = 2;
+						}
+					}
+				}
 	}
 	
 	/**

@@ -3500,7 +3500,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (MoveUnitInCombatMessage.class.getName (), msgs.getMessages ().get (0).getClass ().getName ());
 		final MoveUnitInCombatMessage msg1 = (MoveUnitInCombatMessage) msgs.getMessages ().get (0);
 		assertEquals (101, msg1.getUnitURN ());
-		assertEquals (4, msg1.getDirection ());
+		assertEquals (4, msg1.getDirection ().intValue ());
 		assertEquals (1, msg1.getMoveFrom ().getX ());
 		assertEquals (7, msg1.getMoveFrom ().getY ());
 		assertEquals (4, msg1.getDoubleCombatMovesLeft ());
@@ -3508,7 +3508,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (MoveUnitInCombatMessage.class.getName (), msgs.getMessages ().get (1).getClass ().getName ());
 		final MoveUnitInCombatMessage msg2 = (MoveUnitInCombatMessage) msgs.getMessages ().get (1);
 		assertEquals (101, msg2.getUnitURN ());
-		assertEquals (3, msg2.getDirection ());
+		assertEquals (3, msg2.getDirection ().intValue ());
 		assertEquals (2, msg2.getMoveFrom ().getX ());
 		assertEquals (8, msg2.getMoveFrom ().getY ());
 		assertEquals (3, msg2.getDoubleCombatMovesLeft ());
@@ -3868,7 +3868,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		assertEquals (MoveUnitInCombatMessage.class.getName (), msgs.getMessages ().get (0).getClass ().getName ());
 		final MoveUnitInCombatMessage msg1 = (MoveUnitInCombatMessage) msgs.getMessages ().get (0);
 		assertEquals (101, msg1.getUnitURN ());
-		assertEquals (4, msg1.getDirection ());
+		assertEquals (4, msg1.getDirection ().intValue ());
 		assertEquals (1, msg1.getMoveFrom ().getX ());
 		assertEquals (7, msg1.getMoveFrom ().getY ());
 		assertEquals (4, msg1.getDoubleCombatMovesLeft ());

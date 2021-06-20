@@ -367,6 +367,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="coordinateSystemUtils" ref="coordinateSystemUtils" />
 		<property name="combatMapProcessing" ref="combatMapProcessing" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
+		<property name="soundPlayer" ref="soundPlayer" />
 	</bean>	
 
 	<bean id="applyDamageMessage" class="momime.client.messages.process.ApplyDamageMessageImpl" scope="prototype">

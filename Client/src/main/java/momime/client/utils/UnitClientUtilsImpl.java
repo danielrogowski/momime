@@ -544,8 +544,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// See if there's a specific override sound specified for this unit.
 		// This so earth elementals make a stomp stomp noise, cavalry go clippity clop and regular swordsmen go clank clank, even though they're all just doing the WALK action.
 		final String soundEffectFilename;
-		final UnitEx UnitEx = getClient ().getClientDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
-		final UnitCombatActionEx unitCombatAction = UnitEx.findCombatAction (combatActionID, "playCombatActionSound");
+		final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "playCombatActionSound");
+		final UnitCombatActionEx unitCombatAction = unitDef.findCombatAction (combatActionID, "playCombatActionSound");
 		if (unitCombatAction.getOverrideActionSoundFile () != null)
 			soundEffectFilename = unitCombatAction.getOverrideActionSoundFile ();
 		else

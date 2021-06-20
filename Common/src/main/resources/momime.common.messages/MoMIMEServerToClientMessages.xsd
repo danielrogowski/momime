@@ -511,7 +511,8 @@ e.g. as a result of casting Wall of Fire/Darkness in combat.</xsd:documentation>
 
 	<xsd:element name="moveUnitInCombatMessage">
 	    <xsd:annotation>
-    		<xsd:documentation>Server breaks down client move requests into a series of directions and sends them back to the client.</xsd:documentation>
+    		<xsd:documentation>Server breaks down client move requests into a series of directions and sends them back to the client.
+Either direction or teleportTo will be filled in, but not both.</xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:complexContent>
@@ -519,7 +520,8 @@ e.g. as a result of casting Wall of Fire/Darkness in combat.</xsd:documentation>
 					<xsd:sequence>
 						<xsd:element minOccurs="1" maxOccurs="1" name="unitURN" type="momimemsgs:unitURN" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates2D" />
-						<xsd:element minOccurs="1" maxOccurs="1" name="direction" type="map:mapDirection" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="direction" type="map:mapDirection" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="teleportTo" type="map:mapCoordinates2D" />
 						<xsd:element minOccurs="1" maxOccurs="1" name="doubleCombatMovesLeft" type="momimecommon:integerMapDistance" />
 					</xsd:sequence>
 				</xsd:extension>

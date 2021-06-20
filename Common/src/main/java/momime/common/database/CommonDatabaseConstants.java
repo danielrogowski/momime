@@ -227,6 +227,9 @@ public final class CommonDatabaseConstants
 
 	/** Movement speed skill; speed is calculated entirely separately from the -kind- of movement, via skills like Flight or Swimming */
 	public final static String UNIT_SKILL_ID_MOVEMENT_SPEED = "UA08";
+
+	/** Can teleport to anywhere in combat */
+	public final static String UNIT_SKILL_ID_TELEPORT = "US000";
 	
 	/** Skill for settlers creating new cities */
 	public final static String UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
@@ -237,23 +240,23 @@ public final class CommonDatabaseConstants
 	/** Invisibility skill added from spell */
 	public final static String UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL = "SS062";
 	
-	/** Skill for engineers building roads */
-	public final static String UNIT_SKILL_ID_BUILD_ROAD = "US036";
-
 	/** Skill for priests purifying corruption */
 	public final static String UNIT_SKILL_ID_PURIFY = "US025";
 	
 	/** Skill for damage dealt being returned to the attackers' HP (this is subtely different than the ability to create undead - ghouls create undead but do not recover HP from it) */
 	public final static String UNIT_SKILL_ID_LIFE_STEALING = "US031";
 	
+	/** Skill for engineers building roads */
+	public final static String UNIT_SKILL_ID_BUILD_ROAD = "US036";
+
 	/** Skill for magic and guardian spirits capturing nodes */	
 	public final static String UNIT_SKILL_ID_MELD_WITH_NODE = "US040";
 	
-	/** the "skill" for experience levels */
-	public final static String UNIT_SKILL_ID_EXPERIENCE = "US098";
-
 	/** Allows unit to cast spells, value of the skill specifies how MP worth of spells they can cast, e.g. Archangels able to cast 40 MP worth of life magic */
 	public final static String UNIT_SKILL_ID_CASTER_UNIT = "US051";
+
+	/** the "skill" for experience levels */
+	public final static String UNIT_SKILL_ID_EXPERIENCE = "US098";
 
 	/** Units converted to undead */
 	public final static String UNIT_SKILL_ID_UNDEAD = "US122";
@@ -261,6 +264,9 @@ public final class CommonDatabaseConstants
 	/** Skill whose value specifies how many ranged shots a unit can fire, used both for phys ammo like arrows and mag ammo like magicians' firebolts */ 
 	public final static String UNIT_SKILL_ID_RANGED_ATTACK_AMMO = "US132";
 
+	/** Can travel through ground to anywhere in combat */
+	public final static String UNIT_SKILL_ID_MERGING = "US169";
+	
 	// hero skills
 
 	/** Armsmaster raises exp of normal units stacked with them */

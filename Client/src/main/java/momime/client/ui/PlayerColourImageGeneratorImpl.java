@@ -301,7 +301,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 				image = getUtils ().loadImage (imageName);
 				for (final String colour : sortedColours)
 					if (colour.length () == 8)
-						image = getUtils ().multiplyImageByColourAndAlpha (image, Integer.parseInt (colour, 16));
+						image = getUtils ().multiplyImageByColourAndAlpha (image, (int) Long.parseLong (colour, 16));
 					else
 						image = getUtils ().multiplyImageByColour (image, Integer.parseInt (colour, 16));
 				

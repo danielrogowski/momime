@@ -11,6 +11,9 @@ public enum CombatMoveType
 	/** Can walk here in one turn */
 	MOVE (null),
 	
+	/** Can teleport to here */
+	TELEPORT (null),
+	
 	/** Adjacent enemy unit we can hit */
 	MELEE ("melee"),
 	

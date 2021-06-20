@@ -665,7 +665,8 @@ public final class CombatUI extends MomClientFrameUI
 				if (getUnitMoving () != null)
 					try
 					{
-						final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), true, getClient ().getClientDB ());
+						final boolean teleporting = (getUnitMoving ().getTeleportTo () != null);
+						final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), !teleporting, getClient ().getClientDB ());
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
 							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours ());
 					}

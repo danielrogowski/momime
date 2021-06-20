@@ -1071,6 +1071,48 @@ public final class CombatProcessingImpl implements CombatProcessing
 		boolean blocked = false;
 		if (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.RANGED)
 			tu.setDoubleCombatMovesLeft (0);
+		
+		// Teleporting always just costs 2 movement
+		else if (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.TELEPORT)
+		{
+			// Bump to different cell if there's an invisible unit here
+			final MapCoordinates2DEx actualMoveTo = getUnitServerUtils ().findFreeCombatPositionAvoidingInvisibleClosestTo
+				(combatLocation, combatCell.getCombatMap (), moveTo, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (),
+					mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
+			
+			// Update on client
+			final MoveUnitInCombatMessage msg = new MoveUnitInCombatMessage ();
+			msg.setUnitURN (tu.getUnitURN ());
+			msg.setMoveFrom (tu.getCombatPosition ());
+			msg.setTeleportTo (actualMoveTo);
+			
+			reduceMovementRemaining (tu.getMemoryUnit (), 2);
+			msg.setDoubleCombatMovesLeft (tu.getDoubleCombatMovesLeft ());
+			
+			// Only send this to the players involved in the combat.
+			// Players not involved in the combat don't care where the units are positioned.
+			if (attackingPlayer.getPlayerDescription ().isHuman ())
+				attackingPlayer.getConnection ().sendMessageToClient (msg);
+
+			if (defendingPlayer.getPlayerDescription ().isHuman ())
+				defendingPlayer.getConnection ().sendMessageToClient (msg);
+
+			// Actually put the units in that location on the server
+			tu.setCombatPosition (actualMoveTo);
+		
+			// Update attacker's memory on server
+			final MapCoordinates2DEx moveToAttackersMemory = new MapCoordinates2DEx (actualMoveTo);
+			
+			final MomPersistentPlayerPrivateKnowledge attackerPriv = (MomPersistentPlayerPrivateKnowledge) attackingPlayer.getPersistentPlayerPrivateKnowledge ();
+			getUnitUtils ().findUnitURN (tu.getUnitURN (), attackerPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-AT").setCombatPosition (moveToAttackersMemory);
+
+			// Update defender's memory on server
+			final MapCoordinates2DEx moveToDefendersMemory = new MapCoordinates2DEx (actualMoveTo);
+			
+			final MomPersistentPlayerPrivateKnowledge defenderPriv = (MomPersistentPlayerPrivateKnowledge) defendingPlayer.getPersistentPlayerPrivateKnowledge ();
+			getUnitUtils ().findUnitURN (tu.getUnitURN (), defenderPriv.getFogOfWarMemory ().getUnit (), "okToMoveUnitInCombat-DT").setCombatPosition (moveToDefendersMemory);
+		}
+		
 		else
 		{
 			// The value at each cell of the directions grid is the direction we need to have come from to get there.
@@ -1184,6 +1226,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					break;
 					
 				case MOVE:
+				case TELEPORT:
 					// Nothing special to do
 					break;
 	

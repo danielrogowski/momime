@@ -15,11 +15,13 @@ import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
+import momime.client.audio.AudioPlayer;
 import momime.client.calculations.CombatMapBitmapGenerator;
 import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.frames.CombatUI;
 import momime.client.utils.UnitClientUtils;
+import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AnimationEx;
 import momime.common.database.TileSetEx;
@@ -63,6 +65,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	
 	/** Bitmap generator for the static terrain */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
+	
+	/** Sound effects player */
+	private AudioPlayer soundPlayer;
 	
 	/** Work the duration out once only */
 	private double duration;
@@ -152,15 +157,39 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		duration = COMBAT_WALK_TIMING * 0.8d;
 
 		// Work out new position
-		moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) getMoveFrom ());
-		getCoordinateSystemUtils ().move2DCoordinates (getClient ().getSessionDescription ().getCombatMapSize (), moveTo, getDirection ());
+		if (getDirection () != null)
+		{
+			moveTo = new MapCoordinates2DEx ((MapCoordinates2DEx) getMoveFrom ());
+			getCoordinateSystemUtils ().move2DCoordinates (getClient ().getSessionDescription ().getCombatMapSize (), moveTo, getDirection ());
+		}
+		else if (getTeleportTo () != null)
+		{
+			moveTo = (MapCoordinates2DEx) getTeleportTo ();
+			shadingColours.add ("FFFFFFFF");
+		}
+		else
+			throw new MomException ("MoveUnitInCombatMessageImpl: Neither direction nor teleportTo was supplied");
 		
 		// Kick off animation
-		mu.setCombatHeading (getDirection ());
-		final String movingActionID = getUnitCalculations ().determineCombatActionID (unit, true, getClient ().getClientDB ());
+		if (getDirection () != null)
+		{
+			mu.setCombatHeading (getDirection ());
 		
-		// Play walking sound effect
-		getUnitClientUtils ().playCombatActionSound (mu, movingActionID);
+			final String movingActionID = getUnitCalculations ().determineCombatActionID (unit, true, getClient ().getClientDB ());
+			
+			// Play walking sound effect
+			getUnitClientUtils ().playCombatActionSound (mu, movingActionID);
+		}
+		else
+			try
+			{
+				// Play teleporting sound effect
+				getSoundPlayer ().playAudioFile ("/momime.client.sounds/SOUNDFX_011_000 - Teleport.mp3");
+			}
+			catch (final Exception e)
+			{
+				log.error (e, e);
+			}
 	}
 	
 	/**
@@ -197,9 +226,42 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		final int moveToY = getCombatMapBitmapGenerator ().combatCoordinatesY (moveTo.getX (), moveTo.getY (), combatMapTileSet);
 		
 		// Work out current position
-		currentX = moveFromX + (int) ((moveToX - moveFromX) * ratio);
-		currentY = moveFromY + (int) ((moveToY - moveFromY) * ratio);
-		currentZOrder = (getMoveFrom ().getY () * 50) + (int) ((moveTo.getY () - getMoveFrom ().getY ()) * ratio * 50d);
+		if (getDirection () != null)
+		{
+			currentX = moveFromX + (int) ((moveToX - moveFromX) * ratio);
+			currentY = moveFromY + (int) ((moveToY - moveFromY) * ratio);
+			currentZOrder = (getMoveFrom ().getY () * 50) + (int) ((moveTo.getY () - getMoveFrom ().getY ()) * ratio * 50d);
+		}
+		else if (tickNumber < (tickCount / 2))
+		{
+			currentX = moveFromX;
+			currentY = moveFromY;
+			currentZOrder = moveFromY * 50;
+			
+			final double alphaRatio = (double) tickNumber / (tickCount / 2);
+			final int alpha = (int) ((1 - alphaRatio) * 255);
+			String alphaString = Integer.toHexString (alpha).toUpperCase ();
+			while (alphaString.length () < 2)
+				alphaString = "0" + alphaString;
+			
+			shadingColours.remove (shadingColours.size () - 1);
+			shadingColours.add (alphaString + "FFFFFF");
+		}
+		else
+		{
+			currentX = moveToX;
+			currentY = moveToY;
+			currentZOrder = moveToY * 50;
+			
+			final double alphaRatio = (double) (tickNumber - (tickCount / 2)) / (tickCount / 2);
+			final int alpha = (int) (alphaRatio * 255);
+			String alphaString = Integer.toHexString (alpha).toUpperCase ();
+			while (alphaString.length () < 2)
+				alphaString = "0" + alphaString;
+			
+			shadingColours.remove (shadingColours.size () - 1);
+			shadingColours.add (alphaString + "FFFFFF");
+		}
 	}
 	
 	/**
@@ -363,6 +425,22 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		combatMapBitmapGenerator = gen;
 	}
 
+	/**
+	 * @return Sound effects player
+	 */
+	public final AudioPlayer getSoundPlayer ()
+	{
+		return soundPlayer;
+	}
+
+	/**
+	 * @param player Sound effects player
+	 */
+	public final void setSoundPlayer (final AudioPlayer player)
+	{
+		soundPlayer = player;
+	}
+	
 	/**
 	 * @return The unit that is moving
 	 */

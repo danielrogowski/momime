@@ -453,18 +453,19 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param baseZOrder Z order for the top of the tile
 	 * @param shadingColours List of shading colours to apply to the image
+	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final String unitID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder, final List<String> shadingColours) throws IOException
+		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio) throws IOException
 	{
 		// Draw sample tile
 		if (sampleTileImageFile != null)
 		{
 			final BufferedImage tileImage = getUtils ().loadImage (sampleTileImageFile);
-			g.drawImage (tileImage, offsetX, offsetY, tileImage.getWidth () * 2, tileImage.getHeight () * 2, baseZOrder);
+			g.drawStretchedImage (tileImage, offsetX, offsetY, tileImage.getWidth () * 2, tileImage.getHeight () * 2, baseZOrder);
 		}
 		
 		// Get the main unit
@@ -486,10 +487,18 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			final int imageHeight = image.getHeight () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
 			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
-			g.drawImage (image,
-				position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
-				position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight,
-				imageWidth, imageHeight, baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+			if ((mergingRatio == null) || (mergingRatio == 0d))
+				g.drawStretchedImage (image,
+					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
+					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight,
+					imageWidth, imageHeight, baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+			else
+				g.drawStretchedClippedImage (image,
+					0, 0, image.getWidth (), (int) (image.getHeight () * (1d - mergingRatio)),
+					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2),
+					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + ((int) (imageHeight * mergingRatio)),
+					imageWidth, (int) (imageHeight * (1d - mergingRatio)),
+					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
 		}
 	}
 
@@ -506,11 +515,13 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param baseZOrder Z order for the top of the tile
 	 * @param shadingColours List of shading colours to apply to the image
+	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @throws IOException If there is a problem
 	 */
 	@Override
 	public final void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
-		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder, final List<String> shadingColours) throws IOException
+		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder,
+		final List<String> shadingColours, final Double mergingRatio) throws IOException
 	{
 		// Get alive figures
 		final int aliveFigureCount = unit.calculateAliveFigureCount ();
@@ -526,7 +537,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 			
 			// Call other version now that we have all the necessary values
 			drawUnitFigures (unit.getUnitID (), unit.getFullFigureCount (), aliveFigureCount, combatActionID,
-				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours);
+				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio);
 		}
 	}
 	

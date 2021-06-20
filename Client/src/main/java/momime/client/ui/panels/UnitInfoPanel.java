@@ -288,7 +288,7 @@ public final class UnitInfoPanel extends MomClientPanelUI
 							// Show combat anim of unit 
 							zOrderGraphics.setGraphics (g);
 							final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnit (), true, getClient ().getClientDB ());
-							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours);
+							getUnitClientUtils ().drawUnitFigures (getUnit (), movingActionID, 4, zOrderGraphics, 1, 26, true, true, 0, shadingColours, null);
 						}
 					}
 				}

@@ -24,6 +24,7 @@ import momime.client.utils.UnitClientUtils;
 import momime.common.MomException;
 import momime.common.calculations.UnitCalculations;
 import momime.common.database.AnimationEx;
+import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.TileSetEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.messages.MemoryUnit;
@@ -99,6 +100,9 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	/** List of shading colours to apply to the image */
 	private List<String> shadingColours;
 	
+	/** How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all */
+	private Double mergingRatio;
+	
 	/**
 	 * @throws JAXBException Typically used if there is a problem sending a reply back to the server
 	 * @throws XMLStreamException Typically used if there is a problem sending a reply back to the server
@@ -165,15 +169,21 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 		else if (getTeleportTo () != null)
 		{
 			moveTo = (MapCoordinates2DEx) getTeleportTo ();
-			shadingColours.add ("FFFFFFFF");
+			
+			// Is it teleporting (Unicorns) or merging (Great Wyrm) - need to control the animation differently in either case
+			if (unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MERGING))
+				setMergingRatio (0d);
+			else
+				shadingColours.add ("FFFFFFFF");
 		}
 		else
 			throw new MomException ("MoveUnitInCombatMessageImpl: Neither direction nor teleportTo was supplied");
 		
 		// Kick off animation
-		if (getDirection () != null)
+		if ((getDirection () != null) || (getMergingRatio () != null))
 		{
-			mu.setCombatHeading (getDirection ());
+			if (getDirection () != null)
+				mu.setCombatHeading (getDirection ());
 		
 			final String movingActionID = getUnitCalculations ().determineCombatActionID (unit, true, getClient ().getClientDB ());
 			
@@ -239,28 +249,46 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 			currentZOrder = moveFromY * 50;
 			
 			final double alphaRatio = (double) tickNumber / (tickCount / 2);
-			final int alpha = (int) ((1 - alphaRatio) * 255);
-			String alphaString = Integer.toHexString (alpha).toUpperCase ();
-			while (alphaString.length () < 2)
-				alphaString = "0" + alphaString;
-			
-			shadingColours.remove (shadingColours.size () - 1);
-			shadingColours.add (alphaString + "FFFFFF");
+			if (getMergingRatio () == null)
+			{
+				// Make Unicorns fade out
+				final int alpha = (int) ((1d - alphaRatio) * 255);
+				String alphaString = Integer.toHexString (alpha).toUpperCase ();
+				while (alphaString.length () < 2)
+					alphaString = "0" + alphaString;
+				
+				shadingColours.remove (shadingColours.size () - 1);
+				shadingColours.add (alphaString + "FFFFFF");
+			}
+			else
+			{
+				// Make Great Wyrm sink down
+				setMergingRatio (alphaRatio);
+			}
 		}
 		else
 		{
 			currentX = moveToX;
 			currentY = moveToY;
 			currentZOrder = moveToY * 50;
-			
+
 			final double alphaRatio = (double) (tickNumber - (tickCount / 2)) / (tickCount / 2);
-			final int alpha = (int) (alphaRatio * 255);
-			String alphaString = Integer.toHexString (alpha).toUpperCase ();
-			while (alphaString.length () < 2)
-				alphaString = "0" + alphaString;
-			
-			shadingColours.remove (shadingColours.size () - 1);
-			shadingColours.add (alphaString + "FFFFFF");
+			if (getMergingRatio () == null)
+			{
+				// Make Unicorns fade in
+				final int alpha = (int) (alphaRatio * 255);
+				String alphaString = Integer.toHexString (alpha).toUpperCase ();
+				while (alphaString.length () < 2)
+					alphaString = "0" + alphaString;
+				
+				shadingColours.remove (shadingColours.size () - 1);
+				shadingColours.add (alphaString + "FFFFFF");
+			}
+			else
+			{
+				// Make Great Wyrm rise up
+				setMergingRatio (1d - alphaRatio);
+			}
 		}
 	}
 	
@@ -487,5 +515,21 @@ public final class MoveUnitInCombatMessageImpl extends MoveUnitInCombatMessage i
 	public final List<String> getShadingColours ()
 	{
 		return shadingColours;
+	}
+
+	/**
+	 * @return How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
+	 */
+	public final Double getMergingRatio ()
+	{
+		return mergingRatio;
+	}
+
+	/**
+	 * @param r How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
+	 */
+	public final void setMergingRatio (final Double r)
+	{
+		mergingRatio = r;
 	}
 }

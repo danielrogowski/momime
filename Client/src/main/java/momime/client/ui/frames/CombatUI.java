@@ -652,7 +652,7 @@ public final class CombatUI extends MomClientFrameUI
 									// Draw unit
 									getUnitClientUtils ().drawUnitFigures (unit.getUnit (), combatActionID, unit.getUnit ().getCombatHeading (), zOrderGraphics,
 										getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet),
-										getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours ());
+										getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet), false, false, y * 50, unit.getShadingColours (), null);
 								}
 							}
 							catch (final Exception e)
@@ -668,7 +668,8 @@ public final class CombatUI extends MomClientFrameUI
 						final boolean teleporting = (getUnitMoving ().getTeleportTo () != null);
 						final String movingActionID = getUnitCalculations ().determineCombatActionID (getUnitMoving ().getUnit (), !teleporting, getClient ().getClientDB ());
 						getUnitClientUtils ().drawUnitFigures (getUnitMoving ().getUnit (), movingActionID, getUnitMoving ().getUnit ().getCombatHeading (), zOrderGraphics,
-							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours ());
+							getUnitMoving ().getCurrentX (), getUnitMoving ().getCurrentY (), false, false, getUnitMoving ().getCurrentZOrder (), getUnitMoving ().getShadingColours (),
+							getUnitMoving ().getMergingRatio ());
 					}
 					catch (final Exception e)
 					{
@@ -701,7 +702,7 @@ public final class CombatUI extends MomClientFrameUI
 									ypos = ypos + (smoothedTileTypesLayer [y] [x].getTileOffsetY () * 2);
 								
 								// Draw images
-								zOrderGraphics.drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, (y * 50) + 5);
+								zOrderGraphics.drawStretchedImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, (y * 50) + 5);
 							}
 						}
 				}
@@ -731,7 +732,7 @@ public final class CombatUI extends MomClientFrameUI
 												(((tile.isWrecked ()) && (borderImage.getWreckedFile () != null)) ?
 													borderImage.getWreckedFile () : borderImage.getStandardFile (), borderImage.getStandardAnimation (), false, AnimationContainer.COMMON_XML);
 											
-											zOrderGraphics.drawImage (image,
+											zOrderGraphics.drawStretchedImage (image,
 												getCombatMapBitmapGenerator ().combatCoordinatesX (x, y, combatMapTileSet) - (2 * 2),
 												getCombatMapBitmapGenerator ().combatCoordinatesY (x, y, combatMapTileSet) - (16 * 2),
 												image.getWidth () * 2, image.getHeight () * 2,

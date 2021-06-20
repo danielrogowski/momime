@@ -146,11 +146,12 @@ public interface UnitClientUtils
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param baseZOrder Z order for the top of the tile
 	 * @param shadingColours List of shading colours to apply to the image
+	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final String unitID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
-		final int baseZOrder, final List<String> shadingColours) throws IOException;
+		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio) throws IOException;
 
 	/**
 	 * Version which derives most of the values from an existing unit object.
@@ -165,10 +166,12 @@ public interface UnitClientUtils
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param baseZOrder Z order for the top of the tile
 	 * @param shadingColours List of shading colours to apply to the image
+	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @throws IOException If there is a problem
 	 */
 	public void drawUnitFigures (final ExpandedUnitDetails unit, final String combatActionID, final int direction, final ZOrderGraphics g,
-		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder, final List<String> shadingColours) throws IOException;
+		final int offsetX, final int offsetY, final boolean drawSampleTile, final boolean registeredAnimation, final int baseZOrder,
+		final List<String> shadingColours, final Double mergingRatio) throws IOException;
 
 	/**
 	 * Plays the sound effect for a particular unit taking a particular action.  This covers all combat actions, so the clank clank of units walking,

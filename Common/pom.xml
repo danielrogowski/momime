@@ -332,7 +332,7 @@
 		<dependency>
 			<groupId>com.ndg.map</groupId>
 			<artifactId>ndgmap</artifactId>
-			<version>0.4.3</version>
+			<version>0.4.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

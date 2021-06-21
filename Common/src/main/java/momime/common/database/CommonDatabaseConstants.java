@@ -228,6 +228,9 @@ public final class CommonDatabaseConstants
 	/** Movement speed skill; speed is calculated entirely separately from the -kind- of movement, via skills like Flight or Swimming */
 	public final static String UNIT_SKILL_ID_MOVEMENT_SPEED = "UA08";
 
+	/** Natural flight */
+	public final static String UNIT_SKILL_ID_FLIGHT = "USX04";
+	
 	/** Can teleport to anywhere in combat */
 	public final static String UNIT_SKILL_ID_TELEPORT = "US000";
 	

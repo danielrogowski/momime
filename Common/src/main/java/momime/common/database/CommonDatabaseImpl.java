@@ -3,6 +3,7 @@ package momime.common.database;
 import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -227,15 +228,6 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		combatTileBorderImagesMap = new HashMap<String, CombatTileBorderImage> ();
 		for (final CombatTileBorderImage ctb : getCombatTileBorderImage ())
 			combatTileBorderImagesMap.put (ctb.getCombatTileBorderID () + "-" + ctb.getDirections () + "-" + ctb.getFrontOrBack ().value (), ctb);
-		
-		// Find list of all hero item bonuses that grant invisibility
-		// Need this multiple times for every draw of the map, so better to figure this out only once
-		invisibilityHeroItemBonusID = getHeroItemBonus ().stream ().filter (b -> b.getHeroItemBonusStat ().stream ().anyMatch
-			(s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL))).map (b -> b.getHeroItemBonusID ()).findAny ().orElse (null);
-		if (invisibilityHeroItemBonusID == null)
-			log.warn ("No hero item bonus that grants invisibility found");
-		else
-			log.info ("Hero item bonus that grants invisibility = " + invisibilityHeroItemBonusID);
 	}
 
 	/**
@@ -245,6 +237,15 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	@Override
 	public final void consistencyChecks () throws MomException
 	{
+		// Find all movement skills
+		final List<String> movementSkills = getUnitSkill ().stream ().filter
+			(s -> s.getMovementIconImagePreference () != null).map (s -> s.getUnitSkillID ()).collect (Collectors.toList ());
+
+		// Remove flight - even if the unit has flight, it needs a backup skill in case flight gets cancelled (black sleep/web)
+		final List<String> movementSkillsWithoutFlight = new ArrayList<String> ();
+		movementSkillsWithoutFlight.addAll (movementSkills);
+		movementSkillsWithoutFlight.remove (CommonDatabaseConstants.UNIT_SKILL_ID_FLIGHT);
+		
 		// Check all units have an HP and double movement speed "skill" value defined
 		for (final Unit unitDef : getUnit ())
 		{
@@ -262,6 +263,12 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 				(s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED)).map (s -> s.getUnitSkillValue ()).findAny ();
 			if ((speed.isEmpty ()) || (speed.get () < 1))
 				throw new MomException ("Unit " + unitDef.getUnitID () + " has no movement speed defined");
+			
+			if (unitDef.getUnitHasSkill ().stream ().noneMatch (s -> movementSkills.contains (s.getUnitSkillID ())))
+				throw new MomException ("Unit " + unitDef.getUnitID () + " has no movement skill defined");
+
+			if (unitDef.getUnitHasSkill ().stream ().noneMatch (s -> movementSkillsWithoutFlight.contains (s.getUnitSkillID ())))
+				throw new MomException ("Unit " + unitDef.getUnitID () + " only has Flight movement skill - it needs a secondary movement skill in case flight is cancelled");
 		}
 
 		// Check all buildings and units to find the most expensive one
@@ -277,6 +284,15 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 				mostExpensiveConstructionCost = Math.max (mostExpensiveConstructionCost, thisUnit.getProductionCost ());
 		
 		log.info ("Most expensive construction project is " + mostExpensiveConstructionCost);
+		
+		// Find list of all hero item bonuses that grant invisibility
+		// Need this multiple times for every draw of the map, so better to figure this out only once
+		invisibilityHeroItemBonusID = getHeroItemBonus ().stream ().filter (b -> b.getHeroItemBonusStat ().stream ().anyMatch
+			(s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL))).map (b -> b.getHeroItemBonusID ()).findAny ().orElse (null);
+		if (invisibilityHeroItemBonusID == null)
+			log.warn ("No hero item bonus that grants invisibility found");
+		else
+			log.info ("Hero item bonus that grants invisibility = " + invisibilityHeroItemBonusID);
 	}
 	
 	/**

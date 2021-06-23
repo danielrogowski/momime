@@ -48,6 +48,9 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	/** Animation controller */
 	private AnimationController anim;
 	
+	/** NTM renderer */
+	private NewTurnMessageRenderer newTurnMessageRenderer;
+	
 	/** Number of pixels that the roller at the top of the scroll overlaps the main piece of background */
 	public final static int SCROLL_OVERLAP_TOP = 6;
 	
@@ -106,12 +109,14 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 		newTurnMessagesList = new JList<NewTurnMessageUI> ();
 		newTurnMessagesList.setOpaque (false);
 		newTurnMessagesList.setModel (newTurnMessages);
-		newTurnMessagesList.setCellRenderer (new NewTurnMessageRenderer ());		// The renderer has no injections (yet) so doesn't have a spring prototype
+		newTurnMessagesList.setCellRenderer (getNewTurnMessageRenderer ());
 		newTurnMessagesList.setSelectionMode (ListSelectionModel.SINGLE_SELECTION);
 		
 		final JScrollPane spellsScroll = getUtils ().createTransparentScrollPane (newTurnMessagesList);
 		spellsScroll.setHorizontalScrollBarPolicy (ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		contentPane.add (spellsScroll, "frmNewTurnMessagesList");
+		
+		getNewTurnMessageRenderer ().setScrollWidth (getNewTurnMessagesLayout ().findComponent ("frmNewTurnMessagesList").getWidth ());
 		
 		contentPane.add (getUtils ().createImageButton (closeAction, null, null, null, closeButtonNormal, closeButtonPressed, closeButtonNormal),
 			"frmNewTurnMessagesClose");
@@ -302,5 +307,21 @@ public final class NewTurnMessagesUI extends MomClientFrameUI
 	public final void setNewTurnMessagesLayout (final XmlLayoutContainerEx layout)
 	{
 		newTurnMessagesLayout = layout;
+	}
+
+	/**
+	 * @return NTM renderer
+	 */
+	public final NewTurnMessageRenderer getNewTurnMessageRenderer ()
+	{
+		return newTurnMessageRenderer;
+	}
+
+	/**
+	 * @param r NTM renderer
+	 */
+	public final void setNewTurnMessageRenderer (final NewTurnMessageRenderer r)
+	{
+		newTurnMessageRenderer = r;
 	}
 }

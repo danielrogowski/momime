@@ -1294,6 +1294,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
 	</bean>
 
+	<bean id="newTurnMessageRenderer" class="momime.client.ui.renderer.NewTurnMessageRenderer">
+		<property name="utils" ref="uiUtils" />
+	</bean>
+
 	<bean id="newTurnMessagesLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">
 		<constructor-arg type="java.io.InputStream" value="/momime.client.ui.frames/NewTurnMessagesUI.xml" />
 	</bean>
@@ -1304,6 +1308,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageChangeMaster" ref="optionsUI" />
 		<property name="utils" ref="uiUtils" />
 		<property name="anim" ref="anim" />
+		<property name="newTurnMessageRenderer" ref="newTurnMessageRenderer" />
 	</bean>
 	
 	<bean id="spellBookUI" class="momime.client.ui.frames.SpellBookUI">

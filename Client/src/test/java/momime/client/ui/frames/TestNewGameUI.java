@@ -354,7 +354,7 @@ public final class TestNewGameUI extends ClientTestData
 		final CustomUnitsTab customUnitsTabLang = new CustomUnitsTab ();
 		customUnitsTabLang.getTitle ().add (createLanguageText (Language.ENGLISH, "New Game: Custom Unit Settings"));
 		customUnitsTabLang.getMaxPerGridCell ().add (createLanguageText (Language.ENGLISH, "Maximum units per grid cell"));
-		customUnitsTabLang.getCanExceedMaximumUnitsDuringCombat ().add (createLanguageText (Language.ENGLISH, "Can temporarily exceed maximum during combat (e.g. with Phantom Warriors, Earth/Air/Fire Elementals)"));
+		customUnitsTabLang.getCanExceedMaximumUnitsDuringCombat ().add (createLanguageText (Language.ENGLISH, "Can temporarily exceed maximum units per map cell during combat (e.g. with Phantom Warriors, Earth/Air/Fire Elementals)"));
 		customUnitsTabLang.getMaxHeroes ().add (createLanguageText (Language.ENGLISH, "Maximum heroes at a time"));
 		customUnitsTabLang.getRollHeroSkillsAtStartOfGame ().add (createLanguageText (Language.ENGLISH, "Hero random skills are rolled at the start of the game (so cannot reroll by reloading the game just before spell finishes casting)"));
 		customUnitsTabLang.getMaxHeroItemBonuses ().add (createLanguageText (Language.ENGLISH, "Maximum bonuses on a hero item"));

@@ -1851,7 +1851,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setCanExceedMaximumUnitsDuringCombat (false);
-		unitSettings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge
@@ -1983,7 +1982,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setCanExceedMaximumUnitsDuringCombat (false);
-		unitSettings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge
@@ -2122,7 +2120,6 @@ public final class TestSpellQueueingImpl extends ServerTestData
 		
 		final UnitSetting unitSettings = new UnitSetting ();
 		unitSettings.setCanExceedMaximumUnitsDuringCombat (true); 		// <---
-		unitSettings.setUnitsPerMapCell (9);
 		sd.setUnitSetting (unitSettings);
 		
 		// General server knowledge

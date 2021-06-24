@@ -47,6 +47,9 @@ public final class CommonDatabaseConstants
 	/** Distance cities are apart to get a road connecting them at the start of the game */
 	public final static int CITY_SEPARATION_TO_GET_STARTER_ROADS = 10;
 	
+	/** Maximum units in a map cell */
+	public final static int MAX_UNITS_PER_MAP_CELL = 9;
+	
 	/*------------------------------------------------------
 	 * Special values the various XML fields can take
 	 *-------------------------------------------------- */

@@ -1717,7 +1717,6 @@
 		<xsd:sequence>
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="unitSettingDescription" type="momimecommon:languageText" nxe:label="Description" />
 
-			<xsd:element minOccurs="1" maxOccurs="1" name="unitsPerMapCell" type="momimecommon:unitCount" nxe:label="Max. units in a map cell" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="canExceedMaximumUnitsDuringCombat" type="xsd:boolean" nxe:label="Exceed limit during combat?" nxe:gridwidth="150" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="rollHeroSkillsAtStartOfGame" type="xsd:boolean" nxe:label="Roll hero skills at start of game?" nxe:gridwidth="170" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="maxHeroItemSpellCharges" type="momimecommon:spellCount" nxe:label="Max. spell charges added to hero item" nxe:gridwidth="200" />

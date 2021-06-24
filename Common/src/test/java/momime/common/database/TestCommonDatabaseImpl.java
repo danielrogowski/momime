@@ -1330,6 +1330,11 @@ public final class TestCommonDatabaseImpl
 		// Set up some sample buildings and units
 		final CommonDatabaseImpl db = new CommonDatabaseImpl ();
 		
+		final UnitSkillEx walking = new UnitSkillEx ();
+		walking.setUnitSkillID ("USX01");
+		walking.setMovementIconImagePreference (1);
+		db.getUnitSkills ().add (walking);
+		
 		final Building building1 = new Building ();
 		building1.setBuildingID ("BL01");
 		building1.setProductionCost (30);
@@ -1359,7 +1364,8 @@ public final class TestCommonDatabaseImpl
 		// Need to assign skill values to pass consistency checks
 		for (final Unit unitDef : db.getUnit ())
 			for (final String unitSkillID : new String []
-				{CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE, CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED})
+				{CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RESISTANCE,
+					CommonDatabaseConstants.UNIT_SKILL_ID_MOVEMENT_SPEED, "USX01"})
 			{
 				final UnitSkillAndValue skillValue = new UnitSkillAndValue ();
 				skillValue.setUnitSkillID (unitSkillID);

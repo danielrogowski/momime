@@ -37,7 +37,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.TileTypeEx;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpecialOrder;
@@ -694,10 +693,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		terrainData.setTileTypeID ("TT01");
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
-		// Unit settings
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
@@ -718,7 +713,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, db));
 	}
 
 	/**
@@ -745,10 +740,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		terrainData.setTileTypeID ("TT01");
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
-		// Unit settings
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
@@ -773,7 +764,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, db));
 	}
 
 	/**
@@ -800,10 +791,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		terrainData.setTileTypeID ("TT01");
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
-		// Unit settings
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
@@ -829,7 +816,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, db));
 	}
 
 	/**
@@ -856,10 +843,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		terrainData.setTileTypeID ("TT01");
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
-		// Unit settings
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
@@ -885,7 +868,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, db));
 	}
 	
 	/**
@@ -913,10 +896,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		terrainData.setTileTypeID ("TT01");
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
-		// Unit settings
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
@@ -937,7 +916,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));		// Adding onto empty nodes is now allowed
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, db));		// Adding onto empty nodes is now allowed
 	}
 	
 	/**
@@ -964,10 +943,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		terrainData.setTileTypeID ("TT01");
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setTerrainData (terrainData);
 		
-		// Unit settings
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
@@ -988,7 +963,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, db));
 	}
 	
 	/**
@@ -1021,10 +996,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		cityData.setCityPopulation (1);
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
-		// Unit settings
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
@@ -1045,7 +1016,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
+		assertTrue (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, db));
 	}
 	
 	/**
@@ -1078,10 +1049,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		cityData.setCityPopulation (1);
 		trueMap.getMap ().getPlane ().get (1).getRow ().get (10).getCell ().get (20).setCityData (cityData);
 		
-		// Unit settings
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		
 		// Unit to try to add
 		final ExpandedUnitDetails testUnit = mock (ExpandedUnitDetails.class);
 		when (testUnit.getOwningPlayerID ()).thenReturn (2);
@@ -1102,7 +1069,7 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 
 		// Run method
 		final MapCoordinates3DEx addLocation = new MapCoordinates3DEx (20, 10, 1);
-		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, settings, db));
+		assertFalse (utils.canUnitBeAddedHere (addLocation, testUnit, trueMap, db));
 	}
 
 	/**
@@ -1122,10 +1089,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (createOverlandMapSize ());
 
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		sd.setUnitSetting (settings);
-		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
@@ -1201,10 +1164,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (createOverlandMapSize ());
 
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		sd.setUnitSetting (settings);
-		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));
@@ -1286,10 +1245,6 @@ public final class TestUnitServerUtilsImpl extends ServerTestData
 		final MomSessionDescription sd = new MomSessionDescription ();
 		sd.setOverlandMapSize (createOverlandMapSize ());
 
-		final UnitSetting settings = new UnitSetting ();
-		settings.setUnitsPerMapCell (9);
-		sd.setUnitSetting (settings);
-		
 		// Map
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (createOverlandMap (sd.getOverlandMapSize ()));

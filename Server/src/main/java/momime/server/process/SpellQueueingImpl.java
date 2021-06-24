@@ -423,7 +423,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 				
 				else if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
 					(getCombatMapUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
-						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) >= mom.getSessionDescription ().getUnitSetting ().getUnitsPerMapCell ()))
+						mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
 					
 					msg = "You already have the maximum number of units in combat so cannot summon any more.";
 				

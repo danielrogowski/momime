@@ -1581,7 +1581,7 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		int mainMonsterCount = 0;
 		if (mainMonster != null)
 		{
-			mainMonsterCount = Math.min (monstersStrength / mainMonster.getProductionCost (), sd.getUnitSetting ().getUnitsPerMapCell () - 1);
+			mainMonsterCount = Math.min (monstersStrength / mainMonster.getProductionCost (), CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL - 1);
 			if ((mainMonsterCount > 1) && (getRandomUtils ().nextBoolean ()))
 				mainMonsterCount--;
 
@@ -1595,12 +1595,12 @@ public final class OverlandMapGeneratorImpl implements OverlandMapGenerator
 		}
 
 		// Deal with secondary monsters
-		final int secondaryMonsterBudget = monstersStrength / (getRandomUtils ().nextInt (sd.getUnitSetting ().getUnitsPerMapCell () + 1 - mainMonsterCount) + 1);
+		final int secondaryMonsterBudget = monstersStrength / (getRandomUtils ().nextInt (CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL + 1 - mainMonsterCount) + 1);
 		final Unit secondaryMonster = findMostExpensiveMonster (magicRealmLifeformTypeID, secondaryMonsterBudget);
 
 		if (secondaryMonster != null)
 		{
-			final int secondaryMonsterCount = Math.min (monstersStrength / secondaryMonster.getProductionCost (), sd.getUnitSetting ().getUnitsPerMapCell () - mainMonsterCount);
+			final int secondaryMonsterCount = Math.min (monstersStrength / secondaryMonster.getProductionCost (), CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL - mainMonsterCount);
 
 			// Actually add them
 			for (int monsterNo = 0; monsterNo < secondaryMonsterCount; monsterNo++)

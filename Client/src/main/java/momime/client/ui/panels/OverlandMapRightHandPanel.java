@@ -629,8 +629,8 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		
 		unitsPanel.setLayout (new GridBagLayout ());
 		
-		for (int y = 0; y < 5; y++)
-			for (int x = 0; x < 4; x++)
+		for (int y = 0; y < 3; y++)
+			for (int x = 0; x < 3; x++)
 			{
 				final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
 				selectUnitButton.init ();

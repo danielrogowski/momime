@@ -2987,7 +2987,7 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
                 <text>Maksymalna ilość jednostek w komórce mapy</text>
             </maxPerGridCell>
             <canExceedMaximumUnitsDuringCombat language="en">
-                <text>Can temporarily exceed maximum during combat (e.g. with Phantom Warriors, Earth/Air/Fire Elementals)</text>
+                <text>Can temporarily exceed maximum units per map cell during combat (e.g. with Phantom Warriors, Earth/Air/Fire Elementals)</text>
             </canExceedMaximumUnitsDuringCombat>
             <canExceedMaximumUnitsDuringCombat language="fr">
                 <text>Peut temporairement dépasser le maximum pendant le combat (ex: avec Guerriers Fantômes, Elémentaux de Terre/Air/Feu)</text>

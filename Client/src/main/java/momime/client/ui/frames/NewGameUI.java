@@ -963,12 +963,6 @@ public final class NewGameUI extends MomClientFrameUI
 	/** Panel */
 	private JPanel unitsPanel;
 	
-	/** Maximum units per overland map grid cell label */
-	private JLabel maxUnitsPerGridCellLabel;
-	
-	/** Maximum units per overland map grid cell */
-	private JTextField maxUnitsPerGridCell;
-	
 	/** Can temporary exceed maximum units during combat */
 	private JCheckBox exceedMaxUnitsDuringCombat;
 
@@ -2226,12 +2220,6 @@ public final class NewGameUI extends MomClientFrameUI
 		// CUSTOM UNIT SETTINGS PANEL
 		unitsPanel = new JPanel (new XmlLayoutManager (getNewGameLayoutUnits ()));
 		unitsPanel.setOpaque (false);
-		
-		maxUnitsPerGridCellLabel = getUtils ().createLabel (MomUIConstants.GOLD, getSmallFont ());
-		unitsPanel.add (maxUnitsPerGridCellLabel, "frmNewGameCustomUnitsMaxPerGridCell");
-		
-		maxUnitsPerGridCell = getUtils ().createTextFieldWithBackgroundImage (MomUIConstants.SILVER, getSmallFont (), editboxSmall);
-		unitsPanel.add (maxUnitsPerGridCell, "frmNewGameCustomUnitsMaxPerGridCellEdit");
 		
 		exceedMaxUnitsDuringCombat = getUtils ().createImageCheckBox (null, null, checkboxUnticked, checkboxTicked);
 		unitsPanel.add (exceedMaxUnitsDuringCombat, "frmNewGameCustomUnitsCanExceedMaximumUnitsDuringCombatCheckbox");
@@ -3509,7 +3497,6 @@ public final class NewGameUI extends MomClientFrameUI
 		fowUnitsForget.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomFogOfWarTab ().getForget ()));
 		
 		// CUSTOM UNIT SETTINGS PANEL
-		maxUnitsPerGridCellLabel.setText					(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxPerGridCell ()));
 		exceedMaxUnitsDuringCombatLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getCanExceedMaximumUnitsDuringCombat ()));
 		maximumHeroesLabel.setText						(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroes ()));
 		maxHeroItemBonusesLabel.setText				(getLanguageHolder ().findDescription (getLanguages ().getNewGameScreen ().getCustomUnitsTab ().getMaxHeroItemBonuses ()));
@@ -4161,7 +4148,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Unit settings
 		final UnitSetting unitSettings = changeUnitSettingsAction.getSelectedItem ();
-		maxUnitsPerGridCell.setText						(Integer.valueOf (unitSettings.getUnitsPerMapCell ()).toString ());
 		exceedMaxUnitsDuringCombat.setSelected	(unitSettings.isCanExceedMaximumUnitsDuringCombat ());
 		maximumHeroes.setText								((unitSettings.getMaxHeroes () == null) ? "" : unitSettings.getMaxHeroes ().toString ());
 		maxHeroItemBonuses.setText						((unitSettings.getMaxHeroItemBonuses () == null) ? "" : unitSettings.getMaxHeroItemBonuses ().toString ());
@@ -4417,7 +4403,6 @@ public final class NewGameUI extends MomClientFrameUI
 		
 		// Unit settings
 		final UnitSetting unitSettings = new UnitSetting ();
-		unitSettings.setUnitsPerMapCell									(Integer.parseInt (maxUnitsPerGridCell.getText ()));
 		unitSettings.setCanExceedMaximumUnitsDuringCombat	(exceedMaxUnitsDuringCombat.isSelected ());
 		unitSettings.setMaxHeroes											(maximumHeroes.getText ().equals("") ? null : Integer.parseInt (maximumHeroes.getText ()));
 		unitSettings.setMaxHeroItemBonuses							(maxHeroItemBonuses.getText ().equals("") ? null : Integer.parseInt (maxHeroItemBonuses.getText ()));

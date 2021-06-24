@@ -773,14 +773,16 @@ public final class CombatProcessingImpl implements CombatProcessing
 	{
 		int unitCountAtLocation = (int) trueMap.getUnit ().stream ().filter (u -> unitLocation.equals (u.getUnitLocation ())).count ();
 
-		while ((unitCountAtLocation > sd.getUnitSetting ().getUnitsPerMapCell ()) && (unitsToRemove.size () > 0))
+		while ((unitCountAtLocation > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL) && (unitsToRemove.size () > 0))
 		{
 			// Pick a random undead to kill off
 			final MemoryUnit trueUnit = unitsToRemove.get (getRandomUtils ().nextInt (unitsToRemove.size ()));
 			unitCountAtLocation--;
 			unitsToRemove.remove (trueUnit);
 			
-			log.debug ("Killing off undead Unit URN " + trueUnit.getUnitURN () + " because there are more than " + sd.getUnitSetting ().getUnitsPerMapCell () + " units at " + unitLocation);
+			log.debug ("Killing off undead Unit URN " + trueUnit.getUnitURN () + " because there are more than " +
+				CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL + " units at " + unitLocation);
+			
 			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (trueUnit, KillUnitActionID.DISMISS, trueMap, players, sd.getFogOfWarSetting (), db);
 		}
 	}

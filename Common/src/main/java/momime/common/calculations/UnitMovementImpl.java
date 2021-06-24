@@ -187,14 +187,13 @@ public final class UnitMovementImpl implements UnitMovement
 	 * @param cellTransportCapacity Count of the number of free transport spaces at every map cell
 	 * @param ourUnitCountAtLocation Count how many of our units are in every cell on the map
 	 * @param doubleMovementRates Movement rate calculated for this unit stack to enter every possible tile type
-	 * @param unitsPerMapCell Maximum number of units allowed to fit in a map cell
 	 * @param sys Overland map coordinate system
 	 * @param db Lookup lists built over the XML database
 	 * @return Movement cost for the unit stack to enter every map cell
 	 */
 	final Integer [] [] [] calculateDoubleMovementToEnterTile (final UnitStack unitStack, final Set<String> unitStackSkills, final MapVolumeOfMemoryGridCells terrain,
 		final int [] [] [] cellTransportCapacity, final int [] [] [] ourUnitCountAtLocation, final Map<String, Integer> doubleMovementRates,
-		final int unitsPerMapCell, final CoordinateSystem sys, final CommonDatabase db)
+		final CoordinateSystem sys, final CommonDatabase db)
 	{
 		final Integer [] [] [] doubleMovementToEnterTile = new Integer [sys.getDepth ()] [sys.getHeight ()] [sys.getWidth ()];
 		for (int z = 0; z < sys.getDepth (); z++)
@@ -202,7 +201,7 @@ public final class UnitMovementImpl implements UnitMovement
 				for (int x = 0; x < sys.getWidth (); x++)
 				{
 					// If cell will be full, leave it as null = impassable
-					if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= unitsPerMapCell)
+					if (ourUnitCountAtLocation [z] [y] [x] + unitStack.getTransports ().size () + unitStack.getUnits ().size () <= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
 					{
 						final OverlandMapTerrainData terrainData = terrain.getPlane ().get (z).getRow ().get (y).getCell ().get (x).getTerrainData ();
 						Integer movementRate = doubleMovementRates.get (getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, true));
@@ -407,7 +406,7 @@ public final class UnitMovementImpl implements UnitMovement
 
 		// Now we can work out the movement cost of entering every tile, taking into account the tiles we can't enter because we'll have too many units there
 		final Integer [] [] [] doubleMovementToEnterTile = calculateDoubleMovementToEnterTile (unitStack, unitStackSkills,
-			map.getMap (), cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, sd.getUnitSetting ().getUnitsPerMapCell (), sd.getOverlandMapSize (), db);
+			map.getMap (), cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, sd.getOverlandMapSize (), db);
 		
 		// Initialize all the map areas
 		for (int z = 0; z < sd.getOverlandMapSize ().getDepth (); z++)

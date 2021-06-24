@@ -29,7 +29,6 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.TileType;
 import momime.common.database.Unit;
-import momime.common.database.UnitSetting;
 import momime.common.database.UnitSkillAndValue;
 import momime.common.database.UnitSkillEx;
 import momime.common.database.UnitSpecialOrder;
@@ -475,13 +474,12 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	 * @param addLocation Location that we're trying to add a unit
 	 * @param testUnit Type of unit that we're trying to add
 	 * @param trueMap Server's true knowledge of terrain, units and so on
-	 * @param settings Unit settings from session description
 	 * @param db Lookup lists built over the XML database
 	 * @return Whether unit can be added here or not
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found
 	 */
 	final boolean canUnitBeAddedHere (final MapCoordinates3DEx addLocation, final ExpandedUnitDetails testUnit,
-		final FogOfWarMemory trueMap, final UnitSetting settings, final CommonDatabase db) throws RecordNotFoundException
+		final FogOfWarMemory trueMap, final CommonDatabase db) throws RecordNotFoundException
 	{
 		// Any other units here?
 		final boolean unitCheckOk;
@@ -491,7 +489,8 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			// Do we own it?
 			if (unitHere.getOwningPlayerID () == testUnit.getOwningPlayerID ())
 				// Maximum number of units already in the cell?
-				unitCheckOk = (getUnitUtils ().countAliveEnemiesAtLocation (trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getZ (), 0) < settings.getUnitsPerMapCell ());
+				unitCheckOk = (getUnitUtils ().countAliveEnemiesAtLocation
+					(trueMap.getUnit (), addLocation.getX (), addLocation.getY (), addLocation.getZ (), 0) < CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL);
 			else
 				// Enemy unit in the cell, so we can't add here
 				unitCheckOk = false;
@@ -565,7 +564,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		MapCoordinates3DEx addLocation = null;
 		UnitAddBumpTypeID bumpType = UnitAddBumpTypeID.NO_ROOM;
 
-		if (canUnitBeAddedHere (desiredLocation, xu, trueMap, sd.getUnitSetting (), db))
+		if (canUnitBeAddedHere (desiredLocation, xu, trueMap, db))
 		{
 			addLocation = desiredLocation;
 			bumpType = UnitAddBumpTypeID.CITY;
@@ -577,7 +576,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 			{
 				final MapCoordinates3DEx adjacentLocation = new MapCoordinates3DEx (desiredLocation);
 				if (getCoordinateSystemUtils ().move3DCoordinates (sd.getOverlandMapSize (), adjacentLocation, direction))
-					if (canUnitBeAddedHere (adjacentLocation, xu, trueMap, sd.getUnitSetting (), db))
+					if (canUnitBeAddedHere (adjacentLocation, xu, trueMap, db))
 					{
 						addLocation = adjacentLocation;
 						bumpType = UnitAddBumpTypeID.BUMPED;

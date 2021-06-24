@@ -50,7 +50,6 @@ import momime.common.database.TileTypeAreaEffect;
 import momime.common.database.TileTypeEx;
 import momime.common.database.TileTypeFeatureChance;
 import momime.common.database.UnitEx;
-import momime.common.database.UnitSetting;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfMemoryGridCells;
 import momime.common.messages.MapRowOfMemoryGridCells;
@@ -1323,11 +1322,7 @@ public final class TestOverlandMapGeneratorImpl extends ServerTestData
 	public final void testFillSingleLairOrTowerWithMonsters () throws Exception
 	{
 		// Session description
-		final UnitSetting unitSettings = new UnitSetting ();
-		unitSettings.setUnitsPerMapCell (9);
-		
 		final MomSessionDescription sd = new MomSessionDescription ();
-		sd.setUnitSetting (unitSettings);
 		
 		// Mock server database
 		final CommonDatabase db = mock (CommonDatabase.class);

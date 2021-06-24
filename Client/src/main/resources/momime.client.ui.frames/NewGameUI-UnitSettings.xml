@@ -2,27 +2,15 @@
 <ns2:xmlLayoutContainer xmlns:ns2="http://ndg.com/swing/layoutmanagers/xmllayout">
 	<formWidth>320</formWidth>
 	<formHeight>400</formHeight>
-	<component name="frmNewGameCustomUnitsMaxPerGridCell">
+	<component name="frmNewGameCustomUnitsCanExceedMaximumUnitsDuringCombatCheckbox">
 		<left>20</left>
 		<top>10</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
-	<component name="frmNewGameCustomUnitsMaxPerGridCellEdit">
-		<left>300</left>
-		<top>3</top>
-		<horizontalAlignment>1.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
-	<component name="frmNewGameCustomUnitsCanExceedMaximumUnitsDuringCombatCheckbox">
-		<left>20</left>
-		<top>30</top>
-		<horizontalAlignment>0.0</horizontalAlignment>
-		<verticalAlignment>0.0</verticalAlignment>
-	</component>
 	<component name="frmNewGameCustomUnitsCanExceedMaximumUnitsDuringCombat">
 		<left>40</left>
-		<top>30</top>
+		<top>10</top>
 		<width>260</width>
 		<height>50</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
@@ -30,79 +18,79 @@
 	</component>
 	<component name="frmNewGameCustomUnitsMaxHeroesLabel">
 		<left>20</left>
-		<top>80</top>
+		<top>60</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxHeroesEdit">
 		<left>300</left>
-		<top>73</top>
+		<top>53</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxHeroesUnlimited">
 		<left>300</left>
-		<top>95</top>
+		<top>75</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxItemBonusesLabel">
 		<left>20</left>
-		<top>120</top>
+		<top>100</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxItemBonusesEdit">
 		<left>300</left>
-		<top>113</top>
+		<top>93</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxItemBonusesUnlimited">
 		<left>300</left>
-		<top>135</top>
+		<top>115</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxSpellChargesLabel">
 		<left>20</left>
-		<top>160</top>
+		<top>140</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxSpellChargesEdit">
 		<left>300</left>
-		<top>153</top>
+		<top>133</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxItemBankLabel">
 		<left>20</left>
-		<top>185</top>
+		<top>165</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxItemBankEdit">
 		<left>300</left>
-		<top>178</top>
+		<top>158</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsMaxItemBankUnlimited">
 		<left>300</left>
-		<top>200</top>
+		<top>180</top>
 		<horizontalAlignment>1.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsRollHeroSkillsAtStartOfGameCheckbox">
 		<left>20</left>
-		<top>220</top>
+		<top>200</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmNewGameCustomUnitsRollHeroSkillsAtStartOfGame">
 		<left>40</left>
-		<top>220</top>
+		<top>200</top>
 		<width>260</width>
 		<height>50</height>
 		<horizontalAlignment>0.0</horizontalAlignment>

@@ -409,19 +409,19 @@ public final class TestUnitMovementImpl
 		// There's already 1 unit at 0, 0, 0 so the 2 we're moving can fit
 		ourUnitCountAtLocation [0] [0] [0] = 1;
 
-		// There's already 3 units at 0, 0, 1 so the 2 we're moving can't fit
-		// We're using max units per cell = 4 so 5 units won't fit
-		ourUnitCountAtLocation [0] [0] [1] = 3;
+		// There's already 8 units at 0, 0, 1 so the 2 we're moving can't fit
+		// We're using max units per cell = 9 so 10 units won't fit
+		ourUnitCountAtLocation [0] [0] [1] = 8;
 		
 		// 0, 0, 2 is impassable terrain
 
 		// 0, 0, 3 is impassable terrain but there's a transport there we can get in and a unit standing beside it that is not inside the transport (passable terrain to that unit)
-		// Transport can hold 2 units, there's 1 unit beside the transport already there, so adding 2 inside the transport both fits in the transport and within our 4 max units per cell
+		// Transport can hold 2 units, there's 1 unit beside the transport already there, so adding 2 inside the transport both fits in the transport and within our 9 max units per cell
 		ourUnitCountAtLocation [0] [0] [3] = 2;
 		cellTransportCapacity [0] [0] [3] = 2; 
 
 		// 0, 0, 4 is impassable terrain but there's a transport there we could get in, except its already partly full (impassable terrain to that unit)
-		// Transport can hold 2 units, but there's 1 inside it already and we need 2 spaces, so its impassable even though we're within the 4 max units per cell
+		// Transport can hold 2 units, but there's 1 inside it already and we need 2 spaces, so its impassable even though we're within the 9 max units per cell
 		ourUnitCountAtLocation [0] [0] [4] = 2;
 		cellTransportCapacity [0] [0] [4] = 1; 
 		
@@ -432,7 +432,7 @@ public final class TestUnitMovementImpl
 		
 		// Call method
 		final Integer [] [] [] result = move.calculateDoubleMovementToEnterTile (unitStack, unitStackSkills, terrain,
-			cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, 4, sys, db);
+			cellTransportCapacity, ourUnitCountAtLocation, doubleMovementRates, sys, db);
 		
 		// Check results
 		assertEquals (4, result [0] [0] [0].intValue ());

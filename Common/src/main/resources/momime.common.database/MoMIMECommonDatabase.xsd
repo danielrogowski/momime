@@ -2565,7 +2565,6 @@ Animsts' Guilds increasing farmers' ration production, production boost from Saw
 					<xsd:documentation>Basically this indicates whether this weapon grade can punch through Weapon Immunity.</xsd:documentation>
 				</xsd:annotation>
 			</xsd:element>
-			<xsd:element minOccurs="0" maxOccurs="1" name="weaponGradeMiniImageFile" type="momimecommon:imageFilename" nxe:label="Weapon grade mini image file" nxe:gridwidth="500" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="weaponGradeSkillBonus" type="momimecommon:unitSkillAndValue" nxe:singular="Skill Bonus" nxe:plural="Skill Bonuses" />
 		</xsd:sequence>
 		<xsd:attribute name="weaponGradeNumber" type="momimecommon:weaponGradeNumber" use="required" nxe:label="Weapon Grade Number" nxe:gridwidth="120" />

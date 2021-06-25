@@ -122,7 +122,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	private final static int INSET = 0;
 
 	/** Gap between unit selection buttons */
-	private final static int UNIT_BUTTONS_INSET = 1;
+	private final static Insets UNIT_BUTTONS_INSET = new Insets (0, 1, 1, 0);
 	
 	/** Text utils */
 	private TextUtils textUtils;

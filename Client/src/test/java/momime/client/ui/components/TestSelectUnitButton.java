@@ -26,6 +26,8 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.UnitEx;
+import momime.common.database.UnitSkillEx;
+import momime.common.database.UnitSkillWeaponGrade;
 import momime.common.database.WeaponGrade;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
@@ -91,8 +93,8 @@ public final class TestSelectUnitButton
 		final CommonDatabase db = mock (CommonDatabase.class);
 		
 		final UnitEx unit = new UnitEx ();
-		unit.setUnitOverlandImageFile ("/momime.client.graphics/units/UN176/overland.png");
-		when (db.findUnit ("UN176", "SelectUnitButton")).thenReturn (unit);
+		unit.setUnitOverlandImageFile ("/momime.client.graphics/units/UN197/overland.png");
+		when (db.findUnit ("UN197", "SelectUnitButton")).thenReturn (unit);
 		
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();
@@ -128,7 +130,7 @@ public final class TestSelectUnitButton
 		// Set up unit
 		final ExpandedUnitDetails xu = mock (ExpandedUnitDetails.class);
 		when (xu.getOwningPlayerID ()).thenReturn (pd1.getPlayerID ());
-		when (xu.getUnitID ()).thenReturn ("UN176");
+		when (xu.getUnitID ()).thenReturn ("UN197");
 		
 		// Coloured image generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
@@ -186,7 +188,15 @@ public final class TestSelectUnitButton
 		
 		final WeaponGrade wepGradeDef = new WeaponGrade ();
 		wepGradeDef.setWeaponGradeNumber (2);
-		wepGradeDef.setWeaponGradeMiniImageFile ("/momime.client.graphics/weaponGrades/weaponGradeMiniImageMithril.png");
+		
+		final UnitSkillEx melee = new UnitSkillEx ();
+		when (db.findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "SelectUnitButton")).thenReturn (melee);
+		
+		final UnitSkillWeaponGrade meleeWeaponGrade = new UnitSkillWeaponGrade ();
+		meleeWeaponGrade.setWeaponGradeNumber (2);
+		meleeWeaponGrade.setSkillImageFile ("/momime.client.graphics/unitSkills/meleeMithril.png");
+		melee.getUnitSkillWeaponGrade ().add (meleeWeaponGrade);
+		melee.buildMap ();
 		
 		// Set up player
 		final PlayerDescription pd1 = new PlayerDescription ();

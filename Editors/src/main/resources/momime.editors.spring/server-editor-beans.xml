@@ -380,17 +380,6 @@
 		</property>
 	</bean>
 	
-	<bean id="weaponGradeGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
-		<property name="mdiEditor" ref="mdiEditor" />
-		<property name="utils" ref="utils" />
-		<property name="rowHeight" value="25" />
-		<property name="imageColumns">
-			<list>
-				<value>weaponGradeMiniImageFile</value>
-			</list>
-		</property>
-	</bean>
-	
 	<bean id="combatAreaEffectGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
 		<property name="mdiEditor" ref="mdiEditor" />
 		<property name="utils" ref="utils" />
@@ -620,7 +609,6 @@
 				<entry key="unit" value="unitGrid" />
 				<entry key="unitCombatImage" value="unitCombatImageGrid" />
 				<entry key="heroName" value="heroNameGrid" />
-				<entry key="weaponGrade" value="weaponGradeGrid" />
 				<entry key="combatAreaEffect" value="combatAreaEffectGrid" />
 				<entry key="spellRank" value="spellRankGrid" />
 				<entry key="spellBookSection" value="spellBookSectionGrid" />

@@ -1,8 +1,11 @@
 package momime.client.ui.components;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -17,6 +20,7 @@ import momime.client.MomClient;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.UnitSkillEx;
 import momime.common.utils.ExpandedUnitDetails;
 
 /**
@@ -29,7 +33,7 @@ public final class SelectUnitButton extends JToggleButton
 	private final static Log log = LogFactory.getLog (SelectUnitButton.class);
 	
 	/** Diameter of experience rings */
-	private final static int EXPERIENCE_RING_SIZE = 4;
+	private final static int EXPERIENCE_RING_SIZE = 5;
 
 	/** Colour of health bar for units with over 50% health */
 	private final static Color HEALTH_BAR_GREEN = new Color (0x00A400);
@@ -96,33 +100,40 @@ public final class SelectUnitButton extends JToggleButton
 				if ((isSelected ()) || (!Integer.valueOf (getUnit ().getOwningPlayerID ()).equals (getClient ().getOurPlayerID ())))
 				{
 					final BufferedImage playerColour = getPlayerColourImageGenerator ().getUnitBackgroundImage (getUnit ().getOwningPlayerID ());
-					g.drawImage (playerColour, 6 + offset, 3 + offset, null);
+					if (playerColour != null)
+						g.drawImage (getUtils ().doubleSize (playerColour), 5 + offset, 5 + offset, null);
 				}
 			
 				// Draw the unit itself
 				final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton").getUnitOverlandImageFile ());
-				g.drawImage (unitImage, 6 + offset, 3 + offset, null);
+				g.drawImage (getUtils ().doubleSize (unitImage), 5 + offset, 5 + offset, null);
 
 				// Experience rings
 				final ExperienceLevel expLevel = getUnit ().getModifiedExperienceLevel ();				
 				if ((expLevel != null) && (expLevel.getRingCount () > 0))
 				{
-					g.setColor (new Color (Integer.parseInt (expLevel.getRingColour (), 16)));
+					final Graphics2D g2 = (Graphics2D) g;
+					g2.setColor (new Color (Integer.parseInt (expLevel.getRingColour (), 16)));
+					g2.setRenderingHint (RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+					g2.setStroke (new BasicStroke (2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10.0f));
 			
-					int x = 3;
+					int x = 6;
 					for (int n = 0; n < expLevel.getRingCount (); n++)
 					{
-						g.drawOval (x + offset, unitButtonNormal.getHeight () - EXPERIENCE_RING_SIZE - 3 + offset, EXPERIENCE_RING_SIZE - 1, EXPERIENCE_RING_SIZE - 1);
-						x = x + EXPERIENCE_RING_SIZE + 1;
+						g.drawOval (x + offset, unitButtonNormal.getHeight () - EXPERIENCE_RING_SIZE - 6 + offset, EXPERIENCE_RING_SIZE - 1, EXPERIENCE_RING_SIZE - 1);
+						x = x + EXPERIENCE_RING_SIZE + 2;
 					}
 				}
 				
 				// Weapon grade
-				if ((getUnit ().getWeaponGrade () != null) && (getUnit ().getWeaponGrade ().getWeaponGradeMiniImageFile () != null))
+				if ((getUnit ().getWeaponGrade () != null) && (getUnit ().getWeaponGrade ().getWeaponGradeNumber () > 0))
 				{
-					final BufferedImage wepGradeImage = getUtils ().loadImage (getUnit ().getWeaponGrade ().getWeaponGradeMiniImageFile ());
-					g.drawImage (wepGradeImage, unitButtonNormal.getWidth () - wepGradeImage.getWidth () - 3 + offset,
-						unitButtonNormal.getHeight () - wepGradeImage.getHeight () - 3 + offset, null);
+					final UnitSkillEx melee = getClient ().getClientDB ().findUnitSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, "SelectUnitButton");
+					final String imageName = melee.findWeaponGradeImageFile (getUnit ().getWeaponGrade ().getWeaponGradeNumber (), "SelectUnitButton");
+					
+					final BufferedImage wepGradeImage = getUtils ().loadImage (imageName);
+					g.drawImage (wepGradeImage, unitButtonNormal.getWidth () - wepGradeImage.getWidth () - 4 + offset,
+						unitButtonNormal.getHeight () - wepGradeImage.getHeight () - 4 + offset, null);
 				}
 				
 				// Health bar
@@ -143,7 +154,7 @@ public final class SelectUnitButton extends JToggleButton
 				else
 					g.setColor (HEALTH_BAR_GREEN);
 				
-				g.fillRect (6 + offset, 21 + offset, (int) (18 * healthProportion), 2);
+				g.fillRect (8 + offset, 42 + offset, (int) (28 * healthProportion), 6);
 			}
 			catch (final IOException e)
 			{

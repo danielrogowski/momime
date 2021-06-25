@@ -3,10 +3,10 @@
 	<formWidth>580</formWidth>
 	<formHeight>482</formHeight>
 	<component name="frmCityNotOurs">
-		<left>342</left>
-		<top>406</top>
-		<width>238</width>
-		<height>28</height>
+		<left>498</left>
+		<top>408</top>
+		<width>82</width>
+		<height>48</height>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -79,20 +79,20 @@
 		<verticalAlignment>1.0</verticalAlignment>
 	</component>
 	<component name="frmCityBuy">
-		<left>344</left>
+		<left>500</left>
 		<top>410</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCityChange">
-		<left>422</left>
-		<top>410</top>
+		<left>500</left>
+		<top>434</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCityOK">
 		<left>500</left>
-		<top>410</top>
+		<top>458</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
@@ -163,56 +163,56 @@
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.0">
-		<left>58</left>
-		<top>408</top>
+		<left>47</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.1">
-		<left>89</left>
-		<top>408</top>
+		<left>93</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.2">
-		<left>120</left>
-		<top>408</top>
+		<left>139</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.3">
-		<left>151</left>
-		<top>408</top>
+		<left>185</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.4">
-		<left>182</left>
-		<top>408</top>
+		<left>231</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.5">
-		<left>213</left>
-		<top>408</top>
+		<left>277</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.6">
-		<left>244</left>
-		<top>408</top>
+		<left>323</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.7">
-		<left>275</left>
-		<top>408</top>
+		<left>369</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCitySelectUnitButton.8">
-		<left>306</left>
-		<top>408</top>
+		<left>415</left>
+		<top>411</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

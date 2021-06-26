@@ -654,7 +654,7 @@ public final class HelpUI extends MomClientFrameUI
 				// e.g. Dark Rituals, Altar of Battle
 				final AnimationEx anim = getClient ().getClientDB ().findAnimation (cityViewElement.getCityViewAnimation (), "showCitySpellEffectID");
 				if (anim.getFrame ().size () > 0)
-					imageFilename = anim.getFrame ().get (0);
+					imageFilename = anim.getFrame ().get (0).getImageFile ();
 			}
 		
 			if (imageFilename != null)

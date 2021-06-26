@@ -21,6 +21,7 @@ import momime.client.languages.database.SpellOfMasteryStartScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.Language;
 
 /**
@@ -48,7 +49,9 @@ public final class TestSpellOfMasteryStartUI extends ClientTestData
 			while (s.length () < 2)
 				s = "0" + s;
 			
-			masteryAnim.getFrame ().add ("/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-" + s + ".png");
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/animations/spellOfMasteryStart/spellOfMastery-frame-" + s + ".png");
+			masteryAnim.getFrame ().add (frame);
 		}
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_SPELL_OF_MASTERY_START, "SpellOfMasteryStartUI")).thenReturn (masteryAnim);

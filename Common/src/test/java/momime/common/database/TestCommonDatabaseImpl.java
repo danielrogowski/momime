@@ -1418,8 +1418,14 @@ public final class TestCommonDatabaseImpl
 		
 		final AnimationEx anim = new AnimationEx ();
 		anim.setAnimationID ("building3");
-		anim.getFrame ().add ("frame1.png");
-		anim.getFrame ().add ("frame2.png");
+		
+		for (int n = 1; n <= 2; n++)
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("frame" + n + ".png");
+			anim.getFrame ().add (frame);
+		}
+		
 		anim.setUtils (utils);
 		db.getAnimation ().add (anim);
 

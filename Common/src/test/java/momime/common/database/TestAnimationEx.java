@@ -41,7 +41,10 @@ public final class TestAnimationEx
 	{
 		// Set up animation and some test frames
 		final AnimationEx anim = new AnimationEx ();
-		anim.getFrame ().add ("ImageFile1");
+		
+		final AnimationFrame frame = new AnimationFrame ();
+		frame.setImageFile ("ImageFile1");
+		anim.getFrame ().add (frame);
 		
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
@@ -68,7 +71,11 @@ public final class TestAnimationEx
 		// Set up animation and some test frames
 		final AnimationEx anim = new AnimationEx ();
 		for (int n = 1; n <= 3; n++)
-			anim.getFrame ().add ("ImageFile" + n);
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("ImageFile" + n);
+			anim.getFrame ().add (frame);
+		}
 		
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);
@@ -101,7 +108,11 @@ public final class TestAnimationEx
 		// Set up animation and some test frames
 		final AnimationEx anim = new AnimationEx ();
 		for (int n = 1; n <= 3; n++)
-			anim.getFrame ().add ("ImageFile" + n);
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("ImageFile" + n);
+			anim.getFrame ().add (frame);
+		}
 		
 		// Mock some images
 		final NdgUIUtils utils = mock (NdgUIUtils.class);

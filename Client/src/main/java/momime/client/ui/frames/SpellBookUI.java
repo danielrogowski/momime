@@ -394,7 +394,7 @@ public final class SpellBookUI extends MomClientFrameUI
 				if (pageTurnFrame != null)
 					try
 					{
-						final BufferedImage page = getUtils ().loadImage (pageTurnAnim.getFrame ().get (pageTurnFrame));
+						final BufferedImage page = getUtils ().loadImage (pageTurnAnim.getFrame ().get (pageTurnFrame).getImageFile ());
 						g.drawImage (page, -17 * 2, 0, page.getWidth () * 2, page.getHeight () * 2, null);
 					}
 					catch (final Exception e)
@@ -454,7 +454,7 @@ public final class SpellBookUI extends MomClientFrameUI
 						if ((castingAnimFrame != null) && (castingAnimSpellX == spellX) && (castingAnimSpellY == spellY))
 							try
 							{
-								final BufferedImage swirl = getUtils ().loadImage (castingAnim.getFrame ().get (castingAnimFrame));
+								final BufferedImage swirl = getUtils ().loadImage (castingAnim.getFrame ().get (castingAnimFrame).getImageFile ());
 								g.drawImage (swirl, 0, 0, getWidth (), getHeight (), null);
 							}
 							catch (final Exception e)

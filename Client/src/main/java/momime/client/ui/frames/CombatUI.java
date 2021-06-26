@@ -605,7 +605,7 @@ public final class CombatUI extends MomClientFrameUI
 				if ((getCombatCastAnimation () != null) && (!isCombatCastAnimationInFront ()))
 					try
 					{
-						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()));
+						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()).getImageFile ());
 						for (final Point p : getCombatCastAnimationPositions ())
 							g.drawImage (image, p.x, p.y, image.getWidth () * 2, image.getHeight () * 2, null);
 					}
@@ -830,7 +830,7 @@ public final class CombatUI extends MomClientFrameUI
 				if ((getCombatCastAnimation () != null) && (isCombatCastAnimationInFront ()))
 					try
 					{
-						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()));
+						final BufferedImage image = getUtils ().loadImage (getCombatCastAnimation ().getFrame ().get (getCombatCastAnimationFrame ()).getImageFile ());
 						for (final Point p : getCombatCastAnimationPositions ())
 							g.drawImage (image, p.x, p.y, image.getWidth () * 2, image.getHeight () * 2, null);
 					}

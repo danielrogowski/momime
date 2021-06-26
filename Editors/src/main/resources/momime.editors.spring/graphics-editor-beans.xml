@@ -50,7 +50,8 @@
 		<property name="rowHeight" value="100" />
 		<property name="imageColumns">
 			<list>
-				<value>frame</value>
+				<value>imageFile</value>
+				<value>imageFlag</value>
 			</list>
 		</property>
 	</bean>

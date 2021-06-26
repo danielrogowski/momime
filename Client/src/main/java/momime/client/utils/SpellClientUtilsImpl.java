@@ -288,7 +288,7 @@ public final class SpellClientUtilsImpl implements SpellClientUtils
 							// e.g. Dark Rituals, Altar of Battle, Move Fortress
 							final AnimationEx anim = getClient ().getClientDB ().findAnimation (cityViewElement.getCityViewAnimation (), "findImageForSpell");
 							if (anim.getFrame ().size () > 0)
-								imageFilenames.add (anim.getFrame ().get (0));
+								imageFilenames.add (anim.getFrame ().get (0).getImageFile ());
 						}
 					
 					break;

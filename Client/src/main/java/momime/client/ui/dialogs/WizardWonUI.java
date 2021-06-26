@@ -154,7 +154,7 @@ public final class WizardWonUI extends MomClientDialogUI
 					(((tickNumber - 47) % 20) + 47);
 				try
 				{
-					final Image worldsImage = getUtils ().loadImage (worldsAnim.getFrame ().get (worldsAnimFrameNumber)).getScaledInstance
+					final Image worldsImage = getUtils ().loadImage (worldsAnim.getFrame ().get (worldsAnimFrameNumber).getImageFile ()).getScaledInstance
 						(worldsLayout.getWidth (), worldsLayout.getHeight (), Image.SCALE_SMOOTH);
 					g.drawImage (worldsImage, worldsLayout.getLeft (), worldsLayout.getTop (), null);
 				}
@@ -168,7 +168,7 @@ public final class WizardWonUI extends MomClientDialogUI
 				if ((sparklesAnimFrameNumber >= 0) && (sparklesAnimFrameNumber < sparklesAnim.getFrame ().size ()))
 					try
 					{
-						final Image sparklesImage = getUtils ().loadImage (sparklesAnim.getFrame ().get (sparklesAnimFrameNumber)).getScaledInstance
+						final Image sparklesImage = getUtils ().loadImage (sparklesAnim.getFrame ().get (sparklesAnimFrameNumber).getImageFile ()).getScaledInstance
 							(sparklesLayout.getWidth (), sparklesLayout.getHeight (), Image.SCALE_SMOOTH);
 						g.drawImage (sparklesImage, sparklesLayout.getLeft (), sparklesLayout.getTop (), null);
 					}
@@ -187,7 +187,7 @@ public final class WizardWonUI extends MomClientDialogUI
 					final int talkingAnimFrameNumber = tickNumber % talkingAnim.getFrame ().size ();
 					try
 					{
-						final Image talkingImage = getUtils ().loadImage (talkingAnim.getFrame ().get (talkingAnimFrameNumber)).getScaledInstance
+						final Image talkingImage = getUtils ().loadImage (talkingAnim.getFrame ().get (talkingAnimFrameNumber).getImageFile ()).getScaledInstance
 							(talkingLayout.getWidth (), talkingLayout.getHeight (), Image.SCALE_SMOOTH);
 						g.drawImage (talkingImage, talkingLayout.getLeft (), talkingLayout.getTop (), null);
 					}

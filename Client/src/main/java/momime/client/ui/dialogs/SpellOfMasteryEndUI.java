@@ -171,7 +171,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 				if (chantingAnim != null)
 					try
 					{
-						final Image image = getUtils ().loadImage (chantingAnim.getFrame ().get ((tickNumber/2) % chantingAnim.getFrame ().size ())).getScaledInstance
+						final Image image = getUtils ().loadImage (chantingAnim.getFrame ().get ((tickNumber/2) % chantingAnim.getFrame ().size ()).getImageFile ()).getScaledInstance
 							(chantingWizardLayout.getWidth (), chantingWizardLayout.getHeight (), Image.SCALE_SMOOTH);
 						g.drawImage (image, chantingWizardLayout.getLeft (), chantingWizardLayout.getTop (), null);
 					}
@@ -191,7 +191,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 					else
 						portalFrameNumber = 6 + ((tickNumber - 6) % 10);
 					
-					final Image image = getUtils ().loadImage (portalAnim.getFrame ().get (portalFrameNumber)).getScaledInstance
+					final Image image = getUtils ().loadImage (portalAnim.getFrame ().get (portalFrameNumber).getImageFile ()).getScaledInstance
 						(portalLayout.getWidth (), portalLayout.getHeight (), Image.SCALE_SMOOTH);
 					g.drawImage (image, portalLayout.getLeft (), portalLayout.getTop (), null);
 				}
@@ -214,7 +214,7 @@ public final class SpellOfMasteryEndUI extends MomClientDialogUI
 							ballAnim = banishedWizardAnims.get (ballNo);
 						}
 						
-						final Image image = getUtils ().loadImage (ballAnim.getFrame ().get (ballTickNumber)).getScaledInstance
+						final Image image = getUtils ().loadImage (ballAnim.getFrame ().get (ballTickNumber).getImageFile ()).getScaledInstance
 							(getSpellOfMasteryEndLayout ().getFormWidth (), getSpellOfMasteryEndLayout ().getFormHeight (), Image.SCALE_SMOOTH);
 						g.drawImage (image, 0, 0, null);
 					}

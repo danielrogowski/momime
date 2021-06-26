@@ -33,9 +33,9 @@ public final class AnimationEx extends Animation
 		
 		// Check all the images
 		boolean first = true;
-		for (final String thisFrame : getFrame ())
+		for (final AnimationFrame thisFrame : getFrame ())
 		{
-			final BufferedImage image = getUtils ().loadImage (thisFrame);
+			final BufferedImage image = getUtils ().loadImage (thisFrame.getImageFile ());
 			if (first)
 			{
 				setAnimationWidth (image.getWidth ());

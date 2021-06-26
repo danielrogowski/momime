@@ -128,7 +128,7 @@ public final class SpellOfMasteryStartUI extends MomClientDialogUI
 					
 				try
 				{
-					final Image image = getUtils ().loadImage (anim.getFrame ().get (frameNumber)).getScaledInstance
+					final Image image = getUtils ().loadImage (anim.getFrame ().get (frameNumber).getImageFile ()).getScaledInstance
 						(spellOfMasteryStartLayout.getFormWidth (), spellOfMasteryStartLayout.getFormHeight (), Image.SCALE_SMOOTH);
 					g.drawImage (image, 0, 0, null);
 				}

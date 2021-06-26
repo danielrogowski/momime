@@ -19,6 +19,7 @@ import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 
 /**
  * Tests the AnimationControllerImpl class
@@ -112,7 +113,11 @@ public final class TestAnimationControllerImpl
 		final AnimationEx anim = new AnimationEx ();
 		anim.setAnimationSpeed (2);
 		for (int n = 0; n < 4; n++)
-			anim.getFrame ().add (n + ".png");
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile (n + ".png");
+			anim.getFrame ().add (frame);
+		}
 
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation ("ANIM", "registerRepaintTrigger")).thenReturn (anim);

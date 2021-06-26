@@ -3094,6 +3094,9 @@ but kept these separate to make it totally clear when production values are reco
 				</xsd:annotation>
 			</xsd:element>
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitCombatImageFile" type="momimecommon:imageFilename" nxe:label="Unit combat image file" nxe:gridwidth="400" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitCombatImageFlag" type="momimecommon:imageFilename" nxe:label="Combat image flag" nxe:gridwidth="320" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="flagOffsetX" type="momimecommon:pixelCoordinate" nxe:label="Flag offset X" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="flagOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Flag offset Y" nxe:gridwidth="150" />
 		</xsd:sequence>
 		<xsd:attribute name="direction" type="map:mapDirection" use="required" nxe:label="Direction" nxe:gridwidth="50" />
 	</xsd:complexType>
@@ -4111,10 +4114,19 @@ Ordering of this list is very significant.
 			<xsd:element minOccurs="0" maxOccurs="1" name="overlandCastOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Overland cast offset Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetX" type="momimecommon:pixelCoordinate" nxe:label="Combat cast offset X" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="combatCastOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Combat cast offset Y" nxe:gridwidth="150" />
-			<xsd:element minOccurs="0" maxOccurs="unbounded" name="frame" type="momimecommon:imageFilename" nxe:label="Frame image file" nxe:gridwidth="500" />
+			<xsd:element minOccurs="0" maxOccurs="unbounded" name="frame" type="momimecommon:animationFrame" />
 		</xsd:sequence>
 		<xsd:attribute name="animationID" type="momimecommon:animationID" use="required" nxe:label="Animation ID" nxe:gridwidth="300" />
 	</xsd:complexType>	
+
+	<xsd:complexType name="animationFrame" nxe:singular="Animation frame" nxe:plural="Animation frames">
+		<xsd:sequence>
+			<xsd:element minOccurs="1" maxOccurs="1" name="imageFile" type="momimecommon:imageFilename" nxe:label="Frame image file" nxe:gridwidth="500" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="imageFlag" type="momimecommon:imageFilename" nxe:label="Image flag" nxe:gridwidth="320" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="flagOffsetX" type="momimecommon:pixelCoordinate" nxe:label="Flag offset X" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="flagOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Flag offset Y" nxe:gridwidth="150" />
+		</xsd:sequence>
+	</xsd:complexType>
 	
 	<xsd:complexType name="playList" nxe:singular="Play list" nxe:plural="Play lists">
 		<xsd:sequence>

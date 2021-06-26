@@ -32,6 +32,7 @@ import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.frames.MagicSlidersUI;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.Spell;
@@ -75,7 +76,11 @@ public final class TestOverlandEnchantmentsUI extends ClientTestData
 		final AnimationEx fade = new AnimationEx ();
 		fade.setAnimationSpeed (8);
 		for (int n = 1; n <= 15; n++)
-			fade.getFrame ().add ("/momime.client.graphics/ui/mirror/mirror-fade-frame" + ((n < 10) ? "0" : "") + n + ".png");
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/ui/mirror/mirror-fade-frame" + ((n < 10) ? "0" : "") + n + ".png");
+			fade.getFrame ().add (frame);
+		}
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation (OverlandEnchantmentsUI.MIRROR_ANIM, "OverlandEnchantmentsUI")).thenReturn (fade);

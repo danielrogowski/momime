@@ -19,6 +19,7 @@ import momime.client.languages.database.MainMenuScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.AnimationControllerImpl;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.Language;
 
 /**
@@ -65,7 +66,11 @@ public final class TestMainMenuUI extends ClientTestData
 		final AnimationEx title = new AnimationEx ();
 		title.setAnimationSpeed (8);
 		for (int n = 1; n <= 20; n++)
-			title.getFrame ().add ("/momime.client.graphics/ui/mainMenu/title-frame" + ((n < 10) ? "0" : "") + n + ".png");
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/ui/mainMenu/title-frame" + ((n < 10) ? "0" : "") + n + ".png");
+			title.getFrame ().add (frame);
+		}
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation (MainMenuUI.ANIM_MAIN_MENU_TITLE, "registerRepaintTrigger")).thenReturn (title);

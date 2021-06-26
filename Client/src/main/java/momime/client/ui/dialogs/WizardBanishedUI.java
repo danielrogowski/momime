@@ -221,7 +221,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 						if ((tickNumber >= 11) && (tickNumber <= 14))
 							try
 							{
-								final Image singleBlastImage = getUtils ().loadImage (singleBlastAnim.getFrame ().get (tickNumber - 11)).getScaledInstance
+								final Image singleBlastImage = getUtils ().loadImage (singleBlastAnim.getFrame ().get (tickNumber - 11).getImageFile ()).getScaledInstance
 									(singleBlastLayout.getWidth (), singleBlastLayout.getHeight (), Image.SCALE_SMOOTH);
 								g.drawImage (singleBlastImage, singleBlastLayout.getLeft (), singleBlastLayout.getTop (), null);
 							}
@@ -233,7 +233,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 						if ((tickNumber >= 15) && (tickNumber <= 22))
 							try
 							{
-								final Image doubleBlastImage = getUtils ().loadImage (doubleBlastAnim.getFrame ().get (tickNumber - 15)).getScaledInstance
+								final Image doubleBlastImage = getUtils ().loadImage (doubleBlastAnim.getFrame ().get (tickNumber - 15).getImageFile ()).getScaledInstance
 									(doubleBlastLayout.getWidth (), doubleBlastLayout.getHeight (), Image.SCALE_SMOOTH);
 								g.drawImage (doubleBlastImage, doubleBlastLayout.getLeft (), doubleBlastLayout.getTop (), null);
 							}
@@ -248,7 +248,7 @@ public final class WizardBanishedUI extends MomClientDialogUI
 						if ((tickNumber >= 23) && (tickNumber <= 26))
 							try
 							{
-								final Image evaporatingImage = getUtils ().loadImage (evaporatingAnim.getFrame ().get (tickNumber - 23)).getScaledInstance
+								final Image evaporatingImage = getUtils ().loadImage (evaporatingAnim.getFrame ().get (tickNumber - 23).getImageFile ()).getScaledInstance
 									(evaporatingLayout.getWidth (), evaporatingLayout.getHeight (), Image.SCALE_SMOOTH);
 								g.drawImage (evaporatingImage, evaporatingLayout.getLeft (), evaporatingLayout.getTop (), null);
 							}

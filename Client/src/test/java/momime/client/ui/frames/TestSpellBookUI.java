@@ -24,6 +24,7 @@ import momime.client.languages.database.SpellBookScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.Language;
@@ -108,7 +109,11 @@ public final class TestSpellBookUI extends ClientTestData
 		final AnimationEx pageTurn = new AnimationEx ();
 		pageTurn.setAnimationSpeed (5);
 		for (int n = 1; n <= 4; n++)
-			pageTurn.getFrame ().add ("/momime.client.graphics/ui/spellBook/spellBookAnim-frame" + n + ".png");
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/ui/spellBook/spellBookAnim-frame" + n + ".png");
+			pageTurn.getFrame ().add (frame);
+		}
 		
 		final GraphicsDatabaseEx gfx = mock (GraphicsDatabaseEx.class);
 		when (gfx.findAnimation (SpellBookUI.ANIM_PAGE_TURN, "SpellBookUI")).thenReturn (pageTurn);

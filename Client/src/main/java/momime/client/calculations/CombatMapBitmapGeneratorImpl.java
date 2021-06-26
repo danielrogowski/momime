@@ -191,7 +191,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 							final AnimationEx anim = getClient ().getClientDB ().findAnimation (tile.getTileAnimation (), "generateCombatMapBitmaps");
 							for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
-								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
+								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getImageFile ());
 								g [frameNo].drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, null);
 							}
 						}
@@ -206,7 +206,7 @@ public final class CombatMapBitmapGeneratorImpl implements CombatMapBitmapGenera
 						final AnimationEx anim = getGraphicsDB ().findAnimation ("MUDDY_TILE", "generateCombatMapBitmaps");
 						for (int frameNo = 0; frameNo < combatMapTileSet.getAnimationFrameCount (); frameNo++)
 						{
-							final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
+							final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getImageFile ());
 							g [frameNo].drawImage (image, xpos, ypos, image.getWidth () * 2, image.getHeight () * 2, null);
 						}
 					}

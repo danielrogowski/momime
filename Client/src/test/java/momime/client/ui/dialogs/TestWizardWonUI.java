@@ -21,6 +21,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.WizardWonScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
@@ -66,7 +67,9 @@ public final class TestWizardWonUI extends ClientTestData
 			while (s.length () < 2)
 				s = "0" + s;
 			
-			worldsAnim.getFrame ().add ("/momime.client.graphics/animations/worlds/worlds-frame-" + s + ".png");
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/animations/worlds/worlds-frame-" + s + ".png");
+			worldsAnim.getFrame ().add (frame);
 		}
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_WORLDS, "WizardWonUI (W)")).thenReturn (worldsAnim);
@@ -78,7 +81,9 @@ public final class TestWizardWonUI extends ClientTestData
 			while (s.length () < 2)
 				s = "0" + s;
 			
-			sparklesAnim.getFrame ().add ("/momime.client.graphics/animations/worlds/sparkles-frame-" + s + ".png");
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/animations/worlds/sparkles-frame-" + s + ".png");
+			sparklesAnim.getFrame ().add (frame);
 		}
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_WON_SPARKLES, "WizardWonUI (S)")).thenReturn (sparklesAnim);
@@ -90,7 +95,9 @@ public final class TestWizardWonUI extends ClientTestData
 			while (s.length () < 2)
 				s = "0" + s;
 			
-			talkingAnim.getFrame ().add ("/momime.client.graphics/wizards/WZ01-talk-frame-" + s + ".png");
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/wizards/WZ01-talk-frame-" + s + ".png");
+			talkingAnim.getFrame ().add (frame);
 		}
 		
 		when (db.findAnimation ("WIZARD_TALKING_01", "WizardWonUI (T)")).thenReturn (talkingAnim);

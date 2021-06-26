@@ -28,7 +28,8 @@
 		<property name="rowHeight" value="100" />
 		<property name="imageColumns">
 			<list>
-				<value>frame</value>
+				<value>imageFile</value>
+				<value>imageFlag</value>
 			</list>
 		</property>
 	</bean>
@@ -566,6 +567,18 @@
 		<property name="imageColumns">
 			<list>
 				<value>tileFile</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="animationGrid" class="momime.editors.grid.XmlEditorGridWithDescriptionsAndImages" scope="prototype">
+		<property name="mdiEditor" ref="mdiEditor" />
+		<property name="utils" ref="utils" />
+		<property name="rowHeight" value="30" />
+		<property name="imageColumns">
+			<list>
+				<value>imageFile</value>
+				<value>imageFlag</value>
 			</list>
 		</property>
 	</bean>

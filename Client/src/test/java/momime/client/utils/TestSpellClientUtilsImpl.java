@@ -28,6 +28,7 @@ import momime.client.languages.database.HelpScreen;
 import momime.client.ui.MomUIConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CityViewElement;
 import momime.common.database.CombatAreaEffect;
 import momime.common.database.CommonDatabase;
@@ -1048,7 +1049,11 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 
 		final AnimationEx anim = new AnimationEx ();
 		for (int n = 1; n <= 3; n++)
-			anim.getFrame ().add ("BL15-frame" + n + ".png");
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("BL15-frame" + n + ".png");
+			anim.getFrame ().add (frame);
+		}
 		
 		when (db.findAnimation ("BL15-anim", "findImageForSpell")).thenReturn (anim);
 

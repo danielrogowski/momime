@@ -32,6 +32,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.CombatScreen;
 import momime.client.process.CombatMapProcessing;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.TextUtilsImpl;
 import momime.client.utils.UnitClientUtils;
@@ -290,6 +291,7 @@ public final class TestCombatUI extends ClientTestData
 		final UnitUtils unitUtils = mock (UnitUtils.class);
 		final ExpandedUnitDetails xuSelectedUnit = mock (ExpandedUnitDetails.class);
 		when (xuSelectedUnit.getUnitDefinition ()).thenReturn (unitDef);
+		when (xuSelectedUnit.getOwningPlayerID ()).thenReturn (atkPd.getPlayerID ());
 		when (unitUtils.expandUnitDetails (selectedUnit, null, null, null, players, fow, db)).thenReturn (xuSelectedUnit);
 		
 		when (xuSelectedUnit.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT)).thenReturn (1);
@@ -310,6 +312,10 @@ public final class TestCombatUI extends ClientTestData
 		movementSkill.setMovementIconImageFile ("/momime.client.graphics/unitSkills/USX01-move.png");
 		
 		when (unitCalc.findPreferredMovementSkillGraphics (xuSelectedUnit, db)).thenReturn (movementSkill);
+		
+		// Image generator
+		final PlayerColourImageGenerator generator = mock (PlayerColourImageGenerator.class);
+		when (generator.getOverlandUnitImage (unitDef, atkPd.getPlayerID ())).thenReturn (utils.loadImage (unitDef.getUnitOverlandImageFile ()));
 		
 		// Layouts
 		final Unmarshaller unmarshaller = createXmlLayoutUnmarshaller ();
@@ -345,6 +351,7 @@ public final class TestCombatUI extends ClientTestData
 		combat.setCombatLayoutMain (mainLayout);
 		combat.setCombatLayoutBottom (bottomLayout);
 		combat.setCombatTerrain (combatMap);
+		combat.setPlayerColourImageGenerator (generator);
 
 		// Display form
 		combat.initNewCombat ();

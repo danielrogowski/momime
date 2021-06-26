@@ -27,6 +27,7 @@ import momime.client.languages.database.SpellOfMasteryEndScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
@@ -64,7 +65,10 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 			for (int f = 1; f <= 8; f++)
 			{
 				final int frameNumber = (f <= 5) ? f : (10 - f);
-				chantingAnim.getFrame ().add ("/momime.client.graphics/wizards/WZ0" + n + "-chanting-frame-" + frameNumber + ".png");
+				
+				final AnimationFrame frame = new AnimationFrame ();
+				frame.setImageFile ("/momime.client.graphics/wizards/WZ0" + n + "-chanting-frame-" + frameNumber + ".png");
+				chantingAnim.getFrame ().add (frame);
 			}
 			
 			when (db.findAnimation (eq ("WIZARD_CHANTING_0" + n), anyString ())).thenReturn (chantingAnim);
@@ -77,7 +81,9 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 				while (s.length () < 2)
 					s = "0" + s;
 				
-				ballAnim.getFrame ().add ("/momime.client.graphics/wizards/WZ0" + n + "-ball-frame-" + s + ".png");
+				final AnimationFrame frame = new AnimationFrame ();
+				frame.setImageFile ("/momime.client.graphics/wizards/WZ0" + n + "-ball-frame-" + s + ".png");
+				ballAnim.getFrame ().add (frame);
 			}
 			
 			when (db.findAnimation (eq ("WIZARD_BALL_0" + n), anyString ())).thenReturn (ballAnim);
@@ -96,7 +102,9 @@ public final class TestSpellOfMasteryEndUI extends ClientTestData
 			while (s.length () < 2)
 				s = "0" + s;
 			
-			portalAnim.getFrame ().add ("/momime.client.graphics/animations/wizardsLab/portal-frame-" + s + ".png");
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/animations/wizardsLab/portal-frame-" + s + ".png");
+			portalAnim.getFrame ().add (frame);
 		}
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_SPELL_OF_MASTERY_PORTAL, "SpellOfMasteryEndUI")).thenReturn (portalAnim);

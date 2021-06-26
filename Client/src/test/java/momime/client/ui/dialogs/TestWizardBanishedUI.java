@@ -22,6 +22,7 @@ import momime.client.languages.database.WizardBanishedScreen;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.utils.WizardClientUtils;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabase;
 import momime.common.database.Language;
 import momime.common.database.WizardEx;
@@ -67,19 +68,31 @@ public final class TestWizardBanishedUI extends ClientTestData
 		// Animations
 		final AnimationEx singleBlastAnim = new AnimationEx ();
 		for (int n = 1; n <= 4; n++)
-			singleBlastAnim.getFrame ().add ("/momime.client.graphics/animations/wizardsLab/singleBlast-frame" + n + ".png");
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/animations/wizardsLab/singleBlast-frame" + n + ".png");
+			singleBlastAnim.getFrame ().add (frame);
+		}
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_BANISHED_SINGLE_BLAST, "WizardBanishedUI (C)")).thenReturn (singleBlastAnim);
 
 		final AnimationEx doubleBlastAnim = new AnimationEx ();
 		for (int n = 1; n <= 8; n++)
-			doubleBlastAnim.getFrame ().add ("/momime.client.graphics/animations/wizardsLab/doubleBlast-frame" + n + ".png");
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/animations/wizardsLab/doubleBlast-frame" + n + ".png");
+			doubleBlastAnim.getFrame ().add (frame);
+		}
 		
 		when (gfx.findAnimation (GraphicsDatabaseConstants.ANIM_WIZARD_BANISHED_DOUBLE_BLAST, "WizardBanishedUI (D)")).thenReturn (doubleBlastAnim);
 
 		final AnimationEx evaporatingAnim = new AnimationEx ();
 		for (int n = 1; n <= 4; n++)
-			evaporatingAnim.getFrame ().add ("/momime.client.graphics/wizards/WZ01-evaporating-frame" + n + ".png");
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/wizards/WZ01-evaporating-frame" + n + ".png");
+			evaporatingAnim.getFrame ().add (frame);
+		}
 		
 		when (db.findAnimation ("WIZARD_EVAPORATING_01", "WizardBanishedUI (E)")).thenReturn (evaporatingAnim);
 		

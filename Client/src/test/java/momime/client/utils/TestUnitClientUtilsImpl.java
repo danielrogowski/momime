@@ -40,6 +40,7 @@ import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.UnitName;
 import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CombatAction;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
@@ -433,10 +434,13 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 	{
 		final AnimationEx anim = new AnimationEx ();
 		anim.setAnimationSpeed (6);
-		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-move-frame1.png");
-		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-stand.png");
-		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-move-frame3.png");
-		anim.getFrame ().add ("/momime.client.graphics/units/" + unitID + "/d4-stand.png");
+		
+		for (String action : new String [] {"move-frame1", "stand", "move-frame3", "stand"})
+		{
+			final AnimationFrame frame = new AnimationFrame ();
+			frame.setImageFile ("/momime.client.graphics/units/" + unitID + "/d4-" + action + ".png");
+			anim.getFrame ().add (frame);
+		}
 		
 		return anim;
 	}

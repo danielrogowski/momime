@@ -26,6 +26,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.ArmyListScreen;
 import momime.client.languages.database.Simple;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.fonts.CreateFontsForTests;
 import momime.client.ui.renderer.ArmyListCellRenderer;
 import momime.client.utils.WizardClientUtils;
@@ -135,10 +136,15 @@ public final class TestArmyListUI extends ClientTestData
 		when (client.getSessionDescription ()).thenReturn (sd);
 		when (client.getClientDB ()).thenReturn (db);
 
+		// Image generator
+		final PlayerColourImageGenerator generator = mock (PlayerColourImageGenerator.class);
+		when (generator.getOverlandUnitImage (unitDef, 1)).thenReturn (utils.loadImage (unitDef.getUnitOverlandImageFile ()));
+		
 		// Renderer
 		final ArmyListCellRenderer renderer = new ArmyListCellRenderer ();
 		renderer.setUtils (utils);
 		renderer.setClient (client);
+		renderer.setPlayerColourImageGenerator (generator);
 		
 		// Mock the minimap bitmaps provided by the RHP
 		final MiniMapBitmapGenerator gen = mock (MiniMapBitmapGenerator.class);

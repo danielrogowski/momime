@@ -16,6 +16,7 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.UnitEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
@@ -186,8 +187,8 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 		if (nodeAuraImages == null)
 		{
 			nodeAuraImages = new ArrayList<BufferedImage> ();
-			for (final String frame : getGraphicsDB ().findAnimation ("NODE_AURA", "getNodeAuraImage").getFrame ())
-				nodeAuraImages.add (getUtils ().loadImage (frame));
+			for (final AnimationFrame frame : getGraphicsDB ().findAnimation ("NODE_AURA", "getNodeAuraImage").getFrame ())
+				nodeAuraImages.add (getUtils ().loadImage (frame.getImageFile ()));
 		}
 		
 		// This is copied from getImage and adapted to work with a list

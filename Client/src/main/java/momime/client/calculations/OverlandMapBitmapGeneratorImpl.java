@@ -173,7 +173,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 							final AnimationEx anim = getClient ().getClientDB ().findAnimation (tile.getTileAnimation (), "generateOverlandMapBitmaps");
 							for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 							{
-								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
+								final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getImageFile ());
 								g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 							}
 						}
@@ -226,7 +226,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 										final AnimationEx anim = getClient ().getClientDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
 										for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 										{
-											final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
+											final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getImageFile ());
 											g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 										}
 									}
@@ -251,7 +251,7 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 								final AnimationEx anim = getClient ().getClientDB ().findAnimation (road.getRoadAnimation (), "generateOverlandMapBitmaps");
 								for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 								{
-									final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo));
+									final BufferedImage image = getUtils ().loadImage (anim.getFrame ().get (frameNo).getImageFile ());
 									g [frameNo].drawImage (image, x * overlandMapTileSet.getTileWidth (), y * overlandMapTileSet.getTileHeight (), null);
 								}
 							}

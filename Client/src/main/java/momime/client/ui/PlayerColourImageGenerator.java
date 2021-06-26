@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
+import momime.common.database.UnitEx;
+
 /**
  * Various items like unit backgrounds and city flags are displayed in the player's colour.
  * This caches the coloured images so that we don't have to recreate a multiplied colour image every time.
@@ -18,12 +20,21 @@ public interface PlayerColourImageGenerator
 	public BufferedImage getUnitBackgroundImage (final int playerID) throws IOException;
 
 	/**
-	 * @param playerID City owner player ID
-	 * @return City flag image in their correct colour
+	 * @param flagImageName Filename of flag image to load
+	 * @param playerID Player ID
+	 * @return Flag image in their correct colour
 	 * @throws IOException If there is a problem loading the flag image
 	 */
-	public BufferedImage getCityFlagImage (final int playerID) throws IOException;
+	public BufferedImage getFlagImage (final String flagImageName, final int playerID) throws IOException;
 
+	/**
+	 * @param unitDef Unit to get the image for
+	 * @param playerID Player ID
+	 * @return Overland image for this unit, with the correct flag colour already drawn on; background square is not included
+	 * @throws IOException If there is a problem loading the images
+	 */
+	public BufferedImage getOverlandUnitImage (final UnitEx unitDef, final int playerID) throws IOException;
+	
 	/**
 	 * @param frameNumber Frame number of the node aura animation
 	 * @param playerID Node owner player ID

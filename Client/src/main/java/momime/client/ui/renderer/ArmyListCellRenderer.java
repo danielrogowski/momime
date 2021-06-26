@@ -20,6 +20,7 @@ import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.UnitEx;
 import momime.common.messages.MemoryUnit;
 
@@ -42,6 +43,9 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 	
 	/** Multiplayer client */
 	private MomClient client;
+	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** Background image */
 	private BufferedImage background;
@@ -73,8 +77,8 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 		{		
 			for (final MemoryUnit unit : value.getValue ())
 			{
-				final UnitEx UnitEx = getClient ().getClientDB ().findUnit (unit.getUnitID (), "ArmyListCellRenderer");
-				unitImages.add (getUtils ().loadImage (UnitEx.getUnitOverlandImageFile ()));
+				final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "ArmyListCellRenderer");
+				unitImages.add (getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID ()));
 			}
 		}
 		catch (final IOException e)
@@ -139,5 +143,21 @@ public final class ArmyListCellRenderer implements ListCellRenderer<Entry<MapCoo
 	public final void setClient (final MomClient obj)
 	{
 		client = obj;
+	}
+
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param g Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator g)
+	{
+		playerColourImageGenerator= g;
 	}
 }

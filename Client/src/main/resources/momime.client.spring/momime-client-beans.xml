@@ -604,6 +604,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="utils" ref="uiUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="newTurnMessageConstructUnit" class="momime.client.newturnmessages.NewTurnMessageConstructUnitEx" scope="prototype">
@@ -613,6 +614,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="client" ref="client" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
 		<property name="utils" ref="uiUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="newTurnMessageSpell" class="momime.client.newturnmessages.NewTurnMessageSpellEx" scope="prototype">
@@ -699,6 +701,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitStatsReplacer" ref="unitStatsReplacer" />
 		<property name="textUtils" ref="textUtils" />
 		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="newTurnMessageOfferItem" class="momime.client.newturnmessages.NewTurnMessageOfferItemEx" scope="prototype">
@@ -1349,6 +1352,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="client" ref="client" />
 		<property name="combatMapBitmapGenerator" ref="combatMapBitmapGenerator" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 		<property name="smallFont" ref="smallFont" />
 		<property name="mediumFont" ref="mediumFont" />
 		<property name="largeFont" ref="largeFont" />
@@ -1668,6 +1672,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	<bean id="armyListCellRenderer" class="momime.client.ui.renderer.ArmyListCellRenderer" scope="prototype">
 		<property name="client" ref="client" />
 		<property name="utils" ref="uiUtils" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="unassignedHeroItemLayout" class="com.ndg.swing.layoutmanagers.xmllayout.XmlLayoutContainerEx" factory-bean="xmlLayoutUnmarshaller" factory-method="unmarshal" init-method="buildMaps">

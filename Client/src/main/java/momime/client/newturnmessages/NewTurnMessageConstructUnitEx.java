@@ -26,6 +26,7 @@ import momime.client.graphics.AnimationContainer;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.ChangeConstructionUI;
 import momime.client.ui.frames.NewTurnMessagesUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -67,6 +68,9 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 	
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
+	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** Panel created to display the NTM */
 	private JPanel panel;
@@ -161,8 +165,8 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			nextConstructionLabel.setText (text);
 
 			// Look up the image for the old unit
-			final BufferedImage image = getUtils ().loadImage (oldUnit.getUnitOverlandImageFile ());			
-			constructionCompletedImage.setIcon (new ImageIcon (image));
+			final BufferedImage image = getPlayerColourImageGenerator ().getOverlandUnitImage (oldUnit, getClient ().getOurPlayerID ());
+			constructionCompletedImage.setIcon (new ImageIcon (getUtils ().doubleSize (image)));
 		}
 		catch (final Exception e)
 		{
@@ -187,10 +191,10 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 			// Unit image
 			if (cityData.getCurrentlyConstructingUnitID () != null)
 			{
-				final BufferedImage image = getUtils ().loadImage (getClient ().getClientDB ().findUnit
-					(cityData.getCurrentlyConstructingUnitID (), "getComponent-New").getUnitOverlandImageFile ());
+				final UnitEx unitDef = getClient ().getClientDB ().findUnit (cityData.getCurrentlyConstructingUnitID (), "getComponent-New");
+				final BufferedImage image = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID ());
 
-				nextConstructionImage.setIcon (new ImageIcon (image));
+				nextConstructionImage.setIcon (new ImageIcon (getUtils ().doubleSize (image)));
 			}
 		}
 		catch (final Exception e)
@@ -362,5 +366,21 @@ public final class NewTurnMessageConstructUnitEx extends NewTurnMessageConstruct
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
 	}
 }

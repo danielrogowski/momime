@@ -48,6 +48,7 @@ import momime.client.messages.process.ApplyDamageMessageImpl;
 import momime.client.messages.process.MoveUnitInCombatMessageImpl;
 import momime.client.process.CombatMapProcessing;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.dialogs.CastCombatSpellFromUI;
 import momime.client.ui.dialogs.MessageBoxUI;
 import momime.client.ui.dialogs.VariableManaUI;
@@ -151,6 +152,9 @@ public final class CombatUI extends MomClientFrameUI
 	
 	/** Bitmap generator for the static terrain */
 	private CombatMapBitmapGenerator combatMapBitmapGenerator;
+	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
 	
 	/** Combat map utils */
 	private CombatMapUtils combatMapUtils;
@@ -1769,8 +1773,8 @@ public final class CombatUI extends MomClientFrameUI
 				(getUnitCalculations ().findPreferredMovementSkillGraphics (xu, getClient ().getClientDB ()).getMovementIconImageFile ())));
 			
 			// Unit image
-			selectedUnitImage.setIcon (new ImageIcon (getUtils ().loadImage
-				(xu.getUnitDefinition ().getUnitOverlandImageFile ())));
+			final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (xu.getUnitDefinition (), xu.getOwningPlayerID ());
+			selectedUnitImage.setIcon (new ImageIcon (getUtils ().doubleSize (unitImage)));
 		}
 		
 		enableOrDisableSpellAction ();
@@ -2050,6 +2054,22 @@ public final class CombatUI extends MomClientFrameUI
 		combatMapBitmapGenerator = gen;
 	}
 
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param g Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator g)
+	{
+		playerColourImageGenerator= g;
+	}
+	
 	/**
 	 * @return Combat map utils
 	 */

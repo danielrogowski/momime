@@ -2908,6 +2908,9 @@ one of these listed skills.</xsd:documentation>
 			</xsd:element>
 			<xsd:element minOccurs="1" maxOccurs="1" name="figureCount" type="momimecommon:figureCount" nxe:label="Figure Count" nxe:gridwidth="110" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="unitOverlandImageFile" type="momimecommon:imageFilename" nxe:label="Overland image file" nxe:gridwidth="320" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="unitOverlandImageFlag" type="momimecommon:imageFilename" nxe:label="Overland image flag" nxe:gridwidth="320" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="flagOffsetX" type="momimecommon:pixelCoordinate" nxe:label="Flag offset X" nxe:gridwidth="150" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="flagOffsetY" type="momimecommon:pixelCoordinate" nxe:label="Flag offset Y" nxe:gridwidth="150" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="unitRaceID" type="momimecommon:raceID" nxe:label="Unit Race" nxe:showmaincolumn="false">
 				<xsd:annotation>
 					<xsd:appinfo>

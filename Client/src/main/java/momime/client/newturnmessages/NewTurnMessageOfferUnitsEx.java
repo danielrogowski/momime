@@ -3,6 +3,7 @@ package momime.client.newturnmessages;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.language.replacer.UnitStatsLanguageVariableReplacer;
 import momime.client.ui.MomUIConstants;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.frames.HeroOrUnitsOfferUI;
 import momime.client.ui.frames.OfferUI;
 import momime.client.ui.frames.PrototypeFrameCreator;
@@ -24,6 +26,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.LanguageText;
 import momime.common.database.Pick;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitType;
 import momime.common.messages.AvailableUnit;
 import momime.common.messages.NewTurnMessageOfferUnits;
@@ -67,6 +70,9 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 	/** Prototype frame creator */
 	private PrototypeFrameCreator prototypeFrameCreator;
 
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
+	
 	/** Sample unit representing the unit on offer */
 	private AvailableUnit sampleUnit;
 	
@@ -95,9 +101,9 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 		if (xu != null)
 			try
 			{
-				final String imageName = getClient ().getClientDB ().findUnit (xu.getUnitID (), "NewTurnMessageOfferUnitsEx").getUnitOverlandImageFile ();
-				if (imageName != null)
-					image = getUtils ().loadImage (imageName);
+				final UnitEx unitDef = getClient ().getClientDB ().findUnit (xu.getUnitID (), "NewTurnMessageOfferUnitsEx");
+				final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getClient ().getOurPlayerID ());
+				image = getUtils ().doubleSize (unitImage);
 			}
 			catch (final Exception e)
 			{
@@ -394,5 +400,21 @@ public final class NewTurnMessageOfferUnitsEx extends NewTurnMessageOfferUnits i
 	public final void setPrototypeFrameCreator (final PrototypeFrameCreator obj)
 	{
 		prototypeFrameCreator = obj;
+	}
+
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
 	}
 }

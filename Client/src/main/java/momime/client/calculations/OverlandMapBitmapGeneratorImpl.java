@@ -294,7 +294,9 @@ public final class OverlandMapBitmapGeneratorImpl implements OverlandMapBitmapGe
 						final int ypos = (y * overlandMapTileSet.getTileHeight ()) - ((image.getHeight () - overlandMapTileSet.getTileHeight ()) / 2);
 	
 						// Use same image for all frames
-						final BufferedImage cityFlagImage = getPlayerColourImageGenerator ().getCityFlagImage (gc.getCityData ().getCityOwnerID ());
+						final BufferedImage cityFlagImage = getPlayerColourImageGenerator ().getFlagImage
+							("/momime.client.graphics/flags/cityFlag.png", gc.getCityData ().getCityOwnerID ());
+						
 						for (int frameNo = 0; frameNo < overlandMapTileSet.getAnimationFrameCount (); frameNo++)
 						{
 							g [frameNo].drawImage (image, xpos, ypos, null);

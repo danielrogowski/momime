@@ -1,5 +1,6 @@
 package momime.client.ui;
 
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import com.ndg.swing.NdgUIUtils;
 import momime.client.MomClient;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.common.database.CommonDatabaseConstants;
+import momime.common.database.UnitEx;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomTransientPlayerPublicKnowledge;
 
@@ -28,9 +30,12 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	/** Colour backgrounds for each player's units */
 	private final Map<Integer, BufferedImage> unitBackgroundImages = new HashMap<Integer, BufferedImage> ();
 
-	/** Colour multiplied flags for each player's cities */
-	private final Map<Integer, BufferedImage> cityFlagImages = new HashMap<Integer, BufferedImage> ();
+	/** Colour multiplied flags for each player's cities and units; outer map is the filename and inner map is the playerID */
+	private final Map<String, Map<Integer, BufferedImage>> flagImages = new HashMap<String, Map<Integer, BufferedImage>> ();
 
+	/** Overland unit images with correct flag colour draw on; outer map is the unitID and inner map is the playerID */
+	private final Map<String, Map<Integer, BufferedImage>> overlandUnitImages = new HashMap<String, Map<Integer, BufferedImage>> ();
+	
 	/** Colour multiplied node animations for each player */
 	private final Map<Integer, List<BufferedImage>> nodeAuraMap = new HashMap<Integer, List<BufferedImage>> ();
 	
@@ -52,9 +57,6 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	
 	/** Uncoloured unit background image */
 	private BufferedImage unitBackgroundImage;
-	
-	/** Uncoloured city flag image */
-	private BufferedImage cityFlagImage;
 	
 	/** Uncoloured node aura images */
 	private List<BufferedImage> nodeAuraImages;
@@ -101,17 +103,75 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	}
 
 	/**
-	 * @param playerID City owner player ID
-	 * @return City flag image in their correct colour
+	 * @param flagImageName Filename of flag image to load
+	 * @param playerID Player ID
+	 * @return Flag image in their correct colour
 	 * @throws IOException If there is a problem loading the flag image
 	 */
 	@Override
-	public final BufferedImage getCityFlagImage (final int playerID) throws IOException
+	public final BufferedImage getFlagImage (final String flagImageName, final int playerID) throws IOException
 	{
-		if (cityFlagImage == null)
-			cityFlagImage = getUtils ().loadImage ("/momime.client.graphics/overland/cities/cityFlag.png");
-
-		return getImage (playerID, cityFlagImage, cityFlagImages);
+		Map<Integer, BufferedImage> imagesOfThisFlag = flagImages.get (flagImageName);
+		if (imagesOfThisFlag == null)
+		{
+			imagesOfThisFlag = new HashMap<Integer, BufferedImage> ();
+			flagImages.put (flagImageName, imagesOfThisFlag);
+		}
+		
+		return getImage (playerID, getUtils ().loadImage (flagImageName), imagesOfThisFlag);
+	}
+	
+	/**
+	 * @param unitDef Unit to get the image for
+	 * @param playerID Player ID
+	 * @return Overland image for this unit, with the correct flag colour already drawn on; background square is not included
+	 * @throws IOException If there is a problem loading the images
+	 */
+	@Override
+	public final BufferedImage getOverlandUnitImage (final UnitEx unitDef, final int playerID) throws IOException
+	{
+		BufferedImage image;
+		
+		// If there's no flag to draw, its just reading the image directly from the normal cache
+		if ((unitDef.getUnitOverlandImageFlag () == null) || (unitDef.getFlagOffsetX () == null) || (unitDef.getFlagOffsetY () == null))
+			image = getUtils ().loadImage (unitDef.getUnitOverlandImageFile ());
+		else
+		{
+			// See if we've arleady generated it
+			Map<Integer, BufferedImage> imagesOfThisUnit = overlandUnitImages.get (unitDef.getUnitID ());
+			if (imagesOfThisUnit == null)
+			{
+				imagesOfThisUnit = new HashMap<Integer, BufferedImage> ();
+				overlandUnitImages.put (unitDef.getUnitID (), imagesOfThisUnit);
+			}
+			
+			image = imagesOfThisUnit.get (playerID);
+			if (image == null)
+			{
+				// Generate it - first we need the regular unit image with the flag pixels in green
+				final BufferedImage baseImage = getUtils ().loadImage (unitDef.getUnitOverlandImageFile ());
+				
+				// Copy it as-is
+				image = new BufferedImage (baseImage.getWidth (), baseImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+				final Graphics2D g = image.createGraphics ();
+				try
+				{
+					g.drawImage (baseImage, 0, 0, null);
+					
+					// Now add on the coloured flag
+					g.drawImage (getFlagImage (unitDef.getUnitOverlandImageFlag (), playerID), unitDef.getFlagOffsetX (), unitDef.getFlagOffsetY (), null);
+				}
+				finally
+				{
+					g.dispose ();
+				}
+				
+				// Add to cache
+				imagesOfThisUnit.put (playerID, image);
+			}
+		}
+		
+		return image;
 	}
 	
 	/**

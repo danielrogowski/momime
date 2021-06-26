@@ -153,8 +153,8 @@
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>
 	<component name="frmCombatCurrentUnitImage">
-		<left>178</left>
-		<top>34</top>
+		<left>168</left>
+		<top>28</top>
 		<horizontalAlignment>0.0</horizontalAlignment>
 		<verticalAlignment>0.0</verticalAlignment>
 	</component>

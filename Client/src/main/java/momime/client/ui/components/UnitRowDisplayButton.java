@@ -15,6 +15,7 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
 import momime.client.ui.PlayerColourImageGenerator;
+import momime.common.database.UnitEx;
 import momime.common.messages.MemoryUnit;
 
 /**
@@ -79,7 +80,8 @@ public final class UnitRowDisplayButton extends JButton
 				g.drawImage (playerColour, offset, offset, null);
 			
 				// Draw the unit itself
-				final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitRowDisplayButton").getUnitOverlandImageFile ());
+				final UnitEx unitDef = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "UnitRowDisplayButton");
+				final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getUnit ().getOwningPlayerID ());
 				g.drawImage (unitImage, offset, offset, null);
 			}
 			catch (final IOException e)

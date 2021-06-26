@@ -69,6 +69,7 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.SpellBookSectionID;
 import momime.common.database.TileSetEx;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSpecialOrder;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
@@ -468,7 +469,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 									try
 									{
 										final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
-										final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+										final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent");
+										final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID ());
 	
 										final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
 										final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;
@@ -515,7 +517,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 						try
 						{
 							final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
-							final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent").getUnitOverlandImageFile ());
+							final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent");
+							final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID ());
 	
 							final int unitZoomedWidth = (unitImage.getWidth () * mapViewZoom) / 10;
 							final int unitZoomedHeight = (unitImage.getHeight () * mapViewZoom) / 10;

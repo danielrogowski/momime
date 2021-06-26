@@ -20,6 +20,7 @@ import momime.client.MomClient;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
+import momime.common.database.UnitEx;
 import momime.common.database.UnitSkillEx;
 import momime.common.utils.ExpandedUnitDetails;
 
@@ -105,7 +106,9 @@ public final class SelectUnitButton extends JToggleButton
 				}
 			
 				// Draw the unit itself
-				final BufferedImage unitImage = getUtils ().loadImage (getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton").getUnitOverlandImageFile ());
+				final UnitEx unitDef = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton");
+				
+				final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getUnit ().getOwningPlayerID ());
 				g.drawImage (getUtils ().doubleSize (unitImage), 5 + offset, 5 + offset, null);
 
 				// Experience rings

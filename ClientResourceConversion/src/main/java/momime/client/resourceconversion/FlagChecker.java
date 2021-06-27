@@ -279,7 +279,7 @@ public final class FlagChecker
 			final String unitID = "UN" + s;
 			final Unit unitDef = unitsMap.get (unitID);
 			
-			for (int d = 1; d < 8; d++)
+			for (int d = 1; d <= 8; d++)
 				for (String f : new String [] {"stand", "attack", "move-frame1", "move-frame3"})
 				{
 					final File unitImage = new File ("W:\\EclipseHome\\SourceForge\\MoMIME\\Client\\src\\main\\resources\\momime.client.graphics\\units\\" + unitID +

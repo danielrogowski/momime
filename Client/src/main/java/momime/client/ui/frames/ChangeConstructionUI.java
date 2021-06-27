@@ -358,6 +358,7 @@ public final class ChangeConstructionUI extends MomClientFrameUI
 			// Create a sample unit for it now, so the list box can keep it to redraw the unit every frame
 			final AvailableUnit sampleUnit = new AvailableUnit ();
 			sampleUnit.setUnitID (thisUnit.getUnitID ());
+			sampleUnit.setOwningPlayerID (getClient ().getOurPlayerID ());
 
 			// We don't have to get the weapon grade or experience right just to draw the figures
 			getUnitUtils ().initializeUnitSkills (sampleUnit, null, getClient ().getClientDB ());

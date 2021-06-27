@@ -835,7 +835,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="utils" ref="uiUtils" />
 		<property name="graphicsDB" ref="graphicsDatabase" />
 		<property name="client" ref="client" />
-		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 	
 	<bean id="textUtils" class="momime.client.utils.TextUtilsImpl">
@@ -857,6 +856,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="soundPlayer" ref="soundPlayer" />
 		<property name="combatUI" ref="combatUI" />
 		<property name="heroItemsUI" ref="heroItemsUI" />
+		<property name="playerColourImageGenerator" ref="playerColourImageGenerator" />
 	</bean>
 
 	<bean id="resourceValueClientUtils" class="momime.client.utils.ResourceValueClientUtilsImpl">

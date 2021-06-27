@@ -21,10 +21,11 @@ import com.ndg.swing.NdgUIUtils;
 import momime.client.MomClient;
 import momime.client.graphics.AnimationContainer;
 import momime.client.graphics.database.GraphicsDatabaseEx;
-import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.MomException;
 import momime.common.database.AnimationEx;
+import momime.common.database.AnimationFrame;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitCombatImage;
 
 /**
 * Common class to handle simple animations defined in the graphics XML file, i.e. cycle around a set of bitmap
@@ -79,16 +80,16 @@ public final class AnimationControllerImpl implements AnimationController
 	/** Lists the frame number that animations are on, keyed by the animationID */
 	private Map<String, AnimationFrameCounter> animationFrames = new HashMap<String, AnimationFrameCounter> ();
 	
-	/** Player colour image generator */
-	private PlayerColourImageGenerator playerColourImageGenerator;
-
 	/**
 	 * Gets the name of an image for either a staticly named image or an animationID.  If an animationID, will use the frame speed
 	 * defined in the graphics XML to animate the frames appropriately.  Internal method shared by both versions of loadImageOrAnimationFrame.
 	 * 
 	 * imageResourceName and animationID should be mutally exclusive; one should be filled in and the other left null.
 	 * 
-	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
+	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png
+	 * @param secondaryImageName Secondary image to draw on top of the primary image
+	 * @param secondaryOffsetX X offset to position the secondary image
+	 * @param secondaryOffsetY Y offset to position the secondary image
 	 * @param animationID AnimationID from the graphics XML file
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param container Whether the animation is defined in the graphics or common XML
@@ -96,7 +97,8 @@ public final class AnimationControllerImpl implements AnimationController
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
-	final String getImageOrAnimationFrameName (final String imageResourceName, final String animationID, final boolean registeredAnimation, final AnimationContainer container)
+	final AnimationFrame getImageOrAnimationFrameName (final String imageResourceName, final String secondaryImageName,
+		final Integer secondaryOffsetX, final Integer secondaryOffsetY, final String animationID, final boolean registeredAnimation, final AnimationContainer container)
 		throws MomException, IOException
 	{
 		if ((imageResourceName == null) && (animationID == null))
@@ -106,9 +108,15 @@ public final class AnimationControllerImpl implements AnimationController
 			throw new MomException ("getImageOrAnimationFrameName: imageResourceName \"" + imageResourceName + "\" and animationID \"" + animationID + "\" were both non-null");
 		
 		// Easy if its a static image
-		final String imageName;
+		final AnimationFrame frame;
 		if (imageResourceName != null)
-			imageName = imageResourceName;
+		{
+			frame = new AnimationFrame ();
+			frame.setImageFile (imageResourceName);
+			frame.setImageFlag (secondaryImageName);
+			frame.setFlagOffsetX (secondaryOffsetX);
+			frame.setFlagOffsetY (secondaryOffsetY);
+		}
 		
 		else if (registeredAnimation)
 		{
@@ -118,7 +126,7 @@ public final class AnimationControllerImpl implements AnimationController
 				throw new MomException ("Requested loadImageOrAnimationFrame on animationID \"" + animationID + "\" without making a prior call to registerRepaintTrigger");
 			
 			// Now can grab the correct frame
-			imageName = counter.anim.getFrame ().get (counter.animationFrame).getImageFile ();
+			frame = counter.anim.getFrame ().get (counter.animationFrame);
 		}
 		
 		else
@@ -132,11 +140,11 @@ public final class AnimationControllerImpl implements AnimationController
 			final int frameLoop = ((int) frameNumber) % anim.getFrame ().size ();
 			
 			// Now can grab the correct frame
-			imageName = anim.getFrame ().get (frameLoop).getImageFile ();
+			frame = anim.getFrame ().get (frameLoop);
 		}
 
 		// Now we know the image name
-		return imageName;
+		return frame;
 	}
 	
 	/**
@@ -157,32 +165,26 @@ public final class AnimationControllerImpl implements AnimationController
 	public final BufferedImage loadImageOrAnimationFrame (final String imageResourceName, final String animationID, final boolean registeredAnimation,
 		final AnimationContainer container) throws MomException, IOException
 	{
-		return getUtils ().loadImage (getImageOrAnimationFrameName (imageResourceName, animationID, registeredAnimation, container));
+		return getUtils ().loadImage (getImageOrAnimationFrameName (imageResourceName, null, null, null, animationID, registeredAnimation, container).getImageFile ());
 	}
 
 	/**
-	 * Gets the image for either a staticly named image or an animationID.  Which frame of the animation to display
-	 * should have been previously set by calling registerRepaintTrigger to start the animation.  Then modifies the
-	 * retrieved image according to the colour(s) in the list of shadingColours.
+	 * Gets the correct frame of a unit combat image, either from the static image or choosing the correct animation frame.
 	 * 
-	 * imageResourceName and animationID should be mutally exclusive; one should be filled in and the other left null.
-	 * 
-	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
-	 * @param animationID AnimationID from the graphics XML file
-	 * @param shadingColours List of shading colours to apply to the image
+	 * @param unitCombatImage Details of either the static image or link to the animation 
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param container Whether the animation is defined in the graphics or common XML
-	 * @return Appropriate image to display
+	 * @return Appropriate frame to display
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
 	@Override
-	public final BufferedImage loadImageOrAnimationFrameWithShading (final String imageResourceName, final String animationID,
-		final List<String> shadingColours, final boolean registeredAnimation, final AnimationContainer container)
+	public final AnimationFrame getUnitCombatImageFrame (final UnitCombatImage unitCombatImage,
+		final boolean registeredAnimation, final AnimationContainer container)
 		throws MomException, IOException
 	{
-		return getPlayerColourImageGenerator ().getSkillShadedImage
-			(getImageOrAnimationFrameName (imageResourceName, animationID, registeredAnimation, container), shadingColours);
+		return getImageOrAnimationFrameName (unitCombatImage.getUnitCombatImageFile (), unitCombatImage.getUnitCombatImageFlag (),
+			unitCombatImage.getFlagOffsetX (), unitCombatImage.getFlagOffsetY (), unitCombatImage.getUnitCombatAnimation (), registeredAnimation, container);
 	}
 	
 	/**
@@ -353,22 +355,6 @@ public final class AnimationControllerImpl implements AnimationController
 	public final void setUtils (final NdgUIUtils util)
 	{
 		utils = util;
-	}
-
-	/**
-	 * @return Player colour image generator
-	 */
-	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
-	{
-		return playerColourImageGenerator;
-	}
-
-	/**
-	 * @param gen Player colour image generator
-	 */
-	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
-	{
-		playerColourImageGenerator = gen;
 	}
 	
 	/**

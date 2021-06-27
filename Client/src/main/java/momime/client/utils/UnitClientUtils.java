@@ -135,6 +135,7 @@ public interface UnitClientUtils
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
 	 * 
 	 * @param unitID The unit to draw
+	 * @param playerID The owner of the unit
 	 * @param totalFigureCount The number of figures the unit had when fully healed
 	 * @param aliveFigureCount The number of figures the unit has now
 	 * @param combatActionID The action to show the unit doing
@@ -149,7 +150,7 @@ public interface UnitClientUtils
 	 * @param mergingRatio How much "dug into the ground" the unit should appear; null/0 means draw normally, 1 will draw nothing at all
 	 * @throws IOException If there is a problem
 	 */
-	public void drawUnitFigures (final String unitID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
+	public void drawUnitFigures (final String unitID, final int playerID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
 		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio) throws IOException;
 

@@ -2,13 +2,14 @@ package momime.client.utils;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.List;
 
 import javax.swing.JComponent;
 
 import momime.client.graphics.AnimationContainer;
 import momime.common.MomException;
+import momime.common.database.AnimationFrame;
 import momime.common.database.RecordNotFoundException;
+import momime.common.database.UnitCombatImage;
 
 /**
  * Common class to handle simple animations defined in the graphics XML file, i.e. cycle around a set of bitmap
@@ -66,23 +67,17 @@ public interface AnimationController
 		final AnimationContainer container) throws MomException, IOException;
 
 	/**
-	 * Gets the image for either a staticly named image or an animationID.  Which frame of the animation to display
-	 * should have been previously set by calling registerRepaintTrigger to start the animation.  Then modifies the
-	 * retrieved image according to the colour(s) in the list of shadingColours.
+	 * Gets the correct frame of a unit combat image, either from the static image or choosing the correct animation frame.
 	 * 
-	 * imageResourceName and animationID should be mutally exclusive; one should be filled in and the other left null.
-	 * 
-	 * @param imageResourceName Name of static image resource on classpath, e.g. /images/cards/Clubs/5C.png 
-	 * @param animationID AnimationID from the graphics XML file
-	 * @param shadingColours List of shading colours to apply to the image
+	 * @param unitCombatImage Details of either the static image or link to the animation 
 	 * @param registeredAnimation Determines frame number: True=by Swing timer, must have previously called registerRepaintTrigger; False=by System.nanoTime ()
 	 * @param container Whether the animation is defined in the graphics or common XML
-	 * @return Appropriate image to display
+	 * @return Appropriate frame to display
 	 * @throws MomException If the imageResourceName and the animationID are both null; or both are non-null; or if we request an anim that we didn't preregister interest in 
 	 * @throws IOException If there is a problem loading either the statically named image, or a particular frame from the animation
 	 */
-	public BufferedImage loadImageOrAnimationFrameWithShading (final String imageResourceName, final String animationID,
-		final List<String> shadingColours, final boolean registeredAnimation, final AnimationContainer container)
+	public AnimationFrame getUnitCombatImageFrame (final UnitCombatImage unitCombatImage,
+		final boolean registeredAnimation, final AnimationContainer container)
 		throws MomException, IOException;
 	
 	/**

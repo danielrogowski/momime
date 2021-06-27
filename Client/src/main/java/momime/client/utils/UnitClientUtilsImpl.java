@@ -27,6 +27,7 @@ import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.process.CombatMapProcessing;
 import momime.client.process.OverlandMapProcessing;
+import momime.client.ui.PlayerColourImageGenerator;
 import momime.client.ui.components.HideableComponent;
 import momime.client.ui.components.SelectUnitButton;
 import momime.client.ui.frames.CityViewUI;
@@ -35,6 +36,7 @@ import momime.client.ui.frames.HeroItemsUI;
 import momime.client.ui.frames.UnitInfoUI;
 import momime.client.ui.panels.OverlandMapRightHandPanel;
 import momime.common.calculations.UnitCalculations;
+import momime.common.database.AnimationFrame;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
 import momime.common.database.LanguageText;
@@ -114,6 +116,9 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	/** Hero items UI */
 	private HeroItemsUI heroItemsUI;
 	
+	/** Player colour image generator */
+	private PlayerColourImageGenerator playerColourImageGenerator;
+
 	/**
 	 * Note the generated unit names are obviously very dependant on the selected language, but the names themselves don't get notified
 	 * to update themselves when the language changes.  It is the responsibility of whatever is calling this method to register itself to be
@@ -442,6 +447,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * NB. This has to work without relying on the AvailableUnit so that we can draw units on the Options screen before joining a game.
 	 * 
 	 * @param unitID The unit to draw
+	 * @param playerID The owner of the unit
 	 * @param totalFigureCount The number of figures the unit had when fully healed
 	 * @param aliveFigureCount The number of figures the unit has now
 	 * @param combatActionID The action to show the unit doing
@@ -457,7 +463,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	 * @throws IOException If there is a problem
 	 */
 	@Override
-	public final void drawUnitFigures (final String unitID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
+	public final void drawUnitFigures (final String unitID, final int playerID, final int totalFigureCount, final int aliveFigureCount, final String combatActionID,
 		final int direction, final ZOrderGraphics g, final int offsetX, final int offsetY, final String sampleTileImageFile, final boolean registeredAnimation,
 		final int baseZOrder, final List<String> shadingColours, final Double mergingRatio) throws IOException
 	{
@@ -476,15 +482,20 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		
 		// Work out the image to draw n times
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
-		final BufferedImage image = getAnim ().loadImageOrAnimationFrameWithShading
-			(unitImage.getUnitCombatImageFile (), unitImage.getUnitCombatAnimation (), shadingColours, registeredAnimation, AnimationContainer.COMMON_XML);
+		final AnimationFrame frame = getAnim ().getUnitCombatImageFrame (unitImage, registeredAnimation, AnimationContainer.COMMON_XML);
+		final BufferedImage image = getPlayerColourImageGenerator ().getSkillShadedImage (frame.getImageFile (), shadingColours);
+		
+		BufferedImage flagImage = null;
+		if ((frame.getImageFlag () != null) && (frame.getFlagOffsetX () != null) && (frame.getFlagOffsetY () != null))
+			flagImage = getPlayerColourImageGenerator ().getFlagImage (frame.getImageFlag (), playerID);
 		
 		// Draw the figure in each position
 		for (final int [] position : figurePositions)
 		{
 			// Last array element tells us what to multiply the image size up by
-			final int imageWidth = image.getWidth () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
-			final int imageHeight = image.getHeight () * position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
+			final int mult = position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_UNIT_IMAGE_MULTIPLIER];
+			final int imageWidth = image.getWidth () * mult;
+			final int imageHeight = image.getHeight () * mult;
 			
 			// TileRelativeX, Y in the graphics XML indicates the position of the unit's feet, so need to adjust according to the unit size
 			if ((mergingRatio == null) || (mergingRatio == 0d))
@@ -499,6 +510,19 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + ((int) (imageHeight * mergingRatio)),
 					imageWidth, (int) (imageHeight * (1d - mergingRatio)),
 					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+			
+			// Draw flag?
+			if (flagImage != null)
+			{
+				final int flagWidth = flagImage.getWidth () * mult;
+				final int flagHeight = flagImage.getHeight () * mult;
+				
+				// No unit with merging has a flag to draw
+				g.drawStretchedImage (flagImage,
+					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2) + (frame.getFlagOffsetX () * mult),
+					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + (frame.getFlagOffsetY () * mult),
+					flagWidth, flagHeight, baseZOrder + 3 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
+			}
 		}
 	}
 
@@ -536,7 +560,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				sampleTileImageFile = null; 
 			
 			// Call other version now that we have all the necessary values
-			drawUnitFigures (unit.getUnitID (), unit.getFullFigureCount (), aliveFigureCount, combatActionID,
+			drawUnitFigures (unit.getUnitID (), unit.getOwningPlayerID (), unit.getFullFigureCount (), aliveFigureCount, combatActionID,
 				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio);
 		}
 	}
@@ -903,5 +927,21 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 	public final void setHeroItemsUI (final HeroItemsUI ui)
 	{
 		heroItemsUI = ui;
+	}
+
+	/**
+	 * @return Player colour image generator
+	 */
+	public final PlayerColourImageGenerator getPlayerColourImageGenerator ()
+	{
+		return playerColourImageGenerator;
+	}
+
+	/**
+	 * @param gen Player colour image generator
+	 */
+	public final void setPlayerColourImageGenerator (final PlayerColourImageGenerator gen)
+	{
+		playerColourImageGenerator = gen;
 	}
 }

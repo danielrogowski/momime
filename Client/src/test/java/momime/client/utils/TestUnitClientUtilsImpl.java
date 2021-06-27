@@ -38,7 +38,6 @@ import momime.client.graphics.database.UnitSkillComponentImage;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.UnitName;
-import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
 import momime.common.database.CombatAction;
@@ -477,14 +476,10 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		final GraphicsDatabaseEx gfx = loadGraphicsDatabase (utils, null);
 		
 		// Animation controller
-		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
-		gen.setUtils (utils);
-		
 		final AnimationControllerImpl anim = new AnimationControllerImpl ();
 		anim.setGraphicsDB (gfx);
 		anim.setClient (client);
 		anim.setUtils (utils);
-		anim.setPlayerColourImageGenerator (gen);
 		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
@@ -508,11 +503,11 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 					zOrderGraphics.setGraphics (g);
 					
 					final int y = 40;
-					unitUtils.drawUnitFigures ("UN106", 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN075", 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN035", 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN197", 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
-					unitUtils.drawUnitFigures ("UN037", 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null, null);
+					unitUtils.drawUnitFigures ("UN106", 1, 6, 6, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 10, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
+					unitUtils.drawUnitFigures ("UN075", 1, 2, 2, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 80, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
+					unitUtils.drawUnitFigures ("UN035", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 150, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
+					unitUtils.drawUnitFigures ("UN197", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 220, y, GraphicsDatabaseConstants.SAMPLE_GRASS_TILE, true, 0, null, null);
+					unitUtils.drawUnitFigures ("UN037", 1, 1, 1, GraphicsDatabaseConstants.UNIT_COMBAT_ACTION_WALK, 4, zOrderGraphics, 290, y, GraphicsDatabaseConstants.SAMPLE_OCEAN_TILE, true, 0, null, null);
 				}
 				catch (final IOException e)
 				{

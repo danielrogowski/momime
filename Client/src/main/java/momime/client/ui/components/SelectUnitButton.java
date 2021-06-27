@@ -102,14 +102,14 @@ public final class SelectUnitButton extends JToggleButton
 				{
 					final BufferedImage playerColour = getPlayerColourImageGenerator ().getUnitBackgroundImage (getUnit ().getOwningPlayerID ());
 					if (playerColour != null)
-						g.drawImage (getUtils ().doubleSize (playerColour), 5 + offset, 5 + offset, null);
+						g.drawImage (playerColour, 5 + offset, 5 + offset, playerColour.getWidth () * 2, playerColour.getHeight () * 2, null);
 				}
 			
 				// Draw the unit itself
 				final UnitEx unitDef = getClient ().getClientDB ().findUnit (getUnit ().getUnitID (), "SelectUnitButton");
 				
 				final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, getUnit ().getOwningPlayerID ());
-				g.drawImage (getUtils ().doubleSize (unitImage), 5 + offset, 5 + offset, null);
+				g.drawImage (unitImage, 5 + offset, 5 + offset, unitImage.getWidth () * 2, unitImage.getHeight () * 2, null);
 
 				// Experience rings
 				final ExperienceLevel expLevel = getUnit ().getModifiedExperienceLevel ();				

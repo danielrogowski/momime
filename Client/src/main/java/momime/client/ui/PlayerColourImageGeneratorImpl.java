@@ -50,11 +50,15 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	private final Map<Integer, BufferedImage> wizardGemCrackedImages = new HashMap<Integer, BufferedImage> ();
 	
 	/**
-	 * Images (typically of unit figures) shaded by one or more unit skills that change a unit's appearance, e.g. Black Sleep or Invisibility
-	 * The key to this is the name of the image, followed by the colour codes that have been applied to its appearance, in alphabetical order, with a : delimiter
-	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:808080:FFFF50"
+	 * Images (typically of unit figures) that have been modified by either superimposing the player's flag colour, or shading by one or more
+	 * unit skills that change a unit's appearance, e.g. Black Sleep or Invisibility, or both.  These then get cached here so we don't have to
+	 * generate the modified image over and over again.
+	 * 
+	 * The key to this is the name of the image, followed a P and the player ID (if applicable) and the colour code(s) that have been applied
+	 * to its appearance (if applicable), in alphabetical order, with a : delimiter
+	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:P1:808080:FFFF50"
 	 */
-	private final Map<String, BufferedImage> skillShadedImages = new HashMap<String, BufferedImage> ();
+	private final Map<String, BufferedImage> modifiedImages = new HashMap<String, BufferedImage> ();
 	
 	/** Uncoloured unit background image */
 	private BufferedImage unitBackgroundImage;
@@ -339,27 +343,84 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:808080:FFFF50"
 	 * 
 	 * @param imageName Filename of the base colour image
+	 * @param flagName Name of flag image, if there is one
+	 * @param flagOffsetX X offset to draw flag
+	 * @param flagOffsetY Y offset to draw flag
+	 * @param playerID Player who owns the unit; if this is not supplied then the flag image will be ignored (if there is one) 
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @return Image with modified colours
 	 * @throws IOException If there is a problem loading the image
 	 */
 	@Override
-	public final BufferedImage getSkillShadedImage (final String imageName, final List<String> shadingColours) throws IOException
+	public final BufferedImage getModifiedImage (final String imageName, final String flagName, final Integer flagOffsetX, final Integer flagOffsetY,
+		final Integer playerID, final List<String> shadingColours) throws IOException
 	{
+		boolean flagApplies = (flagName != null) && (flagOffsetX != null) && (flagOffsetY != null) && (playerID != null);
+		final boolean shadingApplies = (shadingColours != null) && (shadingColours.size () > 0);
+		
+		// Maybe flag doesn't apply after all for monsters (this is TBC)
+		PlayerPublicDetails player = null;
+		if (flagApplies)
+		{
+			player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), playerID, "getModifiedImage");
+			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
+			if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+				flagApplies = false;
+		}
+		
+		// If there are no modifications to make at all, just use the normal image cache
 		BufferedImage image;
-		if ((shadingColours == null) || (shadingColours.size () == 0))
+		if ((!flagApplies) && (!shadingApplies))
 			image = getUtils ().loadImage (imageName);
 		else
 		{
-			final List<String> sortedColours = shadingColours.stream ().sorted ().collect (Collectors.toList ());
-			
+			// Generate the entire key - maybe the image already exists in the cache
 			final StringBuilder key = new StringBuilder (imageName);
-			sortedColours.forEach (s -> key.append (":" + s));
-			image = skillShadedImages.get (key.toString ());
+			if (flagApplies)
+				key.append (":P" + playerID);
+
+			List<String> sortedColours = null;
+			if (shadingApplies)
+			{
+				sortedColours = shadingColours.stream ().sorted ().collect (Collectors.toList ());
+				sortedColours.forEach (s -> key.append (":" + s));
+			}
+			
+			image = modifiedImages.get (key.toString ());
 			if (image == null)
 			{
-				// Generate new image
-				image = getUtils ().loadImage (imageName);
+				// Generate new image - first deal with the flag colours
+				if (!flagApplies)
+					image = getUtils ().loadImage (imageName);
+				else
+				{
+					// Need flag, and its not in the cache.. but maybe only the flag with the extra shading is not in the cache and the base flag might be
+					final String partialKey = imageName + ":P" + playerID;
+					image = modifiedImages.get (partialKey);
+					
+					if (image == null)
+					{
+						// Generate a new one
+						final BufferedImage baseImage = getUtils ().loadImage (imageName);
+						final BufferedImage flagImage = getFlagImage (flagName, playerID);
+						
+						image = new BufferedImage (baseImage.getWidth (), baseImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+						final Graphics2D g = image.createGraphics ();
+						try
+						{
+							g.drawImage (baseImage, 0, 0, null);
+							g.drawImage (flagImage, flagOffsetX, flagOffsetY, null);
+						}
+						finally
+						{
+							g.dispose ();
+						}
+				
+						// Store base image + flag, prior to applying shading, in the map
+						modifiedImages.put (partialKey, image);
+					}
+				}
+				
 				for (final String colour : sortedColours)
 					if (colour.length () == 8)
 						image = getUtils ().multiplyImageByColourAndAlpha (image, (int) Long.parseLong (colour, 16));
@@ -367,7 +428,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 						image = getUtils ().multiplyImageByColour (image, Integer.parseInt (colour, 16));
 				
 				// Store it in the map
-				skillShadedImages.put (key.toString (), image);
+				modifiedImages.put (key.toString (), image);
 			}
 		}
 		

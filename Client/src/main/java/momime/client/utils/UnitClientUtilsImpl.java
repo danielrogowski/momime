@@ -483,11 +483,8 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Work out the image to draw n times
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
 		final AnimationFrame frame = getAnim ().getUnitCombatImageFrame (unitImage, registeredAnimation, AnimationContainer.COMMON_XML);
-		final BufferedImage image = getPlayerColourImageGenerator ().getSkillShadedImage (frame.getImageFile (), shadingColours);
-		
-		BufferedImage flagImage = null;
-		if ((frame.getImageFlag () != null) && (frame.getFlagOffsetX () != null) && (frame.getFlagOffsetY () != null))
-			flagImage = getPlayerColourImageGenerator ().getFlagImage (frame.getImageFlag (), playerID);
+		final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (frame.getImageFile (), frame.getImageFlag (),
+			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours);
 		
 		// Draw the figure in each position
 		for (final int [] position : figurePositions)
@@ -510,19 +507,6 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + ((int) (imageHeight * mergingRatio)),
 					imageWidth, (int) (imageHeight * (1d - mergingRatio)),
 					baseZOrder + 2 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
-			
-			// Draw flag?
-			if (flagImage != null)
-			{
-				final int flagWidth = flagImage.getWidth () * mult;
-				final int flagHeight = flagImage.getHeight () * mult;
-				
-				// No unit with merging has a flag to draw
-				g.drawStretchedImage (flagImage,
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_X_INCL_OFFSET] - (imageWidth / 2) + (frame.getFlagOffsetX () * mult),
-					position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_INCL_OFFSET] - imageHeight + (frame.getFlagOffsetY () * mult),
-					flagWidth, flagHeight, baseZOrder + 3 + position [CALC_UNIT_FIGURE_POSITIONS_COLUMN_Y_EXCL_OFFSET]);
-			}
 		}
 	}
 

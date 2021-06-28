@@ -78,9 +78,14 @@ public interface PlayerColourImageGenerator
 	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:808080:FFFF50"
 	 * 
 	 * @param imageName Filename of the base colour image
+	 * @param flagName Name of flag image, if there is one
+	 * @param flagOffsetX X offset to draw flag
+	 * @param flagOffsetY Y offset to draw flag
+	 * @param playerID Player who owns the unit; if this is not supplied then the flag image will be ignored (if there is one) 
 	 * @param shadingColours List of shading colours to apply to the image
 	 * @return Image with modified colours
 	 * @throws IOException If there is a problem loading the image
 	 */
-	public BufferedImage getSkillShadedImage (final String imageName, final List<String> shadingColours) throws IOException;
+	public BufferedImage getModifiedImage (final String imageName, final String flagName, final Integer flagOffsetX, final Integer flagOffsetY,
+		final Integer playerID, final List<String> shadingColours) throws IOException;
 }

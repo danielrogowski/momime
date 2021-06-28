@@ -1107,6 +1107,7 @@ public final class CityViewUI extends MomClientFrameUI
 			// Create a dummy unit here, rather than on every paintComponent call
 			final AvailableUnit sample = new AvailableUnit ();
 			sample.setUnitID (cityData.getCurrentlyConstructingUnitID ());
+			sample.setOwningPlayerID (cityData.getCityOwnerID ());
 
 			// We don't have to get the weapon grade or experience right just to draw the figures
 			getUnitUtils ().initializeUnitSkills (sample, null, getClient ().getClientDB ());

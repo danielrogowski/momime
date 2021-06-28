@@ -421,11 +421,12 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 					}
 				}
 				
-				for (final String colour : sortedColours)
-					if (colour.length () == 8)
-						image = getUtils ().multiplyImageByColourAndAlpha (image, (int) Long.parseLong (colour, 16));
-					else
-						image = getUtils ().multiplyImageByColour (image, Integer.parseInt (colour, 16));
+				if (shadingApplies)
+					for (final String colour : sortedColours)
+						if (colour.length () == 8)
+							image = getUtils ().multiplyImageByColourAndAlpha (image, (int) Long.parseLong (colour, 16));
+						else
+							image = getUtils ().multiplyImageByColour (image, Integer.parseInt (colour, 16));
 				
 				// Store it in the map
 				modifiedImages.put (key.toString (), image);

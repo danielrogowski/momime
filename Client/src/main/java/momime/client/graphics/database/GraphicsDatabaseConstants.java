@@ -31,6 +31,12 @@ public final class GraphicsDatabaseConstants
 	
 	/** Sample of an ocean tile, before obtaining the client XML so we can derive this properly from an AvailableUnit */
 	public final static String SAMPLE_OCEAN_TILE = "/momime.client.graphics/combat/terrain/arcanus/ocean/standard/00000000a-frame1.png";
+	
+	/** Mirror showing wizard's face then the overland enchantment they cast */
+	public final static String OVERLAND_ENCHANTMENTS_MIRROR = "/momime.client.graphics/ui/mirror/mirror.png";
+	
+	/** Square background drawn behind units on the overland map */
+	public final static String UNIT_BACKGROUND = "/momime.client.graphics/ui/overland/unitBackground.png";
 
 	/** Controls how overland enchantment images fit inside the mirror */ 
 	public final static int IMAGE_MIRROR_X_OFFSET = 9;

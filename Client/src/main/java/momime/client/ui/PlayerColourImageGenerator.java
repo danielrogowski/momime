@@ -13,21 +13,6 @@ import momime.common.database.UnitEx;
 public interface PlayerColourImageGenerator
 {
 	/**
-	 * @param playerID Unit owner player ID
-	 * @return Unit background image in their correct colour; null for the monsters player who has no colour
-	 * @throws IOException If there is a problem loading the background image
-	 */
-	public BufferedImage getUnitBackgroundImage (final int playerID) throws IOException;
-
-	/**
-	 * @param flagImageName Filename of flag image to load
-	 * @param playerID Player ID
-	 * @return Flag image in their correct colour
-	 * @throws IOException If there is a problem loading the flag image
-	 */
-	public BufferedImage getFlagImage (final String flagImageName, final int playerID) throws IOException;
-
-	/**
 	 * @param unitDef Unit to get the image for
 	 * @param playerID Player ID
 	 * @return Overland image for this unit, with the correct flag colour already drawn on; background square is not included
@@ -42,27 +27,6 @@ public interface PlayerColourImageGenerator
 	 * @throws IOException If there is a problem loading the flag image
 	 */
 	public BufferedImage getNodeAuraImage (final int frameNumber, final int playerID) throws IOException;
-	
-	/**
-	 * @param playerID Spell owner player ID
-	 * @return Mirror image in their correct colour
-	 * @throws IOException If there is a problem loading the mirror image
-	 */
-	public BufferedImage getOverlandEnchantmentMirror (final int playerID) throws IOException;
-
-	/**
-	 * @param playerID Unit owner player ID
-	 * @return Wizard gem background image in their correct colour
-	 * @throws IOException If there is a problem loading the background image
-	 */
-	public BufferedImage getWizardGemImage (final int playerID) throws IOException;
-	
-	/**
-	 * @param playerID Unit owner player ID
-	 * @return Cracked wizard gem background image in their correct colour
-	 * @throws IOException If there is a problem loading the background image
-	 */
-	public BufferedImage getWizardGemCrackedImage (final int playerID) throws IOException;
 	
 	/**
 	 * @param d Direction of border edge to draw

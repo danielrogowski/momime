@@ -22,6 +22,7 @@ import com.ndg.swing.NdgUIUtils;
 
 import momime.client.ClientTestData;
 import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.HelpScreen;
@@ -615,7 +616,7 @@ public final class TestSpellClientUtilsImpl extends ClientTestData
 				mirror.setRGB (x, y, Color.BLUE.getRGB ());
 		
 		final PlayerColourImageGenerator gen = mock (PlayerColourImageGenerator.class);
-		when (gen.getOverlandEnchantmentMirror (3)).thenReturn (mirror);
+		when (gen.getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR, true, null, null, null, 3, null)).thenReturn (mirror);
 		
 		// Mock entries from client DB
 		final CommonDatabase db = mock (CommonDatabase.class);

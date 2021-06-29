@@ -48,6 +48,7 @@ import com.ndg.swing.actions.LoggingAction;
 import momime.client.MomClient;
 import momime.client.calculations.OverlandMapBitmapGenerator;
 import momime.client.config.MomImeClientConfig;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.graphics.database.GraphicsDatabaseEx;
 import momime.client.languages.database.Month;
 import momime.client.languages.database.Shortcut;
@@ -468,7 +469,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 								if (drawUnit)
 									try
 									{
-										final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
+										final BufferedImage unitBackground = getPlayerColourImageGenerator ().getModifiedImage
+											(GraphicsDatabaseConstants.UNIT_BACKGROUND, true, null, null, null, unit.getOwningPlayerID (), null);
 										final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent");
 										final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID ());
 	
@@ -516,7 +518,8 @@ public final class OverlandMapUI extends MomClientFrameUI
 					if (unit != null)
 						try
 						{
-							final BufferedImage unitBackground = getPlayerColourImageGenerator ().getUnitBackgroundImage (unit.getOwningPlayerID ());
+							final BufferedImage unitBackground = getPlayerColourImageGenerator ().getModifiedImage
+								(GraphicsDatabaseConstants.UNIT_BACKGROUND, true, null, null, null, unit.getOwningPlayerID (), null);
 							final UnitEx unitDef = getClient ().getClientDB ().findUnit (unit.getUnitID (), "sceneryPanel.paintComponent");
 							final BufferedImage unitImage = getPlayerColourImageGenerator ().getOverlandUnitImage (unitDef, unit.getOwningPlayerID ());
 	

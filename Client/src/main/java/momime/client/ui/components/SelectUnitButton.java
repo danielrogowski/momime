@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.ExperienceLevel;
@@ -100,7 +101,8 @@ public final class SelectUnitButton extends JToggleButton
 				// Only draw patch of player colour if this unit has been selected to move or belongs to somebody else
 				if ((isSelected ()) || (!Integer.valueOf (getUnit ().getOwningPlayerID ()).equals (getClient ().getOurPlayerID ())))
 				{
-					final BufferedImage playerColour = getPlayerColourImageGenerator ().getUnitBackgroundImage (getUnit ().getOwningPlayerID ());
+					final BufferedImage playerColour = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.UNIT_BACKGROUND,
+						true, null, null, null, getUnit ().getOwningPlayerID (), null);
 					if (playerColour != null)
 						g.drawImage (playerColour, 5 + offset, 5 + offset, playerColour.getWidth () * 2, playerColour.getHeight () * 2, null);
 				}

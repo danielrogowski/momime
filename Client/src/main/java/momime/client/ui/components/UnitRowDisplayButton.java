@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import com.ndg.swing.NdgUIUtils;
 
 import momime.client.MomClient;
+import momime.client.graphics.database.GraphicsDatabaseConstants;
 import momime.client.ui.PlayerColourImageGenerator;
 import momime.common.database.UnitEx;
 import momime.common.messages.MemoryUnit;
@@ -76,7 +77,8 @@ public final class UnitRowDisplayButton extends JButton
 			try
 			{
 				// Draw player colour patch
-				final BufferedImage playerColour = getPlayerColourImageGenerator ().getUnitBackgroundImage (getUnit ().getOwningPlayerID ());
+				final BufferedImage playerColour = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.UNIT_BACKGROUND,
+					true, null, null, null, getUnit ().getOwningPlayerID (), null);
 				g.drawImage (playerColour, offset, offset, null);
 			
 				// Draw the unit itself

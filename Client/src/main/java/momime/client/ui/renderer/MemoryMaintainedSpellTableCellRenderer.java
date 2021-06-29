@@ -55,7 +55,8 @@ public final class MemoryMaintainedSpellTableCellRenderer extends JLabel impleme
 					final BufferedImage spellImage = getUtils ().loadImage (imageName);
 					
 					// Now that we got the spell image OK, get the coloured mirror for the caster
-					final BufferedImage mirrorImage = getPlayerColourImageGenerator ().getOverlandEnchantmentMirror (spell.getCastingPlayerID ());
+					final BufferedImage mirrorImage = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
+						true, null, null, null, spell.getCastingPlayerID (), null);
 					final BufferedImage mergedImage = new BufferedImage (mirrorImage.getWidth (), mirrorImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
 					final Graphics2D g = mergedImage.createGraphics ();
 					try

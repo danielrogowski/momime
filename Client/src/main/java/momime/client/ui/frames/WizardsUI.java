@@ -254,9 +254,12 @@ public final class WizardsUI extends MomClientFrameUI
 				
 				if (isWizard)
 				{
-					final BufferedImage gemImage = (pub.getWizardState () == WizardState.ACTIVE) ?
-						getPlayerColourImageGenerator ().getWizardGemImage (player.getPlayerDescription ().getPlayerID ()) :
-						getPlayerColourImageGenerator ().getWizardGemCrackedImage (player.getPlayerDescription ().getPlayerID ());
+					final String gemImageName = (pub.getWizardState () == WizardState.ACTIVE) ? "/momime.client.graphics/ui/backgrounds/gem.png" :
+						"/momime.client.graphics/ui/backgrounds/gemCracked.png";
+					
+					final BufferedImage gemImage = getPlayerColourImageGenerator ().getModifiedImage (gemImageName, true, null, null, null,
+						player.getPlayerDescription ().getPlayerID (), null);
+					
 					gemLabel.setIcon (new ImageIcon (gemImage));
 
 					// Find the wizard's photo

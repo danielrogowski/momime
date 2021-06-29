@@ -126,7 +126,8 @@ public final class OverlandEnchantmentsUI extends MomClientDialogUI
 		fadeAnim = getGraphicsDB ().findAnimation (MIRROR_ANIM, "OverlandEnchantmentsUI");
 		
 		// Get the player's colour and face
-		final BufferedImage mirror = getPlayerColourImageGenerator ().getOverlandEnchantmentMirror (getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID ());
+		final BufferedImage mirror = getPlayerColourImageGenerator ().getModifiedImage (GraphicsDatabaseConstants.OVERLAND_ENCHANTMENTS_MIRROR,
+			true, null, null, null, getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID (), null);
 		
 		final PlayerPublicDetails player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), getAddSpellMessage ().getMaintainedSpell ().getCastingPlayerID (), "OverlandEnchantmentsUI");
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();

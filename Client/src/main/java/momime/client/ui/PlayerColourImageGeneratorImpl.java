@@ -343,6 +343,9 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:808080:FFFF50"
 	 * 
 	 * @param imageName Filename of the base colour image
+	 * @param playerColourEntireImage If true, the entire primary image is changed to the wizard's flag colour like e.g. the wizard gems
+	 * 	or overland enchantment mirrors, in this case any flag values will be ignored; if false, the primary image is kept original colour and
+	 * 	only the flag is changed to the wizard's colour and then superimposed onto the primary image
 	 * @param flagName Name of flag image, if there is one
 	 * @param flagOffsetX X offset to draw flag
 	 * @param flagOffsetY Y offset to draw flag
@@ -352,31 +355,38 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 	 * @throws IOException If there is a problem loading the image
 	 */
 	@Override
-	public final BufferedImage getModifiedImage (final String imageName, final String flagName, final Integer flagOffsetX, final Integer flagOffsetY,
+	public final BufferedImage getModifiedImage (final String imageName, final boolean playerColourEntireImage,
+		final String flagName, final Integer flagOffsetX, final Integer flagOffsetY,
 		final Integer playerID, final List<String> shadingColours) throws IOException
 	{
-		boolean flagApplies = (flagName != null) && (flagOffsetX != null) && (flagOffsetY != null) && (playerID != null);
+		boolean colourEntireImageApplies = (playerColourEntireImage) && (playerID != null);
+		boolean flagApplies = (!playerColourEntireImage) && (flagName != null) && (flagOffsetX != null) && (flagOffsetY != null) && (playerID != null);
 		final boolean shadingApplies = (shadingColours != null) && (shadingColours.size () > 0);
 		
-		// Maybe flag doesn't apply after all for monsters (this is TBC)
+		// Maybe flags and colouring doesn't apply after all for monsters
 		PlayerPublicDetails player = null;
-		if (flagApplies)
+		if ((colourEntireImageApplies) || (flagApplies))
 		{
 			player = getMultiplayerSessionUtils ().findPlayerWithID (getClient ().getPlayers (), playerID, "getModifiedImage");
 			final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) player.getPersistentPlayerPublicKnowledge ();
 			if (CommonDatabaseConstants.WIZARD_ID_MONSTERS.equals (pub.getWizardID ()))
+			{
+				colourEntireImageApplies = false;
 				flagApplies = false;
+			}
 		}
 		
 		// If there are no modifications to make at all, just use the normal image cache
 		BufferedImage image;
-		if ((!flagApplies) && (!shadingApplies))
+		if ((!colourEntireImageApplies) && (!flagApplies) && (!shadingApplies))
 			image = getUtils ().loadImage (imageName);
 		else
 		{
 			// Generate the entire key - maybe the image already exists in the cache
 			final StringBuilder key = new StringBuilder (imageName);
-			if (flagApplies)
+			if (colourEntireImageApplies)
+				key.append (":W" + playerID);
+			else if (flagApplies)
 				key.append (":P" + playerID);
 
 			List<String> sortedColours = null;
@@ -390,33 +400,42 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 			if (image == null)
 			{
 				// Generate new image - first deal with the flag colours
-				if (!flagApplies)
+				if ((!colourEntireImageApplies) && (!flagApplies))
 					image = getUtils ().loadImage (imageName);
 				else
 				{
-					// Need flag, and its not in the cache.. but maybe only the flag with the extra shading is not in the cache and the base flag might be
-					final String partialKey = imageName + ":P" + playerID;
+					// Need modified image, and its not in the cache.. but maybe only the coloured image or image with flag is in the cache, only missing the extra shading
+					final String partialKey = imageName + (colourEntireImageApplies ? ":W" : ":P") + playerID;
 					image = modifiedImages.get (partialKey);
 					
 					if (image == null)
 					{
 						// Generate a new one
 						final BufferedImage baseImage = getUtils ().loadImage (imageName);
-						final BufferedImage flagImage = getFlagImage (flagName, playerID);
-						
-						image = new BufferedImage (baseImage.getWidth (), baseImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
-						final Graphics2D g = image.createGraphics ();
-						try
+						if (colourEntireImageApplies)
 						{
-							g.drawImage (baseImage, 0, 0, null);
-							g.drawImage (flagImage, flagOffsetX, flagOffsetY, null);
+							final MomTransientPlayerPublicKnowledge trans = (MomTransientPlayerPublicKnowledge) player.getTransientPlayerPublicKnowledge ();
+							image = getUtils ().multiplyImageByColour (baseImage, Integer.parseInt (trans.getFlagColour (), 16));
 						}
-						finally
+						else
 						{
-							g.dispose ();
+							// Recursive call to get the coloured flag
+							final BufferedImage flagImage = getModifiedImage (flagName, true, null, null, null, playerID, null);
+							
+							image = new BufferedImage (baseImage.getWidth (), baseImage.getHeight (), BufferedImage.TYPE_INT_ARGB);
+							final Graphics2D g = image.createGraphics ();
+							try
+							{
+								g.drawImage (baseImage, 0, 0, null);
+								g.drawImage (flagImage, flagOffsetX, flagOffsetY, null);
+							}
+							finally
+							{
+								g.dispose ();
+							}
 						}
 				
-						// Store base image + flag, prior to applying shading, in the map
+						// Store base image + flag or coloured image, prior to applying shading, in the map
 						modifiedImages.put (partialKey, image);
 					}
 				}

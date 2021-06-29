@@ -483,7 +483,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		// Work out the image to draw n times
 		final UnitCombatImage unitImage = unit.findCombatAction (combatActionID, "drawUnitFigures").findDirection (direction, "drawUnitFigures");
 		final AnimationFrame frame = getAnim ().getUnitCombatImageFrame (unitImage, registeredAnimation, AnimationContainer.COMMON_XML);
-		final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (frame.getImageFile (), frame.getImageFlag (),
+		final BufferedImage image = getPlayerColourImageGenerator ().getModifiedImage (frame.getImageFile (), false, frame.getImageFlag (),
 			frame.getFlagOffsetX (), frame.getFlagOffsetY (), playerID, shadingColours);
 		
 		// Draw the figure in each position

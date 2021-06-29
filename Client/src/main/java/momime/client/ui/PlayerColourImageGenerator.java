@@ -78,6 +78,9 @@ public interface PlayerColourImageGenerator
 	 * e.g. "/momime.client.graphics/units/UN123/d5-stand.png:808080:FFFF50"
 	 * 
 	 * @param imageName Filename of the base colour image
+	 * @param playerColourEntireImage If true, the entire primary image is changed to the wizard's flag colour like e.g. the wizard gems
+	 * 	or overland enchantment mirrors, in this case any flag values will be ignored; if false, the primary image is kept original colour and
+	 * 	only the flag is changed to the wizard's colour and then superimposed onto the primary image
 	 * @param flagName Name of flag image, if there is one
 	 * @param flagOffsetX X offset to draw flag
 	 * @param flagOffsetY Y offset to draw flag
@@ -86,6 +89,7 @@ public interface PlayerColourImageGenerator
 	 * @return Image with modified colours
 	 * @throws IOException If there is a problem loading the image
 	 */
-	public BufferedImage getModifiedImage (final String imageName, final String flagName, final Integer flagOffsetX, final Integer flagOffsetY,
+	public BufferedImage getModifiedImage (final String imageName, final boolean playerColourEntireImage,
+		final String flagName, final Integer flagOffsetX, final Integer flagOffsetY,
 		final Integer playerID, final List<String> shadingColours) throws IOException;
 }

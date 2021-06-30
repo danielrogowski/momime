@@ -177,7 +177,7 @@ public final class TestUnitRowDisplayUI extends ClientTestData
 			
 		// Session utils
 		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
-		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "PlayerColourImageGeneratorImpl")).thenReturn (player1);
+		when (multiplayerSessionUtils.findPlayerWithID (players, pd1.getPlayerID (), "getModifiedImage")).thenReturn (player1);
 		
 		// Background generator
 		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();

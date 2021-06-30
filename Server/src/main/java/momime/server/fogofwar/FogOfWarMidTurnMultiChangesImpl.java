@@ -892,7 +892,10 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			final int movementDirection = getFogOfWarMidTurnChanges ().determineMovementDirection (moveFrom, moveTo, movementDirections, mom.getSessionDescription ().getOverlandMapSize ());
 
 			// Work out where this moves us to
-			// If we are moving ON to a tower from Myrror then plane still must be 1, or moveUnitStack thinks we can't click there, and it will adjust the plane when we actually move
+			// If we are MOVING onto to an empty tower (or one we already occupy) from Myrror then plane still must be 1,
+			//   or moveUnitStack thinks we can't click there, and it will adjust the plane when we actually move
+			// If we are ATTACKING a tower from Myrror then plane must be 0 as we call startCombat directly and this expects the plane to already be resolved correctly
+			//   but we need to check whether a combat is initiated first, so for now create oneStep with moveTo set to Myrror
 			// If we are moving OFF of a tower onto Myrror, then plane must be 1 or we'll get off on the wrong plane
 			// So plane must always be set from moveTo
 			final MapCoordinates3DEx oneStep = new MapCoordinates3DEx (moveFrom.getX (), moveFrom.getY (), moveTo.getZ ());
@@ -902,6 +905,14 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 			final boolean combatInitiated = getUnitCalculations ().willMovingHereResultInAnAttack (oneStep.getX (), oneStep.getY (), oneStep.getZ (),
 				unitStackOwner.getPlayerDescription ().getPlayerID (),
 				mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ());
+			
+			// If attacking a tower from Myrror, need to tweak the combat location
+			if ((combatInitiated) && (oneStep.getZ () > 0))
+			{
+				final MemoryGridCell mc = mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get (oneStep.getZ ()).getRow ().get (oneStep.getY ()).getCell ().get (oneStep.getX ());
+				if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (mc.getTerrainData ()))
+					oneStep.setZ (0);
+			}
 
 			// Set up result
 			result = new OneCellPendingMovement (unitStackOwner, pendingMovement, oneStep, combatInitiated);

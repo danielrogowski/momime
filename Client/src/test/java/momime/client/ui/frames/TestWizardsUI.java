@@ -1,5 +1,7 @@
 package momime.client.ui.frames;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -108,7 +110,7 @@ public final class TestWizardsUI extends ClientTestData
 			final PlayerPublicDetails player = new PlayerPublicDetails (pd, pub, trans);
 			players.add (player);
 			
-			when (multiplayerSessionUtils.findPlayerWithID (players, pd.getPlayerID (), "PlayerColourImageGeneratorImpl")).thenReturn (player);
+			when (multiplayerSessionUtils.findPlayerWithID (eq (players), eq (pd.getPlayerID ()), anyString ())).thenReturn (player);
 		}
 		
 		final MomClient client = mock (MomClient.class);

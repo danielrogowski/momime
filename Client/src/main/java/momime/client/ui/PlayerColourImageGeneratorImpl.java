@@ -125,7 +125,7 @@ public final class PlayerColourImageGeneratorImpl implements PlayerColourImageGe
 			{
 				colourEntireImageApplies = false;
 				flagApplies = false;
-				wasMonsters = true;
+				wasMonsters = playerColourEntireImage;  // So unit background squares output null, but units themselves are still drawn
 			}
 		}
 		

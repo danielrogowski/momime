@@ -7,6 +7,9 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -44,6 +47,9 @@ import momime.common.utils.UnitUtils;
  */
 public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 {
+	/** Class logger */
+	private final static Log log = LogFactory.getLog (OverlandMapProcessingImpl.class);
+	
 	/** Ordered list of units that we have to give orders to this turn */
 	private final List<MemoryUnit> unitsLeftToMoveOverland = new ArrayList<MemoryUnit> ();
 	
@@ -170,14 +176,19 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 					(getUnitUtils ().canSeeUnitOverland (mu, getClient ().getOurPlayerID (),
 						getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 				{
-					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
-						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-					
-					final HideableComponent<SelectUnitButton> button = buttonIter.next ();
-					button.getComponent ().setUnit (xu);
-					button.getComponent ().setSelected (unitsLeftToMoveOverland.contains (mu));	// Pre-select this unit as long as it hasn't already passed its allocated movement sequence
-					button.setHidden (false);
 					count++;
+					if (buttonIter.hasNext ())
+					{
+						final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+							getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+						
+						final HideableComponent<SelectUnitButton> button = buttonIter.next ();
+						button.getComponent ().setUnit (xu);
+						button.getComponent ().setSelected (unitsLeftToMoveOverland.contains (mu));	// Pre-select this unit as long as it hasn't already passed its allocated movement sequence
+						button.setHidden (false);
+					}
+					else
+						log.warn ("Ran out of select unit boxes when trying to show units at " + unitLocation + " (found " + count + " units)");
 				}
 
 		// Get rid of any remaining spare unused buttons

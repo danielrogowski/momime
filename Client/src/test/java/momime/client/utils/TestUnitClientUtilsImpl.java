@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 
+import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 import com.ndg.swing.NdgUIUtils;
 import com.ndg.swing.NdgUIUtilsImpl;
@@ -38,6 +39,7 @@ import momime.client.graphics.database.UnitSkillComponentImage;
 import momime.client.language.database.LanguageDatabaseHolder;
 import momime.client.language.database.MomLanguagesEx;
 import momime.client.languages.database.UnitName;
+import momime.client.ui.PlayerColourImageGeneratorImpl;
 import momime.common.database.AnimationEx;
 import momime.common.database.AnimationFrame;
 import momime.common.database.CombatAction;
@@ -63,6 +65,8 @@ import momime.common.messages.AvailableUnit;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
+import momime.common.messages.MomPersistentPlayerPublicKnowledge;
+import momime.common.messages.MomTransientPlayerPublicKnowledge;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 
@@ -427,9 +431,21 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 	
 	/**
 	 * @param unitID ID of unit to set up animation for
+	 * @param flagImage1 Flag image corresponding to move-frame1
+	 * @param flagOffsetX1 X offset of flag image corresponding to move-frame1
+	 * @param flagOffsetY1 X offset of flag image corresponding to move-frame1
+	 * @param flagImage2 Flag image corresponding to stand
+	 * @param flagOffsetX2 X offset of flag image corresponding to stand
+	 * @param flagOffsetY2 X offset of flag image corresponding to stand
+	 * @param flagImage3 Flag image corresponding to move-frame3
+	 * @param flagOffsetX3 X offset of flag image corresponding to move-frame3
+	 * @param flagOffsetY3 X offset of flag image corresponding to move-frame3
 	 * @return Animation with necessary details for testDrawUnit
 	 */
-	private final AnimationEx createUnitAnimation (final String unitID)
+	private final AnimationEx createUnitAnimation (final String unitID,
+		final String flagImage1, final Integer flagOffsetX1, final Integer flagOffsetY1,
+		final String flagImage2, final Integer flagOffsetX2, final Integer flagOffsetY2,
+		final String flagImage3, final Integer flagOffsetX3, final Integer flagOffsetY3)
 	{
 		final AnimationEx anim = new AnimationEx ();
 		anim.setAnimationSpeed (6);
@@ -438,6 +454,29 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		{
 			final AnimationFrame frame = new AnimationFrame ();
 			frame.setImageFile ("/momime.client.graphics/units/" + unitID + "/d4-" + action + ".png");
+			
+			switch (anim.getFrame ().size ())
+			{
+				case 0:
+					frame.setImageFlag (flagImage1);
+					frame.setFlagOffsetX (flagOffsetX1);
+					frame.setFlagOffsetY (flagOffsetY1);
+					break;
+
+				case 1:
+				case 3:
+					frame.setImageFlag (flagImage2);
+					frame.setFlagOffsetX (flagOffsetX2);
+					frame.setFlagOffsetY (flagOffsetY2);
+					break;
+					
+				case 2:
+					frame.setImageFlag (flagImage3);
+					frame.setFlagOffsetX (flagOffsetX3);
+					frame.setFlagOffsetY (flagOffsetY3);
+					break;
+			}
+			
 			anim.getFrame ().add (frame);
 		}
 		
@@ -463,14 +502,43 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		when (db.findUnit (eq ("UN197"), anyString ())).thenReturn (createUnitGraphics ("UN197")); 
 		when (db.findUnit (eq ("UN037"), anyString ())).thenReturn (createUnitGraphics ("UN037"));
 		
-		when (db.findAnimation (eq ("UN106_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN106"));
-		when (db.findAnimation (eq ("UN075_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN075"));
-		when (db.findAnimation (eq ("UN035_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN035"));
-		when (db.findAnimation (eq ("UN197_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN197"));
-		when (db.findAnimation (eq ("UN037_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN037"));
+		when (db.findAnimation (eq ("UN106_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN106",
+			"/momime.client.graphics/flags/combatHighMenFlag-d4-02.png", 12, 16,
+			"/momime.client.graphics/flags/combatHighMenFlag-d4-05.png", 12, 16,
+			"/momime.client.graphics/flags/combatHighMenFlag-d4-06.png", 11, 16));
+		
+		when (db.findAnimation (eq ("UN075_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN075",
+			null, null, null, null, null, null,null, null, null));
+		
+		when (db.findAnimation (eq ("UN035_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN035",
+			"/momime.client.graphics/flags/combatHeroFlag-d4-2.png", 10, 2,
+			"/momime.client.graphics/flags/combatHeroFlag-d4-1.png", 10, 2,
+			"/momime.client.graphics/flags/combatHeroFlag-d4-3.png", 10, 1));
+		
+		when (db.findAnimation (eq ("UN197_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN197",
+			null, null, null, null, null, null,null, null, null));
+		
+		when (db.findAnimation (eq ("UN037_D4_WALKFLY"), anyString ())).thenReturn (createUnitAnimation ("UN037",
+			"/momime.client.graphics/flags/combatBoatFlag-d4-2.png", 14, 11,
+			"/momime.client.graphics/flags/combatBoatFlag-d4-1.png", 14, 11,
+			"/momime.client.graphics/flags/combatBoatFlag-d4-3.png", 14, 11));
 		
 		final MomClient client = mock (MomClient.class);
 		when (client.getClientDB ()).thenReturn (db);
+		
+		// Owner of the units
+		final MomPersistentPlayerPublicKnowledge pub = new MomPersistentPlayerPublicKnowledge ();
+		pub.setWizardID ("WZ01");
+		
+		final MomTransientPlayerPublicKnowledge trans = new MomTransientPlayerPublicKnowledge ();
+		trans.setFlagColour ("FF4040");
+		
+		final PlayerPublicDetails player = new PlayerPublicDetails (null, pub, trans);
+		final List<PlayerPublicDetails> players = new ArrayList<PlayerPublicDetails> ();
+
+		final MultiplayerSessionUtils multiplayerSessionUtils = mock (MultiplayerSessionUtils.class);
+		when (client.getPlayers ()).thenReturn (players);
+		when (multiplayerSessionUtils.findPlayerWithID (players, 1, "getModifiedImage")).thenReturn (player);
 		
 		// This is dependant on way too many values to mock them all - so use the real graphics DB
 		final GraphicsDatabaseEx gfx = loadGraphicsDatabase (utils, null);
@@ -481,12 +549,19 @@ public final class TestUnitClientUtilsImpl extends ClientTestData
 		anim.setClient (client);
 		anim.setUtils (utils);
 		
+		// Image generator
+		final PlayerColourImageGeneratorImpl gen = new PlayerColourImageGeneratorImpl ();
+		gen.setUtils (utils);
+		gen.setClient (client);
+		gen.setMultiplayerSessionUtils (multiplayerSessionUtils);
+		
 		// Set up object to test
 		final UnitClientUtilsImpl unitUtils = new UnitClientUtilsImpl ();
 		unitUtils.setAnim (anim);
 		unitUtils.setGraphicsDB (gfx);
 		unitUtils.setClient (client);
 		unitUtils.setUtils (utils);
+		unitUtils.setPlayerColourImageGenerator (gen);
 		
 		// Set up a dummy panel
 		final Dimension panelSize = new Dimension (600, 400);

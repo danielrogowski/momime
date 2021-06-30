@@ -870,54 +870,62 @@ public final class CityViewUI extends MomClientFrameUI
 			if ((cityLocation.equals (mu.getUnitLocation ())) && (mu.getStatus () == UnitStatusID.ALIVE) && (getUnitUtils ().canSeeUnitOverland
 				(mu, getClient ().getOurPlayerID (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (), getClient ().getClientDB ())))
 			{
-				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
-					getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
-				
-				final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
-				selectUnitButton.init ();
-				selectUnitButton.setUnit (xu);
-				selectUnitButton.setSelected (true);		// Just so the owner's background colour appears
-
-				selectUnitButton.addMouseListener (new MouseAdapter ()
+				if (x < CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
 				{
-					@Override
-					public final void mouseClicked (final MouseEvent ev)
+					final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (mu, null, null, null,
+						getClient ().getPlayers (), getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory (), getClient ().getClientDB ());
+					
+					final SelectUnitButton selectUnitButton = getUiComponentFactory ().createSelectUnitButton ();
+					selectUnitButton.init ();
+					selectUnitButton.setUnit (xu);
+					selectUnitButton.setSelected (true);		// Just so the owner's background colour appears
+	
+					selectUnitButton.addMouseListener (new MouseAdapter ()
 					{
-						try
+						@Override
+						public final void mouseClicked (final MouseEvent ev)
 						{
-							// Right mouse clicks to open up the unit info screen are always enabled
-							if (SwingUtilities.isRightMouseButton (ev))
+							try
 							{
-								// Is there a unit info screen already open for this unit?
-								UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (selectUnitButton.getUnit ().getUnitURN ());
-								if (unitInfo == null)
+								// Right mouse clicks to open up the unit info screen are always enabled
+								if (SwingUtilities.isRightMouseButton (ev))
 								{
-									unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
-									unitInfo.setUnit (selectUnitButton.getUnit ().getMemoryUnit ());
-									getClient ().getUnitInfos ().put (selectUnitButton.getUnit ().getUnitURN (), unitInfo);
-								}
-							
-								unitInfo.setVisible (true);
-							}
-							else
-							{
-								// Left click shows the units in the city in the right hand panel of the overland map
-								getOverlandMapProcessing ().showSelectUnitBoxes (getCityLocation ());
+									// Is there a unit info screen already open for this unit?
+									UnitInfoUI unitInfo = getClient ().getUnitInfos ().get (selectUnitButton.getUnit ().getUnitURN ());
+									if (unitInfo == null)
+									{
+										unitInfo = getPrototypeFrameCreator ().createUnitInfo ();
+										unitInfo.setUnit (selectUnitButton.getUnit ().getMemoryUnit ());
+										getClient ().getUnitInfos ().put (selectUnitButton.getUnit ().getUnitURN (), unitInfo);
+									}
 								
-								// Don't actually deselect the button
-								selectUnitButton.setSelected (!selectUnitButton.isSelected ());
+									unitInfo.setVisible (true);
+								}
+								else
+								{
+									// Left click shows the units in the city in the right hand panel of the overland map
+									getOverlandMapProcessing ().showSelectUnitBoxes (getCityLocation ());
+									
+									// Don't actually deselect the button
+									selectUnitButton.setSelected (!selectUnitButton.isSelected ());
+								}
+							}
+							catch (final Exception e)
+							{
+								log.error (e, e);
 							}
 						}
-						catch (final Exception e)
-						{
-							log.error (e, e);
-						}
-					}
-				});
-
-				selectUnitButtons.add (selectUnitButton);
-				contentPane.add (selectUnitButton, "frmCitySelectUnitButton." + x);
-				x++;
+					});
+	
+					selectUnitButtons.add (selectUnitButton);
+					contentPane.add (selectUnitButton, "frmCitySelectUnitButton." + x);
+					x++;
+				}
+				else
+				{
+					x++;
+					log.warn ("Ran out of select unit boxes when trying to show units in city at " + cityLocation + " (found " + x + " units)");
+				}
 			}
 
 		contentPane.revalidate ();

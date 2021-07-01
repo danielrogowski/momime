@@ -658,7 +658,8 @@ public final class PlayerMessageProcessingImpl implements PlayerMessageProcessin
 
 		// Heal hurt units 1pt and gain 1exp
 		getFogOfWarMidTurnMultiChanges ().healUnitsAndGainExperience (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), onlyOnePlayerID,
-			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
+			mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (),
+			mom.getSessionDescription ().getOverlandMapSize ());
 
 		// Allow another building to be sold
 		getMemoryGridCellUtils ().blankBuildingsSoldThisTurn (mom.getGeneralServerKnowledge ().getTrueMap ().getMap ());

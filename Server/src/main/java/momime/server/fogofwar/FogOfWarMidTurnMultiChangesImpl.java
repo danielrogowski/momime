@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import javax.xml.bind.JAXBException;
@@ -13,6 +14,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.CoordinateSystemUtils;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.MultiplayerSessionServerUtils;
@@ -268,6 +270,7 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 * @param players List of players in the session
 	 * @param db Lookup lists built over the XML database
 	 * @param fogOfWarSettings Fog of War settings from session description
+	 * @param overlandMapCoordinateSystem Overland map coordinate system
 	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
 	 * @throws XMLStreamException If there is a problem sending a message to a player
 	 * @throws RecordNotFoundException If the tile type or map feature IDs cannot be found, or the player should be able to see the unit but it isn't in their list
@@ -276,11 +279,12 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	 */
 	@Override
 	public final void healUnitsAndGainExperience (final List<MemoryUnit> trueUnits, final int onlyOnePlayerID, final FogOfWarMemory trueMap,
-		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings)
+		final List<PlayerServerDetails> players, final CommonDatabase db, final FogOfWarSetting fogOfWarSettings, final CoordinateSystem overlandMapCoordinateSystem)
 		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
 	{
-		// Find the best Armsmaster at each map cell
+		// Find the best Armsmaster at each map cell and all the healers
 		final Map<MapCoordinates3DEx, Integer> armsmasters = new HashMap<MapCoordinates3DEx, Integer> ();
+		final Map<MapCoordinates3DEx, Integer> healers = new HashMap<MapCoordinates3DEx, Integer> ();
 		
 		for (final MemoryUnit thisUnit : trueUnits)
 			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && ((onlyOnePlayerID == 0) || (onlyOnePlayerID == thisUnit.getOwningPlayerID ())))
@@ -295,7 +299,45 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 					if ((oldValue == null) || (oldValue < heroSkillValue))
 						armsmasters.put (xu.getUnitLocation (), heroSkillValue);
 				}
+				
+				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_HEALER))
+				{
+					final int value = xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_SKILL_ID_HEALER);
+					Integer oldValue = healers.get (xu.getUnitLocation ());
+					if ((oldValue == null) || (oldValue < value))
+						healers.put (xu.getUnitLocation (), value);
+				}
 			}
+		
+		// Add +3 heal at every city
+		for (int plane = 0; plane < overlandMapCoordinateSystem.getDepth (); plane++)
+			for (int y = 0; y < overlandMapCoordinateSystem.getHeight (); y++)
+				for (int x = 0; x < overlandMapCoordinateSystem.getWidth (); x++)
+				{
+					final MemoryGridCell mc = trueMap.getMap ().getPlane ().get (plane).getRow ().get (y).getCell ().get (x);
+					final OverlandMapCityData cityData = mc.getCityData ();
+					
+					if ((cityData != null) && (cityData.getCityPopulation () > 0))
+					{
+						final MapCoordinates3DEx cityLocation = new MapCoordinates3DEx (x, y, plane);
+						final Integer oldValue = healers.get (cityLocation);
+						healers.put (cityLocation, ((oldValue == null ? 0 : oldValue) + 3));
+					}
+				}
+		
+		// Add +4 heal at every Animists' Guild
+		final Map<String, Integer> healingBuildings = db.getBuilding ().stream ().filter
+			(b -> b.getHealingRateBonus () != null).collect (Collectors.toMap (b -> b.getBuildingID (), b -> b.getHealingRateBonus ()));
+		
+		trueMap.getBuilding ().forEach (b ->
+		{
+			final Integer healingValue = healingBuildings.get (b.getBuildingID ());
+			if (healingValue != null)
+			{
+				final Integer oldValue = healers.get (b.getCityLocation ());
+				healers.put ((MapCoordinates3DEx) b.getCityLocation (), ((oldValue == null ? 0 : oldValue) + healingValue));
+			}
+		});
 		
 		// This can generate a lot of data - a unit update for every single one of our own units plus all units we can see (except summoned ones) - so collate the client messages
 		final Map<Integer, FogOfWarVisibleAreaChangedMessage> fowMessages = new HashMap<Integer, FogOfWarVisibleAreaChangedMessage> ();
@@ -312,7 +354,18 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				// Heal?
 				if ((magicRealm.isHealEachTurn ()) && (thisUnit.getUnitDamage ().size () > 0))
 				{
-					getUnitServerUtils ().healDamage (thisUnit.getUnitDamage (), 1, true);
+					// Work out healing rate
+					int healingRate = 3;
+					
+					final Integer healingRateBonus = healers.get (xu.getUnitLocation ());
+					if (healingRateBonus != null)
+						healingRate = healingRate + healingRateBonus;
+					
+					// How much is actually healed?
+					final int totalHealth = xu.getFullFigureCount () * xu.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS);
+					final int healValue = ((totalHealth * healingRate) + 59) / 60;
+					
+					getUnitServerUtils ().healDamage (thisUnit.getUnitDamage (), healValue, false);
 					sendMsg = true;
 				}
 

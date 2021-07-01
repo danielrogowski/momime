@@ -237,6 +237,9 @@ public final class CommonDatabaseConstants
 	/** Can teleport to anywhere in combat */
 	public final static String UNIT_SKILL_ID_TELEPORT = "US000";
 	
+	/** Boosts healing rate of unit stack */
+	public final static String UNIT_SKILL_ID_HEALER = "US016";
+	
 	/** Skill for settlers creating new cities */
 	public final static String UNIT_SKILL_ID_CREATE_OUTPOST = "US017";
 

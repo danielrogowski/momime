@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ndg.map.CoordinateSystem;
 import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
@@ -363,8 +364,11 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		magicRealm.setGainExperienceEachTurn (true);
 		when (db.findPick ("LTN", "healUnitsAndGainExperience")).thenReturn (magicRealm);
 
+		// Session description
+		final CoordinateSystem overlandMapCoordinateSystem = createOverlandMapCoordinateSystem ();
+		
 		// Server memory
-		final MapVolumeOfMemoryGridCells trueTerrain = new MapVolumeOfMemoryGridCells ();
+		final MapVolumeOfMemoryGridCells trueTerrain = createOverlandMap (overlandMapCoordinateSystem);
 		
 		final FogOfWarMemory trueMap = new FogOfWarMemory ();
 		trueMap.setMap (trueTerrain);
@@ -398,6 +402,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (unitUtils.expandUnitDetails (unit1, null, null, null, players, trueMap, db)).thenReturn (xu1);
 		when (xu1.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu1.getUnitDefinition ()).thenReturn (unitDef);
+		when (xu1.getFullFigureCount ()).thenReturn (6);
+		when (xu1.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (4);
 		
 		// Summoned unit that has taken 1 kind of damage
 		final UnitDamage unit2dmg1 = new UnitDamage ();
@@ -417,6 +423,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (unitUtils.expandUnitDetails (unit2, null, null, null, players, trueMap, db)).thenReturn (xu2);
 		when (xu2.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu2.getUnitDefinition ()).thenReturn (unitDef);
+		when (xu2.getFullFigureCount ()).thenReturn (2);
+		when (xu2.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (8);
 		
 		// Hero that has taken no damage
 		final MemoryUnit unit3 = new MemoryUnit ();
@@ -431,6 +439,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (unitUtils.expandUnitDetails (unit3, null, null, null, players, trueMap, db)).thenReturn (xu3);
 		when (xu3.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu3.getUnitDefinition ()).thenReturn (unitDef);
+		when (xu3.getFullFigureCount ()).thenReturn (2);
+		when (xu3.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (8);
 		
 		// Summoned unit that has taken no damage
 		final MemoryUnit unit4 = new MemoryUnit ();
@@ -445,6 +455,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (unitUtils.expandUnitDetails (unit4, null, null, null, players, trueMap, db)).thenReturn (xu4);
 		when (xu4.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu4.getUnitDefinition ()).thenReturn (unitDef);
+		when (xu4.getFullFigureCount ()).thenReturn (2);
+		when (xu4.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (8);
 		
 		// Dead hero
 		final UnitDamage unit5dmg1 = new UnitDamage ();
@@ -464,6 +476,8 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		when (unitUtils.expandUnitDetails (unit5, null, null, null, players, trueMap, db)).thenReturn (xu5);
 		when (xu5.getModifiedUnitMagicRealmLifeformType ()).thenReturn (magicRealm);
 		when (xu5.getUnitDefinition ()).thenReturn (unitDef);
+		when (xu5.getFullFigureCount ()).thenReturn (1);
+		when (xu5.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_HIT_POINTS)).thenReturn (10);
 		
 		// Units list
 		final List<MemoryUnit> units = new ArrayList<MemoryUnit> ();
@@ -485,26 +499,26 @@ public final class TestFogOfWarMidTurnMultiChangesImpl extends ServerTestData
 		multi.setUnitUtils (unitUtils);
 		
 		// Run method
-		multi.healUnitsAndGainExperience (units, 0, trueMap, players, db, fogOfWarSettings);
+		multi.healUnitsAndGainExperience (units, 0, trueMap, players, db, fogOfWarSettings, overlandMapCoordinateSystem);
 		
 		// Check results
-		verify (unitServerUtils, times (1)).healDamage (unit1.getUnitDamage (), 1, true);
+		verify (unitServerUtils, times (1)).healDamage (unit1.getUnitDamage (), 2, false);		// 5% of 24 is 1.2, then round up
 		verify (direct, times (1)).setDirectSkillValue (unit1, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit1), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
-		verify (unitServerUtils, times (1)).healDamage (unit2.getUnitDamage (), 1, true);
+		verify (unitServerUtils, times (1)).healDamage (unit2.getUnitDamage (), 1, false);		// 5% of 16 is 0.8, then round up
 		verify (direct, times (0)).setDirectSkillValue (unit2, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit2), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
-		verify (unitServerUtils, times (0)).healDamage (unit3.getUnitDamage (), 1, true);
+		verify (unitServerUtils, times (0)).healDamage (unit3.getUnitDamage (), 1, false);
 		verify (direct, times (1)).setDirectSkillValue (unit3, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (1)).updatePlayerMemoryOfUnit (eq (unit3), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 
-		verify (unitServerUtils, times (0)).healDamage (unit4.getUnitDamage (), 1, true);
+		verify (unitServerUtils, times (0)).healDamage (unit4.getUnitDamage (), 1, false);
 		verify (direct, times (0)).setDirectSkillValue (unit4, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit4), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 		
-		verify (unitServerUtils, times (0)).healDamage (unit5.getUnitDamage (), 1, true);
+		verify (unitServerUtils, times (0)).healDamage (unit5.getUnitDamage (), 1, false);
 		verify (direct, times (0)).setDirectSkillValue (unit5, CommonDatabaseConstants.UNIT_SKILL_ID_EXPERIENCE, 11);
 		verify (midTurn, times (0)).updatePlayerMemoryOfUnit (eq (unit5), eq (trueTerrain), eq (players), eq (db), eq (fogOfWarSettings), anyMap ());
 	}

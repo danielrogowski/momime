@@ -2426,6 +2426,7 @@ Halfling farmers produce more food, that Klackon and Dwarven workers produce mor
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingUnrestReductionImprovedByRetorts" type="xsd:boolean" nxe:label="Unrest reduction improved by DivP/InfP?" nxe:gridwidth="250" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="growthRateBonus" type="momimecommon:cityPopulationGrowthRate" nxe:label="Growth Rate Bonus" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="housingPercentageBonus" type="momimecommon:percentage" nxe:label="Housing %" nxe:gridwidth="100" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="healingRateBonus" type="momimecommon:healingRate" nxe:label="Healing Rate" nxe:gridwidth="100" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingExperience" type="momimecommon:experiencePoints" nxe:label="Experience Granted" nxe:gridwidth="120" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="buildingMagicWeapons" type="momimecommon:weaponGradeNumber" nxe:label="Magic Weapons?" nxe:showmaincolumn="false">
 				<xsd:annotation>
@@ -5401,6 +5402,13 @@ then use the movement codes of the unit stack(s) being carried to see if they wo
 	
 	<xsd:simpleType name="playListID">
 		<xsd:restriction base="xsd:normalizedString" />
+	</xsd:simpleType>
+	
+	<xsd:simpleType name="healingRate">
+        <xsd:annotation>
+        	<xsd:documentation>Healing rates are defined in 1/60ths..</xsd:documentation>
+        </xsd:annotation>
+		<xsd:restriction base="xsd:unsignedShort" />
 	</xsd:simpleType>
 	
 </xsd:schema>

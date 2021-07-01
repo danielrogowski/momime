@@ -248,6 +248,12 @@ public final class CommonDatabaseConstants
 
 	/** Invisibility skill added from spell */
 	public final static String UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL = "SS062";
+
+	/** Natural regeneration */
+	public final static String UNIT_SKILL_ID_REGENERATION = "US024";
+
+	/** Regeneration added from spell */
+	public final static String UNIT_SKILL_ID_REGENERATION_FROM_SPELL = "SS031";
 	
 	/** Skill for priests purifying corruption */
 	public final static String UNIT_SKILL_ID_PURIFY = "US025";

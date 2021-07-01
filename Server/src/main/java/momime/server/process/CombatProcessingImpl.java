@@ -110,6 +110,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	/** MemoryGridCell utils */
 	private MemoryGridCellUtils memoryGridCellUtils;
 	
+	/** Combat end of turn processing */
+	private CombatEndTurn combatEndTurn;
+	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
 	 * city wall corners and the main feature (node, temple, tower of wizardry, etc. on the defender side).
@@ -587,9 +590,10 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// Keep going until one side is wiped out or a human player needs to take their turn.
 		boolean aiPlayerTurn = true;
 		int consecutiveTurnsWithoutDoingAnything = 0;
+		int consecutiveTurns = 0;
 		CombatPlayers combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 			(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
-		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()) && (consecutiveTurnsWithoutDoingAnything < 2))
+		while ((mom.getPlayers ().size () > 0) && (aiPlayerTurn) && (combatPlayers.bothFound ()) && (consecutiveTurnsWithoutDoingAnything < 2) && (consecutiveTurns < 50))
 		{
 			// Who should take their turn next?
 			// If human player hits Auto, then we want to play their turn for them through their AI, without switching players
@@ -648,7 +652,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				}
 				else
 				{
-					// Take AI players' turn
+					// Take AI player's turn
 					CombatAIMovementResult aiMovementResult = getCombatAI ().aiCombatTurn (combatLocation, combatCurrentPlayer, mom);
 					switch (aiMovementResult)
 					{
@@ -676,6 +680,11 @@ public final class CombatProcessingImpl implements CombatProcessing
 					}
 					
 					autoControlHumanPlayer = false;
+					
+					// End of AI player's turn
+					if (mom.getPlayers ().size () > 0)
+						getCombatEndTurn ().combatEndTurn (combatLocation, tc.getCombatCurrentPlayerID (),
+							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
 			}
 			
@@ -684,12 +693,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 			if (mom.getPlayers ().size () > 0)
 				combatPlayers = getCombatMapUtils ().determinePlayersInCombatFromLocation
 					(combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), mom.getPlayers ());
+			
+			consecutiveTurns++;
 		}
 		
 		// If the combat is a stalemate, then just declare the defender as the winner
 		if ((combatPlayers.bothFound ()) && (consecutiveTurnsWithoutDoingAnything >= 2))
 		{
-			log.debug ("Combat at " + combatLocation + " ended in stalemate so ending immediately with defender as the winner");
+			log.debug ("Combat at " + combatLocation + " ended as neither side took any meanginful action for last 2 turns");
+			getCombatStartAndEnd ().combatEnded (combatLocation, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
+				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), null, mom);
+		}
+		
+		else if ((combatPlayers.bothFound ()) && (consecutiveTurns >= 50))
+		{
+			log.debug ("Combat at " + combatLocation + " ended as neither side took any action for last 50 turns");
 			getCombatStartAndEnd ().combatEnded (combatLocation, (PlayerServerDetails) combatPlayers.getAttackingPlayer (),
 				(PlayerServerDetails) combatPlayers.getDefendingPlayer (), (PlayerServerDetails) combatPlayers.getDefendingPlayer (), null, mom);
 		}
@@ -1447,5 +1465,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
 	{
 		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return Combat end of turn processing
+	 */
+	public final CombatEndTurn getCombatEndTurn ()
+	{
+		return combatEndTurn;
+	}
+
+	/**
+	 * @param c Combat end of turn processing
+	 */
+	public final void setCombatEndTurn (final CombatEndTurn c)
+	{
+		combatEndTurn = c;
 	}
 }

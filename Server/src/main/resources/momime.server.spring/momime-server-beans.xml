@@ -199,6 +199,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 	
 	<bean id="endCombatTurnMessage" class="momime.server.messages.process.EndCombatTurnMessageImpl" scope="prototype">
 		<property name="combatProcessing" ref="combatProcessing" />
+		<property name="combatEndTurn" ref="combatEndTurn" />
 	</bean>
 	
 	<bean id="combatAutoControlMessage" class="momime.server.messages.process.CombatAutoControlMessageImpl" scope="prototype">
@@ -672,6 +673,13 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatStartAndEnd" ref="combatStartAndEnd" />
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="combatEndTurn" ref="combatEndTurn" />
+	</bean>
+
+	<bean id="combatEndTurn" class="momime.server.process.CombatEndTurnImpl">
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="fogOfWarMidTurnChanges" ref="fogOfWarMidTurnChanges" />
 	</bean>
 	
 	<bean id="simultaneousTurnsProcessing" class="momime.server.process.SimultaneousTurnsProcessingImpl">

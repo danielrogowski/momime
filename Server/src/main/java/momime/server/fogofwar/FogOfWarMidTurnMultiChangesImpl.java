@@ -351,8 +351,16 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 				
 				boolean sendMsg = false;
 
+				// Units with regeneration can heal even if they wouldn't normally be allowed to (undead trolls)
+				if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_REGENERATION) ||
+					xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_REGENERATION_FROM_SPELL)) && (thisUnit.getUnitDamage ().size () > 0))
+				{
+					getUnitServerUtils ().healDamage (thisUnit.getUnitDamage (), 1000, false);
+					sendMsg = true;
+				}
+				
 				// Heal?
-				if ((magicRealm.isHealEachTurn ()) && (thisUnit.getUnitDamage ().size () > 0))
+				else if ((magicRealm.isHealEachTurn ()) && (thisUnit.getUnitDamage ().size () > 0))
 				{
 					// Work out healing rate
 					int healingRate = 3;

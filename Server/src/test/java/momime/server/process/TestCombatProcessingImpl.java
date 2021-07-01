@@ -566,11 +566,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MultiplayerSessionServerUtils multiplayerSessionServerUtils = mock (MultiplayerSessionServerUtils.class);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
 		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -585,11 +589,13 @@ public final class TestCombatProcessingImpl extends ServerTestData
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
+		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setCombatEndTurn (combatEndTurn);
 		
 		// Run method
 		proc.progressCombat (combatLocation, true, false, mom);
@@ -656,11 +662,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
 		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -682,12 +692,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
+		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setCombatEndTurn (combatEndTurn);
 		
 		// Run method
 		proc.progressCombat (combatLocation, false, false, mom);
@@ -763,11 +775,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
 		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -790,12 +806,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
+		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setCombatEndTurn (combatEndTurn);
 		
 		// Run method
 		proc.progressCombat (combatLocation, false, true, mom);
@@ -871,11 +889,15 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, defendingPd.getPlayerID (), "progressCombat")).thenReturn (defendingPlayer);
 		when (multiplayerSessionServerUtils.findPlayerWithID (players, attackingPd.getPlayerID (), "progressCombat")).thenReturn (attackingPlayer);
 		
+		// Session description
+		final MomSessionDescription sd = new MomSessionDescription ();
+		
 		// Session variables
 		final MomSessionVariables mom = mock (MomSessionVariables.class);
 		when (mom.getGeneralServerKnowledge ()).thenReturn (gsk);
 		when (mom.getPlayers ()).thenReturn (players);
 		when (mom.getServerDB ()).thenReturn (db);
+		when (mom.getSessionDescription ()).thenReturn (sd);
 		
 		// Combat location
 		final MapCoordinates3DEx combatLocation = new MapCoordinates3DEx (20, 10, 1);
@@ -900,12 +922,14 @@ public final class TestCombatProcessingImpl extends ServerTestData
 				
 		// Set up object to test
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
+		final CombatEndTurn combatEndTurn = mock (CombatEndTurn.class);
 		
 		final CombatProcessingImpl proc = new CombatProcessingImpl ();
 		proc.setCombatMapUtils (combatMapUtils);
 		proc.setUnitCalculations (unitCalc);
 		proc.setCombatAI (ai);
 		proc.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
+		proc.setCombatEndTurn (combatEndTurn);
 		
 		// Run method
 		proc.progressCombat (combatLocation, true, false, mom);

@@ -1239,7 +1239,8 @@ public final class FogOfWarMidTurnChangesImpl implements FogOfWarMidTurnChanges
 			{
 				msg = new ApplyDamageMessage ();
 				msg.setAttackerPlayerID (attackerPlayerID);
-				msg.getSpecialDamageResolutionTypeID ().addAll (specialDamageResolutionsApplied);
+				if (specialDamageResolutionsApplied != null)
+					msg.getSpecialDamageResolutionTypeID ().addAll (specialDamageResolutionsApplied);
 			}
 			else
 				msg = null;

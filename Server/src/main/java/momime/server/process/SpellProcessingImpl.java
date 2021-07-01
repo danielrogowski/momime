@@ -27,7 +27,6 @@ import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.Building;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
-import momime.common.database.DamageResolutionTypeID;
 import momime.common.database.HeroItem;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
@@ -734,7 +733,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						
 						getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (),
-							targetUnits, null, spell.getSpellID (), new ArrayList<DamageResolutionTypeID> (), mom.getPlayers (),
+							targetUnits, null, spell.getSpellID (), null, mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 					}
 					else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)

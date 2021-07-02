@@ -371,10 +371,13 @@ public final class CombatAIImpl implements CombatAI
 						// combat, in which case all units would have had their CombatX, CombatY values set to -1, -1
 						if (tu.getUnit ().getCombatPosition () != null)
 						{
-							// Consider casting a spell if the unit is a spellcaster without a ranged attack (e.g. Angel)
-							CombatAIMovementResult thisResult = CombatAIMovementResult.NOTHING;
+							// First try to cast fixed spells (e.g. Giant Spiders' web)
+							CombatAIMovementResult thisResult = getSpellAI ().decideWhetherToCastFixedSpellInCombat (currentPlayer, tu.getUnit (), combatLocation, mom);
 							
-							if ((tu.getUnit ().getManaRemaining () > 0) && (!getUnitCalculations ().canMakeRangedAttack (tu.getUnit ())))
+							// Next consider casting a spell if the unit is a spellcaster without a ranged attack (e.g. Angel)
+							if ((thisResult == CombatAIMovementResult.NOTHING) &&
+								(tu.getUnit ().getManaRemaining () > 0) && (!getUnitCalculations ().canMakeRangedAttack (tu.getUnit ())))
+								
 								thisResult = getSpellAI ().decideWhatToCastCombat (currentPlayer, tu.getUnit (), combatLocation, mom);
 							
 							if (thisResult == CombatAIMovementResult.NOTHING)

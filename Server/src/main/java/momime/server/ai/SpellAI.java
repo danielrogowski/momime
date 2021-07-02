@@ -99,4 +99,22 @@ public interface SpellAI
 	public CombatAIMovementResult decideWhatToCastCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit, final MapCoordinates3DEx combatLocation,
 		final MomSessionVariables mom)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * AI player decides whether to use a fixed spell a unit can cast in combat, e.g. Giant Spiders' web
+	 * 
+	 * @param player AI player who needs to choose what to cast
+	 * @param combatCastingUnit Unit who is casting the spell
+	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether a spell was cast or not
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
+	 * @throws MomException If there are any issues with data or calculation logic
+	 */
+	public CombatAIMovementResult decideWhetherToCastFixedSpellInCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
+		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException;
 }

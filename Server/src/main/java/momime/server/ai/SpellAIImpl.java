@@ -14,7 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.ndg.map.CoordinateSystemUtils;
-import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
@@ -23,7 +22,6 @@ import com.ndg.random.WeightedChoicesImpl;
 
 import momime.common.MomException;
 import momime.common.calculations.SpellCalculations;
-import momime.common.database.AttackSpellCombatTargetID;
 import momime.common.database.CommonDatabase;
 import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.RecordNotFoundException;
@@ -42,7 +40,6 @@ import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryBuildingUtils;
-import momime.common.utils.MemoryCombatAreaEffectUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.ResourceValueUtils;
@@ -54,7 +51,6 @@ import momime.server.MomSessionVariables;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.process.SpellProcessing;
 import momime.server.process.SpellQueueing;
-import momime.server.utils.UnitServerUtils;
 
 /**
  * Methods for AI players making decisions about spells
@@ -112,11 +108,8 @@ public final class SpellAIImpl implements SpellAI
 	/** Resource value utils */
 	private ResourceValueUtils resourceValueUtils;
 	
-	/** Server-only unit utils */
-	private UnitServerUtils unitServerUtils;
-	
-	/** Memory CAE utils */
-	private MemoryCombatAreaEffectUtils memoryCombatAreaEffectUtils;
+	/** Methods relating to casting spells in combat */
+	private CombatSpellAI combatSpellAI;
 	
 	/**
 	 * Common routine between picking free spells at the start of the game and picking the next spell to research - it picks a spell from the supplied list
@@ -670,124 +663,47 @@ public final class SpellAIImpl implements SpellAI
 					}
 
 					if (canAffordSpell)
-					{
-						// Validation for certain spell book sections
-						boolean valid = true;
-						switch (spell.getSpellBookSectionID ())
-						{
-							// Only add combat enchantments that aren't already there
-							case COMBAT_ENCHANTMENTS:
-								if (getMemoryCombatAreaEffectUtils ().listCombatEffectsNotYetCastAtLocation (mom.getGeneralServerKnowledge ().getTrueMap ().getCombatAreaEffect (),
-									spell, player.getPlayerDescription ().getPlayerID (), combatLocation).size () == 0)
-									
-									valid = false;
-								break;
-								
-							// Only allow Wall of Fire/Darkness/Stone if we don't already have it
-							case CITY_ENCHANTMENTS:
-								valid = (getMemoryMaintainedSpellUtils ().isCityValidTargetForSpell (mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (),
-									spell, player.getPlayerDescription ().getPlayerID (), combatLocation, mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
-									priv.getFogOfWar (), mom.getGeneralServerKnowledge ().getTrueMap ().getBuilding ()) == TargetSpellResult.VALID_TARGET);
-								break;
-								
-							// Can't summon (including raise dead-type spells) if already max number of units
-							case SUMMONING:
-								if ((!mom.getSessionDescription ().getUnitSetting ().isCanExceedMaximumUnitsDuringCombat ()) &&
-									(getCombatMapUtils ().countPlayersAliveUnitsAtCombatLocation (player.getPlayerDescription ().getPlayerID (), combatLocation,
-										mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ()) >= CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL))
-									
-									valid = false;
-								break;
-								
-							// Earth to Mud and Disrupt Wall aren't useful enough to bother teaching the AI there to target them
-							case SPECIAL_COMBAT_SPELLS:
-								valid = false;
-								break;
-								
-							default:
-						}
-						
-						if (valid)
-						{
-							// Do we need to pick a target?  Or if spell hits multiple targets, prove there is at least one?
-							if ((spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS) ||
-								((spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) && (spell.getSummonedUnit ().size () > 0)))
-							{
-								log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat which requires no unit checks");
-								final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, null);
-								choices.add (choice.getWeighting (), choice);
-							}
-							else
-							{
-								// Every other kind of spell requires either to be targetted on a specific unit, or at least for spells that hit all units (e.g. Flame Strike or Mass Healing)
-								// that there are some appropriate targets for the spell to act on.  First figure out which of those situations it is.
-								Integer targetCount;
-								if ((spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_ENCHANTMENTS) || (spell.getSpellBookSectionID () == SpellBookSectionID.UNIT_CURSES) ||
-									(spell.getSpellBookSectionID () == SpellBookSectionID.SUMMONING) ||
-									(((spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS) || (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) ||
-										(spell.getSpellBookSectionID () == SpellBookSectionID.DISPEL_SPELLS)) && (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
-									
-									targetCount = null;		// Targetted at a specific unit, so do not keep a count of targets
-								else
-									targetCount = 0;		// Targetted at all units, so count how many
-	
-								for (final MemoryUnit targetUnit : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
-								{
-									final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (targetUnit, null, null, spell.getSpellRealm (),
-										mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
-
-									if (getMemoryMaintainedSpellUtils ().isUnitValidTargetForSpell (spell, combatLocation, player.getPlayerDescription ().getPlayerID (),
-										combatCastingUnit, null, xu, mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()) == TargetSpellResult.VALID_TARGET)
-									{
-										if (targetCount == null)
-										{
-											log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat at Unit URN " + targetUnit.getUnitURN ());
-											final CombatAISpellChoice choice = new CombatAISpellChoice (spell, xu, null);
-											choices.add (choice.getWeighting (), choice);
-										}
-										else
-											targetCount++;
-									}
-								}
-								
-								// Is it a spell that hits all units, and found some targets?
-								if ((targetCount != null) && (targetCount > 0))
-								{
-									log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " considering casting spell " + spell.getSpellID () + " in combat which will hit " + targetCount + " target(s)");
-									final CombatAISpellChoice choice = new CombatAISpellChoice (spell, null, targetCount);
-									choices.add (choice.getWeighting (), choice);
-								}
-							}
-						}
-					}
+						getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, null, null, mom, choices);
 				}
 			}
 		
-		final CombatAISpellChoice choice = choices.nextWeightedValue ();
-		final CombatAIMovementResult result;
-		if (choice == null)
-			result = CombatAIMovementResult.NOTHING;
-		else
+		return getCombatSpellAI ().makeCastingChoice (player, combatLocation, choices, combatCastingUnit, mom);
+	}
+	
+	/**
+	 * AI player decides whether to use a fixed spell a unit can cast in combat, e.g. Giant Spiders' web
+	 * 
+	 * @param player AI player who needs to choose what to cast
+	 * @param combatCastingUnit Unit who is casting the spell
+	 * @param combatLocation Location of the combat where this spell is being cast
+	 * @param mom Allows accessing server knowledge structures, player list and so on
+	 * @return Whether a spell was cast or not
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 * @throws RecordNotFoundException If we find the spell they're trying to cast, or other expected game elements
+	 * @throws MomException If there are any issues with data or calculation logic
+	 */
+	@Override
+	public final CombatAIMovementResult decideWhetherToCastFixedSpellInCombat (final PlayerServerDetails player, final ExpandedUnitDetails combatCastingUnit,
+		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
+		throws MomException, RecordNotFoundException, PlayerNotFoundException, JAXBException, XMLStreamException
+	{
+		// Now we can go through all the types of fixed spell this unit can cast
+		final WeightedChoicesImpl<CombatAISpellChoice> choices = new WeightedChoicesImpl<CombatAISpellChoice> ();
+		choices.setRandomUtils (getRandomUtils ());
+		
+		for (int fixedSpellNumber = 0; fixedSpellNumber < combatCastingUnit.getMemoryUnit ().getFixedSpellsRemaining ().size (); fixedSpellNumber++)
 		{
-			log.debug ("AI player " + player.getPlayerDescription ().getPlayerID () + " decided to cast combat spell " + choice.getSpell ().getSpellID () + " (" +
-				choice.getSpell ().getSpellName () + ")");
-			
-			// If a summoning spell, pick a location for the unit
-			final MapCoordinates2DEx summoningLocation = (choice.getSpell ().getSpellBookSectionID () != SpellBookSectionID.SUMMONING) ? null :
-				getUnitServerUtils ().findFreeCombatPositionClosestTo (combatLocation, gc.getCombatMap (),
-					new MapCoordinates2DEx (mom.getSessionDescription ().getCombatMapSize ().getWidth () / 2, mom.getSessionDescription ().getCombatMapSize ().getHeight () / 2),
-					player.getPlayerDescription ().getPlayerID (), mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (),
-					mom.getServerDB (), mom.getSessionDescription ().getCombatMapSize ());
-			
-			if (getSpellQueueing ().requestCastSpell (player, (combatCastingUnit == null) ? null : combatCastingUnit.getUnitURN (), null, null,
-				choice.getSpell ().getSpellID (), null, combatLocation, summoningLocation, (choice.getTargetUnit () == null) ? null : choice.getTargetUnit ().getUnitURN (), null, mom))
-				
-				result = CombatAIMovementResult.ENDED_COMBAT;
-			else
-				result = CombatAIMovementResult.MOVED_OR_ATTACKED;
+			final Integer fixedSpellsRemaining = combatCastingUnit.getMemoryUnit ().getFixedSpellsRemaining ().get (fixedSpellNumber);
+			if ((fixedSpellsRemaining != null) && (fixedSpellsRemaining > 0))
+			{
+				final Spell spell = mom.getServerDB ().findSpell (combatCastingUnit.getUnitDefinition ().getUnitCanCast ().get (fixedSpellNumber).getUnitSpellID (), "decideWhetherToCastFixedSpellInCombat");
+				getCombatSpellAI ().listChoicesForSpell (player, spell, combatLocation, combatCastingUnit, fixedSpellNumber, null, mom, choices);
+			}
 		}
-
-		return result;
+		
+		return getCombatSpellAI ().makeCastingChoice (player, combatLocation, choices, combatCastingUnit, mom);
 	}
 	
 	/**
@@ -1047,34 +963,18 @@ public final class SpellAIImpl implements SpellAI
 	}
 
 	/**
-	 * @return Server-only unit utils
+	 * @return Methods relating to casting spells in combat
 	 */
-	public final UnitServerUtils getUnitServerUtils ()
+	public final CombatSpellAI getCombatSpellAI ()
 	{
-		return unitServerUtils;
+		return combatSpellAI;
 	}
-
+	
 	/**
-	 * @param utils Server-only unit utils
+	 * @param ai Methods relating to casting spells in combat
 	 */
-	public final void setUnitServerUtils (final UnitServerUtils utils)
+	public final void setCombatSpellAI (final CombatSpellAI ai)
 	{
-		unitServerUtils = utils;
-	}
-
-	/**
-	 * @return Memory CAE utils
-	 */
-	public final MemoryCombatAreaEffectUtils getMemoryCombatAreaEffectUtils ()
-	{
-		return memoryCombatAreaEffectUtils;
-	}
-
-	/**
-	 * @param utils Memory CAE utils
-	 */
-	public final void setMemoryCombatAreaEffectUtils (final MemoryCombatAreaEffectUtils utils)
-	{
-		memoryCombatAreaEffectUtils = utils;
+		combatSpellAI = ai;
 	}
 }

@@ -264,7 +264,8 @@ public final class MomSessionThread extends MultiplayerSessionThread implements 
 			if (spell.getSpellRealm () != null)
 			{
 				status.setStatus (SpellResearchStatusID.UNAVAILABLE);
-				status.setRemainingResearchCost (spell.getResearchCost ());
+				if (spell.getResearchCost () != null)
+					status.setRemainingResearchCost (spell.getResearchCost ());
 			}
 
 			// Some arcane spells are free

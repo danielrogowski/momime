@@ -731,8 +731,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="spellCalculations" ref="spellCalculations" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="resourceValueUtils" ref="resourceValueUtils" />
-		<property name="unitServerUtils" ref="unitServerUtils" />
-		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="combatSpellAI" ref="combatSpellAI" />
 	</bean>
 
 	<bean id="cityAI" class="momime.server.ai.CityAIImpl">
@@ -820,6 +819,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="unitUtils" ref="unitUtils" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
+	
+	<bean id="combatSpellAI" class="momime.server.ai.CombatSpellAIImpl">
+		<property name="memoryCombatAreaEffectUtils" ref="memoryCombatAreaEffectUtils" />
+		<property name="combatMapUtils" ref="combatMapUtils" />
+		<property name="unitUtils" ref="unitUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="unitServerUtils" ref="unitServerUtils" />
+		<property name="spellQueueing" ref="spellQueueing" />
+	</bean>	
 	
 	<!-- Fog of War -->
 

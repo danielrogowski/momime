@@ -246,7 +246,7 @@ public final class TreasureUtilsImpl implements TreasureUtils
 					while ((!found) && (spells.hasNext ()))
 					{
 						final Spell spell = spells.next ();
-						if (spell.getSpellRank ().equals (spellRank.getSpellRankID ()))
+						if ((spell.getSpellRank () != null) && (spell.getSpellRank ().equals (spellRank.getSpellRankID ())))
 						{
 							final SpellResearchStatus researchStatus = getSpellUtils ().findSpellResearchStatus (priv.getSpellResearchStatus (), spell.getSpellID ());
 							if ((researchStatus != null) && ((researchStatus.getStatus () == SpellResearchStatusID.NOT_IN_SPELL_BOOK) ||

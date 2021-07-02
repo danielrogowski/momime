@@ -472,6 +472,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 						{
 							if (skill.getUnitSkillID () != null)
 								getHelpUI ().showUnitSkillID (skill.getUnitSkillID (), getUnit ());
+							else if (skill.getSpellID () != null)
+								getHelpUI ().showSpellID (skill.getSpellID (), getUnit ().getOwningPlayer ());
 							else if (skill.getHeroItemSlotTypeID () != null)
 								getHelpUI ().showHeroItemSlotTypeID (skill.getHeroItemSlotTypeID ());
 							else if (skill.getHeroItem () != null)

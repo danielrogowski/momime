@@ -689,10 +689,17 @@ public final class SpellBookUI extends MomClientFrameUI
 		final MomPersistentPlayerPublicKnowledge pub = (MomPersistentPlayerPublicKnowledge) ourPlayer.getPersistentPlayerPublicKnowledge ();
 
 		final ExpandedUnitDetails castingUnit;
+		final boolean castingFixedSpell;
 		if ((getCastType () == SpellCastType.COMBAT) && (getCombatUI ().getCastingSource () != null))
+		{
 			castingUnit = getCombatUI ().getCastingSource ().getCastingUnit ();
+			castingFixedSpell = (getCombatUI ().getCastingSource ().getFixedSpellNumber () != null);
+		}
 		else
+		{
 			castingUnit = null;
+			castingFixedSpell = false;
+		}
 		
 		// Look up name
 		final String spellName = getLanguageHolder ().findDescription (spell.getSpellName ());
@@ -717,7 +724,8 @@ public final class SpellBookUI extends MomClientFrameUI
 			else if ((getCastType () == SpellCastType.SPELL_CHARGES) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
 				proceed = false;
 			
-			else if ((getCastType () == SpellCastType.COMBAT) &&
+			// If we're casting a fixed spell on a unit, allow it even if it can't normally be cast that way from the spell book
+			else if ((getCastType () == SpellCastType.COMBAT) && (!castingFixedSpell) &&
 				((!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)) || (combatCost > getCombatMaxCastable ())))
 				proceed = false;
 			

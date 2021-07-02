@@ -448,10 +448,18 @@ public final class SpellProcessingImpl implements SpellProcessing
 		// See if node aura or Counter Magic blocks it
 		final MomPersistentPlayerPublicKnowledge castingPlayerPub = (MomPersistentPlayerPublicKnowledge) castingPlayer.getPersistentPlayerPublicKnowledge ();
 		
-		final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, castingPlayerPub.getPick ());
-		if ((immuneToCounterMagic) || (getSpellDispelling ().processCountering
-			(castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer,
-				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ())))
+		final boolean passesCounteringAttempts;
+		if (immuneToCounterMagic)
+			passesCounteringAttempts = true;
+		else
+		{
+			final int unmodifiedCombatCastingCost = getSpellUtils ().getUnmodifiedCombatCastingCost (spell, variableDamage, castingPlayerPub.getPick ());
+			passesCounteringAttempts = getSpellDispelling ().processCountering
+				(castingPlayer, spell, unmodifiedCombatCastingCost, combatLocation, defendingPlayer, attackingPlayer,
+					mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
+		}
+		
+		if (passesCounteringAttempts)
 		{
 			// Combat enchantments
 			if (spell.getSpellBookSectionID () == SpellBookSectionID.COMBAT_ENCHANTMENTS)

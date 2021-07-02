@@ -3178,8 +3178,9 @@ this value each time a dispel attempt is made (counter magic).</xsd:documentatio
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellName" type="momimecommon:languageText" nxe:label="Name" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellDescription" type="momimecommon:languageText" nxe:label="Short description" />
 			<xsd:element minOccurs="0" maxOccurs="unbounded" name="spellHelpText" type="momimecommon:languageText" nxe:label="Long help text" />
-			<xsd:element minOccurs="1" maxOccurs="1" name="spellRank" type="momimecommon:spellRankID" nxe:label="Rank" nxe:showmaincolumn="false">
+			<xsd:element minOccurs="0" maxOccurs="1" name="spellRank" type="momimecommon:spellRankID" nxe:label="Rank" nxe:showmaincolumn="false">
 				<xsd:annotation>
+					<xsd:documentation>Units with no spell rank can never be researched (this exists solely for the Summon Demon spell)</xsd:documentation>
 					<xsd:appinfo>
 						<nxe:showreferencedfield>spellRankDescription</nxe:showreferencedfield>
 					</xsd:appinfo>

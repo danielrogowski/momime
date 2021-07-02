@@ -152,7 +152,7 @@ public final class SpellQueueingImpl implements SpellQueueing
 		else if ((combatLocation == null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.OVERLAND)))
 			msg = "That spell cannot be cast overland.";
 		
-		else if ((combatLocation != null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
+		else if ((combatLocation != null) && (combatCastingFixedSpellNumber == null) && (!getSpellUtils ().spellCanBeCastIn (spell, SpellCastType.COMBAT)))
 			msg = "That spell cannot be cast in combat.";
 
 		else if ((combatLocation == null) && ((combatTargetLocation != null) || (combatTargetUnitURN != null)))

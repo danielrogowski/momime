@@ -3119,7 +3119,7 @@ public final class NewGameUI extends MomClientFrameUI
 			// See if there's any other spell ranks for this magic realm that we don't get free spells for
 			// i.e. for any of the 5 magic realms in the default MoM setup, this will give SR01, SR02, SR03, SR04 but not SR05
 			for (final Spell spell : getClient ().getClientDB ().getSpell ())
-				if ((magicRealmID.equals (spell.getSpellRealm ())) && (!spellRankIDs.contains (spell.getSpellRank ())))
+				if ((magicRealmID.equals (spell.getSpellRealm ())) && (spell.getSpellRank () != null) && (!spellRankIDs.contains (spell.getSpellRank ())))
 				{
 					spellRankIDs.add (spell.getSpellRank ());
 					

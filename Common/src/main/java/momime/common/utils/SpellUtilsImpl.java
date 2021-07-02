@@ -406,7 +406,7 @@ public final class SpellUtilsImpl implements SpellUtils
 					  /* or we want arcane and spell lacks a realm */ || ((desiredMagicRealmID.equals ("")) && (thisSpell.getSpellRealm () == null))
 					  /* or we want a specific non-arcane realm and spell matches */ || (thisSpell.getSpellRealm () != null && thisSpell.getSpellRealm ().equals (desiredMagicRealmID))
 					)
-				  && ((spellRankID == null) || (thisSpell.getSpellRank ().equals (spellRankID)))
+				  && ((spellRankID == null) || ((thisSpell.getSpellRank () != null) && (thisSpell.getSpellRank ().equals (spellRankID))))
 				  && ((statuses == null) || (statuses.contains (thisSpellResearchStatus.getStatus ())))
 			   )
 

@@ -682,7 +682,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					autoControlHumanPlayer = false;
 					
 					// End of AI player's turn
-					if (mom.getPlayers ().size () > 0)
+					if ((mom.getPlayers ().size () > 0) && (tc.getCombatCurrentPlayerID () != null))
 						getCombatEndTurn ().combatEndTurn (combatLocation, tc.getCombatCurrentPlayerID (),
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 				}
@@ -713,6 +713,56 @@ public final class CombatProcessingImpl implements CombatProcessing
 		}
 	}
 
+	/**
+	 * Searches for units that died in the specified combat, but their side won, and they can regenerate.
+	 * 
+	 * @param combatLocation The location the combat is taking place at (may not necessarily be the location of the defending units, see where this is set in startCombat)
+	 * @param winningPlayer The player who won the combat
+	 * @param trueMap True server knowledge of buildings and terrain
+	 * @param players List of players in the session
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @return The number of dead units that were brought back to life
+	 * @throws JAXBException If there is a problem converting the object into XML
+	 * @throws XMLStreamException If there is a problem writing to the XML stream
+	 * @throws RecordNotFoundException If an expected item cannot be found in the db
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final int regenerateUnits (final MapCoordinates3DEx combatLocation, final PlayerServerDetails winningPlayer, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+		throws JAXBException, XMLStreamException, RecordNotFoundException, PlayerNotFoundException, MomException
+	{
+		int count = 0;
+		
+		for (final MemoryUnit trueUnit : trueMap.getUnit ())
+
+			// Don't check combatPosition here - DEAD units should have no position
+			if ((combatLocation.equals (trueUnit.getCombatLocation ())) && (!trueUnit.isWasSummonedInCombat ()) &&
+				(trueUnit.getOwningPlayerID () == winningPlayer.getPlayerDescription ().getPlayerID ()) &&
+				((trueUnit.getStatus () != UnitStatusID.ALIVE) || (trueUnit.getUnitDamage ().size () > 0)))
+			{
+				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
+				if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_REGENERATION)) ||
+					(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_REGENERATION_FROM_SPELL)))
+				{
+					// Only count up the ones that were actually dead; not just if we're healing them
+					if (trueUnit.getStatus () != UnitStatusID.ALIVE)
+						count++;
+					
+					trueUnit.setStatus (UnitStatusID.ALIVE);
+					getUnitServerUtils ().healDamage (trueUnit.getUnitDamage (), 1000, false);
+					trueUnit.getUnitDamage ().clear ();
+					
+					getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (trueUnit, trueMap.getMap (), players, db, fogOfWarSettings, null);
+				}
+			}
+		
+		log.debug ("regenerateUnits brought " + count + " units back to life");
+		return count;
+	}
+	
 	/**
 	 * Searches for units that died in the specified combat mainly to Life Stealing damage owned by the losing player,
 	 * and converts them into undead owned by the winning player.
@@ -753,7 +803,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 					trueUnit.setOwningPlayerID (winningPlayer.getPlayerDescription ().getPlayerID ());
 					trueUnit.setStatus (UnitStatusID.ALIVE);
 					trueUnit.setUnitLocation (new MapCoordinates3DEx (newLocation));
-					trueUnit.getUnitDamage ().clear ();
+					getUnitServerUtils ().healDamage (trueUnit.getUnitDamage (), 1000, false);
 					
 					// Note this is an actual skill, not a spell effect, hence can never be turned off
 					final UnitSkillAndValue undeadSkill = new UnitSkillAndValue ();

@@ -559,6 +559,11 @@ Either direction or teleportTo will be filled in, but not both.</xsd:documentati
     							<xsd:documentation>Number of items held by heroes who died in the combat, regardless of which side they were on.  The winner gets all such items.</xsd:documentation>
 							</xsd:annotation>
 						</xsd:element>
+						<xsd:element minOccurs="1" maxOccurs="1" name="regeneratedCount" type="xsd:unsignedShort">
+						    <xsd:annotation>
+    							<xsd:documentation>Number of units with regeneration that were killed, but then their side won the combat so they came back to life.</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="1" maxOccurs="1" name="undeadCreated" type="xsd:unsignedShort">
 						    <xsd:annotation>
     							<xsd:documentation>Number of undead created because the winning player killed some of the losing player's units mainly with ghouls / life drain.</xsd:documentation>

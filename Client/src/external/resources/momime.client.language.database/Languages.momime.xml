@@ -3915,6 +3915,12 @@ Bonus Or +GOLD_BONUS%</text>
         <heroItems language="en">
             <text>ITEM_COUNT hero item(s) from heroes that died in battle were added to your fortress vault.</text>
         </heroItems>
+        <regeneratedSingular language="en">
+            <text>1 unit regenerates after dying.</text>
+        </regeneratedSingular>
+        <regeneratedPlural language="en">
+            <text>REGENERATED_COUNT units regenerate after dying.</text>
+        </regeneratedPlural>
         <undeadCreatedSingular language="en">
             <text>1 unit rises from the dead.</text>
         </undeadCreatedSingular>

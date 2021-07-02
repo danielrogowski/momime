@@ -403,9 +403,14 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 			if (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ()))
 				moveTo.setZ (0);
 			
+			// Units with regeneration come back from being dead and/or regain full health
+			msg.setRegeneratedCount (getCombatProcessing ().regenerateUnits (combatLocation, winningPlayer,
+				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ()));
+			
 			// Undead created from ghouls / life stealing?
 			// Note these are always moved to the "moveTo" i.e. defending location - if the attacker won, their main force will advance
 			// there in the code below; if the defender won, the undead need to be moved to be stacked with the rest of the defenders.
+			// This doesn't bother checking if we end up with too many units; if there are, they get removed in killUnitsIfTooManyInMapCell below.
 			final PlayerServerDetails losingPlayer = (winningPlayer == attackingPlayer) ? defendingPlayer : attackingPlayer;
 			final List<MemoryUnit> undead = getCombatProcessing ().createUndead (combatLocation, moveTo, winningPlayer, losingPlayer,
 				mom.getGeneralServerKnowledge ().getTrueMap (), mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());

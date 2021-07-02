@@ -229,6 +229,19 @@ public final class CombatEndedUI extends MomClientDialogUI
 				("ITEM_COUNT", Integer.valueOf (getMessage ().getHeroItemCount ()).toString ()));
 		}
 		
+		// Units regenerated?
+		if (getMessage ().getRegeneratedCount () > 0)
+		{
+			if (bottomText.length () > 0)
+				bottomText.append (System.lineSeparator ());
+			
+			final List<LanguageText> regeneratedText = (getMessage ().getRegeneratedCount () == 1) ?
+				getLanguages ().getCombatEndedScreen ().getRegeneratedSingular () : getLanguages ().getCombatEndedScreen ().getRegeneratedPlural ();
+			
+			bottomText.append (getLanguageHolder ().findDescription (regeneratedText).replaceAll
+				("REGENERATED_COUNT", Integer.valueOf (getMessage ().getRegeneratedCount ()).toString ()));
+		}
+		
 		// Undead created?
 		if (getMessage ().getUndeadCreated () > 0)
 		{

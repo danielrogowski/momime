@@ -241,16 +241,7 @@ public class MinimalUnitDetailsImpl implements MinimalUnitDetails
 	@Override
 	public final int getFullFigureCount ()
 	{
-		final int countAccordingToRecord = getUnitDefinition ().getFigureCount ();
-
-        // Fudge until we do Hydras properly with a 'Figures-as-heads' skill
-		final int realCount;
-        if (countAccordingToRecord == 9)
-        	realCount = 1;
-       	else
-       		realCount = countAccordingToRecord;
-
-		return realCount;
+		return getUnitDefinition ().getFigureCount ();
 	}
 
 	/**

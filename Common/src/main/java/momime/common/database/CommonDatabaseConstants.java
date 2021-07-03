@@ -282,6 +282,9 @@ public final class CommonDatabaseConstants
 	/** Can travel through ground to anywhere in combat */
 	public final static String UNIT_SKILL_ID_MERGING = "US169";
 	
+	/** Unit lacks graphics for multiple figures, so always just draw one */
+	public final static String UNIT_SKILL_ID_DRAW_ONE_FIGURE = "US170";
+	
 	// hero skills
 
 	/** Armsmaster raises exp of normal units stacked with them */

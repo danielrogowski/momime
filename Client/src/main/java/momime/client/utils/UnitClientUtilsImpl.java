@@ -532,7 +532,7 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 		final List<String> shadingColours, final Double mergingRatio) throws IOException
 	{
 		// Get alive figures
-		final int aliveFigureCount = unit.calculateAliveFigureCount ();
+		int aliveFigureCount = unit.calculateAliveFigureCount ();
 		
 		if (aliveFigureCount > 0)
 		{
@@ -544,7 +544,16 @@ public final class UnitClientUtilsImpl implements UnitClientUtils
 				sampleTileImageFile = null; 
 			
 			// Call other version now that we have all the necessary values
-			drawUnitFigures (unit.getUnitID (), unit.getOwningPlayerID (), unit.getFullFigureCount (), aliveFigureCount, combatActionID,
+			int fullFigureCount = unit.getFullFigureCount ();
+			
+			if (unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_DRAW_ONE_FIGURE))
+			{
+				fullFigureCount = 1;
+				if (aliveFigureCount > 1)
+					aliveFigureCount = 1;
+			}			
+			
+			drawUnitFigures (unit.getUnitID (), unit.getOwningPlayerID (), fullFigureCount, aliveFigureCount, combatActionID,
 				direction, g, offsetX, offsetY, sampleTileImageFile, registeredAnimation, baseZOrder, shadingColours, mergingRatio);
 		}
 	}

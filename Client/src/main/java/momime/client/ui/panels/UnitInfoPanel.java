@@ -162,6 +162,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 	/** Image of upkeep in coins */
 	private JLabel currentlyConstructingUpkeep;
 
+	/** Head count label for Hydra */
+	private JLabel headsLabel;
+	
+	/** Head count label for Hydra */
+	private JLabel headsValue;
+	
 	/** URN label */
 	private JLabel urnLabel;
 	
@@ -316,6 +322,12 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		
 		currentlyConstructingUpkeep = new JLabel ();
 		getPanel ().add (currentlyConstructingUpkeep, "frmUnitInfoCurrentlyConstructingUpkeep");
+		
+		headsLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
+		getPanel ().add (headsLabel, "frmUnitInfoHeadsLabel");
+		
+		headsValue = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
+		getPanel ().add (headsValue, "frmUnitInfoHeadsValue");
 		
 		urnLabel = getUtils ().createLabel (MomUIConstants.AQUA, getSmallFont ());
 		getPanel ().add (urnLabel, "frmUnitInfoURNLabel");
@@ -528,6 +540,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		unitSkillsScrollPane.setVisible (false);
 		currentlyConstructingAllows.setVisible (true);
 		currentlyConstructingDescription.setVisible (true);
+		headsLabel.setVisible (false);
+		headsValue.setVisible (false);
 
 		// Find details about this kind of building
 		building = showBuilding;
@@ -767,6 +781,19 @@ public final class UnitInfoPanel extends MomClientPanelUI
 			urnLabel.setVisible (false);
 			urnValue.setVisible (false);
 		}
+		
+		// Special head count label for hydras
+		if (unit.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_DRAW_ONE_FIGURE))
+		{
+			headsLabel.setVisible (true);
+			headsValue.setVisible (true);
+			headsValue.setText (Integer.valueOf (getUnit ().calculateAliveFigureCount ()).toString ());
+		}
+		else
+		{
+			headsLabel.setVisible (false);
+			headsValue.setVisible (false);
+		}
 	}
 
 	/**
@@ -795,6 +822,8 @@ public final class UnitInfoPanel extends MomClientPanelUI
 		// Fixed labels
 		upkeepLabel.setText	(getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getUpkeep ()));
 		costLabel.setText		(getLanguageHolder ().findDescription (getLanguages ().getChangeConstructionScreen ().getCost ()));
+
+		headsLabel.setText ("Heads");
 
 		// Update text about unit or building being displayed
 		currentConstructionChanged ();

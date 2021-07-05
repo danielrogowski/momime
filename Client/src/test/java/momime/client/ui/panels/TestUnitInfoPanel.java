@@ -320,7 +320,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 			final UnitSkillEx skillDef = new UnitSkillEx ();
 			skillDef.getUnitSkillDescription ().add (createLanguageText (Language.ENGLISH, "Name of skill " + skillID));
 			skillDef.setUnitSkillTypeID (UnitSkillTypeID.NO_VALUE);
-			skillDef.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png");
+			skillDef.setUnitSkillImageFile ("/momime.client.graphics/unitSkills/US0" + (n+25) + "-icon.png");
 			when (db.findUnitSkill (eq (skillID), anyString ())).thenReturn (skillDef);
 
 			// Unit stat
@@ -332,7 +332,7 @@ public final class TestUnitInfoPanel extends ClientTestData
 			when (xu.hasModifiedSkill (skillID)).thenReturn (n % 2 == 0);
 
 			// Icon
-			when (unitClientUtils.getUnitSkillSingleIcon (xu, skillID)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+13) + "-icon.png"));
+			when (unitClientUtils.getUnitSkillSingleIcon (xu, skillID)).thenReturn (utils.loadImage ("/momime.client.graphics/unitSkills/US0" + (n+25) + "-icon.png"));
 		}
 		
 		// Attributes

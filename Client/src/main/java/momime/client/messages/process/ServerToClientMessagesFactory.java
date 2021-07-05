@@ -328,4 +328,9 @@ public interface ServerToClientMessagesFactory
 	 * @return Newly created message
 	 */
 	public OfferAcceptedMessageImpl createOfferAcceptedMessage ();
+	
+	/**
+	 * @return Newly created message
+	 */
+	public PlaneShiftUnitStackMessageImpl createPlaneShiftUnitStackMessage ();
 }

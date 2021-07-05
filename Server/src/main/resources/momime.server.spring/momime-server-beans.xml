@@ -385,6 +385,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="serverResourceCalculations" ref="serverResourceCalculations" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
 		<property name="cityCalculations" ref="cityCalculations" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
+		<property name="fogOfWarMidTurnMultiChanges" ref="fogOfWarMidTurnMultiChanges" />
 	</bean>
 
 	<bean id="cityServerUtils" class="momime.server.utils.CityServerUtilsImpl">
@@ -651,7 +653,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="combatMapGenerator" ref="combatMapGenerator" />
 		<property name="combatProcessing" ref="combatProcessing" />
 		<property name="multiplayerSessionServerUtils" ref="multiplayerSessionServerUtils" />
-		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 		<property name="simultaneousTurnsProcessing" ref="simultaneousTurnsProcessing" />
 		<property name="momAI" ref="momAI" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
@@ -674,6 +675,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="randomUtils" ref="randomUtils" />
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="combatEndTurn" ref="combatEndTurn" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
 	<bean id="combatEndTurn" class="momime.server.process.CombatEndTurnImpl">
@@ -885,6 +887,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="treasureUtils" ref="treasureUtils" />
 		<property name="unitSkillDirectAccess" ref="unitSkillDirectAccess" />
 		<property name="playerMessageProcessing" ref="playerMessageProcessing" />
+		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
 	</bean>
 
 	<bean id="fogOfWarProcessing" class="momime.server.fogofwar.FogOfWarProcessingImpl">

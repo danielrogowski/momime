@@ -2,11 +2,12 @@ package momime.server.fogofwar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -42,12 +43,14 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.OverlandMapCityData;
+import momime.common.messages.OverlandMapTerrainData;
 import momime.common.messages.PendingMovement;
 import momime.common.messages.TurnSystem;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.FogOfWarVisibleAreaChangedMessage;
 import momime.common.messages.servertoclient.MoveUnitStackOverlandMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
+import momime.common.messages.servertoclient.PlaneShiftUnitStackMessage;
 import momime.common.messages.servertoclient.SelectNextUnitToMoveOverlandMessage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryCombatAreaEffectUtils;
@@ -56,6 +59,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.FogOfWarCalculations;
 import momime.server.calculations.ServerCityCalculations;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.knowledge.ServerGridCellEx;
 import momime.server.messages.MomGeneralServerKnowledge;
 import momime.server.process.CombatStartAndEnd;
@@ -125,6 +129,9 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	
 	/** Methods for dealing with player msgs */
 	private PlayerMessageProcessing playerMessageProcessing;
+	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * @param trueMap True server knowledge of buildings and terrain
@@ -1083,6 +1090,144 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	}
 	
 	/**
+	 * @param selectedUnits List of units who want to jump to the other plane
+	 * @param players Players list
+	 * @param gsk Server knowledge structure
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If an expected data item cannot be found
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	@Override
+	public final void planeShiftUnitStack (final List<ExpandedUnitDetails> selectedUnits, final List<PlayerServerDetails> players,
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException
+	{
+		final int playerID = selectedUnits.get (0).getOwningPlayerID ();
+		final MapCoordinates3DEx moveFrom = selectedUnits.get (0).getUnitLocation ();
+		
+		final MapCoordinates3DEx moveTo = new MapCoordinates3DEx (moveFrom);
+		moveTo.setZ (1 - moveTo.getZ ());
+		
+		final MemoryGridCell tc = gsk.getTrueMap ().getMap ().getPlane ().get (moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ());
+		final OverlandMapTerrainData terrainData = gsk.getTrueMap ().getMap ().getPlane ().get (moveTo.getZ ()).getRow ().get (moveTo.getY ()).getCell ().get (moveTo.getX ()).getTerrainData ();
+		
+		// Check for units already in the target cell (we need a list of them below anyway which is why am not using the methods like findFirstAliveEnemyAtLocation)
+		final List<MemoryUnit> unitsInTargetCell = new ArrayList<MemoryUnit> ();
+		boolean anyEnemyHere = false;
+		
+		for (final MemoryUnit thisUnit : gsk.getTrueMap ().getUnit ())
+			if ((thisUnit.getStatus () == UnitStatusID.ALIVE) && (thisUnit.getUnitLocation () != null) && (thisUnit.getUnitLocation ().equals (moveTo)))
+			{
+				if (thisUnit.getOwningPlayerID () != playerID)
+					anyEnemyHere = true;
+				else
+					unitsInTargetCell.add (thisUnit);
+			}		
+		
+		// Any number of reasons it may fail
+		boolean success = true;
+		if (anyEnemyHere)
+			success = false;
+		
+		else if (unitsInTargetCell.size () > CommonDatabaseConstants.MAX_UNITS_PER_MAP_CELL)
+			success = false;
+
+		else if (getMemoryGridCellUtils ().isNodeLairTower (terrainData, db))
+			success = false;
+
+		// We can plane shift into our own cities, but not someone else's, even if its empty
+		else if ((tc.getCityData () != null) && (tc.getCityData ().getCityPopulation () > 0) && (tc.getCityData ().getCityOwnerID () != playerID))
+			success = false;
+		
+		else
+		{
+			// Now need to start checking each individual unit.  Need to combine the units who are plane shifting together with any of our own
+			// units in the destination map cell and make sure nobody ends up on impassable terrain.  This is so you could for example have
+			// some spearmen in a boat on one plane, and if there's a boat waiting on the other plane to hold them, you can plane shift them and its fine
+			// even though the ocean tile is impassable to them.  This is all based on how recheckTransportCapacity works.
+			final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
+			unitStack.addAll (selectedUnits);
+			
+			for (final MemoryUnit tu : unitsInTargetCell)
+				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, players, gsk.getTrueMap (), db));
+			
+			// Get a list of the unit stack skills
+			final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
+			
+			// Now check each unit in the stack
+			int spaceRequired = 0;
+			
+			final Iterator<ExpandedUnitDetails> iter = unitStack.iterator ();
+			while ((success) && (iter.hasNext ()))
+			{
+				final ExpandedUnitDetails tu = iter.next ();
+				
+				final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
+					getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
+					
+				// Count space granted by transports
+				final Integer unitTransportCapacity = tu.getUnitDefinition ().getTransportCapacity ();
+				if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
+				{
+					// Transports on impassable terrain are just invalid, since they can't get inside any other unit to transport them
+					if (impassable)
+						success = false;
+					else
+						spaceRequired = spaceRequired - unitTransportCapacity;
+				}
+				else if (impassable)
+					spaceRequired++;
+			}
+			
+			// If there's enough space to transport any units for who the terrain is impassable, then we're fine
+			if (spaceRequired > 0)
+				success = false;
+		}
+
+		// Did it work?
+		final PlayerServerDetails player = (PlayerServerDetails) selectedUnits.get (0).getOwningPlayer ();
+		if (success)
+		{
+			// Move units
+			final List<MemoryUnit> unitStack = new ArrayList<MemoryUnit> ();
+			for (final ExpandedUnitDetails tu : selectedUnits)
+				unitStack.add (tu.getMemoryUnit ());
+
+			// This method does all the proper handling for units moving from one cell to another - it doesn't really
+			// matter whether that is a conventional move or the cells are on different planes
+			moveUnitStackOneCellOnServerAndClients (unitStack, player, moveFrom, moveTo, players, gsk, sd, db);
+			
+			// Recheck the units left behind - maybe a ship plane shifted and all the units who used to be inside it are now swimming
+			getServerUnitCalculations ().recheckTransportCapacity (moveFrom, playerID, gsk.getTrueMap (), players, sd.getFogOfWarSetting (), db);
+		}
+		else
+		{
+			// Stay where we are
+			moveTo.setZ (1 - moveTo.getZ ());
+		}
+		
+		// Inform client
+		// For now, keeping this as informing the owner of the units, and not displaying an animation for it.  The client only does something with
+		// this message if the plane shift failed.  If we try to display an animation for anyone other than the unit owner then it gets messy, as they
+		// may be able to see the start/end point but not the other, or so on.
+		if (player.getPlayerDescription ().isHuman ())
+		{
+			final PlaneShiftUnitStackMessage msg = new PlaneShiftUnitStackMessage ();
+			msg.setMoveFrom (moveFrom);
+			msg.setMoveTo (moveTo);
+			
+			for (final ExpandedUnitDetails tu : selectedUnits)
+				msg.getUnitURN ().add (tu.getUnitURN ());
+			
+			player.getConnection ().sendMessageToClient (msg);
+		}
+	}
+	
+	/**
 	 * @return Single cell FOW calculations
 	 */
 	public final FogOfWarCalculations getFogOfWarCalculations ()
@@ -1352,5 +1497,21 @@ public final class FogOfWarMidTurnMultiChangesImpl implements FogOfWarMidTurnMul
 	public final void setPlayerMessageProcessing (final PlayerMessageProcessing obj)
 	{
 		playerMessageProcessing = obj;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

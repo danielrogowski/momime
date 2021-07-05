@@ -40,6 +40,7 @@ import momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessag
 import momime.common.messages.servertoclient.OverlandCastQueuedMessage;
 import momime.common.messages.servertoclient.PendingMovementMessage;
 import momime.common.messages.servertoclient.PendingSaleMessage;
+import momime.common.messages.servertoclient.PlaneShiftUnitStackMessage;
 import momime.common.messages.servertoclient.PlayAnimationMessage;
 import momime.common.messages.servertoclient.RemoveQueuedSpellMessage;
 import momime.common.messages.servertoclient.RemoveUnassignedHeroItemMessage;
@@ -653,6 +654,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 	public final OfferAcceptedMessage createOfferAcceptedMessage ()
 	{
 		return getFactory ().createOfferAcceptedMessage ();
+	}
+
+	/**
+	 * @return Newly created message
+	 */
+	@Override
+	public final PlaneShiftUnitStackMessage createPlaneShiftUnitStackMessage ()
+	{
+		return getFactory ().createPlaneShiftUnitStackMessage ();
 	}
 	
 	/**

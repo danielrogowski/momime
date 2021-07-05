@@ -102,10 +102,9 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 
 	/**
 	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
-	 * This is used after naval combats where some of the transports may have died, to kill off any surviving units who now have no transport,
-	 * or perhaps a unit had Flight cast on it which was dispelled during combat.
 	 * 
-	 * @param combatLocation The combatLocation where the units need to be rechecked
+	 * @param mapLocation Location where the units need to be rechecked
+	 * @param playerID Whose units to recheck
 	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param fogOfWarSettings Fog of war settings from session description
@@ -117,82 +116,63 @@ public final class ServerUnitCalculationsImpl implements ServerUnitCalculations
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
 	@Override
-	public final void recheckTransportCapacity (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
+	public final void recheckTransportCapacity (final MapCoordinates3DEx mapLocation, final int playerID, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
 	{
-		// First get a list of the map coordinates and players to check; this could be two cells if the defender won - they'll have units at the combatLocation and the
-		// attackers' transports may have been wiped out but the transported units are still sat at the point they attacked from.
-		final List<MapCoordinates3DEx> mapLocations = new ArrayList<MapCoordinates3DEx> ();
-		final List<Integer> playerIDs = new ArrayList<Integer> ();
-		for (final MemoryUnit tu : trueMap.getUnit ())
-			if ((tu.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (tu.getCombatLocation ())))
-			{
-				if (!mapLocations.contains (tu.getUnitLocation ()))
-					mapLocations.add ((MapCoordinates3DEx) tu.getUnitLocation ());
-				
-				if (!playerIDs.contains (tu.getOwningPlayerID ()))
-					playerIDs.add (tu.getOwningPlayerID ());
-			}
-		
-		// Now check all locations and all players
-		for (final MapCoordinates3DEx mapLocation : mapLocations)
-			for (final Integer playerID : playerIDs)
-			{
-				log.debug ("recheckTransportCapacity checking location " + mapLocation + " for units owned by player ID " + playerID);
+		log.debug ("recheckTransportCapacity checking location " + mapLocation + " for units owned by player ID " + playerID);
 
-				final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
-					(mapLocation.getZ ()).getRow ().get (mapLocation.getY ()).getCell ().get (mapLocation.getX ()).getTerrainData ();
+		final OverlandMapTerrainData terrainData = trueMap.getMap ().getPlane ().get
+			(mapLocation.getZ ()).getRow ().get (mapLocation.getY ()).getCell ().get (mapLocation.getX ()).getTerrainData ();
+		
+		// List all the units at this location owned by this player
+		final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
+		for (final MemoryUnit tu : trueMap.getUnit ())
+			if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())) && (playerID == tu.getOwningPlayerID ()))
+				unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, players, trueMap, db));
+		
+		// Get a list of the unit stack skills
+		final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
+		
+		// Now check each unit in the stack
+		final List<ExpandedUnitDetails> impassableUnits = new ArrayList<ExpandedUnitDetails> ();
+		int spaceRequired = 0;
+		for (final ExpandedUnitDetails tu : unitStack)
+		{
+			final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
+				getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
 				
-				// List all the units at this location owned by this player
-				final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
-				for (final MemoryUnit tu : trueMap.getUnit ())
-					if ((tu.getStatus () == UnitStatusID.ALIVE) && (mapLocation.equals (tu.getUnitLocation ())) && (playerID == tu.getOwningPlayerID ()))
-						unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, players, trueMap, db));
-				
-				// Get a list of the unit stack skills
-				final Set<String> unitStackSkills = getUnitCalculations ().listAllSkillsInUnitStack (unitStack);
-				
-				// Now check each unit in the stack
-				final List<ExpandedUnitDetails> impassableUnits = new ArrayList<ExpandedUnitDetails> ();
-				int spaceRequired = 0;
-				for (final ExpandedUnitDetails tu : unitStack)
+			// Count space granted by transports
+			final Integer unitTransportCapacity = tu.getUnitDefinition ().getTransportCapacity ();
+			if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
+			{
+				// Transports on impassable terrain just get killed (maybe a ship had its flight spell dispelled during an overland combat)
+				if (impassable)
 				{
-					final boolean impassable = (getUnitCalculations ().calculateDoubleMovementToEnterTileType (tu, unitStackSkills,
-						getMemoryGridCellUtils ().convertNullTileTypeToFOW (terrainData, false), db) == null);
-						
-					// Count space granted by transports
-					final Integer unitTransportCapacity = tu.getUnitDefinition ().getTransportCapacity ();
-					if ((unitTransportCapacity != null) && (unitTransportCapacity > 0))
-					{
-						// Transports on impassable terrain just get killed (maybe a ship had its flight spell dispelled during an overland combat)
-						if (impassable)
-						{
-							log.debug ("Killing Unit URN " + tu.getUnitURN () + " (transport on impassable terrain)");
-							getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
-						}
-						else
-							spaceRequired = spaceRequired - unitTransportCapacity;
-					}
-					else if (impassable)
-					{
-						spaceRequired++;
-						impassableUnits.add (tu);
-					}
+					log.debug ("Killing Unit URN " + tu.getUnitURN () + " (transport on impassable terrain)");
+					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (tu.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
 				}
-				
-				// Need to kill off any units?
-				while ((spaceRequired > 0) && (impassableUnits.size () > 0))
-				{
-					final ExpandedUnitDetails killUnit = impassableUnits.get (getRandomUtils ().nextInt (impassableUnits.size ()));
-					log.debug ("Killing Unit URN " + killUnit.getUnitURN () + " (unit on impassable terrain)");
-					
-					getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
-					
-					spaceRequired--;
-					impassableUnits.remove (killUnit);
-				}
+				else
+					spaceRequired = spaceRequired - unitTransportCapacity;
 			}
+			else if (impassable)
+			{
+				spaceRequired++;
+				impassableUnits.add (tu);
+			}
+		}
+		
+		// Need to kill off any units?
+		while ((spaceRequired > 0) && (impassableUnits.size () > 0))
+		{
+			final ExpandedUnitDetails killUnit = impassableUnits.get (getRandomUtils ().nextInt (impassableUnits.size ()));
+			log.debug ("Killing Unit URN " + killUnit.getUnitURN () + " (unit on impassable terrain)");
+			
+			getFogOfWarMidTurnChanges ().killUnitOnServerAndClients (killUnit.getMemoryUnit (), KillUnitActionID.HEALABLE_OVERLAND_DAMAGE, trueMap, players, fogOfWarSettings, db);
+			
+			spaceRequired--;
+			impassableUnits.remove (killUnit);
+		}
 	}
 
 	/**

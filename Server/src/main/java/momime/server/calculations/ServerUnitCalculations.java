@@ -36,10 +36,9 @@ public interface ServerUnitCalculations
 
 	/**
 	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
-	 * This is used after naval combats where some of the transports may have died, to kill off any surviving units who now have no transport,
-	 * or perhaps a unit had Flight cast on it which was dispelled during combat.
 	 * 
-	 * @param combatLocation The combatLocation where the units need to be rechecked
+	 * @param mapLocation Location where the units need to be rechecked
+	 * @param playerID Whose units to recheck
 	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
 	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
 	 * @param fogOfWarSettings Fog of war settings from session description
@@ -50,7 +49,7 @@ public interface ServerUnitCalculations
 	 * @throws XMLStreamException If there is a problem sending the reply to the client
 	 * @throws PlayerNotFoundException If we can't find one of the players
 	 */
-	public void recheckTransportCapacity (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
+	public void recheckTransportCapacity (final MapCoordinates3DEx mapLocation, final int playerID, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 

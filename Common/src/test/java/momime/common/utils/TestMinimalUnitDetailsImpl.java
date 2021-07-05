@@ -160,23 +160,6 @@ public final class TestMinimalUnitDetailsImpl
 	}
 	
 	/**
-	 * Tests the getFullFigureCount method on a Hydra
-	 */
-	@Test
-	public final void testGetFullFigureCount_Hydra ()
-	{
-		// Mock database
-		final UnitEx unitDef = new UnitEx ();
-		
-		// Set up object to test
-		final MinimalUnitDetailsImpl mu = new MinimalUnitDetailsImpl (null, unitDef, null, null, null, null, null);
-
-		// Run method
-		unitDef.setFigureCount (9);
-		assertEquals (1, mu.getFullFigureCount ());
-	}
-	
-	/**
 	 * Tests the unitIgnoresCombatTerrain method on a unit which doesn't have any skills which make it ignore combat terrain
 	 * @throws Exception If there is a problem
 	 */

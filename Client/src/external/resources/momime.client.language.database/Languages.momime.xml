@@ -3348,6 +3348,12 @@ Miasto zaprzestanie produkcji budowli PREREQUISITE_BUILDING_NAME.</text>
         </custom>
     </waitForPlayersToJoinScreen>
     <overlandMapScreen>
+        <planeShiftFailedTitle language="en">
+            <text>Plane Shift</text>
+        </planeShiftFailedTitle>
+        <planeShiftFailedText language="en">
+            <text>The selected unit(s) cannot Planar Travel at this location.</text>
+        </planeShiftFailedText>
         <mapButtonBar>
             <game language="en">
                 <text>Game</text>

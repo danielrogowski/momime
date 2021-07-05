@@ -5006,6 +5006,10 @@ Units with special orders won't be asked for movement orders and look visibly di
 				<xsd:documentation>Purify</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="PURIFY" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="S"><xsd:annotation>
+				<xsd:documentation>Plane Shift</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="PLANE_SHIFT" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="D"><xsd:annotation>
 				<xsd:documentation>Dismiss</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="DISMISS" /></xsd:appinfo>

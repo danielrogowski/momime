@@ -54,6 +54,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.CombatAI;
 import momime.server.ai.CombatAIMovementResult;
+import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarDuplication;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
 import momime.server.fogofwar.KillUnitActionID;
@@ -112,6 +113,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Combat end of turn processing */
 	private CombatEndTurn combatEndTurn;
+	
+	/** Server-only unit calculations */
+	private ServerUnitCalculations serverUnitCalculations;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -1310,6 +1314,47 @@ public final class CombatProcessingImpl implements CombatProcessing
 	}
 	
 	/**
+	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
+	 * This is used after naval combats where some of the transports may have died, to kill off any surviving units who now have no transport,
+	 * or perhaps a unit had Flight cast on it which was dispelled during combat.
+	 * 
+	 * @param combatLocation The combatLocation where the units need to be rechecked
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	@Override
+	public final void recheckTransportCapacityAfterCombat (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException
+	{
+		// First get a list of the map coordinates and players to check; this could be two cells if the defender won - they'll have units at the combatLocation and the
+		// attackers' transports may have been wiped out but the transported units are still sat at the point they attacked from.
+		final List<MapCoordinates3DEx> mapLocations = new ArrayList<MapCoordinates3DEx> ();
+		final List<Integer> playerIDs = new ArrayList<Integer> ();
+		for (final MemoryUnit tu : trueMap.getUnit ())
+			if ((tu.getStatus () == UnitStatusID.ALIVE) && (combatLocation.equals (tu.getCombatLocation ())))
+			{
+				if (!mapLocations.contains (tu.getUnitLocation ()))
+					mapLocations.add ((MapCoordinates3DEx) tu.getUnitLocation ());
+				
+				if (!playerIDs.contains (tu.getOwningPlayerID ()))
+					playerIDs.add (tu.getOwningPlayerID ());
+			}
+		
+		// Now check all locations and all players
+		for (final MapCoordinates3DEx mapLocation : mapLocations)
+			for (final Integer playerID : playerIDs)
+				getServerUnitCalculations ().recheckTransportCapacity (mapLocation, playerID, trueMap, players, fogOfWarSettings, db);
+	}
+	
+	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()
@@ -1531,5 +1576,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setCombatEndTurn (final CombatEndTurn c)
 	{
 		combatEndTurn = c;
+	}
+
+	/**
+	 * @return Server-only unit calculations
+	 */
+	public final ServerUnitCalculations getServerUnitCalculations ()
+	{
+		return serverUnitCalculations;
+	}
+
+	/**
+	 * @param calc Server-only unit calculations
+	 */
+	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
+	{
+		serverUnitCalculations = calc;
 	}
 }

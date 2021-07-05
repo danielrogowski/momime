@@ -476,6 +476,33 @@ public final class SimultaneousTurnsProcessingImpl implements SimultaneousTurnsP
 					}
 				}
 		
+		// Get a list of all units with plane shift orders
+		final List<MemoryUnit> planeShifters = getUnitServerUtils ().listUnitsWithSpecialOrder (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), UnitSpecialOrder.PLANE_SHIFT);
+		while (planeShifters.size () > 0)
+		{
+			// Pick a random plane shifter and find any other units in the same stack plane shifting with it
+			final int planeShifterIndex = getRandomUtils ().nextInt (planeShifters.size ());
+			final MemoryUnit planeShifter = planeShifters.get (planeShifterIndex);
+			
+			final List<ExpandedUnitDetails> unitStack = new ArrayList<ExpandedUnitDetails> ();
+			for (final MemoryUnit tu : mom.getGeneralServerKnowledge ().getTrueMap ().getUnit ())
+				if ((planeShifters.contains (tu)) && (tu.getUnitLocation ().equals (planeShifter.getUnitLocation ())))
+					unitStack.add (getUnitUtils ().expandUnitDetails (tu, null, null, null, mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ()));
+			
+			getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (unitStack, mom.getPlayers (),
+				mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
+			
+			// Remove the whole stack from the list of plane shifters; also clear their special orders
+			for (final ExpandedUnitDetails xu : unitStack)
+			{
+				planeShifters.remove (xu.getMemoryUnit ());
+				
+				xu.setSpecialOrder (null);
+				getFogOfWarMidTurnChanges ().updatePlayerMemoryOfUnit (xu.getMemoryUnit (), mom.getGeneralServerKnowledge ().getTrueMap ().getMap (),
+					mom.getPlayers (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting (), null);
+			}
+		}
+		
 		// Get a list of all settlers with build orders.
 		
 		// Have to be careful here - two settlers (whether owned by the same or different players) can both be on

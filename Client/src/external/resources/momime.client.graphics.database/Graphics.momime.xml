@@ -42,6 +42,9 @@
 	<unitSpecialOrderImage unitSpecialOrderID="D">
 		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/dismiss.png</unitSpecialOrderImageFile>
 	</unitSpecialOrderImage>
+	<unitSpecialOrderImage unitSpecialOrderID="S">
+		<unitSpecialOrderImageFile>/momime.client.graphics/overland/specialOrders/planeShift.png</unitSpecialOrderImageFile>
+	</unitSpecialOrderImage>
 	<combatTileFigurePositions figureCount="1">
 		<figurePositionsForFigureCount figureNumber="1">
 			<tileRelativeX>15</tileRelativeX>

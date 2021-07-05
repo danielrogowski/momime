@@ -40,7 +40,6 @@ import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.ai.MomAI;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
@@ -115,9 +114,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	/** Server only helper methods for dealing with players in a session */
 	private MultiplayerSessionServerUtils multiplayerSessionServerUtils;
 	
-	/** Server-only unit calculations */
-	private ServerUnitCalculations serverUnitCalculations;
-
 	/** Simultaneous turns processing */
 	private SimultaneousTurnsProcessing simultaneousTurnsProcessing;
 	
@@ -595,7 +591,7 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 					mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 	
 				// Recheck that transports have enough capacity to hold all units that require them (both for attacker and defender, and regardless who won)
-				getServerUnitCalculations ().recheckTransportCapacity (combatLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
+				getCombatProcessing ().recheckTransportCapacityAfterCombat (combatLocation, mom.getGeneralServerKnowledge ().getTrueMap (),
 					mom.getPlayers (), mom.getSessionDescription ().getFogOfWarSetting (), mom.getServerDB ());
 				
 				// Set all units CombatX, CombatY back to -1, -1 so we don't think they're in combat anymore.
@@ -861,22 +857,6 @@ public final class CombatStartAndEndImpl implements CombatStartAndEnd
 	public final void setMultiplayerSessionServerUtils (final MultiplayerSessionServerUtils obj)
 	{
 		multiplayerSessionServerUtils = obj;
-	}
-
-	/**
-	 * @return Server-only unit calculations
-	 */
-	public final ServerUnitCalculations getServerUnitCalculations ()
-	{
-		return serverUnitCalculations;
-	}
-
-	/**
-	 * @param calc Server-only unit calculations
-	 */
-	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
-	{
-		serverUnitCalculations = calc;
 	}
 
 	/**

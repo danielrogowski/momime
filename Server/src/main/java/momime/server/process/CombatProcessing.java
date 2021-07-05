@@ -239,4 +239,24 @@ public interface CombatProcessing
 	public boolean okToMoveUnitInCombat (final ExpandedUnitDetails tu, final MapCoordinates2DEx moveTo,
 		final int [] [] movementDirections, final CombatMoveType [] [] movementTypes, final MomSessionVariables mom)
 		throws MomException, PlayerNotFoundException, RecordNotFoundException, JAXBException, XMLStreamException;
+
+	/**
+	 * Rechecks that transports have sufficient space to hold all units for whom the terrain is impassable.
+	 * This is used after naval combats where some of the transports may have died, to kill off any surviving units who now have no transport,
+	 * or perhaps a unit had Flight cast on it which was dispelled during combat.
+	 * 
+	 * @param combatLocation The combatLocation where the units need to be rechecked
+	 * @param players List of players in this session, this can be passed in null for when units are being added to the map pre-game
+	 * @param trueMap True terrain, buildings, spells and so on as known only to the server
+	 * @param fogOfWarSettings Fog of war settings from session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws MomException If there is a problem with any of the calculations
+	 * @throws RecordNotFoundException If we encounter a map feature, building or pick that we can't find in the XML data
+	 * @throws JAXBException If there is a problem sending the reply to the client
+	 * @throws XMLStreamException If there is a problem sending the reply to the client
+	 * @throws PlayerNotFoundException If we can't find one of the players
+	 */
+	public void recheckTransportCapacityAfterCombat (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
+		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
 }

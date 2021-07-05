@@ -1335,7 +1335,16 @@
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
-    			<xsd:element minOccurs="0" maxOccurs="1" name="overlandMapScreen" type="momimelangs:overlandMapScreen" />
+    			<xsd:element minOccurs="0" maxOccurs="1" name="overlandMapScreen" type="momimelangs:overlandMapScreen">
+					<xsd:key name="overlandMapScreenPlaneShiftFailedTitlePK">
+						<xsd:selector xpath="planeShiftFailedTitle" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="overlandMapScreenPlaneShiftFailedTextPK">
+						<xsd:selector xpath="planeShiftFailedText" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+    			</xsd:element>
     			<xsd:element minOccurs="0" maxOccurs="1" name="nameCityScreen" type="momimelangs:nameCityScreen">
 					<xsd:key name="nameCityScreenTitlePK">
 						<xsd:selector xpath="title" />
@@ -3625,6 +3634,8 @@
 
 	<xsd:complexType name="overlandMapScreen" nxe:submenu="Overland map" nxe:singular="Overland map" nxe:plural="Overland map">
 		<xsd:sequence>
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftFailedTitle" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="planeShiftFailedText" />
    			<xsd:element minOccurs="0" maxOccurs="1" name="mapButtonBar" type="momimelangs:mapButtonBar">
 				<xsd:key name="mapButtonBarGamePK">
 					<xsd:selector xpath="game" />

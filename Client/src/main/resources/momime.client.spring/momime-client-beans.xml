@@ -293,6 +293,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="languageHolder" ref="languageHolder" />
 	</bean>
 
+	<bean id="planeShiftUnitStackMessage" class="momime.client.messages.process.PlaneShiftUnitStackMessageImpl" scope="prototype">
+		<property name="prototypeFrameCreator" ref="prototypeFrameCreator" />
+		<property name="languageHolder" ref="languageHolder" />
+		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
+	</bean>
+
 	<bean id="selectNextUnitToMoveOverlandMessage" class="momime.client.messages.process.SelectNextUnitToMoveOverlandMessageImpl" scope="prototype">
 		<property name="overlandMapProcessing" ref="overlandMapProcessing" />
 	</bean>
@@ -913,6 +919,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="overlandMapRightHandPanel" ref="overlandMapRightHandPanel" />
 		<property name="unitMovement" ref="unitMovement" />
 		<property name="unitCalculations" ref="unitCalculations" />
+		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
+		<property name="memoryMaintainedSpellUtils" ref="memoryMaintainedSpellUtils" />
 	</bean>
 
 	<bean id="combatMapProcessing" class="momime.client.process.CombatMapProcessingImpl">

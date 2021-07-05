@@ -1121,6 +1121,23 @@ limitation that client assumes this damage type is applied to ALL defenders.</xs
 		</xsd:complexType>
 	</xsd:element>
 
+	<xsd:element name="planeShiftUnitStackMessage">
+	    <xsd:annotation>
+    		<xsd:documentation>A unit stack tried to jump from one plane to the other, maybe successfully or not.  If failed then moveTo = moveFrom.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:complexContent>
+				<xsd:extension base="mp:serverToClientMessage">
+					<xsd:sequence>
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveFrom" type="map:mapCoordinates3D" />
+						<xsd:element minOccurs="1" maxOccurs="1" name="moveTo" type="map:mapCoordinates3D" />
+						<xsd:element minOccurs="1" maxOccurs="unbounded" name="unitURN" type="momimemsgs:unitURN" />
+					</xsd:sequence>
+				</xsd:extension>
+			</xsd:complexContent>
+		</xsd:complexType>
+	</xsd:element>
+	
 <!-- Hero items, new for 0.9.7 -->
 
 	<xsd:element name="addUnassignedHeroItemMessage">

@@ -269,4 +269,20 @@ public interface FogOfWarMidTurnMultiChanges
 	public void resetUnitOverlandMovement (final int onlyOnePlayerID, final List<PlayerServerDetails> players,
 		final FogOfWarMemory trueMap, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws RecordNotFoundException, PlayerNotFoundException, MomException, JAXBException, XMLStreamException;
+	
+	/**
+	 * @param selectedUnits List of units who want to jump to the other plane
+	 * @param players Players list
+	 * @param gsk Server knowledge structure
+	 * @param sd Session description
+	 * @param db Lookup lists built over the XML database
+	 * @throws JAXBException If there is a problem converting a message to send to a player into XML
+	 * @throws XMLStreamException If there is a problem sending a message to a player
+	 * @throws RecordNotFoundException If an expected data item cannot be found
+	 * @throws PlayerNotFoundException If the player who owns the unit cannot be found
+	 * @throws MomException If the player's unit doesn't have the experience skill
+	 */
+	public void planeShiftUnitStack (final List<ExpandedUnitDetails> selectedUnits, final List<PlayerServerDetails> players,
+		final MomGeneralServerKnowledge gsk, final MomSessionDescription sd, final CommonDatabase db)
+		throws PlayerNotFoundException, RecordNotFoundException, MomException, JAXBException, XMLStreamException;
 }

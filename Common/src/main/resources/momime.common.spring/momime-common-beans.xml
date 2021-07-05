@@ -117,6 +117,7 @@
     			<value>momime.common.messages.servertoclient.FullSpellListMessage</value>
     			<value>momime.common.messages.servertoclient.MoveUnitInCombatMessage</value>
     			<value>momime.common.messages.servertoclient.MoveUnitStackOverlandMessage</value>
+    			<value>momime.common.messages.servertoclient.PlaneShiftUnitStackMessage</value>
     			<value>momime.common.messages.servertoclient.NewGameDatabaseMessage</value>
     			<value>momime.common.messages.servertoclient.OnePlayerSimultaneousTurnDoneMessage</value>
     			<value>momime.common.messages.servertoclient.OverlandCastQueuedMessage</value>

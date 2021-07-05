@@ -38,6 +38,8 @@ import momime.common.messages.clienttoserver.NextTurnButtonMessage;
 import momime.common.messages.clienttoserver.RequestMoveOverlandUnitStackMessage;
 import momime.common.messages.clienttoserver.SpecialOrderButtonMessage;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 
@@ -79,6 +81,12 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	
 	/** Unit calculations */
 	private UnitCalculations unitCalculations;
+	
+	/** MemoryGridCell utils */
+	private MemoryGridCellUtils memoryGridCellUtils;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
 	
 	/**
 	 * At the start of a turn, once all our movement has been reset and the server has sent any continuation moves to us, this gets called.
@@ -236,6 +244,7 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		int spiritCount = 0;
 		int purifyCount = 0;
 		int engineerCount = 0;
+		int planeShiftCount = 0;
 		
 		OverlandMapTerrainData terrainData = null;
 		TileType tileType = null;
@@ -251,17 +260,23 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 			for (final HideableComponent<SelectUnitButton> button : getOverlandMapRightHandPanel ().getSelectUnitButtons ())
 				if ((button.getComponent ().isSelected ()) && (button.getComponent ().getUnit ().getOwningPlayerID () == getClient ().getOurPlayerID ()))
 				{
-					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST))
+					final ExpandedUnitDetails xu = button.getComponent ().getUnit ();
+					if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST))
 						settlerCount++;
 					
-					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE))						
+					if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE))						
 						spiritCount++;
 
-					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY))
+					if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY))
 						purifyCount++;
 
-					if (button.getComponent ().getUnit ().hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD))
+					if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD))
 						engineerCount++;
+
+					if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_PLANE_SHIFT)) ||
+						(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_PLANE_SHIFT_FROM_SPELL)))
+						
+						planeShiftCount++;
 				}
 		}
 		
@@ -297,6 +312,13 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 		// Can we build a road?
 		getOverlandMapRightHandPanel ().setBuildRoadEnabled ((engineerCount > 0) && (tileType != null) && (tileType.isLand () != null) && (tileType.isLand ()) &&
 			(terrainData != null) && (terrainData.getRoadTileTypeID () == null));
+		
+		// Can we jump to the other plane?
+		// Not allowed if we're standing on a tower, or someone has Planar Seal cast
+		getOverlandMapRightHandPanel ().setPlaneShiftEnabled ((planeShiftCount > 0) &&
+			(!(getMemoryGridCellUtils ().isTerrainTowerOfWizardry (terrainData))) &&
+			(getMemoryMaintainedSpellUtils ().findMaintainedSpell (getClient ().getOurPersistentPlayerPrivateKnowledge ().getFogOfWarMemory ().getMaintainedSpell (),
+				null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) == null));
 	}
 	
 	/**
@@ -727,5 +749,37 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 	public final void setUnitCalculations (final UnitCalculations calc)
 	{
 		unitCalculations = calc;
+	}
+	
+	/**
+	 * @return MemoryGridCell utils
+	 */
+	public final MemoryGridCellUtils getMemoryGridCellUtils ()
+	{
+		return memoryGridCellUtils;
+	}
+
+	/**
+	 * @param utils MemoryGridCell utils
+	 */
+	public final void setMemoryGridCellUtils (final MemoryGridCellUtils utils)
+	{
+		memoryGridCellUtils = utils;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
 	}
 }

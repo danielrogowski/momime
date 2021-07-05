@@ -59,7 +59,6 @@ import momime.server.DummyServerToClientConnection;
 import momime.server.MomSessionVariables;
 import momime.server.ServerTestData;
 import momime.server.calculations.ServerResourceCalculations;
-import momime.server.calculations.ServerUnitCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.fogofwar.FogOfWarProcessing;
 import momime.server.knowledge.ServerGridCellEx;
@@ -741,7 +740,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -883,7 +881,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -1042,7 +1039,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Run method
 		cse.combatEnded (combatLocation, attackingPlayer, defendingPlayer, winningPlayer, null, mom);
@@ -1230,7 +1226,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setResourceValueUtils (resourceValueUtils);
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (mock (MemoryBuildingUtils.class));
 		cse.setCityServerUtils (mock (CityServerUtils.class));
@@ -1433,7 +1428,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setOverlandMapServerUtils (overlandMapServerUtils);
 		cse.setCityServerUtils (cityServerUtils);
 		cse.setMultiplayerSessionServerUtils (multiplayerSessionServerUtils);
-		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		cse.setCityProcessing (cityProcessing);
 		cse.setMemoryBuildingUtils (mock (MemoryBuildingUtils.class));
 		
@@ -1582,7 +1576,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setSimultaneousTurnsProcessing (simultaneousTurnsProcessing);
-		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Regular combat, so only the attacker has a pending movement
 		final PendingMovement attackerPendingMovement = new PendingMovement ();
@@ -1731,7 +1724,6 @@ public final class TestCombatStartAndEndImpl extends ServerTestData
 		cse.setServerResourceCalculations (serverResourceCalculations);
 		cse.setMemoryGridCellUtils (memoryGridCellUtils);
 		cse.setSimultaneousTurnsProcessing (simultaneousTurnsProcessing);
-		cse.setServerUnitCalculations (mock (ServerUnitCalculations.class));
 		
 		// Border conflict, so we have two pending movements
 		final PendingMovement attackerPendingMovement = new PendingMovement ();

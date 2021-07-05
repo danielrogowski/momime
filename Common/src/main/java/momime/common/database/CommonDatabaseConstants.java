@@ -237,6 +237,12 @@ public final class CommonDatabaseConstants
 	/** Can teleport to anywhere in combat */
 	public final static String UNIT_SKILL_ID_TELEPORT = "US000";
 	
+	/** Unit is able to freely jump between planes */
+	public final static String UNIT_SKILL_ID_PLANE_SHIFT = "US004";
+	
+	/** Unit is able to freely jump between planes */
+	public final static String UNIT_SKILL_ID_PLANE_SHIFT_FROM_SPELL = "SS138";
+			
 	/** Boosts healing rate of unit stack */
 	public final static String UNIT_SKILL_ID_HEALER = "US016";
 	
@@ -321,6 +327,9 @@ public final class CommonDatabaseConstants
 	
 	/** Just Cause spell */
 	public final static String SPELL_ID_JUST_CAUSE = "SP127";
+	
+	/** Block travel between planes */
+	public final static String SPELL_ID_PLANAR_SEAL = "SP135"; 
 	
 	/** Summoning circle spell */
 	public final static String SPELL_ID_SUMMONING_CIRCLE = "SP203";

@@ -51,11 +51,13 @@ import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.MemoryGridCellUtils;
+import momime.common.utils.MemoryMaintainedSpellUtils;
 import momime.common.utils.PendingMovementUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
 import momime.server.calculations.ServerResourceCalculations;
 import momime.server.fogofwar.FogOfWarMidTurnChanges;
+import momime.server.fogofwar.FogOfWarMidTurnMultiChanges;
 import momime.server.messages.process.SpecialOrderButtonMessageImpl;
 import momime.server.process.PlayerMessageProcessing;
 
@@ -105,6 +107,12 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	
 	/** City calculations */
 	private CityCalculations cityCalculations;
+	
+	/** MemoryMaintainedSpell utils */
+	private MemoryMaintainedSpellUtils memoryMaintainedSpellUtils;
+	
+	/** Methods for updating true map + players' memory */
+	private FogOfWarMidTurnMultiChanges fogOfWarMidTurnMultiChanges;
 	
 	/**
 	 * @param unit Unit whose skills we want to output, not including bonuses from things like adamantium weapons, spells cast on the unit and so on
@@ -289,34 +297,39 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 		final PlayerServerDetails player, final MomSessionVariables mom)
 		throws RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException, MomException
 	{
-		// What skill do we need
-		final String necessarySkillID;
+		// What skill do we need (if list is empty, we don't need any skills at all; if list has multiple then any of the listed skills will do)
+		final List<String> necessarySkillIDs = new ArrayList<String> ();
 		final boolean allowMultipleUnits;
 		
 		switch (specialOrder)
 		{
 			case BUILD_CITY:
-				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST;
+				necessarySkillIDs.add (CommonDatabaseConstants.UNIT_SKILL_ID_CREATE_OUTPOST);
 				allowMultipleUnits = false;
 				break;
 				
 			case MELD_WITH_NODE:
-				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE;
+				necessarySkillIDs.add (CommonDatabaseConstants.UNIT_SKILL_ID_MELD_WITH_NODE);
 				allowMultipleUnits = false;
 				break;
 
 			case PURIFY:
-				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY;
+				necessarySkillIDs.add (CommonDatabaseConstants.UNIT_SKILL_ID_PURIFY);
 				allowMultipleUnits = true;
 				break;
 				
 			case BUILD_ROAD:
-				necessarySkillID = CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD;
+				necessarySkillIDs.add (CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD);
+				allowMultipleUnits = true;
+				break;
+				
+			case PLANE_SHIFT:
+				necessarySkillIDs.add (CommonDatabaseConstants.UNIT_SKILL_ID_PLANE_SHIFT);
+				necessarySkillIDs.add (CommonDatabaseConstants.UNIT_SKILL_ID_PLANE_SHIFT_FROM_SPELL);
 				allowMultipleUnits = true;
 				break;
 				
 			case PATROL:
-				necessarySkillID = null;
 				allowMultipleUnits = true;
 				break;
 				
@@ -358,7 +371,12 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null,
 					mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getServerDB ());
 				
-				if ((necessarySkillID == null) || (xu.hasModifiedSkill (necessarySkillID)))				
+				boolean hasNecessarySkillID = (necessarySkillIDs.size () == 0);
+				for (final String necessarySkillID : necessarySkillIDs)
+					if (xu.hasModifiedSkill (necessarySkillID))
+						hasNecessarySkillID = true;
+				
+				if (hasNecessarySkillID)
 					unitsWithNecessarySkillID.add (xu);
 			}
 		}
@@ -402,6 +420,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				error = "You already control this node so cannot meld with it again";
 			else if ((specialOrder == UnitSpecialOrder.PURIFY) && (tc.getTerrainData ().getCorrupted () == null))
 				error = "You can only use purify on corrupted terrain";
+			else if ((specialOrder == UnitSpecialOrder.PLANE_SHIFT) && (getMemoryGridCellUtils ().isTerrainTowerOfWizardry (tc.getTerrainData ())))
+				error = "You cannot plane shift when already stood in a Tower of Wizardry";
+			else if ((specialOrder == UnitSpecialOrder.PLANE_SHIFT) && (getMemoryMaintainedSpellUtils ().findMaintainedSpell
+				(mom.getGeneralServerKnowledge ().getTrueMap ().getMaintainedSpell (), null, CommonDatabaseConstants.SPELL_ID_PLANAR_SEAL, null, null, null, null) != null))
+				error = "You cannot plane shift while Planar Seal is in effect";
 		}
 
 		if (error == null)
@@ -432,6 +455,11 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 							mom.getPlayers (), mom.getSessionDescription (), mom.getServerDB ());
 						
 						getPlayerMessageProcessing ().sendNewTurnMessages (mom.getGeneralPublicKnowledge (), mom.getPlayers (), null);						
+						break;
+						
+					case PLANE_SHIFT:
+						getFogOfWarMidTurnMultiChanges ().planeShiftUnitStack (unitsWithNecessarySkillID, mom.getPlayers (),
+							mom.getGeneralServerKnowledge (), mom.getSessionDescription (), mom.getServerDB ());
 						break;
 						
 					default:
@@ -1137,5 +1165,37 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 	public final void setCityCalculations (final CityCalculations calc)
 	{
 		cityCalculations = calc;
+	}
+
+	/**
+	 * @return MemoryMaintainedSpell utils
+	 */
+	public final MemoryMaintainedSpellUtils getMemoryMaintainedSpellUtils ()
+	{
+		return memoryMaintainedSpellUtils;
+	}
+
+	/**
+	 * @param spellUtils MemoryMaintainedSpell utils
+	 */
+	public final void setMemoryMaintainedSpellUtils (final MemoryMaintainedSpellUtils spellUtils)
+	{
+		memoryMaintainedSpellUtils = spellUtils;
+	}
+
+	/**
+	 * @return Methods for updating true map + players' memory
+	 */
+	public final FogOfWarMidTurnMultiChanges getFogOfWarMidTurnMultiChanges ()
+	{
+		return fogOfWarMidTurnMultiChanges;
+	}
+
+	/**
+	 * @param obj Methods for updating true map + players' memory
+	 */
+	public final void setFogOfWarMidTurnMultiChanges (final FogOfWarMidTurnMultiChanges obj)
+	{
+		fogOfWarMidTurnMultiChanges = obj;
 	}
 }

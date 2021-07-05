@@ -244,6 +244,9 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	/** Priests purifying corrupted lands */
 	private Action purifyAction;
 
+	/** Jumping to other plane */
+	private Action planeShiftAction;
+
 	/** Title for targetting spells */
 	private JLabel targetSpellTitle;
 	
@@ -331,18 +334,25 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		final BufferedImage buttonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldPressed.png");
 		final BufferedImage buttonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button66x18goldDisabled.png");
 
-		final BufferedImage createOutpostButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/createOutpostNormal.png");
-		final BufferedImage createOutpostButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/createOutpostPressed.png");
-		final BufferedImage createOutpostButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/createOutpostDisabled.png");
-		final BufferedImage buildRoadButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/buildRoadNormal.png");
-		final BufferedImage buildRoadButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/buildRoadPressed.png");
-		final BufferedImage buildRoadButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/buildRoadDisabled.png");
-		final BufferedImage meldWithNodeButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/meldWithNodeNormal.png");
-		final BufferedImage meldWithNodeButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/meldWithNodePressed.png");
-		final BufferedImage meldWithNodeButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/meldWithNodeDisabled.png");
-		final BufferedImage purifyButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/purifyNormal.png");
-		final BufferedImage purifyButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/purifyPressed.png");
-		final BufferedImage purifyButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/purifyDisabled.png");
+		final BufferedImage buttonNarrowNormal = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button48x18goldNormal.png");
+		final BufferedImage buttonNarrowPressed = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button48x18goldPressed.png");
+		final BufferedImage buttonNarrowDisabled = getUtils ().loadImage ("/momime.client.graphics/ui/buttons/button48x18goldDisabled.png");
+
+		final BufferedImage createOutpostButtonNormal = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US017-icon-buttonNormal.png");
+		final BufferedImage createOutpostButtonPressed = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US017-buttonPressed.png");
+		final BufferedImage createOutpostButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US017-buttonDisabled.png");
+		final BufferedImage buildRoadButtonNormal = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US036-icon-buttonNormal.png");
+		final BufferedImage buildRoadButtonPressed = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US036-buttonPressed.png");
+		final BufferedImage buildRoadButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US036-buttonDisabled.png");
+		final BufferedImage meldWithNodeButtonNormal = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US040-icon-buttonNormal.png");
+		final BufferedImage meldWithNodeButtonPressed = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US040-buttonPressed.png");
+		final BufferedImage meldWithNodeButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US040-buttonDisabled.png");
+		final BufferedImage purifyButtonNormal = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US025-icon-buttonNormal.png");
+		final BufferedImage purifyButtonPressed = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US025-buttonPressed.png");
+		final BufferedImage purifyButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US025-buttonDisabled.png");
+		final BufferedImage planeShiftButtonNormal = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US004-icon-buttonNormal.png");
+		final BufferedImage planeShiftButtonPressed = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US004-buttonPressed.png");
+		final BufferedImage planeShiftButtonDisabled = getUtils ().loadImage ("/momime.client.graphics/unitSkills/US004-buttonDisabled.png");
 
 		final BufferedImage nextTurnButtonNormal = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/nextTurnNormal.png");
 		final BufferedImage nextTurnButtonPressed = getUtils ().loadImage ("/momime.client.graphics/ui/overland/rightHandPanel/nextTurnPressed.png");
@@ -364,6 +374,7 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		buildRoadAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.BUILD_ROAD));
 		meldWithNodeAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.MELD_WITH_NODE));
 		purifyAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.PURIFY));
+		planeShiftAction = new LoggingAction ((ev) -> getOverlandMapProcessing ().specialOrderButton (UnitSpecialOrder.PLANE_SHIFT));
 		
 		cancelAction = new LoggingAction ((ev) ->
 		{
@@ -596,25 +607,28 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 		specialOrdersPanel.setLayout (new GridBagLayout ());
 		
 		specialOrdersPanel.add (getUtils ().createImageButton (doneAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
-			getUtils ().createConstraintsNoFill (0, 0, 1, 1, new Insets (0, 0, 2, 2), GridBagConstraintsNoFill.CENTRE));
+			getUtils ().createConstraintsNoFill (0, 0, 2, 1, new Insets (0, 0, 2, 1), GridBagConstraintsNoFill.CENTRE));
 
-		specialOrdersPanel.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
+		specialOrdersPanel.add (getUtils ().createImageButton (waitAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNarrowNormal, buttonNarrowPressed, buttonNarrowDisabled),
 			getUtils ().createConstraintsNoFill (0, 1, 1, 1, new Insets (0, 0, 1, 2), GridBagConstraintsNoFill.CENTRE));
 
 		specialOrdersPanel.add (getUtils ().createImageButton (patrolAction, MomUIConstants.GOLD, MomUIConstants.DARK_BROWN, getSmallFont (), buttonNormal, buttonPressed, buttonDisabled),
-			getUtils ().createConstraintsNoFill (1, 0, 4, 1, new Insets (0, 0, 2, 1), GridBagConstraintsNoFill.CENTRE));
+			getUtils ().createConstraintsNoFill (2, 0, 4, 1, new Insets (0, 1, 2, 1), GridBagConstraintsNoFill.CENTRE));
 
 		specialOrdersPanel.add (getUtils ().createImageButton (createOutpostAction, null, null, null, createOutpostButtonNormal, createOutpostButtonPressed, createOutpostButtonDisabled),
 			getUtils ().createConstraintsNoFill (1, 1, 1, 1, new Insets (0, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
 
 		specialOrdersPanel.add (getUtils ().createImageButton (buildRoadAction, null, null, null, buildRoadButtonNormal, buildRoadButtonPressed, buildRoadButtonDisabled),
-			getUtils ().createConstraintsNoFill (2, 1, 1, 1, new Insets (0, 1, 2, 0), GridBagConstraintsNoFill.CENTRE));
+			getUtils ().createConstraintsNoFill (2, 1, 1, 1, new Insets (0, 0, 2, 0), GridBagConstraintsNoFill.CENTRE));
 		
 		specialOrdersPanel.add (getUtils ().createImageButton (meldWithNodeAction, null, null, null, meldWithNodeButtonNormal, meldWithNodeButtonPressed, meldWithNodeButtonDisabled),
 			getUtils ().createConstraintsNoFill (3, 1, 1, 1, new Insets (0, 1, 2, 0), GridBagConstraintsNoFill.CENTRE));
 
 		specialOrdersPanel.add (getUtils ().createImageButton (purifyAction, null, null, null, purifyButtonNormal, purifyButtonPressed, purifyButtonDisabled),
 			getUtils ().createConstraintsNoFill (4, 1, 1, 1, new Insets (0, 1, 2, 0), GridBagConstraintsNoFill.CENTRE));		
+
+		specialOrdersPanel.add (getUtils ().createImageButton (planeShiftAction, null, null, null, planeShiftButtonNormal, planeShiftButtonPressed, planeShiftButtonDisabled),
+			getUtils ().createConstraintsNoFill (5, 1, 1, 1, new Insets (0, 1, 2, 0), GridBagConstraintsNoFill.CENTRE));		
 
 		// Top card - units (this is the one with no background image so it just sees through to the main background)
 		final JPanel unitsPanel = new JPanel ();
@@ -1396,6 +1410,14 @@ public final class OverlandMapRightHandPanel extends MomClientPanelUI
 	public final void setPurifyEnabled (final boolean enabled)
 	{
 		purifyAction.setEnabled (enabled);
+	}
+	
+	/**
+	 * @param enabled Whether any units in the stack can jump to the other plane
+	 */
+	public final void setPlaneShiftEnabled (final boolean enabled)
+	{
+		planeShiftAction.setEnabled (enabled);
 	}
 	
 	/**

@@ -181,7 +181,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
 				final MomCombatTile cell = map.getRow ().get (y).getCell ().get (x);
-				if ((x == 3) &&  (y == 9))	// Wizard's fortress combat element coordinates from the server XML file
+				if ((x == 3) &&  (y == 8))	// Wizard's fortress combat element coordinates from the server XML file
 				{
 					assertEquals (1, cell.getTileLayer ().size ());
 					assertEquals (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES, cell.getTileLayer ().get (0).getLayer ());
@@ -203,7 +203,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
 				final MomCombatTile cell = map.getRow ().get (y).getCell ().get (x);
-				if ((x == 3) &&  (y == 9))
+				if ((x == 3) &&  (y == 8))
 				{
 					assertEquals (1, cell.getTileLayer ().size ());
 					assertEquals (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES, cell.getTileLayer ().get (0).getLayer ());
@@ -222,7 +222,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 			for (int x = 0; x < CommonDatabaseConstants.COMBAT_MAP_WIDTH; x++)
 			{
 				final MomCombatTile cell = map.getRow ().get (y).getCell ().get (x);
-				if ((x == 3) &&  (y == 9))
+				if ((x == 3) &&  (y == 8))
 				{
 					assertEquals (1, cell.getTileLayer ().size ());
 					assertEquals (CombatMapLayerID.BUILDINGS_AND_TERRAIN_FEATURES, cell.getTileLayer ().get (0).getLayer ());
@@ -263,7 +263,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 				}
 			}
 		
-		assertEquals (16, wallOfFireTileCount);
+		assertEquals (12, wallOfFireTileCount);
 		
 		// Element from population, note this puts all kinds of city roads down too as well as the houses
 		trueTerrain.getMaintainedSpell ().clear ();
@@ -286,7 +286,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 					assertEquals (CombatMapLayerID.ROAD, cell.getTileLayer ().get (1).getLayer ());	// Road
 					assertEquals ("CRL01", cell.getTileLayer ().get (1).getCombatTileTypeID ());
 				}
-				else if ((x == 4) && (y == 11))		// Special road tile for city entryway
+				else if ((x == 3) && (y == 11))		// Special road tile for city entryway
 				{
 					assertEquals (1, cell.getTileLayer ().size ());
 					assertEquals (CombatMapLayerID.ROAD, cell.getTileLayer ().get (0).getLayer ());
@@ -301,7 +301,7 @@ public final class TestCombatMapGeneratorImpl extends ServerTestData
 				}
 			}
 		
-		assertEquals (22, roadCount);		// Note there's 24 in the DB, but we counted 2 in the check for the houses cells
+		assertEquals (13, roadCount);		// Note there's 4x4-1=15 in the DB, but we counted 2 in the check for the houses cells
 	}
 	
 	/**

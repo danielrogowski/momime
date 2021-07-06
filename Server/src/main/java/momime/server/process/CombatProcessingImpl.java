@@ -67,7 +67,7 @@ import momime.server.utils.UnitServerUtils;
 public final class CombatProcessingImpl implements CombatProcessing
 {
 	/** Max number of units to fill each row during combat set up */ 
-	private final static int COMBAT_SETUP_UNITS_PER_ROW = 5;
+	private final static int COMBAT_SETUP_UNITS_PER_ROW = 4;
 	
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (CombatProcessingImpl.class);
@@ -121,20 +121,18 @@ public final class CombatProcessingImpl implements CombatProcessing
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
 	 * city wall corners and the main feature (node, temple, tower of wizardry, etc. on the defender side).
 	 * 
-	 * So for attackers we always end up with 4 full rows like
-	 * XXXXX
-	 * XXXXX
-	 * XXXXX
-	 * XXXXX
+	 * So for attackers we always end up with 3 full rows like
+	 * XXXX
+	 * XXXX
+	 * XXXX
 	 * 
-	 * For defenders in a city with walls we end up with 5 rows patterened like so (or there may be more spaces if no city walls) 
-	 *   XXX
-	 * XXXXX
-	 * XX  XX
-	 * XXXXX
-	 *   XXX
+	 * For defenders in a city with walls we end up with 4 rows patterened like so (or there may be more spaces if no city walls) 
+	 *   XX
+	 * XX  X
+	 * XXXX
+	 *   XX
 	 *   
-	 * so either way we should always have 20 spaces
+	 * so either way we should always have 9 spaces and some spare
 	 *
 	 * @param startX X coordinate within the combat map to centre the units around
 	 * @param startY Y coordinate within the combat map to centre the units around
@@ -158,8 +156,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 			
 			// Move down-left to start of row...
 			final MapCoordinates2DEx coords = new MapCoordinates2DEx (centre);
-			for (int n = 0; n < COMBAT_SETUP_UNITS_PER_ROW/2; n++)
-				getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 6);
+			//for (int n = 0; n < COMBAT_SETUP_UNITS_PER_ROW/2; n++)
+			getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 6);
 			
 			// ..then position units in an up-right fashion to fill the row
 			for (int n = 0; n < COMBAT_SETUP_UNITS_PER_ROW; n++)
@@ -397,8 +395,8 @@ public final class CombatProcessingImpl implements CombatProcessing
 			final MapCoordinates2DEx coords = new MapCoordinates2DEx (centre);
 				
 			// Move down-left to start of row...
-			for (int n = 0; n < unitsOnThisRow/2; n++)
-				getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 6);
+			//for (int n = 0; n < unitsOnThisRow/2; n++)
+			getCoordinateSystemUtils ().move2DCoordinates (combatMapCoordinateSystem, coords, 6);
 				
 			// ..then position units in an up-right fashion to fill the row
 			for (int n = 0; n < unitsOnThisRow; n++)

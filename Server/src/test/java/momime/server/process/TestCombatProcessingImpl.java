@@ -90,7 +90,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final MomCombatTile impassable = new MomCombatTile ();
 		
 		// This is a copy of the pattern layout of city wall corners + wizard's fortress, i.e. BL99 and CTB02 combatMapElements from the server XML
-		final int [] [] wallsAndFortress = new int [] [] {{3, 9}, {5, 9}, {3, 5}, {1, 9}, {3, 13}};
+		final int [] [] wallsAndFortress = new int [] [] {{3, 8}, {4, 9}, {3, 6}, {1, 9}, {3, 12}};
 		
 		for (final int [] coords : wallsAndFortress)
 			combatMap.getRow ().get (coords [1]).getCell ().set (coords [0], impassable);
@@ -109,12 +109,11 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			CombatStartAndEndImpl.COMBAT_SETUP_DEFENDER_ROWS, combatMapCoordinateSystem, combatMap, db);
 		
 		// Check results
-		assertEquals (5, maxUnitsInRow.size ());
-		assertEquals (3, maxUnitsInRow.get (0).intValue ());
-		assertEquals (5, maxUnitsInRow.get (1).intValue ());
-		assertEquals (4, maxUnitsInRow.get (2).intValue ());
-		assertEquals (5, maxUnitsInRow.get (3).intValue ());
-		assertEquals (3, maxUnitsInRow.get (4).intValue ());
+		assertEquals (4, maxUnitsInRow.size ());
+		assertEquals (2, maxUnitsInRow.get (0).intValue ());
+		assertEquals (4, maxUnitsInRow.get (1).intValue ());
+		assertEquals (3, maxUnitsInRow.get (2).intValue ());
+		assertEquals (2, maxUnitsInRow.get (3).intValue ());
 	}
 	
 	/**
@@ -449,19 +448,19 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		// Check updates to server's true memory, via mocks
 		final ExpandedUnitDetails xu1 = trueExpandedUnits.get (0);
 		verify (xu1).setCombatLocation (combatLocation);
-		verify (xu1).setCombatPosition (new MapCoordinates2DEx (7, 17));
+		verify (xu1).setCombatPosition (new MapCoordinates2DEx (7, 20));
 		verify (xu1).setCombatHeading (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING);
 		verify (xu1).setCombatSide (UnitCombatSideID.ATTACKER);
 		
 		final ExpandedUnitDetails xu2 = trueExpandedUnits.get (1);
 		verify (xu2).setCombatLocation (combatLocation);
-		verify (xu2).setCombatPosition (new MapCoordinates2DEx (7, 19));
+		verify (xu2).setCombatPosition (new MapCoordinates2DEx (7, 21));
 		verify (xu2).setCombatHeading (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING);
 		verify (xu2).setCombatSide (UnitCombatSideID.ATTACKER);
 
 		final ExpandedUnitDetails xu3 = trueExpandedUnits.get (2);
 		verify (xu3).setCombatLocation (combatLocation);
-		verify (xu3).setCombatPosition (new MapCoordinates2DEx (8, 18));
+		verify (xu3).setCombatPosition (new MapCoordinates2DEx (8, 20));
 		verify (xu3).setCombatHeading (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING);
 		verify (xu3).setCombatSide (UnitCombatSideID.ATTACKER);
 		
@@ -474,7 +473,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			assertEquals (1, unit1.getUnitURN ());
 			assertSame (combatLocation, unit1.getCombatLocation ());
 			assertEquals (7, unit1.getCombatPosition ().getX ());
-			assertEquals (17, unit1.getCombatPosition ().getY ());
+			assertEquals (20, unit1.getCombatPosition ().getY ());
 			assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit1.getCombatHeading ().intValue ());
 			assertEquals (UnitCombatSideID.ATTACKER, unit1.getCombatSide ());
 			
@@ -482,7 +481,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			assertEquals (2, unit2.getUnitURN ());
 			assertSame (combatLocation, unit2.getCombatLocation ());
 			assertEquals (7, unit2.getCombatPosition ().getX ());
-			assertEquals (19, unit2.getCombatPosition ().getY ());
+			assertEquals (21, unit2.getCombatPosition ().getY ());
 			assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit2.getCombatHeading ().intValue ());
 			assertEquals (UnitCombatSideID.ATTACKER, unit2.getCombatSide ());
 
@@ -490,7 +489,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 			assertEquals (3, unit3.getUnitURN ());
 			assertSame (combatLocation, unit3.getCombatLocation ());
 			assertEquals (8, unit3.getCombatPosition ().getX ());
-			assertEquals (18, unit3.getCombatPosition ().getY ());
+			assertEquals (20, unit3.getCombatPosition ().getY ());
 			assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ().intValue ());
 			assertEquals (UnitCombatSideID.ATTACKER, unit3.getCombatSide ());
 		}
@@ -501,21 +500,21 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final StartCombatMessageUnit unit1 = msg.getUnitPlacement ().get (0);
 		assertEquals (1, unit1.getUnitURN ());
 		assertEquals (7, unit1.getCombatPosition ().getX ());
-		assertEquals (17, unit1.getCombatPosition ().getY ());
+		assertEquals (20, unit1.getCombatPosition ().getY ());
 		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit1.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit1.getCombatSide ());
 
 		final StartCombatMessageUnit unit2 = msg.getUnitPlacement ().get (1);
 		assertEquals (2, unit2.getUnitURN ());
 		assertEquals (7, unit2.getCombatPosition ().getX ());
-		assertEquals (19, unit2.getCombatPosition ().getY ());
+		assertEquals (21, unit2.getCombatPosition ().getY ());
 		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit2.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit2.getCombatSide ());
 
 		final StartCombatMessageUnit unit3 = msg.getUnitPlacement ().get (2);
 		assertEquals (3, unit3.getUnitURN ());
 		assertEquals (8, unit3.getCombatPosition ().getX ());
-		assertEquals (18, unit3.getCombatPosition ().getY ());
+		assertEquals (20, unit3.getCombatPosition ().getY ());
 		assertEquals (CombatStartAndEndImpl.COMBAT_SETUP_ATTACKER_FACING, unit3.getCombatHeading ());
 		assertEquals (UnitCombatSideID.ATTACKER, unit3.getCombatSide ());
 	}

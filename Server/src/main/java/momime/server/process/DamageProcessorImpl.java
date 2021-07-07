@@ -219,7 +219,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 					(xuDefender.calculateAliveFigureCount () > 0))
 				{
 					final List<DamageResolutionTypeID> thisSpecialDamageResolutionsApplied = getAttackResolutionProcessing ().processAttackResolutionStep
-						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, step, spellDamageToThisDefender,
+						(attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation, step, spellDamageToThisDefender,
 							mom.getPlayers (), mom.getGeneralServerKnowledge ().getTrueMap (), mom.getSessionDescription ().getCombatMapSize (), mom.getServerDB ());
 					
 					for (final DamageResolutionTypeID thisSpecialDamageResolutionApplied : thisSpecialDamageResolutionsApplied)

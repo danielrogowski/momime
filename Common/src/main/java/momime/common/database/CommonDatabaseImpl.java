@@ -149,6 +149,9 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	/** Hero item bonus ID that grants invisibility */
 	private String invisibilityHeroItemBonusID;
 	
+	/** City walls building ID */
+	private String cityWallsBuildingID;
+
 	/**
 	 * Builds all the hash maps to enable finding records faster
 	 */
@@ -289,10 +292,23 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		// Need this multiple times for every draw of the map, so better to figure this out only once
 		invisibilityHeroItemBonusID = getHeroItemBonus ().stream ().filter (b -> b.getHeroItemBonusStat ().stream ().anyMatch
 			(s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL))).map (b -> b.getHeroItemBonusID ()).findAny ().orElse (null);
+		
 		if (invisibilityHeroItemBonusID == null)
 			log.warn ("No hero item bonus that grants invisibility found");
 		else
 			log.info ("Hero item bonus that grants invisibility = " + invisibilityHeroItemBonusID);
+		
+		// Find building ID for city walls by looking for borders which give a defence bonus
+		final List<String> combatTileBorderIDsWithDefenceBonus = getCombatTileBorder ().stream ().filter
+			(b -> (b.getDefenceBonus () != null) && (b.getDefenceBonus () > 0)).map (b -> b.getCombatTileBorderID ()).collect (Collectors.toList ());
+		
+		cityWallsBuildingID = getCombatMapElement ().stream ().filter
+			(e -> (combatTileBorderIDsWithDefenceBonus.contains (e.getCombatTileBorderID ())) && (e.getBuildingID () != null)).map (e -> e.getBuildingID ()).findAny ().orElse (null);
+
+		if (cityWallsBuildingID == null)
+			log.warn ("No building ID found that gives a defence bonus");
+		else
+			log.info ("Building ID that grants defence bonus (city walls) = " + cityWallsBuildingID);
 	}
 	
 	/**
@@ -1089,6 +1105,15 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 	public final String getInvisibilityHeroItemBonusID ()
 	{
 		return invisibilityHeroItemBonusID;
+	}
+
+	/**
+	 * @return City walls building ID
+	 */
+	@Override
+	public final String getCityWallsBuildingID ()
+	{
+		return cityWallsBuildingID;
 	}
 	
 	/**

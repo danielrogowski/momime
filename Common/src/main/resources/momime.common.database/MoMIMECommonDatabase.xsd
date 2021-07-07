@@ -3425,6 +3425,11 @@ Zero value indicates the terrain in this layer has no effect on movement (e.g. h
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatTileTypeDescription" type="momimecommon:description" nxe:label="Combat Tile Type Description" nxe:gridwidth="200" />
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatMapLayer" type="momimecommon:combatMapLayerID" nxe:label="Layer" nxe:gridwidth="60" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="doubleMovement" type="momimecommon:combatTileTypeDoubleMovement" nxe:label="2x Movement to enter this tile" nxe:gridwidth="200" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="insideCity" type="xsd:boolean" nxe:label="Inside city?" nxe:gridWidth="80">
+			<xsd:annotation>
+				<xsd:documentation>Presence of this tile on any layer indicates this tile is part of the 4x4 area inside the city.</xsd:documentation>
+			</xsd:annotation>
+			</xsd:element>
 		</xsd:sequence>
 		<xsd:attribute name="combatTileTypeID" type="momimecommon:combatTileTypeID" use="required" nxe:label="Combat Tile Type ID" nxe:gridwidth="130" />
 	</xsd:complexType>
@@ -3437,6 +3442,7 @@ To keep things simple, the graphics XML file has a quite simple mapping which co
 		<xsd:sequence>
 			<xsd:element minOccurs="1" maxOccurs="1" name="combatTileBorderDescription" type="momimecommon:description" nxe:label="Combat Tile Border Description" nxe:gridwidth="200" />
 			<xsd:element minOccurs="0" maxOccurs="1" name="blocksMovement" type="momimecommon:combatTileBorderBlocksMovementID" nxe:label="Blocks movement?" nxe:showmaincolumn="false" />
+			<xsd:element minOccurs="0" maxOccurs="1" name="defenceBonus" type="momimecommon:unitSkillValue" nxe:label="Defence Bonus" nxe:gridwidth="100" />
 		</xsd:sequence>
 		<xsd:attribute name="combatTileBorderID" type="momimecommon:combatTileBorderID" use="required" nxe:label="Combat Tile Border ID" nxe:gridwidth="150" />
 	</xsd:complexType>

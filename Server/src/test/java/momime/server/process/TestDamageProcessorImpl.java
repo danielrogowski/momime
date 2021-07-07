@@ -219,8 +219,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
-			trueMap, combatMapSize, db);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
+			steps, null, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
@@ -402,8 +402,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final AttackResolutionUnit attackerWrapper = new AttackResolutionUnit (attacker);
 		final AttackResolutionUnit defenderWrapper = new AttackResolutionUnit (defender);
 
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, steps, null, players,
-			trueMap, combatMapSize, db);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
+			steps, null, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
@@ -551,8 +551,8 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<AttackResolutionStep> steps = new ArrayList<AttackResolutionStep> ();
 		steps.add (null);
 		
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, steps, spellDamage, players,
-			trueMap, combatMapSize, db);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, combatLocation,
+			steps, spellDamage, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (), defenders,
@@ -731,9 +731,14 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		spell.setAttackSpellDamageResolutionTypeID (DamageResolutionTypeID.SINGLE_FIGURE);
 		final AttackDamage reducedDamage = new AttackDamage (6, 0, damageType, null, spell, null, null, 1);
 		
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender1Wrapper, attackingPlayer, defendingPlayer, steps, spellDamage, players, trueMap, combatMapSize, db);
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, steps, reducedDamage, players, trueMap, combatMapSize, db);
-		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, steps, spellDamage, players, trueMap, combatMapSize, db);
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender1Wrapper, attackingPlayer, defendingPlayer, combatLocation,
+			steps, spellDamage, players, trueMap, combatMapSize, db);
+		
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender2Wrapper, attackingPlayer, defendingPlayer, combatLocation,
+			steps, reducedDamage, players, trueMap, combatMapSize, db);
+		
+		verify (attackResolutionProc, times (1)).processAttackResolutionStep (null, defender3Wrapper, attackingPlayer, defendingPlayer, combatLocation,
+			steps, spellDamage, players, trueMap, combatMapSize, db);
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (), defenders,

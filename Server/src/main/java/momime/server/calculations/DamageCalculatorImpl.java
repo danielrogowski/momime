@@ -6,6 +6,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.random.RandomUtils;
@@ -21,6 +22,8 @@ import momime.common.database.Spell;
 import momime.common.database.SpellValidUnitTarget;
 import momime.common.database.UnitSkill;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
@@ -321,19 +324,29 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * absorbed or every figure is killed.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack if there is one; null if the damage is coming from a spell (even if the spell was cast by a unit)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateSingleFigureDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	public final int calculateSingleFigureDamage (final ExpandedUnitDetails defender, final ExpandedUnitDetails attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final MapCoordinates3DEx combatLocation,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attackDamage, 1);
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attacker, attackDamage, 1,
+			combatLocation, combatMap, trueBuildings, db);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
 		return totalHits;
@@ -344,19 +357,29 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * damage except that the defender's defence stat is halved.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack if there is one; null if the damage is coming from a spell (even if the spell was cast by a unit)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateArmourPiercingDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	public final int calculateArmourPiercingDamage (final ExpandedUnitDetails defender, final ExpandedUnitDetails attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final MapCoordinates3DEx combatLocation,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attackDamage, 2);
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attacker, attackDamage, 2,
+			combatLocation, combatMap, trueBuildings, db);
 		
 		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
 		return totalHits;
@@ -367,19 +390,31 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * damage except that the defender gets no defence rolls at all.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack if there is one; null if the damage is coming from a spell (even if the spell was cast by a unit)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateIllusionaryDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	public final int calculateIllusionaryDamage (final ExpandedUnitDetails defender, final ExpandedUnitDetails attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final MapCoordinates3DEx combatLocation,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException
 	{
-		final int totalHits = calculateSingleFigureDamageInternal (defender, 0, attackingPlayer, defendingPlayer, attackDamage);
+		final int defenderDefenceStrength = getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attacker, attackDamage, 0,
+			combatLocation, combatMap, trueBuildings, db);
+		
+		final int totalHits = calculateSingleFigureDamageInternal (defender, defenderDefenceStrength, attackingPlayer, defendingPlayer, attackDamage);
 		return totalHits;
 	}
 	
@@ -441,17 +476,26 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	 * making their own to hit and defence rolls.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack if there is one; null if the damage is coming from a spell (even if the spell was cast by a unit)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	@Override
-	public final int calculateMultiFigureDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException
+	public final int calculateMultiFigureDamage (final ExpandedUnitDetails defender, final ExpandedUnitDetails attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final MapCoordinates3DEx combatLocation,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
@@ -464,7 +508,8 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		damageCalculationMsg.setDefenderFigures (defender.calculateAliveFigureCount ());
 		damageCalculationMsg.setUnmodifiedDefenceStrength (!defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE) ? 0 :
 			Math.max (0, defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)));
-		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attackDamage, 1));
+		damageCalculationMsg.setModifiedDefenceStrength (getDamageTypeCalculations ().getDefenderDefenceStrength (defender, attacker, attackDamage, 1,
+			combatLocation, combatMap, trueBuildings, db));
 		damageCalculationMsg.setChanceToDefend (Math.max (0, 3 + (!defender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK) ? 0 :
 			defender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK))));
 		damageCalculationMsg.setTenTimesAverageBlock (damageCalculationMsg.getModifiedDefenceStrength () * damageCalculationMsg.getChanceToDefend ());

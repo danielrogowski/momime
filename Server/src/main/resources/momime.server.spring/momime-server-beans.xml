@@ -470,6 +470,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<bean id="damageTypeCalculations" class="momime.server.calculations.DamageTypeCalculationsImpl">
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="combatProcessing" ref="combatProcessing" />
 	</bean>
 
 	<bean id="damageCalculator" class="momime.server.calculations.DamageCalculatorImpl">
@@ -676,6 +677,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="memoryGridCellUtils" ref="memoryGridCellUtils" />
 		<property name="combatEndTurn" ref="combatEndTurn" />
 		<property name="serverUnitCalculations" ref="serverUnitCalculations" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 
 	<bean id="combatEndTurn" class="momime.server.process.CombatEndTurnImpl">

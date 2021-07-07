@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -13,6 +14,8 @@ import momime.common.database.CommonDatabase;
 import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.messages.FogOfWarMemory;
+import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.server.process.AttackResolutionUnit;
@@ -89,64 +92,100 @@ public interface DamageCalculator
 	 * absorbed or every figure is killed.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack if there is one; null if the damage is coming from a spell (even if the spell was cast by a unit)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public int calculateSingleFigureDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
-
+	public int calculateSingleFigureDamage (final ExpandedUnitDetails defender, final ExpandedUnitDetails attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final MapCoordinates3DEx combatLocation,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException;
+	
 	/**
 	 * Rolls the number of actual hits and blocks for "armour piercing" type damage, as per single figure
 	 * damage except that the defender's defence stat is halved.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack if there is one; null if the damage is coming from a spell (even if the spell was cast by a unit)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public int calculateArmourPiercingDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+	public int calculateArmourPiercingDamage (final ExpandedUnitDetails defender, final ExpandedUnitDetails attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final MapCoordinates3DEx combatLocation,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException;
 
 	/**
 	 * Rolls the number of actual hits for "illusionary" type damage, as per single figure
 	 * damage except that the defender gets no defence rolls at all.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack if there is one; null if the damage is coming from a spell (even if the spell was cast by a unit)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public int calculateIllusionaryDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+	public int calculateIllusionaryDamage (final ExpandedUnitDetails defender, final ExpandedUnitDetails attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final MapCoordinates3DEx combatLocation,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException;
 
 	/**
 	 * Rolls the number of actual hits and blocks for "multi figure" a.k.a. immolation type damage, where all figures are hit individually by the attack,
 	 * making their own to hit and defence rolls.
 	 * 
 	 * @param defender Unit being hit
+	 * @param attacker Unit making the attack if there is one; null if the damage is coming from a spell (even if the spell was cast by a unit)
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param attackDamage The maximum possible damage the attack may do, and any pluses to hit
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
 	 * @return How much damage defender takes as a result of being attacked by attacker
 	 * @throws MomException If we cannot find any appropriate experience level for this unit
+	 * @throws RecordNotFoundException If one of the expected items can't be found in the DB
 	 * @throws JAXBException If there is a problem converting the object into XML
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
-	public int calculateMultiFigureDamage (final ExpandedUnitDetails defender, final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
-		final AttackDamage attackDamage) throws MomException, JAXBException, XMLStreamException;
+	public int calculateMultiFigureDamage (final ExpandedUnitDetails defender, final ExpandedUnitDetails attacker,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final AttackDamage attackDamage, final MapCoordinates3DEx combatLocation,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException;
 	
 	/**
 	 * Sets the number of actual hits for "doom" type constant damage.

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -55,6 +56,7 @@ public interface AttackResolutionProcessing
 	 * @param defender Unit being attacked
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param combatLocation Location the combat is taking place
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
 	 * @param commonPotentialDamageToDefenders This damage is applied to the defender if any "null" entries are encountered in the steps list (used for spell damage)
 	 * @param players Players list
@@ -69,7 +71,7 @@ public interface AttackResolutionProcessing
 	 * @throws XMLStreamException If there is a problem writing to the XML stream
 	 */
 	public List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
 		final List<AttackResolutionStep> steps, final AttackDamage commonPotentialDamageToDefenders,
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException;

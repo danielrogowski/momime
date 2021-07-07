@@ -20,6 +20,7 @@ import momime.common.database.UnitCombatSideID;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomSessionDescription;
 import momime.common.messages.servertoclient.StartCombatMessage;
@@ -259,4 +260,15 @@ public interface CombatProcessing
 	public void recheckTransportCapacityAfterCombat (final MapCoordinates3DEx combatLocation, final FogOfWarMemory trueMap,
 		final List<PlayerServerDetails> players, final FogOfWarSetting fogOfWarSettings, final CommonDatabase db)
 		throws MomException, RecordNotFoundException, JAXBException, XMLStreamException, PlayerNotFoundException;
+
+	/**
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatPosition Location of the unit within the combat map
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the specified location is within city walls (if there even are any)
+	 */
+	public boolean isWithinCityWalls (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db);
 }

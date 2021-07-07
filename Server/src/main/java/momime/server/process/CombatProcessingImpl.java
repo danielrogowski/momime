@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -34,8 +35,10 @@ import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -49,6 +52,7 @@ import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
+import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -116,6 +120,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
+	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -1353,6 +1360,38 @@ public final class CombatProcessingImpl implements CombatProcessing
 	}
 	
 	/**
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatPosition Location of the unit within the combat map
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the specified location is within city walls (if there even are any)
+	 */
+	@Override
+	public final boolean isWithinCityWalls (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+	{
+		final boolean withinCityWalls;
+		
+		// First, the city actually has to have city walls
+		if (getMemoryBuildingUtils ().findBuilding (trueBuildings, combatLocation, db.getCityWallsBuildingID ()) == null)
+			withinCityWalls = false;
+		else
+		{
+			// Get the specific tile where the unit is
+			final MomCombatTile combatTile = combatMap.getRow ().get (combatPosition.getY ()).getCell ().get (combatPosition.getX ());
+			
+			// See if any of the layers have a tile that identifies this location as being within the city
+			final List<String> cityTiles = db.getCombatTileType ().stream ().filter
+				(t -> (t.isInsideCity () != null) && (t.isInsideCity ())).map (t -> t.getCombatTileTypeID ()).collect (Collectors.toList ());
+			
+			withinCityWalls = combatTile.getTileLayer ().stream ().anyMatch (l -> cityTiles.contains (l.getCombatTileTypeID ()));
+		}
+		
+		return withinCityWalls;
+	}
+	
+	/**
 	 * @return Unit utils
 	 */
 	public final UnitUtils getUnitUtils ()
@@ -1590,5 +1629,21 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
 	}
 }

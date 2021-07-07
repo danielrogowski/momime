@@ -736,7 +736,7 @@ public final class TestDamageCalculatorImpl
 		
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 1)).thenReturn (4);
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 1, null, null, null, null)).thenReturn (4);
 		
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
@@ -756,7 +756,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (3, calc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, attackDamage));
+		assertEquals (3, calc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, null));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -824,7 +824,7 @@ public final class TestDamageCalculatorImpl
 
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 2)).thenReturn (2);		// halved by Armour Piercing
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 2, null, null, null, null)).thenReturn (2);		// halved by Armour Piercing
 
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
@@ -844,7 +844,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (3, calc.calculateArmourPiercingDamage (xuDefender, attackingPlayer, defendingPlayer, attackDamage));
+		assertEquals (3, calc.calculateArmourPiercingDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, null));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -901,11 +901,18 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.getMemoryUnit ()).thenReturn (defender);
 		when (xuDefender.getUnitURN ()).thenReturn (33);
 		
+		// Set up attack damage
+		final DamageType damageType = new DamageType ();
+		final AttackDamage attackDamage = new AttackDamage (18, 1, damageType, DamageResolutionTypeID.ILLUSIONARY, null, null, null, 1);
+		
 		// Set up defender stats
+		final DamageTypeCalculations damageTypeCalculations = mock (DamageTypeCalculations .class);
+		
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 0, null, null, null, null)).thenReturn (0);
 
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
@@ -915,8 +922,6 @@ public final class TestDamageCalculatorImpl
 		when (random.nextInt (10)).thenReturn (0, 2, 6, 7, 3, 6, 7, 4, 2, 5, 7, 9, 2, 4, 3, 6, 6, 8);		// Attack rolls, 6 of them are <4
 
 		// Mock the damage being applied (NB. now 0 instead of 4 defence)
-		final DamageType damageType = new DamageType ();
-		
 		final UnitServerUtils unitServerUtils = mock (UnitServerUtils.class);
 		when (unitServerUtils.applyDamage (xuDefender, 6, 0, 5)).thenReturn (6);		// Take 6 hits, each figure has defence 0, with 50% block chance
 		
@@ -924,10 +929,10 @@ public final class TestDamageCalculatorImpl
 		final DamageCalculatorImpl calc = new DamageCalculatorImpl ();
 		calc.setRandomUtils (random);
 		calc.setUnitServerUtils (unitServerUtils);
+		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (6, calc.calculateIllusionaryDamage (xuDefender, attackingPlayer, defendingPlayer,
-			new AttackDamage (18, 1, damageType, DamageResolutionTypeID.ILLUSIONARY, null, null, null, 1)));
+		assertEquals (6, calc.calculateIllusionaryDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, null));
 		
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());
@@ -995,7 +1000,7 @@ public final class TestDamageCalculatorImpl
 		when (xuDefender.calculateAliveFigureCount ()).thenReturn (3);		// Defender has 4 figures unit but 1's dead already...
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_DEFENCE)).thenReturn (4);	// ..and 4 shields...
-		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, attackDamage, 1)).thenReturn (4);
+		when (damageTypeCalculations.getDefenderDefenceStrength (xuDefender, null, attackDamage, 1, null, null, null, null)).thenReturn (4);
 		
 		when (xuDefender.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (true);
 		when (xuDefender.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK)).thenReturn (2);	// ..with 50% chance to block on each
@@ -1019,7 +1024,7 @@ public final class TestDamageCalculatorImpl
 		calc.setDamageTypeCalculations (damageTypeCalculations);
 		
 		// Run test
-		assertEquals (5, calc.calculateMultiFigureDamage (xuDefender, attackingPlayer, defendingPlayer, attackDamage));
+		assertEquals (5, calc.calculateMultiFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, attackDamage, null, null, null, null));
 
 		// Check the message that got sent to the attacker
 		assertEquals (1, attackingConn.getMessages ().size ());

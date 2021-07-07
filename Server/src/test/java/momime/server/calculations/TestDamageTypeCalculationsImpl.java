@@ -412,7 +412,7 @@ public final class TestDamageTypeCalculationsImpl
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
 		
 		// Run method
-		assertEquals (5, calc.getDefenderDefenceStrength (defender, attackDamage, 1));
+		assertEquals (5, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, null, null, null, null));
 	}
 
 	/**
@@ -436,7 +436,7 @@ public final class TestDamageTypeCalculationsImpl
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
 		
 		// Run method
-		assertEquals (2, calc.getDefenderDefenceStrength (defender, attackDamage, 2));
+		assertEquals (2, calc.getDefenderDefenceStrength (defender, null, attackDamage, 2, null, null, null, null));
 	}
 
 	/**
@@ -465,7 +465,7 @@ public final class TestDamageTypeCalculationsImpl
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
 		
 		// Run method
-		assertEquals (5, calc.getDefenderDefenceStrength (defender, attackDamage, 1));
+		assertEquals (5, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, null, null, null, null));
 	}
 
 	/**
@@ -494,7 +494,7 @@ public final class TestDamageTypeCalculationsImpl
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
 		
 		// Run method
-		assertEquals (50, calc.getDefenderDefenceStrength (defender, attackDamage, 1));
+		assertEquals (50, calc.getDefenderDefenceStrength (defender, null, attackDamage, 1, null, null, null, null));
 	}
 
 	/**
@@ -523,6 +523,6 @@ public final class TestDamageTypeCalculationsImpl
 		final DamageTypeCalculationsImpl calc = new DamageTypeCalculationsImpl ();
 		
 		// Run method
-		assertEquals (50, calc.getDefenderDefenceStrength (defender, attackDamage, 2));
+		assertEquals (50, calc.getDefenderDefenceStrength (defender, null, attackDamage, 2, null, null, null, null));
 	}
 }

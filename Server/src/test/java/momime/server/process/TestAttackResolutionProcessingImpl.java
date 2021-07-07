@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.sessionbase.PlayerDescription;
 
@@ -31,6 +32,7 @@ import momime.common.messages.MemoryUnit;
 import momime.common.messages.UnitDamage;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
+import momime.server.ServerTestData;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
@@ -39,7 +41,7 @@ import momime.server.utils.UnitServerUtilsImpl;
 /**
  * Tests the AttackResolutionProcessingImpl class
  */
-public final class TestAttackResolutionProcessingImpl
+public final class TestAttackResolutionProcessingImpl extends ServerTestData
 {
 	/**
 	 * Tests the chooseAttackResolution method when an appropraite attack resolution does exist 
@@ -280,6 +282,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
+		fow.setMap (createOverlandMap (createOverlandMapCoordinateSystem ()));
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -340,7 +343,7 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToDefender);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, potentialDamageToDefender, null, null, null, null)).thenReturn (3);
 		
 		// Range penalty
 		final ServerUnitCalculations serverUnitCalculations = mock (ServerUnitCalculations.class);
@@ -354,7 +357,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
-		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, new MapCoordinates3DEx (20, 10, 1),
 			steps, null, players, fow, combatMapSize, db);
 		
 		// Check results
@@ -390,6 +393,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
+		fow.setMap (createOverlandMap (createOverlandMapCoordinateSystem ()));
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -462,8 +466,8 @@ public final class TestAttackResolutionProcessingImpl
 			players, fow, db)).thenReturn (potentialDamageToAttacker);
 		
 		// 3 of the attacker's hits do damage; 4 of the defender's hits do damage
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender)).thenReturn (3);
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToAttacker)).thenReturn (4);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, potentialDamageToDefender, null, null, null, null)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, potentialDamageToAttacker, null, null, null, null)).thenReturn (4);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -473,7 +477,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
-		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, new MapCoordinates3DEx (20, 10, 1),
 			steps, null, players, fow, combatMapSize, db);
 		
 		// Check results
@@ -506,6 +510,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
+		fow.setMap (createOverlandMap (createOverlandMapCoordinateSystem ()));
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -581,7 +586,7 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
-		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer,
+		proc.processAttackResolutionStep (attackerWrapper, defenderWrapper, attackingPlayer, defendingPlayer, new MapCoordinates3DEx (20, 10, 1),
 			steps, null, players, fow, combatMapSize, db);
 		
 		// Check results
@@ -608,6 +613,7 @@ public final class TestAttackResolutionProcessingImpl
 		
 		// Set up other lists
 		final FogOfWarMemory fow = new FogOfWarMemory ();
+		fow.setMap (createOverlandMap (createOverlandMapCoordinateSystem ()));
 		
 		// Players
 		final PlayerDescription attackingPd = new PlayerDescription ();
@@ -657,7 +663,7 @@ public final class TestAttackResolutionProcessingImpl
 		final AttackDamage potentialDamageToDefender = new AttackDamage (5, 1, damageTypeToDefender, DamageResolutionTypeID.SINGLE_FIGURE, null, null, null, 1);
 		
 		// 3 of them actually hit
-		when (damageCalc.calculateSingleFigureDamage (xuDefender, attackingPlayer, defendingPlayer, potentialDamageToDefender)).thenReturn (3);
+		when (damageCalc.calculateSingleFigureDamage (xuDefender, null, attackingPlayer, defendingPlayer, potentialDamageToDefender, null, null, null, null)).thenReturn (3);
 		
 		// Set up object to test
 		final AttackResolutionProcessingImpl proc = new AttackResolutionProcessingImpl ();
@@ -667,8 +673,8 @@ public final class TestAttackResolutionProcessingImpl
 		proc.setUnitServerUtils (new UnitServerUtilsImpl ());
 		
 		// Run method
-		proc.processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, steps,
-			potentialDamageToDefender, players, fow, combatMapSize, db);
+		proc.processAttackResolutionStep (null, defenderWrapper, attackingPlayer, defendingPlayer, new MapCoordinates3DEx (20, 10, 1),
+			steps, potentialDamageToDefender, players, fow, combatMapSize, db);
 		
 		// Check results
 		//assertEquals (3+3, defender.getDamageTaken ());

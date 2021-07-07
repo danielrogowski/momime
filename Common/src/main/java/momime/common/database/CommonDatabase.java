@@ -543,4 +543,9 @@ public interface CommonDatabase
 	 * @return Hero item bonus ID that grants invisibility
 	 */
 	public String getInvisibilityHeroItemBonusID ();
+
+	/**
+	 * @return City walls building ID
+	 */
+	public String getCityWallsBuildingID ();
 }

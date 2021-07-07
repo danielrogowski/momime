@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
+import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 
@@ -29,6 +30,7 @@ import momime.common.utils.UnitUtils;
 import momime.server.calculations.AttackDamage;
 import momime.server.calculations.DamageCalculator;
 import momime.server.calculations.ServerUnitCalculations;
+import momime.server.knowledge.ServerGridCellEx;
 import momime.server.utils.UnitServerUtils;
 
 /**
@@ -146,6 +148,7 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 * @param defender Unit being attacked
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param combatLocation Location the combat is taking place
 	 * @param steps The steps to take, i.e. all of the steps defined under the chosen attackResolution that have the same stepNumber
 	 * @param commonPotentialDamageToDefenders This damage is applied to the defender if any "null" entries are encountered in the steps list (used for spell damage)
 	 * @param players Players list
@@ -161,11 +164,13 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 	 */
 	@Override
 	public final List<DamageResolutionTypeID> processAttackResolutionStep (final AttackResolutionUnit attacker, final AttackResolutionUnit defender,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final MapCoordinates3DEx combatLocation,
 		final List<AttackResolutionStep> steps, final AttackDamage commonPotentialDamageToDefenders,
 		final List<PlayerServerDetails> players, final FogOfWarMemory mem, final CombatMapSize combatMapCoordinateSystem, final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
+		final ServerGridCellEx tc = (ServerGridCellEx) mem.getMap ().getPlane ().get (combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+		
 		// Zero out damage taken
 		final List<UnitDamage> damageToDefender = new ArrayList<UnitDamage> ();
 		final List<UnitDamage> damageToAttacker = new ArrayList<UnitDamage> ();
@@ -260,23 +265,23 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 							switch (potentialDamage.getDamageResolutionTypeID ())
 							{
 								case SINGLE_FIGURE:
-									thisDamage = getDamageCalculator ().calculateSingleFigureDamage (xuUnitBeingAttacked,
-										attackingPlayer, defendingPlayer, potentialDamage);
+									thisDamage = getDamageCalculator ().calculateSingleFigureDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
+										attackingPlayer, defendingPlayer, potentialDamage, combatLocation, tc.getCombatMap (), mem.getBuilding (), db);
 									break;
 									
 								case ARMOUR_PIERCING:
-									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage (xuUnitBeingAttacked,
-										attackingPlayer, defendingPlayer, potentialDamage); 
+									thisDamage = getDamageCalculator ().calculateArmourPiercingDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
+										attackingPlayer, defendingPlayer, potentialDamage, combatLocation, tc.getCombatMap (), mem.getBuilding (), db);
 									break;
 									
 								case ILLUSIONARY:
-									thisDamage = getDamageCalculator ().calculateIllusionaryDamage
-										(xuUnitBeingAttacked, attackingPlayer, defendingPlayer, potentialDamage);
+									thisDamage = getDamageCalculator ().calculateIllusionaryDamage (xuUnitBeingAttacked,  xuUnitMakingAttack,
+										attackingPlayer, defendingPlayer, potentialDamage, combatLocation, tc.getCombatMap (), mem.getBuilding (), db);
 									break;
 				
 								case MULTI_FIGURE:
-									thisDamage = getDamageCalculator ().calculateMultiFigureDamage (xuUnitBeingAttacked,
-										attackingPlayer, defendingPlayer, potentialDamage); 
+									thisDamage = getDamageCalculator ().calculateMultiFigureDamage (xuUnitBeingAttacked, xuUnitMakingAttack,
+										attackingPlayer, defendingPlayer, potentialDamage, combatLocation, tc.getCombatMap (), mem.getBuilding (), db);
 									break;
 									
 								case DOOM:

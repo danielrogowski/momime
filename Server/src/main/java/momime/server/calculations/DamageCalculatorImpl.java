@@ -251,6 +251,7 @@ public final class DamageCalculatorImpl implements DamageCalculator
 						sendDamageCalculationMessage (attackingPlayer, defendingPlayer, damageCalculationMsg);
 				
 						// Fill in the damage object
+						// Work out to hit bonuses - to hit penalties are applied in processAttackResolutionStep
 						final int plusToHit = !xuAttacker.hasModifiedSkill (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT) ? 0 :
 							xuAttacker.getModifiedSkillValue (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT);
 				

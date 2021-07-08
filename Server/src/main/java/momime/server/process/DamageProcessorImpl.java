@@ -156,6 +156,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 		}
 		
 		// Process our attack against each defender
+		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		for (final MemoryUnit defender : defenders)
 		{
@@ -232,6 +235,13 @@ public final class DamageProcessorImpl implements DamageProcessor
 						if (!specialDamageResolutionsApplied.contains (thisSpecialDamageResolutionApplied))
 							specialDamageResolutionsApplied.add (thisSpecialDamageResolutionApplied);
 				}
+			
+			// Count this as an attack against this defender, as long as its a regular attack from a unit and not a spell
+			if (attackSkillID != null)
+			{
+				final Integer count = tc.getNumberOfTimedAttacked ().get (defender.getUnitURN ());
+				tc.getNumberOfTimedAttacked ().put (defender.getUnitURN (), ((count == null) ? 0 : count) + 1);
+			}
 		}
 		
 		// Process attack against the wall
@@ -245,10 +255,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 
 			if (wallMsg.isWrecked ())
 			{
-				final ServerGridCellEx serverGridCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-					(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-					
-				final MapAreaOfCombatTiles combatMap = serverGridCell.getCombatMap ();
+				final MapAreaOfCombatTiles combatMap = tc.getCombatMap ();
 				
 				final MomCombatTile tile = combatMap.getRow ().get (wreckTilePosition.getY ()).getCell ().get (wreckTilePosition.getX ());
 				tile.setWrecked (true);
@@ -293,9 +300,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// Kill off any of the units who may have died.
 		// We don't need to notify the clients of this separately, clients can tell from the damage taken values above whether the units are dead or not,
 		// whether or not they're involved in the combat.
-		final ServerGridCellEx tc = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
-			(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
-		
 		boolean combatEnded = false;
 		PlayerServerDetails winningPlayer = null;
 		

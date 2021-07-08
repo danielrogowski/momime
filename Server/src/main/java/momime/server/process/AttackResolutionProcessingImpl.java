@@ -228,19 +228,27 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 					// We may get null here, if the step says to attack with a skill that this unit doesn't have
 					if (potentialDamage != null)
 					{
+						// Work out to hit penalties
+						int penalty = 0;
+						
 						// If its a non-magical ranged attack, work out any distance penalty
 						if ((step != null) && (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (step.getUnitSkillID ())))
-						{
-							final int penalty = getServerUnitCalculations ().calculateRangedAttackDistancePenalty
+							penalty = penalty + getServerUnitCalculations ().calculateRangedAttackDistancePenalty
 								(xuUnitMakingAttack, xuUnitBeingAttackedHPcheck, combatMapCoordinateSystem);
-							
-							if (penalty > 0)
-							{
-								final int newChanceToHitWithPenalty = potentialDamage.getChanceToHit () - penalty;
-								
-								// Can't reduce chance below 10%
-								potentialDamage.setChanceToHit (Math.max (newChanceToHitWithPenalty, 1));
-							}
+						
+						// If the unit has suffered too many attacks, its counterattack to hit chance goes down
+						if ((step != null) && (step.getCombatSide () == UnitCombatSideID.DEFENDER))
+						{
+							final Integer numberOfTimedAttacked = tc.getNumberOfTimedAttacked ().get (unitMakingAttack.getUnit ().getUnitURN ());
+							if ((numberOfTimedAttacked != null) && (numberOfTimedAttacked >= 2))
+								penalty = penalty + (numberOfTimedAttacked / 2);
+						}
+
+						// Can't reduce chance below 10%
+						if (penalty > 0)
+						{
+							final int newChanceToHitWithPenalty = potentialDamage.getChanceToHit () - penalty;							
+							potentialDamage.setChanceToHit (Math.max (newChanceToHitWithPenalty, 1));
 						}
 						
 						// Work out how much of the damage gets through

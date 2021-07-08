@@ -1,7 +1,9 @@
 package momime.server.knowledge;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import momime.common.messages.NumberedHeroItem;
 import momime.common.messages.PendingMovement;
@@ -65,7 +67,10 @@ public final class ServerGridCellEx extends ServerGridCell
 	private Integer attackerSpecialFameLost;
 
 	/** List of items held by any heroes that died in this combat, no matter which side they were on */
-	private List<NumberedHeroItem> itemsFromHeroesWhoDiedInCombat = new ArrayList<NumberedHeroItem> ();
+	private final List<NumberedHeroItem> itemsFromHeroesWhoDiedInCombat = new ArrayList<NumberedHeroItem> ();
+	
+	/** Map keyed by Unit URN indicating how many times each unit has been attacked this combat round */ 
+	private final Map<Integer, Integer> numberOfTimedAttacked = new HashMap<Integer, Integer> (); 
 	
 	/**
 	 * @return Whether the lair here was generated as "weak" - this is needed when populating the lair with monsters
@@ -329,5 +334,13 @@ public final class ServerGridCellEx extends ServerGridCell
 	public final List<NumberedHeroItem> getItemsFromHeroesWhoDiedInCombat ()
 	{
 		return itemsFromHeroesWhoDiedInCombat;
+	}
+
+	/**
+	 * @return Map keyed by Unit URN indicating how many times each unit has been attacked this combat round
+	 */ 
+	public final Map<Integer, Integer> getNumberOfTimedAttacked ()
+	{
+		return numberOfTimedAttacked;
 	}
 }

@@ -651,6 +651,9 @@ public final class CombatProcessingImpl implements CombatProcessing
 				
 				// Allow the player to cast a spell this turn
 				tc.setSpellCastThisCombatTurn (null);
+				
+				// Reset counterattack to hit penalties
+				tc.getNumberOfTimedAttacked ().clear ();
 			}
 			
 			// AI or human player?

@@ -49,7 +49,6 @@ import momime.common.messages.UnitDamage;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
-import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -212,7 +211,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		assertFalse (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, 7,
+		assertFalse (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom));
 
 		// Ensure steps were processed
@@ -225,7 +224,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null,
-			specialDamageResolutionsApplied, players, trueTerrain, db, fogOfWarSettings);
+			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -234,7 +233,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
 		
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
-		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
 		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackSkillID ());
 		assertNull (data.getAttackSpellID ());
 		assertEquals (attacker.getOwningPlayerID (), data.getAttackerPlayerID ());
@@ -395,7 +393,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		assertTrue (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, 7,
+		assertTrue (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, null, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom));
 		
 		// Ensure steps were processed
@@ -408,7 +406,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (attacker, attacker.getOwningPlayerID (), defenders,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null,
-			specialDamageResolutionsApplied, players, trueTerrain, db, fogOfWarSettings);
+			specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -417,7 +415,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
 		
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
-		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
 		assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, data.getAttackSkillID ());
 		assertNull (data.getAttackSpellID ());
 		assertEquals (attacker.getOwningPlayerID (), data.getAttackerPlayerID ());
@@ -542,7 +539,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null,
+		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
 			null, spell, null, castingPlayer, combatLocation, mom));
 
 		// Ensure steps were processed
@@ -556,7 +553,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (), defenders,
-			null, "SP001", specialDamageResolutionsApplied, players, trueTerrain, db, fogOfWarSettings);
+			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -565,7 +562,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
 		
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
-		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
 		assertNull (data.getAttackSkillID ());
 		assertEquals ("SP001", data.getAttackSpellID ());
 		assertEquals (castingPlayer.getPlayerDescription ().getPlayerID ().intValue (), data.getAttackerPlayerID ());
@@ -717,7 +713,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenders.add (defender2);
 		defenders.add (defender3);
 		
-		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null,
+		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null, null,
 			null, spell, null, castingPlayer, combatLocation, mom));
 
 		// Ensure steps were processed
@@ -742,7 +738,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 
 		final List<DamageResolutionTypeID> specialDamageResolutionsApplied = new ArrayList<DamageResolutionTypeID> ();
 		verify (midTurnSingle, times (1)).sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (), defenders,
-			null, "SP001", specialDamageResolutionsApplied, players, trueTerrain, db, fogOfWarSettings);
+			null, "SP001", specialDamageResolutionsApplied, null, null, players, trueTerrain, db, fogOfWarSettings);
 		
 		// Check initial message was sent
 		final ArgumentCaptor<DamageCalculationData> msg = ArgumentCaptor.forClass (DamageCalculationData.class); 
@@ -751,7 +747,6 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		assertEquals (DamageCalculationHeaderData.class.getName (), msg.getValue ().getClass ().getName ());
 		
 		final DamageCalculationHeaderData data = (DamageCalculationHeaderData) msg.getValue ();
-		assertEquals (DamageCalculationMessageTypeID.HEADER, data.getMessageType ());
 		assertNull (data.getAttackSkillID ());
 		assertEquals ("SP001", data.getAttackSpellID ());
 		assertEquals (castingPlayer.getPlayerDescription ().getPlayerID ().intValue (), data.getAttackerPlayerID ());

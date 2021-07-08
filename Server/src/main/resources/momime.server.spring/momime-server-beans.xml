@@ -632,6 +632,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="attackResolutionProcessing" ref="attackResolutionProcessing" />
 		<property name="unitServerUtils" ref="unitServerUtils" />
 		<property name="unitUtils" ref="unitUtils" />
+		<property name="randomUtils" ref="randomUtils" />
 	</bean>
 	
 	<bean id="attackResolutionProcessing" class="momime.server.process.AttackResolutionProcessingImpl">

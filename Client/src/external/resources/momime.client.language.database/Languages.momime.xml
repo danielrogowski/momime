@@ -1077,12 +1077,15 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <title language="en">
             <text>Damage calculations</text>
         </title>
-        <headerWithAttackerUnit language="en">
+        <headerWithBothUnits language="en">
             <text>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making ATTACK_TYPE attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</text>
-        </headerWithAttackerUnit>
-        <headerWithoutAttackerUnit language="en">
+        </headerWithBothUnits>
+        <headerWithDefenderOnly language="en">
             <text>ATTACKER_NAME making ATTACK_TYPE attack against DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME:</text>
-        </headerWithoutAttackerUnit>
+        </headerWithDefenderOnly>
+        <headerWithAttackerOnly language="en">
+            <text>ATTACKER_NAME's ATTACKER_RACE_UNIT_NAME making ATTACK_TYPE attack:</text>
+        </headerWithAttackerOnly>
         <headerWithoutEitherUnit language="en">
             <text>ATTACKER_NAME making ATTACK_TYPE attack:</text>
         </headerWithoutEitherUnit>
@@ -1161,6 +1164,12 @@ Note some spells such as Banish and Life Drain allow additional Mana to be chann
         <defenceFear language="en">
             <text>DEFENDER_NAME's DEFENDER_RACE_UNIT_NAME has resistance DEFENCE_STRENGTH, ACTUAL_HITS figures fail resistance roll and become frozen in fear.</text>
         </defenceFear>
+        <wallWrecked language="en">
+            <text>PERCENTAGE% chance to knock down wall - success.</text>
+        </wallWrecked>
+        <wallFailed language="en">
+            <text>PERCENTAGE% chance to knock down wall - failed.</text>
+        </wallFailed>
     </combatDamage>
     <cityGrowthRate>
         <title language="en">

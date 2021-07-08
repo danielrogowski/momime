@@ -1303,13 +1303,14 @@ public final class CombatProcessingImpl implements CombatProcessing
 					defenders.add (defender);
 			}
 			
+			final boolean attackWalls = ATTACK_WALLS.contains (combatMoveType);
 			switch (combatMoveType)
 			{
 				case MELEE_UNIT:
 				case MELEE_WALL:
 				case MELEE_UNIT_AND_WALL:
 					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
-						ATTACK_WALLS.contains (combatMoveType) ? 2 : null,
+						attackWalls ? 2 : null, attackWalls ? moveTo : null,
 						movementDirections [moveTo.getY ()] [moveTo.getX ()],
 						CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 					break;
@@ -1318,7 +1319,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 				case RANGED_WALL:
 				case RANGED_UNIT_AND_WALL:
 					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
-						ATTACK_WALLS.contains (combatMoveType) ? 4 : null,
+						attackWalls ? 4 : null, attackWalls ? moveTo : null,
 						getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), tu.getCombatPosition (), moveTo),
 						CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 					break;

@@ -604,9 +604,6 @@ Will be null if combat wasn't at a city, or if it was a city combat and the defe
 	    <xsd:annotation>
     		<xsd:documentation>Class used to store breakdown values for all messages that appear in the damage calculation window.</xsd:documentation>
 		</xsd:annotation>
-		<xsd:sequence>
-			<xsd:element minOccurs="1" maxOccurs="1" name="messageType" type="momimestoc:damageCalculationMessageTypeID" />
-		</xsd:sequence>
 	</xsd:complexType>
 
 	<xsd:complexType name="damageCalculationHeaderData">
@@ -699,6 +696,24 @@ This can be null for unusual kinds of attack, e.g. Warp Wood.</xsd:documentation
 		</xsd:complexContent>
 	</xsd:complexType>		       
 	
+	<xsd:complexType name="damageCalculationWallData">
+	    <xsd:annotation>
+    		<xsd:documentation>Breakdown about a roll made with Wall Crusher skill.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="momimestoc:damageCalculationData">
+				<xsd:sequence>
+					<xsd:element minOccurs="1" maxOccurs="1" name="wreckTileChance" type="xsd:unsignedShort">
+					    <xsd:annotation>
+    						<xsd:documentation>Chance of the tile being wrecked, e.g. 4 means 1 in 4 chance = 25%.</xsd:documentation>
+						</xsd:annotation>
+					</xsd:element>
+					<xsd:element minOccurs="1" maxOccurs="1" name="wrecked" type="xsd:boolean" />
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>		       
+
 <!-- Magic -->
 
 	<xsd:element name="fullSpellListMessage">
@@ -1107,6 +1122,12 @@ Exactly one and only one of attackSkillID or attackSpellID will be filled in to 
 						
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSkillID" type="momimecommon:unitSkillID" />
 						<xsd:element minOccurs="0" maxOccurs="1" name="attackSpellID" type="momimecommon:spellID" />
+						<xsd:element minOccurs="0" maxOccurs="1" name="wreckTilePosition" type="map:mapCoordinates2D">
+						    <xsd:annotation><xsd:documentation>Filled in if the tile was attacked by Wall Crusher skill (whether successful or not).</xsd:documentation></xsd:annotation>
+						</xsd:element>
+						<xsd:element minOccurs="0" maxOccurs="1" name="wrecked" type="xsd:boolean">
+						    <xsd:annotation><xsd:documentation>Filled in only if Wall Crusher skill successfully wrecked the tile.</xsd:documentation></xsd:annotation>
+						</xsd:element>
 						<xsd:element minOccurs="0" maxOccurs="unbounded" name="specialDamageResolutionTypeID" type="momimecommon:damageResolutionTypeID">
 						    <xsd:annotation>
     							<xsd:documentation>List of special damage types done to the defender (used for warp wood);
@@ -1430,23 +1451,6 @@ The actual new unit(s) or hero item will be sent separately.</xsd:documentation>
 	</xsd:element>
 
 <!--  Enums -->
-
-	<xsd:simpleType name="damageCalculationMessageTypeID">
-		<xsd:restriction base="xsd:normalizedString">
-			<xsd:enumeration value="H"><xsd:annotation>
-				<xsd:documentation>Header denoting what initiated the attack</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="HEADER" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="A"><xsd:annotation>
-				<xsd:documentation>Attack data</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="ATTACK_DATA" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-			<xsd:enumeration value="D"><xsd:annotation>
-				<xsd:documentation>Defence data</xsd:documentation>
-				<xsd:appinfo><jaxb:typesafeEnumMember name="DEFENCE_DATA" /></xsd:appinfo>
-			</xsd:annotation></xsd:enumeration>
-		</xsd:restriction>
-	</xsd:simpleType>
 
 	<xsd:simpleType name="animationID">
 		<xsd:restriction base="xsd:normalizedString">

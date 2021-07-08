@@ -11,6 +11,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.multiplayer.base.client.AnimatedServerToClientMessage;
 
 import momime.client.MomClient;
@@ -35,6 +36,7 @@ import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.TileSetEx;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.UnitDamage;
 import momime.common.messages.servertoclient.ApplyDamageMessage;
 import momime.common.messages.servertoclient.ApplyDamageMessageUnit;
@@ -192,16 +194,25 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 			getCombatUI ().setAttackAnim (this);
 			combatMapTileSet = getClient ().getClientDB ().findTileSet (GraphicsDatabaseConstants.TILE_SET_COMBAT_MAP, "ApplyDamageMessageImpl");
 			
-			if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackSkillID ())) && (getDefenderUnits ().size () == 1))
+			if ((CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK.equals (getAttackSkillID ())) &&
+				((getDefenderUnits ().size () == 1) || ((getDefenderUnits ().size () == 0) && (getWreckTilePosition () != null))))
 			{
 				// Start a ranged attack animation - firstly, after a brief frame of showing the unit firing, it'll be back to standing still
 				// To animate the missiles, first we need the locations (in pixels) of the two units involved
 				final int startX = getCombatMapBitmapGenerator ().combatCoordinatesX (attackerUnit.getCombatPosition ().getX (), attackerUnit.getCombatPosition ().getY (), combatMapTileSet);
 				final int startY = getCombatMapBitmapGenerator ().combatCoordinatesY (attackerUnit.getCombatPosition ().getX (), attackerUnit.getCombatPosition ().getY (), combatMapTileSet);
 				
-				final MemoryUnit singleDefender = getDefenderUnits ().get (0).getDefUnit ();
-				endX = getCombatMapBitmapGenerator ().combatCoordinatesX (singleDefender.getCombatPosition ().getX (), singleDefender.getCombatPosition ().getY (), combatMapTileSet);
-				endY = getCombatMapBitmapGenerator ().combatCoordinatesY (singleDefender.getCombatPosition ().getX (), singleDefender.getCombatPosition ().getY (), combatMapTileSet);
+				final MapCoordinates2DEx rangedAttackTargetPosition;
+				if (getDefenderUnits ().size () == 1)
+				{
+					final MemoryUnit singleDefender = getDefenderUnits ().get (0).getDefUnit ();
+					rangedAttackTargetPosition = (MapCoordinates2DEx) singleDefender.getCombatPosition ();
+				}
+				else
+					rangedAttackTargetPosition = (MapCoordinates2DEx) getWreckTilePosition ();
+				
+				endX = getCombatMapBitmapGenerator ().combatCoordinatesX (rangedAttackTargetPosition.getX (), rangedAttackTargetPosition.getY (), combatMapTileSet);
+				endY = getCombatMapBitmapGenerator ().combatCoordinatesY (rangedAttackTargetPosition.getX (), rangedAttackTargetPosition.getY (), combatMapTileSet);
 				
 				// Work out the firing distance in pixels
 				final double dx = startX - endX;
@@ -517,6 +528,14 @@ public final class ApplyDamageMessageImpl extends ApplyDamageMessage implements 
 				for (final SelectUnitButton button : cityView.getSelectUnitButtons ())
 					if (getDefenderUnits ().stream ().anyMatch (du -> du.getDefUnit () == button.getUnit ().getUnit ()))
 						button.repaint ();
+		}
+	
+		// If we're involved in the combat, we must be looked at combatUI, so possibly need to update the terrain
+		if ((animated) && (getWreckTilePosition () != null) && (isWrecked () != null) && (isWrecked ()))
+		{
+			final MomCombatTile tile = getCombatUI ().getCombatTerrain ().getRow ().get (getWreckTilePosition ().getY ()).getCell ().get (getWreckTilePosition ().getX ());
+			tile.setWrecked (true);
+			getCombatUI ().regenerateBitmaps ();
 		}
 		
 		// Jump to the next unit to move

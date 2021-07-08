@@ -385,12 +385,16 @@
 						<xsd:selector xpath="title" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="combatDamageHeaderWithAttackerUnitPK">
-						<xsd:selector xpath="headerWithAttackerUnit" />
+					<xsd:key name="combatDamageHeaderWithBothUnitsPK">
+						<xsd:selector xpath="headerWithBothUnits" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
-					<xsd:key name="combatDamageHeaderWithoutAttackerUnitPK">
-						<xsd:selector xpath="headerWithoutAttackerUnit" />
+					<xsd:key name="combatDamageHeaderWithDefenderOnlyPK">
+						<xsd:selector xpath="headerWithDefenderOnly" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageHeaderWithAttackerOnlyPK">
+						<xsd:selector xpath="headerWithAttackerOnly" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
 					<xsd:key name="combatDamageHeaderWithoutEitherUnitPK">
@@ -491,6 +495,14 @@
 					</xsd:key>
 					<xsd:key name="combatDamageDefenceFearPK">
 						<xsd:selector xpath="defenceFear" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageWallWreckedPK">
+						<xsd:selector xpath="wallWrecked" />
+						<xsd:field xpath="@language" />
+					</xsd:key>
+					<xsd:key name="combatDamageWallFailedPK">
+						<xsd:selector xpath="wallFailed" />
 						<xsd:field xpath="@language" />
 					</xsd:key>
     			</xsd:element>
@@ -2641,8 +2653,9 @@
 	<xsd:complexType name="combatDamage" nxe:submenu="Strings" nxe:singular="Combat damage" nxe:plural="Combat damages">
 		<xsd:sequence>
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="title" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithAttackerUnit" />
-	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithoutAttackerUnit" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithBothUnits" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithDefenderOnly" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithAttackerOnly" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="headerWithoutEitherUnit" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackWithUnit" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="attackWithoutUnit" />
@@ -2668,6 +2681,8 @@
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceDisintegrateDies" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceDisintegrateSurvives" />
 	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="defenceFear" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wallWrecked" />
+	        <xsd:element minOccurs="0" maxOccurs="unbounded" type="momimecommon:languageText" name="wallFailed" />
 		</xsd:sequence>
     </xsd:complexType>
 	

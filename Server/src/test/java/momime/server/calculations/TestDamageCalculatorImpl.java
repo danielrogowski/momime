@@ -31,7 +31,6 @@ import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
-import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.DummyServerToClientConnection;
@@ -218,7 +217,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
 	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertEquals ("US001", data.getAttackSkillID ());
@@ -326,7 +324,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
 	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertEquals ("US001", data.getAttackSkillID ());
@@ -544,7 +541,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
 	    assertEquals (attacker.getUnitURN (), data.getAttackerUnitURN ().intValue ());
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertEquals (CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, data.getAttackSkillID ());
@@ -612,7 +608,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
 	    assertNull (data.getAttackerUnitURN ());
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertNull (data.getAttackSkillID ());
@@ -682,7 +677,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationAttackData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationAttackData data = (DamageCalculationAttackData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.ATTACK_DATA, data.getMessageType ());
 	    assertNull (data.getAttackerUnitURN ());
 	    assertEquals (attackingPD.getPlayerID ().intValue (), data.getAttackerPlayerID ());
 	    assertNull (data.getAttackSkillID ());
@@ -767,7 +761,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertEquals (4, data.getChanceToHit ().intValue ());
@@ -855,7 +848,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertEquals (4, data.getChanceToHit ().intValue ());
@@ -943,7 +935,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertEquals (4, data.getChanceToHit ().intValue ());
@@ -1035,7 +1026,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertEquals (4, data.getChanceToHit ().intValue ());
@@ -1107,7 +1097,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1184,7 +1173,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1261,7 +1249,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1339,7 +1326,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1417,7 +1403,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1495,7 +1480,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1573,7 +1557,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1653,7 +1636,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1736,7 +1718,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1814,7 +1795,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1887,7 +1867,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -1960,7 +1939,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());
@@ -2040,7 +2018,6 @@ public final class TestDamageCalculatorImpl
 		assertEquals (DamageCalculationDefenceData.class.getName (), msg.getBreakdown ().getClass ().getName ());
 		final DamageCalculationDefenceData data = (DamageCalculationDefenceData) msg.getBreakdown ();
 		
-		assertEquals (DamageCalculationMessageTypeID.DEFENCE_DATA, data.getMessageType ());
 		assertEquals (33, data.getDefenderUnitURN ());
 		
 		assertNull (data.getChanceToHit ());

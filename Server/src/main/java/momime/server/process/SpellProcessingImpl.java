@@ -726,7 +726,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
 						combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 							targetUnits, attackingPlayer, defendingPlayer,
-							null, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+							null, null, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 					
 					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
 					{
@@ -741,7 +741,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 						}
 						
 						getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, castingPlayer.getPlayerDescription ().getPlayerID (),
-							targetUnits, null, spell.getSpellID (), null, mom.getPlayers (),
+							targetUnits, null, spell.getSpellID (), null, null, null, mom.getPlayers (),
 							mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 					}
 					else if (spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS)

@@ -102,11 +102,9 @@ public final class DamageCalculationHeaderDataEx extends DamageCalculationHeader
 		// Now work out the rest of the text
 		final List<LanguageText> languageText;
 		if (getDefenderUnit () == null)
-			languageText = getLanguages ().getCombatDamage ().getHeaderWithoutEitherUnit ();
-		else if (getAttackerUnit () == null)
-			languageText = getLanguages ().getCombatDamage ().getHeaderWithoutAttackerUnit ();
+			languageText = (getAttackerUnit () == null) ? getLanguages ().getCombatDamage ().getHeaderWithoutEitherUnit () : getLanguages ().getCombatDamage ().getHeaderWithAttackerOnly ();
 		else
-			languageText = getLanguages ().getCombatDamage ().getHeaderWithAttackerUnit ();
+			languageText = (getAttackerUnit () == null) ? getLanguages ().getCombatDamage ().getHeaderWithDefenderOnly () : getLanguages ().getCombatDamage ().getHeaderWithBothUnits ();
 		
 		String text = getLanguageHolder ().findDescription (languageText).replaceAll
 			("ATTACKER_NAME", getWizardClientUtils ().getPlayerName (getAttackingPlayer ())).replaceAll

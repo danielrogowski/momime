@@ -3,6 +3,7 @@ package momime.client.messages.process;
 import momime.client.calculations.damage.DamageCalculationAttackDataEx;
 import momime.client.calculations.damage.DamageCalculationDefenceDataEx;
 import momime.client.calculations.damage.DamageCalculationHeaderDataEx;
+import momime.client.calculations.damage.DamageCalculationWallDataEx;
 
 /**
  * Factory interface for creating every possible type of server to client message
@@ -288,6 +289,11 @@ public interface ServerToClientMessagesFactory
 	 * @return Damage breakdown line with with injected dependencies
 	 */
 	public DamageCalculationDefenceDataEx createDamageCalculationDefenceData ();
+
+	/**
+	 * @return Damage breakdown line with with injected dependencies
+	 */
+	public DamageCalculationWallDataEx createDamageCalculationWallData ();
 	
 	/**
 	 * @return Newly created message

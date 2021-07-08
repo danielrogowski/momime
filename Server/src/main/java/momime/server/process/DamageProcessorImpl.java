@@ -8,9 +8,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 
 import com.ndg.map.CoordinateSystemUtils;
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.server.session.PlayerServerDetails;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
+import com.ndg.random.RandomUtils;
 
 import momime.common.MomException;
 import momime.common.database.AttackResolution;
@@ -23,10 +25,12 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.database.Spell;
 import momime.common.database.StoredDamageTypeID;
 import momime.common.database.UnitCombatSideID;
+import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryUnit;
+import momime.common.messages.MomCombatTile;
 import momime.common.messages.UnitStatusID;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
-import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
+import momime.common.messages.servertoclient.DamageCalculationWallData;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -68,6 +72,9 @@ public final class DamageProcessorImpl implements DamageProcessor
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
+	/** Random number generator */
+	private RandomUtils randomUtils;
+	
 	/**
 	 * Performs one attack in combat, which may be a melee, ranged or spell attack.
 	 * If a close combat attack, also resolves the defender retaliating.
@@ -78,6 +85,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
 	 * @param wreckTileChance Whether to roll an attack against the tile in addition to the defenders; null = no, any other value is the chance so 4 = 1/4 chance
+	 * @param wreckTilePosition The position within the combat map of the tile that will be attacked
 	 * @param attackerDirection The direction the attacker needs to turn to in order to be facing the defender; or null if the attack isn't coming from a unit
 	 * @param attackSkillID The skill being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
 	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
@@ -94,7 +102,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 */
 	@Override
 	public final boolean resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance, final MapCoordinates2DEx wreckTilePosition,
 		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
@@ -102,7 +110,6 @@ public final class DamageProcessorImpl implements DamageProcessor
 	{
 		// We send this a couple of times for different parts of the calculation, so initialize it here
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.HEADER);
 		damageCalculationMsg.setAttackSkillID (attackSkillID);
 
 		if ((defenders.size () > 0) && ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
@@ -227,13 +234,35 @@ public final class DamageProcessorImpl implements DamageProcessor
 				}
 		}
 		
+		// Process attack against the wall
+		Boolean sendWrecked = null;
+		if (wreckTileChance != null)
+		{
+			final DamageCalculationWallData wallMsg = new DamageCalculationWallData ();
+			wallMsg.setWreckTileChance (wreckTileChance);
+			wallMsg.setWrecked ((getRandomUtils ().nextInt (wreckTileChance) == 0));
+			getDamageCalculator ().sendDamageCalculationMessage (attackingPlayer, defendingPlayer, wallMsg);
+
+			if (wallMsg.isWrecked ())
+			{
+				final ServerGridCellEx serverGridCell = (ServerGridCellEx) mom.getGeneralServerKnowledge ().getTrueMap ().getMap ().getPlane ().get
+					(combatLocation.getZ ()).getRow ().get (combatLocation.getY ()).getCell ().get (combatLocation.getX ());
+					
+				final MapAreaOfCombatTiles combatMap = serverGridCell.getCombatMap ();
+				
+				final MomCombatTile tile = combatMap.getRow ().get (wreckTilePosition.getY ()).getCell ().get (wreckTilePosition.getX ());
+				tile.setWrecked (true);
+				sendWrecked = true;
+			}
+		}
+		
 		// Update damage taken in player's memory on server, and on all clients who can see the unit.
 		// This includes both players involved in the combat (who will queue this up as an animation), and players who aren't involved in the combat but
 		// can see the units fighting (who will update the damage immediately).
 		// This also sends the number of combat movement points the attacker has left.
 		getFogOfWarMidTurnChanges ().sendCombatDamageToClients (attacker, damageCalculationMsg.getAttackerPlayerID (), defenders,
 			damageCalculationMsg.getAttackSkillID (), damageCalculationMsg.getAttackSpellID (),
-			specialDamageResolutionsApplied, mom.getPlayers (),
+			specialDamageResolutionsApplied, wreckTilePosition, sendWrecked, mom.getPlayers (),
 			mom.getGeneralServerKnowledge ().getTrueMap ().getMap (), mom.getServerDB (), mom.getSessionDescription ().getFogOfWarSetting ());
 		
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose
@@ -492,5 +521,21 @@ public final class DamageProcessorImpl implements DamageProcessor
 	public final void setUnitUtils (final UnitUtils utils)
 	{
 		unitUtils = utils;
+	}
+
+	/**
+	 * @return Random number generator
+	 */
+	public final RandomUtils getRandomUtils ()
+	{
+		return randomUtils;
+	}
+
+	/**
+	 * @param utils Random number generator
+	 */
+	public final void setRandomUtils (final RandomUtils utils)
+	{
+		randomUtils = utils;
 	}
 }

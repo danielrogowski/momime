@@ -750,6 +750,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="textUtils" ref="textUtils" />
 	</bean>
 	
+	<bean id="damageCalculationWallData" class="momime.client.calculations.damage.DamageCalculationWallDataEx" scope="prototype">
+		<property name="languageHolder" ref="languageHolder" />
+	</bean>
+	
 	<!-- Version of the client -->
 	
 	<context:property-placeholder location="classpath:MoMIMEClientVersion.properties" />

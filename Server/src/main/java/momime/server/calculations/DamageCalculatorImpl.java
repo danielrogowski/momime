@@ -28,7 +28,6 @@ import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
-import momime.common.messages.servertoclient.DamageCalculationMessageTypeID;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.SpellUtils;
 import momime.common.utils.UnitUtils;
@@ -205,7 +204,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 						
 						// Start breakdown message
 						final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
-						damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.ATTACK_DATA);
 						damageCalculationMsg.setAttackerUnitURN (attacker.getUnit ().getUnitURN ());
 						damageCalculationMsg.setAttackerPlayerID (attacker.getUnit ().getOwningPlayerID ());
 						damageCalculationMsg.setAttackSkillID (attackSkillID);
@@ -304,7 +302,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 		
 		// Start breakdown message
 		final DamageCalculationAttackData damageCalculationMsg = new DamageCalculationAttackData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.ATTACK_DATA);
 		damageCalculationMsg.setAttackerPlayerID (castingPlayer.getPlayerDescription ().getPlayerID ());
 		damageCalculationMsg.setAttackSpellID (spell.getSpellID ());
 		damageCalculationMsg.setPotentialHits (damage);
@@ -437,7 +434,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setChanceToHit (attackDamage.getChanceToHit ());
 		damageCalculationMsg.setTenTimesAverageDamage (attackDamage.getPotentialHits () * damageCalculationMsg.getChanceToHit ());
@@ -499,7 +495,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setChanceToHit (attackDamage.getChanceToHit ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
@@ -581,7 +576,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
@@ -618,7 +612,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
@@ -657,7 +650,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
@@ -734,7 +726,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
@@ -811,7 +802,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
@@ -859,7 +849,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 
@@ -905,7 +894,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (defender.getUnitURN ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 		
@@ -948,7 +936,6 @@ public final class DamageCalculatorImpl implements DamageCalculator
 	{
 		// Store values straight into the message
 		final DamageCalculationDefenceData damageCalculationMsg = new DamageCalculationDefenceData ();
-		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.DEFENCE_DATA);
 		damageCalculationMsg.setDefenderUnitURN (xuDefender.getUnitURN ());
 		damageCalculationMsg.setDamageResolutionTypeID (attackDamage.getDamageResolutionTypeID ());
 

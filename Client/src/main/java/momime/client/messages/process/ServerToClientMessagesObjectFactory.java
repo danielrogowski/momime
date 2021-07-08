@@ -24,6 +24,7 @@ import momime.common.messages.servertoclient.DamageCalculationAttackData;
 import momime.common.messages.servertoclient.DamageCalculationDefenceData;
 import momime.common.messages.servertoclient.DamageCalculationHeaderData;
 import momime.common.messages.servertoclient.DamageCalculationMessage;
+import momime.common.messages.servertoclient.DamageCalculationWallData;
 import momime.common.messages.servertoclient.DestroyBuildingMessage;
 import momime.common.messages.servertoclient.DispelMagicResultsMessage;
 import momime.common.messages.servertoclient.EndOfContinuedMovementMessage;
@@ -584,6 +585,15 @@ public final class ServerToClientMessagesObjectFactory extends ObjectFactory
 		return getFactory ().createDamageCalculationDefenceData ();
 	}
 
+	/**
+	 * @return Newly created damage calculation breakdown line
+	 */
+	@Override
+	public final DamageCalculationWallData createDamageCalculationWallData ()
+	{
+		return getFactory ().createDamageCalculationWallData ();
+	}
+	
 	/**
 	 * @return Newly created message
 	 */

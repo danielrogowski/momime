@@ -76,7 +76,7 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 			}
 		
 		if (healedUnits.size () > 0)
-			getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, playerID, healedUnits, null, null, null, players, mem.getMap (), db, fogOfWarSettings);
+			getFogOfWarMidTurnChanges ().sendCombatDamageToClients (null, playerID, healedUnits, null, null, null, null, null, players, mem.getMap (), db, fogOfWarSettings);
 	}
 
 	/**

@@ -1,11 +1,11 @@
 package momime.server.process;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -35,10 +35,8 @@ import momime.common.database.UnitSkillAndValue;
 import momime.common.messages.FogOfWarMemory;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MapVolumeOfMemoryGridCells;
-import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryGridCell;
 import momime.common.messages.MemoryUnit;
-import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomPersistentPlayerPrivateKnowledge;
 import momime.common.messages.MomPersistentPlayerPublicKnowledge;
 import momime.common.messages.MomSessionDescription;
@@ -52,7 +50,6 @@ import momime.common.messages.servertoclient.StartCombatMessageUnit;
 import momime.common.utils.CombatMapUtils;
 import momime.common.utils.CombatPlayers;
 import momime.common.utils.ExpandedUnitDetails;
-import momime.common.utils.MemoryBuildingUtils;
 import momime.common.utils.MemoryGridCellUtils;
 import momime.common.utils.UnitUtils;
 import momime.server.MomSessionVariables;
@@ -70,12 +67,24 @@ import momime.server.utils.UnitServerUtils;
  */
 public final class CombatProcessingImpl implements CombatProcessing
 {
-	/** Max number of units to fill each row during combat set up */ 
-	private final static int COMBAT_SETUP_UNITS_PER_ROW = 4;
-	
 	/** Class logger */
 	private final static Log log = LogFactory.getLog (CombatProcessingImpl.class);
 
+	/** Max number of units to fill each row during combat set up */ 
+	private final static int COMBAT_SETUP_UNITS_PER_ROW = 4;
+	
+	/** All move types that include attacking the tile itself */
+	private final static List<CombatMoveType> ATTACK_WALLS = Arrays.asList (CombatMoveType.MELEE_WALL, CombatMoveType.MELEE_UNIT_AND_WALL,
+		CombatMoveType.RANGED_WALL, CombatMoveType.RANGED_UNIT_AND_WALL);
+
+	/** All move types that include attacking the unit */
+	private final static List<CombatMoveType> ATTACK_UNIT = Arrays.asList (CombatMoveType.MELEE_UNIT, CombatMoveType.MELEE_UNIT_AND_WALL,
+		CombatMoveType.RANGED_UNIT, CombatMoveType.RANGED_UNIT_AND_WALL);
+
+	/** All types of ranged attacks */
+	private final static List<CombatMoveType> RANGED_ATTACKS = Arrays.asList
+		(CombatMoveType.RANGED_WALL, CombatMoveType.RANGED_UNIT_AND_WALL, CombatMoveType.RANGED_UNIT);
+	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -120,9 +129,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 	
 	/** Server-only unit calculations */
 	private ServerUnitCalculations serverUnitCalculations;
-	
-	/** Memory building utils */
-	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/**
 	 * Purpose of this is to check for impassable terrain obstructions.  All the rocks, housing, ridges and so on are still passable, the only impassable things are
@@ -1148,7 +1154,7 @@ public final class CombatProcessingImpl implements CombatProcessing
 		// Ranged attacks always reduce movement remaining to zero and never result in the unit actually moving.
 		// The value gets sent to the client by resolveAttack below.
 		boolean blocked = false;
-		if (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.RANGED)
+		if (RANGED_ATTACKS.contains (movementTypes [moveTo.getY ()] [moveTo.getX ()]))
 			tu.setDoubleCombatMovesLeft (0);
 		
 		// Teleporting always just costs 2 movement
@@ -1287,19 +1293,32 @@ public final class CombatProcessingImpl implements CombatProcessing
 		boolean combatEnded = false;
 		if (!blocked)
 		{
+			final CombatMoveType combatMoveType = movementTypes [moveTo.getY ()] [moveTo.getX ()];
 			final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
-			defenders.add (getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo));
 			
-			switch (movementTypes [moveTo.getY ()] [moveTo.getX ()])
+			if (ATTACK_UNIT.contains (combatMoveType))
 			{
-				case MELEE:
+				final MemoryUnit defender = getUnitUtils ().findAliveUnitInCombatAt (mom.getGeneralServerKnowledge ().getTrueMap ().getUnit (), combatLocation, moveTo);
+				if (defender != null)
+					defenders.add (defender);
+			}
+			
+			switch (combatMoveType)
+			{
+				case MELEE_UNIT:
+				case MELEE_WALL:
+				case MELEE_UNIT_AND_WALL:
 					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
+						ATTACK_WALLS.contains (combatMoveType) ? 2 : null,
 						movementDirections [moveTo.getY ()] [moveTo.getX ()],
 						CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 					break;
 					
-				case RANGED:
+				case RANGED_UNIT:
+				case RANGED_WALL:
+				case RANGED_UNIT_AND_WALL:
 					combatEnded = getDamageProcessor ().resolveAttack (tu.getMemoryUnit (), defenders, attackingPlayer, defendingPlayer,
+						ATTACK_WALLS.contains (combatMoveType) ? 4 : null,
 						getCoordinateSystemUtils ().determineDirectionTo (mom.getSessionDescription ().getCombatMapSize (), tu.getCombatPosition (), moveTo),
 						CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 					break;
@@ -1357,38 +1376,6 @@ public final class CombatProcessingImpl implements CombatProcessing
 		for (final MapCoordinates3DEx mapLocation : mapLocations)
 			for (final Integer playerID : playerIDs)
 				getServerUnitCalculations ().recheckTransportCapacity (mapLocation, playerID, trueMap, players, fogOfWarSettings, db);
-	}
-	
-	/**
-	 * @param combatLocation Location where the combat is taking place
-	 * @param combatPosition Location of the unit within the combat map
-	 * @param combatMap Combat scenery
-	 * @param trueBuildings True list of buildings
-	 * @param db Lookup lists built over the XML database
-	 * @return Whether the specified location is within city walls (if there even are any)
-	 */
-	@Override
-	public final boolean isWithinCityWalls (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
-		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
-	{
-		final boolean withinCityWalls;
-		
-		// First, the city actually has to have city walls
-		if (getMemoryBuildingUtils ().findBuilding (trueBuildings, combatLocation, db.getCityWallsBuildingID ()) == null)
-			withinCityWalls = false;
-		else
-		{
-			// Get the specific tile where the unit is
-			final MomCombatTile combatTile = combatMap.getRow ().get (combatPosition.getY ()).getCell ().get (combatPosition.getX ());
-			
-			// See if any of the layers have a tile that identifies this location as being within the city
-			final List<String> cityTiles = db.getCombatTileType ().stream ().filter
-				(t -> (t.isInsideCity () != null) && (t.isInsideCity ())).map (t -> t.getCombatTileTypeID ()).collect (Collectors.toList ());
-			
-			withinCityWalls = combatTile.getTileLayer ().stream ().anyMatch (l -> cityTiles.contains (l.getCombatTileTypeID ()));
-		}
-		
-		return withinCityWalls;
 	}
 	
 	/**
@@ -1629,21 +1616,5 @@ public final class CombatProcessingImpl implements CombatProcessing
 	public final void setServerUnitCalculations (final ServerUnitCalculations calc)
 	{
 		serverUnitCalculations = calc;
-	}
-
-	/**
-	 * @return Memory building utils
-	 */
-	public final MemoryBuildingUtils getMemoryBuildingUtils ()
-	{
-		return memoryBuildingUtils;
-	}
-
-	/**
-	 * @param utils Memory building utils
-	 */
-	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
-	{
-		memoryBuildingUtils = utils;
 	}
 }

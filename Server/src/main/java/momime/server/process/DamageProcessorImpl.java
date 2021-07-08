@@ -77,6 +77,7 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 * @param defenders Unit(s) being hit; some attacks can hit multiple units such as Flame Strike
 	 * @param attackingPlayer The player who attacked to initiate the combat - not necessarily the owner of the 'attacker' unit 
 	 * @param defendingPlayer Player who was attacked to initiate the combat - not necessarily the owner of the 'defender' unit
+	 * @param wreckTileChance Whether to roll an attack against the tile in addition to the defenders; null = no, any other value is the chance so 4 = 1/4 chance
 	 * @param attackerDirection The direction the attacker needs to turn to in order to be facing the defender; or null if the attack isn't coming from a unit
 	 * @param attackSkillID The skill being used to attack, i.e. UA01 (swords) or UA02 (ranged); or null if the attack isn't coming from a unit
 	 * @param spell The spell being cast; or null if the attack isn't coming from a spell
@@ -93,20 +94,18 @@ public final class DamageProcessorImpl implements DamageProcessor
 	 */
 	@Override
 	public final boolean resolveAttack (final MemoryUnit attacker, final List<MemoryUnit> defenders,
-		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer attackerDirection, final String attackSkillID,
+		final PlayerServerDetails attackingPlayer, final PlayerServerDetails defendingPlayer, final Integer wreckTileChance,
+		final Integer attackerDirection, final String attackSkillID,
 		final Spell spell, final Integer variableDamage, final PlayerServerDetails castingPlayer, 
 		final MapCoordinates3DEx combatLocation, final MomSessionVariables mom)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException, JAXBException, XMLStreamException
 	{
-		if (defenders.size () == 0)
-			throw new MomException ("resolveAttack was called with 0 defenders");
-
 		// We send this a couple of times for different parts of the calculation, so initialize it here
 		final DamageCalculationHeaderData damageCalculationMsg = new DamageCalculationHeaderData ();
 		damageCalculationMsg.setMessageType (DamageCalculationMessageTypeID.HEADER);
 		damageCalculationMsg.setAttackSkillID (attackSkillID);
 
-		if ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT))
+		if ((defenders.size () > 0) && ((spell == null) || (spell.getAttackSpellCombatTarget () == AttackSpellCombatTargetID.SINGLE_UNIT)))
 			damageCalculationMsg.setDefenderUnitURN (defenders.get (0).getUnitURN ());
 		
 		if (spell != null)
@@ -240,9 +239,12 @@ public final class DamageProcessorImpl implements DamageProcessor
 		// Now we know who the COMBAT attacking and defending players are, we can work out whose
 		// is whose unit - because it could be the defending players' unit making the attack in combat.
 		// We have to know this, because if both units die at the same time, the defender wins the combat.
+		
+		// In the case where there are ZERO defenders, we're just hitting a wall.  In that case it doesn't really matter
+		// which way around we assign the players as knocking a wall down isn't going to end the combat.
 		final List<MemoryUnit> attackingPlayerUnits;
 		final List<MemoryUnit> defendingPlayerUnits;
-		if (defenders.get (0).getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ())
+		if ((defenders.size () == 0) || (defenders.get (0).getOwningPlayerID () == defendingPlayer.getPlayerDescription ().getPlayerID ()))
 		{
 			attackingPlayerUnits = new ArrayList<MemoryUnit> ();
 			if (attacker != null)

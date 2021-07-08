@@ -1,6 +1,7 @@
 package momime.server.ai;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -42,6 +43,13 @@ import momime.server.process.CombatStartAndEndImpl;
  */
 public final class CombatAIImpl implements CombatAI
 {
+	/** All types of attack the AI is interested in making in combat */
+	private final static List<CombatMoveType> ALL_ATTACKS = Arrays.asList (CombatMoveType.MELEE_UNIT, CombatMoveType.MELEE_UNIT_AND_WALL,
+		CombatMoveType.RANGED_UNIT, CombatMoveType.RANGED_UNIT_AND_WALL);
+	
+	/** Only ranged attacks */
+	private final static List<CombatMoveType> RANGED_ATTACKS = Arrays.asList (CombatMoveType.RANGED_UNIT, CombatMoveType.RANGED_UNIT_AND_WALL);
+	
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
@@ -168,11 +176,6 @@ public final class CombatAIImpl implements CombatAI
 		final CommonDatabase db)
 		throws RecordNotFoundException, MomException, PlayerNotFoundException
 	{
-		// Need this in a list for the comparison below
-		final List<CombatMoveType> attacks = new ArrayList<CombatMoveType> ();
-		attacks.add (CombatMoveType.MELEE);
-		attacks.add (CombatMoveType.RANGED);
-		
 		// Check all enemy units in combat
 		MemoryUnit bestUnit = null;
 		Integer bestScore = null;
@@ -187,7 +190,7 @@ public final class CombatAIImpl implements CombatAI
 				
 				// This also stops grounded units trying to attack flying units, as calculateCombatMovementDistances will already have
 				// figured out that we're not allowed to attack it and set it to CANNOT_MOVE and MOVEMENT_DISTANCE_CANNOT_MOVE_HERE
-				((attacks.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()])) ||
+				((ALL_ATTACKS.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()])) ||
 				(movementDirections [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] > 0)))
 			{
 				// Make sure we can actually see it
@@ -200,7 +203,7 @@ public final class CombatAIImpl implements CombatAI
 					
 					// Subtract more the further away the unit is, so closer units get a higher score.
 					// Can't use doubleMovementDistances for this as it gets set to the same high 999 value for all ranged attacks.
-					if (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] == CombatMoveType.RANGED)
+					if (RANGED_ATTACKS.contains (movementTypes [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()]))
 						thisScore = thisScore - (int) (10 * getCoordinateSystemUtils ().determineReal2DDistanceBetween
 							(combatMapCoordinateSystem, attacker.getCombatPosition (), (MapCoordinates2DEx) thisUnit.getCombatPosition ()));
 					else
@@ -273,7 +276,7 @@ public final class CombatAIImpl implements CombatAI
 		{
 			// If we can attack at range then shoot it - if not then start walking towards it, or if adjacent to it already then attack it
 			boolean ok = true;
-			if ((movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.MELEE) || (movementTypes [moveTo.getY ()] [moveTo.getX ()] == CombatMoveType.RANGED))
+			if (ALL_ATTACKS.contains (movementTypes [moveTo.getY ()] [moveTo.getX ()]))
 			{
 				// Have set MoveToX, MoveToY already so nothing to do
 			}

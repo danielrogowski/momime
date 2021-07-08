@@ -15,10 +15,22 @@ public enum CombatMoveType
 	TELEPORT (null),
 	
 	/** Adjacent enemy unit we can hit */
-	MELEE ("melee"),
+	MELEE_UNIT ("melee"),
+	
+	/** Adjacent wall we can hit */
+	MELEE_WALL ("melee"),
+
+	/** Adjacent enemy unit and wall we can hit at the same time; this can only happen at the doorway or with a flyer that can hit over the wall */
+	MELEE_UNIT_AND_WALL ("melee"),
 	
 	/** Enemy unit and we have a ranged attack we can fire at it */
-	RANGED ("ranged");
+	RANGED_UNIT ("ranged"),
+	
+	/** Wall and we have a ranged attack we can fire at it */
+	RANGED_WALL ("ranged"),
+	
+	/** Enemy unit and wall we have a ranged attack we can fire at both at the same time */
+	RANGED_UNIT_AND_WALL ("ranged");
 	
 	/** Name of the image that the client displays for this move type */
 	private final String imageFilename;

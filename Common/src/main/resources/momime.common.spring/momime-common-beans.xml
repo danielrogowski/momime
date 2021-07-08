@@ -327,6 +327,7 @@
 	
 	<bean id="combatMapUtils" class="momime.common.utils.CombatMapUtilsImpl">
 		<property name="multiplayerSessionUtils" ref="multiplayerSessionUtils" />
+		<property name="memoryBuildingUtils" ref="memoryBuildingUtils" />
 	</bean>
 
 	<bean id="pendingMovementUtils" class="momime.common.utils.PendingMovementUtilsImpl" />

@@ -14,9 +14,9 @@ import momime.common.database.RecordNotFoundException;
 import momime.common.messages.MapAreaOfCombatTiles;
 import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MomCombatTile;
+import momime.common.utils.CombatMapUtils;
 import momime.common.utils.ExpandedUnitDetails;
 import momime.common.utils.UnitUtils;
-import momime.server.process.CombatProcessing;
 
 /**
  * Methods dealing with deciding the damage type of attacks, and dealing with immunities to damage types
@@ -26,8 +26,8 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	/** Unit utils */
 	private UnitUtils unitUtils;
 	
-	/** Combat processing */
-	private CombatProcessing combatProcessing;
+	/** Combat map utils */
+	private CombatMapUtils combatMapUtils;
 	
 	/**
 	 * @param attacker Unit making the attack
@@ -101,8 +101,8 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 		
 		// Defence bonus from being inside city walls?  Still get this even if its an illusionary or armour piercing attack
 		if ((attacker != null) &&
-			(getCombatProcessing ().isWithinCityWalls (combatLocation, defender.getCombatPosition (), combatMap, trueBuildings, db)) &&
-			(!getCombatProcessing ().isWithinCityWalls (combatLocation, attacker.getCombatPosition (), combatMap, trueBuildings, db)))
+			(getCombatMapUtils ().isWithinCityWalls (combatLocation, defender.getCombatPosition (), combatMap, trueBuildings, db)) &&
+			(!getCombatMapUtils ().isWithinCityWalls (combatLocation, attacker.getCombatPosition (), combatMap, trueBuildings, db)))
 		{
 			defenderDefenceStrength++;
 			
@@ -137,18 +137,18 @@ public final class DamageTypeCalculationsImpl implements DamageTypeCalculations
 	}
 
 	/**
-	 * @return Combat processing
+	 * @return Combat map utils
 	 */
-	public final CombatProcessing getCombatProcessing ()
+	public final CombatMapUtils getCombatMapUtils ()
 	{
-		return combatProcessing;
+		return combatMapUtils;
 	}
 
 	/**
-	 * @param proc Combat processing
+	 * @param proc Combat map utils
 	 */
-	public final void setCombatProcessing (final CombatProcessing proc)
+	public final void setCombatMapUtils (final CombatMapUtils proc)
 	{
-		combatProcessing = proc;
+		combatMapUtils = proc;
 	}
 }

@@ -212,7 +212,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		assertFalse (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
+		assertFalse (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom));
 
 		// Ensure steps were processed
@@ -395,7 +395,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		assertTrue (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, 7,
+		assertTrue (proc.resolveAttack (attacker, defenders, attackingPlayer, defendingPlayer, null, 7,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom));
 		
 		// Ensure steps were processed
@@ -542,7 +542,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null,
+		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null,
 			null, spell, null, castingPlayer, combatLocation, mom));
 
 		// Ensure steps were processed
@@ -717,7 +717,7 @@ public final class TestDamageProcessorImpl extends ServerTestData
 		defenders.add (defender2);
 		defenders.add (defender3);
 		
-		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null,
+		assertFalse (proc.resolveAttack (null, defenders, attackingPlayer, defendingPlayer, null, null,
 			null, spell, null, castingPlayer, combatLocation, mom));
 
 		// Ensure steps were processed

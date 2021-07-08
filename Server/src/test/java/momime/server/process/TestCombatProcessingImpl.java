@@ -3680,7 +3680,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		movementDirections [8] [2] = 4;
 		movementDirections [8] [3] = 3;
 		
-		movementTypes [8] [3] = CombatMoveType.RANGED;		// <---
+		movementTypes [8] [3] = CombatMoveType.RANGED_UNIT;		// <---
 		
 		// Movement points to enter each tile
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -3719,7 +3719,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 		
-		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, 4,
+		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, 4,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_RANGED_ATTACK, null, null, null, combatLocation, mom);
 	}
 
@@ -3861,7 +3861,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		movementDirections [8] [2] = 4;
 		movementDirections [8] [3] = 3;
 		
-		movementTypes [8] [3] = CombatMoveType.MELEE;
+		movementTypes [8] [3] = CombatMoveType.MELEE_UNIT;
 		
 		// Movement points to enter each tile
 		final UnitCalculations unitCalc = mock (UnitCalculations.class);
@@ -3910,7 +3910,7 @@ public final class TestCombatProcessingImpl extends ServerTestData
 		final List<MemoryUnit> defenders = new ArrayList<MemoryUnit> ();
 		defenders.add (defender);
 
-		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, 3,
+		verify (damageProcessor, times (1)).resolveAttack (tu, defenders, attackingPlayer, defendingPlayer, null, 3,
 			CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_MELEE_ATTACK, null, null, null, combatLocation, mom);
 	}
 }

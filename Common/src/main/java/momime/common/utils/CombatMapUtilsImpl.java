@@ -2,13 +2,18 @@ package momime.common.utils;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.ndg.map.coordinates.MapCoordinates2DEx;
 import com.ndg.map.coordinates.MapCoordinates3DEx;
 import com.ndg.multiplayer.session.MultiplayerSessionUtils;
 import com.ndg.multiplayer.session.PlayerNotFoundException;
 import com.ndg.multiplayer.session.PlayerPublicDetails;
 
 import momime.common.database.CombatMapLayerID;
+import momime.common.database.CommonDatabase;
+import momime.common.messages.MapAreaOfCombatTiles;
+import momime.common.messages.MemoryBuilding;
 import momime.common.messages.MemoryUnit;
 import momime.common.messages.MomCombatTile;
 import momime.common.messages.MomCombatTileLayer;
@@ -21,6 +26,9 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 {
 	/** Session utils */
 	private MultiplayerSessionUtils multiplayerSessionUtils;
+	
+	/** Memory building utils */
+	private MemoryBuildingUtils memoryBuildingUtils;
 	
 	/**
 	 * @param tile Tile to search
@@ -148,6 +156,38 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	}
 
 	/**
+	 * @param combatLocation Location where the combat is taking place
+	 * @param combatPosition Location of the unit within the combat map
+	 * @param combatMap Combat scenery
+	 * @param trueBuildings True list of buildings
+	 * @param db Lookup lists built over the XML database
+	 * @return Whether the specified location is within city walls (if there even are any)
+	 */
+	@Override
+	public final boolean isWithinCityWalls (final MapCoordinates3DEx combatLocation, final MapCoordinates2DEx combatPosition,
+		final MapAreaOfCombatTiles combatMap, final List<MemoryBuilding> trueBuildings, final CommonDatabase db)
+	{
+		final boolean withinCityWalls;
+		
+		// First, the city actually has to have city walls
+		if (getMemoryBuildingUtils ().findBuilding (trueBuildings, combatLocation, db.getCityWallsBuildingID ()) == null)
+			withinCityWalls = false;
+		else
+		{
+			// Get the specific tile where the unit is
+			final MomCombatTile combatTile = combatMap.getRow ().get (combatPosition.getY ()).getCell ().get (combatPosition.getX ());
+			
+			// See if any of the layers have a tile that identifies this location as being within the city
+			final List<String> cityTiles = db.getCombatTileType ().stream ().filter
+				(t -> (t.isInsideCity () != null) && (t.isInsideCity ())).map (t -> t.getCombatTileTypeID ()).collect (Collectors.toList ());
+			
+			withinCityWalls = combatTile.getTileLayer ().stream ().anyMatch (l -> cityTiles.contains (l.getCombatTileTypeID ()));
+		}
+		
+		return withinCityWalls;
+	}
+	
+	/**
 	 * @return Session utils
 	 */
 	public final MultiplayerSessionUtils getMultiplayerSessionUtils ()
@@ -161,5 +201,21 @@ public final class CombatMapUtilsImpl implements CombatMapUtils
 	public final void setMultiplayerSessionUtils (final MultiplayerSessionUtils util)
 	{
 		multiplayerSessionUtils = util;
+	}
+
+	/**
+	 * @return Memory building utils
+	 */
+	public final MemoryBuildingUtils getMemoryBuildingUtils ()
+	{
+		return memoryBuildingUtils;
+	}
+
+	/**
+	 * @param utils Memory building utils
+	 */
+	public final void setMemoryBuildingUtils (final MemoryBuildingUtils utils)
+	{
+		memoryBuildingUtils = utils;
 	}
 }

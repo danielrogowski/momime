@@ -243,6 +243,9 @@ public final class CommonDatabaseConstants
 	/** Unit is able to freely jump between planes */
 	public final static String UNIT_SKILL_ID_PLANE_SHIFT_FROM_SPELL = "SS138";
 			
+	/** Can attack city walls as well as units */
+	public final static String UNIT_SKILL_ID_WALL_CRUSHER = "US015";
+	
 	/** Boosts healing rate of unit stack */
 	public final static String UNIT_SKILL_ID_HEALER = "US016";
 	
@@ -324,6 +327,9 @@ public final class CommonDatabaseConstants
 	public final static String HERO_ITEM_BONUS_ID_SPELL_CHARGES = "IB65";
 	
 	// spells
+	
+	/** Disrupt Wall spell */
+	public final static String SPELL_ID_DISRUPT_WALL = "SP082";
 	
 	/** Just Cause spell */
 	public final static String SPELL_ID_JUST_CAUSE = "SP127";

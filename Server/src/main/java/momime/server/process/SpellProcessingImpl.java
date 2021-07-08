@@ -726,7 +726,7 @@ public final class SpellProcessingImpl implements SpellProcessing
 					if (spell.getSpellBookSectionID () == SpellBookSectionID.ATTACK_SPELLS)
 						combatEnded = getDamageProcessor ().resolveAttack ((xuCombatCastingUnit == null) ? null : xuCombatCastingUnit.getMemoryUnit (),
 							targetUnits, attackingPlayer, defendingPlayer,
-							null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
+							null, null, null, spell, variableDamage, castingPlayer, combatLocation, mom);
 					
 					else if ((spell.getSpellBookSectionID () == SpellBookSectionID.SPECIAL_UNIT_SPELLS) && (spell.getCombatBaseDamage () != null))
 					{

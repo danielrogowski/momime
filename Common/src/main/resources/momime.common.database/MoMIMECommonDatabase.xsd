@@ -4442,6 +4442,10 @@ Ordering of this list is very significant.
 				<xsd:documentation>Cannot cross specified borders</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="CANNOT_CROSS_SPECIFIED_BORDERS" /></xsd:appinfo>
 			</xsd:annotation></xsd:enumeration>
+			<xsd:enumeration value="D"><xsd:annotation>
+				<xsd:documentation>Movement on adjacent diagonals is blocked, but the actual specified border direction is open (door in city walls)</xsd:documentation>
+				<xsd:appinfo><jaxb:typesafeEnumMember name="CANNOT_CROSS_DIAGONALS" /></xsd:appinfo>
+			</xsd:annotation></xsd:enumeration>
 			<xsd:enumeration value="T"><xsd:annotation>
 				<xsd:documentation>Whole tile impassable</xsd:documentation>
 				<xsd:appinfo><jaxb:typesafeEnumMember name="WHOLE_TILE_IMPASSABLE" /></xsd:appinfo>

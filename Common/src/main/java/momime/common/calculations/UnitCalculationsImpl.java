@@ -634,6 +634,11 @@ public final class UnitCalculationsImpl implements UnitCalculations
 				final CombatTileBorder border = db.findCombatTileBorder (borderID, "okToCrossCombatTileBorder");
 				if (border.getBlocksMovement () == CombatTileBorderBlocksMovementID.CANNOT_CROSS_SPECIFIED_BORDERS)
 					ok = false;
+				
+				else if ((border.getBlocksMovement () == CombatTileBorderBlocksMovementID.CANNOT_CROSS_DIAGONALS) &&
+					(!tile.getBorderDirections ().contains (Integer.valueOf (d).toString ())))
+					
+					ok = false;						
 			}
 		}
 		

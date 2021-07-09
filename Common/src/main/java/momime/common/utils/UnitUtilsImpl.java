@@ -65,8 +65,7 @@ public final class UnitUtilsImpl implements UnitUtils
 	 * So the two that are left, that we must treat differently, are + to hit and + to block.  Most units don't have those values defined, but bonuses definitely still apply.
 	 */
 	private final static String [] SKILLS_WHERE_BONUSES_APPLY_EVEN_IF_NO_BASIC_SKILL = new String []
-		{CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK,
-		 CommonDatabaseConstants.UNIT_SKILL_ID_SAVING_THROW_PENALTY};
+		{CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_HIT, CommonDatabaseConstants.UNIT_ATTRIBUTE_ID_PLUS_TO_BLOCK};
 	
 	/** Player pick utils */
 	private PlayerPickUtils playerPickUtils;
@@ -677,17 +676,22 @@ public final class UnitUtilsImpl implements UnitUtils
 								}
 							}
 		
-							// Regular bonus
+							// Regular bonus - if we don't add the skill then add it; there's very few of these (Holy Avenger and Stoning; also -Spell Save)
+							// This a bit different that bonuses from spells or CAEs, as those won't add valued skills to stop settlers gaining an attack or phantom warriors gaining defence
+							// but every hero has at least 1 attack, 1 defence, 1 resistance, and so on 
 							else
 							{
-								final Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonusStat.getUnitSkillID ());
-								if ((components != null) && (bonusStat.getUnitSkillValue () != null))
+								Map<UnitSkillComponent, Integer> components = modifiedSkillValues.get (bonusStat.getUnitSkillID ());
+								if (components == null)
 								{
-									// This might coincide with a basic stat, e.g. plate mail (+2 defence) with another +4 defence imbued onto it
-									Integer bonusValue = components.get (UnitSkillComponent.HERO_ITEMS);
-									bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonusStat.getUnitSkillValue ();
-									components.put (UnitSkillComponent.HERO_ITEMS, bonusValue);
+									components = new HashMap<UnitSkillComponent, Integer> ();
+									modifiedSkillValues.put (bonusStat.getUnitSkillID (), components);
 								}
+								
+								// This might coincide with a basic stat, e.g. plate mail (+2 defence) with another +4 defence imbued onto it
+								Integer bonusValue = components.get (UnitSkillComponent.HERO_ITEMS);
+								bonusValue = ((bonusValue == null) ? 0 : bonusValue) + bonusStat.getUnitSkillValue ();
+								components.put (UnitSkillComponent.HERO_ITEMS, bonusValue);
 							}
 				}
 		

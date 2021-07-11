@@ -66,9 +66,13 @@ public final class CombatEndTurnImpl implements CombatEndTurn
 				(thisUnit.getUnitDamage ().size () > 0))
 			{
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (thisUnit, null, null, null, players, mem, db);
-
-				if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_REGENERATION) ||
-					xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_REGENERATION_FROM_SPELL))
+				
+				boolean regeneration = false;
+				for (final String regenerationSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_REGENERATION)
+					if (xu.hasModifiedSkill (regenerationSkillID))
+						regeneration = true;
+				
+				if (regeneration)
 				{
 					getUnitServerUtils ().healDamage (thisUnit.getUnitDamage (), 1, false);
 					healedUnits.add (thisUnit);

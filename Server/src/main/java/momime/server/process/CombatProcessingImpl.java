@@ -762,8 +762,13 @@ public final class CombatProcessingImpl implements CombatProcessing
 				((trueUnit.getStatus () != UnitStatusID.ALIVE) || (trueUnit.getUnitDamage ().size () > 0)))
 			{
 				final ExpandedUnitDetails xu = getUnitUtils ().expandUnitDetails (trueUnit, null, null, null, players, trueMap, db);
-				if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_REGENERATION)) ||
-					(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_REGENERATION_FROM_SPELL)))
+
+				boolean regeneration = false;
+				for (final String regenerationSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_REGENERATION)
+					if (xu.hasModifiedSkill (regenerationSkillID))
+						regeneration = true;
+				
+				if (regeneration)
 				{
 					// Only count up the ones that were actually dead; not just if we're healing them
 					if (trueUnit.getStatus () != UnitStatusID.ALIVE)

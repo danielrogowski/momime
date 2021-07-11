@@ -291,7 +291,7 @@ public final class CommonDatabaseImpl extends MomDatabase implements CommonDatab
 		// Find list of all hero item bonuses that grant invisibility
 		// Need this multiple times for every draw of the map, so better to figure this out only once
 		invisibilityHeroItemBonusID = getHeroItemBonus ().stream ().filter (b -> b.getHeroItemBonusStat ().stream ().anyMatch
-			(s -> s.getUnitSkillID ().equals (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL))).map (b -> b.getHeroItemBonusID ()).findAny ().orElse (null);
+			(s -> CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY.contains (s.getUnitSkillID ()))).map (b -> b.getHeroItemBonusID ()).findAny ().orElse (null);
 		
 		if (invisibilityHeroItemBonusID == null)
 			log.warn ("No hero item bonus that grants invisibility found");

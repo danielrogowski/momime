@@ -88,7 +88,9 @@ public final class AttackResolutionProcessingImpl implements AttackResolutionPro
 				
 				// Check this condition; these are things like haste + first strike, so its ok to pass in nulls here - we don't know the actual attack steps yet
 				final ExpandedUnitDetails unitToTest = (condition.getCombatSide () == UnitCombatSideID.ATTACKER) ? attacker : defender;
-				if (!unitToTest.hasModifiedSkill (condition.getUnitSkillID ()))					
+				if ((!unitToTest.hasModifiedSkill (condition.getUnitSkillID ())) &&
+					((condition.getAlternativeUnitSkillID () == null) || (!unitToTest.hasModifiedSkill (condition.getAlternativeUnitSkillID ()))))
+					
 					conditionsMatch = false;
 			}
 			

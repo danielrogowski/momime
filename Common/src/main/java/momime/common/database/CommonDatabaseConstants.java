@@ -1,5 +1,8 @@
 package momime.common.database;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * XML tags used in the part of the MoM database which is sent to the client when they've chosen a game that's using a specific XML file
  */
@@ -237,11 +240,8 @@ public final class CommonDatabaseConstants
 	/** Can teleport to anywhere in combat */
 	public final static String UNIT_SKILL_ID_TELEPORT = "US000";
 	
-	/** Unit is able to freely jump between planes */
-	public final static String UNIT_SKILL_ID_PLANE_SHIFT = "US004";
-	
-	/** Unit is able to freely jump between planes */
-	public final static String UNIT_SKILL_ID_PLANE_SHIFT_FROM_SPELL = "SS138";
+	/** All skills that let the unit freely jump between planes */
+	public final static List<String> UNIT_SKILL_IDS_PLANE_SHIFT = Arrays.asList ("IS09", "US004", "SS138");
 			
 	/** Can attack city walls as well as units */
 	public final static String UNIT_SKILL_ID_WALL_CRUSHER = "US015";
@@ -257,12 +257,12 @@ public final class CommonDatabaseConstants
 
 	/** Invisibility skill added from spell */
 	public final static String UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL = "SS062";
+	
+	/** All invisibility skills */
+	public final static List<String> UNIT_SKILL_IDS_INVISIBILITY = Arrays.asList ("IS08", UNIT_SKILL_ID_INVISIBILITY, UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL);
 
-	/** Natural regeneration */
-	public final static String UNIT_SKILL_ID_REGENERATION = "US024";
-
-	/** Regeneration added from spell */
-	public final static String UNIT_SKILL_ID_REGENERATION_FROM_SPELL = "SS031";
+	/** All regeneration skills */
+	public final static List<String> UNIT_SKILL_IDS_REGENERATION = Arrays.asList ("IS01", "US024", "SS031");
 	
 	/** Skill for priests purifying corruption */
 	public final static String UNIT_SKILL_ID_PURIFY = "US025";

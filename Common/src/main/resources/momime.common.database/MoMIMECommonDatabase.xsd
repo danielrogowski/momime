@@ -1298,9 +1298,13 @@
 		</xsd:keyref>
 		
 		<!-- Combat attack resolution, for dealing with exactly what happens if e.g. we have first strike and enemy unit has haste, new for 0.9.6.2 -->
-		<xsd:keyref refer="momimecommon:unitSkillPK" name="attackResolutionConditionFKunitSkill">
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="attackResolutionConditionFKunitSkill1">
 			<xsd:selector xpath="unitSkill/attackResolution/attackResolutionCondition" />
 			<xsd:field xpath="@unitSkillID" />
+		</xsd:keyref>
+		<xsd:keyref refer="momimecommon:unitSkillPK" name="attackResolutionConditionFKunitSkill2">
+			<xsd:selector xpath="unitSkill/attackResolution/attackResolutionCondition" />
+			<xsd:field xpath="@alternativeUnitSkillID" />
 		</xsd:keyref>
 		<xsd:keyref refer="momimecommon:unitSkillPK" name="attackResolutionStepFKunitSkill">
 			<xsd:selector xpath="unitSkill/attackResolution/attackResolutionStep" />
@@ -3814,6 +3818,14 @@ e.g. attacking unit must have first strike and defending unit must have haste.</
 		<xsd:attribute name="combatSide" type="momimecommon:unitCombatSideID" use="required" nxe:label="Combat side" nxe:showmaincolumn="false" />
 		<xsd:attribute name="unitSkillID" type="momimecommon:unitSkillID" use="required" nxe:label="Skill" nxe:showmaincolumn="false">
 			<xsd:annotation>
+				<xsd:appinfo>
+					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
+				</xsd:appinfo>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="alternativeUnitSkillID" type="momimecommon:unitSkillID" use="optional" nxe:label="Alt Skill" nxe:showmaincolumn="false">
+			<xsd:annotation>
+       			<xsd:documentation>For OR-like conditions, such as Attacker must have Haste (spell) or Haste (item power).</xsd:documentation>
 				<xsd:appinfo>
 					<nxe:showreferencedfield>unitSkillDescription</nxe:showreferencedfield>
 				</xsd:appinfo>

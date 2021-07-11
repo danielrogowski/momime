@@ -324,8 +324,7 @@ public final class UnitServerUtilsImpl implements UnitServerUtils
 				break;
 				
 			case PLANE_SHIFT:
-				necessarySkillIDs.add (CommonDatabaseConstants.UNIT_SKILL_ID_PLANE_SHIFT);
-				necessarySkillIDs.add (CommonDatabaseConstants.UNIT_SKILL_ID_PLANE_SHIFT_FROM_SPELL);
+				necessarySkillIDs.addAll (CommonDatabaseConstants.UNIT_SKILL_IDS_PLANE_SHIFT);
 				allowMultipleUnits = true;
 				break;
 				

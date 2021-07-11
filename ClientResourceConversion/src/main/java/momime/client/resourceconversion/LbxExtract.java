@@ -71,7 +71,7 @@ public final class LbxExtract
 			}
 		};
 		
-		for (int w = 0; w <= 13; w++)
+/*		for (int w = 0; w <= 13; w++)
 		{
 			String t = Integer.valueOf (w+1).toString ();
 			while (t.length () < 2)
@@ -87,16 +87,17 @@ public final class LbxExtract
 				
 				convertImage ("SPLMASTR.LBX", w, n, "wizards\\WZ" + t + "-ball-frame-" + s);
 			}
-		}
+		} */
 		
-		/*for (int n = 0; n <= 5 ; n++)
+		for (int n = 0; n <= 20 ; n++)
 		{
-			String s = Integer.valueOf (n+17).toString ();
+			final int m = (n <= 17) ? n : (n + 15);
+			String s = Integer.valueOf (m).toString ();
 			while (s.length () < 2)
 				s = "0" + s;
 
-			convertImage ("SPLMASTR.LBX", 31, n, "animations\\wizardsLab\\portal-frame-" + s);
-		} */
+			convertImage ("ITEMISC.LBX", m, 0, "unitSkills\\IS" + s + "-icon");
+		}
 		
 		System.out.println ("All done!");
 	} 

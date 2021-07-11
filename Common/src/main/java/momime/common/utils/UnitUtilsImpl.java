@@ -25,6 +25,7 @@ import momime.common.database.CommonDatabaseConstants;
 import momime.common.database.HeroItemBonusStat;
 import momime.common.database.HeroItemType;
 import momime.common.database.NegatedBySkill;
+import momime.common.database.NegatedByUnitID;
 import momime.common.database.Pick;
 import momime.common.database.RangedAttackTypeEx;
 import momime.common.database.RecordNotFoundException;
@@ -1228,20 +1229,19 @@ public final class UnitUtilsImpl implements UnitUtils
 		final CoordinateSystem combatMapCoordinateSystem)
 		throws MomException, RecordNotFoundException, PlayerNotFoundException
 	{
-		boolean invisible;
-		if (xu.getOwningPlayerID () == ourPlayerID)
-			invisible = false;
-		else
+		boolean invisible = false;
+		if (xu.getOwningPlayerID () != ourPlayerID)
 		{
 			// expandUnitDetails takes care of granting invisibility spell from Mass Invisibility CAE, so we don't need to check for that here
-			invisible = (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)) ||
-				(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL));
+			for (final String invisibilitySkillkID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
+				if (xu.hasModifiedSkill (invisibilitySkillkID))
+					invisible = true;
 			
 			if (invisible)
 			{
 				final List<String> skillsThatNegateInvisibility = db.findUnitSkill
-					(CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY, "canSeeUnitInCombat").getNegatedBySkill ().stream ().map
-					(n -> n.getNegatedBySkillID ()).collect (Collectors.toList ());
+					(CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY.get (0), "canSeeUnitInCombat").getNegatedBySkill ().stream ().filter
+						(n -> n.getNegatedByUnitID () == NegatedByUnitID.ENEMY_UNIT).map (n -> n.getNegatedBySkillID ()).collect (Collectors.toList ());
 				
 				// Look through our units who are also in the combat looking for one which has True Sight or Immunity to Illusions or is adjacent to the enemy unit
 				final Iterator<MemoryUnit> iter = mem.getUnit ().iterator ();

@@ -273,9 +273,12 @@ public final class OverlandMapProcessingImpl implements OverlandMapProcessing
 					if (xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_BUILD_ROAD))
 						engineerCount++;
 
-					if ((xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_PLANE_SHIFT)) ||
-						(xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_PLANE_SHIFT_FROM_SPELL)))
-						
+					boolean planeShift = false;
+					for (final String planeShiftSkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_PLANE_SHIFT)
+						if (xu.hasModifiedSkill (planeShiftSkillID))
+							planeShift = true;
+
+					if (planeShift)
 						planeShiftCount++;
 				}
 		}

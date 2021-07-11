@@ -837,9 +837,12 @@ public final class UnitCalculationsImpl implements UnitCalculations
 					{
 						enemyUnits [thisUnit.getCombatPosition ().getY ()] [thisUnit.getCombatPosition ().getX ()] = determineCombatActionID (xu, false, db);
 						
-						if ((!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY)) &&
-							(!xu.hasModifiedSkill (CommonDatabaseConstants.UNIT_SKILL_ID_INVISIBILITY_FROM_SPELL)))
-							
+						boolean visible = true;
+						for (final String invisibilitySkillID : CommonDatabaseConstants.UNIT_SKILL_IDS_INVISIBILITY)
+							if (xu.hasModifiedSkill (invisibilitySkillID))
+								visible = false;
+
+						if (visible)
 							directlyVisibleEnemyUnits.add (xu);
 					}
 				}

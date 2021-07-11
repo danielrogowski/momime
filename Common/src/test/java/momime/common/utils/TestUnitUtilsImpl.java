@@ -1686,7 +1686,8 @@ public final class TestUnitUtilsImpl
 		assertEquals (1 + 2, details.getModifiedSkillValue ("US006").intValue ());
 	
 		assertFalse (details.hasBasicSkill ("US007"));
-		assertFalse (details.hasModifiedSkill ("US007"));
+		assertTrue (details.hasModifiedSkill ("US007"));
+		assertEquals (2, details.getModifiedSkillValue ("US007").intValue ());
 
 		assertTrue (details.hasBasicSkill ("US008"));
 		assertTrue (details.hasModifiedSkill ("US008"));

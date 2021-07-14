@@ -1,0 +1,10 @@
+.project
+.classpath
+.settings
+target
+test-output
+/Client/MoMIMEClientConfig.xml
+/Client/MoMIMEClientLogging.xml
+/Editors/MoMIMEEditorsLogging.xml
+/Server/MoMIMEServerConfig.xml
+/Server/MoMIMEServerLogging.xml

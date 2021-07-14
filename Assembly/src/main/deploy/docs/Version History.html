@@ -37,8 +37,51 @@
 		</tr>
 		<tr>
 			<a name="currentversion"></a>
-			<td align=left><b>Current version: 0.9.9.3</b></td>
-			<td align=left><b>30 Jun 2021</b></td>
+			<td align=left><b>Current version: 0.9.9.4</b></td>
+			<td align=left><b>15 Jul 2021</b></td>
+				<b>Unit skills that now work correctly:</b>
+				<ul>
+					<li>Healer
+					<li>Regeneration
+					<li>Summon Demons
+					<li>Hydras' multiple heads
+					<li>Plane Shift
+					<li>Wall Crusher
+				</ul>
+
+				<b>Changes to combats:</b>
+				<ul>
+					<li>Cities are now 4x4 tiles like the original MoM (previously they were 5x5 to accomodate the 20 unit limit which was removed in 0.9.9.3)
+					<li>Units inside City Walls now get defensive bonus when being attacked by units outside the City Walls
+					<li>Each 2 units that attack a unit in the same combat round reduce that unit's To Hit chance when making counterattacks by 10% (as per MoM wiki)
+					<li>Cannot walk through the gate in City Walls diagonally
+				</ul>
+				
+				<b>Other new features:</b>
+				<ul>
+					<li>Units being in a city now boosts healing rate, and moreso if the city has an Animists' Guild
+					<li>When a unit has a fixed spell it can cast (e.g. Giant Spiders' web, Magicians' fireball, Priests' healing), right clicking the skill in their unit info panel now shows help for that spell
+					<li>AI players (and human players putting combats on Auto) will now cast unit fixed spells
+					<li>AI players (and human players putting combats on Auto) will now cast spells imbued in hero items
+					<li>Skills granted from hero item bonuses are now defined separately from base unit skills and skills granted from spells, so they appear with the correct brown background icons
+				</ul>
+				
+				<b>Fixed bugs:</b>
+				<ul>
+					<li>Permanent damage (e.g. from being turned to stone) will no longer heal each overland turn
+					<li>Units being turned into undead who lost some figures due to permanent damage will now become undead without regaining those figures
+					<li>Holy Avenger hero item attribute didn't add Dispels Evil 4, and Stoning hero item attribute didn't add Stoning Touch 1
+				</ul>
+				
+				<b>Text updates:</b>
+				<ul>
+					<li>Updated help text of Healer skill and Animsts' Guild to describe how healing rate each turn is calculated
+				</ul>
+			</td>
+		</tr>
+		<tr>
+			<td align=left>0.9.9.3</td>
+			<td align=left>30 Jun 2021</td>
 				<b>Unit skills that now work correctly:</b>
 				<ul>
 					<li>Invisible units in combat now appear semi-transparent if they can be seen (for example if you have a unit in adjacent cell or any unit in combat with True Sight) or completely hidden if you cannot see them
@@ -56,7 +99,7 @@
 					<li>Black Sleep and Web now negate Flight, so flying units that are asleep or webbed in combat can be attacked by ground units
 				</ul>
 				
-			<b>Other new features:</b>
+				<b>Other new features:</b>
 				<ul>
 					<li>In simultaneous turns games, now tells you the difference between waiting for other players to allocate moves, and when all players have allocated moves and waiting for the server to process them
 					<li>AI will now make multiple moves or attacks with the same unit in combat if it can
@@ -77,7 +120,7 @@
 				<ul>
 					<li>Removed option to change max number of units per map cell to anything other than 9 (I feel this is too tightly tied to the economy and needing to provide food for bigger stacks)
 				</ul>
-			<td align=left>
+			<td>
 		</tr>
 		<tr>
 			<td align=left>0.9.9.2</td>
